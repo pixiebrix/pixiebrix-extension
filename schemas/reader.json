@@ -176,14 +176,12 @@
                   },
                   "find": {
                     "type": "object",
-                    "additionalProperties": true,
-                    "minProperties": 1
+                    "additionalProperties": true
                   }
                 }
               }
             ]
-          },
-          "minProperties": 1
+          }
         }
       },
       "required": ["type", "selectors"]

@@ -14,16 +14,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors.scss";
 
-.topRow {
-  align-items: center;
+.coreFields {
+  container-name: EditorNodeConfigPanelHeader;
+  container-type: inline-size;
 }
 
-.buttonRow {
-  align-items: center;
-  margin-bottom: 1em;
-}
-
-.brickInfo {
-  font-weight: 500;
+@container EditorNodeConfigPanelHeader (min-width: 700px) {
+  .coreFields > :first-child {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .coreFields label {
+    /* Replicate fitLabelWidth */
+    min-width: fit-content;
+    flex-grow: 0;
+  }
 }

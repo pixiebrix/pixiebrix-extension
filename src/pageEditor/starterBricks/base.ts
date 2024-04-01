@@ -27,7 +27,6 @@ import {
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import { registry } from "@/background/messenger/api";
 import type React from "react";
 import { createSitePattern } from "@/permissions/patterns";
 import { type Except } from "type-fest";
@@ -42,7 +41,6 @@ import {
   type NormalizedAvailability,
   type ReaderConfig,
 } from "@/bricks/types";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
@@ -61,6 +59,7 @@ import {
   type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import { registry } from "@/background/messenger/strict/api";
 
 export interface WizardStep {
   step: string;

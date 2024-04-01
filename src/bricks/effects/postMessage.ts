@@ -19,7 +19,6 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { $safeFindElementsWithRootMode } from "@/bricks/rootModeHelpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { PropError } from "@/errors/businessErrors";
 import { assertNotNullish } from "@/utils/nullishUtils";
 

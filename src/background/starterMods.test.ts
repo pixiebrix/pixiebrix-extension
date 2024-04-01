@@ -16,7 +16,7 @@
  */
 
 import {
-  debouncedInstallStarterMods,
+  debouncedActivateStarterMods,
   getBuiltInIntegrationConfigs,
 } from "@/background/starterMods";
 import {
@@ -25,7 +25,7 @@ import {
 } from "@/store/extensionsStorage";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { isLinked } from "@/auth/token";
+import { isLinked } from "@/auth/authStorage";
 import { refreshRegistries } from "./refreshRegistries";
 import {
   type ActivatedModComponent,
@@ -37,16 +37,17 @@ import {
   defaultModDefinitionFactory,
   getModDefinitionWithBuiltInIntegrationConfigs,
 } from "@/testUtils/factories/modDefinitionFactories";
-import { userOrganizationFactory } from "@/testUtils/factories/authFactories";
+import { meOrganizationApiResponseFactory } from "@/testUtils/factories/authFactories";
 import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 
 const axiosMock = new MockAdapter(axios);
 
-jest.mock("@/auth/token", () => ({
+jest.mock("@/auth/authStorage", () => ({
   async getAuthHeaders() {
     return {};
   },
   isLinked: jest.fn().mockResolvedValue(true),
+  addListener: jest.fn(),
 }));
 
 jest.mock("@/utils/extensionUtils");
@@ -79,7 +80,7 @@ describe("debouncedInstallStarterMods", () => {
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [mod]);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions } = await getModComponentState();
 
     expect(extensions).toHaveLength(1);
@@ -91,7 +92,7 @@ describe("debouncedInstallStarterMods", () => {
     axiosMock.onGet("/api/services/shared/?meta=1").reply(200, [
       remoteIntegrationConfigurationFactory(),
       remoteIntegrationConfigurationFactory({
-        organization: userOrganizationFactory(),
+        organization: meOrganizationApiResponseFactory(),
       }),
       remoteIntegrationConfigurationFactory({ user: uuidv4() }),
     ]);
@@ -115,7 +116,7 @@ describe("debouncedInstallStarterMods", () => {
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions } = await getModComponentState();
 
     expect(extensions).toHaveLength(0);
@@ -135,7 +136,7 @@ describe("debouncedInstallStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions: modComponents } = await getModComponentState();
 
     expect(modComponents).toBeArrayOfSize(1);
@@ -176,7 +177,7 @@ describe("debouncedInstallStarterMods", () => {
       },
     ]);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions } = await getModComponentState();
 
     expect(extensions).toHaveLength(1);
@@ -197,7 +198,7 @@ describe("debouncedInstallStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [defaultModDefinitionFactory()]);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions } = await getModComponentState();
 
     expect(extensions).toHaveLength(2);
@@ -220,7 +221,7 @@ describe("debouncedInstallStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions } = await getModComponentState();
 
     expect(extensions).toHaveLength(1);
@@ -258,7 +259,7 @@ describe("debouncedInstallStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions: modComponents } = await getModComponentState();
 
     expect(modComponents).toBeArrayOfSize(1);

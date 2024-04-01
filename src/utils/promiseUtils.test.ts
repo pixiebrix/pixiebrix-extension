@@ -21,7 +21,10 @@ import {
   memoizeUntilSettled,
   retryWithJitter,
   asyncMapValues,
+  pollUntilTruthy,
 } from "@/utils/promiseUtils";
+import { PromiseCancelled } from "@/errors/genericErrors";
+import pDefer from "p-defer";
 
 // From https://github.com/sindresorhus/p-memoize/blob/52fe6052ff2287f528c954c4c67fc5a61ff21360/test.ts#LL198
 test("memoizeUntilSettled", async () => {
@@ -29,10 +32,12 @@ test("memoizeUntilSettled", async () => {
 
   const memoized = memoizeUntilSettled(async () => index++);
 
-  expect(await memoized()).toBe(0);
-  expect(await memoized()).toBe(1);
-  expect(await memoized()).toBe(2);
-  expect(await Promise.all([memoized(), memoized()])).toStrictEqual([3, 3]);
+  await expect(memoized()).resolves.toBe(0);
+  await expect(memoized()).resolves.toBe(1);
+  await expect(memoized()).resolves.toBe(2);
+  await expect(Promise.all([memoized(), memoized()])).resolves.toStrictEqual([
+    3, 3,
+  ]);
 });
 
 test("groupPromisesByStatus", async () => {
@@ -194,5 +199,50 @@ describe("asyncMapValues", () => {
       a: 2,
       b: 4,
     });
+  });
+});
+
+describe("pollUntilTruthy", () => {
+  it("returns truthy value", async () => {
+    const generator = jest.fn().mockResolvedValue(true);
+    await expect(pollUntilTruthy(generator)).resolves.toBe(true);
+  });
+
+  it("returns undefined for falsy value", async () => {
+    const generator = jest.fn().mockResolvedValue(false);
+    await expect(
+      pollUntilTruthy(generator, { maxWaitMillis: 0, intervalMillis: 1 }),
+    ).resolves.toBeUndefined();
+    // Still calls even if maxWaitMillis is 0
+    expect(generator).toHaveBeenCalledOnce();
+  });
+
+  it("doesn't call generator if already aborted", async () => {
+    const generator = jest.fn().mockResolvedValue(true);
+    const controller = new AbortController();
+    controller.abort(new PromiseCancelled());
+
+    const pollPromise = pollUntilTruthy(generator, {
+      signal: controller.signal,
+    });
+
+    await expect(pollPromise).rejects.toThrow(PromiseCancelled);
+    expect(generator).not.toHaveBeenCalled();
+  });
+
+  it("prefers abort signal", async () => {
+    const deferred = pDefer();
+    const generator = jest.fn().mockResolvedValue(deferred.promise);
+    const controller = new AbortController();
+
+    const pollPromise = pollUntilTruthy(generator, {
+      signal: controller.signal,
+    });
+
+    controller.abort(new PromiseCancelled());
+    deferred.resolve(true);
+
+    expect(generator).toHaveBeenCalledOnce();
+    await expect(pollPromise).rejects.toThrow(PromiseCancelled);
   });
 });

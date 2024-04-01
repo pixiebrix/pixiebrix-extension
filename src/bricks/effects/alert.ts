@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { propertiesToSchema } from "@/validators/generic";
-import { showNotification } from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export const ALERT_EFFECT_ID = validateRegistryId("@pixiebrix/browser/alert");
 
@@ -61,22 +61,29 @@ export class AlertEffect extends EffectABC {
     ["message"],
   );
 
-  async effect({
-    message,
-    type = "window",
-    duration = Number.POSITIVE_INFINITY,
-  }: BrickArgs<{
-    message: string | number | boolean;
-    type: "window" | "info" | "success" | "warning" | "error";
-    duration?: number;
-  }>): Promise<void> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    // In the future, dynamically determine based off type if type is statically known
+    return ["alert", "toast"];
+  }
+
+  async effect(
+    {
+      message,
+      type = "window",
+      duration = Number.POSITIVE_INFINITY,
+    }: BrickArgs<{
+      message: string | number | boolean;
+      type: "window" | "info" | "success" | "warning" | "error";
+      duration?: number;
+    }>,
+    { platform }: BrickOptions,
+  ): Promise<void> {
     const messageString = String(message);
 
     if (type === "window") {
-      // eslint-disable-next-line no-alert -- User requested
-      window.alert(messageString);
+      platform.alert(messageString);
     } else {
-      showNotification({
+      platform.toasts.showNotification({
         message: messageString,
         type,
         autoDismissTimeMs: duration,

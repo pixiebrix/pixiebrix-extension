@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/vendors/overrides.scss";
+import "@/vendors/bootstrapWithoutRem.css";
+import "@/utils/global.scss";
 import "@/utils/layout.scss";
 
 import "@/extensionContext";
@@ -31,11 +31,23 @@ import { watchNavigation } from "@/pageEditor/protocol";
 import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
+import { setPlatform } from "@/platform/platformContext";
+import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
 
-void initMessengerLogging();
-void initRuntimeLogging();
-void initPerformanceMonitoring();
-watchNavigation();
-initToaster();
+async function init() {
+  setPlatform(extensionPagePlatform);
+  void initMessengerLogging();
+  void initRuntimeLogging();
+  try {
+    await initPerformanceMonitoring();
+  } catch (error) {
+    console.error("Failed to initialize performance monitoring", error);
+  }
 
-ReactDOM.render(<Panel />, document.querySelector("#container"));
+  watchNavigation();
+  initToaster();
+
+  ReactDOM.render(<Panel />, document.querySelector("#container"));
+}
+
+void init();

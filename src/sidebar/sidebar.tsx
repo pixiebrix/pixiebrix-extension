@@ -17,7 +17,7 @@
 
 // Keep in order so precedence is preserved
 import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
+import "@/utils/global.scss";
 import "@/utils/layout.scss";
 import "./sidebar.scss";
 
@@ -38,21 +38,43 @@ import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { initSidePanel } from "./sidePanel";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { sidebarWasLoaded } from "@/contentScript/messenger/strict/api";
+import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
+import { setPlatform } from "@/platform/platformContext";
+import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
+import { isMicrosoftEdge } from "@/utils/browserUtils";
+import openAllLinksInPopups from "@/utils/openAllLinksInPopups";
 
 async function init(): Promise<void> {
+  setPlatform(extensionPagePlatform);
+  void initMessengerLogging();
+  void initRuntimeLogging();
+  try {
+    await initPerformanceMonitoring();
+  } catch (error) {
+    console.error("Failed to initialize performance monitoring", error);
+  }
+
+  registerMessenger();
+  registerContribBlocks();
+  registerBuiltinBricks();
+  initToaster();
+
   ReactDOM.render(<App />, document.querySelector("#container"));
+
+  // XXX: Do we really want to delay the `init`? Maybe this should be last or use `getConnectedTarget().then`
   sidebarWasLoaded(await getConnectedTarget());
+
+  initSidePanel();
+  markDocumentAsFocusableByUser();
+
+  // Handle an embedded AA business copilot frame
+  void initCopilotMessenger();
+
+  // Edge crashes on plain target=_blank links
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/7832
+  if (isMicrosoftEdge()) {
+    openAllLinksInPopups();
+  }
 }
 
-void initMessengerLogging();
-void initRuntimeLogging();
-void initPerformanceMonitoring();
-registerMessenger();
-registerContribBlocks();
-registerBuiltinBricks();
-initToaster();
 void init();
-initSidePanel();
-
-// Handle an embedded AA business copilot frame
-void initCopilotMessenger();

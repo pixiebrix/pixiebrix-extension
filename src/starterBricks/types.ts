@@ -30,7 +30,8 @@ import { type Logger } from "@/types/loggerTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type UnknownObject } from "@/types/objectTypes";
+import { type PlatformCapability } from "@/platform/capabilities";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 
 /**
  * Follows the semantics of lodash's debounce: https://lodash.com/docs/4.17.15#debounce
@@ -88,7 +89,7 @@ export function assertStarterBrickConfig(
     throw new TypeError("Expected object for StarterBrickConfig");
   }
 
-  const config = maybeStarterBrickConfig as Record<string, unknown>;
+  const config = maybeStarterBrickConfig as UnknownObject;
 
   if (config.kind !== "extensionPoint") {
     console.warn("Expected extension point", errorContext);
@@ -135,6 +136,8 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   public abstract readonly inputSchema: Schema;
 
+  public abstract readonly capabilities: PlatformCapability[];
+
   protected readonly logger: Logger;
 
   public abstract get kind(): StarterBrickType;
@@ -157,12 +160,20 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     return {};
   }
 
-  protected constructor(metadata: Metadata, logger: Logger) {
+  // Support injecting the platform via constructor to allow platforms to allow:
+  // 1) more fine-grained control during testing, and
+  // 2) contexts like the PageEditor to inspect the starter brick as if it were running on another platform
+  protected constructor(
+    public readonly platform: PlatformProtocol,
+    metadata: Metadata,
+  ) {
     this.id = validateRegistryId(metadata.id);
     this.name = metadata.name;
     this.description = metadata.description;
     this.instanceNonce = uuidv4();
-    this.logger = logger.childLogger({ extensionPointId: this.id });
+    this.logger = this.platform.logger.childLogger({
+      extensionPointId: this.id,
+    });
   }
 
   /**
@@ -212,8 +223,8 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
       console.warn(
         `Component ${component.id} already registered for the starter brick ${this.id}`,
       );
-      // Index is guaranteed to be a number, and this.extensions is an array
-      // eslint-disable-next-line security/detect-object-injection
+      /* eslint-disable-next-line security/detect-object-injection --
+      -- Index is guaranteed to be a number, and this.extensions is an array */
       this.modComponents[index] = component;
     } else {
       this.modComponents.push(component);

@@ -37,7 +37,7 @@ import TagList, { type TagItem } from "@/components/addBlockModal/TagList";
 import {
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
-} from "@/services/api";
+} from "@/data/service/api";
 import { type MarketplaceListing } from "@/types/contract";
 import BlockDetail from "@/components/addBlockModal/BlockDetail";
 import Loader from "@/components/Loader";
@@ -60,13 +60,13 @@ import {
 } from "@/components/addBlockModal/addBlockModalTypes";
 import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
 import useAddBlock from "@/components/addBlockModal/useAddBlock";
-import { useGetTheme } from "@/hooks/useTheme";
-import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
+import useTheme from "@/hooks/useTheme";
 import aaLogo from "@img/aa-logo-small.svg";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import useAsyncState from "@/hooks/useAsyncState";
+import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
 
 const TAG_POPULAR = "Popular";
 const TAG_UIPATH = "UiPath";
@@ -182,11 +182,13 @@ const AddBlockModal: React.FC = () => {
     [marketplaceTags, listings],
   );
 
-  const partnerKey = useGetTheme();
+  const {
+    activeTheme: { themeName },
+  } = useTheme();
 
   const tagItems: TagItem[] = useMemo(() => {
     const items: TagItem[] = [{ tag: TAG_ALL }];
-    if (partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY) {
+    if (themeName === AUTOMATION_ANYWHERE_PARTNER_KEY) {
       const aaTag = marketplaceTags.find(
         (tag) => tag.name === "Automation Anywhere",
       );
@@ -208,7 +210,7 @@ const AddBlockModal: React.FC = () => {
     );
 
     return items;
-  }, [marketplaceTags, partnerKey]);
+  }, [marketplaceTags, themeName]);
 
   const filteredBlocks = useMemo<Brick[]>(() => {
     if (isLoadingAllBricks || isLoadingTags || isEmpty(allBricks)) {
@@ -217,7 +219,7 @@ const AddBlockModal: React.FC = () => {
 
     let typedBlocks = [...allBricks.values()];
 
-    if (partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY) {
+    if (themeName === AUTOMATION_ANYWHERE_PARTNER_KEY) {
       typedBlocks = typedBlocks.filter(
         // eslint-disable-next-line security/detect-object-injection -- constant
         (typed) => !taggedBrickIds[TAG_UIPATH]?.has(typed.block.id),
@@ -225,13 +227,7 @@ const AddBlockModal: React.FC = () => {
     }
 
     return typedBlocks.map(({ block }) => block);
-  }, [
-    allBricks,
-    isLoadingAllBricks,
-    isLoadingTags,
-    partnerKey,
-    taggedBrickIds,
-  ]);
+  }, [allBricks, isLoadingAllBricks, isLoadingTags, themeName, taggedBrickIds]);
 
   const searchResults = useBlockSearch(
     filteredBlocks,
@@ -384,7 +380,7 @@ const AddBlockModal: React.FC = () => {
               className={cx(styles.tagList, {
                 // Fit the "Automation Anywhere" tag name on one line
                 [styles.widerTagList ?? ""]:
-                  partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY,
+                  themeName === AUTOMATION_ANYWHERE_PARTNER_KEY,
               })}
             >
               {isLoadingTags ? (

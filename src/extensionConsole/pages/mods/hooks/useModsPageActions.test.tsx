@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectActions"] }] */
-/// <reference types="jest-extended" />
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectActions"] }] -- TODO: replace with native expect and it.each */
 
 import useModsPageActions, {
   type ModsPageActions,
@@ -438,12 +437,12 @@ describe("actions", () => {
       } = renderHook(() => useModsPageActions(modViewItem), {
         setupRedux(dispatch) {
           dispatch(
-            extensionActions.installCloudExtension({
+            extensionActions.activateStandaloneModDefinition({
               extension: standaloneModDefinition,
             }),
           );
           dispatch(
-            extensionActions.installCloudExtension({
+            extensionActions.activateStandaloneModDefinition({
               extension: standaloneModDefinitionFactory(),
             }),
           );

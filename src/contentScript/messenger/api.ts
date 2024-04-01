@@ -17,10 +17,22 @@
 
 /* Do not use `registerMethod` in this file */
 import { getMethod, getNotifier } from "webext-messenger";
+import { forEachTab } from "@/utils/extensionUtils";
 
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
-export const navigateTab = getNotifier("NAVIGATE_TAB");
-export const reactivateTab = getNotifier("REACTIVATE_TAB");
+
+// Not exported because currently only used by reactivateEveryTab
+const reactivateTab = getNotifier("REACTIVATE_TAB");
+
+/**
+ * Convenience method to reactivate mods in every/all tabs.
+ * @see reactivateTab
+ */
+export function reactivateEveryTab(): void {
+  console.debug("Reactivate all tabs");
+  void forEachTab(reactivateTab);
+}
+
 export const ensureExtensionPointsInstalled = getMethod(
   "ENSURE_EXTENSION_POINTS_INSTALLED",
 );
@@ -37,8 +49,8 @@ export const getAttributeExamples = getMethod("GET_ATTRIBUTE_EXAMPLES");
 export const runBlock = getMethod("RUN_SINGLE_BLOCK");
 export const runRendererBlock = getMethod("RUN_RENDERER_BLOCK");
 
-export const clearDynamicElements = getMethod("CLEAR_DYNAMIC_ELEMENTS");
-export const updateDynamicElement = getMethod("UPDATE_DYNAMIC_ELEMENT");
+export const clearDynamicElements = getNotifier("CLEAR_DYNAMIC_ELEMENTS");
+export const updateDynamicElement = getNotifier("UPDATE_DYNAMIC_ELEMENT");
 export const runExtensionPointReader = getMethod("RUN_EXTENSION_POINT_READER");
 export const enableOverlay = getMethod("ENABLE_OVERLAY");
 export const disableOverlay = getMethod("DISABLE_OVERLAY");
@@ -59,3 +71,5 @@ export const getCopilotHostData = getMethod("GET_COPILOT_HOST_DATA");
 export const reloadMarketplaceEnhancements = getMethod(
   "RELOAD_MARKETPLACE_ENHANCEMENTS",
 );
+
+export const showLoginBanner = getMethod("SHOW_LOGIN_BANNER");

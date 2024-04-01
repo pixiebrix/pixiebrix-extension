@@ -18,12 +18,12 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { compact } from "lodash";
 import {
   $safeFindElementsWithRootMode,
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/bricks/rootModeHelpers";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 function isCheckbox(
   element: HTMLInputElement | HTMLTextAreaElement,
@@ -71,7 +71,7 @@ export class FormData extends TransformerABC {
   async transform(
     { selector, isRootAware = false }: BrickArgs,
     { root }: BrickOptions,
-  ): Promise<Record<string, unknown>> {
+  ): Promise<UnknownObject> {
     const $elements = $safeFindElementsWithRootMode({
       selector,
       isRootAware,
@@ -82,13 +82,13 @@ export class FormData extends TransformerABC {
     const result = $elements
       .find<HTMLInputElement | HTMLTextAreaElement>(":input")
       .get()
-      .map((input) => {
+      .map((input): [string, string | boolean] | undefined => {
         if (!input.name) {
           return;
         }
 
         if (!isCheckbox(input)) {
-          return [input.name, $(input).val()];
+          return [input.name, input.value];
         }
 
         // Cast `"on"` to `true`, un-checked to `false`

@@ -20,7 +20,6 @@ import { isEmpty, sortBy } from "lodash";
 import servicesRegistry, {
   readRawConfigurations,
 } from "@/integrations/registry";
-import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
@@ -28,7 +27,6 @@ import {
   MissingConfigurationError,
   NotConfiguredError,
 } from "@/errors/businessErrors";
-import { DoesNotExistError } from "@/registry/memoryRegistry";
 import {
   type IntegrationABC,
   type IntegrationConfig,
@@ -37,9 +35,12 @@ import {
   type SecretsConfig,
 } from "@/integrations/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type RegistryId } from "@/types/registryTypes";
+import { DoesNotExistError, type RegistryId } from "@/types/registryTypes";
 import { sanitizeIntegrationConfig } from "@/integrations/sanitizeIntegrationConfig";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import { getLinkedApiClient } from "@/data/service/apiClient";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { type SetRequired } from "type-fest";
 
 enum Visibility {
   Private = 0,
@@ -62,6 +63,13 @@ type Option = {
    * The configuration id.
    */
   id: UUID;
+
+  /**
+   * Human-readable label for the configuration to distinguish it from other configurations for the same integration
+   * in the interface.
+   */
+  label: string | undefined;
+
   /**
    * The registry id of the integration definition package.
    */
@@ -98,13 +106,9 @@ class LazyLocatorFactory {
 
   private local: IntegrationConfig[] = [];
 
-  private options: Option[];
+  private options: Option[] = [];
 
-  private _initialized = false;
-
-  private _refreshPromise: Promise<void>;
-
-  private updateTimestamp: number = undefined;
+  private updateTimestamp: number | undefined;
 
   constructor() {
     forbidContext(
@@ -120,7 +124,7 @@ class LazyLocatorFactory {
   }
 
   get initialized(): boolean {
-    return this._initialized;
+    return Boolean(this.updateTimestamp);
   }
 
   async refreshRemote(): Promise<void> {
@@ -128,11 +132,12 @@ class LazyLocatorFactory {
       // As of https://github.com/pixiebrix/pixiebrix-app/issues/562, the API gracefully handles unauthenticated calls
       // to this endpoint. However, there's no need to pull the built-in services because the user can't call them
       // without being authenticated
-      this.remote = await fetch<RemoteIntegrationConfig[]>(
+      const client = await getLinkedApiClient();
+      const { data } = await client.get<RemoteIntegrationConfig[]>(
         // Fetch full configurations, including credentials for configurations with pushdown
         "/api/services/shared/",
-        { requireLinked: true },
       );
+      this.remote = data;
       console.debug(`Fetched ${this.remote.length} remote service auth(s)`);
     } catch (error) {
       if (error instanceof ExtensionNotLinkedError) {
@@ -153,40 +158,35 @@ class LazyLocatorFactory {
   /**
    * Refreshes the local and remote integration configurations.
    */
-  async refresh(): Promise<void> {
-    // Avoid multiple concurrent requests. Could potentially replace with debouncer with both leading/trailing: true
-    // For example: https://github.com/sindresorhus/promise-fun/issues/15
-    this._refreshPromise = this._refreshPromise ?? this._refresh();
-    try {
-      await this._refreshPromise;
-    } finally {
-      this._refreshPromise = undefined;
-    }
-  }
-
-  private async _refresh(): Promise<void> {
+  // eslint-disable-next-line unicorn/consistent-function-scoping -- Clearer here
+  refresh = memoizeUntilSettled(async () => {
     const timestamp = Date.now();
     await Promise.all([this.refreshLocal(), this.refreshRemote()]);
     this.initializeOptions();
-    this._initialized = true;
     this.updateTimestamp = timestamp;
     console.debug("Refreshed service configuration locator", {
       updateTimestamp: this.updateTimestamp,
     });
-  }
+  });
 
   private initializeOptions() {
     this.options = sortBy(
       [
-        ...this.local.map((x) => ({
-          ...x,
-          level: Visibility.Private,
-          local: true,
-          proxy: false,
-          serviceId: x.integrationId,
-        })),
+        ...this.local.map(
+          (x) =>
+            ({
+              ...x,
+              level: Visibility.Private,
+              local: true,
+              proxy: false,
+              serviceId: x.integrationId,
+              // TODO: Unsafe. Remove once the `id` in `IntegrationConfig` is not optional
+            }) as SetRequired<Option, "id">,
+        ),
         ...(this.remote ?? []).map((x) => ({
           ...x,
+          // Server JSON response uses null instead of undefined for `label`
+          label: x.label ?? undefined,
           level: x.organization ? Visibility.Team : Visibility.BuiltIn,
           local: false,
           proxy: !x.pushdown,
@@ -257,8 +257,9 @@ class LazyLocatorFactory {
     return this.options
       .filter((x) => x.serviceId === serviceId)
       .map((match) => ({
-        _sanitizedIntegrationConfigBrand: undefined,
+        _sanitizedIntegrationConfigBrand: null,
         id: match.id,
+        label: match.label,
         serviceId,
         proxy: match.proxy,
         config: sanitizeIntegrationConfig(service, match.config),
@@ -323,8 +324,9 @@ class LazyLocatorFactory {
     });
 
     return {
-      _sanitizedIntegrationConfigBrand: undefined,
+      _sanitizedIntegrationConfigBrand: null,
       id: authId,
+      label: match.label,
       serviceId,
       proxy: match.proxy,
       config: sanitizeIntegrationConfig(service, match.config),

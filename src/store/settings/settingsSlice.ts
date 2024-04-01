@@ -15,25 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import {
   AUTH_METHODS,
   type SettingsFlags,
   type SettingsState,
 } from "@/store/settings/settingsTypes";
-import reportError from "@/telemetry/reportError";
-import { isEmpty, once } from "lodash";
+import { isEmpty } from "lodash";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
-import { isValidTheme } from "@/themes/themeUtils";
 import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import { revertAll } from "@/store/commonActions";
+import { activateTheme } from "@/background/messenger/strict/api";
 
 export const initialSettingsState: SettingsState = {
-  mode: "remote",
   nextUpdate: null,
   suggestElements: false,
   browserWarningDismissed: false,
+  /**
+   * @since 1.8.11 default to true
+   */
+  textSelectionMenu: true,
+  snippetShortcutMenu: true,
   /**
    * @since 1.8.6 default to true
    */
@@ -48,6 +55,9 @@ export const initialSettingsState: SettingsState = {
   partnerId: null,
   authMethod: null,
   authIntegrationId: null,
+  /**
+   * @deprecated - instead get themeName from useTheme / themeStorage
+   */
   theme: DEFAULT_THEME,
   updatePromptTimestamp: null,
 };
@@ -56,9 +66,6 @@ const settingsSlice = createSlice({
   name: "settings",
   initialState: initialSettingsState,
   reducers: {
-    setMode(state, { payload: { mode } }) {
-      state.mode = mode;
-    },
     setFlag(
       state,
       action: PayloadAction<{
@@ -111,29 +118,29 @@ const settingsSlice = createSlice({
     },
     recordUpdatePromptTimestamp(state) {
       // Don't overwrite the old timestamp
-      if (state.updatePromptTimestamp == null) {
-        state.updatePromptTimestamp = Date.now();
-      }
+      state.updatePromptTimestamp ??= Date.now();
     },
     resetUpdatePromptTimestamp(state) {
       state.updatePromptTimestamp = null;
-    },
-    setTheme(state, { payload: { theme } }: { payload: { theme: string } }) {
-      if (isValidTheme(theme)) {
-        state.theme = theme;
-        return;
-      }
-
-      state.theme = DEFAULT_THEME;
-
-      once(() => {
-        reportError(new Error(`Selected theme "${theme}" doesn't exist.`));
-      });
     },
   },
   extraReducers(builder) {
     builder.addCase(revertAll, () => initialSettingsState);
   },
+});
+
+/**
+ * Updates the partnerId in settingsState and calls `activateTheme` which
+ * triggers updating themeStorage in the background script.
+ * @see activateTheme
+ */
+export const updateLocalPartnerTheme = createAsyncThunk<
+  void,
+  string,
+  { state: SettingsState }
+>("settings/updatePartnerTheme", async (partnerId, thunkAPI) => {
+  thunkAPI.dispatch(settingsSlice.actions.setPartnerId({ partnerId }));
+  await activateTheme();
 });
 
 export default settingsSlice;

@@ -148,11 +148,16 @@ function customizeManifest(manifestV2, options = {}) {
   const policy = new Policy(manifest.content_security_policy);
 
   if (!isProduction) {
+    policy.add("img-src", "https://pixiebrix-marketplace-dev.s3.amazonaws.com");
+
     // React Dev Tools app. See https://github.com/pixiebrix/pixiebrix-extension/wiki/Development-commands#react-dev-tools
     policy.add("script-src", "http://localhost:8097");
     policy.add("connect-src", "ws://localhost:8097/");
+
+    // React Refresh (HMR)
     policy.add("connect-src", "ws://127.0.0.1:8080/");
     policy.add("connect-src", "ws://127.0.0.1/");
+
     policy.add("img-src", "https://pixiebrix-marketplace-dev.s3.amazonaws.com");
   }
 
@@ -173,6 +178,12 @@ function customizeManifest(manifestV2, options = {}) {
   // HMR support
   if (!isProduction) {
     manifest.web_accessible_resources.push("*.json");
+  }
+
+  // Playwright does not support dynamically accepting permissions for extensions, so we need to add all permissions
+  // to the manifest. This is only necessary for Playwright tests.
+  if (env.REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST) {
+    manifest.permissions.push(...manifest.optional_permissions);
   }
 
   if (manifestVersion === 3) {

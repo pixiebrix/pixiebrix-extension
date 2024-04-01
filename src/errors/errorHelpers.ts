@@ -94,7 +94,7 @@ export function onUncaughtError(handler: (error: Error) => void): void {
 export function isErrorObject(
   error: unknown,
 ): error is SetRequired<ErrorObject, "name" | "message"> {
-  // We should probably just use ErrorLike everywhere but it requires changing a lot of code
+  // We should probably just use ErrorLike everywhere, but it requires changing a lot of code
   return isErrorLike(error);
 }
 
@@ -163,6 +163,8 @@ const BUSINESS_ERROR_NAMES = new Set([
   "PropError",
   "BusinessError",
   "CancelError",
+  "InteractiveLoginRequiredError",
+  "RequestSupersededError",
   "SubmitPanelAction",
   "AbortPanelAction",
   "ClosePanelAction",

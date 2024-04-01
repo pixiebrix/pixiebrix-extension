@@ -23,8 +23,8 @@ import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type RegistryId, type Metadata } from "@/types/registryTypes";
-import { type BrickConfig } from "@/bricks/types";
+import { type Metadata, type RegistryId } from "@/types/registryTypes";
+import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { type ModComponentFormState } from "./starterBricks/formStateTypes";
@@ -34,12 +34,6 @@ import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
-
-export enum PipelineFlavor {
-  AllBlocks = "allBlocks",
-  NoEffect = "noEffect",
-  NoRenderer = "noRenderer",
-}
 
 export type AddBlockLocation = {
   /**
@@ -65,6 +59,7 @@ export enum ModalKey {
   SAVE_AS_NEW_RECIPE,
   CREATE_RECIPE,
   ADD_BLOCK,
+  SAVE_DATA_INTEGRITY_ERROR,
 }
 
 export type ModMetadataFormState = Pick<

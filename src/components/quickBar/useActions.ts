@@ -16,8 +16,9 @@
  */
 
 import { type Action, useKBar } from "kbar";
-import React, { useEffect } from "react";
+import React from "react";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 function useActions(): void {
   // The useActions hook is included in KBarComponent, which mounts/unmounts when the kbar is toggled
@@ -25,27 +26,27 @@ function useActions(): void {
   const { query } = useKBar();
   const uninstallActionsRef = React.useRef<(() => void) | null>(null);
 
+  const handler = (nextActions: Action[]) => {
+    uninstallActionsRef.current?.();
+    // Potential improvement: to avoid flickering, we could register actions individually and keep track of
+    // their uninstall handlers by id.
+    uninstallActionsRef.current = query.registerActions(nextActions);
+  };
+
   // Listen for changes while the kbar is mounted:
   // - The user is making edits in the Page Editor
   // - Generators are producing new actions in response to the search query changing
-  useEffect(() => {
-    const handler = (nextActions: Action[]) => {
-      uninstallActionsRef.current?.();
-      // Potential improvement: to avoid flickering, we could register actions individually and keep track of
-      // their uninstall handlers by id.
-      uninstallActionsRef.current = query.registerActions(nextActions);
-    };
-
+  // The query is available on initial mount
+  useOnMountOnly(() => {
     // Don't use useRegisterActions, because then we aren't able to unregister actions that were around
     // from the initial mount
     handler(quickBarRegistry.currentActions);
 
-    quickBarRegistry.addListener(handler);
+    quickBarRegistry.changeEvent.add(handler);
     return () => {
-      quickBarRegistry.removeListener(handler);
+      quickBarRegistry.changeEvent.remove(handler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- the query is available on initial mount
-  }, []);
+  });
 }
 
 export default useActions;

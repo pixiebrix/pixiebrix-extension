@@ -81,10 +81,7 @@ const PublicNoActiveSidebarPanelsView: React.FunctionComponent = () => (
     <p>
       Looking for new mods?
       <br />
-      Check out the{" "}
-      <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
-        PixieBrix Marketplace
-      </a>
+      Check out the <a href={MARKETPLACE_URL}>PixieBrix Marketplace</a>
     </p>
   </div>
 );

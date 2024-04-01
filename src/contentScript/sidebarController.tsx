@@ -21,7 +21,7 @@ import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty, throttle } from "lodash";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
-import * as sidebarMv2 from "./sidebarDomControllerLite";
+import * as sidebarMv2 from "@/contentScript/sidebarDomControllerLite";
 import { type Except } from "type-fest";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -35,8 +35,8 @@ import type {
   PanelPayload,
   TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
+import { getTemporaryPanelSidebarEntries } from "@/platform/panels/panelController";
+import { getFormPanelSidebarEntries } from "@/platform/forms/formController";
 import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
@@ -46,6 +46,9 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { showMySidePanel } from "@/background/messenger/strict/api";
+import { getSidebarElement } from "@/contentScript/sidebarDomControllerLite";
+import focusController from "@/utils/focusController";
+import selectionController from "@/utils/selectionController";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -59,7 +62,7 @@ export const isSidePanelOpen = isMV3()
 /**
  * Determines whether the sidebar is open.
  * @returns false when it's definitely closed
- * @returns 'unknown' when it cannot be determined, beause the extra padding might be
+ * @returns 'unknown' when it cannot be determined, because the extra padding might be
  *          caused by the dev tools being open on the side or due to another sidebar
  */
 // The type cannot be `undefined` due to strictNullChecks
@@ -127,7 +130,6 @@ let modActivationPanelEntry: ModActivationPanelEntry | null = null;
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
  */
 export async function showSidebar(): Promise<void> {
-  console.debug("sidebarController:showSidebar");
   reportEvent(Events.SIDEBAR_SHOW);
   if (isMV3() || isLoadedInIframe()) {
     try {
@@ -175,31 +177,9 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
  * @see HIDE_SIDEBAR_EVENT_NAME
  */
 export function hideSidebar(): void {
-  console.debug("sidebarController:hideSidebar", {
-    isSidebarFrameVisible: sidebarMv2.isSidebarFrameVisible(),
-  });
-
   reportEvent(Events.SIDEBAR_HIDE);
   sidebarMv2.removeSidebarFrame();
   window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
-}
-
-/**
- * Reload the sidebar and its content.
- *
- * Known limitations:
- * - Does not reload ephemeral forms
- */
-export async function reloadSidebar(): Promise<void> {
-  console.debug("sidebarController:reloadSidebar");
-
-  // Hide and reshow to force a full-refresh of the sidebar
-
-  if (sidebarMv2.isSidebarFrameVisible()) {
-    hideSidebar();
-  }
-
-  await showSidebar();
 }
 
 /**
@@ -222,8 +202,6 @@ export async function updateSidebar(
 
 export async function renderPanelsIfVisible(): Promise<void> {
   expectContext("contentScript");
-
-  console.debug("sidebarController:renderPanelsIfVisible");
 
   if (await isSidePanelOpen()) {
     void sidebarInThisTab.renderPanels(getTimedSequence(), panels);
@@ -386,11 +364,6 @@ export function reservePanels(refs: ModComponentRef[]): void {
 
 export function updateHeading(extensionId: UUID, heading: string): void {
   const entry = panels.find((x) => x.extensionId === extensionId);
-
-  console.debug("sidebarController:updateHeading %s", extensionId, {
-    heading,
-    panel: entry,
-  });
 
   if (entry) {
     entry.heading = heading;
@@ -555,4 +528,55 @@ function sidePanelOnCloseSignal(): AbortSignal {
 export function sidePanelOnClose(callback: () => void): void {
   const signal = sidePanelOnCloseSignal();
   signal.addEventListener("abort", callback, { once: true });
+}
+
+export function initSidebarFocusEvents(): void {
+  if (!isMV3()) {
+    // Add listeners to track keep track of focus with the MV2 sidebar. When the user interacts
+    // with the MV2 sidebar, the sidebar gets set as the document.activeElement. Required for brick
+    // functionality such as InsertAtCursorEffect
+    sidebarShowEvents.add(() => {
+      const sidebar = getSidebarElement();
+
+      if (!sidebar) {
+        // Should always exist because sidebarShowEvents is called on Sidebar App initialization
+        return;
+      }
+
+      // Save focus on initial load, because the user may have `mouseenter`ed the sidebar before the React App
+      // fired the sidebarShowEvent event. For example, if the user clicked the browserAction toolbar button and
+      // immediately `mouseenter`ed the sidebar (because the top of the sidebar is very close to the top browserAction)
+      if (document.activeElement !== sidebar) {
+        focusController.save();
+      }
+
+      const closeSignal = sidePanelOnCloseSignal();
+
+      // Can't detect clicks in the sidebar itself. So need to just watch for enter/leave the sidebar element
+      sidebar.addEventListener(
+        "mouseenter",
+        () => {
+          // If the user clicks into the sidebar and then leaves the sidebar, don't set the focus to the sidebar
+          // when they re-enter the sidebar
+          if (document.activeElement !== sidebar) {
+            // FIXME: If the user closes the sidebar when these two items are stored,
+            // both controllers will be stuck that way until some other .restore()/.clear() call resets it. It will need a "sidebar hide" listener to ensure it doesn't happen
+            // https://github.com/pixiebrix/pixiebrix-extension/pull/7842#discussion_r1516015396
+            focusController.save();
+            selectionController.save();
+          }
+        },
+        { passive: true, capture: true, signal: closeSignal },
+      );
+
+      sidebar.addEventListener(
+        "mouseleave",
+        () => {
+          focusController.clear();
+          selectionController.clear();
+        },
+        { passive: true, capture: true, signal: closeSignal },
+      );
+    });
+  }
 }

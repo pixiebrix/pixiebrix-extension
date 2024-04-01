@@ -28,7 +28,6 @@ import {
 } from "@rjsf/utils";
 import React from "react";
 import { FormControl, type FormControlProps } from "react-bootstrap";
-import { type UnknownObject } from "@/types/objectTypes";
 
 // RJSF's BaseInputTemplateProps is overly permissive. Tightening it up here.
 export interface StrictBaseInputTemplateProps<
@@ -41,7 +40,8 @@ export interface StrictBaseInputTemplateProps<
   value: string | number;
 }
 
-// eslint-disable-next-line security/detect-unsafe-regex
+/* eslint-disable-next-line security/detect-unsafe-regex -- @graham: this was the best/fastest regex I was able to
+ * come up with, but a better regex-er might be able to improve it and eliminate the need to disable. */
 const DEFAULT_NUMBER_REGEX = /^-?\d*(?:\.\d*)?(?:[Ee][+-]?\d*)?$/;
 
 /* @since 1.8.7
@@ -99,6 +99,8 @@ function getValue(
   return value || value === 0 ? value : "";
 }
 
+const emptyArray: string[] = [] as const;
+
 export default function BaseInputTemplate<
   T = HTMLInputElement,
   S extends StrictRJSFSchema = RJSFSchema,
@@ -118,7 +120,7 @@ export default function BaseInputTemplate<
   autofocus,
   options,
   schema,
-  rawErrors = [],
+  rawErrors = emptyArray,
   children,
   extraProps,
 }: StrictBaseInputTemplateProps<T, S, F>) {

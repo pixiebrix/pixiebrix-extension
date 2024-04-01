@@ -7,7 +7,12 @@
     },
     "enforceAuthentication": {
       "type": "boolean",
-      "description": "Enforce PixieBrix authentication on specified URLs ",
+      "description": "Enforce PixieBrix authentication on specified URLs",
+      "default": false
+    },
+    "disableLoginTab": {
+      "type": "boolean",
+      "description": "Disable opening a login tab on install and heartbeat",
       "default": false
     },
     "partnerId": {

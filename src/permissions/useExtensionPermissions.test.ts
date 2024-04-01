@@ -47,7 +47,6 @@ function mockOrigins(...additional: string[]): void {
 
 describe("useExtensionPermissions", () => {
   beforeEach(() => {
-    // eslint-disable-next-line new-cap -- test helper method
     INTERNAL_reset();
   });
 

@@ -27,7 +27,10 @@ type SimpleEventListener<Detail> = (detail: Detail) => void;
  */
 export class SimpleEventTarget<Detail> extends EventTarget {
   coreEvent = "DEFAULT";
-  private readonly weakEvents = new WeakMap();
+  private readonly weakEvents = new WeakMap<
+    SimpleEventListener<Detail>,
+    EventListener
+  >();
 
   // Permanently map simplified callbacks to native listeners.
   // This acts as a memoization/deduplication which matches the native behavior.
@@ -36,7 +39,8 @@ export class SimpleEventTarget<Detail> extends EventTarget {
     callback: SimpleEventListener<Detail>,
   ): EventListener {
     if (this.weakEvents.has(callback)) {
-      return this.weakEvents.get(callback);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Just checked
+      return this.weakEvents.get(callback)!;
     }
 
     const native = (event: CustomEvent<Detail>) => {
@@ -47,14 +51,22 @@ export class SimpleEventTarget<Detail> extends EventTarget {
     return native;
   }
 
-  add(callback: SimpleEventListener<Detail>): void {
-    this.addEventListener(this.coreEvent, this.getNativeListener(callback));
+  add(
+    callback: SimpleEventListener<Detail>,
+    options?: AddEventListenerOptions,
+  ): void {
+    this.addEventListener(
+      this.coreEvent,
+      this.getNativeListener(callback),
+      options,
+    );
   }
 
   remove(callback: SimpleEventListener<Detail>): void {
     this.removeEventListener(this.coreEvent, this.getNativeListener(callback));
   }
 
+  // TODO: Enforce detail, unless it's `undefined`
   emit(detail?: Detail): void {
     this.dispatchEvent(new CustomEvent(this.coreEvent, { detail }));
   }

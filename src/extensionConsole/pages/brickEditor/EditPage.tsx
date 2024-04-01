@@ -28,7 +28,7 @@ import { truncate } from "lodash";
 import Loader from "@/components/Loader";
 import useSubmitBrick from "./useSubmitBrick";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import { HotKeys } from "react-hotkeys";
 import workshopSlice from "@/store/workshopSlice";
@@ -36,7 +36,7 @@ import useLogContext from "@/extensionConsole/pages/brickEditor/useLogContext";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { type Package } from "@/types/contract";
-import { useGetPackageQuery } from "@/services/api";
+import { useGetPackageQuery } from "@/data/service/api";
 import useIsMounted from "@/hooks/useIsMounted";
 import { type UUID } from "@/types/stringTypes";
 import { type Definition } from "@/types/registryTypes";
@@ -50,7 +50,7 @@ type ParsedBrickInfo = {
 };
 
 function useParseBrick(config: string | null): ParsedBrickInfo {
-  const extensions = useSelector(selectExtensions);
+  const extensions = useSelector(selectActivatedModComponents);
 
   return useMemo(() => {
     if (config == null) {
@@ -111,6 +111,8 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
     config: rawConfig,
   } = useParseBrick(data.config);
 
+  const name = rawConfig.metadata?.name;
+
   const { submit, validate, remove } = useSubmitBrick({
     create: false,
   });
@@ -120,7 +122,7 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
   const [isRemoving, setIsRemovingBrick] = useState(false);
   const onRemove = async () => {
     setIsRemovingBrick(true);
-    await remove(id);
+    await remove({ id, name });
 
     // If the brick has been removed, the app will navigate away from this page,
     // so we need to check if the component is still mounted
@@ -131,7 +133,6 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
 
   useLogContext(data.config);
 
-  const name = rawConfig.metadata?.name;
   useSetDocumentTitle(
     name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick",
   );
@@ -168,23 +169,19 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
                         <span className="ml-2">Re-activate Mod</span>
                       </div>
                     )}
-                    <div>
-                      <Button
-                        disabled={!isValid || isSubmitting || isRemoving}
-                        type="submit"
-                      >
-                        {values.public ? "Publish Brick" : "Update Brick"}
-                      </Button>
-                    </div>
-                    <div>
-                      <Button
-                        disabled={isSubmitting || isRemoving}
-                        variant="danger"
-                        onClick={onRemove}
-                      >
-                        Delete Brick
-                      </Button>
-                    </div>
+                    <Button
+                      disabled={!isValid || isSubmitting || isRemoving}
+                      type="submit"
+                    >
+                      {values.public ? "Publish Brick" : "Update Brick"}
+                    </Button>
+                    <Button
+                      disabled={isSubmitting || isRemoving}
+                      variant="danger"
+                      onClick={onRemove}
+                    >
+                      Delete Brick
+                    </Button>
                   </div>
                 </div>
               </div>

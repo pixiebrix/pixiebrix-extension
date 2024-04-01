@@ -30,109 +30,36 @@ import { isEmpty } from "lodash";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
-import { setCKEditorData } from "@/pageScript/messenger/api";
-import { getSelectorForElement } from "@/contentScript/elementReference";
-import { hasCKEditorClass } from "@/contrib/ckeditor";
-import { boolean } from "@/utils/typeUtils";
 import { findSingleElement } from "@/utils/domUtils";
+import {
+  isFieldElement,
+  setFieldValue,
+  setFieldsValue,
+} from "@/utils/domFieldUtils";
 
-type SetValueData = RequireExactlyOne<
+type FindAndSetValueData = RequireExactlyOne<
   {
     form?: HTMLElement | Document;
     value: unknown;
-    selector?: string;
-    name?: string;
+    selector: string;
+    name: string;
     dispatchEvent?: boolean;
     logger: Logger;
   },
   "selector" | "name"
 >;
 
-const OPTION_FIELDS = new Set(["checkbox", "radio"]);
-
-type FieldElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
-
-function isFieldElement(element: HTMLElement): boolean {
-  return (
-    element.isContentEditable ||
-    element instanceof HTMLInputElement ||
-    element instanceof HTMLTextAreaElement ||
-    element instanceof HTMLSelectElement
-  );
-}
-
-async function setFieldValue(
-  field: FieldElement,
-  value: unknown,
-  { dispatchEvent, isOption }: { dispatchEvent: boolean; isOption: boolean },
-): Promise<void> {
-  // For performance, use the contentScript-based call to determine if the element has the classname associate with
-  // CKEditor 5 instances. If it does, set the data (will error if it's not actually a CKEditor 5 instance).
-  if (hasCKEditorClass(field)) {
-    await setCKEditorData({
-      selector: getSelectorForElement(field),
-      value: String(value),
-    });
-    return;
-  }
-
-  if (field.isContentEditable) {
-    // Field needs to be focused first
-    field.focus();
-
-    // `insertText` acts as a "paste", so if no text is selected it's just appended
-    document.execCommand("selectAll");
-
-    // It automatically triggers an `input` event
-    document.execCommand("insertText", false, String(value));
-
-    return;
-  }
-
-  // `instanceof` is there as a type guard only
-  if (
-    !OPTION_FIELDS.has(field.type) ||
-    field instanceof HTMLTextAreaElement ||
-    field instanceof HTMLSelectElement
-  ) {
-    // Plain text field
-    field.value = String(value);
-  } else if (isOption) {
-    // Value-based radio/checkbox
-    field.checked = field.value === value;
-  } else {
-    // Boolean checkbox
-    field.checked = boolean(value);
-  }
-
-  if (dispatchEvent) {
-    if (
-      !(OPTION_FIELDS.has(field.type) || field instanceof HTMLSelectElement)
-    ) {
-      // Browsers normally fire these text events while typing
-      field.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true }));
-      field.dispatchEvent(new KeyboardEvent("keypress", { bubbles: true }));
-      field.dispatchEvent(new CompositionEvent("textInput", { bubbles: true }));
-      field.dispatchEvent(new InputEvent("input", { bubbles: true }));
-      field.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true }));
-    }
-
-    // Browsers normally fire this on `blur` if it's a text field, otherwise immediately
-    field.dispatchEvent(new KeyboardEvent("change", { bubbles: true }));
-  }
-}
-
 /**
  * Set the value of an input, doing the right thing for check boxes, etc.
  */
-async function setValue({
+async function findAndSetValue({
   form = document,
   value,
   logger,
   name,
   selector = `[name="${name}"]`,
   dispatchEvent = true,
-}: SetValueData) {
+}: FindAndSetValueData) {
   const isNameBased = Boolean(name);
   const fields = $(form)
     .find<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(selector)
@@ -159,18 +86,7 @@ async function setValue({
     return;
   }
 
-  // Exact matches will be picked out of many, otherwise we'll treat them as booleans
-  const isOption =
-    isNameBased &&
-    fields.some(
-      (field) => field.value === value && OPTION_FIELDS.has(field.type),
-    );
-
-  return Promise.all(
-    fields.map(async (field) =>
-      setFieldValue(field, value, { dispatchEvent, isOption }),
-    ),
-  );
+  return setFieldsValue(fields, value, { dispatchEvent, isNameBased });
 }
 
 export class SetInputValue extends EffectABC {
@@ -237,19 +153,19 @@ export class SetInputValue extends EffectABC {
             );
           }
 
-          if (!isFieldElement(target as HTMLElement)) {
+          if (!isFieldElement(target)) {
             throw new BusinessError(
               "Field is not a input field or editable element",
             );
           }
 
-          await setFieldValue(target as FieldElement, value, {
+          await setFieldValue(target, value, {
             dispatchEvent: true,
             isOption: false,
           });
         } else {
           // `setValue` works on any element that contains fields, not just forms
-          await setValue({
+          await findAndSetValue({
             selector,
             value,
             logger,
@@ -335,17 +251,17 @@ export class FormFill extends EffectABC {
 
     await Promise.all([
       ...Object.entries(fieldNames).map(async ([name, value]) =>
-        setValue({ name, value, logger, dispatchEvent: true }),
+        findAndSetValue({ name, value, logger, dispatchEvent: true }),
       ),
       ...Object.entries(fieldSelectors).map(async ([selector, value]) =>
-        setValue({ selector, value, logger, dispatchEvent: true }),
+        findAndSetValue({ selector, value, logger, dispatchEvent: true }),
       ),
     ]);
 
     if (typeof submit === "boolean") {
       if (submit) {
         if (!$form.is("form")) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Validated above
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Validated above
           const form = $form.get(0)!;
 
           if (form instanceof Document) {

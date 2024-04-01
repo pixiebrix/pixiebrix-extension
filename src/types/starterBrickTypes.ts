@@ -23,7 +23,7 @@ import { type RunArgs } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Metadata } from "@/types/registryTypes";
-import { type UnknownObject } from "@/types/objectTypes";
+import { type PlatformCapability } from "@/platform/capabilities";
 
 export type StarterBrickType =
   | "panel"
@@ -65,6 +65,12 @@ export interface StarterBrick extends Metadata {
    * Permissions required to use the StarterBrick.
    */
   permissions: Permissions.Permissions;
+
+  /**
+   * Platform capabilities required to use the StarterBrick.
+   * @since 1.8.10
+   */
+  capabilities: PlatformCapability[];
 
   /**
    * Return the Reader used by the StarterBrick. This method should only be called for calculating availability

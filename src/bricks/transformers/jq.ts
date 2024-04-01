@@ -18,13 +18,13 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { InputValidationError } from "@/bricks/errors";
 import { getErrorMessage, isErrorObject } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { retryWithJitter } from "@/utils/promiseUtils";
 import { type JsonValue } from "type-fest";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 const jqStacktraceRegexp = /jq: error \(at \/dev\/stdin:0\): (?<message>.*)/;
 
@@ -62,13 +62,14 @@ type ApplyJqPayload = {
   filter: string;
 };
 
-async function applyJq(payload: ApplyJqPayload) {
+async function applyJq(payload: ApplyJqPayload): Promise<JsonValue> {
   const { input, filter } = payload;
   const { default: jq } = await import(
     /* webpackChunkName: "jq-web" */
     "@pixiebrix/jq-web"
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Not sure why it's marked as "any"
   return jq.promised.json(input, filter);
 }
 
@@ -104,6 +105,7 @@ export class JQTransformer extends TransformerABC {
     { ctxt }: BrickOptions,
   ): Promise<unknown> {
     // This is the legacy behavior, back from runtime v1 when there wasn't explicit data flow.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: Fix when BrickArgs/BrickOptions return `unknown` instead
     const input = isNullOrBlank(data) ? ctxt : data;
 
     try {

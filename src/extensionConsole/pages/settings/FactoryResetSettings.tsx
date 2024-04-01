@@ -20,7 +20,7 @@ import React, { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import notify from "@/utils/notify";
 import { clearPackages } from "@/registry/memoryRegistry";
-import { clearLogs, reactivateEveryTab } from "@/background/messenger/api";
+import { clearLogs } from "@/background/messenger/strict/api";
 import { sessionChangesActions } from "@/store/sessionChanges/sessionChangesSlice";
 import AsyncButton from "@/components/AsyncButton";
 import reportEvent from "@/telemetry/reportEvent";
@@ -32,6 +32,7 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { revertAll } from "@/store/commonActions";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import { allSettled } from "@/utils/promiseUtils";
+import { reactivateEveryTab } from "@/contentScript/messenger/api";
 
 async function revokeAllAdditionalPermissions() {
   const permissions: Permissions.AnyPermissions =
@@ -54,10 +55,10 @@ const FactoryResetSettings: React.FunctionComponent = () => {
       <Card.Body className="text-danger">
         <p className="card-text">
           Click here to reset your local PixieBrix data.{" "}
-          <b>
+          <strong>
             This will deactivate any mods you&apos;ve activated and reset all
             browser extension settings.
-          </b>
+          </strong>
         </p>
         <AsyncButton
           variant="danger"

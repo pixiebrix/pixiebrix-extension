@@ -36,7 +36,7 @@ import {
   integrationDependencyFactory,
 } from "@/testUtils/factories/integrationFactories";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
-import { registry, services } from "@/background/messenger/api";
+import { registry, services } from "@/background/messenger/strict/api";
 import { refreshServices } from "@/background/locator";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -130,25 +130,27 @@ afterAll(() => {
 });
 
 async function expectServiceDescriptorVisible(service: IntegrationDefinition) {
-  expect(await screen.findByText(service.metadata.name)).toBeVisible();
-  expect(await screen.findByText(service.metadata.id)).toBeVisible();
+  await expect(screen.findByText(service.metadata.name)).resolves.toBeVisible();
+  await expect(screen.findByText(service.metadata.id)).resolves.toBeVisible();
 }
 
 async function expectRefreshButton(count?: number) {
   if (count) {
-    expect(
-      await screen.findAllByRole("button", { name: /refresh/i }),
-    ).toHaveLength(count);
+    await expect(
+      screen.findAllByRole("button", { name: /refresh/i }),
+    ).resolves.toHaveLength(count);
   } else {
-    expect(
-      await screen.findByRole("button", { name: /refresh/i }),
-    ).toBeVisible();
+    await expect(
+      screen.findByRole("button", { name: /refresh/i }),
+    ).resolves.toBeVisible();
   }
 }
 
 async function expectFieldToBeHidden(integration: IntegrationDefinition) {
   // Wait for automatic form submit button to be shown
-  expect(await screen.findByRole("button", { name: /submit/i })).toBeVisible();
+  await expect(
+    screen.findByRole("button", { name: /submit/i }),
+  ).resolves.toBeVisible();
 
   // Expect no service descriptor to be shown
   expect(screen.queryByText(integration.metadata.name)).not.toBeInTheDocument();
@@ -214,9 +216,9 @@ describe("IntegrationsBody", () => {
     });
 
     // Ensure Integrations title is shown
-    expect(
-      await screen.findByRole("heading", { name: "Integrations" }),
-    ).toBeVisible();
+    await expect(
+      screen.findByRole("heading", { name: "Integrations" }),
+    ).resolves.toBeVisible();
   });
 
   it("does not hide field with one service, no options for the service, but other options exist", async () => {

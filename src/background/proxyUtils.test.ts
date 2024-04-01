@@ -97,7 +97,7 @@ describe("proxyResponseToAxiosResponse", () => {
         },
       },
       status: 404,
-      statusText: undefined,
+      statusText: "Not Found",
     });
   });
 });

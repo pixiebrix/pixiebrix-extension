@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Button } from "react-bootstrap";
 import Centered from "@/components/Centered";
-import { getBaseURL } from "@/services/baseService";
+import { getBaseURL } from "@/data/service/baseService";
 import useAsyncState from "@/hooks/useAsyncState";
 
 const LoginCard: React.VoidFunctionComponent = () => {
@@ -32,7 +32,6 @@ const LoginCard: React.VoidFunctionComponent = () => {
       <Button
         variant="primary"
         className="mt-2"
-        target="_blank"
         href={baseURL ?? "/options.html"}
       >
         <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account

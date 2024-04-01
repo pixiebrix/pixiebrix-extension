@@ -16,12 +16,18 @@
  */
 
 import { type Kind } from "@/registry/packageRegistry";
-import { registry as backgroundRegistry } from "@/background/messenger/api";
+import { registry as backgroundRegistry } from "@/background/messenger/strict/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
-import { type RegistryId } from "@/types/registryTypes";
+import {
+  DoesNotExistError,
+  type EnumerableRegistryProtocol,
+  type RegistryId,
+  type RegistryItem,
+} from "@/types/registryTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
 type Source =
   // From the remote brick registry
@@ -31,40 +37,10 @@ type Source =
   // From an internal definition
   | "internal";
 
-export interface RegistryItem<T extends RegistryId = RegistryId> {
-  id: T;
-}
-
-export class DoesNotExistError extends Error {
-  override name = "DoesNotExistError";
-  public readonly id: string;
-
-  constructor(id: string) {
-    super(`Registry item does not exist: ${id}`);
-    this.id = id;
-  }
-}
-
-export type RegistryChangeListener = {
-  onCacheChanged: () => void;
-};
-
-type DatabaseChangeListener = {
-  onChanged: () => void;
-};
-
 /**
  * `backgroundRegistry` database change listeners.
  */
-// TODO: Use SimpleEventTarget instead
-// eslint-disable-next-line local-rules/persistBackgroundData -- Functions
-const databaseChangeListeners: DatabaseChangeListener[] = [];
-
-function notifyDatabaseListeners() {
-  for (const listener of databaseChangeListeners) {
-    listener.onChanged();
-  }
-}
+const packageRegistryChange = new SimpleEventTarget();
 
 /**
  * Replace IDB with remote packages and notify listeners.
@@ -73,7 +49,7 @@ export const syncRemotePackages = memoizeUntilSettled(async () => {
   expectContext("extension");
 
   await backgroundRegistry.syncRemote();
-  notifyDatabaseListeners();
+  packageRegistryChange.emit();
 });
 
 /**
@@ -83,19 +59,8 @@ export const clearPackages = async () => {
   expectContext("extension");
 
   await backgroundRegistry.clear();
-  notifyDatabaseListeners();
+  packageRegistryChange.emit();
 };
-
-/**
- * Protocol to avoid circular imports.
- * @since 1.8.2
- */
-export interface RegistryProtocol<
-  Id extends RegistryId = RegistryId,
-  Item extends RegistryItem<Id> = RegistryItem<Id>,
-> {
-  lookup: (id: Id) => Promise<Item>;
-}
 
 /**
  * Brick registry, with remote bricks backed by IDB.
@@ -103,7 +68,7 @@ export interface RegistryProtocol<
 class MemoryRegistry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>,
-> implements RegistryProtocol<Id, Item>
+> implements EnumerableRegistryProtocol<Id, Item>
 {
   /**
    * Registered built-in items. Used to keep track of built-ins across cache clears.
@@ -132,19 +97,17 @@ class MemoryRegistry<
 
   public readonly kinds: Set<Kind>;
 
-  private deserialize: (raw: unknown) => Item;
+  private deserialize: ((raw: unknown) => Item) | null;
 
-  private listeners: RegistryChangeListener[] = [];
+  onChange = new SimpleEventTarget();
 
   constructor(kinds: Kind[], deserialize: ((raw: unknown) => Item) | null) {
     this.kinds = new Set(kinds);
     this.deserialize = deserialize;
 
-    databaseChangeListeners.push({
-      onChanged: () => {
-        // If database changes, clear the cache to force reloading user-defined bricks
-        this.clear();
-      },
+    packageRegistryChange.add(() => {
+      // If database changes, clear the cache to force reloading user-defined bricks
+      this.clear();
     });
   }
 
@@ -158,28 +121,6 @@ class MemoryRegistry<
     }
 
     this.deserialize = deserialize;
-  }
-
-  /**
-   * Add a change listener
-   * @param listener the change listener
-   */
-  addListener(listener: RegistryChangeListener): void {
-    this.listeners.push(listener);
-  }
-
-  /**
-   * Remove a change listener
-   * @param listener the change listener
-   */
-  removeListener(listener: RegistryChangeListener): void {
-    this.listeners = this.listeners.filter((x) => x !== listener);
-  }
-
-  private notifyAll() {
-    for (const listener of this.listeners) {
-      listener.onCacheChanged();
-    }
   }
 
   /**
@@ -281,8 +222,8 @@ class MemoryRegistry<
     ]);
 
     const remoteItems: Item[] = [];
-    for (const raw of packages) {
-      const item = this.parse(raw.config);
+    for (const packageVersion of packages) {
+      const item = this.parse(packageVersion.config);
       if (item) {
         remoteItems.push(item);
       }
@@ -304,7 +245,7 @@ class MemoryRegistry<
       source: "internal",
       notify: false,
     });
-    this.notifyAll();
+    this.onChange.emit();
 
     this._cacheInitialized = true;
 
@@ -343,7 +284,7 @@ class MemoryRegistry<
     }
 
     if (changed && notify) {
-      this.notifyAll();
+      this.onChange.emit();
     }
   }
 
@@ -371,7 +312,7 @@ class MemoryRegistry<
     // Need to clear the whole thing, including built-ins. Listeners will often can all() to repopulate the cache.
     this._cacheInitialized = false;
     this._cache.clear();
-    this.notifyAll();
+    this.onChange.emit();
   }
 
   /**

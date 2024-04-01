@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sheets } from "@/background/messenger/api";
+import * as sheets from "@/contrib/google/sheets/core/sheetsApi";
 import { GoogleSheetsLookup } from "@/contrib/google/sheets/bricks/lookup";
 import { type ValueRange } from "@/contrib/google/sheets/core/types";
-import { type UnknownObject } from "@/types/objectTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+
+// XXX: sheetsApi should likely be mocked at the network level, not the module level
+jest.mock("@/contrib/google/sheets/core/sheetsApi");
 
 const getAllRowsMock = jest.mocked(sheets.getAllRows);
 

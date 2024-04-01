@@ -17,7 +17,7 @@
 
 import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
 import { useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import type React from "react";
 import { isEmpty, mapValues } from "lodash";
 import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
@@ -45,7 +45,6 @@ import { isPrimitive } from "@/utils/typeUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
-import type { UnknownObject } from "@/types/objectTypes";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: IntegrationsBody },
@@ -208,7 +207,7 @@ function useActivateModWizard(
   defaultAuthOptions: Record<RegistryId, AuthOption> = {},
   initialOptions: UnknownObject = {},
 ): FetchableAsyncState<UseActivateRecipeWizardResult> {
-  const installedExtensions = useSelector(selectExtensions);
+  const installedExtensions = useSelector(selectActivatedModComponents);
   const optionsValidationSchemaState = useAsyncModOptionsValidationSchema(
     modDefinition.options?.schema,
   );

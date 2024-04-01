@@ -20,7 +20,7 @@ import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import NoTabAccessPane from "@/pageEditor/panes/NoTabAccessPane";
 import BetaPane from "@/pageEditor/panes/BetaPane";
 import EditorPane from "@/pageEditor/panes/EditorPane";
@@ -36,11 +36,10 @@ import {
   selectTabHasPermissions,
   selectTabIsConnectingToContentScript,
 } from "@/pageEditor/tabState/tabStateSelectors";
-import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
+import useCurrentInspectedUrl from "@/pageEditor/hooks/useCurrentInspectedUrl";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import Alert from "@/components/Alert";
-import styles from "./EditorContent.module.scss";
 import { selectPageEditorDimensions } from "@/pageEditor/utils";
+import { DefaultErrorComponent } from "@/components/ErrorBoundary";
 
 const EditorContent: React.FC = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
@@ -54,7 +53,7 @@ const EditorContent: React.FC = () => {
   const { isPendingInstalledExtensions, isPendingDynamicExtensions } =
     useSelector(selectExtensionAvailability);
 
-  const url = useCurrentUrl();
+  const url = useCurrentInspectedUrl();
 
   useEffect(() => {
     console.debug("EditorContent debug effect", {
@@ -95,9 +94,12 @@ const EditorContent: React.FC = () => {
   // Always show the main error if present - keep this first
   if (editorError) {
     return (
-      <div className={styles.alertContainer}>
-        <Alert variant="danger">{getErrorMessage(editorError)}</Alert>
-      </div>
+      <DefaultErrorComponent
+        hasError={true}
+        error={editorError}
+        errorMessage={getErrorMessage(editorError)}
+        stack={editorError instanceof Error ? editorError.stack : null}
+      />
     );
   }
 

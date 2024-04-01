@@ -23,12 +23,19 @@ import {
   performConfiguredRequestInBackground,
 } from "@/background/messenger/api";
 import { getCachedAuthData } from "@/background/messenger/strict/api";
-import { type AuthData } from "@/integrations/integrationTypes";
+import {
+  type AuthData,
+  type SanitizedIntegrationConfig,
+} from "@/integrations/integrationTypes";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { setPlatform } from "@/platform/platformContext";
+import { platformMock as platform } from "@/testUtils/platformMock";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({
@@ -43,6 +50,7 @@ jest.mock("@/background/messenger/api", () => ({
 const performConfiguredRequestInBackgroundMock = jest.mocked(
   performConfiguredRequestInBackground,
 );
+
 const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
 const getUserDataMock = jest.mocked(getUserData);
 
@@ -60,11 +68,25 @@ const CONTROL_ROOM_USER_ID = 999;
 const UNATTENDED_RUN_AS_USER_ID = 1000;
 const DEPLOYMENT_ID = "789";
 
+beforeEach(() => {
+  // The aaApi module uses the platform global
+  setPlatform({
+    ...platform,
+    request: async <TData>(
+      integrationConfig: Nullishable<SanitizedIntegrationConfig>,
+      requestConfig: NetworkRequestConfig,
+    ) =>
+      performConfiguredRequestInBackgroundMock<TData>(
+        integrationConfig,
+        requestConfig,
+        { interactiveLogin: false },
+      ),
+  });
+});
+
 describe("Automation Anywhere - RunBot", () => {
   beforeEach(() => {
-    performConfiguredRequestInBackgroundMock.mockReset();
-    getCachedAuthDataMock.mockReset();
-    getUserDataMock.mockReset();
+    jest.clearAllMocks();
   });
 
   it("run Community Edition bot", async () => {
@@ -90,7 +112,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      brickOptionsFactory(),
+      brickOptionsFactory({ platform }),
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -112,6 +134,7 @@ describe("Automation Anywhere - RunBot", () => {
         method: "post",
         url: "/v2/automations/deploy",
       },
+      { interactiveLogin: false },
     );
 
     // CE returns blank object
@@ -149,7 +172,7 @@ describe("Automation Anywhere - RunBot", () => {
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         data: {},
       }),
-      brickOptionsFactory(),
+      brickOptionsFactory({ platform }),
     );
 
     expect(getCachedAuthDataMock).not.toHaveBeenCalled();
@@ -175,6 +198,7 @@ describe("Automation Anywhere - RunBot", () => {
         method: "post",
         url: "/v3/automations/deploy",
       },
+      { interactiveLogin: false },
     );
 
     // CE returns blank object
@@ -213,7 +237,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      brickOptionsFactory(),
+      brickOptionsFactory({ platform }),
     );
 
     expect(getCachedAuthDataMock).toHaveBeenCalledWith(tokenAuthId);
@@ -239,6 +263,7 @@ describe("Automation Anywhere - RunBot", () => {
         method: "post",
         url: "/v3/automations/deploy",
       },
+      { interactiveLogin: false },
     );
 
     // CE returns blank object
@@ -278,7 +303,7 @@ describe("Automation Anywhere - RunBot", () => {
         data: {},
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
       }),
-      brickOptionsFactory(),
+      brickOptionsFactory({ platform }),
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -302,6 +327,7 @@ describe("Automation Anywhere - RunBot", () => {
         method: "post",
         url: "/v3/automations/deploy",
       },
+      { interactiveLogin: false },
     );
 
     expect(values).toStrictEqual({
@@ -322,8 +348,8 @@ describe("Automation Anywhere - RunBot", () => {
     getUserDataMock.mockResolvedValue({
       partnerPrincipals: [
         {
-          control_room_url: EE_CONTROL_ROOM_URL,
-          control_room_user_id: CONTROL_ROOM_USER_ID,
+          controlRoomUrl: new URL(EE_CONTROL_ROOM_URL),
+          controlRoomUserId: CONTROL_ROOM_USER_ID,
         },
       ],
     });
@@ -343,7 +369,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      brickOptionsFactory(),
+      brickOptionsFactory({ platform }),
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -367,6 +393,7 @@ describe("Automation Anywhere - RunBot", () => {
         method: "post",
         url: "/v3/automations/deploy",
       },
+      { interactiveLogin: false },
     );
 
     expect(values).toStrictEqual({
@@ -452,7 +479,7 @@ describe("Automation Anywhere - RunBot", () => {
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         awaitResult: true,
       }),
-      brickOptionsFactory(),
+      brickOptionsFactory({ platform }),
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -476,6 +503,7 @@ describe("Automation Anywhere - RunBot", () => {
         method: "post",
         url: "/v3/automations/deploy",
       },
+      { interactiveLogin: false },
     );
 
     expect(values).toStrictEqual({

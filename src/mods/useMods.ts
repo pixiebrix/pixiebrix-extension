@@ -18,9 +18,9 @@
 import { type UUID } from "@/types/stringTypes";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { useGetAllStandaloneModDefinitionsQuery } from "@/services/api";
+import { useGetAllStandaloneModDefinitionsQuery } from "@/data/service/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { uniqBy } from "lodash";
@@ -58,7 +58,7 @@ export function selectUnavailableRecipe(
  */
 function useMods(): ModsState {
   const scope = useSelector(selectScope);
-  const unresolvedExtensions = useSelector(selectExtensions);
+  const unresolvedExtensions = useSelector(selectActivatedModComponents);
 
   const { data: knownRecipes, ...recipesState } = useAllModDefinitions();
   const standaloneModDefinitions = useGetAllStandaloneModDefinitionsQuery();

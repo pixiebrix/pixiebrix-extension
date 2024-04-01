@@ -16,19 +16,20 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { sheets } from "@/background/messenger/api";
 import { zip } from "lodash";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
-  SHEET_SERVICE_SCHEMA,
+  SHEET_INTEGRATION_SCHEMA,
 } from "@/contrib/google/sheets/core/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
-import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
+import {
+  getAllRows,
+  type SpreadsheetTarget,
+} from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
@@ -57,7 +58,7 @@ export const LOOKUP_SCHEMA: Schema = {
           type: "string",
           minLength: 1,
         },
-        SHEET_SERVICE_SCHEMA,
+        SHEET_INTEGRATION_SCHEMA,
       ],
     },
     tabName: {
@@ -173,7 +174,7 @@ export class GoogleSheetsLookup extends TransformerABC {
       spreadsheetId,
       tabName,
     };
-    const valueRange = await sheets.getAllRows(target);
+    const valueRange = await getAllRows(target);
     const [headers, ...rows] = valueRange?.values ?? [[], []];
 
     logger.debug(`Tab ${tabName} has headers`, { headers });
@@ -188,11 +189,12 @@ export class GoogleSheetsLookup extends TransformerABC {
     const matchData = returnAllRows
       ? rows
       : rows.filter((x) => x.at(columnIndex) === query);
-    const matchRecords = matchData.map((row) =>
-      Object.fromEntries(
-        zip(headers, row).filter(([rowHeader]) => !isNullOrBlank(rowHeader)),
-      ),
-    );
+    const matchRecords = matchData.map((row) => {
+      const entries = zip(headers as string[], row).filter(
+        ([rowHeader]) => !isNullOrBlank(rowHeader),
+      );
+      return Object.fromEntries(entries);
+    });
 
     if (multi || returnAllRows) {
       return matchRecords;

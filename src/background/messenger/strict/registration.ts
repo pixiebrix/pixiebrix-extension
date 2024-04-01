@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,11 +18,10 @@
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-
 import { showMySidePanel } from "@/background/sidePanel";
 import { ensureContentScript } from "@/background/contentScript";
 import { getRecord, setRecord } from "@/background/dataStore";
-import initPartnerTheme from "@/background/partnerTheme";
+import initTheme from "@/background/initTheme";
 import {
   addTraceEntry,
   addTraceExit,
@@ -33,8 +32,23 @@ import { captureTab } from "@/background/capture";
 import {
   deleteCachedAuthData,
   getCachedAuthData,
+  hasCachedAuthData,
 } from "@/background/auth/authStorage";
 import { setToolbarBadge } from "@/background/toolbarBadge";
+import { rememberFocus } from "@/utils/focusTracker";
+import writeToClipboardInFocusedContext from "@/background/clipboard";
+import * as registry from "@/registry/packageRegistry";
+import serviceRegistry from "@/integrations/registry";
+import { getUserData } from "@/auth/authStorage";
+import {
+  clearExtensionDebugLogs,
+  clearLog,
+  clearLogs,
+  recordError,
+  recordLog,
+} from "@/telemetry/logging";
+import { fetchFeatureFlags } from "@/auth/featureFlagStorage";
+import { locator, refreshServices } from "@/background/locator";
 
 expectContext("background");
 
@@ -44,7 +58,7 @@ declare global {
     INJECT_SCRIPT: typeof ensureContentScript;
     GET_DATA_STORE: typeof getRecord;
     SET_DATA_STORE: typeof setRecord;
-    ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
+    ACTIVATE_THEME: typeof initTheme;
     ADD_TRACE_ENTRY: typeof addTraceEntry;
     ADD_TRACE_EXIT: typeof addTraceExit;
     CLEAR_TRACES: typeof clearExtensionTraces;
@@ -52,7 +66,29 @@ declare global {
     CAPTURE_TAB: typeof captureTab;
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
     GET_CACHED_AUTH: typeof getCachedAuthData;
+    HAS_CACHED_AUTH: typeof hasCachedAuthData;
     SET_TOOLBAR_BADGE: typeof setToolbarBadge;
+    DOCUMENT_RECEIVED_FOCUS: typeof rememberFocus;
+    WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT: typeof writeToClipboardInFocusedContext;
+    REGISTRY_SYNC: typeof registry.syncPackages;
+    REGISTRY_CLEAR: typeof registry.clear;
+    REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
+    REGISTRY_FIND: typeof registry.find;
+    QUERY_TABS: typeof browser.tabs.query;
+    FETCH_FEATURE_FLAGS: typeof fetchFeatureFlags;
+
+    CLEAR_SERVICE_CACHE: typeof serviceRegistry.clear;
+    GET_USER_DATA: typeof getUserData;
+    RECORD_LOG: typeof recordLog;
+    RECORD_ERROR: typeof recordError;
+    CLEAR_LOGS: typeof clearLogs;
+    CLEAR_LOG: typeof clearLog;
+    CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
+
+    LOCATE_SERVICES_FOR_ID: typeof locator.locateAllForService;
+    LOCATE_SERVICE: typeof locator.locate;
+    REFRESH_SERVICES: typeof refreshServices;
+    LOCATOR_REFRESH_LOCAL: typeof locator.refreshLocal;
   }
 }
 
@@ -62,7 +98,7 @@ export default function registerMessenger(): void {
     INJECT_SCRIPT: ensureContentScript,
     GET_DATA_STORE: getRecord,
     SET_DATA_STORE: setRecord,
-    ACTIVATE_PARTNER_THEME: initPartnerTheme,
+    ACTIVATE_THEME: initTheme,
     ADD_TRACE_ENTRY: addTraceEntry,
     ADD_TRACE_EXIT: addTraceExit,
     CLEAR_TRACES: clearExtensionTraces,
@@ -70,6 +106,28 @@ export default function registerMessenger(): void {
     CAPTURE_TAB: captureTab,
     DELETE_CACHED_AUTH: deleteCachedAuthData,
     GET_CACHED_AUTH: getCachedAuthData,
+    HAS_CACHED_AUTH: hasCachedAuthData,
     SET_TOOLBAR_BADGE: setToolbarBadge,
+    DOCUMENT_RECEIVED_FOCUS: rememberFocus,
+    WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT: writeToClipboardInFocusedContext,
+    REGISTRY_SYNC: registry.syncPackages,
+    REGISTRY_CLEAR: registry.clear,
+    REGISTRY_GET_BY_KINDS: registry.getByKinds,
+    REGISTRY_FIND: registry.find,
+    QUERY_TABS: browser.tabs.query,
+    FETCH_FEATURE_FLAGS: fetchFeatureFlags,
+
+    CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
+    GET_USER_DATA: getUserData,
+    RECORD_LOG: recordLog,
+    RECORD_ERROR: recordError,
+    CLEAR_LOGS: clearLogs,
+    CLEAR_LOG: clearLog,
+    CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
+
+    LOCATE_SERVICES_FOR_ID: locator.locateAllForService.bind(locator),
+    LOCATE_SERVICE: locator.locate.bind(locator),
+    LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),
+    REFRESH_SERVICES: refreshServices,
   });
 }

@@ -16,7 +16,6 @@
  */
 
 import {
-  CONTENT_SCRIPT_READY_ATTRIBUTE,
   EXTENSION_POINT_DATA_ATTR,
   PANEL_FRAME_ID,
   PIXIEBRIX_DATA_ATTR,
@@ -59,7 +58,6 @@ const TEMPLATE_ATTR_EXCLUDE_PATTERNS = [
 
   EXTENSION_POINT_DATA_ATTR,
   PIXIEBRIX_DATA_ATTR,
-  CONTENT_SCRIPT_READY_ATTRIBUTE,
 
   // Angular attributes
   /^_ngcontent-/,
@@ -300,7 +298,7 @@ function commonPanelStructure(
   }: PanelStructureState = {} as PanelStructureState,
 ): [Element | string, PanelStructureState] {
   const proto = $items.get(0);
-  inHeader = inHeader || HEADER_TAGS.includes(proto.tagName.toLowerCase());
+  inHeader ||= HEADER_TAGS.includes(proto.tagName.toLowerCase());
 
   const common = newElement(proto.tagName);
 

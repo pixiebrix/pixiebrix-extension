@@ -32,12 +32,12 @@ import {
   type SemVerString,
 } from "@/types/registryTypes";
 import notify from "@/utils/notify";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import {
   useCreateRecipeMutation,
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
-} from "@/services/api";
+} from "@/data/service/api";
 import { replaceModComponent } from "./saveHelpers";
 import extensionsSlice from "@/store/extensionsSlice";
 import pDefer, { type DeferredPromise } from "p-defer";
@@ -79,7 +79,7 @@ const useSavingWizard = () => {
   const reset = useResetExtension();
   const isWizardOpen = useSelector(selectIsWizardOpen);
   const isSaving = useSelector(selectIsSaving);
-  const extensions = useSelector(selectExtensions);
+  const extensions = useSelector(selectActivatedModComponents);
   const elements = useSelector(selectElements);
   const element = useSelector(selectActiveElement);
 

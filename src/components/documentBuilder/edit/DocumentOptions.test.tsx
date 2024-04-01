@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -145,7 +145,7 @@ describe("DocumentOptions", () => {
     });
   });
 
-  describe("remove element", () => {
+  describe("remove current element", () => {
     test("removes integration dependency", async () => {
       // Integration dependencies included in the form state
       const integrationDependencies: IntegrationDependency[] = [
@@ -189,7 +189,7 @@ describe("DocumentOptions", () => {
 
       const { getFormState } = renderDocumentOptions(formState, "0");
 
-      await userEvent.click(screen.getByText("Remove element"));
+      await userEvent.click(screen.getByText("Remove current element"));
 
       expect(getFormState().integrationDependencies).toStrictEqual([]);
     });

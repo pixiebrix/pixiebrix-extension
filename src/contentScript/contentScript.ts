@@ -23,14 +23,14 @@ import "./contentScript.scss";
 import { addContentScriptIndicator } from "@/development/visualInjection";
 import { uuidv4 } from "@/types/helpers";
 import {
-  isInstalledInThisSession,
-  setInstalledInThisSession,
-  setReadyInThisDocument,
-  unsetReadyInThisDocument,
+  isContentScriptInstalled,
+  setContentScriptInstalled,
+  setContentScriptReady,
 } from "@/contentScript/ready";
 import { onContextInvalidated } from "webext-events";
 import { logPromiseDuration } from "@/utils/promiseUtils";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
+import { type Runtime } from "webextension-polyfill";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
@@ -53,23 +53,37 @@ void initRuntimeLogging();
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
-  const context = top === self ? "" : `in frame ${location.href}`;
+  const urlInfo = top === self ? "" : `in frame ${location.href}`;
   const uuid = uuidv4();
 
-  if (isInstalledInThisSession()) {
+  if (isContentScriptInstalled()) {
     // Must prevent multiple injection because repeat messenger registration causes message handling errors:
     // https://github.com/pixiebrix/webext-messenger/issues/88
     // Prior to 1.7.31 we had been using `webext-dynamic-content-scripts` which can inject the same content script
     // multiple times: https://github.com/pixiebrix/pixiebrix-extension/pull/5743
     console.warn(
-      `contentScript: was requested twice in the same context, skipping content script initialization ${context}`,
+      `contentScript: was requested twice in the same context, skipping content script initialization ${urlInfo}`,
     );
     return;
   }
 
-  console.debug(`contentScript: importing ${uuid} ${context}`);
+  // Do not use the Messenger, it cannot appear in this bundle
+  const context: Runtime.MessageSender | undefined =
+    await browser.runtime.sendMessage({ type: "WHO_AM_I" });
+  if (!context) {
+    console.error(
+      "contentScript: nobody answered the WHO_AM_I context check. Loading might fail later.",
+    );
+  } else if (!("tab" in context)) {
+    console.warn("contentScript: not available in tabless iframes", {
+      context,
+    });
+    return;
+  }
 
-  setInstalledInThisSession();
+  console.debug(`contentScript: importing ${uuid} ${urlInfo}`);
+
+  setContentScriptInstalled();
 
   // Keeping the import separate ensures that no side effects are run until this point
   const contentScriptPromise = import(
@@ -81,10 +95,9 @@ async function initContentScript() {
 
   const { init } = await contentScriptPromise;
   await logPromiseDuration("contentScript: ready", init());
-  setReadyInThisDocument(uuid);
+  setContentScriptReady();
 
   onContextInvalidated.addListener(() => {
-    unsetReadyInThisDocument(uuid);
     console.debug("contentScript: invalidated", uuid);
   });
 

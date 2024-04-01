@@ -42,6 +42,11 @@ console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
 console.log("MARKETPLACE_URL:", process.env.MARKETPLACE_URL);
 console.log("CHROME_EXTENSION_ID:", process.env.CHROME_EXTENSION_ID);
+console.log("MV:", process.env.MV);
+console.log(
+  "REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST:",
+  process.env.REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST,
+);
 
 if (!process.env.SOURCE_VERSION) {
   process.env.SOURCE_VERSION = execSync("git rev-parse --short HEAD")
@@ -84,6 +89,8 @@ function mockHeavyDependencies() {
   }
 }
 
+const isHMR = Boolean(process.env.HMR);
+
 const createConfig = (env, options) =>
   mergeWithShared({
     node: {
@@ -106,11 +113,15 @@ const createConfig = (env, options) =>
     entry: Object.fromEntries(
       [
         "background/background",
-        // Components rendered by the Document Renderer brick in the sidebar are placed in a shadow dom. This is how we
-        // isolate our custom Bootstrap theme to just the sidebar. However, this also prevents access to CSS module
-        // classes used by components in the rendered document. Build styles for DocumentView to add only the styles
-        // that are needed to render the document without also including our custom theme in sidebar.css.
+        // Components rendered within the Shadow DOM, such as those used by the Document Renderer brick in the sidebar,
+        // are isolated from global styles. This prevents access to CSS module classes used by these components.
+        // To resolve this, add the root component of the affected component hierarchy to the webpack function that
+        // bundles styles. This will make the CSS available to be loaded by the component tree.
+        // Additionally, remember to add the related JavaScript file to the DiscardFilePlugin.mjs file to exclude
+        // it from the bundle, as it is not needed for rendering in this context.
+        "bricks/renderers/CustomFormComponent",
         "bricks/renderers/documentView/DocumentView",
+        "bricks/transformers/ephemeralForm/EphemeralFormContent",
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",
@@ -283,7 +294,11 @@ const createConfig = (env, options) =>
         ],
       }),
       new DiscardFilePlugin(),
-      new ReactRefreshWebpackPlugin(),
+
+      isHMR &&
+        new ReactRefreshWebpackPlugin({
+          overlay: false,
+        }),
     ]),
     module: {
       rules: [

@@ -29,7 +29,6 @@ import { type SerializableResponse } from "@/types/messengerTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
 import { runRendererBlock } from "@/contentScript/messenger/api";
-import { thisTab } from "@/pageEditor/utils";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
 import { type UUID } from "@/types/stringTypes";
@@ -37,6 +36,7 @@ import { type BrickArgsContext } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import useAsyncState from "@/hooks/useAsyncState";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 type Location = "modal" | "panel";
 
@@ -189,7 +189,7 @@ export default function useDocumentPreviewRunBlock(
         (parentBlockInfo?.blockConfig.config.location as Location) ?? "panel";
 
       try {
-        await runRendererBlock(thisTab, {
+        await runRendererBlock(inspectedTab, {
           extensionId,
           blueprintId: recipe?.id,
           runId: traceRecord.runId,

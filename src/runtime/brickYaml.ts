@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any -- TODO: The types around schemas are loose and complex */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any -- TODO: The types around schemas are loose and complex */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -17,7 +17,6 @@
  */
 
 import yaml from "js-yaml";
-import { type UnknownObject } from "@/types/objectTypes";
 import { produce } from "immer";
 import { isPlainObject } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";

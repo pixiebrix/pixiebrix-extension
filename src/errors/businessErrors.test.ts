@@ -17,6 +17,8 @@
 
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
+import { isSpecificError } from "@/errors/errorHelpers";
 
 describe("BusinessError", () => {
   it("records cause", () => {
@@ -26,4 +28,10 @@ describe("BusinessError", () => {
     });
     expect(serializeError(error).cause).toStrictEqual(serializeError(cause));
   });
+});
+
+test("is business error", () => {
+  const error = new InteractiveLoginRequiredError("message");
+  expect(isSpecificError(error, BusinessError)).toBeTrue();
+  expect(isSpecificError(serializeError(error), BusinessError)).toBeTrue();
 });

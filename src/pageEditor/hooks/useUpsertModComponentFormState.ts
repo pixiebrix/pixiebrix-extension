@@ -21,17 +21,15 @@ import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
-import { reactivateEveryTab } from "@/background/messenger/api";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { getLinkedApiClient } from "@/services/apiClient";
+import { getLinkedApiClient } from "@/data/service/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { extensionWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
 import {
   useGetEditablePackagesQuery,
   useSaveStandaloneModDefinitionMutation,
-} from "@/services/api";
-import { type UnknownObject } from "@/types/objectTypes";
+} from "@/data/service/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -41,6 +39,7 @@ import { type Timestamp, type UUID } from "@/types/stringTypes";
 
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import type { RegistryId } from "@/types/registryTypes";
+import { reactivateEveryTab } from "@/contentScript/messenger/api";
 
 const { saveModComponent } = extensionsSlice.actions;
 const { markClean } = editorSlice.actions;

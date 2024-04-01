@@ -25,9 +25,14 @@ import {
 } from "@/contentScript/sidebarController";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isMV3 } from "@/mv3/api";
-import { propertiesToSchema } from "@/validators/generic";
 import { logPromiseDuration } from "@/utils/promiseUtils";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
+import {
+  CONTENT_SCRIPT_CAPABILITIES,
+  type PlatformCapability,
+} from "@/platform/capabilities";
+import { expectContext } from "@/utils/expectContext";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class ShowSidebar extends EffectABC {
   constructor() {
@@ -58,6 +63,10 @@ export class ShowSidebar extends EffectABC {
     [],
   );
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return CONTENT_SCRIPT_CAPABILITIES;
+  }
+
   async effect(
     {
       panelHeading,
@@ -68,6 +77,8 @@ export class ShowSidebar extends EffectABC {
     }>,
     { logger }: BrickOptions,
   ): Promise<void> {
+    expectContext("contentScript");
+
     await showSidebar();
 
     void logPromiseDuration(
@@ -92,7 +103,13 @@ export class HideSidebar extends EffectABC {
 
   inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return CONTENT_SCRIPT_CAPABILITIES;
+  }
+
   async effect(): Promise<void> {
+    expectContext("contentScript");
+
     if (isMV3() || isLoadedInIframe()) {
       sidebarInThisTab.close();
     } else {

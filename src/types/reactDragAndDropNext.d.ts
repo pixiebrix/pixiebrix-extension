@@ -19,6 +19,8 @@
 // Grabbed the old typings from https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react-beautiful-dnd/v11/index.d.ts
 
 declare module "react-beautiful-dnd-next" {
+  import { type Nullishable } from "@/utils/nullishUtils";
+
   export type Id = string;
   export type DraggableId = Id;
   export type DroppableId = Id;
@@ -120,7 +122,7 @@ declare module "react-beautiful-dnd-next" {
   }
   export interface DroppableProvided {
     innerRef(element: HTMLElement | null): unknown;
-    placeholder?: React.ReactElement<HTMLElement> | null | undefined;
+    placeholder?: Nullishable<React.ReactElement<HTMLElement>>;
     droppableProps: DroppableProvidedProps;
   }
 
@@ -194,7 +196,7 @@ declare module "react-beautiful-dnd-next" {
 
     // Will be removed after move to react 16
     innerRef(element?: HTMLElement | null): unknown;
-    placeholder?: React.ReactElement<HTMLElement> | null | undefined;
+    placeholder?: Nullishable<React.ReactElement<HTMLElement>>;
   }
 
   export interface Position {

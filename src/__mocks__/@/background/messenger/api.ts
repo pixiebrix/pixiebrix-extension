@@ -19,45 +19,18 @@
 
 /* Do not use `registerMethod` in this file */
 import { backgroundTarget as bg, getMethod } from "webext-messenger";
-import type { AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
-import { uuidv4 } from "@/types/helpers";
 import { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { RegistryId } from "@/types/registryTypes";
 
-// Bypass auto-mocks
+// Use relative path to bypass auto-mocks
 export * from "../../../../background/messenger/api";
-
-export const getUID = jest.fn().mockResolvedValue(uuidv4());
 
 export const pong = jest.fn(() => ({
   timestamp: Date.now(),
 }));
 
 export const clearServiceCache = jest.fn();
-export const sheets = {
-  isLoggedIn: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getAllSpreadsheets: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getSpreadsheet: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getTabNames: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getSheetProperties: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getHeaders: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getAllRows: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
-  appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
-};
-
-export const registry = {
-  fetch: jest.fn().mockResolvedValue(true),
-  syncRemote: jest.fn(),
-  getByKinds: jest.fn().mockResolvedValue([]),
-  find: jest.fn().mockImplementation(async (id: RegistryId) => {
-    throw new Error(
-      `Find not implemented in registry mock (looking up "${id}"). See __mocks__/background/messenger/api for more information.`,
-    );
-  }),
-  clear: getMethod("REGISTRY_CLEAR", bg),
-};
 
 export const dataStore = {
   get: jest.fn().mockRejectedValue(new Error("Not implemented in mock")),
@@ -79,5 +52,5 @@ export const performConfiguredRequestInBackground = getMethod(
   bg,
 ) as <TData>(
   integrationConfig: SanitizedIntegrationConfig | null,
-  requestConfig: AxiosRequestConfig,
+  requestConfig: NetworkRequestConfig,
 ) => Promise<RemoteResponse<TData>>;

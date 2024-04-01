@@ -23,8 +23,8 @@ import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import notify from "@/utils/notify";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { writeTextToClipboard } from "@/utils/clipboardUtils";
-import { useGetZapierKeyQuery } from "@/services/api";
+import { writeToClipboard } from "@/utils/clipboardUtils";
+import { useGetZapierKeyQuery } from "@/data/service/api";
 
 interface OwnProps {
   show: boolean;
@@ -38,7 +38,7 @@ const ZapierIntegrationModal: React.FunctionComponent<OwnProps> = ({
   const { data } = useGetZapierKeyQuery(undefined, { skip: !show });
 
   const handleCopy = useCallback(async () => {
-    await writeTextToClipboard({ text: String(data?.api_key) });
+    await writeToClipboard({ text: String(data?.api_key) });
     notify.success("Copied API Key to clipboard");
     reportEvent(Events.ZAPIER_KEY_COPY);
   }, [data?.api_key]);
@@ -50,18 +50,17 @@ const ZapierIntegrationModal: React.FunctionComponent<OwnProps> = ({
       </Modal.Header>
       <Modal.Body>
         <p>Use this key to log in to PixieBrix from Zapier</p>
-        <Form.Group>
-          <Form.Group controlId="label">
-            <Form.Label>PixieBrix API Key</Form.Label>
-            <InputGroup>
-              <Form.Control type="text" readOnly defaultValue={data?.api_key} />
-              <InputGroup.Append>
-                <Button variant="info" onClick={handleCopy}>
-                  <FontAwesomeIcon icon={faCopy} />
-                </Button>
-              </InputGroup.Append>
-            </InputGroup>
-          </Form.Group>
+        <Form.Group controlId="label">
+          <Form.Label>PixieBrix API Key</Form.Label>
+          <InputGroup>
+            <Form.Control type="text" readOnly defaultValue={data?.api_key} />
+            <InputGroup.Append>
+              <Button variant="info" onClick={handleCopy}>
+                {/* eslint-disable-next-line react/jsx-max-depth -- Not worth extracting */}
+                <FontAwesomeIcon icon={faCopy} />
+              </Button>
+            </InputGroup.Append>
+          </InputGroup>
         </Form.Group>
       </Modal.Body>
     </Modal>

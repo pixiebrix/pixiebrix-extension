@@ -29,7 +29,7 @@ export const foreverPendingPromise = new Promise(() => {});
  * Same as lodash mapValues but supports promises
  */
 export async function asyncMapValues<
-  InputObject extends Record<string, unknown>,
+  InputObject extends UnknownObject,
   OutputValues,
 >(mapping: InputObject, fn: ObjectIterator<InputObject, OutputValues>) {
   const entries = Object.entries(mapping) as Array<
@@ -105,14 +105,40 @@ export async function awaitValue<T>(
   throw new TimeoutError(`Value not found after ${waitMillis} milliseconds`);
 }
 
+/**
+ * Poll until the looper returns a truthy value. If the timeout is reached, return undefined.
+ * @param looper the value generator
+ * @param maxWaitMillis the maximum time to wait for the value
+ * @param intervalMillis time between each call to looper
+ * @param signal an AbortSignal to cancel the polling. Checked per interval.
+ * @throws Error if the signal is aborted. Throw's the signal's abort reason
+ */
 export async function pollUntilTruthy<T>(
   looper: (...args: unknown[]) => Promise<T> | T,
-  { maxWaitMillis = Number.MAX_SAFE_INTEGER, intervalMillis = 100 },
+  {
+    maxWaitMillis = Number.MAX_SAFE_INTEGER,
+    intervalMillis = 100,
+    signal,
+  }: {
+    maxWaitMillis?: number;
+    intervalMillis?: number;
+    signal?: AbortSignal;
+  } = {},
 ): Promise<T | undefined> {
+  // See example of signal logic:
+  // https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/throwIfAborted#aborting_a_polling_operation
+
   const endBy = Date.now() + maxWaitMillis;
   do {
+    // Check at beginning of loop to avoid unnecessary compute
+    signal?.throwIfAborted();
+
     // eslint-disable-next-line no-await-in-loop -- It's a retry loop
     const result = await looper();
+
+    // Prefer cancellation to result
+    signal?.throwIfAborted();
+
     if (result) {
       return result;
     }
@@ -163,11 +189,12 @@ export async function retryWithJitter<T>(
  * Returns a new object with all the values from the original resolved
  */
 export async function resolveObj<T>(
-  obj: Record<string, Promise<T>>,
+  object: Record<string, Promise<T>>,
 ): Promise<Record<string, T>> {
-  return Object.fromEntries(
-    await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v])),
+  const entries = await Promise.all(
+    Object.entries(object).map(async ([k, v]) => [k, await v] as const),
   );
+  return Object.fromEntries(entries);
 }
 
 /**
@@ -238,4 +265,19 @@ export async function allSettled<T>(
   }
 
   return { fulfilled, rejected };
+}
+
+/**
+ * Utility to await promises where you only care whether they throw or not
+ * @warning it swallows the error. Use try/catch if you want the error to bubble up
+ */
+export async function isPromiseFulfilled(
+  promise: Promise<unknown>,
+): Promise<boolean> {
+  try {
+    await promise;
+    return true;
+  } catch {
+    return false;
+  }
 }

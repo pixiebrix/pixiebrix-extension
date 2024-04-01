@@ -3,7 +3,7 @@
 exports[`Header renders 1`] = `
 <DocumentFragment>
   <div
-    class="d-flex py-2 pl-2 pr-0 justify-content-between align-content-center"
+    class="d-flex py-2 pl-2 pr-0 align-items-center"
   >
     <button
       class="button themeColorOverride btn btn-link btn-sm"
@@ -26,7 +26,7 @@ exports[`Header renders 1`] = `
       </svg>
     </button>
     <div
-      class="align-self-center"
+      class="mx-auto"
     >
       <img
         alt="PixieBrix logo"
@@ -37,8 +37,7 @@ exports[`Header renders 1`] = `
     </div>
     <a
       class="button themeColorOverride btn btn-link btn-sm"
-      href="/options.html"
-      target="_blank"
+      href="chrome-extension://abcxyz/options.html"
     >
       <svg
         aria-hidden="true"
@@ -63,7 +62,7 @@ exports[`Header renders 1`] = `
 exports[`Header renders sidebar header logo per organization theme 1`] = `
 <DocumentFragment>
   <div
-    class="d-flex py-2 pl-2 pr-0 justify-content-between align-content-center"
+    class="d-flex py-2 pl-2 pr-0 align-items-center"
   >
     <button
       class="button themeColorOverride btn btn-link btn-sm"
@@ -86,7 +85,7 @@ exports[`Header renders sidebar header logo per organization theme 1`] = `
       </svg>
     </button>
     <div
-      class="align-self-center"
+      class="mx-auto"
     >
       <img
         alt="PixieBrix logo"
@@ -97,8 +96,7 @@ exports[`Header renders sidebar header logo per organization theme 1`] = `
     </div>
     <a
       class="button themeColorOverride btn btn-link btn-sm"
-      href="/options.html"
-      target="_blank"
+      href="chrome-extension://abcxyz/options.html"
     >
       <svg
         aria-hidden="true"

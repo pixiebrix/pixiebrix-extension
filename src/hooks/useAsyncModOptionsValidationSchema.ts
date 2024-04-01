@@ -16,8 +16,8 @@
  */
 
 import { type AnyObjectSchema, object } from "yup";
-import { dereference } from "@/validators/generic";
-import { cloneDeep, isEmpty, mapValues } from "lodash";
+import { dereference } from "@/validators/schemaValidator";
+import { isEmpty, mapValues } from "lodash";
 import { type Schema } from "@/types/schemaTypes";
 import { buildYup } from "schema-to-yup";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -38,12 +38,14 @@ export async function getOptionsValidationSchema(
     return object().shape({});
   }
 
-  // Sometimes this schema comes in as a non-extensible object for some
-  // reason, so we need to clone it to make sure dereference() can add
-  // fields to the object
-  const dereferencedSchema = await dereference(
-    cloneDeep(optionsDefinitionSchema),
-  );
+  // Dereference because buildYup doesn't support $ref:
+  // https://github.com/kristianmandrup/schema-to-yup?tab=readme-ov-file#refs
+  // NOTE: sometimes this schema comes in as a non-extensible object. Dereference clones the object for us.
+  const dereferencedSchema = await dereference(optionsDefinitionSchema, {
+    // Include secrets (if any), so they can be validated. As of 1.8.10, there's no "secret" mod input type
+    // exposed via the Page Editor, though.
+    sanitizeIntegrationDefinitions: false,
+  });
 
   const yupSchema = buildYup(dereferencedSchema);
   // Yup will produce an ugly "null is not type of x" validation error instead of an

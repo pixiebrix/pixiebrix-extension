@@ -78,7 +78,9 @@ class ArrayCompositeReader extends ReaderABC {
       return result;
     });
 
-    return Object.assign({}, ...(await Promise.all(readResults)));
+    const resolvedResults = await Promise.all(readResults);
+
+    return Object.assign({}, ...resolvedResults) as JsonObject;
   }
 }
 

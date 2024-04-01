@@ -24,15 +24,16 @@ import { authSlice } from "@/auth/authSlice";
 import { Provider } from "react-redux";
 import integrationsSlice from "@/integrations/store/integrationsSlice";
 import { uuidv4 } from "@/types/helpers";
-import { type RegistryId } from "@/types/registryTypes";
 import PartnerSetupCard from "@/extensionConsole/pages/onboarding/partner/PartnerSetupCard";
 import { type AuthState } from "@/auth/authTypes";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { rest } from "msw";
 import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
 import { addThemeClassToDocumentRoot } from "@/themes/themeUtils";
 import defaultMiddlewareConfig from "@/store/defaultMiddlewareConfig";
+import { meApiResponseFactory } from "@/testUtils/factories/authFactories";
+import { mockAnonymousMeApiResponse } from "@/testUtils/userMock";
 
 export default {
   title: "Onboarding/Setup/PartnerSetupCard",
@@ -53,8 +54,9 @@ const PartnerThemeEffect: React.FunctionComponent = () => {
 
 const Template: Story<{
   auth: AuthState;
-  configuredServiceId: RegistryId | null;
 }> = ({ auth }) => {
+  mockAnonymousMeApiResponse();
+
   // Store that doesn't persist the data
   const templateStore = configureStore({
     reducer: {
@@ -100,7 +102,7 @@ OAuth2.parameters = {
     handlers: [
       rest.get("/api/me/", async (request, result, context) =>
         // State is blank for unauthenticated users
-        result(context.json({})),
+        result(context.json({ flags: [] })),
       ),
     ],
   },
@@ -116,7 +118,7 @@ TokenUnlinked.parameters = {
     handlers: [
       rest.get("/api/me/", async (request, result, context) =>
         // State is blank for unauthenticated users
-        result(context.json({})),
+        result(context.json({ flags: [] })),
       ),
     ],
   },
@@ -131,11 +133,7 @@ TokenLinked.parameters = {
   msw: {
     handlers: [
       rest.get("/api/me/", async (request, result, context) =>
-        result(
-          context.json({
-            id: uuidv4(),
-          }),
-        ),
+        result(context.json(meApiResponseFactory())),
       ),
     ],
   },

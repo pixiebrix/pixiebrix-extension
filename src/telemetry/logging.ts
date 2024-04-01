@@ -24,14 +24,13 @@ import { allowsTrack } from "@/telemetry/dnt";
 import {
   getErrorMessage,
   hasSpecificErrorCause,
-  isErrorObject,
   isSpecificError,
 } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import {
   reportToErrorService,
   selectExtraContext,
-} from "@/services/errorService";
+} from "@/data/service/errorService";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
@@ -42,7 +41,7 @@ import { type UUID } from "@/types/stringTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { StorageItem } from "webext-storage";
-import { flagOn } from "@/auth/authUtils";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -102,6 +101,7 @@ type IndexKey = keyof Except<
   | "blockVersion"
   | "serviceVersion"
   | "extensionLabel"
+  | "platformName"
 >;
 
 const INDEX_KEYS = [
@@ -262,7 +262,7 @@ export async function getLogEntries(
       .transaction(ENTRY_OBJECT_STORE, "readonly")
       .objectStore(ENTRY_OBJECT_STORE);
 
-    let indexKey: IndexKey;
+    let indexKey: IndexKey | undefined;
     for (const key of INDEX_KEYS) {
       // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
       if (context[key] != null) {
@@ -319,38 +319,7 @@ const warnAboutDisabledDNT = once(() => {
 
 const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
 const THROTTLE_RATE_MS = 60_000; // 1 minute
-let lastAxiosServerErrorTimestamp: number = null;
-
-/**
- * Create a fake stacktrace for Datadog that don't natively support Error.cause.
- */
-export function flattenStackForDatadog(stack: string, cause?: unknown): string {
-  // TODO: remove once Datadog supports natively: https://github.com/DataDog/browser-sdk/issues/2569
-
-  // The logic was originally written for Rollbar, which later introduced native support for Error.cause:
-  // https://github.com/pixiebrix/pixiebrix-extension/pull/3011/files
-
-  // Some stack validation to avoid runtime errors while submitting errors
-  if (!isErrorObject(cause) || !cause.stack?.includes("\n")) {
-    return stack;
-  }
-
-  // Drop spaces from cause’s title or else Datadog will clip the title
-  const [errorTitle] = cause.stack.split("\n", 1);
-  const causeStack = cause.stack.replace(
-    errorTitle,
-    errorTitle.replaceAll(" ", "-"),
-  );
-
-  // Add a fake stacktrace line in order to preserve the cause’s title. Datadog does not support
-  // the standard `caused by: Error: Some message\n` line and would misinterpret the stacktrace.
-  // XXX: this isn't quite right for Datadog. In the Datadog UI, the fake line ends up as
-  // "BY.js:0:0) Error:-Error-Message" That's OK for now because it's by and large a cosmetic limitation.
-  return flattenStackForDatadog(
-    stack + `\n    at CAUSED (BY.js:0:0) ${causeStack}`,
-    cause.cause,
-  );
-}
+let lastAxiosServerErrorTimestamp: number | null = null;
 
 /**
  * Do not use this function directly. Use `reportError` instead: `import reportError from "@/telemetry/reportError"`
@@ -375,7 +344,8 @@ export async function reportToApplicationErrorTelemetry(
   // Throttle certain Axios status codes because they are redundant with our platform alerts
   if (
     isAxiosError(error) &&
-    THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES.has(error.response?.status)
+    error.response?.status &&
+    THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES.has(error.response.status)
   ) {
     // JS allows subtracting dates directly but TS complains, so get the date as a number in milliseconds:
     // https://github.com/microsoft/TypeScript/issues/8260
@@ -414,8 +384,6 @@ export async function reportToApplicationErrorTelemetry(
   }
 
   const details = await selectExtraContext(error);
-
-  error.stack = flattenStackForDatadog(error.stack, error.cause);
 
   reporter.error({
     message,
@@ -500,7 +468,8 @@ export async function getLoggingConfig(): Promise<LoggingConfig> {
     return lastValue;
   } catch {
     // The context was probably invalidated. Logging utilities shouldn't throw errors
-    return lastValue ?? loggingConfig.defaultValue;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Incomplete types
+    return lastValue ?? loggingConfig.defaultValue!;
   }
 }
 

@@ -1,5 +1,11 @@
 name: Rainforest QA Run
 
+# There's only one Rainforest server, so this workflow must wait for the previous run to end.
+# The queue length is 1, so with multiple PRs merged at once, this workflow will only be run twice in total.
+# See https://github.com/pixiebrix/pixiebrix-extension/pull/7562#discussion_r1485159972
+concurrency:
+  group: one-rainforest-server
+
 # For now, we'll manually trigger the run. We might consider the pull_request review_requested or push to main
 # event triggers in the future. These will require potentially cleanly dealing with concurrent runs
 # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
@@ -8,6 +14,7 @@ on:
   workflow_dispatch:
   push:
     branches:
+      - main
       - release/*
   schedule:
     - cron: "0 8 * * *" # 8am UTC -> 3am EST
@@ -85,8 +92,26 @@ jobs:
         #   they're all using the same server
         # Use --fail-fast so that we're not using GitHub build minutes if not necessary
         run: |
-          ./rainforest run --fail-fast --description "pixiebrix-extension - ${{ github.ref_name }} ${{ github.job }}" --run-group $RUN_GROUP --release "${{ github.sha }}" --conflict cancel-all
+          ./rainforest run \
+          --fail-fast \
+          --automation-max-retries 1 \
+          --description "pixiebrix-extension - ${{ github.ref_name }} ${{ github.job }}" \
+          --run-group $RUN_GROUP \
+          --release "${{ github.sha }}" \
+          --conflict cancel-all
         env:
           RAINFOREST_API_TOKEN: ${{ secrets.RAINFORESTQA_TOKEN }}
           # The run group for tests to run during CI, now has start URL built-in
           RUN_GROUP: ${{ env.RUN_GROUP }}
+
+      - name: Slack Notification
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: rainforest-notifications
+          SLACK_MESSAGE: "Rainforest run failed"
+          SLACK_COLOR: ${{ job.status }}

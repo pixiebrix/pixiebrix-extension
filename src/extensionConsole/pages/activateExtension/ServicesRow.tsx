@@ -21,13 +21,13 @@ import React from "react";
 import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { Card, Col, Row } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import IntegrationDescriptor from "@/extensionConsole/pages/activateMod/IntegrationDescriptor";
 import AuthWidget from "@/components/integrations/AuthWidget";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
-import { useGetIntegrationsQuery } from "@/services/api";
+import { useGetIntegrationsQuery } from "@/data/service/api";
 import { joinName } from "@/utils/formUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
@@ -56,33 +56,30 @@ const ServicesRow: React.FunctionComponent<{
   }
 
   return (
-    <Row>
-      <Col xs={12}>
-        <h4>Integrations</h4>
-      </Col>
+    <div>
+      <h4>Integrations</h4>
       {typeof error === "string" && (
         <FieldAnnotationAlert message={error} type={AnnotationType.Error} />
       )}
-      {configurable.map(
-        ({ dependency: { outputKey, integrationId }, valueIndex }) => (
-          <Col xs={12} sm={6} xl={4} key={`${outputKey}-${valueIndex}`}>
-            <ServiceFieldError servicesError={error} fieldIndex={valueIndex} />
-            <Card className={styles.serviceCard}>
-              <IntegrationDescriptor
-                integrationId={integrationId}
-                integrationConfigs={serviceConfigs}
-              />
-              <AuthWidget
-                authOptions={authOptions}
-                integrationId={integrationId}
-                name={joinName(field.name, String(valueIndex), "config")}
-                onRefresh={refreshAuthOptions}
-              />
-            </Card>
-          </Col>
-        ),
-      )}
-    </Row>
+      {configurable.map(({ dependency: { integrationId } }, valueIndex) => (
+        // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
+        <div key={valueIndex} className="max-750">
+          <ServiceFieldError servicesError={error} fieldIndex={valueIndex} />
+          <Card className={styles.integrationCard}>
+            <IntegrationDescriptor
+              integrationId={integrationId}
+              integrationConfigs={serviceConfigs}
+            />
+            <AuthWidget
+              authOptions={authOptions}
+              integrationId={integrationId}
+              name={joinName(field.name, String(valueIndex), "configId")}
+              onRefresh={refreshAuthOptions}
+            />
+          </Card>
+        </div>
+      ))}
+    </div>
   );
 };
 

@@ -19,13 +19,13 @@ import styles from "./BrickHistory.module.scss";
 
 import React, { Suspense, useEffect, useMemo, useState } from "react";
 import Select, { components, type OptionProps } from "react-select";
-import DiffEditor from "@/vendors/DiffEditor";
+import DiffEditor from "@/components/DiffEditor";
 import objectHash from "object-hash";
 import { type UUID } from "@/types/stringTypes";
 import {
   useGetPackageQuery,
   useListPackageVersionsQuery,
-} from "@/services/api";
+} from "@/data/service/api";
 
 export interface PackageVersionOption {
   value: string;
@@ -102,7 +102,7 @@ const BrickHistory: React.FunctionComponent<{
   // We look up the large rawConfig up separately instead of including it in the versionOptions array because
   // it's a large string, and it causes the UI to hang.
   // TODO: use a specific endpoint for fetching just version metadata without the entire mod config
-  //   https://github.com/pixiebrix/pixiebrix-app/issues/4627
+  //   https://github.com/pixiebrix/pixiebrix-extension/issues/7692
   const versionARawConfig = useMemo(
     () =>
       packageVersions?.find((version) => version.version === versionA?.value)

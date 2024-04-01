@@ -17,10 +17,7 @@
 
 import { columnToLetter } from "@/contrib/google/sheets/core/sheetsHelpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type AxiosRequestConfig } from "axios";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
-import { getCachedAuthData } from "@/background/messenger/strict/api";
-import { isEmpty } from "lodash";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { handleGoogleRequestRejection } from "@/contrib/google/sheets/core/handleGoogleRequestRejection";
 import {
   type AppendValuesResponse,
@@ -31,6 +28,8 @@ import {
   type UserInfo,
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
+import { getPlatform } from "@/platform/platformContext";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 export const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
@@ -41,19 +40,14 @@ export type SpreadsheetTarget = {
   tabName?: string;
 };
 
-export async function isLoggedIn(
-  googleAccount: SanitizedIntegrationConfig,
-): Promise<boolean> {
-  const authData = await getCachedAuthData(googleAccount.id);
-  return !isEmpty(authData);
-}
-
 async function executeRequest<Response, RequestData = never>(
-  requestConfig: AxiosRequestConfig<RequestData>,
-  googleAccount: SanitizedIntegrationConfig | null,
+  requestConfig: NetworkRequestConfig<RequestData>,
+  googleAccount: Nullishable<SanitizedIntegrationConfig>,
 ): Promise<Response> {
   try {
-    const result = await performConfiguredRequestInBackground<Response>(
+    // XXX: instead of using the implicit platform, might instead choose to wrap all the module methods in a class
+    // that takes the platform and googleAccount as a constructor argument
+    const result = await getPlatform().request<Response>(
       googleAccount,
       requestConfig,
     );
@@ -66,7 +60,7 @@ async function executeRequest<Response, RequestData = never>(
 export async function getAllSpreadsheets(
   googleAccount: SanitizedIntegrationConfig | null,
 ): Promise<FileList> {
-  const requestConfig: AxiosRequestConfig<never> = {
+  const requestConfig: NetworkRequestConfig<never> = {
     url: DRIVE_BASE_URL,
     method: "get",
     params: {
@@ -88,7 +82,7 @@ export async function getAllSpreadsheets(
 export async function getGoogleUserEmail(
   googleAccount: SanitizedIntegrationConfig,
 ): Promise<string> {
-  const requestConfig: AxiosRequestConfig<never> = {
+  const requestConfig: NetworkRequestConfig<never> = {
     url: "https://www.googleapis.com/oauth2/v1/userinfo",
     method: "get",
   };
@@ -101,7 +95,7 @@ async function batchUpdateSpreadsheet(
   { googleAccount, spreadsheetId }: SpreadsheetTarget,
   request: BatchUpdateSpreadsheetRequest,
 ): Promise<BatchUpdateSpreadsheetResponse> {
-  const requestConfig: AxiosRequestConfig<BatchUpdateSpreadsheetRequest> = {
+  const requestConfig: NetworkRequestConfig<BatchUpdateSpreadsheetRequest> = {
     url: `${SHEETS_BASE_URL}/${spreadsheetId}:batchUpdate`,
     method: "post",
     data: request,
@@ -141,7 +135,7 @@ export async function appendRows(
   // Note: We currently don't support intermediate empty columns, which would
   // require us to use the batchUpdate endpoint instead of append.
   // See: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdate
-  const requestConfig: AxiosRequestConfig<ValueRange> = {
+  const requestConfig: NetworkRequestConfig<ValueRange> = {
     url: `${SHEETS_BASE_URL}/${spreadsheetId}/values/${tabName}:append`,
     method: "post",
     params: {

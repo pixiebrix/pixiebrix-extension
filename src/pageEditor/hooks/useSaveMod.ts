@@ -18,32 +18,30 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectDeletedElements,
-  selectDirty,
   selectDirtyRecipeMetadata,
   selectDirtyRecipeOptionDefinitions,
-  selectElements,
+  selectGetDeletedComponentIdsForMod,
 } from "@/pageEditor/slices/editorSelectors";
 import {
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
-} from "@/services/api";
+} from "@/data/service/api";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
-import { selectExtensions } from "@/store/extensionsSelectors";
-import { buildNewMod } from "@/pageEditor/panes/save/saveHelpers";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
-import { reactivateEveryTab } from "@/background/messenger/api";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import type { EditablePackageMetadata } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
+import { reactivateEveryTab } from "@/contentScript/messenger/api";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -74,14 +72,17 @@ function useSaveMod(): ModSaver {
   const { data: editablePackages, isLoading: isEditablePackagesLoading } =
     useGetEditablePackagesQuery();
   const [updateMod] = useUpdateRecipeMutation();
-  const modComponentFormStates = useSelector(selectElements);
-  const isDirtyByModComponentId = useSelector(selectDirty);
-  const activatedModComponents = useSelector(selectExtensions);
+  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
+    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  );
+  const getDeletedComponentIdsForMod = useSelector(
+    selectGetDeletedComponentIdsForMod,
+  );
   const allDirtyModOptions = useSelector(selectDirtyRecipeOptionDefinitions);
   const allDirtyModMetadatas = useSelector(selectDirtyRecipeMetadata);
-  const deletedComponentsByModId = useSelector(selectDeletedElements);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
+  const { buildAndValidateMod } = useBuildAndValidateMod();
 
   /**
    * Save a mod's components, options, and metadata
@@ -114,33 +115,13 @@ function useSaveMod(): ModSaver {
       return false;
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-    const deletedModComponentFormStates = deletedComponentsByModId[modId] ?? [];
-    const deletedModComponentIds = new Set(
-      deletedModComponentFormStates.map(({ uuid }) => uuid),
-    );
-
-    const dirtyModComponentFormStates = modComponentFormStates.filter(
-      (modComponentFormState) =>
-        modComponentFormState.recipe?.id === modId &&
-        isDirtyByModComponentId[modComponentFormState.uuid] &&
-        !deletedModComponentIds.has(modComponentFormState.uuid),
-    );
+    const { cleanModComponents, dirtyModComponentFormStates } =
+      getCleanComponentsAndDirtyFormStatesForMod(modId);
 
     // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
     // long to confirm?
     // Check permissions as early as possible
     void ensureElementPermissionsFromUserGesture(dirtyModComponentFormStates);
-
-    const cleanModComponents = activatedModComponents.filter(
-      (modComponent) =>
-        modComponent._recipe?.id === modId &&
-        !dirtyModComponentFormStates.some(
-          (modComponentFormState) =>
-            modComponentFormState.uuid === modComponent.id,
-        ) &&
-        !deletedModComponentIds.has(modComponent.id),
-    );
 
     // Dirty options/metadata or null if there are no staged changes.
     // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
@@ -148,64 +129,74 @@ function useSaveMod(): ModSaver {
     // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
     const dirtyModMetadata = allDirtyModMetadatas[modId];
 
-    const newMod = buildNewMod({
-      sourceMod: modDefinition,
-      cleanModComponents,
-      dirtyModComponentFormStates,
-      dirtyModOptions,
-      dirtyModMetadata,
-    });
+    try {
+      const newMod = await buildAndValidateMod({
+        sourceMod: modDefinition,
+        cleanModComponents,
+        dirtyModComponentFormStates,
+        dirtyModOptions,
+        dirtyModMetadata,
+      });
 
-    const packageId = editablePackages.find(
-      // Bricks endpoint uses "name" instead of id
-      (x) => x.name === newMod.metadata.id,
-    )?.id;
+      const packageId = editablePackages.find(
+        // Bricks endpoint uses "name" instead of id
+        (x) => x.name === newMod.metadata.id,
+      )?.id;
 
-    const upsertResponse = await updateMod({
-      packageId,
-      recipe: newMod,
-    }).unwrap();
+      const upsertResponse = await updateMod({
+        packageId,
+        recipe: newMod,
+      }).unwrap();
 
-    const newModMetadata = selectRecipeMetadata(newMod, upsertResponse);
+      const newModMetadata = selectRecipeMetadata(newMod, upsertResponse);
 
-    // Don't push to cloud since we're saving it with the mod
-    await Promise.all(
-      dirtyModComponentFormStates.map(async (modComponentFormState) =>
-        upsertModComponentFormState({
-          element: modComponentFormState,
-          options: {
-            pushToCloud: false,
-            // Permissions were already checked earlier in the save function here
-            checkPermissions: false,
-            // Notified and reactivated once in safeSave below
-            notifySuccess: false,
-            reactivateEveryTab: false,
-          },
-          modId: newModMetadata.id,
-        }),
-      ),
-    );
+      // Don't push to cloud since we're saving it with the mod
+      await Promise.all(
+        dirtyModComponentFormStates.map(async (modComponentFormState) =>
+          upsertModComponentFormState({
+            element: modComponentFormState,
+            options: {
+              pushToCloud: false,
+              // Permissions were already checked earlier in the save function here
+              checkPermissions: false,
+              // Notified and reactivated once in safeSave below
+              notifySuccess: false,
+              reactivateEveryTab: false,
+            },
+            modId: newModMetadata.id,
+          }),
+        ),
+      );
 
-    // Update the mod metadata on mod components in the options slice
-    dispatch(optionsActions.updateRecipeMetadataForExtensions(newModMetadata));
+      // Update the mod metadata on mod components in the options slice
+      dispatch(
+        optionsActions.updateRecipeMetadataForExtensions(newModMetadata),
+      );
 
-    // Update the mod metadata on mod component form states in the page editor slice
-    dispatch(editorActions.updateRecipeMetadataForElements(newModMetadata));
+      // Update the mod metadata on mod component form states in the page editor slice
+      dispatch(editorActions.updateRecipeMetadataForElements(newModMetadata));
 
-    // Remove any deleted mod component form states from the extensions slice
-    for (const modComponentId of deletedModComponentIds) {
-      dispatch(optionsActions.removeExtension({ extensionId: modComponentId }));
+      // Remove any deleted mod component form states from the extensions slice
+      for (const modComponentId of getDeletedComponentIdsForMod(modId)) {
+        dispatch(
+          optionsActions.removeExtension({ extensionId: modComponentId }),
+        );
+      }
+
+      // Clear the dirty states
+      dispatch(
+        editorActions.resetMetadataAndOptionsForRecipe(newModMetadata.id),
+      );
+      dispatch(editorActions.clearDeletedElementsForRecipe(newModMetadata.id));
+
+      reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
+        modId: newMod.metadata.id,
+      });
+
+      return true;
+    } catch {
+      return false;
     }
-
-    // Clear the dirty states
-    dispatch(editorActions.resetMetadataAndOptionsForRecipe(newModMetadata.id));
-    dispatch(editorActions.clearDeletedElementsForRecipe(newModMetadata.id));
-
-    reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
-      modId: newMod.metadata.id,
-    });
-
-    return true;
   }
 
   async function safeSave(modId: RegistryId) {
@@ -229,7 +220,7 @@ function useSaveMod(): ModSaver {
         notify.success("Saved mod");
         reactivateEveryTab();
       }
-    } catch (error: unknown) {
+    } catch (error) {
       notify.error({
         message: "Failed saving mod",
         error,

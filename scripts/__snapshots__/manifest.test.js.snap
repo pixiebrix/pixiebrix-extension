@@ -5,7 +5,7 @@ exports[`customizeManifest mv2 1`] = `
   "author": "PixieBrix, Inc.",
   "background": {
     "scripts": [
-      "grayIconWhileLoading.js",
+      "backgroundCanary.js",
       "background.js",
     ],
   },
@@ -70,7 +70,7 @@ exports[`customizeManifest mv2 1`] = `
       "run_at": "document_end",
     },
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' https:;",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:;",
   "description": "Customize, extend, and integrate your favorite SaaS apps without writing a line of code!",
   "devtools_page": "devtools.html",
   "externally_connectable": {
@@ -86,7 +86,7 @@ exports[`customizeManifest mv2 1`] = `
     "48": "icons/logo48.png",
   },
   "manifest_version": 2,
-  "minimum_chrome_version": "95.0",
+  "minimum_chrome_version": "105.0",
   "name": "PixieBrix",
   "optional_permissions": [
     "clipboardWrite",
@@ -103,6 +103,7 @@ exports[`customizeManifest mv2 1`] = `
     "webNavigation",
     "contextMenus",
     "<all_urls>",
+    "alarms",
   ],
   "sandbox": {
     "pages": [
@@ -128,6 +129,8 @@ exports[`customizeManifest mv2 1`] = `
     "ephemeralPanel.html",
     "ephemeralModal.css",
     "DocumentView.css",
+    "CustomFormComponent.css",
+    "EphemeralFormContent.css",
     "audio/*",
     "user-icons/*",
     "img/*",
@@ -204,7 +207,7 @@ exports[`customizeManifest mv3 1`] = `
     },
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' https:;",
+    "extension_pages": "script-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:;",
     "sandbox": "sandbox allow-scripts allow-forms; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';",
   },
   "description": "Customize, extend, and integrate your favorite SaaS apps without writing a line of code!",
@@ -241,6 +244,7 @@ exports[`customizeManifest mv3 1`] = `
     "tabs",
     "webNavigation",
     "contextMenus",
+    "alarms",
     "devtools",
     "scripting",
     "sidePanel",
@@ -277,6 +281,8 @@ exports[`customizeManifest mv3 1`] = `
         "ephemeralPanel.html",
         "ephemeralModal.css",
         "DocumentView.css",
+        "CustomFormComponent.css",
+        "EphemeralFormContent.css",
         "audio/*",
         "user-icons/*",
         "img/*",

@@ -24,7 +24,7 @@ import {
   type SanitizedIntegrationConfig,
 } from "@/integrations/integrationTypes";
 import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
-import * as backgroundApi from "@/background/messenger/api";
+import * as backgroundApi from "@/background/messenger/strict/api";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
@@ -60,7 +60,6 @@ const serviceRegistryMock = jest.mocked(serviceRegistry);
 
 describe("useSanitizedIntegrationConfigFormikAdapter", () => {
   beforeEach(() => {
-    // eslint-disable-next-line new-cap -- test helper method
     INTERNAL_reset();
   });
 

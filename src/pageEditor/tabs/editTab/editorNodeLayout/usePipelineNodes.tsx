@@ -23,8 +23,11 @@ import {
 import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import {
+  type BrickConfig,
+  type BrickPipeline,
+  PipelineFlavor,
+} from "@/bricks/types";
 import {
   filterTracesByCall,
   getLatestBrickCall,
@@ -264,7 +267,7 @@ const usePipelineNodes = (): {
     );
   }
 
-  // eslint-disable-next-line complexity
+  // eslint-disable-next-line complexity -- large number of parameters required to map a block to nodes
   function mapBlockToNodes({
     index,
     blockConfig,
@@ -556,7 +559,7 @@ const usePipelineNodes = (): {
           ...subPipelineNodes,
         );
 
-        extensionHasTraces = extensionHasTraces || subPipelineHasTraces;
+        extensionHasTraces ||= subPipelineHasTraces;
       }
 
       const footerNodeProps: PipelineFooterNodeProps = {
@@ -645,7 +648,7 @@ const usePipelineNodes = (): {
           extensionHasTraces,
         });
       nodes.push(...blockNodes);
-      extensionHasTraces = extensionHasTraces || extensionHasTracesOut;
+      extensionHasTraces ||= extensionHasTracesOut;
     }
 
     return {

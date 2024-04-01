@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getCurrentURL } from "@/pageEditor/utils";
 import { configureStore } from "@reduxjs/toolkit";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
@@ -31,17 +30,17 @@ import { checkAvailable as backgroundCheckAvailable } from "@/bricks/available";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { produce } from "immer";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 
 jest.mock("@/contentScript/messenger/api");
-
-jest.mock("@/pageEditor/utils");
+jest.mock("@/pageEditor/context/connection");
 
 const { reducer: extensionsReducer } = extensionsSlice;
 
 describe("checkActiveElementAvailability", () => {
   test("it checks the active element correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
-    jest.mocked(getCurrentURL).mockResolvedValue(testUrl);
+    jest.mocked(getCurrentInspectedURL).mockResolvedValue(testUrl);
 
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {

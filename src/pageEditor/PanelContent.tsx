@@ -22,13 +22,12 @@ import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
 import { persistor } from "@/pageEditor/store";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import ErrorBanner from "@/pageEditor/ErrorBanner";
+import TabConnectionErrorBanner from "@/pageEditor/TabConnectionErrorBanner";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginCard from "@/pageEditor/components/LoginCard";
 import EditorLayout from "@/pageEditor/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
-import { thisTab } from "@/pageEditor/utils";
 import {
   removeInstalledExtension,
   updateDynamicElement,
@@ -42,6 +41,8 @@ import ReduxPersistenceContext, {
 import type { StarterBrickType } from "@/types/starterBrickTypes";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import DimensionGate from "@/pageEditor/components/DimensionGate";
+import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
+import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 
 const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
   "actionPanel",
@@ -60,7 +61,7 @@ const cleanUpStarterBrickForElement = (
     return;
   }
 
-  removeInstalledExtension(thisTab, element.uuid);
+  removeInstalledExtension(allFramesInInspectedTab, element.uuid);
 };
 
 const PanelContent: React.FC = () => {
@@ -72,7 +73,7 @@ const PanelContent: React.FC = () => {
 
     if (activeElement != null && shouldAutoRun(activeElement)) {
       const dynamicElement = formStateToDynamicElement(activeElement);
-      void updateDynamicElement(thisTab, dynamicElement);
+      updateDynamicElement(allFramesInInspectedTab, dynamicElement);
     }
   }, [dispatch, activeElement]);
 
@@ -81,7 +82,7 @@ const PanelContent: React.FC = () => {
     return () => {
       navigationEvent.remove(onNavigation);
     };
-  }, [navigationEvent, onNavigation]);
+  }, [onNavigation]);
 
   useEffect(() => {
     // Automatically connect on load
@@ -110,9 +111,11 @@ const PanelContent: React.FC = () => {
       <ReduxPersistenceContext.Provider value={authPersistenceContext}>
         <ModalProvider>
           <ErrorBoundary>
-            <ErrorBanner />
+            <TabConnectionErrorBanner />
+            <DatabaseUnresponsiveBanner />
             <DimensionGate>
               <RequireAuth LoginPage={LoginCard}>
+                {/* eslint-disable-next-line react/jsx-max-depth -- Not worth simplifying */}
                 <EditorLayout />
               </RequireAuth>
             </DimensionGate>

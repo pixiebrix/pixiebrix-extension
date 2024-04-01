@@ -15,25 +15,97 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSettingsState } from "@/store/settings/settingsStorage";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { expectContext } from "@/utils/expectContext";
-import { DEFAULT_THEME, type Theme } from "@/themes/themeTypes";
-import { isValidTheme } from "@/themes/themeUtils";
+import {
+  getThemeLogo,
+  isValidThemeName,
+  type ThemeAssets,
+} from "@/themes/themeUtils";
+import { isUUID } from "@/types/helpers";
+import { getApiClient } from "@/data/service/apiClient";
+import reportError from "@/telemetry/reportError";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
+import { getSettingsState } from "@/store/settings/settingsStorage";
+import type { components } from "@/types/swagger";
+import { type Nullishable } from "@/utils/nullishUtils";
+import { getMe } from "@/data/service/backgroundApi";
+
+export const initialTheme: ThemeAssets = {
+  logo: getThemeLogo(DEFAULT_THEME),
+  showSidebarLogo: true,
+  customSidebarLogo: null,
+  toolbarIcon: null,
+  themeName: DEFAULT_THEME,
+  lastFetched: null,
+};
 
 /**
- * Returns the active theme. In React, prefer useGetTheme.
- * @see useGetTheme
+ * Returns the active theme assets based on a few different sources.
+ * In order of preference we use information from:
+ * - The managed storage defined organization and partnerId
+ * - The user's (`me` endpoint) primary organization and partnerId
+ * - The user's local settings
+ * - The default theme
+ *
+ * The value for the active theme is cached in `themeStorage`.
+ *
+ * In React components, prefer useTheme.
+ * @see useTheme
  */
-export async function getActiveTheme(): Promise<Theme> {
-  expectContext("extension");
+export async function getActiveTheme(): Promise<ThemeAssets> {
+  expectContext(
+    "background",
+    "getActiveTheme expects background to use the memoized getMe() method",
+  );
+  try {
+    const client = await getApiClient();
+    const [
+      { partnerId: managedPartnerId, managedOrganizationId },
+      meApiResponse,
+      { partnerId: settingsPartnerId },
+    ] = await Promise.all([
+      // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
+      readManagedStorage(),
+      getMe(),
+      getSettingsState(),
+    ]);
 
-  // The theme property is initialized/set via an effect in useGetTheme
-  const { theme } = await getSettingsState();
-  const { partnerId: managedPartnerId } = await readManagedStorage();
+    let organizationThemeApiResponse: Nullishable<
+      components["schemas"]["OrganizationTheme"]
+    > = null;
+    if (managedOrganizationId && isUUID(managedOrganizationId)) {
+      const { data } = await client.get<
+        components["schemas"]["OrganizationTheme"]
+      >(
+        // Is an unauthenticated endpoint
+        `/api/organizations/${managedOrganizationId}/theme/`,
+      );
+      organizationThemeApiResponse = data;
+    } else if (meApiResponse.organization?.theme) {
+      organizationThemeApiResponse = meApiResponse.organization?.theme;
+    }
 
-  // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
-  const active = managedPartnerId ?? theme;
+    const activeThemeName =
+      managedPartnerId ??
+      meApiResponse.partner?.theme ??
+      settingsPartnerId ??
+      DEFAULT_THEME;
 
-  return isValidTheme(active) ? active : DEFAULT_THEME;
+    return {
+      logo: getThemeLogo(activeThemeName),
+      showSidebarLogo: organizationThemeApiResponse
+        ? Boolean(organizationThemeApiResponse.show_sidebar_logo)
+        : true,
+      customSidebarLogo: organizationThemeApiResponse?.logo || null,
+      toolbarIcon: organizationThemeApiResponse?.toolbar_icon || null,
+      themeName: isValidThemeName(activeThemeName)
+        ? activeThemeName
+        : DEFAULT_THEME,
+      lastFetched: Date.now(),
+    };
+  } catch (error) {
+    reportError(error);
+    return initialTheme;
+  }
 }

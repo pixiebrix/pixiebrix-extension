@@ -17,9 +17,9 @@
 
 import React, { type ChangeEvent, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import bootstrap from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import Draggable from "react-draggable";
-import EmotionShadowRoot from "react-shadow/emotion";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
@@ -31,11 +31,6 @@ import { Button, FormLabel } from "react-bootstrap";
 import pluralize from "@/utils/pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGripHorizontal } from "@fortawesome/free-solid-svg-icons";
-
-// "Every property exists" (via Proxy), TypeScript doesn't offer such type
-// Also strictNullChecks config mismatch
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
-const ShadowRoot = EmotionShadowRoot.div!;
 
 export type SelectionHandlerType = (count: number) => void;
 type SetSelectionHandlerType = (handler: SelectionHandlerType | null) => void;
@@ -74,7 +69,7 @@ const SelectionToolPopover: React.FC<{
     // To support react-select and any future potential emotion components we used the
     // emotion variant of the react-shadow library.
 
-    <ShadowRoot>
+    <EmotionShadowRoot>
       <Stylesheets href={[bootstrap, switchStyle, switchButtonStyle, custom]}>
         <Draggable>
           <div className="popover-wrapper">
@@ -134,7 +129,7 @@ const SelectionToolPopover: React.FC<{
           </div>
         </Draggable>
       </Stylesheets>
-    </ShadowRoot>
+    </EmotionShadowRoot>
   );
 };
 

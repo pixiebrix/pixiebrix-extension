@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
+import useEventListener from "./useEventListener";
 
 /**
  * Basic keyboard shortcut hook. If we introduce more shortcuts, we should consider using a library.
@@ -23,19 +23,13 @@ import { useEffect } from "react";
  * @param callback the callback to call when the key is pressed.
  */
 function useKeyboardShortcut(code: string, callback: () => void): void {
-  useEffect(() => {
-    const handleShortcut = (event: KeyboardEvent) => {
-      if (event.code === code) {
-        callback();
-      }
-    };
+  const handleShortcut = (event: KeyboardEvent) => {
+    if (event.code === code) {
+      callback();
+    }
+  };
 
-    document.addEventListener("keydown", handleShortcut);
-
-    return () => {
-      document.removeEventListener("keydown", handleShortcut);
-    };
-  });
+  useEventListener(document, "keydown", handleShortcut);
 }
 
 export default useKeyboardShortcut;

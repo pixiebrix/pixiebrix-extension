@@ -17,7 +17,7 @@
 
 import React from "react";
 import useSubmitBrick from "@/extensionConsole/pages/brickEditor/useSubmitBrick";
-import { renderHook } from "@testing-library/react-hooks";
+import { act, renderHook } from "@testing-library/react-hooks";
 import { Provider } from "react-redux";
 import { type AuthState } from "@/auth/authTypes";
 import integrationsSlice, {
@@ -29,9 +29,8 @@ import { authSlice } from "@/auth/authSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 // FIXME: this is coming through as a module with default being a JSON object. (yaml-jest-transform is being applied)
 import pipedriveYaml from "@contrib/integrations/pipedrive.yaml?loadAsText";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { brickToYaml } from "@/utils/objToYaml";
-import { act } from "react-dom/test-utils";
 import testMiddleware, {
   actionTypes,
   resetTestMiddleware,
@@ -39,9 +38,9 @@ import testMiddleware, {
 import notify from "@/utils/notify";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { uuidv4 } from "@/types/helpers";
+import { ModalContext } from "@/components/ConfirmationModal";
 
 jest.mock("@/utils/notify");
-
 jest.mock("@/extensionConsole/pages/mods/utils/useReinstall");
 
 const errorMock = jest.mocked(notify.error);
@@ -166,5 +165,29 @@ describe("useSubmitBrick", () => {
       message: "Invalid organizations",
       error: expect.toBeObject(),
     });
+  });
+
+  it("shows delete confirmation modal", async () => {
+    const store = testStore();
+
+    resetTestMiddleware();
+
+    const showConfirmation = jest.fn().mockResolvedValue(false);
+
+    const { result } = renderHook(() => useSubmitBrick({ create: false }), {
+      wrapper: ({ children }) => (
+        <ModalContext.Provider value={{ showConfirmation }}>
+          <Provider store={store}>{children}</Provider>
+        </ModalContext.Provider>
+      ),
+    });
+
+    const id = uuidv4();
+
+    await act(async () => {
+      await result.current.remove({ id, name: "Test" });
+    });
+
+    expect(showConfirmation).toHaveBeenCalledOnce();
   });
 });

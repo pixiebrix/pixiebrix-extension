@@ -17,34 +17,6 @@
 
 import { type MutableRefObject, useEffect } from "react";
 
-type HoverListener = {
-  onMouseEnter: (element: HTMLElement) => void;
-  onMouseExit: (element: HTMLElement) => void;
-};
-
-// OK to use module-level tracking, because there will only ever be one VariablesTree rendered at a time
-const hoverListeners = new Set<HoverListener>();
-
-function addHoverListener(listener: HoverListener): void {
-  hoverListeners.add(listener);
-}
-
-function removeHoverListener(listener: HoverListener): void {
-  hoverListeners.delete(listener);
-}
-
-function notifyMouseEnter(element: HTMLElement): void {
-  for (const listener of hoverListeners) {
-    listener.onMouseEnter(element);
-  }
-}
-
-function notifyMouseExit(element: HTMLElement): void {
-  for (const listener of hoverListeners) {
-    listener.onMouseExit(element);
-  }
-}
-
 /**
  * A hack to make JSON Tree rows clickable/highlightable.
  * @param buttonRef ref for the label in the row
@@ -63,57 +35,25 @@ function useTreeRow({
   useEffect(() => {
     if (buttonRef.current) {
       // Find the containing row in the JSONTree
-      const $row = $(buttonRef.current).closest("li");
-      const row = $row.get(0);
+      const row = buttonRef.current.closest("li");
 
-      $row.click((event) => {
-        if (event.target === row) {
-          event.preventDefault();
-          event.stopPropagation();
+      const controller = new AbortController();
+      row.addEventListener(
+        "click",
+        (event) => {
+          // Only call onSelect if the click was on the row itself, not its children
+          if (event.target === row) {
+            event.preventDefault();
+            event.stopPropagation();
 
-          onSelect();
-        }
-      });
-
-      $row.mouseenter(() => {
-        notifyMouseEnter(row);
-      });
-
-      $row.mouseover((event) => {
-        if (event.target === row) {
-          notifyMouseEnter(row);
-        }
-
-        event.stopPropagation();
-      });
-
-      $row.mouseleave(() => {
-        notifyMouseExit(row);
-      });
-
-      const listener: HoverListener = {
-        onMouseEnter(element) {
-          if (element === row) {
-            $row.addClass("hover");
-          } else {
-            // Handle the case where user moves mouse over the nested properties. It's still over the parent, so
-            // we wouldn't have seen a mousexit event yet
-            $row.removeClass("hover");
+            onSelect();
           }
         },
-        onMouseExit(element) {
-          if (element === row) {
-            $row.removeClass("hover");
-          }
-        },
-      };
-
-      addHoverListener(listener);
+        { signal: controller.signal },
+      );
 
       return () => {
-        removeHoverListener(listener);
-        $row.off("click");
-        $row.off("mouseenter");
+        controller.abort();
       };
     }
   }, [buttonRef, onSelect]);

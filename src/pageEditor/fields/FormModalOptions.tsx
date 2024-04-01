@@ -19,9 +19,8 @@ import React from "react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
-import FormEditor, {
-  FormIntroFields,
-} from "@/components/formBuilder/edit/FormEditor";
+import FormEditor from "@/components/formBuilder/edit/FormEditor";
+import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
@@ -30,7 +29,7 @@ import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { joinName } from "@/utils/formUtils";
 import { partial } from "lodash";
-import { MODAL_FORM_SCHEMA } from "@/bricks/transformers/ephemeralForm/formTransformer";
+import { TEMPORARY_FORM_SCHEMA } from "@/bricks/transformers/ephemeralForm/formTransformer";
 
 export const FORM_MODAL_ID = validateRegistryId("@pixiebrix/form-modal");
 
@@ -69,7 +68,7 @@ const FormModalOptions: React.FC<{
   );
 
   return (
-    <div>
+    <>
       <ConnectedCollapsibleFieldSection
         title="Form Title/Description"
         initialExpanded
@@ -108,7 +107,6 @@ const FormModalOptions: React.FC<{
             activeField={activeElement}
             setActiveField={setActiveElement}
             fieldTypes={FORM_FIELD_TYPE_OPTIONS}
-            showFormIntroFields={false}
           />
         </ConfigErrorBoundary>
       </ConnectedCollapsibleFieldSection>
@@ -116,14 +114,16 @@ const FormModalOptions: React.FC<{
       <ConnectedCollapsibleFieldSection title={"Advanced: Theme"}>
         <SchemaField
           name={configName("stylesheets")}
-          schema={MODAL_FORM_SCHEMA.properties.stylesheets as Schema}
+          schema={TEMPORARY_FORM_SCHEMA.properties.stylesheets as Schema}
         />
         <SchemaField
           name={configName("disableParentStyles")}
-          schema={MODAL_FORM_SCHEMA.properties.disableParentStyles as Schema}
+          schema={
+            TEMPORARY_FORM_SCHEMA.properties.disableParentStyles as Schema
+          }
         />
       </ConnectedCollapsibleFieldSection>
-    </div>
+    </>
   );
 };
 

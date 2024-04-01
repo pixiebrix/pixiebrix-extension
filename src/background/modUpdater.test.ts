@@ -18,7 +18,6 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {
-  autoModUpdatesEnabled,
   deactivateMod,
   fetchModUpdates,
   getActivatedMarketplaceModVersions,
@@ -44,6 +43,7 @@ import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactorie
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import { uninstallContextMenu } from "@/background/contextMenus";
+import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError");
@@ -52,35 +52,8 @@ jest.mock("@/background/contextMenus");
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
 
-describe("autoModUpdatesEnabled function", () => {
-  it("should return false if flag absent", async () => {
-    axiosMock.onGet().reply(200, {
-      flags: [],
-    });
-
-    const result = await autoModUpdatesEnabled();
-
-    expect(result).toBe(false);
-  });
-
-  it("should return true if flag present", async () => {
-    axiosMock.onGet().reply(200, {
-      flags: ["automatic-mod-updates"],
-    });
-
-    const result = await autoModUpdatesEnabled();
-
-    expect(result).toBe(true);
-  });
-
-  it("should return false on error", async () => {
-    axiosMock.onGet().reply(400, {});
-
-    const result = await autoModUpdatesEnabled();
-
-    expect(result).toBe(false);
-    expect(reportError).toHaveBeenCalled();
-  });
+afterEach(async () => {
+  await TEST_deleteFeatureFlagsCache();
 });
 
 describe("getActivatedMarketplaceModVersions function", () => {
@@ -223,7 +196,7 @@ describe("fetchModUpdates function", () => {
   });
 
   it("calls the registry/updates/ endpoint with the right payload", async () => {
-    axiosMock.onPost().reply(200, {});
+    axiosMock.onPost().reply(200, { updates: [] });
 
     await fetchModUpdates();
 
@@ -351,10 +324,10 @@ describe("updateModsIfUpdatesAvailable", () => {
 
     const optionsState = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition: publicMod,
         screen: "marketplace",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
 

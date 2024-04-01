@@ -24,6 +24,8 @@ import registerEditors from "@/contrib/editors";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import PanelContent from "@/pageEditor/PanelContent";
+import InvalidatedContextGate from "@/components/InvalidatedContextGate";
+import TabInspectionGate from "@/pageEditor/context/TabInspectionGate";
 
 // Register the built-in bricks
 registerEditors();
@@ -33,7 +35,7 @@ registerBuiltinBricks();
 // Register Widgets
 registerDefaultWidgets();
 
-const Panel: React.VoidFunctionComponent = () => {
+const UnguardedPanel: React.VoidFunctionComponent = () => {
   // Refresh the brick registry on mount
   useRefreshRegistries({ refreshOnMount: true });
 
@@ -43,5 +45,13 @@ const Panel: React.VoidFunctionComponent = () => {
     </Provider>
   );
 };
+
+const Panel: React.VoidFunctionComponent = () => (
+  <InvalidatedContextGate autoReload contextNameTitleCase="Page Editor">
+    <TabInspectionGate>
+      <UnguardedPanel />
+    </TabInspectionGate>
+  </InvalidatedContextGate>
+);
 
 export default Panel;

@@ -20,7 +20,7 @@ import {
   type ModOptionsDefinition,
 } from "@/types/modDefinitionTypes";
 import * as semver from "semver";
-import { type MarketplaceListing, type Organization } from "@/types/contract";
+import { type Organization } from "@/types/contract";
 import {
   type Mod,
   type SharingSource,
@@ -28,7 +28,7 @@ import {
   type UnavailableMod,
 } from "@/types/modTypes";
 import { createSelector } from "@reduxjs/toolkit";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import {
   type ModComponentBase,
   type ResolvedModComponent,
@@ -42,6 +42,7 @@ import { assertNotNullish } from "./nullishUtils";
 import {
   minimalSchemaFactory,
   minimalUiSchemaFactory,
+  propertiesToSchema,
 } from "@/utils/schemaUtils";
 import { isEmpty, sortBy } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
@@ -50,7 +51,6 @@ import {
   type SchemaProperties,
   type UiSchema,
 } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -120,6 +120,7 @@ export function getPackageId(mod: Mod): RegistryId | undefined {
  * Returns the timestamp for the time the mod was last updated (edited)
  */
 export function getUpdatedAt(mod: Mod): string | null {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- See TODO below
   return isResolvedModComponent(mod)
     ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on ModComponentBase here
       mod._recipe?.updated_at ?? mod.updateTimestamp
@@ -204,16 +205,6 @@ export function isDeployment(
   return installedComponents.some(
     (component) => component._recipe?.id === modId && component?._deployment,
   );
-}
-
-/**
- * Returns true if a mod has been made public but is not yet published to the Marketplace.
- */
-export function isModPendingPublish(
-  mod: ModDefinition,
-  marketplaceListings: Record<RegistryId, MarketplaceListing>,
-): boolean {
-  return mod.sharing.public && !marketplaceListings[mod.metadata.id];
 }
 
 export function getSharingSource({
@@ -357,7 +348,7 @@ function getOrganization(
  * Select UnresolvedModComponents currently activated from the mod.
  */
 export const selectComponentsFromMod = createSelector(
-  [selectExtensions, (_state: unknown, mod: Mod) => mod],
+  [selectActivatedModComponents, (_state: unknown, mod: Mod) => mod],
   (activeModComponents, mod) =>
     isModDefinition(mod)
       ? activeModComponents.filter(

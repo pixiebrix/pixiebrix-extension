@@ -29,11 +29,12 @@ import * as backgroundApi from "@/background/messenger/api";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";
-import { setContext } from "@/testUtils/detectPageMock";
+import { TEST_setContext } from "webext-detect-page";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { getPlatform } from "@/platform/platformContext";
 
-setContext("background");
+TEST_setContext("background");
 
 jest.mock("webext-polyfill-kinda", () => ({
   contextMenus: {
@@ -76,7 +77,7 @@ describe("contextMenus", () => {
 
     updateMenuMock.mockRejectedValue(new Error("My Error"));
 
-    extensionPointRegistry.register([fromJS(extensionPoint)]);
+    extensionPointRegistry.register([fromJS(getPlatform(), extensionPoint)]);
 
     const menuModComponent = modComponentFactory({
       extensionPointId: extensionPoint.metadata.id,

@@ -1,4 +1,4 @@
-/* eslint-disable complexity */
+/* eslint-disable complexity -- necessary complexity due to data handling  */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -168,6 +168,7 @@ const DataPanel: React.FC = () => {
       brickId,
       tabName: activeTabKey,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- We only want to report when `activeTabKey` changes
   }, [activeTabKey]);
 
   const [nodePreviewActiveElement, setNodePreviewActiveElement] = useReduxState(

@@ -29,7 +29,7 @@ const IconSelector = lazy(
     ),
 );
 
-type IconValue = {
+export type IconValue = {
   id: string;
   library: IconLibrary;
   size: number;

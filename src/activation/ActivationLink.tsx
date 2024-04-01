@@ -23,7 +23,7 @@ import { Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
-import { writeTextToClipboard } from "@/utils/clipboardUtils";
+import { writeToClipboard } from "@/utils/clipboardUtils";
 import { createActivationUrl } from "@/activation/activationLinkUtils";
 
 type ActivationLinkProps = {
@@ -44,7 +44,7 @@ const ActivationLink: React.FunctionComponent<ActivationLinkProps> = ({
         <AsyncButton
           variant="info"
           onClick={async () => {
-            await writeTextToClipboard({ text: activationLink });
+            await writeToClipboard({ text: activationLink });
             // Don't close the modal - that allows the user to re-copy the link and verify the link works
             notify.success("Copied activation link to clipboard");
           }}

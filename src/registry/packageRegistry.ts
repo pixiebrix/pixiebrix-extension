@@ -18,12 +18,12 @@
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { flatten, groupBy, sortBy } from "lodash";
 import { type RegistryPackage } from "@/types/contract";
-import { fetch } from "@/hooks/fetch";
 import { type Except } from "type-fest";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { getApiClient } from "@/data/service/apiClient";
+import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 
 const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
@@ -46,13 +46,14 @@ export type Kind =
   | "extensionPoint"
   | "recipe";
 
-type PackageVersion = {
+export type PackageVersion = {
   id: string;
   version: Version;
   kind: Kind;
-  scope: string;
+  scope: Nullishable<string>;
   config: UnknownObject;
-  rawConfig: string | null;
+  // `rawConfig` is the YAML configuration. Only available for user-defined packages
+  rawConfig: Nullishable<string>;
   timestamp: Date;
 };
 
@@ -107,51 +108,17 @@ async function openRegistryDB() {
   return database;
 }
 
-function latestVersion(versions: PackageVersion[]): PackageVersion | null {
+function latestVersion(
+  versions: PackageVersion[],
+): Nullishable<PackageVersion> {
   return versions.length > 0
     ? sortBy(
-        versions,
+        versions.filter(Boolean),
         (x) => -x.version.major,
         (x) => -x.version.minor,
         (x) => -x.version.patch,
       )[0]
     : null;
-}
-
-/**
- * Return all packages for the given kinds
- * @param kinds kinds of bricks
- */
-export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
-  const db = await openRegistryDB();
-
-  try {
-    const bricks = flatten(
-      await Promise.all(
-        kinds.map(async (kind) =>
-          db.getAllFromIndex(BRICK_STORE, "kind", kind),
-        ),
-      ),
-    );
-
-    return Object.entries(groupBy(bricks, (x) => x.id)).map(([, versions]) =>
-      latestVersion(versions),
-    );
-  } finally {
-    db.close();
-  }
-}
-
-/**
- * Clear the brick definition registry
- */
-export async function clear(): Promise<void> {
-  const db = await openRegistryDB();
-  try {
-    await db.clear(BRICK_STORE);
-  } finally {
-    db.close();
-  }
 }
 
 /**
@@ -163,8 +130,11 @@ export const syncPackages = memoizeUntilSettled(async () => {
   // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
   const timestamp = new Date();
 
+  // XXX: we currently don't have to worry about consecutive calls where the first call is unauthenticated and the
+  // second is after the user authenticates, because the extension reloads on linking
+  const client = await getApiClient();
   // In the future, use the paginated endpoint?
-  const data = await fetch<RegistryPackage[]>("/api/registry/bricks/");
+  const { data } = await client.get<RegistryPackage[]>("/api/registry/bricks/");
 
   const packages = data.map((x) => ({
     ...parsePackage(x),
@@ -175,6 +145,41 @@ export const syncPackages = memoizeUntilSettled(async () => {
 
   await replaceAll(packages);
 });
+
+/**
+ * Helper to ensure the IDB has synced packages. DOES NOT ensure the database has the latest package definitions --
+ * i.e., does not await any inflight syncPackages call if the database is already populated.
+ */
+// Memoize for slight performance gain for multiple concurrent callers
+const ensurePopulated = memoizeUntilSettled(async () => {
+  // Safe to assume everyone has access to at least one package
+  if ((await count()) > 0) {
+    // Already populated
+    return;
+  }
+
+  // XXX: there's a small chance of a race here, where an existing syncPackages call finishes after the count()
+  // call resolves, before executes switches back to this method.
+
+  try {
+    // `syncPackages` is memoized, so safe to call multiple times;
+    await syncPackages();
+  } catch {
+    // NOP - call-site will handle uninitialized state
+  }
+});
+
+/**
+ * Clear the brick definition registry.
+ */
+export async function clear(): Promise<void> {
+  const db = await openRegistryDB();
+  try {
+    await db.clear(BRICK_STORE);
+  } finally {
+    db.close();
+  }
+}
 
 /**
  * Deletes and recreates the brick definition database.
@@ -190,9 +195,38 @@ export async function recreateDB(): Promise<void> {
 }
 
 /**
+ * Return all packages for the given kinds
+ * @param kinds kinds of bricks
+ */
+export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
+  await ensurePopulated();
+
+  const db = await openRegistryDB();
+
+  try {
+    const bricks = flatten(
+      await Promise.all(
+        kinds.map(async (kind) =>
+          db.getAllFromIndex(BRICK_STORE, "kind", kind),
+        ),
+      ),
+    );
+
+    return Object.entries(groupBy(bricks, (x) => x.id)).map(
+      ([, versions]) =>
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- there's at least one element per group
+        latestVersion(versions)!,
+    );
+  } finally {
+    db.close();
+  }
+}
+
+/**
  * Return the number of records in the registry.
  */
 export async function count(): Promise<number> {
+  // Don't need to ensure populated, because we're just counting current records
   const db = await openRegistryDB();
   try {
     return await db.count(BRICK_STORE);
@@ -223,20 +257,27 @@ async function replaceAll(packages: PackageVersion[]): Promise<void> {
 export function parsePackage(
   item: RegistryPackage,
 ): Except<PackageVersion, "timestamp"> {
-  const [major, minor, patch] = item.metadata.version
+  const { version, id } = item.metadata;
+  assertNotNullish(version, "Package Version is required");
+
+  const [major, minor, patch] = version
     .split(".")
     .map((x) => Number.parseInt(x, 10));
 
-  const match = PACKAGE_REGEX.exec(item.metadata.id);
+  if (major == null || minor == null || patch == null) {
+    throw new Error(`Invalid version: ${version}`);
+  }
+
+  const match = PACKAGE_REGEX.exec(id);
 
   return {
-    id: item.metadata.id,
+    id,
     version: { major, minor, patch },
-    scope: match.groups.scope,
+    scope: match?.groups?.scope,
     kind: item.kind,
     config: item,
     // We don't need to store the raw configs, because the Workshop uses an endpoint vs. the registry version
-    rawConfig: undefined,
+    rawConfig: null,
   };
 }
 
@@ -244,7 +285,7 @@ export function parsePackage(
  * Return the latest version of a brick, or null if it's not found.
  * @param id the registry id
  */
-export async function find(id: string): Promise<PackageVersion | null> {
+export async function find(id: string): Promise<Nullishable<PackageVersion>> {
   if (id == null) {
     throw new Error("id is required");
   }
@@ -254,10 +295,13 @@ export async function find(id: string): Promise<PackageVersion | null> {
     throw new Error("invalid brick id");
   }
 
+  await ensurePopulated();
+
   const db = await openRegistryDB();
 
   try {
     const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
+
     return latestVersion(versions);
   } finally {
     db.close();

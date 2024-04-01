@@ -17,6 +17,11 @@
 
 import { cleanDatadogVersionName } from "@/telemetry/telemetryHelpers";
 
+// Disable automatic __mocks__ resolution #6799
+jest.mock("@/telemetry/telemetryHelpers", () =>
+  jest.requireActual("./telemetryHelpers.ts"),
+);
+
 describe("cleanDatadogVersionName", () => {
   it("cleans local build version name", () => {
     expect(

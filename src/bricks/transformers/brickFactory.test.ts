@@ -34,13 +34,13 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import Run from "@/bricks/transformers/controlFlow/Run";
 import { cloneDeep, partial } from "lodash";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
-import { setContext } from "@/testUtils/detectPageMock";
+import { TEST_setContext } from "webext-detect-page";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 
 import { toExpression } from "@/utils/expressionUtils";
 
-setContext("contentScript");
+TEST_setContext("contentScript");
 
 const fromJS = partial(nativeFromJS, blockRegistry);
 

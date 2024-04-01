@@ -17,19 +17,14 @@
 
 import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
-import {
-  clearExtensionDebugLogs,
-  requestRun,
-  sendDeploymentAlert,
-} from "@/background/messenger/api";
-import { traces } from "@/background/messenger/strict/api";
+import { requestRun, sendDeploymentAlert } from "@/background/messenger/api";
 import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/bricks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
-import { uuidv4, validateSemVerString } from "@/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
   type ApiVersionOptions,
@@ -42,7 +37,7 @@ import {
 } from "@/bricks/types";
 import {
   logIfInvalidOutput,
-  selectBlockRootElement,
+  selectBrickRootElement,
   shouldRunBlock,
   throwIfInvalidInput,
 } from "@/runtime/runtimeUtils";
@@ -71,15 +66,13 @@ import {
   type PipelineExpression,
   type RunMetadata,
 } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { isObject } from "@/utils/objectUtils";
-import { type RegistryProtocol } from "@/registry/memoryRegistry";
-import { type RegistryId } from "@/types/registryTypes";
-import { type Brick } from "@/types/brickTypes";
+import type { RegistryId, RegistryProtocol } from "@/types/registryTypes";
+import type { Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
-import { allSettled } from "@/utils/promiseUtils";
+import { getPlatform } from "@/platform/platformContext";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -343,6 +336,7 @@ async function executeBlockWithValidatedProps(
       const { runId, extensionId, branches } = options.trace;
 
       return block.run(args, {
+        platform: getPlatform(),
         ...commonOptions,
         ...options,
         meta: {
@@ -532,15 +526,17 @@ function selectTraceRecordMeta(
 }
 
 /**
- * Return true if tracing is enabled based on the given tracing options
- * @see traces.addEntry
- * @see traces.addExit
+ * Return true if tracing is enabled based on the given tracing options and the platform
  */
 function selectTraceEnabled({
   runId,
   blockInstanceId,
 }: Pick<TraceMetadata, "runId" | "blockInstanceId">): boolean {
-  return Boolean(runId) && Boolean(blockInstanceId);
+  return (
+    Boolean(runId) &&
+    Boolean(blockInstanceId) &&
+    getPlatform().capabilities.includes("debugger")
+  );
 }
 
 async function runBlock(
@@ -567,7 +563,7 @@ async function runBlock(
 
   if (type === "renderer" && headless) {
     if (selectTraceEnabled(trace)) {
-      traces.addExit({
+      getPlatform().debugger.traces.exit({
         ...trace,
         extensionId: logger.context.extensionId,
         blockId: block.id,
@@ -639,7 +635,7 @@ async function applyReduceDefaults({
 }
 
 export async function blockReducer(
-  blockConfig: BrickConfig,
+  brickConfig: BrickConfig,
   state: IntermediateState,
   options: ReduceOptions,
 ): Promise<BlockOutput> {
@@ -653,7 +649,7 @@ export async function blockReducer(
       ? context
       : { ...context, ...(previousOutput as UnknownObject) };
 
-  const resolvedConfig = await resolveBlockConfig(blockConfig);
+  const resolvedConfig = await resolveBlockConfig(brickConfig);
 
   const optionsWithTraceRef = {
     ...options,
@@ -662,15 +658,16 @@ export async function blockReducer(
       // Be defensive if the call site doesn't provide an extensionId
       // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3751
       extensionId: extensionId ?? logger.context.extensionId,
-      blockInstanceId: blockConfig.instanceId,
+      blockInstanceId: brickConfig.instanceId,
       branches,
     },
   };
 
   // Adjust the root according to the `root` and `rootMode` props on the blockConfig
-  const blockRoot = await selectBlockRootElement(
-    blockConfig,
-    root,
+  const brickRoot = await selectBrickRootElement(
+    brickConfig,
+    // IntermediateState.root is nullishable. Fallback to the document
+    root ?? document,
     context,
     options,
   );
@@ -683,7 +680,7 @@ export async function blockReducer(
     try {
       renderedArgs = await renderBlockArg(
         resolvedConfig,
-        { ...state, root: blockRoot },
+        { ...state, root: brickRoot },
         optionsWithTraceRef,
       );
     } catch (error) {
@@ -699,20 +696,20 @@ export async function blockReducer(
     await lazyRenderArgs();
 
     // Always add the trace entry, even if the brick didn't run
-    traces.addEntry({
+    getPlatform().debugger.traces.enter({
       ...traceMeta,
       timestamp: new Date().toISOString(),
       templateContext: context as JsonObject,
       renderError: renderError ? serializeError(renderError) : null,
       // `renderedArgs` will be null if there's an error rendering args
       renderedArgs,
-      blockConfig,
+      blockConfig: brickConfig,
     });
   }
 
   const preconfiguredTraceExit: TraceExitData = {
     ...traceMeta,
-    outputKey: blockConfig.outputKey,
+    outputKey: brickConfig.outputKey,
     output: null,
     skippedRun: false,
     isRenderer: false,
@@ -720,12 +717,12 @@ export async function blockReducer(
   };
 
   if (
-    !(await shouldRunBlock(blockConfig, contextWithPreviousOutput, options))
+    !(await shouldRunBlock(brickConfig, contextWithPreviousOutput, options))
   ) {
-    logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
+    logger.debug(`Skipping stage ${brickConfig.id} because condition not met`);
 
     if (traceEnabled) {
-      traces.addExit({
+      getPlatform().debugger.traces.exit({
         ...preconfiguredTraceExit,
         output: null,
         skippedRun: true,
@@ -745,7 +742,7 @@ export async function blockReducer(
 
   const props: BlockProps = {
     args: renderedArgs,
-    root: blockRoot,
+    root: brickRoot,
     previousOutput,
     context: contextWithPreviousOutput,
   };
@@ -753,19 +750,19 @@ export async function blockReducer(
   const output = await runBlock(resolvedConfig, props, optionsWithTraceRef);
 
   if (logValues) {
-    console.info(`Output for brick #${index + 1}: ${blockConfig.id}`, {
+    console.info(`Output for brick #${index + 1}: ${brickConfig.id}`, {
       output,
-      outputKey: blockConfig.outputKey ? `@${blockConfig.outputKey}` : null,
+      outputKey: brickConfig.outputKey ? `@${brickConfig.outputKey}` : null,
     });
 
-    logger.debug(`Output for brick #${index + 1}: ${blockConfig.id}`, {
+    logger.debug(`Output for brick #${index + 1}: ${brickConfig.id}`, {
       output,
-      outputKey: blockConfig.outputKey ? `@${blockConfig.outputKey}` : null,
+      outputKey: brickConfig.outputKey ? `@${brickConfig.outputKey}` : null,
     });
   }
 
   if (traceEnabled) {
-    traces.addExit({
+    getPlatform().debugger.traces.exit({
       ...preconfiguredTraceExit,
       output: output as JsonObject,
       skippedRun: false,
@@ -773,30 +770,30 @@ export async function blockReducer(
   }
 
   await logIfInvalidOutput(resolvedConfig.block, output, logger, {
-    window: blockConfig.window,
+    window: brickConfig.window,
   });
 
   if (resolvedConfig.type === "effect") {
-    if (blockConfig.outputKey) {
-      logger.warn(`Ignoring output key for effect ${blockConfig.id}`);
+    if (brickConfig.outputKey) {
+      logger.warn(`Ignoring output key for effect ${brickConfig.id}`);
     }
 
     // If run against multiple targets, the output at this point will be an array
     if (output != null && !hasMultipleTargets(resolvedConfig.config.window)) {
-      console.warn(`Effect ${blockConfig.id} produced an output`, { output });
-      logger.warn(`Ignoring output produced by effect ${blockConfig.id}`);
+      console.warn(`Effect ${brickConfig.id} produced an output`, { output });
+      logger.warn(`Ignoring output produced by effect ${brickConfig.id}`);
     }
 
     return { output: previousOutput, context, blockOutput: undefined };
   }
 
-  if (blockConfig.outputKey) {
+  if (brickConfig.outputKey) {
     return {
       output: previousOutput,
       context: {
         ...context,
         // Keys overwrite any previous keys with the same name
-        [`@${blockConfig.outputKey}`]: output,
+        [`@${brickConfig.outputKey}`]: output,
       },
       blockOutput: output,
     };
@@ -827,8 +824,8 @@ function throwBlockError(
     throw error;
   }
 
-  if (runId && blockConfig.instanceId) {
-    traces.addExit({
+  if (selectTraceEnabled({ runId, blockInstanceId: blockConfig.instanceId })) {
+    getPlatform().debugger.traces.exit({
       runId,
       branches,
       extensionId: logger.context.extensionId,
@@ -884,7 +881,7 @@ async function getStepLogger(
   if (resolvedConfig && !version) {
     // Built-in bricks don't have a version number. Use the browser extension version to identify bugs introduced
     // during browser extension releases
-    version = validateSemVerString(browser.runtime.getManifest().version);
+    version = getPlatform().version;
   }
 
   return pipelineLogger.childLogger({
@@ -904,16 +901,17 @@ export async function reduceExtensionPipeline(
   initialValues: InitialValues,
   partialOptions: Partial<ReduceOptions> = {},
 ): Promise<unknown> {
+  const platform = getPlatform();
   const pipelineLogger = partialOptions.logger ?? new ConsoleLogger();
 
-  // `await` promises to avoid race condition where the calls here delete debug entries from this call to reducePipeline
-  await allSettled(
-    [
-      traces.clear(pipelineLogger.context.extensionId),
-      clearExtensionDebugLogs(pipelineLogger.context.extensionId),
-    ],
-    { catch: "ignore" },
-  );
+  if (platform.capabilities.includes("debugger")) {
+    try {
+      // `await` promise to avoid race condition where the calls here delete entries from this call to reducePipeline
+      await platform.debugger.clear(pipelineLogger.context.extensionId);
+    } catch {
+      // NOP
+    }
+  }
 
   return reducePipeline(pipeline, initialValues, {
     ...partialOptions,

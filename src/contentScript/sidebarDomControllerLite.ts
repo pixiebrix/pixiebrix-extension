@@ -16,8 +16,9 @@
  */
 
 /**
- * @file This file MUST not have dependencies as it's meant to be tiny
- * and imported by browserActionInstantHandler.ts
+ * @file This file MUST not have dependencies as it's meant to be tiny and imported by browserActionInstantHandler.ts.
+ * Because browserActionInstantHandler.ts is a separate content script, any modules will be duplicated
+ * between browserActionInstantHandler and the main content script.
  */
 
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/domConstants";
@@ -28,57 +29,56 @@ import { uuidv4 } from "@/types/helpers";
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
 
-// Use ? because it's not defined during header generation. But otherwise it will always be defined.
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const html: HTMLElement = globalThis.document?.documentElement;
 const SIDEBAR_WIDTH_PX = 400;
 
 function storeOriginalCSSOnce() {
+  const html = document.documentElement;
+
   if (html.style.getPropertyValue(ORIGINAL_MARGIN_CSS_PROPERTY)) {
     return;
   }
 
-  // Store the original margin so it can be reused in future calculations. It must also persist across sessions
+  // Store the original margin, so it can be reused in future calculations. It must also persist across sessions
   html.style.setProperty(
     ORIGINAL_MARGIN_CSS_PROPERTY,
     getComputedStyle(html).getPropertyValue("margin-right"),
   );
 
-  // Make margin dynamic so it always follows the original margin AND the sidebar width, if open
+  // Make margin dynamic, so it always follows the original margin AND the sidebar width, if open
   html.style.setProperty(
     "margin-right",
     `calc(var(${ORIGINAL_MARGIN_CSS_PROPERTY}) + var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`,
   );
+
+  // Some websites like https://www.nespresso.com/us/en/ have `width: 100%` on the HTML.
+  // This resets it as it prevents the margin from working (and it's the default already)
+  html.style.setProperty("width", "auto");
 }
 
 function setSidebarWidth(pixels: number): void {
+  const html = document.documentElement;
   html.style.setProperty(SIDEBAR_WIDTH_CSS_PROPERTY, `${pixels}px`);
 }
 
 /**
  * Returns the sidebar frame if it's in the DOM, or null otherwise. The sidebar might not be initialized yet.
  */
-function getSidebar(): Element | null {
+export function getSidebarElement(): Element | null {
   expectContext("contentScript");
 
-  return html.querySelector(`#${PANEL_FRAME_ID}`);
+  return document.documentElement.querySelector(`#${PANEL_FRAME_ID}`);
 }
 
 /**
  * Return true if the sidebar frame is in the DOM. The sidebar might not be initialized yet.
  */
 export function isSidebarFrameVisible(): boolean {
-  return Boolean(getSidebar());
+  return Boolean(getSidebarElement());
 }
 
 /** Removes the element; Returns false if no element was found */
 export function removeSidebarFrame(): boolean {
-  const sidebar = getSidebar();
-
-  console.debug("sidebarDomControllerLite:removeSidebarFrame", {
-    isSidebarFrameVisible: Boolean(sidebar),
-  });
-
+  const sidebar = getSidebarElement();
   if (sidebar) {
     sidebar.remove();
     setSidebarWidth(0);
@@ -89,12 +89,7 @@ export function removeSidebarFrame(): boolean {
 
 /** Inserts the element; Returns false if it already existed */
 export function insertSidebarFrame(): boolean {
-  console.debug("sidebarDomControllerLite:insertSidebarFrame", {
-    isSidebarFrameVisible: isSidebarFrameVisible(),
-  });
-
   if (isSidebarFrameVisible()) {
-    console.debug("insertSidebarFrame: sidebar frame already exists");
     return false;
   }
 
@@ -127,7 +122,7 @@ export function insertSidebarFrame(): boolean {
 
   const wrapper = shadowWrap(iframe);
   wrapper.id = PANEL_FRAME_ID;
-  html.append(wrapper);
+  document.documentElement.append(wrapper);
 
   iframe.animate([{ translate: "50%" }, { translate: 0 }], {
     duration: 500,

@@ -34,15 +34,12 @@ import { getUserData } from "@/background/messenger/api";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
-
-export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
-  "@pixiebrix/automation-anywhere/run-bot",
-);
+import { urlsMatch } from "@/utils/urlUtils";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
 
 export const COMMON_PROPERTIES: SchemaProperties = {
   service: {
@@ -117,9 +114,13 @@ const ENTERPRISE_EDITION_PUBLIC_PROPERTIES: SchemaProperties = {
 };
 
 export class RunBot extends TransformerABC {
+  static BRICK_ID = validateRegistryId(
+    "@pixiebrix/automation-anywhere/run-bot",
+  );
+
   constructor() {
     super(
-      AUTOMATION_ANYWHERE_RUN_BOT_ID,
+      RunBot.BRICK_ID,
       "Run Automation Anywhere Bot",
       "Run an Automation Anywhere Bot via the Control Room API",
     );
@@ -155,11 +156,7 @@ export class RunBot extends TransformerABC {
 
   override defaultOutputKey = "bot";
 
-  override outputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    additionalProperties: true,
-  };
+  override outputSchema = minimalSchemaFactory();
 
   async transform(
     args: BrickArgs<BotArgs>,
@@ -207,8 +204,8 @@ export class RunBot extends TransformerABC {
 
       const { partnerPrincipals = [] } = await getUserData();
 
-      const principal = partnerPrincipals.find(
-        (x) => x.control_room_url === service.config.controlRoomUrl,
+      const principal = partnerPrincipals.find(({ controlRoomUrl }) =>
+        urlsMatch(controlRoomUrl, service.config.controlRoomUrl),
       );
       if (!principal) {
         throw new PropError(
@@ -219,7 +216,7 @@ export class RunBot extends TransformerABC {
         );
       }
 
-      runAsUserIds = [principal.control_room_user_id];
+      runAsUserIds = [principal.controlRoomUserId];
       enterpriseBotArgs.poolIds = [];
     } else if (
       enterpriseBotArgs.isAttended &&

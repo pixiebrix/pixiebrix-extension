@@ -21,9 +21,7 @@ import { useField } from "formik";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Webhook } from "@/contrib/zapier/contract";
 import { pixiebrixConfigurationFactory } from "@/integrations/locator";
-import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
@@ -40,14 +38,15 @@ import { joinName } from "@/utils/formUtils";
 import defaultFieldFactory from "@/components/fields/schemaFields/defaultFieldFactory";
 import useAsyncState from "@/hooks/useAsyncState";
 import type { AsyncState } from "@/types/sliceTypes";
+import { getPlatform } from "@/platform/platformContext";
+import { absoluteApiUrl } from "@/data/service/apiClient";
 
 function useHooks(): AsyncState<Webhook[]> {
   return useAsyncState(async () => {
-    const { data } = await performConfiguredRequestInBackground<{
+    const { data } = await getPlatform().request<{
       new_push_fields: Webhook[];
     }>(await pixiebrixConfigurationFactory(), {
-      baseURL: await getBaseURL(),
-      url: "/api/webhooks/hooks/",
+      url: await absoluteApiUrl("/api/webhooks/hooks/"),
       method: "get",
     });
 

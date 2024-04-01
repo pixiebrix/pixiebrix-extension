@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Theme } from "@/themes/themeTypes";
+import { type ThemeName } from "@/themes/themeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Except } from "type-fest";
-
-type InstallMode = "local" | "remote";
 
 export const AUTH_METHODS = [
   "default",
@@ -60,6 +58,18 @@ export type GeneralSettingsFlags = {
    * Button to enable the floating action button on the page
    */
   isFloatingActionButtonEnabled?: boolean;
+
+  /**
+   * Setting to enable the text selection menu for all/text context menu items
+   * @since 1.8.11
+   */
+  textSelectionMenu?: boolean;
+
+  /**
+   * Setting to enable the snippet shortcut menu
+   * @since 1.8.11
+   */
+  snippetShortcutMenu?: boolean;
 };
 
 export type SettingsFlags = SkunkworksSettingsFlags & GeneralSettingsFlags;
@@ -69,13 +79,6 @@ export type SettingsFlags = SkunkworksSettingsFlags & GeneralSettingsFlags;
  */
 export type SettingsStateV1 = SkunkworksSettingsFlags &
   GeneralSettingsFlags & {
-    /**
-     * Whether the extension is synced to the app for provisioning.
-     *
-     * NOTE: `local` is broken in many places. The only current valid value is remote.
-     */
-    mode: InstallMode;
-
     /**
      * Time to snooze updates until (in milliseconds from the epoch), or null.
      *
@@ -127,7 +130,7 @@ export type SettingsStateV1 = SkunkworksSettingsFlags &
     /**
      * Theme name for the extension
      */
-    theme: Theme;
+    theme: ThemeName;
   };
 
 /**
@@ -159,7 +162,15 @@ export type SettingsStateV3 = SettingsStateV2 & {
   varAutosuggest: boolean;
 };
 
-export type SettingsState = SettingsStateV3;
+export type SettingsStateV4 = SettingsStateV3 & {
+  /**
+   * @since 1.8.11 SettingsStateV4 makes textSelectionMenu and snippetShortcutMenu required
+   */
+  textSelectionMenu: boolean;
+  snippetShortcutMenu: boolean;
+};
+
+export type SettingsState = SettingsStateV4;
 
 export type SettingsRootState = {
   settings: SettingsState;

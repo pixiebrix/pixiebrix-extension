@@ -21,7 +21,7 @@ import integrationsSlice from "@/integrations/store/integrationsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { uuidv4 } from "@/types/helpers";
 import notify from "@/utils/notify";
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import Form, {
   type RenderBody,
   type RenderSubmit,
@@ -140,9 +140,9 @@ const ControlRoomTokenForm: React.FunctionComponent<{
       <Button
         type="submit"
         disabled={isSubmitting || !isValid}
-        data-testid="connect-aari-token-btn"
+        data-testid="connect-aa-copilot-token-btn"
       >
-        Connect AARI
+        Connect
       </Button>
     </div>
   );

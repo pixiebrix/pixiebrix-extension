@@ -30,10 +30,19 @@ import axios, { type AxiosResponse } from "axios";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { launchWebAuthFlow } from "@/background/auth/authHelpers";
 
+/**
+ * Retrieve the OAuth2 token using the code grant flow.
+ * @param integrationConfig the integration configuration
+ * @param oauth2 the instantiated OAuth2 directives
+ * @param interactive If false, forces the flow to complete silently, without any user interaction. See
+ *  https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/identity/launchWebAuthFlow#interactive
+ */
 async function codeGrantFlow(
-  auth: IntegrationConfig,
+  integrationConfig: IntegrationConfig,
   oauth2: OAuth2Context,
+  { interactive }: { interactive: boolean },
 ): Promise<AuthData> {
   const redirect_uri = browser.identity.getRedirectURL("oauth2");
 
@@ -73,20 +82,16 @@ async function codeGrantFlow(
       code_challenge_method,
     );
   } else if (code_challenge_method != null) {
+    const exhaustiveCheck: never = code_challenge_method;
     throw new BusinessError(
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check; type is `never`
-      `Unsupported code challenge method: ${code_challenge_method}`,
+      `Unsupported code challenge method: ${exhaustiveCheck}`,
     );
   }
 
-  const responseUrl = await browser.identity.launchWebAuthFlow({
+  const responseUrl = await launchWebAuthFlow({
     url: authorizeURL.href,
-    interactive: true,
+    interactive,
   });
-
-  if (!responseUrl) {
-    throw new Error("Authentication cancelled");
-  }
 
   const authResponse = new URL(responseUrl);
 
@@ -164,16 +169,14 @@ async function codeGrantFlow(
     }
 
     const json = Object.fromEntries(parsed.entries());
-    // TODO: Fix IntegrationConfig types
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
-    await setCachedAuthData(auth.id!, json);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
+    await setCachedAuthData(integrationConfig.id!, json);
     return json as AuthData;
   }
 
   if (typeof data === "object") {
-    // TODO: Fix IntegrationConfig types
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
-    await setCachedAuthData(auth.id!, data);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
+    await setCachedAuthData(integrationConfig.id!, data);
     return data as AuthData;
   }
 

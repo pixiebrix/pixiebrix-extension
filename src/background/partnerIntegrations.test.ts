@@ -24,7 +24,7 @@ import tokenIntegrationDefinition from "@contrib/integrations/automation-anywher
 import oauthIntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import { locator as serviceLocator } from "@/background/locator";
 import { uuidv4 } from "@/types/helpers";
-import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
+import { readPartnerAuthData, setPartnerAuth } from "@/auth/authStorage";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
@@ -33,7 +33,7 @@ import {
   secretsConfigFactory,
 } from "@/testUtils/factories/integrationFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { registry } from "@/background/messenger/api";
+import { registry } from "@/background/messenger/strict/api";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
@@ -45,9 +45,11 @@ const integrationDefinitionMap = new Map([
   [CONTROL_ROOM_OAUTH_INTEGRATION_ID, oauthIntegrationDefinition],
 ]);
 
-jest.mock("@/auth/token", () => ({
+jest.mock("@/background/auth/authStorage");
+jest.mock("@/auth/authStorage", () => ({
   readPartnerAuthData: jest.fn().mockResolvedValue({}),
   setPartnerAuth: jest.fn(),
+  addListener: jest.fn(),
 }));
 
 jest.mock("@/integrations/registry", () => {
@@ -59,8 +61,6 @@ jest.mock("@/integrations/registry", () => {
     readRawConfigurations: jest.fn().mockResolvedValue([]),
   };
 });
-
-jest.mock("@/background/auth/authStorage");
 
 // Module mocked via __mocks__/@/background/messenger/api
 jest.mocked(registry.find).mockImplementation(async (id: RegistryId) => {

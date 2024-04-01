@@ -24,7 +24,6 @@ import {
   SELF_EXISTENCE,
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { type KeyPath, type ShouldExpandNodeInitially } from "react-json-tree";
-import { type UnknownObject } from "@/types/objectTypes";
 import { getIn } from "formik";
 
 /**

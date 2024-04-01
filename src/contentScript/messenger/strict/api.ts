@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +31,6 @@ export const getReservedSidebarEntries = getMethod(
 );
 export const updateSidebar = getNotifier("UPDATE_SIDEBAR");
 export const sidebarWasLoaded = getNotifier("SIDEBAR_WAS_LOADED");
-export const reloadSidebar = getMethod("RELOAD_SIDEBAR");
 export const removeSidebars = getMethod("REMOVE_SIDEBARS");
 
 export const initRobot = getMethod("UIPATH_INIT");

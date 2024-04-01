@@ -18,7 +18,7 @@
 import React, { useReducer } from "react";
 import Loader from "@/components/Loader";
 import blockRegistry from "@/bricks/registry";
-import EmotionShadowRoot from "react-shadow/emotion";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
 import {
   isRendererErrorPayload,
@@ -33,7 +33,6 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useAsyncEffect } from "use-async-effect";
 import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { type RegistryId } from "@/types/registryTypes";
 import {
@@ -49,10 +48,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
-
-// Used for the loading message
-// import cx from "classnames";
-// import styles from "./PanelBody.module.scss";
+import { getPlatform } from "@/platform/platformContext";
 
 type BodyProps = {
   blockId: RegistryId;
@@ -65,14 +61,14 @@ const BodyContainer: React.FC<
   BodyProps & { onAction: (action: SubmitPanelAction) => void }
 > = ({ blockId, body, onAction, meta }) => (
   // Use a shadow dom to prevent the webpage styles from affecting the sidebar
-  <EmotionShadowRoot.div className="full-height" data-testid={blockId}>
+  <EmotionShadowRoot className="full-height" data-testid={blockId}>
     <RendererComponent
       blockId={blockId}
       body={body}
       meta={meta}
       onAction={onAction}
     />
-  </EmotionShadowRoot.div>
+  </EmotionShadowRoot>
 );
 
 type State = {
@@ -167,6 +163,8 @@ const PanelBody: React.FunctionComponent<{
       }
 
       try {
+        const platform = getPlatform();
+
         // In most cases reactivate would have already been called for the payload == null branch. But confirm it here
         dispatch(slice.actions.reactivate());
 
@@ -182,7 +180,7 @@ const PanelBody: React.FunctionComponent<{
 
         const block = await blockRegistry.lookup(blockId);
 
-        const logger = new BackgroundLogger({
+        const logger = platform.logger.childLogger({
           ...context,
           blockId,
         });
@@ -190,6 +188,7 @@ const PanelBody: React.FunctionComponent<{
         const branches = tracePath ? mapPathToTraceBranches(tracePath) : [];
 
         const body = await block.run(unsafeAssumeValidArg(args), {
+          platform,
           ctxt: brickArgsContext,
           root: null,
           meta: {

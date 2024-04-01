@@ -26,6 +26,8 @@ import {
 } from "@/types/runtimeTypes";
 import { UNSET_UUID } from "@/types/helpers";
 
+import { uninitializedPlatform } from "@/platform/platformContext";
+
 type DocumentState = {
   onAction: (action: { type: string; detail: JsonObject }) => void;
   options: BrickOptions<BrickArgsContext>;
@@ -41,6 +43,7 @@ export const initialValue: DocumentState = {
     throw new BusinessError("Panel actions not available for panel type");
   },
   options: {
+    platform: uninitializedPlatform,
     meta: {
       runId: null,
       extensionId: UNSET_UUID,

@@ -412,7 +412,7 @@ exports[`Storyshots Components/BrickDetail Amazon Search 1`] = `
         <svg
           aria-hidden="true"
           className="svg-inline--fa fa-cube fa-w-16 fa-fw fa-1x "
-          color="darkGrey"
+          color="#241C32"
           data-icon="cube"
           data-prefix="fas"
           focusable="false"
@@ -705,7 +705,7 @@ exports[`Storyshots Components/BrickDetail Built In 1`] = `
         <svg
           aria-hidden="true"
           className="svg-inline--fa fa-cube fa-w-16 fa-fw fa-1x "
-          color="darkGrey"
+          color="#241C32"
           data-icon="cube"
           data-prefix="fas"
           focusable="false"
@@ -3491,6 +3491,36 @@ exports[`Storyshots Editor/LogToolbar Default 1`] = `
 </div>
 `;
 
+exports[`Storyshots Enhancements/SelectionMenu Emoji Buttons 1`] = `
+<div
+  style={
+    {
+      "all": "initial",
+    }
+  }
+/>
+`;
+
+exports[`Storyshots Enhancements/SelectionMenu Mixed Buttons 1`] = `
+<div
+  style={
+    {
+      "all": "initial",
+    }
+  }
+/>
+`;
+
+exports[`Storyshots Enhancements/ShortcutSnippetMenu Demo 1`] = `
+<div>
+  <textarea
+    cols={50}
+    id="textArea"
+    rows={4}
+  />
+</div>
+`;
+
 exports[`Storyshots ExtensionConsole/IDBErrorDisplay Connection Error 1`] = `
 <div
   className="p-3"
@@ -5821,9 +5851,11 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           </small>
         </div>
       </div>
-      <hr />
+      <p>
+        Use the Preview Tab on the right to select a field to edit ⟶
+      </p>
       <div
-        className="addRow"
+        className="d-flex mb-3 gap-1 gap-column-4 align-items-center flex-wrap"
       >
         <button
           className="btn btn-primary btn-sm"
@@ -5850,56 +5882,35 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           </svg>
            Add new field
         </button>
-      </div>
-      <div
-        className="currentFieldRow row"
-      >
-        <div
-          className="currentField col-xl-3"
+        <button
+          className="btn btn-danger btn-sm"
+          disabled={false}
+          onClick={[Function]}
+          type="button"
         >
-          <h6>
-            Current Field
-          </h6>
-        </div>
-        <div
-          className="col-xl"
-        >
-          <button
-            className="btn btn-danger btn-sm"
-            disabled={false}
-            onClick={[Function]}
-            type="button"
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-trash fa-w-14 "
+            data-icon="trash"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <svg
-              aria-hidden="true"
-              className="svg-inline--fa fa-trash fa-w-14 "
-              data-icon="trash"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
+            <path
+              d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
+              fill="currentColor"
               style={{}}
-              viewBox="0 0 448 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
-                fill="currentColor"
-                style={{}}
-              />
-            </svg>
-             Remove field
-          </button>
-        </div>
-        <div
-          className="col-xl"
-        >
-          <small
-            className="text-muted"
-          >
-            Use the Preview Tab on the right to select a field to edit ⟶
-          </small>
-        </div>
+            />
+          </svg>
+           Remove current field
+        </button>
       </div>
+      <h6>
+        Current Field
+      </h6>
       <div
         className="root"
       >
@@ -6504,7 +6515,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       data-testid="preview"
     >
       <div
-        className="rjsf"
+        className="mr-2"
         noValidate={false}
         onSubmit={[Function]}
       >
@@ -6583,7 +6594,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     value="Chuck"
                   />
                   <div
-                    className="field-description text-muted"
+                    className="field-description mt-1 text-muted"
                   >
                     <div
                       dangerouslySetInnerHTML={
@@ -6637,7 +6648,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     value=""
                   />
                   <div
-                    className="field-description text-muted"
+                    className="field-description mt-1 text-muted"
                   >
                     <div
                       dangerouslySetInnerHTML={
@@ -6865,9 +6876,11 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
           </small>
         </div>
       </div>
-      <hr />
+      <p>
+        Use the Preview Tab on the right to select a field to edit ⟶
+      </p>
       <div
-        className="addRow"
+        className="d-flex mb-3 gap-1 gap-column-4 align-items-center flex-wrap"
       >
         <button
           className="btn btn-primary btn-sm"
@@ -6894,26 +6907,6 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
           </svg>
            Add new field
         </button>
-      </div>
-      <div
-        className="currentFieldRow row"
-      >
-        <div
-          className="currentField col-xl-3"
-        >
-          <h6>
-            Current Field
-          </h6>
-        </div>
-        <div
-          className="col-xl"
-        >
-          <small
-            className="text-muted"
-          >
-            Use the Preview Tab on the right to select a field to edit ⟶
-          </small>
-        </div>
       </div>
     </div>
     <div
@@ -8387,7 +8380,7 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard OAuth2 1`] = `
               <h3
                 className="stepTitle"
               >
-                Connect your AARI account
+                Connect your Automation Co-Pilot account
               </h3>
               <div
                 className="stepBody"
@@ -8447,7 +8440,7 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard OAuth2 1`] = `
                       disabled={false}
                       type="submit"
                     >
-                      Connect AARI
+                      Connect
                     </button>
                   </div>
                 </form>
@@ -8615,7 +8608,7 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Linked Extension) 1
               <h3
                 className="stepTitle"
               >
-                Connect your AARI account
+                Connect your Automation Co-Pilot account
               </h3>
             </div>
           </div>
@@ -8780,7 +8773,7 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Unlinked Extension)
               <h3
                 className="stepTitle"
               >
-                Connect your AARI account
+                Connect your Automation Co-Pilot account
               </h3>
             </div>
           </div>
@@ -8793,10 +8786,10 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Unlinked Extension)
 
 exports[`Storyshots PageEditor/HomePane Default 1`] = `
 <div
-  className="h-100 overflow-auto container-fluid"
+  className="h-100 overflow-auto p-4 container-fluid"
 >
   <div
-    className="pane row"
+    className="gap-2 row"
   >
     <img
       alt="background illustration"
@@ -8920,7 +8913,6 @@ exports[`Storyshots PageEditor/LoginCard Default 1`] = `
     href="/options.html"
     onClick={[Function]}
     onKeyDown={[Function]}
-    target="_blank"
   >
     <svg
       aria-hidden="true"
@@ -9670,7 +9662,6 @@ exports[`Storyshots Sidebar/LoginPanel Default 1`] = `
       href="https://app.pixiebrix.com"
       onClick={[Function]}
       onKeyDown={[Function]}
-      target="_blank"
     >
       <svg
         aria-hidden="true"

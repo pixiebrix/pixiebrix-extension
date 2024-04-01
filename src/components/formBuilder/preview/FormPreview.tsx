@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable security/detect-object-injection */
+/* eslint-disable security/detect-object-injection -- keys do not come from customer input */
+
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import validator from "@/validators/formValidator";
@@ -68,10 +69,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
         }
 
         if (activeField) {
-          if (!draftUiSchema[activeField]) {
-            draftUiSchema[activeField] = {};
-          }
-
+          draftUiSchema[activeField] ??= {};
           draftUiSchema[activeField][UI_SCHEMA_ACTIVE] = true;
         }
 
@@ -148,10 +146,8 @@ const FormPreview: React.FC<FormPreviewProps> = ({
             value[UI_WIDGET] === "select" &&
             propertySchema.oneOf !== undefined
           ) {
-            if (propertySchema.default == null) {
-              // Setting the default value for preview to hide an empty option
-              propertySchema.default = "";
-            }
+            // Setting the default value for preview to hide an empty option
+            propertySchema.default ??= "";
 
             if (!propertySchema.oneOf?.length) {
               propertySchema.oneOf = [{ const: "" }];
@@ -192,6 +188,8 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   return (
     <JsonSchemaForm
       tagName="div"
+      // Add margin to make room for the active element outline. Style is not added to FieldTemplate due to re-use when rendering the form
+      className="mr-2"
       formData={data}
       fields={fields}
       widgets={widgets}

@@ -58,6 +58,7 @@ export const Events = {
 
   IDB_RECLAIM_QUOTA: "IDBReclaimQuota",
   IDB_RECOVER_CONNECTION: "IDBRecoverConnection",
+  IDB_UNRESPONSIVE_BANNER: "IDBUnresponsiveBanner",
 
   INTEGRATION_WIDGET_SELECT: "IntegrationWidgetSelect",
   INTEGRATION_WIDGET_CLEAR: "IntegrationWidgetClear",
@@ -101,6 +102,7 @@ export const Events = {
   PAGE_EDITOR_VIEW_TEMPLATES: "PageEditorViewTemplates",
   PAGE_EDITOR_MOD_CREATE: "PageEditorModCreate",
   PAGE_EDITOR_MOD_UPDATE: "PageEditorModUpdate",
+  PAGE_EDITOR_MOD_SAVE_ERROR: "PageEditorModSaveError",
 
   PAGE_EDITOR_SESSION_START: "PageEditorSessionStart",
   PAGE_EDITOR_SESSION_END: "PageEditorSessionEnd",
@@ -159,6 +161,8 @@ export const Events = {
   VIEW_SIDEBAR_PANEL: "ViewSidePanelPanel",
 
   ZAPIER_KEY_COPY: "ZapierKeyCopy",
+
+  SHORTCUT_SNIPPET_RUN: "TextCommandRun",
 } as const;
 
 export type Event = (typeof Events)[keyof typeof Events];

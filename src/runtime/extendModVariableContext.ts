@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types/objectTypes";
-import { expectContext } from "@/utils/expectContext";
-import { getPageState } from "@/contentScript/pageState";
+import { getState } from "@/platform/state/stateController";
 import { type RegistryId } from "@/types/registryTypes";
 import apiVersionOptions, {
   type ApiVersionOptions,
@@ -25,6 +23,7 @@ import apiVersionOptions, {
 import { pickBy } from "lodash";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { validateUUID } from "@/types/helpers";
+import { assertPlatformCapability } from "@/platform/platformContext";
 
 /**
  * Variable for accessing the mod Page State.
@@ -115,7 +114,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
     options: Pick<ApiVersionOptions, "extendModVariable">;
   },
 ): ExtendedContext<T> {
-  expectContext("contentScript");
+  assertPlatformCapability("state");
 
   // For backward compatability, don't overwrite for older versions of the runtime. It should generally be safe, but
   // there may be some edge cases especially with implicit data flow.
@@ -139,7 +138,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
   // Eagerly grab the state. It's fast/synchronous since it's in memory in the same JS context.
   // Previously, we had considered using a proxy to lazily load the state. However, eagerly reading is simpler.
   // Additionally, in the future to pass the context to the sandbox we'd have to always load the state anyway.
-  const modState = getPageState({
+  const modState = getState({
     namespace: "blueprint",
     blueprintId,
     // `extensionId` is not used because namespace is `blueprint`

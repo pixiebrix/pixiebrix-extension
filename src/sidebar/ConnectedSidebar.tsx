@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   addListener,
   removeListener,
@@ -43,11 +43,11 @@ import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api"
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
-
 import addFormPanel from "@/sidebar/thunks/addFormPanel";
 import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
+import useEventListener from "@/hooks/useEventListener";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -142,19 +142,11 @@ const ConnectedSidebar: React.VFC = () => {
   }, [listener]);
 
   // Wire up a click handler on the document to handle activate link clicks
-  useEffect(() => {
-    const listener = (event: MouseEvent) => {
-      activateLinkClickHandler(event, (entry) => {
-        dispatch(sidebarSlice.actions.showModActivationPanel(entry));
-      });
-    };
-
-    document.addEventListener("click", listener);
-    return () => {
-      document.removeEventListener("click", listener);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount
-  }, []);
+  useEventListener(document, "click", (event: MouseEvent) => {
+    activateLinkClickHandler(event, (entry) => {
+      dispatch(sidebarSlice.actions.showModActivationPanel(entry));
+    });
+  });
 
   return (
     <ErrorBoundary>

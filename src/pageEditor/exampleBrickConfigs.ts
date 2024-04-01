@@ -32,6 +32,9 @@ import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
 import { toExpression } from "@/utils/expressionUtils";
 import CommentEffect from "@/bricks/effects/comment";
+import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
 
 /**
  * Get an example brick config for a given brick id.
@@ -180,6 +183,34 @@ export function getExampleBrickConfig(
       return {
         variableName: "",
         value: toExpression("nunjucks", ""),
+      };
+    }
+
+    case AddTextSnippets.BRICK_ID: {
+      return {
+        snippets: [
+          {
+            shortcut: "example",
+            title: "Example Snippet",
+            text: "Example snippet text",
+          },
+        ],
+      };
+    }
+
+    case AddDynamicTextSnippet.BRICK_ID: {
+      return {
+        shortcut: "command",
+        title: "Example Dynamic Snippet",
+        generate: toExpression("pipeline", [
+          {
+            ...createNewConfiguredBrick(IdentityTransformer.BRICK_ID, {
+              parentBrickId: AddDynamicTextSnippet.BRICK_ID,
+            }),
+            config: toExpression("nunjucks", ""),
+            outputKey: validateOutputKey("generatedText"),
+          },
+        ]),
       };
     }
 

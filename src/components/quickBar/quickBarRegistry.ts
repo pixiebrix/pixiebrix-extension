@@ -20,13 +20,17 @@ import { type RegistryId } from "@/types/registryTypes";
 import { pull, remove } from "lodash";
 import {
   type ActionGenerator,
-  type ActionsChangeHandler,
-  type CustomAction,
   type GeneratorArgs,
 } from "@/components/quickBar/quickbarTypes";
 import { allSettled } from "@/utils/promiseUtils";
+import { ReusableAbortController } from "abort-utils";
+import type {
+  CustomAction,
+  QuickBarProtocol,
+} from "@/platform/platformTypes/quickBarProtocol";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
-class QuickBarRegistry {
+class QuickBarRegistry implements QuickBarProtocol {
   /**
    * Current set of actions, including static and generated actions.
    * @see actionGenerators
@@ -37,9 +41,8 @@ class QuickBarRegistry {
 
   /**
    * Registry of action listeners, called when the set of actions changes.
-   * @private
    */
-  private readonly listeners: ActionsChangeHandler[] = [];
+  readonly changeEvent = new SimpleEventTarget<CustomAction[]>();
 
   /**
    * Registry of action generators. The generators are called when the user types in the Quick Bar.
@@ -51,7 +54,7 @@ class QuickBarRegistry {
    * Abort controller for the currently running action generator.
    * @private
    */
-  private generatorAbortController: AbortController | null = null;
+  private readonly generatorAbortController = new ReusableAbortController();
 
   /**
    * Mapping from action generator to the rootActionId.
@@ -70,15 +73,12 @@ class QuickBarRegistry {
 
   /**
    * Helper method to notify all action listeners that the set of actions changed.
-   * @private
    */
   private notifyListeners() {
     // Need to copy the array because the registry mutates the array in-place, and listeners might be keeping a
     // reference to the argument passed to them
     const copy = [...this.actions];
-    for (const listener of this.listeners) {
-      listener(copy);
-    }
+    this.changeEvent.emit(copy);
   }
 
   /**
@@ -148,22 +148,6 @@ class QuickBarRegistry {
   }
 
   /**
-   * Add an action change handler.
-   * @param handler the action change handler
-   */
-  addListener(handler: ActionsChangeHandler): void {
-    this.listeners.push(handler);
-  }
-
-  /**
-   * Remove an action change handler.
-   * @param handler the action change handler
-   */
-  removeListener(handler: ActionsChangeHandler): void {
-    pull(this.listeners, handler);
-  }
-
-  /**
    * Register an action generator.
    * @param generator the action generator
    * @param rootActionId an optional rootActionId to associate with the generator
@@ -193,11 +177,10 @@ class QuickBarRegistry {
    */
   async generateActions(args: GeneratorArgs): Promise<void> {
     // Abort previously running generators
-    this.generatorAbortController?.abort();
+    this.generatorAbortController.abortAndReset();
+    const abortSignal = this.generatorAbortController.signal;
 
     // Run all generators in parallel
-    this.generatorAbortController = new AbortController();
-    const abortSignal = this.generatorAbortController.signal;
     await allSettled(
       this.actionGenerators.map(async (x) => x({ ...args, abortSignal })),
       { catch: "ignore" },

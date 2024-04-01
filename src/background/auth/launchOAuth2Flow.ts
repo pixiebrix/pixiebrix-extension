@@ -26,17 +26,28 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import implicitGrantFlow from "@/background/auth/implicitGrantFlow";
 import codeGrantFlow from "@/background/auth/codeGrantFlow";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
+/**
+ * Perform the OAuth2 flow for the given integration.
+ * @param integration the integration, or nullish to lookup by id
+ * @param integrationConfig the integration configuration
+ * @param options options for the flow
+ */
 async function launchOAuth2Flow(
-  service: Integration,
-  auth: IntegrationConfig,
+  integration: Integration,
+  integrationConfig: IntegrationConfig,
+  options: { interactive: boolean },
 ): Promise<AuthData> {
   // Reference: https://github.com/kylpo/salesforce-chrome-oauth/blob/master/index.js
-  if (!service.isOAuth2) {
-    throw new Error(`Service ${service.id} is not an OAuth2 service`);
+  if (!integration.isOAuth2) {
+    throw new Error(`Service ${integration.id} is not an OAuth2 service`);
   }
 
-  const oauth2 = service.getOAuth2Context(auth.config);
+  const oauth2 = integration.getOAuth2Context(
+    integrationConfig.config,
+    options,
+  );
 
   const {
     host,
@@ -53,8 +64,8 @@ async function launchOAuth2Flow(
   const isImplicitFlow = rawTokenUrl === undefined;
 
   const eventPayload = {
-    integration_id: service.id,
-    auth_label: auth.label,
+    integration_id: integration.id,
+    auth_label: integrationConfig.label,
     host,
     client_id,
     authorize_url: rawAuthorizeUrl,
@@ -65,17 +76,17 @@ async function launchOAuth2Flow(
 
   if (isImplicitFlow) {
     console.debug("Using implicitGrantFlow because tokenUrl was not provided");
-    return implicitGrantFlow(auth, oauth2);
+    return implicitGrantFlow(integrationConfig, oauth2, options);
   }
 
   console.debug("Using codeGrantFlow");
   try {
-    const result = await codeGrantFlow(auth, oauth2);
+    const result = await codeGrantFlow(integrationConfig, oauth2, options);
     reportEvent(Events.OAUTH2_LOGIN_SUCCESS, eventPayload);
     return result;
   } catch (error) {
     const errorMessage = getErrorMessage(error);
-    console.log(errorMessage);
+
     reportEvent(Events.OAUTH2_LOGIN_ERROR, {
       ...eventPayload,
       error_message: errorMessage,
@@ -84,4 +95,11 @@ async function launchOAuth2Flow(
   }
 }
 
-export default launchOAuth2Flow;
+/**
+ * Memoize launchOAuth2Flow to prevent the integration banner from being displayed
+ * while the login flow is in progress.
+ * See: https://github.com/pixiebrix/pixiebrix-extension/issues/8004
+ */
+export default memoizeUntilSettled(launchOAuth2Flow, {
+  cacheKey: ([_, integrationConfig]) => integrationConfig.id,
+});

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,7 +29,7 @@ export const dataStore = {
   get: getMethod("GET_DATA_STORE", bg),
   set: getMethod("SET_DATA_STORE", bg),
 };
-export const activatePartnerTheme = getMethod("ACTIVATE_PARTNER_THEME", bg);
+export const activateTheme = getMethod("ACTIVATE_THEME", bg);
 
 export const traces = {
   addEntry: getNotifier("ADD_TRACE_ENTRY", bg),
@@ -41,4 +41,45 @@ export const traces = {
 export const captureTab = getMethod("CAPTURE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
+
+export const hasCachedAuthData = getMethod("HAS_CACHED_AUTH", bg);
+
 export const setToolbarBadge = getMethod("SET_TOOLBAR_BADGE", bg);
+export const documentReceivedFocus = getNotifier("DOCUMENT_RECEIVED_FOCUS", bg);
+
+export const writeToClipboardInFocusedDocument = getMethod(
+  "WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT",
+  bg,
+);
+
+export const registry = {
+  syncRemote: getMethod("REGISTRY_SYNC", bg),
+  getByKinds: getMethod("REGISTRY_GET_BY_KINDS", bg),
+  find: getMethod("REGISTRY_FIND", bg),
+  clear: getMethod("REGISTRY_CLEAR", bg),
+};
+
+export const queryTabs = getMethod("QUERY_TABS", bg);
+
+// Use this instead: `import reportEvent from "@/telemetry/reportEvent"`
+// export const recordEvent = getNotifier("RECORD_EVENT", bg);
+
+export const recordLog = getNotifier("RECORD_LOG", bg);
+export const clearLogs = getMethod("CLEAR_LOGS", bg);
+export const clearLog = getMethod("CLEAR_LOG", bg);
+export const clearExtensionDebugLogs = getMethod(
+  "CLEAR_EXTENSION_DEBUG_LOGS",
+  bg,
+);
+
+export const fetchFeatureFlagsInBackground = getMethod(
+  "FETCH_FEATURE_FLAGS",
+  bg,
+);
+
+export const services = {
+  locateAllForId: getMethod("LOCATE_SERVICES_FOR_ID", bg),
+  locate: getMethod("LOCATE_SERVICE", bg),
+  refresh: getMethod("REFRESH_SERVICES", bg),
+  refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
+};

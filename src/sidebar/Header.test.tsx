@@ -18,18 +18,24 @@
 import React from "react";
 import { screen, render } from "@/sidebar/testHelpers";
 import Header from "@/sidebar/Header";
-import { mockCachedUser } from "@/testUtils/userMock";
+import useTheme from "@/hooks/useTheme";
 
-import {
-  userFactory,
-  userOrganizationFactory,
-} from "@/testUtils/factories/authFactories";
+import { waitFor } from "@testing-library/react";
+import { initialTheme } from "@/themes/themeStore";
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
+jest.mock("@/hooks/useTheme");
+
 describe("Header", () => {
+  beforeEach(() => {
+    jest
+      .mocked(useTheme)
+      .mockReturnValue({ activeTheme: initialTheme, isLoading: false });
+  });
+
   it("renders", () => {
     const { asFragment } = render(<Header />);
 
@@ -37,35 +43,22 @@ describe("Header", () => {
     expect(screen.getByTestId("sidebarHeaderLogo")).not.toBeNull();
   });
 
-  it("renders sidebar header logo per organization theme", () => {
-    mockCachedUser(
-      userFactory({
-        organization: userOrganizationFactory({
-          theme: {
-            show_sidebar_logo: true,
-          },
-        }),
-      }),
-    );
-
+  it("renders sidebar header logo per organization theme", async () => {
     const { asFragment } = render(<Header />);
     expect(asFragment()).toMatchSnapshot();
     expect(screen.getByTestId("sidebarHeaderLogo")).not.toBeNull();
   });
 
-  it("renders no sidebar header logo per organization theme", () => {
-    mockCachedUser(
-      userFactory({
-        organization: userOrganizationFactory({
-          theme: {
-            show_sidebar_logo: false,
-          },
-        }),
-      }),
-    );
+  it("renders no sidebar header logo per organization theme", async () => {
+    jest.mocked(useTheme).mockReturnValue({
+      activeTheme: { ...initialTheme, showSidebarLogo: false },
+      isLoading: false,
+    });
 
     render(<Header />);
 
-    expect(screen.queryByTestId("sidebarHeaderLogo")).toBeNull();
+    await waitFor(() => {
+      expect(screen.queryByTestId("sidebarHeaderLogo")).toBeNull();
+    });
   });
 });

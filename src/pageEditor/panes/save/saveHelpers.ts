@@ -177,8 +177,8 @@ export function selectExtensionPointIntegrations({
     } as Schema;
   }
 
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- future-proofing
-  throw new Error(`Unknown ModDependencyApiVersion: ${apiVersion}`);
+  const exhaustiveCheck: never = apiVersion;
+  throw new Error(`Unknown ModDependencyApiVersion: ${exhaustiveCheck}`);
 }
 
 /**
@@ -330,7 +330,7 @@ export function replaceModComponent(
   });
 }
 
-function selectExtensionPointConfig(
+function selectModComponentDefinition(
   modComponent: ModComponentBase,
 ): ModComponentDefinition {
   const extensionPoint: ModComponentDefinition = {
@@ -346,7 +346,7 @@ function selectExtensionPointConfig(
   return extensionPoint;
 }
 
-type ModParts = {
+export type ModParts = {
   sourceMod?: ModDefinition;
   cleanModComponents: UnresolvedModComponent[];
   dirtyModComponentFormStates: ModComponentFormState[];
@@ -397,14 +397,12 @@ export function buildNewMod({
     sourceMod ?? emptyModDefinition;
 
   return produce(unsavedModDefinition, (draft: UnsavedModDefinition): void => {
-    // Options dirty state is only populated if a change is made
     if (dirtyModOptions) {
       draft.options = isModOptionsSchemaEmpty(dirtyModOptions)
         ? undefined
         : normalizeModOptionsDefinition(dirtyModOptions);
     }
 
-    // Metadata dirty state is only populated if a change is made
     if (dirtyModMetadata) {
       draft.metadata = dirtyModMetadata;
     }
@@ -433,15 +431,15 @@ export function buildNewMod({
     }
 
     const unsavedModComponents: ModComponentBase[] =
-      dirtyModComponentFormStates.map((modComponentFormStates) => {
+      dirtyModComponentFormStates.map((modComponentFormState) => {
         const { selectExtension, selectExtensionPointConfig } = ADAPTERS.get(
-          modComponentFormStates.type,
+          modComponentFormState.type,
         );
-        const unsavedModComponent = selectExtension(modComponentFormStates);
+        const unsavedModComponent = selectExtension(modComponentFormState);
 
         if (isInnerDefinitionRegistryId(unsavedModComponent.extensionPointId)) {
           const extensionPointConfig = selectExtensionPointConfig(
-            modComponentFormStates,
+            modComponentFormState,
           );
           unsavedModComponent.definitions = {
             [unsavedModComponent.extensionPointId]: {
@@ -518,7 +516,7 @@ function buildExtensionPoints(
         // We already used this extensionPointId, need to generate a fresh one
         needsFreshExtensionPointId = true;
 
-        // eslint-disable-next-line security/detect-object-injection
+        // eslint-disable-next-line security/detect-object-injection -- extensionPointId is coming from the modComponent definition entries
         if (isEqual(definition, innerDefinitions[extensionPointId])) {
           // Not only has the id been used before, but the definition deeply matches
           // the one being added as well
@@ -554,7 +552,7 @@ function buildExtensionPoints(
     }
 
     // Construct the modComponent point config from the modComponent
-    const extensionPoint = selectExtensionPointConfig(modComponent);
+    const extensionPoint = selectModComponentDefinition(modComponent);
 
     // Add the extensionPoint, replacing the id with our updated
     // extensionPointId, if we've tracked a change in newExtensionPointId

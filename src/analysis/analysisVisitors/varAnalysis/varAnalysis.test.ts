@@ -39,7 +39,7 @@ import {
   type ListDocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   formStateFactory,

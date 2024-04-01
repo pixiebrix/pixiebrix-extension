@@ -23,6 +23,7 @@ import {
   SET_COMPONENT_DATA,
   READ_WINDOW,
   CKEDITOR_SET_VALUE,
+  CKEDITOR_INSERT_TEXT,
 } from "@/pageScript/messenger/constants";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type JsonObject, type JsonValue } from "type-fest";
@@ -49,7 +50,7 @@ export type ReadPayload = ReadOptions & {
 export interface WritePayload {
   framework: Framework;
   selector: string;
-  valueMap: Record<string, unknown>;
+  valueMap: UnknownObject;
 }
 
 export const setComponentData = createSendScriptMessage<void, WritePayload>(
@@ -80,3 +81,8 @@ export const setCKEditorData = createSendScriptMessage<
   void,
   { selector: string; value: string }
 >(CKEDITOR_SET_VALUE);
+
+export const insertCKEditorData = createSendScriptMessage<
+  void,
+  { selector: string; value: string }
+>(CKEDITOR_INSERT_TEXT);

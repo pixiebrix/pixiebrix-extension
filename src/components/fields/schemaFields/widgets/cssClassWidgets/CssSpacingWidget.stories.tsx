@@ -20,7 +20,7 @@ import CssSpacingWidget from "@/components/fields/schemaFields/widgets/cssClassW
 import type CssClassWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget";
 import { Provider } from "react-redux";
 import { settingsStore } from "@/testUtils/storyUtils";
-// eslint-disable-next-line no-restricted-imports
+// eslint-disable-next-line no-restricted-imports -- Required for story
 import { Formik, useField } from "formik";
 import { action } from "@storybook/addon-actions";
 import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";

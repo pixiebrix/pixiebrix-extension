@@ -27,7 +27,14 @@ https://github.com/typescript-eslint/typescript-eslint/issues/3295#issuecomment-
 // Improve standard type library https://www.totaltypescript.com/ts-reset
 /// <reference types="@total-typescript/ts-reset" />
 
+/// <reference types="jest-extended" />
+
 declare const browser: import("webextension-polyfill").Browser;
+
+/* eslint-disable-next-line no-restricted-syntax --
+ * Type to be preferred over a plain `object`
+ * https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/ban-types.md */
+type UnknownObject = Record<string, unknown>;
 
 // https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
 declare module "*.svg" {
@@ -64,7 +71,7 @@ declare module "*.txt" {
 }
 
 declare module "*.yaml" {
-  const content: Record<string, unknown>;
+  const content: UnknownObject;
   export default content;
 }
 
@@ -83,8 +90,6 @@ declare module "react-select-virtualized" {
 }
 
 declare module "generate-schema" {
-  import { type UnknownObject } from "@/types/objectTypes";
-
   const json: (title: string, obj: unknown) => UnknownObject;
 }
 
@@ -102,76 +107,16 @@ declare module "canvas-confetti" {
   export default confetti;
 }
 
-// From https://github.com/mozilla/page-metadata-parser/issues/116#issuecomment-614882830
-declare module "@/vendors/page-metadata-parser/parser" {
-  export type IPageMetadata = Record<string, string | string[]>;
-
-  export type PageMetadataRule = [
-    string,
-    (element: HTMLElement) => string | null,
-  ];
-
-  export function getMetadata(
-    doc: Document | HTMLElement,
-    url: string,
-    customRuleSets?: Record<string, PageMetadataRule>,
-  ): IPageMetadata;
-}
-
-declare module "@/vendors/initialize" {
-  import { type JsonValue, type Promisable } from "type-fest";
-
-  /** Attach a MutationObserver specifically for a selector */
-  const initialize: (
-    selector: string,
-    callback: (
-      this: Element,
-      index: number,
-      element: Element,
-    ) => Promisable<void | false>,
-    options: { target: Element | Document; observer?: MutationObserverInit },
-  ) => MutationObserver;
-
-  export default initialize;
-}
-
-interface JQuery {
-  /**
-   * From @/vendors/hoverintent
-   * @param options
-   */
-  hoverIntent: (options: {
-    /**
-     * Required. The handlerIn function you'd like to call on "mouseenter with intent". Your function receives the same
-     * "this" and "event" objects as it would from jQuery's hover method. If the "over" function is sent alone (without
-     * "out") then it will be used in both cases like the handlerInOut param.
-     */
-    over: JQuery.EventHandler<unknown>;
-    /**
-     * The handlerOut function you'd like to call on "mouseleave after timeout". Your function receives the same "this"
-     * and "event" objects as it would from jQuery's hover method. Note, hoverIntent will only call the "out" function
-     * if the "over" function has been called.
-     */
-    out?: JQuery.EventHandler<unknown>;
-    /**
-     * A simple delay, in milliseconds, before the "out" function is called. If the user mouses back over the element
-     * before the timeout has expired the "out" function will not be called (nor will the "over" function be called).
-     * This is primarily to protect against sloppy/human mousing trajectories that temporarily (and unintentionally)
-     * take the user off of the target element... giving them time to return. Default timeout: 0
-     */
-    timeout?: number;
-    /**
-     * A selector string for event delegation. Used to filter the descendants of the selected elements that trigger the
-     * event. If the selector is null or omitted, the event is always triggered when it reaches the selected element
-     */
-    selector?: string;
-  }) => void;
-}
+type Token = {
+  value: string;
+  type: "PSEUDO" | "TAG" | string;
+  matches: string[];
+};
 
 interface JQueryStatic {
   find: (() => JQuery) & {
     /** Partial type for `$.find.tokenize */
-    tokenize: (selector: string) => string[];
+    tokenize: (selector: string) => Token[][];
   };
 }
 
@@ -183,10 +128,8 @@ interface Promise<T> {
    * @returns A Promise for the completion of the callback.
    */
   catch<TResult = never>(
-    onrejected?:
-      | ((reason: unknown) => TResult | PromiseLike<TResult>)
-      | undefined
-      | null,
+    onrejected?: // eslint-disable-next-line local-rules/preferNullishable -- Importing here is not worth it
+    ((reason: unknown) => TResult | PromiseLike<TResult>) | undefined | null,
   ): Promise<T | TResult>;
 }
 

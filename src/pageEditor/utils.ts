@@ -27,12 +27,10 @@ import {
   isPipelineElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
-import { castArray, pickBy } from "lodash";
+import { castArray, pick, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
-import { expectContext } from "@/utils/expectContext";
 import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
-import { type Target } from "@/types/messengerTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -46,25 +44,9 @@ import { inputProperties } from "@/utils/schemaUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
-
-export async function getCurrentURL(): Promise<string> {
-  expectContext("pageEditor");
-
-  const tab = await browser.tabs.get(chrome.devtools.inspectedWindow.tabId);
-  return tab.url;
-}
-
-/**
- * Message target for the tab being inspected by the devtools.
- *
- * The Page Editor only supports editing the top-level frame.
- */
-export const thisTab: Target = {
-  // This code might end up (unused) in non-dev bundles, so use `?.` to avoid errors from undefined values
-  tabId: globalThis.chrome?.devtools?.inspectedWindow?.tabId ?? 0,
-  // The top-level frame
-  frameId: 0,
-};
+import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
+import { type PackageUpsertResponse } from "@/types/contract";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
 export function getIdForElement(
   element: ModComponentBase | ModComponentFormState,
@@ -181,6 +163,13 @@ export function getVariableKeyForSubPipeline(
     return CustomFormRenderer.ON_SUBMIT_VARIABLE_NAME;
   }
 
+  if (
+    brickConfig.id === AddDynamicTextSnippet.BRICK_ID &&
+    pipelinePropName === "generate"
+  ) {
+    return AddDynamicTextSnippet.DEFAULT_PIPELINE_VAR;
+  }
+
   if (!keyPropName) {
     return null;
   }
@@ -280,5 +269,16 @@ export function selectPageEditorDimensions() {
     pageEditorHeight: window.innerHeight,
     pageEditorOrientation:
       window.innerWidth > window.innerHeight ? "landscape" : "portrait",
+  };
+}
+
+export function selectModMetadata(
+  unsavedModDefinition: UnsavedModDefinition,
+  response: PackageUpsertResponse,
+): ModComponentBase["_recipe"] {
+  return {
+    ...unsavedModDefinition.metadata,
+    sharing: pick(response, ["public", "organizations"]),
+    ...pick(response, ["updated_at"]),
   };
 }

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types/objectTypes";
 import { getIn } from "formik";
 
 type InvalidPathInformation = {
@@ -45,4 +44,33 @@ export function getInvalidPath(
   }
 
   throw new Error("Expected invalid path");
+}
+
+/** @knip debugging util
+ * A debug util for drawing a rectangle on the screen. Useful for debugging
+ * positioning issues related to dom bounding boxes (such as tooltips and popovers like
+ * `src/contentScript/textSelectionMenu/selectionMenuController.tsx`).
+ */
+export function drawRectangle({
+  x,
+  y,
+  width,
+  height,
+  color,
+}: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  color?: string;
+}) {
+  const rect = document.createElement("div");
+  rect.style.position = "absolute";
+  rect.style.left = x + window.scrollX + "px";
+  rect.style.top = y + window.scrollY + "px";
+  rect.style.width = width + "px";
+  rect.style.height = height + "px";
+  rect.style.border = `2px solid ${color || "red"}`;
+  rect.style.zIndex = Number.MAX_SAFE_INTEGER.toString();
+  document.body.append(rect);
 }

@@ -22,7 +22,7 @@ import { useField } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import registry from "@/integrations/registry";
 import { uuidv4 } from "@/types/helpers";
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import { Button } from "react-bootstrap";
 import IntegrationConfigEditorModal from "@/components/integrations/IntegrationConfigEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -49,10 +49,9 @@ import {
 } from "@/integrations/autoConfigure";
 import { freshIdentifier } from "@/utils/variableUtils";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
-import { type UnknownObject } from "@/types/objectTypes";
-import { type Schema } from "@/types/schemaTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import AsyncStateGate from "@/components/AsyncStateGate";
+import { convertSchemaToConfigState } from "@/components/integrations/integrationHelpers";
 
 const { upsertIntegrationConfig, deleteIntegrationConfig } =
   integrationsSlice.actions;
@@ -83,45 +82,6 @@ const RefreshButton: React.VFC<{
     </Button>
   );
 };
-
-export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
-  const result: UnknownObject = {};
-  for (const [key, value] of Object.entries(inputSchema.properties)) {
-    if (typeof value === "boolean" || value.type === "null") {
-      continue;
-    }
-
-    if (value.type === "object") {
-      // eslint-disable-next-line security/detect-object-injection -- Schema property keys
-      result[key] = convertSchemaToConfigState(value);
-    } else {
-      if (value.default !== undefined) {
-        // eslint-disable-next-line security/detect-object-injection -- Schema property keys
-        result[key] = value.default;
-      }
-
-      if (value.type === "boolean") {
-        // eslint-disable-next-line security/detect-object-injection -- Schema property keys
-        result[key] = false;
-      }
-
-      if (value.type === "number" || value.type === "integer") {
-        // eslint-disable-next-line security/detect-object-injection -- Schema property keys
-        result[key] = 0;
-      }
-
-      if (value.type === "array") {
-        // eslint-disable-next-line security/detect-object-injection -- Schema property keys
-        result[key] = [];
-      }
-
-      // eslint-disable-next-line security/detect-object-injection -- Schema property keys
-      result[key] = "";
-    }
-  }
-
-  return result;
-}
 
 type AuthWidgetContentProps = {
   name: string;

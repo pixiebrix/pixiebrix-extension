@@ -19,8 +19,7 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-
-import { propertiesToSchema } from "@/validators/generic";
+import { ReusableAbortController } from "abort-utils";
 import {
   type CustomEventOptions,
   type DebounceOptions,
@@ -37,14 +36,12 @@ import {
   awaitElementOnce,
   selectExtensionContext,
 } from "@/starterBricks/helpers";
-import notify from "@/utils/notify";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import initialize from "@/vendors/initialize";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import initialize from "@/vendors/jQueryInitialize";
 import pluralize from "@/utils/pluralize";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { BusinessError } from "@/errors/businessErrors";
@@ -85,6 +82,9 @@ import {
 } from "@/utils/domUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import { allSettled } from "@/utils/promiseUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type TriggerTarget = Document | HTMLElement;
 
@@ -192,20 +192,15 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   >();
 
   /**
-   * Installed DOM event listeners, e.g., `click`, or the name of a custom event. Used to keep track of which event
-   * handlers need to be removed when the extension is uninstalled.
-   *
-   * Currently, there's only ever 1 event attached per trigger extension point instance.
-   *
+   * Controller to drop observers
    * @private
    */
-  private readonly installedEvents = new Set<string>();
+  private readonly observersController = new ReusableAbortController();
 
   /**
-   * Controller to drop all listeners and timers
-   * @private
+   * Controller to drop event listeners and timers
    */
-  private abortController = new AbortController();
+  private readonly cancelHandlers = new ReusableAbortController();
 
   // Extensions that have errors/events reported. NOTE: this tracked per contentScript instance. These are not
   // reset on Single Page Application navigation events
@@ -215,6 +210,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   public get kind(): "trigger" {
     return "trigger";
   }
+
+  readonly capabilities: PlatformCapability[] = ["dom", "state"];
 
   /**
    * Returns true if an event should be reported, given whether it has already been reported.
@@ -232,8 +229,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       }
 
       default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Invalid reportMode: ${this.reportMode}`);
+        const exhaustiveCheck: never = this.reportMode;
+        throw new BusinessError(`Invalid reportMode: ${exhaustiveCheck}`);
       }
     }
   }
@@ -297,15 +294,17 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   }
 
   cancelObservers(): void {
-    // Inform registered listeners
-    this.abortController.abort();
+    console.debug("TriggerExtensionPoint:cancelObservers", {
+      id: this.id,
+      instanceNonce: this.instanceNonce,
+    });
 
-    // Allow new registrations
-    this.abortController = new AbortController();
+    // Inform and discard registered observers
+    this.observersController.abortAndReset();
   }
 
   addCancelHandler(callback: () => void): void {
-    this.abortController.signal.addEventListener("abort", callback);
+    this.cancelHandlers.signal.addEventListener("abort", callback);
   }
 
   clearModComponentInterfaceAndEvents(): void {
@@ -335,11 +334,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     });
 
     // This won't impact with other trigger extension points because the handler reference is unique to `this`
-    for (const event of this.installedEvents) {
-      $currentElements.off(event, this.eventHandler);
-    }
-
-    this.installedEvents.clear();
+    this.cancelHandlers.abortAndReset();
 
     // Remove all extensions to prevent them from running if there are any straggler event handlers on the page
     this.modComponents.length = 0;
@@ -412,13 +407,10 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   /**
    * Shared event handler for DOM event triggers
+   * It's bound to this instance so that it can be removed when the mod is deactivated.
    */
-  private readonly eventHandler: JQuery.EventHandler<unknown> = async (
-    event,
-  ) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- based on available trigger types
-    let element: TriggerTarget = event.target;
-
+  private readonly eventHandler = async (event: Event) => {
+    let element = event.target as HTMLElement | Document;
     console.debug("TriggerExtensionPoint:eventHandler", {
       id: this.id,
       instanceNonce: this.instanceNonce,
@@ -439,7 +431,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
 
     await this.debouncedRunTriggersAndNotify([element], {
-      nativeEvent: event.originalEvent,
+      nativeEvent: event,
     });
   };
 
@@ -581,7 +573,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     const subject = pluralize(errors.length, "a trigger", "$$ triggers");
     const message = `An error occurred running ${subject}`;
     console.debug(message, { errors });
-    notify.error({
+
+    this.platform.toasts.showNotification({
+      type: "error",
       message,
       // Show any information to the user about the error, so they can report/correct it.
       error: errors[0],
@@ -595,7 +589,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     // Await for the element(s) to appear on the page so that we can
     const rootPromise = isEmpty(rootSelector)
       ? document
-      : awaitElementOnce(rootSelector, this.abortController.signal);
+      : awaitElementOnce(rootSelector, this.observersController.signal);
 
     try {
       await rootPromise;
@@ -633,7 +627,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       void interval({
         intervalMillis: this.intervalMillis,
         effectGenerator: intervalEffect,
-        signal: this.abortController.signal,
+        signal: this.observersController.signal,
         requestAnimationFrame: !this.allowInactiveFrames,
       });
 
@@ -722,17 +716,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   }
 
   private attachDocumentTrigger(): void {
-    const $document = $(document);
-
-    $document.off(this.trigger, this.eventHandler);
-
-    // Install the DOM trigger
-    $document.on(this.trigger, this.eventHandler);
-
-    this.installedEvents.add(this.trigger);
-
-    this.addCancelHandler(() => {
-      $document.off(this.trigger, this.eventHandler);
+    document.addEventListener(this.trigger, this.eventHandler, {
+      signal: this.cancelHandlers.signal,
     });
   }
 
@@ -768,16 +753,21 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       $elements.off("mouseenter.hoverIntent");
       $elements.off("mouseleave.hoverIntent");
       $elements.hoverIntent({
-        over: this.eventHandler,
+        over: async ({ originalEvent }) => this.eventHandler(originalEvent),
         // If `out` is not provided, over is called on both mouseenter and mouseleave
         out: noop,
       });
+      this.addCancelHandler(() => {
+        $elements.off("mouseenter.hoverIntent");
+        $elements.off("mouseleave.hoverIntent");
+      });
     } else {
-      $elements.off(domEventName, this.eventHandler);
-      $elements.on(domEventName, this.eventHandler);
+      for (const element of $elements) {
+        element.addEventListener(domEventName, this.eventHandler, {
+          signal: this.cancelHandlers.signal,
+        });
+      }
     }
-
-    this.installedEvents.add(domEventName);
 
     if (watch) {
       if ($elements.get(0) === document) {
@@ -969,10 +959,13 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
     return this._definition.defaultOptions ?? {};
   }
 
-  constructor(config: StarterBrickConfig<TriggerDefinition>) {
+  constructor(
+    platform: PlatformProtocol,
+    config: StarterBrickConfig<TriggerDefinition>,
+  ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;
@@ -1042,6 +1035,7 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
 }
 
 export function fromJS(
+  platform: PlatformProtocol,
   config: StarterBrickConfig<TriggerDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
@@ -1049,5 +1043,5 @@ export function fromJS(
     throw new Error(`Expected type=trigger, got ${type}`);
   }
 
-  return new RemoteTriggerExtensionPoint(config);
+  return new RemoteTriggerExtensionPoint(platform, config);
 }

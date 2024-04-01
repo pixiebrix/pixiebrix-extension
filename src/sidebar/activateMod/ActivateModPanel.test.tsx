@@ -21,7 +21,6 @@ import { render, screen } from "@/sidebar/testHelpers";
 import ActivateModPanel from "@/sidebar/activateMod/ActivateModPanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -44,7 +43,7 @@ import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integrationFactories";
-import { registry, services } from "@/background/messenger/api";
+import { services, registry } from "@/background/messenger/strict/api";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { refreshServices } from "@/background/locator";
@@ -54,7 +53,7 @@ import useActivateRecipe, {
 } from "@/activation/useActivateRecipe";
 import brickRegistry from "@/bricks/registry";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
-import type { UnknownObject } from "@/types/objectTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 jest.mock("@/sidebar/sidebarSelectors");
@@ -287,9 +286,9 @@ describe("ActivateModPanel", () => {
       ],
     });
 
-    expect(
-      await screen.findByText("Well done", { exact: false }),
-    ).toBeVisible();
+    await expect(
+      screen.findByText("Well done", { exact: false }),
+    ).resolves.toBeVisible();
     expect(screen.getByRole("button", { name: "Ok" })).toBeVisible();
     expect(activateRecipeSpy).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -331,9 +330,9 @@ describe("ActivateModPanel", () => {
       ],
     });
 
-    expect(
-      await screen.findByText("Well done", { exact: false }),
-    ).toBeVisible();
+    await expect(
+      screen.findByText("Well done", { exact: false }),
+    ).resolves.toBeVisible();
     expect(screen.getByRole("button", { name: "Ok" })).toBeVisible();
     expect(activateRecipeSpy).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -376,9 +375,9 @@ describe("ActivateModPanel", () => {
       ],
     });
 
-    expect(
-      await screen.findByText("Well done", { exact: false }),
-    ).toBeVisible();
+    await expect(
+      screen.findByText("Well done", { exact: false }),
+    ).resolves.toBeVisible();
     expect(screen.getByRole("button", { name: "Ok" })).toBeVisible();
     expect(activateRecipeSpy).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -420,12 +419,12 @@ describe("ActivateModPanel", () => {
       ],
     });
 
-    expect(
-      await screen.findByText(
+    await expect(
+      screen.findByText(
         "We're almost there. This mod has a few settings to configure before using.",
         { exact: false },
       ),
-    ).toBeVisible();
+    ).resolves.toBeVisible();
     expect(
       screen.getByRole("button", { name: "Finish Activating" }),
     ).toBeVisible();
@@ -466,12 +465,12 @@ describe("ActivateModPanel", () => {
       ],
     });
 
-    expect(
-      await screen.findByText(
+    await expect(
+      screen.findByText(
         "We're almost there. This mod has a few settings to configure before using.",
         { exact: false },
       ),
-    ).toBeVisible();
+    ).resolves.toBeVisible();
     expect(
       screen.getByRole("button", { name: "Finish Activating" }),
     ).toBeVisible();

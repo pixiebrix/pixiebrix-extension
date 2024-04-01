@@ -16,14 +16,13 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
-import { openTab } from "@/background/messenger/api";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { URL_INPUT_SPEC } from "@/bricks/transformers/url";
-
 import {
   LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
   makeURL,
 } from "@/utils/urlUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class NavigateURLEffect extends EffectABC {
   constructor() {
@@ -35,6 +34,10 @@ export class NavigateURLEffect extends EffectABC {
   }
 
   inputSchema = URL_INPUT_SPEC;
+
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["dom"];
+  }
 
   async effect({
     url,
@@ -60,17 +63,22 @@ export class OpenURLEffect extends EffectABC {
 
   inputSchema = URL_INPUT_SPEC;
 
-  async effect({
-    url,
-    params,
-    spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
-  }: BrickArgs<{
-    url: string;
-    params?: Record<string, string | number | boolean>;
-    spaceEncoding?: "plus" | "percent";
-  }>): Promise<void> {
-    await openTab({
-      url: makeURL(url, params, spaceEncoding),
-    });
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["link"];
+  }
+
+  async effect(
+    {
+      url,
+      params,
+      spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
+    }: BrickArgs<{
+      url: string;
+      params?: Record<string, string | number | boolean>;
+      spaceEncoding?: "plus" | "percent";
+    }>,
+    { platform }: BrickOptions,
+  ): Promise<void> {
+    await platform.open(new URL(makeURL(url, params, spaceEncoding)));
   }
 }

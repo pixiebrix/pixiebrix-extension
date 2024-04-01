@@ -117,11 +117,11 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
           !configId ||
           !isEqual(existingIntegrationConfig?.config, secretsConfig)
         ) {
-          configId = configId ?? uuidv4();
+          configId ??= uuidv4();
           const newIntegrationConfig = {
             id: configId,
             integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-            label: "Primary AARI Account",
+            label: "Primary Automation Co-Pilot Account",
             config: secretsConfig,
           } as IntegrationConfig;
 
@@ -141,7 +141,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
 
         await ensurePermissionsFromUserGesture(requiredPermissions);
 
-        await launchAuthIntegration({ serviceId: authIntegrationId });
+        await launchAuthIntegration({ integrationId: authIntegrationId });
 
         // Redirect to blueprints screen. The SetupPage always shows a login screen for the "/start" URL
         history.push("/");
@@ -194,7 +194,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
   const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
     <div className="text-left">
       <Button type="submit" disabled={isSubmitting || !isValid}>
-        Connect AARI
+        Connect
       </Button>
     </div>
   );

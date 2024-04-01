@@ -17,55 +17,32 @@
 
 import {
   addListener as addAuthListener,
-  isLinked,
   removeListener as removeAuthListener,
-} from "@/auth/token";
-import useAsyncState from "@/hooks/useAsyncState";
-import { useEffect } from "react";
+  isLinked,
+} from "@/auth/authStorage";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
+import type { AsyncState } from "@/types/sliceTypes";
 
-type LinkState = {
-  hasToken: boolean | undefined;
-  tokenLoading: boolean;
-  tokenError: unknown;
+// NOTE: can't share subscribe methods across generators currently for useAsyncExternalStore because it maintains
+// a map of subscriptions to state controllers. See https://github.com/pixiebrix/pixiebrix-extension/issues/7789
+const subscribe = (callback: () => void) => {
+  addAuthListener(callback);
+
+  return () => {
+    removeAuthListener(callback);
+  };
 };
 
 /**
- * Hook to get link state, and automatically update if extension becomes linked/unlinked.
- *
- * TODO: this should use Redux to ensure UI is in sync, as it is referenced by multiple place. OK for now because the
- *   isLinked check is fast and side-effect free.
- *
+ * Hook to watch the isLinked state, and automatically update if extension becomes linked/unlinked.
  * @see isLinked
  */
-function useLinkState(): LinkState {
-  // See component documentation for why both isLinked and useGetMeQuery are required
-  // hasToken is true for either native PixieBrix token, or partner Bearer JWT
-  const {
-    data: hasToken,
-    isLoading: tokenLoading,
-    isError: tokenError,
-    refetch: refreshTokenState,
-  } = useAsyncState(isLinked, []);
-
-  useEffect(() => {
-    // Listen for token invalidation
-    const handler = async () => {
-      console.debug("Auth state changed, checking for token");
-      refreshTokenState();
-    };
-
-    addAuthListener(handler);
-
-    return () => {
-      removeAuthListener(handler);
-    };
-  }, [refreshTokenState]);
-
-  return {
-    hasToken,
-    tokenLoading,
-    tokenError,
-  };
+function useLinkState(): AsyncState<boolean> {
+  // Using useAsyncExternalStore shares state/async calls across components in the tree.
+  // In the future, we might consider including the state in the Redux Store or React Context and gating
+  // on the state being available. Given how fast the `isLinked` call should resolve in practice, there's
+  // little benefit to exposing AsyncState for components to perform optimistic rendering on isLoading.
+  return useAsyncExternalStore(subscribe, isLinked);
 }
 
 export default useLinkState;

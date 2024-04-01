@@ -82,6 +82,32 @@ const formRuntimeContext: RuntimeContext = {
   allowExpressions: false,
 };
 
+const Preview: React.VFC<{
+  optionsDefinition: RJSFSchema;
+  activeField: string | undefined;
+  setActiveField: (field: string) => void;
+}> = ({ optionsDefinition, activeField, setActiveField }) => (
+  <Tab.Container activeKey="preview">
+    <Nav variant="tabs">
+      <Nav.Item className={dataPanelStyles.tabNav}>
+        <Nav.Link eventKey="preview">Preview</Nav.Link>
+      </Nav.Item>
+    </Nav>
+
+    <Tab.Content className={dataPanelStyles.tabContent}>
+      <Tab.Pane eventKey="preview" className={dataPanelStyles.tabPane}>
+        <ErrorBoundary>
+          <FormPreview
+            rjsfSchema={optionsDefinition}
+            activeField={activeField}
+            setActiveField={setActiveField}
+          />
+        </ErrorBoundary>
+      </Tab.Pane>
+    </Tab.Content>
+  </Tab.Container>
+);
+
 const ModOptionsDefinitionEditor: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const modId = useSelector(selectActiveRecipeId);
@@ -158,7 +184,6 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
 
                       <FormEditor
                         name="optionsDefinition"
-                        showFormIntroFields={false}
                         activeField={activeField}
                         setActiveField={setActiveField}
                         fieldTypes={fieldTypes}
@@ -168,30 +193,11 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
                 </Card>
               </div>
               <div className={styles.dataPanel}>
-                <Tab.Container activeKey="preview">
-                  <div className={dataPanelStyles.tabContainer}>
-                    <Nav variant="tabs">
-                      <Nav.Item className={dataPanelStyles.tabNav}>
-                        <Nav.Link eventKey="preview">Preview</Nav.Link>
-                      </Nav.Item>
-                    </Nav>
-
-                    <Tab.Content className={dataPanelStyles.tabContent}>
-                      <Tab.Pane
-                        eventKey="preview"
-                        className={dataPanelStyles.tabPane}
-                      >
-                        <ErrorBoundary>
-                          <FormPreview
-                            rjsfSchema={values.optionsDefinition as RJSFSchema}
-                            activeField={activeField}
-                            setActiveField={setActiveField}
-                          />
-                        </ErrorBoundary>
-                      </Tab.Pane>
-                    </Tab.Content>
-                  </div>
-                </Tab.Container>
+                <Preview
+                  optionsDefinition={values.optionsDefinition as RJSFSchema}
+                  activeField={activeField}
+                  setActiveField={setActiveField}
+                />
               </div>
             </>
           )}

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
+import "@/vendors/bootstrapWithoutRem.css";
 import "@/extensionContext";
 import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
 import ReactDOM from "react-dom";

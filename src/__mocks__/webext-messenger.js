@@ -19,5 +19,12 @@ export const getMethod = jest.fn(() => jest.fn());
 export const getNotifier = jest.fn(() => jest.fn());
 export const backgroundTarget = { page: "background" };
 
-export const getTopLevelFrame = async () => ({ tabId: 1, frameId: 0 });
+let frameId = 0;
+
+export const getTopLevelFrame = async () => ({ tabId: 1, frameId });
+
 export const getThisFrame = getTopLevelFrame;
+
+export function setFrameId(newFrameId) {
+  frameId = newFrameId;
+}

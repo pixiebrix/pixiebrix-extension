@@ -18,8 +18,7 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
-import { getPageState, setPageState } from "@/contentScript/pageState";
+import { getState, setState } from "@/platform/state/stateController";
 import {
   type BrickArgs,
   type BrickOptions,
@@ -33,6 +32,7 @@ import { isEmpty } from "lodash";
 import { PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
@@ -189,7 +189,7 @@ export class WithAsyncModVariable extends TransformerABC {
     const isCurrentNonce = () => modVariableNonces.get(stateKey) === requestId;
 
     const setModVariable = (data: JsonObject, strategy: "put" | "patch") => {
-      setPageState({
+      setState({
         // Store as Mod Variable
         namespace: "blueprint",
         data: {
@@ -206,7 +206,7 @@ export class WithAsyncModVariable extends TransformerABC {
     modVariableNonces.set(stateKey, requestId);
 
     // Get/set page state calls are synchronous from the content script, so safe to call sequentially
-    const currentState = getPageState({
+    const currentState = getState({
       namespace: "blueprint",
       extensionId,
       blueprintId,
@@ -242,14 +242,13 @@ export class WithAsyncModVariable extends TransformerABC {
       );
     }
 
-    const bodyPromise = runPipeline(body, {
-      key: "body",
-      counter: 0,
-    });
-
-    void bodyPromise
-      // eslint-disable-next-line promise/prefer-await-to-then -- not blocking
-      .then((data: JsonObject) => {
+    // Non-blocking async call
+    (async () => {
+      try {
+        const data = (await runPipeline(body, {
+          key: "body",
+          counter: 0,
+        })) as JsonObject;
         if (!isCurrentNonce()) {
           return;
         }
@@ -267,9 +266,7 @@ export class WithAsyncModVariable extends TransformerABC {
           },
           "put",
         );
-      })
-      // eslint-disable-next-line promise/prefer-await-to-then -- not blocking
-      .catch((error) => {
+      } catch (error) {
         if (!isCurrentNonce()) {
           return;
         }
@@ -287,7 +284,8 @@ export class WithAsyncModVariable extends TransformerABC {
           },
           "put",
         );
-      });
+      }
+    })();
 
     return {
       requestId,

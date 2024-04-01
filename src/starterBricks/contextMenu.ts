@@ -19,7 +19,6 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import { propertiesToSchema } from "@/validators/generic";
 import {
   type Manifest,
   type Menus,
@@ -33,18 +32,8 @@ import {
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
 import { checkAvailable } from "@/bricks/available";
-import {
-  ensureContextMenu,
-  uninstallContextMenu,
-} from "@/background/messenger/api";
-import { registerHandler } from "@/contentScript/contextMenus";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
-import notify, {
-  DEFAULT_ACTION_RESULTS,
-  type MessageConfig,
-  showNotification,
-} from "@/utils/notify";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
@@ -59,7 +48,6 @@ import {
   ContextMenuReader,
   contextMenuReaderShim,
 } from "@/starterBricks/contextMenuReader";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -72,25 +60,37 @@ import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
 import batchedFunction from "batched-function";
 import { onContextInvalidated } from "webext-events";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { getPlatform } from "@/platform/platformContext";
+import { getSettingsState } from "@/store/settings/settingsStorage";
+import type { Except } from "type-fest";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { type MessageConfig } from "@/utils/notify";
+import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { initSelectionMenu } from "@/contentScript/textSelectionMenu/selectionMenuController";
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Function
-const groupRegistrationErrorNotification = batchedFunction(
-  (errors: unknown[][]): void => {
-    // `batchedFunction` will throttle the calls and coalesce all the errors into a
-    // single notification, even if they come from different extensions
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/7353
-    notify.error({
-      message: `An error occurred adding ${pluralize(
-        errors.flat().length,
-        "$$ context menu item",
-      )}`,
-      reportError: false,
-    });
-  },
-  {
-    delay: 100,
-  },
-);
+const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
+
+const groupRegistrationErrorNotification = (platform: PlatformProtocol) =>
+  batchedFunction(
+    (errors: unknown[][]): void => {
+      // `batchedFunction` will throttle the calls and coalesce all the errors into a
+      // single notification, even if they come from different extensions
+      // https://github.com/pixiebrix/pixiebrix-extension/issues/7353
+      platform.toasts.showNotification({
+        type: "error",
+        message: `An error occurred adding ${pluralize(
+          errors.flat().length,
+          "$$ context menu item",
+        )}`,
+        reportError: false,
+      });
+    },
+    {
+      delay: 100,
+    },
+  );
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -160,6 +160,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     return "contextMenu";
   }
 
+  readonly capabilities: PlatformCapability[] = ["contextMenu"];
+
   inputSchema: Schema = propertiesToSchema(
     {
       title: {
@@ -191,7 +193,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     const extensions = this.modComponents.splice(0);
     if (global) {
       for (const extension of extensions) {
-        void uninstallContextMenu({ extensionId: extension.id });
+        void getPlatform().contextMenus.unregister(extension.id);
+        getPlatform().textSelectionMenu.unregister(extension.id);
       }
     }
   }
@@ -209,13 +212,24 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     // re-activating a context menu (during re-activation, mod components get new extensionIds.)
 
     for (const extensionId of extensionIds) {
-      void uninstallContextMenu({ extensionId });
+      void getPlatform().contextMenus.unregister(extensionId);
+      getPlatform().textSelectionMenu.unregister(extensionId);
     }
   }
 
   async install(): Promise<boolean> {
     // Always install the mouse handler in case a context menu is added later
     installMouseHandlerOnce();
+
+    if (this.contexts.includes("selection") || this.contexts.includes("all")) {
+      const { textSelectionMenu: isTextSelectionMenuEnabled } =
+        await getSettingsState();
+
+      if (isTextSelectionMenuEnabled) {
+        initSelectionMenu();
+      }
+    }
+
     return this.isAvailable();
   }
 
@@ -237,17 +251,16 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     ]);
   }
 
-  async ensureMenu(
+  async registerMenuItem(
     extension: Pick<
       ResolvedModComponent<ContextMenuConfig>,
       "id" | "config" | "_deployment"
     >,
+    handler: (clickData: Menus.OnClickData) => Promise<void>,
   ): Promise<void> {
-    const { title = "Untitled menu item" } = extension.config;
+    const { title = DEFAULT_MENU_ITEM_TITLE } = extension.config;
 
-    // Check for null/undefined to preserve backward compatability
     if (!isDeploymentActive(extension)) {
-      console.debug("Skipping ensureMenu for extension from paused deployment");
       return;
     }
 
@@ -255,11 +268,12 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       uniq([...this.documentUrlPatterns, ...(this.permissions?.origins ?? [])]),
     );
 
-    await ensureContextMenu({
+    await getPlatform().contextMenus.register({
       extensionId: extension.id,
       contexts: this.contexts ?? ["all"],
       title,
       documentUrlPatterns: patterns,
+      handler,
     });
   }
 
@@ -286,7 +300,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     });
 
     await allSettled(promises, {
-      catch: groupRegistrationErrorNotification,
+      catch: groupRegistrationErrorNotification(this.platform),
     });
   }
 
@@ -302,8 +316,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       }
 
       default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
+        const exhaustiveCheck: never = this.targetMode;
+        throw new BusinessError(`Unknown targetMode: ${exhaustiveCheck}`);
       }
     }
   }
@@ -320,8 +334,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       }
 
       default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
+        const exhaustiveCheck: never = this.targetMode;
+        throw new BusinessError(`Unknown targetMode: ${exhaustiveCheck}`);
       }
     }
   }
@@ -329,24 +343,22 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   private async registerExtension(
     extension: ResolvedModComponent<ContextMenuConfig>,
   ): Promise<void> {
-    const { action: actionConfig, onSuccess = {} } = extension.config;
-
-    await this.ensureMenu(extension);
+    const {
+      action: actionConfig,
+      onSuccess = {},
+      title = DEFAULT_MENU_ITEM_TITLE,
+    } = extension.config;
 
     const extensionLogger = this.logger.childLogger(
       selectExtensionContext(extension),
     );
 
-    console.debug(
-      "Register context menu handler for: %s (%s)",
-      extension.id,
-      extension.label ?? "No Label",
-      {
-        extension,
-      },
-    );
-
-    registerHandler(extension.id, async (clickData) => {
+    const handler = async (
+      clickData: Except<
+        Menus.OnClickData,
+        "menuItemId" | "editable" | "modifiers"
+      >,
+    ): Promise<void> => {
       reportEvent(Events.HANDLE_CONTEXT_MENU, selectEventData(extension));
 
       try {
@@ -380,9 +392,11 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
         if (onSuccess) {
           if (typeof onSuccess === "boolean" && onSuccess) {
-            showNotification(DEFAULT_ACTION_RESULTS.success);
+            this.platform.toasts.showNotification(
+              DEFAULT_ACTION_RESULTS.success,
+            );
           } else {
-            showNotification({
+            this.platform.toasts.showNotification({
               ...DEFAULT_ACTION_RESULTS.success,
               ...pick(onSuccess, "message", "type"),
             });
@@ -390,16 +404,27 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         }
       } catch (error) {
         if (hasSpecificErrorCause(error, CancelError)) {
-          showNotification(DEFAULT_ACTION_RESULTS.cancel);
+          this.platform.toasts.showNotification(DEFAULT_ACTION_RESULTS.cancel);
         } else {
           extensionLogger.error(error);
-          showNotification({
+          this.platform.toasts.showNotification({
             ...DEFAULT_ACTION_RESULTS.error,
             error, // Include more details in the notification
             reportError: false,
           });
         }
       }
+    };
+
+    await this.registerMenuItem(extension, handler);
+
+    getPlatform().textSelectionMenu.register(extension.id, {
+      title,
+      // Starter Brick current doesn't have an icon affordance because the browser context menu API doesn't support them
+      icon: undefined,
+      async handler(text: string) {
+        return handler({ selectionText: text });
+      },
     });
   }
 }
@@ -427,10 +452,13 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
 
   public readonly rawConfig: StarterBrickConfig<MenuDefinition>;
 
-  constructor(config: StarterBrickConfig<MenuDefinition>) {
+  constructor(
+    platform: PlatformProtocol,
+    config: StarterBrickConfig<MenuDefinition>,
+  ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable, documentUrlPatterns, contexts } = cloned.definition;
@@ -478,6 +506,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
 }
 
 export function fromJS(
+  platform: PlatformProtocol,
   config: StarterBrickConfig<MenuDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
@@ -485,5 +514,5 @@ export function fromJS(
     throw new Error(`Expected type=contextMenu, got ${type}`);
   }
 
-  return new RemoteContextMenuExtensionPoint(config);
+  return new RemoteContextMenuExtensionPoint(platform, config);
 }

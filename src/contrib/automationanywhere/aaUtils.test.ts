@@ -137,18 +137,59 @@ describe("selectBotOutput", () => {
             string: "foo",
             number: "",
             boolean: "",
+            dictionary: [],
           },
           out_Number: {
             type: "NUMBER",
             string: "",
             number: "42",
             boolean: "",
+            dictionary: [],
           },
           out_Boolean: {
             type: "BOOLEAN",
             boolean: "true",
             string: "",
             number: "",
+            dictionary: [],
+          },
+          out_Dictionary: {
+            type: "DICTIONARY",
+            boolean: "",
+            string: "",
+            number: "",
+            dictionary: [
+              {
+                key: "foo",
+                value: {
+                  type: "STRING",
+                  string: "bar",
+                  number: "",
+                  boolean: "",
+                  dictionary: [],
+                },
+              },
+              {
+                key: "baz",
+                value: {
+                  type: "BOOLEAN",
+                  boolean: "true",
+                  string: "",
+                  number: "",
+                  dictionary: [],
+                },
+              },
+              {
+                key: "qux",
+                value: {
+                  type: "NUMBER",
+                  string: "",
+                  number: "42",
+                  boolean: "",
+                  dictionary: [],
+                },
+              },
+            ],
           },
         },
       },
@@ -158,6 +199,11 @@ describe("selectBotOutput", () => {
       out_String: "foo",
       out_Number: 42,
       out_Boolean: true,
+      out_Dictionary: {
+        foo: "bar",
+        baz: true,
+        qux: 42,
+      },
     });
   });
 });

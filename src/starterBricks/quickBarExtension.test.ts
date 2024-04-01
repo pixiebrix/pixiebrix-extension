@@ -16,7 +16,6 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
@@ -47,17 +46,14 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import defaultActions, {
   pageEditorAction,
 } from "@/components/quickBar/defaultActions";
+import { getPlatform } from "@/platform/platformContext";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
 mockAnimationsApi();
 
-jest.mock("@/auth/token", () => ({
-  __esModule: true,
-  ...jest.requireActual("@/auth/token"),
-  readAuthData: jest.fn().mockResolvedValue({
-    flags: [],
-  }),
+jest.mock("@/auth/featureFlagStorage", () => ({
+  flagOn: jest.fn().mockReturnValue(false),
 }));
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
@@ -118,7 +114,7 @@ describe("quickBarExtension", () => {
     // Ensure default actions are registered
     await initQuickBarApp();
 
-    const starterBrick = fromJS(starterBrickFactory()());
+    const starterBrick = fromJS(getPlatform(), starterBrickFactory()());
 
     starterBrick.registerModComponent(
       extensionFactory({

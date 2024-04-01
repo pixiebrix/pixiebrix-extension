@@ -1,4 +1,10 @@
 # https://pre-commit.com/hooks.html
+
+# The hooks can be updated with:
+# pre-commit autoupdate
+#
+# And then run updated hooks against all files with:
+# pre-commit run --all-files
 exclude: __snapshots__/|package-lock.json
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks

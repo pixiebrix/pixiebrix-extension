@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateInput, validateOutput } from "@/validators/generic";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import {
   arraySchema,
   castSchema,
@@ -52,7 +52,6 @@ import {
 import { excludeUndefined } from "@/utils/objectUtils";
 import { boolean } from "@/utils/typeUtils";
 import { $safeFind } from "@/utils/domUtils";
-import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick
@@ -62,7 +61,7 @@ export async function throwIfInvalidInput(
   brick: Brick,
   brickArgs: RenderedArgs,
 ): Promise<void> {
-  const validationResult = await validateInput(
+  const validationResult = await validateBrickInputOutput(
     castSchema(brick.inputSchema),
     excludeUndefined(brickArgs),
   );
@@ -95,7 +94,7 @@ export async function logIfInvalidOutput(
 ): Promise<void> {
   if (!isEmpty(brick.outputSchema)) {
     const baseSchema = castSchema(brick.outputSchema);
-    const validationResult = await validateOutput(
+    const validationResult = await validateBrickInputOutput(
       hasMultipleTargets(window) ? arraySchema(baseSchema) : baseSchema,
       excludeUndefined(output),
     );
@@ -165,7 +164,7 @@ export async function shouldRunBlock(
  * @see BrickConfig.rootMode
  * @see BrickConfig.root
  */
-export async function selectBlockRootElement(
+export async function selectBrickRootElement(
   brickConfig: BrickConfig,
   defaultRoot: SelectorRoot,
   context: BrickArgsContext,
@@ -173,7 +172,7 @@ export async function selectBlockRootElement(
 ): Promise<SelectorRoot> {
   const rootMode = brickConfig.rootMode ?? "inherit";
 
-  let root;
+  let root: HTMLElement | Document = document;
 
   switch (rootMode) {
     case "inherit": {
@@ -214,36 +213,33 @@ export async function selectBlockRootElement(
     }
 
     default: {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check
-      throw new BusinessError(`Invalid rootMode: ${rootMode}`);
+      const exhaustiveCheck: never = rootMode;
+      throw new BusinessError(`Invalid rootMode: ${exhaustiveCheck}`);
     }
   }
-
-  const $root = $(root ?? document);
 
   // Passing a selector for root is an old behavior from when the rootModes were just inherit and document
   if (
-    typeof brickConfig.root === "string" &&
-    brickConfig.rootMode !== "element"
+    typeof brickConfig.root !== "string" ||
+    brickConfig.rootMode === "element"
   ) {
-    const $stageRoot = $safeFind(brickConfig.root, $root);
-
-    if ($stageRoot.length > 1) {
-      throw new BusinessError(`Multiple roots found for ${brickConfig.root}`);
-    }
-
-    if ($stageRoot.length === 0) {
-      const rootDescriptor =
-        (defaultRoot as HTMLElement)?.tagName ?? "document";
-      throw new BusinessError(
-        `No roots found for ${brickConfig.root} (root=${rootDescriptor})`,
-      );
-    }
-
-    return $stageRoot.get(0);
+    return root;
   }
 
-  return $root.get(0);
+  const [stageRoot, multipleStageRoots] = $safeFind(brickConfig.root, root);
+
+  if (multipleStageRoots) {
+    throw new BusinessError(`Multiple roots found for ${brickConfig.root}`);
+  }
+
+  if (stageRoot) {
+    return stageRoot;
+  }
+
+  const rootDescriptor = (defaultRoot as HTMLElement)?.tagName ?? "document";
+  throw new BusinessError(
+    `No roots found for ${brickConfig.root} (root=${rootDescriptor})`,
+  );
 }
 
 export function assertModComponentNotResolved<

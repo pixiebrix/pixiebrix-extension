@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./SpreadsheetPickerWidget.module.scss";
-
 import React, { useCallback, useState } from "react";
-import { sheets } from "@/background/messenger/api";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
@@ -38,6 +35,8 @@ import { type AsyncStateArray } from "@/types/sliceTypes";
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
+import "./SpreadsheetPickerWidget.module.scss";
+import { getAllSpreadsheets } from "@/contrib/google/sheets/core/sheetsApi";
 
 const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
   const { name, schema: baseSchema } = props;
@@ -68,8 +67,7 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
           return baseSchema;
         }
 
-        const spreadsheetFileList =
-          await sheets.getAllSpreadsheets(googleAccount);
+        const spreadsheetFileList = await getAllSpreadsheets(googleAccount);
 
         if (isEmpty(spreadsheetFileList.files)) {
           return baseSchema;
@@ -126,7 +124,7 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
 
         setIsSchemaError(false);
         return schemaResult;
-      } catch (error: unknown) {
+      } catch (error) {
         console.error(error);
         setIsSchemaError(true);
         return {

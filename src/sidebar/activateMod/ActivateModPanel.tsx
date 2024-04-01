@@ -52,6 +52,7 @@ import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 import Markdown from "@/components/Markdown";
 import { getModActivationInstructions } from "@/utils/modUtils";
 import type { ModActivationConfig } from "@/types/modTypes";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 const { actions } = sidebarSlice;
 
@@ -287,10 +288,9 @@ const ActivateModPanelContent: React.FC<
 
   // Check permissions on mount, to determine if the recipe can be auto-activated, and whether to show the
   // permissions request information UI.
-  useEffect(() => {
+  useOnMountOnly(() => {
     void checkPermissions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
-  }, []);
+  });
 
   // Trigger auto-activation if the recipe does not require permissions or user configuration, and there's no error.
   // Skip auto-activation on reactivation only if the mod has optional configurations.

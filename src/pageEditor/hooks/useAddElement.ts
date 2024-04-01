@@ -22,7 +22,6 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
-import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import useFlags from "@/hooks/useFlags";
@@ -30,6 +29,11 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { CancelError } from "@/errors/businessErrors";
+import {
+  allFramesInInspectedTab,
+  getCurrentInspectedURL,
+  inspectedTab,
+} from "@/pageEditor/context/connection";
 
 type AddElement = (config: ElementConfig) => void;
 
@@ -56,17 +60,17 @@ function useAddElement(): AddElement {
 
       try {
         const element = await config.selectNativeElement(
-          thisTab,
+          inspectedTab,
           suggestElements,
         );
-        const url = await getCurrentURL();
+        const url = await getCurrentInspectedURL();
 
         const metadata = internalStarterBrickMetaFactory();
 
         const initialState = config.fromNativeElement(url, metadata, element);
 
-        await updateDynamicElement(
-          thisTab,
+        updateDynamicElement(
+          allFramesInInspectedTab,
           config.asDynamicElement(initialState),
         );
 

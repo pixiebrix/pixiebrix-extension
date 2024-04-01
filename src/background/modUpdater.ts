@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Me, PackageVersionUpdates } from "@/types/contract";
-import { maybeGetLinkedApiClient } from "@/services/apiClient";
+import type { PackageVersionUpdates } from "@/types/contract";
+import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
   getModComponentState,
@@ -24,7 +24,7 @@ import {
 } from "@/store/extensionsStorage";
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
-import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
+import { selectModComponentsForMod } from "@/store/extensionsSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
 import { groupBy, isEmpty, uniq } from "lodash";
 import { forEachTab } from "@/utils/extensionUtils";
@@ -40,6 +40,7 @@ import { collectModOptions } from "@/store/extensionsUtils";
 import type { ModComponentState } from "@/store/extensionsTypes";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -54,28 +55,6 @@ type BackwardsCompatibleUpdate = {
 };
 
 type PackageVersionPair = { name: RegistryId; version: SemVerString };
-
-export async function autoModUpdatesEnabled(): Promise<boolean> {
-  const client = await maybeGetLinkedApiClient();
-  if (client == null) {
-    console.debug(
-      "Skipping automatic mod updates because the extension is not linked to the PixieBrix service",
-    );
-    return false;
-  }
-
-  try {
-    const { data: profile } = await client.get<Me>("/api/me/");
-
-    return profile.flags.includes("automatic-mod-updates");
-  } catch (error) {
-    console.debug(
-      "Skipping automatic mod updates because /api/me/ request failed",
-    );
-    reportError(error);
-    return false;
-  }
-}
 
 /**
  * Produces an array of activated Marketplace mods by registry id and currently activated versions. For use
@@ -205,7 +184,7 @@ export function deactivateMod(
 } {
   let { options: newOptionsState, editor: newEditorState } = reduxState;
 
-  const activatedModComponentSelector = selectExtensionsForRecipe(modId);
+  const activatedModComponentSelector = selectModComponentsForMod(modId);
   const activatedModComponents = activatedModComponentSelector({
     options: newOptionsState,
   });
@@ -278,12 +257,12 @@ function updateMod(
 
   newOptionsState = extensionsSlice.reducer(
     newOptionsState,
-    extensionsSlice.actions.installMod({
+    extensionsSlice.actions.activateMod({
       modDefinition,
       configuredDependencies,
       optionsArgs,
       screen: "background",
-      isReinstall: true,
+      isReactivate: true,
     }),
   );
 
@@ -315,7 +294,8 @@ async function updateMods(modUpdates: BackwardsCompatibleUpdate[]) {
 }
 
 export async function updateModsIfForceUpdatesAvailable() {
-  if (!(await autoModUpdatesEnabled())) {
+  const autoModUpdatesEnabled = await flagOn("automatic-mod-updates");
+  if (!autoModUpdatesEnabled) {
     return;
   }
 

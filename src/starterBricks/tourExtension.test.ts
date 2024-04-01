@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
@@ -38,15 +37,12 @@ import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
+import { getPlatform } from "@/platform/platformContext";
 
 const rootReader = new RootReader();
 
-jest.mock("@/auth/token", () => ({
-  __esModule: true,
-  ...jest.requireActual("@/auth/token"),
-  readAuthData: jest.fn().mockResolvedValue({
-    flags: [],
-  }),
+jest.mock("@/auth/featureFlagStorage", () => ({
+  flagOn: jest.fn().mockReturnValue(false),
 }));
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
@@ -95,7 +91,7 @@ const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
 
 describe("tourExtension", () => {
   test("install tour via Page Editor", async () => {
-    const starterBrick = fromJS(starterBrickFactory()());
+    const starterBrick = fromJS(getPlatform(), starterBrickFactory()());
 
     starterBrick.registerModComponent(
       extensionFactory({
@@ -118,6 +114,7 @@ describe("tourExtension", () => {
     await initQuickBarApp();
 
     const extensionPoint = fromJS(
+      getPlatform(),
       starterBrickFactory({ allowUserRun: true, autoRunSchedule: "never" })(),
     );
 

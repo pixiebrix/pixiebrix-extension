@@ -21,13 +21,15 @@ import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { act, render } from "@/pageEditor/testHelpers";
 import { validateSchema } from "@/extensionConsole/pages/brickEditor/validate";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { registry as messengerRegistry } from "@/background/messenger/api";
+import { registry as messengerRegistry } from "@/background/messenger/strict/api";
 import * as localRegistry from "@/registry/packageRegistry";
 import pDefer from "p-defer";
 import { defaultInitialValue } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import extensionsSlice from "@/store/extensionsSlice";
 
+jest.mock("@/contentScript/messenger/api");
 jest.mock("@/components/ConfirmationModal", () => ({
   ...jest.requireActual("@/components/ConfirmationModal"),
   useModals: () => ({
@@ -130,7 +132,17 @@ test("load mod definitions and save one", async () => {
     );
   };
 
-  render(<TestComponent />);
+  render(<TestComponent />, {
+    setupRedux(dispatch) {
+      dispatch(
+        extensionsSlice.actions.activateMod({
+          modDefinition: sourceModDefinition,
+          screen: "pageEditor",
+          isReactivate: false,
+        }),
+      );
+    },
+  });
 
   // Let the registry and the RTK Query to load and update a mod definition
   await act(async () => fetchingSavingPromise.promise);

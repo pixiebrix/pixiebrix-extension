@@ -20,19 +20,22 @@ import { type JsonObject } from "type-fest";
 import { isBackground } from "webext-detect-page";
 import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import { wasContextInvalidated } from "webext-events";
-import { recordLog } from "@/background/messenger/api";
+import { recordLog } from "@/background/messenger/strict/api";
 import { expectContext, isPageEditor } from "@/utils/expectContext";
 import reportError from "@/telemetry/reportError";
 
 /**
  * A Logger that logs messages through the background page (which can make calls to Application error telemetry)
+ *
+ * Can only be used in extension contexts because it sends messages to the background page.
+ *
  * @see recordLog
  * @see recordError
  */
 class BackgroundLogger implements Logger {
   readonly context: MessageContext;
 
-  constructor(context: MessageContext = null) {
+  constructor(context?: MessageContext) {
     expectContext(
       "extension",
       "BackgroundLogger requires access to the background messenger API",

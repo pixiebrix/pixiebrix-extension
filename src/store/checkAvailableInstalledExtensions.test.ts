@@ -22,7 +22,6 @@ import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
-import { getCurrentURL } from "@/pageEditor/utils";
 import { validateRegistryId } from "@/types/helpers";
 import {
   type MenuDefinition,
@@ -37,17 +36,19 @@ import {
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
+import { getPlatform } from "@/platform/platformContext";
 
 jest.mock("@/contentScript/messenger/api");
 
-jest.mock("@/pageEditor/utils");
+jest.mock("@/pageEditor/context/connection");
 
 const { actions: optionsActions, reducer: extensionsReducer } = extensionsSlice;
 
 describe("checkAvailableInstalledExtensions", () => {
   test("it checks installed extensions correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
-    jest.mocked(getCurrentURL).mockResolvedValue(testUrl);
+    jest.mocked(getCurrentInspectedURL).mockResolvedValue(testUrl);
 
     const availableButtonId = validateRegistryId("test/available-button");
     const availableButton = standaloneModDefinitionFactory({
@@ -85,6 +86,7 @@ describe("checkAvailableInstalledExtensions", () => {
       },
     }) as StarterBrickConfig<MenuDefinition>;
     const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
+      getPlatform(),
       availableButtonStarterBrickConfig,
     );
 
@@ -108,6 +110,7 @@ describe("checkAvailableInstalledExtensions", () => {
       },
     }) as StarterBrickConfig<QuickBarDefinition>;
     const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
+      getPlatform(),
       availableQuickbarStarterBrickConfig,
     );
     jest
@@ -125,16 +128,24 @@ describe("checkAvailableInstalledExtensions", () => {
     });
 
     store.dispatch(
-      optionsActions.installCloudExtension({ extension: availableButton }),
+      optionsActions.activateStandaloneModDefinition({
+        extension: availableButton,
+      }),
     );
     store.dispatch(
-      optionsActions.installCloudExtension({ extension: unavailableButton }),
+      optionsActions.activateStandaloneModDefinition({
+        extension: unavailableButton,
+      }),
     );
     store.dispatch(
-      optionsActions.installCloudExtension({ extension: availableQb }),
+      optionsActions.activateStandaloneModDefinition({
+        extension: availableQb,
+      }),
     );
     store.dispatch(
-      optionsActions.installCloudExtension({ extension: unavailableQb }),
+      optionsActions.activateStandaloneModDefinition({
+        extension: unavailableQb,
+      }),
     );
 
     await store.dispatch(actions.checkAvailableInstalledExtensions());

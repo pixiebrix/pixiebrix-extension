@@ -23,7 +23,7 @@ import {
 } from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
-import { configureStore, type Store } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import { type TraceRecord } from "@/telemetry/trace";
 import { uuidv4 } from "@/types/helpers";
 import reportEvent from "@/telemetry/reportEvent";
@@ -35,6 +35,7 @@ import {
   traceErrorFactory,
   traceRecordFactory,
 } from "@/testUtils/factories/traceFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 // Override the manual mock to support `expect` assertions
 jest.mock("@/telemetry/reportEvent");
@@ -42,34 +43,39 @@ jest.mock("@/telemetry/reportEvent");
 const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
   const activeElementId = uuidv4();
 
-  // @ts-ignore-error -- ignoring "Type instantiation is excessively deep and possibly infinite" for test
-  const store: Store = configureStore({
+  const getTestStore = (testTraces: TraceRecord[]) =>
     // @ts-ignore-error -- ignoring "Type instantiation is excessively deep and possibly infinite" for test
-    reducer: {
-      session: sessionSlice.reducer,
-      editor: editorSlice.reducer,
-      runtime: runtimeSlice.reducer,
-    },
-    preloadedState: {
-      editor: {
-        ...editorInitialState,
-        activeElementId,
+    configureStore({
+      // @ts-ignore-error -- ignoring "Type instantiation is excessively deep and possibly infinite" for test
+      reducer: {
+        session: sessionSlice.reducer,
+        editor: editorSlice.reducer,
+        runtime: runtimeSlice.reducer,
       },
-      runtime: {
-        // @ts-expect-error -- TS is detecting the wrong type; ignoring since this is only for testing
-        extensionTraces: {
-          [activeElementId]: traces,
+      preloadedState: {
+        editor: {
+          ...editorInitialState,
+          activeElementId,
+        },
+        runtime: {
+          // @ts-expect-error -- TS is detecting the wrong type; ignoring since this is only for testing
+          extensionTraces: {
+            [activeElementId]: testTraces,
+          },
         },
       },
-    },
-  });
+    });
 
   return renderHook(
-    () => {
+    (_rerenderProps: { rerenderTraces?: TraceRecord[] }) => {
       useReportTraceError();
     },
     {
-      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+      wrapper: ({ children, rerenderTraces }) => (
+        <Provider store={getTestStore(rerenderTraces || traces)}>
+          {children}
+        </Provider>
+      ),
     },
   );
 };
@@ -78,24 +84,46 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-test("it reports an error", () => {
-  renderUseReportTraceError([traceErrorFactory()]);
-  expect(reportEvent).toHaveBeenCalledWith(
-    "PageEditorExtensionError",
-    expect.anything(),
-  );
-});
+describe("useReportTraceError", () => {
+  test("it reports an error", () => {
+    renderUseReportTraceError([traceErrorFactory()]);
+    expect(reportEvent).toHaveBeenCalledWith(
+      "PageEditorExtensionError",
+      expect.anything(),
+    );
+  });
 
-test("doesn't report when no error", () => {
-  renderUseReportTraceError([traceRecordFactory()]);
-  expect(reportEvent).not.toHaveBeenCalledWith();
-});
+  test("doesn't report when no error", () => {
+    renderUseReportTraceError([traceRecordFactory()]);
+    expect(reportEvent).not.toHaveBeenCalledWith();
+  });
 
-test("reports the same error only once", () => {
-  const { rerender } = renderUseReportTraceError([traceErrorFactory()]);
+  test("doesn't report when error does not have a run id", () => {
+    renderUseReportTraceError([traceErrorFactory({ runId: null })]);
+    expect(reportEvent).not.toHaveBeenCalledWith();
+  });
 
-  // Re-render the hook
-  rerender();
+  test("reports error from the same run id only once", () => {
+    const errorTrace = traceErrorFactory({ runId: uuidSequence(1) });
+    const { rerender } = renderUseReportTraceError([errorTrace]);
 
-  expect(reportEvent).toHaveBeenCalledTimes(1);
+    // Re-render the hook
+    rerender({ rerenderTraces: [errorTrace] });
+
+    expect(reportEvent).toHaveBeenCalledTimes(1);
+
+    // Re-render the hook with a different error, but same run id
+    rerender({
+      rerenderTraces: [traceErrorFactory({ runId: errorTrace.runId })],
+    });
+
+    expect(reportEvent).toHaveBeenCalledTimes(1);
+
+    // Re-render the hook with a different run id
+    rerender({
+      rerenderTraces: [traceErrorFactory({ runId: uuidSequence(2) })],
+    });
+
+    expect(reportEvent).toHaveBeenCalledTimes(2);
+  });
 });

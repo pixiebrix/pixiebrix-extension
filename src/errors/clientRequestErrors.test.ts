@@ -57,7 +57,7 @@ describe("RemoteServiceError", () => {
         url: "https://httpstat.us/400",
         method: "get",
       });
-    } catch (error: unknown) {
+    } catch (error) {
       cause = error as AxiosError;
     }
 

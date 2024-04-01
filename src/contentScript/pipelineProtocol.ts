@@ -4,10 +4,8 @@ import { expectContext } from "@/utils/expectContext";
 import { HeadlessModeError } from "@/bricks/errors";
 import { type Args, mapArgs, type MapOptions } from "@/runtime/mapArgs";
 import { type Except } from "type-fest";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type ApiVersionOptions } from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors/businessErrors";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type UUID } from "@/types/stringTypes";
 import {
   type BrickArgsContext,
@@ -18,6 +16,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { type RendererRunPayload } from "@/types/rendererTypes";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { type RegistryId } from "@/types/registryTypes";
+import { getPlatform } from "@/platform/platformContext";
 
 type RunPipelineParams = {
   nonce: UUID;
@@ -65,7 +64,7 @@ export async function runRendererPipeline({
         serviceContext: context as ServiceContext,
       },
       {
-        logger: new BackgroundLogger(messageContext),
+        logger: getPlatform().logger.childLogger(messageContext),
         headless: true,
         ...options,
         ...meta,
@@ -121,7 +120,7 @@ export async function runHeadlessPipeline({
     {
       ...options,
       ...meta,
-      logger: new BackgroundLogger(messageContext),
+      logger: getPlatform().logger.childLogger(messageContext),
       headless: true,
     },
   );

@@ -23,8 +23,8 @@ import { act, screen } from "@testing-library/react";
 import { validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
 import { render } from "@/pageEditor/testHelpers";
-import { services, sheets } from "@/background/messenger/api";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { services, hasCachedAuthData } from "@/background/messenger/strict/api";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
@@ -33,7 +33,6 @@ import {
   type FileList,
   type Spreadsheet,
 } from "@/contrib/google/sheets/core/types";
-import { type UUID } from "@/types/stringTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { type AuthOption } from "@/auth/authTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -41,28 +40,30 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { type FormikValues } from "formik";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { toExpression } from "@/utils/expressionUtils";
-
-let idSequence = 0;
-function newId(): UUID {
-  return uuidSequence(idSequence++);
-}
+import {
+  getAllSpreadsheets,
+  getHeaders,
+  getSpreadsheet,
+} from "@/contrib/google/sheets/core/sheetsApi";
 
 const servicesLocateMock = jest.mocked(services.locate);
 
+// XXX: sheetsApi should likely be mocked at the network level, not the module level
+jest.mock("@/contrib/google/sheets/core/sheetsApi");
 jest.mock("@/hooks/auth");
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 
-const isLoggedInMock = jest.mocked(sheets.isLoggedIn);
-const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
-const getSpreadsheetMock = jest.mocked(sheets.getSpreadsheet);
-const getHeadersMock = jest.mocked(sheets.getHeaders);
+const isLoggedInMock = jest.mocked(hasCachedAuthData);
+const getAllSpreadsheetsMock = jest.mocked(getAllSpreadsheets);
+const getSpreadsheetMock = jest.mocked(getSpreadsheet);
+const getHeadersMock = jest.mocked(getHeaders);
 
-const TEST_SPREADSHEET_ID = newId();
+const TEST_SPREADSHEET_ID = autoUUIDSequence();
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 const GOOGLE_PKCE_SERVICE_ID = validateRegistryId("google/oauth2-pkce");
-const GOOGLE_PKCE_AUTH_CONFIG = newId();
-const TEST_SPREADSHEET_AUTH_CONFIG = newId();
+const GOOGLE_PKCE_AUTH_CONFIG = autoUUIDSequence();
+const TEST_SPREADSHEET_AUTH_CONFIG = autoUUIDSequence();
 
 const TEST_SPREADSHEET_NAME = "Test Spreadsheet";
 

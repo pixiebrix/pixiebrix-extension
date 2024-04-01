@@ -39,6 +39,7 @@ $pipeLineFooterWidth: 17px;
 }
 
 .pipelineContainer {
+  flex-shrink: 0;
   width: calc(
     #{$pipeLineOffset} + #{$pipeLineFooterWidth} - #{$pipeLineBorderWidth}
   );

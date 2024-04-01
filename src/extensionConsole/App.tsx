@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -54,6 +54,7 @@ import ReduxPersistenceContext, {
 } from "@/store/ReduxPersistenceContext";
 import IDBErrorDisplay from "@/extensionConsole/components/IDBErrorDisplay";
 import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
+import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 
 // Register the built-in bricks
 registerEditors();
@@ -76,6 +77,7 @@ const AuthenticatedContent: React.VFC = () => {
     <DeploymentsProvider>
       <Sidebar />
       <div className="main-panel">
+        <DatabaseUnresponsiveBanner />
         <BrowserBanner />
         <EnvironmentBanner />
         <UpdateBanner />
@@ -133,11 +135,14 @@ const AuthenticatedContent: React.VFC = () => {
 };
 
 const Layout = () => {
-  const { logo } = useTheme();
+  const {
+    activeTheme: { logo },
+    isLoading: themeIsLoading,
+  } = useTheme();
 
   return (
     <div>
-      <Navbar logo={logo} />
+      {!themeIsLoading && <Navbar logo={logo} />}
       <Container fluid className="page-body-wrapper">
         {/* It is guaranteed that under RequireAuth the user has a valid API token (either PixieBrix token or partner JWT). */}
         <ErrorBoundary ErrorComponent={IDBErrorDisplay}>

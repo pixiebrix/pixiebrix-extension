@@ -35,6 +35,8 @@ import {
   getCachedAuthData,
   setCachedAuthData,
 } from "@/background/auth/authStorage";
+import { setPlatform } from "@/platform/platformContext";
+import backgroundPlatform from "@/background/backgroundPlatform";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -68,6 +70,11 @@ jest.mock("@/integrations/registry", () => {
       throw new Error(`Integration id not mocked: ${id}`);
     }),
   };
+});
+
+beforeEach(() => {
+  // `sheetsApi` uses the ambient platform context to make requests
+  setPlatform(backgroundPlatform);
 });
 
 describe("error handling", () => {
@@ -161,7 +168,9 @@ describe("error handling", () => {
 
       await expect(getAllSpreadsheets(config)).rejects.toThrow(message);
 
-      expect(await getCachedAuthData(integrationConfig.id)).toStrictEqual({
+      await expect(
+        getCachedAuthData(integrationConfig.id),
+      ).resolves.toStrictEqual({
         access_token: "NOTAREALTOKEN",
       });
       expect(deleteCachedAuthDataMock).toHaveBeenCalledOnce();
@@ -203,7 +212,9 @@ describe("error handling", () => {
 
       await expect(getAllSpreadsheets(config)).rejects.toThrow(message);
 
-      expect(await getCachedAuthData(integrationConfig.id)).toStrictEqual({
+      await expect(
+        getCachedAuthData(integrationConfig.id),
+      ).resolves.toStrictEqual({
         access_token: "NOTAREALTOKEN",
         refresh_token: "NOTAREALREFRESHTOKEN",
       });
@@ -239,7 +250,9 @@ describe("error handling", () => {
 
       await getAllSpreadsheets(config);
 
-      expect(await getCachedAuthData(integrationConfig.id)).toStrictEqual({
+      await expect(
+        getCachedAuthData(integrationConfig.id),
+      ).resolves.toStrictEqual({
         access_token: "NOTAREALTOKEN2",
         refresh_token: "NOTAREALREFRESHTOKEN2",
       });

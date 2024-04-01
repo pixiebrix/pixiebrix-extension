@@ -19,9 +19,7 @@ import React, { useCallback, useEffect, useReducer } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { runExtensionPointReader } from "@/contentScript/messenger/api";
-import { thisTab } from "@/pageEditor/utils";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
@@ -33,6 +31,7 @@ import {
 } from "@/pageEditor/starterBricks/formStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 type PreviewState = {
   isRunning: boolean;
@@ -91,7 +90,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
       }
 
       const data = await runExtensionPointReader(
-        thisTab,
+        inspectedTab,
         factory(element),
         rootSelector,
       );

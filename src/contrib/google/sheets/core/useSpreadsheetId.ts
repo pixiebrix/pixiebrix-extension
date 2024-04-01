@@ -18,7 +18,7 @@
 import { useField } from "formik";
 import { isIntegrationDependencyValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isEmpty } from "lodash";
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
 import { getSheetIdIntegrationOutputKey } from "@/contrib/google/sheets/core/getSheetIdIntegrationOutputKey";
@@ -115,7 +115,8 @@ function useSpreadsheetId(
 
   const [{ value: optionsArgs }] = useField<OptionsArgs>("optionsArgs");
 
-  const lastGoodSpreadsheetId = useRef<string | null>();
+  // Provide null, so undefined isn't returned from useAsyncState if spreadsheetId is null
+  const lastGoodSpreadsheetId = useRef<string | null>(null);
 
   return useAsyncState<string | null>(async () => {
     try {
@@ -130,7 +131,7 @@ function useSpreadsheetId(
       }
 
       return lastGoodSpreadsheetId.current;
-    } catch (error: unknown) {
+    } catch (error) {
       setError(getErrorMessage(error));
       return null;
     }

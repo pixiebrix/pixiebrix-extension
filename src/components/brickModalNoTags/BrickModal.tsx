@@ -20,24 +20,20 @@ import styles from "./BrickModal.module.scss";
 import React, {
   type CSSProperties,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import {
   Button,
-  Col,
-  Container,
   // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
   Form,
   InputGroup,
   Modal,
-  Row,
 } from "react-bootstrap";
 import { compact, sortBy } from "lodash";
 import { useDebounce } from "use-debounce";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import Fuse from "fuse.js";
 import { FixedSizeList as LazyList } from "react-window";
 import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
@@ -52,6 +48,7 @@ import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 type BrickOption<T extends Metadata = Brick> = {
   data: T;
@@ -181,12 +178,14 @@ const defaultAddCaption = (
   </span>
 );
 
+const defaultRecommendations: RegistryId[] = [] as const;
+
 function ActualModal<T extends Metadata>({
-  bricks = [],
+  bricks,
   close,
   onSelect,
   selectCaption = defaultAddCaption,
-  recommendations = [],
+  recommendations = defaultRecommendations,
   modalClassName,
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
@@ -200,7 +199,7 @@ function ActualModal<T extends Metadata>({
 
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
-  const searchResults = useSearch(bricks, query);
+  const searchResults = useSearch(bricks ?? [], query);
 
   const recommendedBricks = useMemo(() => {
     if (recommendations.length === 0) {
@@ -208,22 +207,18 @@ function ActualModal<T extends Metadata>({
     }
 
     // Retain the same order that the recommendations were passed in
-    const brickMap = new Map(bricks.map((brick) => [brick.id, brick]));
+    const brickMap = new Map((bricks ?? []).map((brick) => [brick.id, brick]));
     return compact(
       recommendations.map((registryId) => brickMap.get(registryId)),
     );
   }, [recommendations, bricks]);
 
-  useEffect(
-    () => {
-      // If there's no recommendations, default to the first brick so the right side isn't blank
-      if (recommendations.length === 0 && searchResults.length > 0) {
-        setDetailBrick(searchResults[0].data);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- run on initial mount
-    [],
-  );
+  useOnMountOnly(() => {
+    // If there's no recommendations, default to the first brick so the right side isn't blank
+    if (recommendations.length === 0 && searchResults.length > 0) {
+      setDetailBrick(searchResults[0].data);
+    }
+  });
 
   return (
     <Modal
@@ -235,78 +230,66 @@ function ActualModal<T extends Metadata>({
       backdrop
       keyboard={false}
     >
-      <Modal.Body className={styles.body}>
-        <Container fluid>
-          <Row>
-            <Col xs={5} className={styles.results}>
-              <Form>
-                <InputGroup>
-                  <InputGroup.Prepend>
-                    <InputGroup.Text>Search</InputGroup.Text>
-                  </InputGroup.Prepend>
-                  <Form.Control
-                    ref={searchInput}
-                    placeholder="Start typing to find results"
-                    value={query}
-                    onChange={({ target }) => {
-                      setQuery(target.value);
-                    }}
-                  />
-                </InputGroup>
-              </Form>
-              <div>
-                <AutoSizer>
-                  {({ height, width }: Size) => (
-                    <LazyList
-                      height={height}
-                      width={width}
-                      itemCount={searchResults.length}
-                      itemSize={brickResultSizePx}
-                      itemKey={itemKey}
-                      itemData={
-                        {
-                          searchResults,
-                          setDetailBrick,
-                          activeBrick: detailBrick,
-                          selectCaption,
-                          onSelect,
-                          close,
-                        } as ItemType<T>
-                      }
-                    >
-                      {ItemRenderer}
-                    </LazyList>
-                  )}
-                </AutoSizer>
-              </div>
-            </Col>
-            <Col
-              xs={7}
-              className={cx(styles.brickDetail)}
-              key={detailBrick?.id}
-            >
-              {detailBrick ? (
-                <BrickDetail
-                  brick={detailBrick}
-                  listing={listings[detailBrick.id]}
-                  selectCaption={selectCaption}
-                  onSelect={() => {
-                    onSelect(detailBrick);
-                    close();
-                  }}
-                />
-              ) : (
-                <QuickAdd
-                  onSelect={(brick) => {
-                    onSelect(brick);
-                    close();
-                  }}
-                  recommendations={recommendedBricks}
-                />
+      <Modal.Body className={cx(styles.body, "gap-4")}>
+        <div className="d-flex flex-column gap-3">
+          <InputGroup>
+            <InputGroup.Prepend>
+              <InputGroup.Text>Search</InputGroup.Text>
+            </InputGroup.Prepend>
+            <Form.Control
+              ref={searchInput}
+              placeholder="Start typing to find results"
+              value={query}
+              onChange={({ target }) => {
+                setQuery(target.value);
+              }}
+            />
+          </InputGroup>
+          <div className="flex-grow-1">
+            <AutoSizer>
+              {({ height, width }: Size) => (
+                <LazyList
+                  height={height}
+                  width={width}
+                  itemCount={searchResults.length}
+                  itemSize={brickResultSizePx}
+                  itemKey={itemKey}
+                  itemData={
+                    {
+                      searchResults,
+                      setDetailBrick,
+                      activeBrick: detailBrick,
+                      selectCaption,
+                      onSelect,
+                      close,
+                    } as ItemType<T>
+                  }
+                >
+                  {ItemRenderer}
+                </LazyList>
               )}
-            </Col>
-          </Row>
-        </Container>
+            </AutoSizer>
+          </div>
+        </div>
+        {detailBrick ? (
+          <BrickDetail
+            brick={detailBrick}
+            listing={listings[detailBrick.id]}
+            selectCaption={selectCaption}
+            onSelect={() => {
+              onSelect(detailBrick);
+              close();
+            }}
+          />
+        ) : (
+          <QuickAdd
+            onSelect={(brick) => {
+              onSelect(brick);
+              close();
+            }}
+            recommendations={recommendedBricks}
+          />
+        )}
       </Modal.Body>
     </Modal>
   );

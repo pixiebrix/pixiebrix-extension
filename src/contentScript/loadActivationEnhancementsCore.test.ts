@@ -31,8 +31,8 @@ import {
   loadActivationEnhancements,
   TEST_unloadActivationEnhancements,
 } from "@/contentScript/loadActivationEnhancementsCore";
-import { isReadyInThisDocument } from "@/contentScript/ready";
-import { isLinked } from "@/auth/token";
+import { isContentScriptReady } from "@/contentScript/ready";
+import { isLinked } from "@/auth/authStorage";
 import { array } from "cooky-cutter";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
@@ -42,16 +42,14 @@ jest.mock("@/contentScript/sidebarController", () => ({
   showModActivationInSidebar: jest.fn(),
 }));
 
-jest.mock("@/auth/token", () => ({
+jest.mock("@/auth/authStorage", () => ({
   isLinked: jest.fn().mockResolvedValue(true),
+  addListener: jest.fn(),
 }));
 
 const isLinkedMock = jest.mocked(isLinked);
 
-jest.mock("@/contentScript/ready", () => ({
-  isReadyInThisDocument: jest.fn(() => true),
-}));
-
+jest.mock("@/contentScript/ready");
 jest.mock("@/store/extensionsStorage");
 jest.mock("@/background/messenger/external/_implementation");
 jest.mock("@/sidebar/store");
@@ -78,14 +76,13 @@ describe("marketplace enhancements", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
     document.body.innerHTML = getDocument(activateButtonsHtml).body.innerHTML;
-    jest.mocked(isReadyInThisDocument).mockImplementation(() => true);
+    jest.mocked(isContentScriptReady).mockImplementation(() => true);
     getActivatedModIdsMock.mockResolvedValue(new Set());
     getActivatingModsMock.mockResolvedValue([]);
   });
 
   afterEach(async () => {
     jest.resetAllMocks();
-    // eslint-disable-next-line new-cap -- test method
     TEST_unloadActivationEnhancements();
   });
 

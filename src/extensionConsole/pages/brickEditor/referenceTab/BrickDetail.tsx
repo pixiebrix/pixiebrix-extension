@@ -20,7 +20,7 @@ import styles from "./BrickDetail.module.scss";
 import React, { Suspense } from "react";
 import { Button } from "react-bootstrap";
 import { isEmpty } from "lodash";
-import AceEditor from "@/vendors/AceEditor";
+import AceEditor from "@/components/AceEditor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faClipboard,
@@ -30,9 +30,9 @@ import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
 import { type Schema } from "@/types/schemaTypes";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import BrickIcon from "@/components/BrickIcon";
-import { writeTextToClipboard } from "@/utils/clipboardUtils";
+import { writeToClipboard } from "@/utils/clipboardUtils";
 import { type Metadata } from "@/types/registryTypes";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
@@ -86,7 +86,7 @@ const BrickDetail = <T extends Metadata>({
       : "inputSchema" in brick
         ? brick.inputSchema
         : {};
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: fix brick typing
   const outputSchema = (brick as any).outputSchema as Schema;
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
@@ -94,7 +94,7 @@ const BrickDetail = <T extends Metadata>({
 
   const copyHandler = useUserAction(
     async () => {
-      await writeTextToClipboard({ text: makeArgumentYaml(schema) });
+      await writeToClipboard({ text: makeArgumentYaml(schema) });
     },
     {
       successMessage: "Copied input argument YAML to clipboard",

@@ -16,15 +16,15 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
-import { propertiesToSchema } from "@/validators/generic";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class GetAPITransformer extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/get");
@@ -66,27 +66,37 @@ export class GetAPITransformer extends TransformerABC {
     ["url"],
   );
 
-  async transform({
-    service,
-    ...requestProps
-  }: BrickArgs<{
-    service: SanitizedIntegrationConfig;
-    requestConfig: AxiosRequestConfig;
-    _blockArgBrand: never;
-  }>): Promise<unknown> {
-    if (!isNullOrBlank(service) && typeof service !== "object") {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["http"];
+  }
+
+  async transform(
+    {
+      service: integrationConfig,
+      ...requestConfig
+    }: BrickArgs<
+      {
+        service: SanitizedIntegrationConfig;
+      } & NetworkRequestConfig
+    >,
+    { platform }: BrickOptions,
+  ): Promise<unknown> {
+    if (
+      !isNullOrBlank(integrationConfig) &&
+      typeof integrationConfig !== "object"
+    ) {
       throw new PropError(
         "Expected configured service",
         this.id,
         "service",
-        service,
+        integrationConfig,
       );
     }
 
-    const { data } = await performConfiguredRequestInBackground(
-      isNullOrBlank(service) ? null : service,
+    const { data } = await platform.request(
+      isNullOrBlank(integrationConfig) ? null : integrationConfig,
       {
-        ...requestProps,
+        ...requestConfig,
         method: "get",
       },
     );

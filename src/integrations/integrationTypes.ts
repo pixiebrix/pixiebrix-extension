@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
@@ -186,7 +186,14 @@ export interface SanitizedIntegrationConfig {
   /**
    * UUID of the integration configuration.
    */
+  // XXX: document why id is optional
   id?: UUID;
+
+  /**
+   * Human-readable label for the configuration to distinguish it from other configurations for the same integration in the
+   * interface.
+   */
+  label: string | undefined;
 
   /**
    * Registry identifier for the integration, e.g., @pixiebrix/api
@@ -292,7 +299,7 @@ export interface Integration<
   TConfig extends IntegrationConfigArgs = IntegrationConfigArgs,
   TSanitized = TConfig & { _sanitizedConfigBrand: null },
   TSecret = TConfig & { _integrationConfigBrand: null },
-  TOAuth extends AuthData = AuthData,
+  TAuthData extends AuthData = AuthData,
 > extends Metadata {
   schema: Schema;
 
@@ -318,15 +325,18 @@ export interface Integration<
 
   getOrigins: (integrationConfig: TSanitized) => string[];
 
-  getOAuth2Context: (integrationConfig: TSecret) => OAuth2Context | undefined;
+  getOAuth2Context: (
+    integrationConfig: TSecret,
+    options: { interactive: boolean },
+  ) => OAuth2Context | undefined;
 
   getTokenContext: (integrationConfig: TSecret) => TokenContext | undefined;
 
   authenticateRequest: (
     integrationConfig: TSecret,
-    requestConfig: AxiosRequestConfig,
-    oauthConfig?: TOAuth,
-  ) => AxiosRequestConfig;
+    requestConfig: NetworkRequestConfig,
+    oauthConfig?: TAuthData,
+  ) => NetworkRequestConfig;
 }
 
 /**
@@ -334,7 +344,7 @@ export interface Integration<
  */
 export abstract class IntegrationABC<
   TConfig extends IntegrationConfigArgs = IntegrationConfigArgs,
-  TOAuth extends AuthData = AuthData,
+  TAuthData extends AuthData = AuthData,
 > implements Integration<TConfig>
 {
   abstract schema: Schema;
@@ -375,7 +385,7 @@ export abstract class IntegrationABC<
 
   abstract authenticateRequest(
     integrationConfig: TConfig & SecretBrand,
-    requestConfig: AxiosRequestConfig,
-    authConfig?: TOAuth,
-  ): AxiosRequestConfig;
+    requestConfig: NetworkRequestConfig,
+    authData?: TAuthData,
+  ): NetworkRequestConfig;
 }

@@ -21,14 +21,17 @@ import { render } from "@/sidebar/testHelpers";
 import { authActions } from "@/auth/authSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { MemoryRouter } from "react-router";
-import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
+import {
+  mockAnonymousMeApiResponse,
+  mockAuthenticatedMeApiResponse,
+} from "@/testUtils/userMock";
 import useLinkState from "@/auth/useLinkState";
 import {
   authStateFactory,
-  partnerUserFactory,
-  userFactory,
+  meWithPartnerApiResponseFactory,
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 jest.mock("@/auth/useLinkState");
 
@@ -48,20 +51,12 @@ describe("SidebarApp", () => {
     appApiMock.onGet("/api/marketplace/listings/").reply(200, []);
     appApiMock.onGet("/api/extensions/").reply(200, []);
 
-    useLinkStateMock.mockReturnValue({
-      hasToken: true,
-      tokenLoading: false,
-      tokenError: null,
-    });
+    useLinkStateMock.mockReturnValue(valueToAsyncState(true));
   });
 
   test("renders not connected", async () => {
-    mockAnonymousUser();
-    useLinkStateMock.mockReturnValue({
-      hasToken: false,
-      tokenLoading: false,
-      tokenError: null,
-    });
+    mockAnonymousMeApiResponse();
+    useLinkStateMock.mockReturnValue(valueToAsyncState(false));
 
     const { asFragment } = render(
       <MemoryRouter>
@@ -73,14 +68,9 @@ describe("SidebarApp", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("renders not connected partner view", async () => {
-    // Is this a real state? The use in meQueryState couldn't be set if hasToken is `false`
-    mockCachedUser(partnerUserFactory());
-    useLinkStateMock.mockReturnValue({
-      hasToken: false,
-      tokenLoading: false,
-      tokenError: null,
-    });
+  test("renders connected partner view", async () => {
+    await mockAuthenticatedMeApiResponse(meWithPartnerApiResponseFactory());
+    useLinkStateMock.mockReturnValue(valueToAsyncState(true));
 
     const { asFragment } = render(
       <MemoryRouter>
@@ -93,7 +83,7 @@ describe("SidebarApp", () => {
   });
 
   test("renders", async () => {
-    mockCachedUser(userFactory());
+    await mockAuthenticatedMeApiResponse();
 
     const { asFragment } = render(
       <MemoryRouter>

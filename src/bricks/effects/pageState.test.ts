@@ -20,16 +20,15 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { toExpression } from "@/utils/expressionUtils";
+import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
+import { TEST_resetState } from "@/platform/state/stateController";
 
 beforeEach(() => {
-  // Isolate extension state between test
-  jest.resetModules();
+  TEST_resetState();
 });
 
 describe("@pixiebrix/state/get", () => {
   test("default to blueprint state", async () => {
-    const { GetPageState } = await import("@/bricks/effects/pageState");
-
     const brick = new GetPageState();
     const logger = new ConsoleLogger({
       extensionId: uuidv4(),
@@ -42,7 +41,6 @@ describe("@pixiebrix/state/get", () => {
   });
 
   test("is page state aware", async () => {
-    const { GetPageState } = await import("@/bricks/effects/pageState");
     const brick = new GetPageState();
     await expect(brick.isPageStateAware()).resolves.toBe(true);
   });
@@ -50,8 +48,6 @@ describe("@pixiebrix/state/get", () => {
 
 describe("@pixiebrix/state/set", () => {
   test("shallow merge", async () => {
-    const { SetPageState } = await import("@/bricks/effects/pageState");
-
     const brick = new SetPageState();
     const logger = new ConsoleLogger({
       extensionId: uuidv4(),
@@ -159,10 +155,6 @@ describe("@pixiebrix/state/set", () => {
 
 describe("set and get", () => {
   test("default to blueprint state", async () => {
-    const { GetPageState, SetPageState } = await import(
-      "@/bricks/effects/pageState"
-    );
-
     const setState = new SetPageState();
     const getState = new GetPageState();
     const logger = new ConsoleLogger({
@@ -195,10 +187,6 @@ describe("set and get", () => {
   });
 
   test("default to shared if not part of blueprint", async () => {
-    const { GetPageState, SetPageState } = await import(
-      "@/bricks/effects/pageState"
-    );
-
     const setState = new SetPageState();
     const getState = new GetPageState();
     const logger = new ConsoleLogger({
@@ -230,7 +218,6 @@ describe("set and get", () => {
   });
 
   test("is page state aware", async () => {
-    const { SetPageState } = await import("@/bricks/effects/pageState");
     const brick = new SetPageState();
     await expect(brick.isPageStateAware()).resolves.toBe(true);
   });

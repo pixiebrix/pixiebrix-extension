@@ -55,6 +55,8 @@ import {
 import { type Schema, type SchemaPropertyType } from "@/types/schemaTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import { Collapse } from "react-bootstrap";
+import { joinName, joinPathParts } from "@/utils/formUtils";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -91,6 +93,59 @@ function shouldShowPlaceholderText(uiType: UiType): boolean {
     }
   }
 }
+
+const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
+  uiOptionsPath,
+}) => {
+  const [{ value: submitToolbar }] = useField<boolean>(
+    `${uiOptionsPath}.submitToolbar`,
+  );
+
+  return (
+    <>
+      <SchemaField
+        name={joinName(uiOptionsPath, "rows")}
+        schema={{
+          type: "number",
+          title: "# Rows",
+          description:
+            "The number of visible text lines for the control. If it is not specified, the default value is 2.",
+        }}
+      />
+      <SchemaField
+        name={joinName(uiOptionsPath, "submitOnEnter")}
+        schema={{
+          type: "boolean",
+          title: "Submit Form on Enter?",
+          description:
+            "If enabled, pressing Enter will submit the form. Press Shift+Enter for newlines in this mode",
+        }}
+        isRequired
+      />
+      <SchemaField
+        name={joinName(uiOptionsPath, "submitToolbar", "show")}
+        schema={{
+          type: "boolean",
+          title: "Include Submit Toolbar?",
+          description:
+            "Enable the submit toolbar that has a selectable icon to act as a submit button",
+        }}
+        isRequired
+      />
+      <Collapse in={submitToolbar}>
+        <SchemaField
+          name={joinName(uiOptionsPath, "submitToolbar", "icon")}
+          schema={{ $ref: "https://app.pixiebrix.com/schemas/icon#" }}
+          label="Select Icon"
+          description="Select the icon that appears in the bottom right of the Submit Toolbar"
+          uiSchema={{
+            "ui:widget": "IconWidget",
+          }}
+        />
+      </Collapse>
+    </>
+  );
+};
 
 const FieldEditor: React.FC<{
   name: string;
@@ -212,9 +267,7 @@ const FieldEditor: React.FC<{
     target: { value: nextIsRequired },
   }: React.ChangeEvent<CheckBoxLike>) => {
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-      if (!draft.schema.required) {
-        draft.schema.required = [];
-      }
+      draft.schema.required ||= [];
 
       if (nextIsRequired) {
         draft.schema.required.push(propertyName);
@@ -384,19 +437,6 @@ const FieldEditor: React.FC<{
         />
       )}
 
-      {uiType.uiWidget === "textarea" && (
-        <SchemaField
-          name={`${name}.uiSchema.${propertyName}.ui:options.submitOnEnter`}
-          schema={{
-            type: "boolean",
-            title: "Submit Form on Enter?",
-            description:
-              "If enabled, pressing Enter will submit the form. Press Shift+Enter for newlines in this mode",
-          }}
-          isRequired
-        />
-      )}
-
       <FieldTemplate
         name={`${name}.schema.required`}
         label="Required Field?"
@@ -404,6 +444,17 @@ const FieldEditor: React.FC<{
         value={isRequired}
         onChange={onRequiredChange}
       />
+
+      {uiType.uiWidget === "textarea" && (
+        <TextAreaFields
+          uiOptionsPath={joinPathParts(
+            name,
+            "uiSchema",
+            propertyName,
+            "ui:options",
+          )}
+        />
+      )}
     </div>
   );
 };

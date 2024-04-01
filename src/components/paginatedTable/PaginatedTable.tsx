@@ -36,14 +36,14 @@ type RowProps = {
   style?: CSSProperties | undefined;
 };
 interface TableProps<
-  Row extends Record<string, unknown>,
+  Row extends UnknownObject,
   Actions extends Record<string, Action>,
 > {
   data: Row[];
   columns: Array<Column<Row>>;
   actions?: Actions;
   initialPageSize?: number;
-  rowProps?: (row: Record<string, unknown>) => RowProps;
+  rowProps?: (row: UnknownObject) => RowProps;
   showSearchFilter: boolean;
 
   /**
@@ -61,7 +61,8 @@ interface TableProps<
 
 const SearchFilter: React.FunctionComponent<{
   setGlobalFilter: (filterValue: FilterValue) => void;
-}> = ({ setGlobalFilter: setFilter }) => {
+  style?: CSSProperties;
+}> = ({ setGlobalFilter: setFilter, style }) => {
   const [value, setValue] = useState("");
   const onChange = useAsyncDebounce((value) => {
     setFilter(value || undefined);
@@ -73,6 +74,7 @@ const SearchFilter: React.FunctionComponent<{
       type="text"
       placeholder="Filter records..."
       value={value ?? ""}
+      style={style}
       onChange={({ target }) => {
         setValue(target.value);
         onChange(target.value);
@@ -107,7 +109,7 @@ function setSearchParams(
   });
 }
 
-function findPageIndex<TRow extends Record<string, unknown>>({
+function findPageIndex<TRow extends UnknownObject>({
   record,
   rows,
   pageSize,
@@ -127,9 +129,13 @@ function findPageIndex<TRow extends Record<string, unknown>>({
   return null;
 }
 
+/**
+ * A paginated table with sorting, resizing, and global filtering.
+ * TODO: This component is not fully accessible - it needs keyboard navigation support.
+ */
 function PaginatedTable<
-  Row extends Record<string, unknown>,
-  Actions extends Record<string, Action>,
+  Row extends UnknownObject,
+  Actions extends Record<string, Action> = Record<string, Action>,
 >({
   data,
   columns,
@@ -207,6 +213,9 @@ function PaginatedTable<
     }
   }, [forceShowRecord, gotoPage, pageSize, rows]);
 
+  // TODO: This component should be reviewed because it has several instances of d-block and w-100,
+  // which "break" the table and seem to do nothing. Also the CSS seems to suggest that some
+  // headers/footers should be sticky but they aren't
   return (
     <Table {...getTableProps()} responsive className={styles.paginatedTable}>
       <thead className="d-block w-100">
@@ -248,7 +257,8 @@ function PaginatedTable<
                 index !== headerGroup.headers.length - 1 ? (
                   <>
                     {column?.isResizing && <div className={styles.overlay} />}
-                    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+                    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+                    -- TODO: implement keyboard accessible column resizing */}
                     <div
                       className={styles.resize}
                       {...column.getResizerProps()}
@@ -296,48 +306,40 @@ function PaginatedTable<
       </tbody>
       <tfoot className={styles.tfoot}>
         <tr className="d-block w-100">
-          <td className="d-block w-100">
-            <div className="d-flex align-items-center">
-              <div className="text-muted">
-                Showing {rowNumber} to{" "}
-                {Math.min(rowNumber + pageSize - 1, rows.length)} of{" "}
-                {rows.length}
-              </div>
-              {showSearchFilter ? (
-                <div className="flex-grow-1 px-3">
-                  <div style={{ maxWidth: 300 }}>
-                    <SearchFilter setGlobalFilter={setGlobalFilter} />
-                  </div>
-                </div>
-              ) : (
-                ""
-              )}
-
-              <div className="flex-grow-1">
-                <Pagination className="m-0 float-right">
-                  <Pagination.First
-                    onClick={() => {
-                      gotoPage(0);
-                    }}
-                    disabled={!canPreviousPage}
-                  />
-                  <Pagination.Prev
-                    onClick={previousPage}
-                    disabled={!canPreviousPage}
-                  />
-                  <Pagination.Item disabled>
-                    Page {pageIndex + 1} of {pageCount === 0 ? 1 : pageCount}
-                  </Pagination.Item>
-                  <Pagination.Next onClick={nextPage} disabled={!canNextPage} />
-                  <Pagination.Last
-                    onClick={() => {
-                      gotoPage(pageCount - 1);
-                    }}
-                    disabled={!canNextPage}
-                  />
-                </Pagination>
-              </div>
+          <td className="d-flex align-items-center justify-content-between w-100">
+            <div className="text-muted">
+              Showing {rowNumber} to{" "}
+              {Math.min(rowNumber + pageSize - 1, rows.length)} of {rows.length}
             </div>
+            <div className="flex-grow-1 px-3">
+              <SearchFilter
+                style={{ maxWidth: 300 }}
+                setGlobalFilter={setGlobalFilter}
+              />
+            </div>
+
+            <Pagination className="m-0">
+              <Pagination.First
+                onClick={() => {
+                  gotoPage(0);
+                }}
+                disabled={!canPreviousPage}
+              />
+              <Pagination.Prev
+                onClick={previousPage}
+                disabled={!canPreviousPage}
+              />
+              <Pagination.Item disabled>
+                Page {pageIndex + 1} of {pageCount === 0 ? 1 : pageCount}
+              </Pagination.Item>
+              <Pagination.Next onClick={nextPage} disabled={!canNextPage} />
+              <Pagination.Last
+                onClick={() => {
+                  gotoPage(pageCount - 1);
+                }}
+                disabled={!canNextPage}
+              />
+            </Pagination>
           </td>
         </tr>
       </tfoot>

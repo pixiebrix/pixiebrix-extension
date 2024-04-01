@@ -22,11 +22,10 @@ import {
   simpleInput,
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { setPageState } from "@/contentScript/pageState";
+import { setState } from "@/platform/state/stateController";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
-import { type UnknownObject } from "@/types/objectTypes";
 import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
@@ -36,7 +35,7 @@ beforeEach(() => {
 
 describe("modVariableContext", () => {
   test("use mod variable in variable condition", async () => {
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: { run: true },
       mergeStrategy: "replace",
@@ -62,7 +61,7 @@ describe("modVariableContext", () => {
   });
 
   test("use mod variable in nunjucks condition", async () => {
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: { run: true },
       mergeStrategy: "replace",
@@ -88,7 +87,7 @@ describe("modVariableContext", () => {
   });
 
   test("mod variable appears in context", async () => {
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: { name: "Bob" },
       mergeStrategy: "replace",
@@ -115,7 +114,7 @@ describe("modVariableContext", () => {
   });
 
   test("use mod variable in nunjucks body", async () => {
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: { name: "Bob" },
       mergeStrategy: "replace",
@@ -140,7 +139,7 @@ describe("modVariableContext", () => {
   });
 
   test("use mod variable in variable body", async () => {
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: { name: "Bob" },
       mergeStrategy: "replace",

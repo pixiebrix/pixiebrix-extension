@@ -19,22 +19,57 @@ import React from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { navigateTab } from "@/contentScript/messenger/api";
-import { thisTab } from "@/pageEditor/utils";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import paintbrush from "@img/paintbrush.svg";
 import bgIllustration from "@img/home-pane-bg-illustration.png";
 
 import styles from "@/pageEditor/panes/HomePane.module.scss";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const TEMPLATE_TELEMETRY_SOURCE = "home_pane";
+
+const Links: React.FunctionComponent = () => (
+  <div className={styles.links}>
+    <ul>
+      <span className={styles.linkSectionHeader}>Support</span>
+      <li>
+        <a href="https://docs.pixiebrix.com/">Documentation</a>
+      </li>
+      <li>
+        <a href="https://pixiebrix.thinkific.com/collections">
+          PixieBrix Certification
+        </a>
+      </li>
+      <li>
+        <a href="https://slack.pixiebrix.com/">Join the Community Slack</a>
+      </li>
+    </ul>
+
+    <ul>
+      <span className={styles.linkSectionHeader}>Helpful Links</span>
+      <li>
+        <button
+          onClick={async (event) => {
+            event.preventDefault();
+            await browser.runtime.openOptionsPage();
+          }}
+        >
+          Extension Console
+        </button>
+      </li>
+      <li>
+        <a href="https://app.pixiebrix.com/">Admin Console</a>
+      </li>
+    </ul>
+  </div>
+);
 
 const HomePane: React.FunctionComponent = () => {
   const sessionId = useSelector(selectSessionId);
   return (
-    <Container fluid className="h-100 overflow-auto">
-      <Row className={styles.pane}>
+    <Container fluid className="h-100 overflow-auto p-4">
+      <Row className="gap-2">
         <img
           src={bgIllustration}
           alt="background illustration"
@@ -70,7 +105,7 @@ const HomePane: React.FunctionComponent = () => {
                     sessionId,
                     source: TEMPLATE_TELEMETRY_SOURCE,
                   });
-                  navigateTab(thisTab, {
+                  void browser.tabs.update(inspectedTab.tabId, {
                     url: `https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=${TEMPLATE_TELEMETRY_SOURCE}`,
                   });
                 }}
@@ -82,41 +117,7 @@ const HomePane: React.FunctionComponent = () => {
         </Col>
 
         <Col xs={12} lg="auto">
-          <div className={styles.links}>
-            <ul>
-              <span className={styles.linkSectionHeader}>Support</span>
-              <li>
-                <a href="https://docs.pixiebrix.com/">Documentation</a>
-              </li>
-              <li>
-                <a href="https://pixiebrix.thinkific.com/collections">
-                  PixieBrix Certification
-                </a>
-              </li>
-              <li>
-                <a href="https://slack.pixiebrix.com/">
-                  Join the Community Slack
-                </a>
-              </li>
-            </ul>
-
-            <ul>
-              <span className={styles.linkSectionHeader}>Helpful Links</span>
-              <li>
-                <button
-                  onClick={async (event) => {
-                    event.preventDefault();
-                    await browser.runtime.openOptionsPage();
-                  }}
-                >
-                  Extension Console
-                </button>
-              </li>
-              <li>
-                <a href="https://app.pixiebrix.com/">Admin Console</a>
-              </li>
-            </ul>
-          </div>
+          <Links />
         </Col>
       </Row>
     </Container>

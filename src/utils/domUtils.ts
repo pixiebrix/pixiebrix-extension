@@ -131,16 +131,10 @@ export async function waitForBody(): Promise<void> {
 }
 
 /**
- * Return true if the element is visible in the viewport.
- * @param element the element to check
+ * Return true if the element is visible (i.e. not in `display: none`), even if outside the viewport
  */
 export function isVisible(element: HTMLElement): boolean {
-  // https://github.com/jquery/jquery/blob/c66d4700dcf98efccb04061d575e242d28741223/src/css/hiddenVisibleSelectors.js#L9C1-L9C1
-  return Boolean(
-    element.offsetWidth ||
-      element.offsetHeight ||
-      element.getClientRects().length > 0,
-  );
+  return element.checkVisibility();
 }
 
 /**
@@ -207,4 +201,38 @@ export function runOnDocumentVisible<Args extends unknown[], TReturn = unknown>(
   }
 
   return runOnce;
+}
+
+export function getSelectionRange(): Range | undefined {
+  const selection = window.getSelection();
+  // eslint-disable-next-line no-restricted-syntax -- The rule points to this helper
+  return selection?.rangeCount ? selection.getRangeAt(0) : undefined;
+}
+
+/**
+ * Returns true if the selector is a native CSS selector, or false if it's a jQuery selector or invalid selector
+ */
+export function isNativeCssSelector(selector: string): boolean {
+  try {
+    document.querySelectorAll(selector);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Returns true if the selector is a valid selector (CSS or jQuery)
+ */
+export function isValidSelector(selector: string): boolean {
+  try {
+    $safeFind(selector);
+    return true;
+  } catch (error) {
+    if (error instanceof InvalidSelectorError) {
+      return false;
+    }
+
+    throw error;
+  }
 }

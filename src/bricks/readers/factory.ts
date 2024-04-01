@@ -16,18 +16,19 @@
  */
 
 import { checkAvailable } from "@/bricks/available";
-import { type Availability } from "@/bricks/types";
-import { Validator } from "@cfworker/json-schema";
-import { dereference } from "@/validators/generic";
-import readerSchema from "@schemas/reader.json";
-import { type Schema as ValidatorSchema } from "@cfworker/json-schema";
+import type { Availability, BrickConfig } from "@/bricks/types";
 import { cloneDeep } from "lodash";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 import { type ApiVersion, type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import { type Reader, ReaderABC } from "@/types/bricks/readerTypes";
-import { type SemVerString, type Metadata } from "@/types/registryTypes";
+import { type Metadata, type SemVerString } from "@/types/registryTypes";
+import {
+  PAGE_SCRIPT_CAPABILITIES,
+  type PlatformCapability,
+} from "@/platform/capabilities";
+import { validatePackageDefinition } from "@/validators/schemaValidator";
 
 export interface ReaderTypeConfig {
   type: string;
@@ -52,10 +53,7 @@ export interface ReaderConfig<
 function validateReaderDefinition(
   component: unknown,
 ): asserts component is ReaderConfig {
-  const validator = new Validator(
-    dereference(readerSchema as Schema) as ValidatorSchema,
-  );
-  const result = validator.validate(component);
+  const result = validatePackageDefinition("reader", component);
   if (!result.valid) {
     console.warn("Invalid reader configuration", result);
     throw new InvalidDefinitionError(
@@ -99,16 +97,22 @@ export function readerFactory(component: unknown): Reader {
       super(id, name, description);
     }
 
-    public readonly version: SemVerString = version;
+    public readonly version: SemVerString | undefined = version;
 
     override outputSchema: Schema = outputSchema;
 
-    async isAvailable() {
-      return checkAvailable(isAvailable);
+    async isAvailable(): Promise<boolean> {
+      return Boolean(isAvailable && checkAvailable(isAvailable));
     }
 
     override async isPure(): Promise<boolean> {
       return true;
+    }
+
+    override async getRequiredCapabilities(
+      _config: BrickConfig,
+    ): Promise<PlatformCapability[]> {
+      return PAGE_SCRIPT_CAPABILITIES;
     }
 
     async read(root: SelectorRoot): Promise<JsonObject> {

@@ -25,26 +25,6 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
 /**
- * Error indicating that client made an unauthenticated request to a PixieBrix API that requires authentication.
- *
- * NOTE: do not throw this error for calls where the token is incorrect
- *
- * This indicates an error in the PixieBrix code, of either:
- * - The endpoint is enforcing authentication when it should (e.g., it should return an empty response for
- * unauthenticated users), or
- * - The client should not make the call if the extensions is not linked
- */
-export class EndpointAuthError extends Error {
-  override name = "EndpointAuthError";
-  readonly url: string;
-
-  constructor(url: string) {
-    super(`API endpoint requires authentication: ${url}`);
-    this.url = url;
-  }
-}
-
-/**
  * Error indicating the client performed a suspicious operation
  */
 export class SuspiciousOperationError extends Error {

@@ -18,8 +18,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
-import { useGetMeQuery } from "@/services/api";
-import { clearCachedAuthSecrets, updateUserData } from "@/auth/token";
+import { useGetMeQuery } from "@/data/service/api";
+import { clearCachedAuthSecrets, updateUserData } from "@/auth/authStorage";
 import {
   selectExtensionAuthState,
   selectUserDataUpdate,
@@ -27,10 +27,10 @@ import {
 import { authActions } from "@/auth/authSlice";
 import { anonAuth } from "@/auth/authConstants";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
-import { type Me } from "@/types/contract";
 import { type AxiosError } from "axios";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import useLinkState from "@/auth/useLinkState";
+import { type Me } from "@/data/model/Me";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
@@ -48,7 +48,7 @@ type RequireAuthProps = {
 const useRequiredAuth = () => {
   const dispatch = useDispatch();
   const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
-  const { hasToken, tokenLoading, tokenError } = useLinkState();
+  const { data: isLinked, isLoading: isLinkedLoading } = useLinkState();
 
   const {
     isLoading: meLoading,
@@ -58,7 +58,7 @@ const useRequiredAuth = () => {
   } = useGetMeQuery(undefined, {
     // Only call /api/me/ if the extension is "linked" is with an Authorization token. If not, the session id will
     // be passed in the header which leads to inconsistent results depending on whether the session is still valid
-    skip: !hasToken,
+    skip: !isLinked,
   });
 
   useEffect(() => {
@@ -78,7 +78,7 @@ const useRequiredAuth = () => {
 
       // Because we're waiting to the Authorization token, there should always be a value here. But, defensively, if
       // not, then reset to the anonymous state
-      if (me?.id) {
+      if (me) {
         const auth = selectExtensionAuthState(me);
         dispatch(authActions.setAuth(auth));
       } else {
@@ -103,14 +103,13 @@ const useRequiredAuth = () => {
   const isAccountUnlinked =
     isBadToken ||
     (!hasCachedLoggedIn && !meLoading) ||
-    (!hasToken && !tokenLoading);
+    (!isLinked && !isLinkedLoading);
 
   return {
     isAccountUnlinked,
-    hasToken,
-    tokenError,
+    hasToken: isLinked,
     hasCachedLoggedIn,
-    isLoading: tokenLoading || meLoading,
+    isLoading: isLinkedLoading || meLoading,
     meError,
   };
 };
@@ -136,13 +135,13 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
   const {
     isAccountUnlinked,
-    tokenError,
     hasCachedLoggedIn,
     isLoading: isRequiredAuthLoading,
     meError,
   } = useRequiredAuth();
 
   const {
+    hasPartner,
     requiresIntegration,
     hasConfiguredIntegration,
     isLoading: isPartnerAuthLoading,
@@ -165,9 +164,11 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     (requiresIntegration && !hasConfiguredIntegration)
   ) {
     console.debug("Showing login page", {
+      isStartPage,
       isAccountUnlinked,
       requiresIntegration,
       hasConfiguredIntegration,
+      hasPartner,
     });
 
     return <LoginPage />;
@@ -181,10 +182,6 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   // `useRequiredAuth` handles 401 and other auth-related errors. Rethrow any other errors, e.g., internal server error
   if (meError && !ignoreApiError) {
     throw meError;
-  }
-
-  if (tokenError) {
-    throw tokenError;
   }
 
   return <>{children}</>;

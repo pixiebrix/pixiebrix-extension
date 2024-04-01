@@ -16,10 +16,11 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { CancelError } from "@/errors/businessErrors";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class Prompt extends TransformerABC {
   constructor() {
@@ -47,6 +48,10 @@ export class Prompt extends TransformerABC {
     ["message"],
   );
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["alert"];
+  }
+
   override outputSchema: Schema = propertiesToSchema(
     {
       value: {
@@ -57,12 +62,14 @@ export class Prompt extends TransformerABC {
     ["value"],
   );
 
-  async transform({
-    message,
-    defaultValue,
-  }: BrickArgs<{ message: string; defaultValue: string }>): Promise<unknown> {
-    // eslint-disable-next-line no-alert -- purpose of this brick is to show an alert
-    const value = window.prompt(message, defaultValue);
+  async transform(
+    {
+      message,
+      defaultValue,
+    }: BrickArgs<{ message: string; defaultValue: string }>,
+    { platform }: BrickOptions,
+  ): Promise<unknown> {
+    const value = platform.prompt(message, defaultValue);
 
     if (value == null) {
       throw new CancelError("User cancelled the prompt");

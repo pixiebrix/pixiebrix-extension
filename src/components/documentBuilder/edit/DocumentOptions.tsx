@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,12 +24,11 @@ import useAsyncEffect from "use-async-effect";
 import { useSelector } from "react-redux";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import ElementEditor from "@/components/documentBuilder/edit/ElementEditor";
-import { Col, Row } from "react-bootstrap";
-import styles from "@/components/documentBuilder/edit/DocumentOptions.module.scss";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { DOCUMENT_SCHEMA } from "@/bricks/renderers/document";
 import { type Schema } from "@/types/schemaTypes";
+import { UncollapsibleFieldSection } from "@/pageEditor/fields/CollapsibleFieldSection";
 
 const DocumentOptions: React.FC<{
   name: string;
@@ -55,18 +54,14 @@ const DocumentOptions: React.FC<{
       {activeElement ? (
         <ElementEditor documentBodyName={documentBodyName} />
       ) : (
-        <Row className={styles.currentFieldRow}>
-          <Col xl="3" className={styles.currentField}>
-            <h6>Nothing selected</h6>
-          </Col>
-          <Col xl>
-            <small className="text-muted">
-              Use the Preview Tab on the right to select an element to edit ⟶
-            </small>
-          </Col>
-        </Row>
+        <UncollapsibleFieldSection title="Document Elements">
+          <p className="small text-muted">
+            Nothing selected. Use the Preview Tab on the right to select an
+            element to edit ⟶
+          </p>
+        </UncollapsibleFieldSection>
       )}
-      <ConnectedCollapsibleFieldSection title={"Advanced: Theme"}>
+      <ConnectedCollapsibleFieldSection title="Advanced: Theme">
         <SchemaField
           name={joinName(documentConfigName, "stylesheets")}
           schema={DOCUMENT_SCHEMA.properties.stylesheets as Schema}

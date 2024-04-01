@@ -19,22 +19,37 @@ import { useSyncExternalStore } from "use-sync-external-store/shim";
 import {
   getSnapshot,
   initManagedStorage,
-  subscribe,
+  managedStorageStateChange,
 } from "@/store/enterprise/managedStorage";
 import { useEffect } from "react";
-import { type ManagedStorageState } from "@/store/enterprise/managedStorageTypes";
+import type { ManagedStorageState } from "@/store/enterprise/managedStorageTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
+import { expectContext } from "@/utils/expectContext";
 
 type HookState = {
-  data: ManagedStorageState | undefined;
+  data: Nullishable<ManagedStorageState>;
   isLoading: boolean;
 };
+
+// NOTE: can't share subscribe methods across generators currently for useAsyncExternalStore because it maintains
+// a map of subscriptions to state controllers. See https://github.com/pixiebrix/pixiebrix-extension/issues/7789
+function subscribe(callback: () => void): () => void {
+  expectContext("extension");
+
+  managedStorageStateChange.add(callback);
+
+  return () => {
+    managedStorageStateChange.remove(callback);
+  };
+}
 
 /**
  * React hook to get the current state of managed storage.
  */
 function useManagedStorageState(): HookState {
   useEffect(() => {
-    initManagedStorage();
+    // `initManagedStorage` is wrapped in once, so safe to call from multiple locations in the tree.
+    void initManagedStorage();
   }, []);
 
   const data = useSyncExternalStore(subscribe, getSnapshot);

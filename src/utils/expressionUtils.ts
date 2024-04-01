@@ -22,7 +22,6 @@ import {
   type PipelineExpression,
   type TemplateEngine,
 } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isObject } from "./objectUtils";
 import { type BrickPipeline } from "@/bricks/types";
 
@@ -77,6 +76,9 @@ export function isNunjucksExpression(
   return isExpression(value) && value.__type__ === "nunjucks";
 }
 
+/**
+ * Returns true if value represents a brick pipeline expression
+ */
 export function isPipelineExpression(
   value: unknown,
 ): value is PipelineExpression {

@@ -18,7 +18,6 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import injectStylesheet from "@/utils/injectStylesheet";
 import stylesheetUrl from "@/vendors/intro.js/introjs.scss?loadAsUrl";
 import pDefer from "p-defer";
@@ -34,6 +33,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
 import { $safeFind } from "@/utils/domUtils";
 import { type TooltipPosition } from "intro.js/src/core/steps";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type Step = {
   title: string;

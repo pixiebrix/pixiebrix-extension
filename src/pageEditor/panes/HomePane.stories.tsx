@@ -23,7 +23,7 @@ import { Provider } from "react-redux";
 import { editorStore } from "@/testUtils/storyUtils";
 
 type HomePagePropsAndCustomArgs = React.ComponentProps<typeof HomePane> &
-  Record<string, unknown>;
+  UnknownObject;
 
 const meta: Meta<HomePagePropsAndCustomArgs> = {
   title: "PageEditor/HomePane",

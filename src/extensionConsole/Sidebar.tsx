@@ -29,7 +29,7 @@ import {
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
 import useFlags from "@/hooks/useFlags";
-import { appApi } from "@/services/api";
+import { useGetMeQuery } from "@/data/service/api";
 import { faSlack } from "@fortawesome/free-brands-svg-icons";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
@@ -37,7 +37,7 @@ const DEFAULT_DOCUMENTATION_URL = "https://docs.pixiebrix.com/";
 
 const Sidebar: React.FunctionComponent = () => {
   const { permit } = useFlags();
-  const { data: me } = appApi.endpoints.getMe.useQueryState();
+  const { data: me } = useGetMeQuery();
   const hasPartner = Boolean(me?.partner);
 
   return (
@@ -62,7 +62,8 @@ const Sidebar: React.FunctionComponent = () => {
           {permit("services") && (
             <SidebarLink
               route="/services"
-              title="Integrations"
+              // Help to distinguish vs. integrations defined in the Admin Console
+              title="Local Integrations"
               icon={faCloud}
             />
           )}
@@ -91,7 +92,7 @@ const Sidebar: React.FunctionComponent = () => {
               </a>
             </li>
           )}
-          {!hasPartner && (
+          {!hasPartner && permit("marketplace") && (
             // Hide for partner users because we don't support custom community links yet
             <li className="nav-item">
               <a
@@ -112,7 +113,9 @@ const Sidebar: React.FunctionComponent = () => {
 
           <li className="nav-item">
             <a
-              href={me?.partner?.documentation_url ?? DEFAULT_DOCUMENTATION_URL}
+              href={
+                me?.partner?.documentationUrl?.href ?? DEFAULT_DOCUMENTATION_URL
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="nav-link"

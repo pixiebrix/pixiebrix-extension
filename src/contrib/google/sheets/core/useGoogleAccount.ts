@@ -18,7 +18,7 @@
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import { useContext } from "react";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { validateRegistryId } from "@/types/helpers";
@@ -46,7 +46,7 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
         googleDependency.integrationId,
         googleDependency.configId,
       );
-    } catch (error: unknown) {
+    } catch (error) {
       reportError(error);
       return null;
     }

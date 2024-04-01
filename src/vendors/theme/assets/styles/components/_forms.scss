@@ -10,7 +10,7 @@
   width: auto;
   border: none;
   .input-group-text {
-    border-color: $border-color;
+    border-color: $input-border-color;
     padding: 0.575rem 0.75rem;
     color: $input-placeholder-color;
   }
@@ -28,7 +28,7 @@
 }
 
 .form-control {
-  border: 1px solid $border-color;
+  border: 1px solid $input-border-color;
   font-size: $input-font-size;
 }
 
@@ -36,10 +36,10 @@ select {
   &.form-control {
     padding: 0.4375rem 0.75rem;
     border: 0;
-    outline: 1px solid $border-color;
+    outline: 1px solid $input-border-color;
     color: $input-placeholder-color;
     &:focus {
-      outline: 1px solid $border-color;
+      outline: 1px solid $input-border-color;
     }
     @each $color, $value in $theme-colors {
       &.border-#{$color} {
@@ -78,7 +78,7 @@ select {
   }
   .custom-file-label {
     background: $input-bg;
-    border: 1px solid $border-color;
+    border: 1px solid $input-border-color;
     height: calc(2.25rem + 2px);
     font-weight: normal;
     font-size: 0.875rem;

@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./EditorNodeConfigPanel.module.scss";
-
 import React from "react";
-import { Col, Row } from "react-bootstrap";
+import cx from "classnames";
+import styles from "./EditorNodeConfigPanel.module.scss";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BrickConfiguration from "@/pageEditor/tabs/effect/BrickConfiguration";
 import blockRegistry from "@/bricks/registry";
@@ -29,8 +28,7 @@ import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabe
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 import { useSelector } from "react-redux";
 import { selectActiveNodeInfo } from "@/pageEditor/slices/editorSelectors";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
-import cx from "classnames";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { MARKETPLACE_URL } from "@/urlConstants";
 import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -39,9 +37,15 @@ const EditorNodeConfigPanel: React.FC = () => {
   const {
     blockId: brickId,
     path: brickFieldName,
-    blockConfig: { comments },
-  } = useSelector(selectActiveNodeInfo);
+    blockConfig,
+  } = useSelector(selectActiveNodeInfo) ?? {};
+  const { comments } = blockConfig ?? {};
+
   const { data: brickInfo } = useAsyncState(async () => {
+    if (brickId == null) {
+      return null;
+    }
+
     const brick = await blockRegistry.lookup(brickId);
     return {
       block: brick,
@@ -75,44 +79,38 @@ const EditorNodeConfigPanel: React.FC = () => {
 
   return (
     <>
-      <div className="mb-3">
-        <AnalysisResult />
-      </div>
-      <Row className={cx(styles.brickInfo, "justify-content-between")}>
-        <Col>
-          <p>{brickInfo?.block.name}</p>
-        </Col>
+      <AnalysisResult className="mb-3" />
+
+      <h6 className="mb-3 d-flex justify-content-between flex-wrap gap-2">
+        {brickInfo?.block.name}
         {showDocumentationLink && (
-          <Col xs="auto">
-            <a
-              href={`${MARKETPLACE_URL}${listingId}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Documentation
-            </a>
-          </Col>
+          <a
+            href={`${MARKETPLACE_URL}${listingId}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
+          >
+            View Documentation
+          </a>
         )}
-      </Row>
-      <Row className={styles.topRow}>
-        <Col xl>
+      </h6>
+
+      <div className={cx("mb-3", styles.coreFields)}>
+        {/* Do not merge divs, the outer div is a CSS @container */}
+        <div className="gap-column-4">
           <ConnectedFieldTemplate
             name={`${brickFieldName}.label`}
             label="Step Name"
-            fitLabelWidth
+            className="flex-grow-1"
             placeholder={brickInfo?.block.name}
           />
-        </Col>
-        <Col xl>
           <ConnectedFieldTemplate
             name={`${brickFieldName}.outputKey`}
             label={PopoverOutputLabel}
-            fitLabelWidth
+            className="flex-grow-1"
             disabled={isOutputDisabled}
             as={KeyNameWidget}
           />
-        </Col>
-      </Row>
+        </div>
+      </div>
+
       {comments && <CommentsPreview comments={comments} />}
 
       <BrickConfiguration name={brickFieldName} brickId={brickId} />

@@ -53,16 +53,12 @@ exports[`NonScriptablePage it renders 1`] = `
               Visit the 
               <a
                 href="https://docs.pixiebrix.com/quick-start"
-                rel="noopener noreferrer"
-                target="_blank"
               >
                 Quick Start Guide
               </a>
                or ask questions in the 
               <a
                 href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-                rel="noopener noreferrer"
-                target="_blank"
               >
                 Slack Community
               </a>
@@ -129,16 +125,12 @@ exports[`NonScriptablePage it renders http snapshot 1`] = `
               Visit the 
               <a
                 href="https://docs.pixiebrix.com/quick-start"
-                rel="noopener noreferrer"
-                target="_blank"
               >
                 Quick Start Guide
               </a>
                or ask questions in the 
               <a
                 href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-                rel="noopener noreferrer"
-                target="_blank"
               >
                 Slack Community
               </a>

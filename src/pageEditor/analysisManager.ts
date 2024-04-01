@@ -38,12 +38,13 @@ import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pag
 import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { selectExtensions } from "@/store/extensionsSelectors";
-import { extensionToFormState } from "@/pageEditor/starterBricks/adapter";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/strict/api";
-import { thisTab } from "@/pageEditor/utils";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
 import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
+import { inspectedTab } from "@/pageEditor/context/connection";
+import SelectorAnalysis from "@/analysis/analysisVisitors/selectorAnalysis";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -65,12 +66,12 @@ async function selectActiveModFormStates(
     );
     const dirtyIds = new Set(dirtyElements.map((x) => x.uuid));
 
-    const extensions = selectExtensions(state);
+    const extensions = selectActivatedModComponents(state);
     const otherExtensions = extensions.filter(
       (x) => x._recipe?.id === element.recipe.id && !dirtyIds.has(x.id),
     );
     const otherElements = await Promise.all(
-      otherExtensions.map(async (x) => extensionToFormState(x)),
+      otherExtensions.map(async (x) => modComponentToFormState(x)),
     );
 
     return [...dirtyElements, ...otherElements];
@@ -136,6 +137,11 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   },
 );
 
+pageEditorAnalysisManager.registerAnalysisEffect(() => new SelectorAnalysis(), {
+  // Slow Selector Analysis currently checks the starter brick definition
+  matcher: isAnyOf(editorActions.editElement),
+});
+
 pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
   matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
 });
@@ -184,7 +190,7 @@ async function varAnalysisFactory(
   const variables = await ModVariableNames.collectSchemas(formStates);
 
   // The actual mod variables
-  const modState = await getPageState(thisTab, {
+  const modState = await getPageState(inspectedTab, {
     namespace: "blueprint",
     extensionId: extension.uuid,
     blueprintId: extension.recipe?.id,

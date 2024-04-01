@@ -20,16 +20,16 @@ import useActivateModWizard, {
   makeDatabasePreviewName,
 } from "@/activation/useActivateModWizard";
 import { renderHook } from "@testing-library/react-hooks";
-import { propertiesToSchema } from "@/validators/generic";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 jest.mock("@/components/integrations/AuthWidget", () => {});
 jest.mock("react-redux");
-jest.mock("@/services/api", () => ({
+jest.mock("@/data/service/api", () => ({
   useGetServiceAuthsQuery: jest.fn().mockReturnValue({
     data: [],
   }),

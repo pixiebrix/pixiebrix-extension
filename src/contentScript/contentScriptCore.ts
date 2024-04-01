@@ -41,13 +41,33 @@ import initFloatingActions from "@/components/floatingActions/initFloatingAction
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
 import { initRuntime } from "@/runtime/reducePipeline";
-import { renderPanelsIfVisible } from "./sidebarController";
+import {
+  initSidebarFocusEvents,
+  renderPanelsIfVisible,
+} from "./sidebarController";
 import {
   isSidebarFrameVisible,
   removeSidebarFrame,
-} from "./sidebarDomControllerLite";
+} from "@/contentScript/sidebarDomControllerLite";
 import { isMV3 } from "@/mv3/api";
 import { onContextInvalidated } from "webext-events";
+import { setPlatform } from "@/platform/platformContext";
+import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
+import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
+import axios from "axios";
+import { initDeferredLoginController } from "@/contentScript/integrations/deferredLoginController";
+
+setPlatform(contentScriptPlatform);
+
+// XXX: ideally would enforce via webpack config or eslint. Enforcing via transformRequest requires importing
+// axios in the content script bundle even though it should never be called. Could we somehow conditionally import
+// checking for process.env.DEBUG?
+axios.defaults.transformRequest = () => {
+  // The content Script is subject to the CSP of the page, so PixieBrix should call from background script instead
+  throw new Error(
+    "API calls from the content script are not allowed. Use the background messenger API/worker instead.",
+  );
+};
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -68,14 +88,18 @@ export async function init(): Promise<void> {
   registerExternalMessenger();
   registerBuiltinBricks();
   registerContribBlocks();
+  markDocumentAsFocusableByUser();
   // Since 1.8.2, the brick registry was de-coupled from the runtime to avoid circular dependencies
+  // Since 1.8.10, we inject the platform into the runtime
   initRuntime(brickRegistry);
+  initDeferredLoginController();
 
   initTelemetry();
   initToaster();
 
   void initNavigation();
 
+  initSidebarFocusEvents();
   void initSidebarActivation();
 
   // Notify `ensureContentScript`

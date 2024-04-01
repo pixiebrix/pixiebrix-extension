@@ -20,7 +20,7 @@ import { persistReducer } from "redux-persist";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { persistSettingsConfig } from "@/store/settings/settingsStorage";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import {
   createRenderHookWithWrappers,
@@ -54,6 +54,8 @@ const renderHookWithWrappers = createRenderHookWithWrappers(
 
 // eslint-disable-next-line import/export -- re-export RTL
 export * from "@testing-library/react";
+
+/** @knip Keep for consistency of API with other render helper modules */
 // eslint-disable-next-line import/export -- override render
 export { renderWithWrappers as render };
 export { renderHookWithWrappers as renderHook };

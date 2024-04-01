@@ -29,8 +29,8 @@ import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
 import { clearDynamicElements } from "@/contentScript/messenger/api";
-import { thisTab } from "@/pageEditor/utils";
 import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
+import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 
 type Config = {
   extensionId: UUID;
@@ -108,7 +108,7 @@ export function useRemoveModComponentFromStorage(): (
 
         // Remove from the host page
         try {
-          await clearDynamicElements(thisTab, {
+          clearDynamicElements(allFramesInInspectedTab, {
             uuid: extensionId,
           });
         } catch (error) {
@@ -117,7 +117,7 @@ export function useRemoveModComponentFromStorage(): (
         }
 
         removeExtensionsFromAllTabs([extensionId]);
-      } catch (error: unknown) {
+      } catch (error) {
         notify.error({
           message: "Error removing mod",
           error,

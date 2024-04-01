@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { lazy, type MouseEvent, Suspense, useEffect } from "react";
+import React, { lazy, type MouseEvent, Suspense } from "react";
 import {
   isFormPanelEntry,
   isModActivationPanelEntry,
@@ -62,6 +62,7 @@ import { cancelForm } from "@/contentScript/messenger/strict/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
 import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 const ActivateModPanel = lazy(
   async () =>
@@ -104,11 +105,8 @@ const TabWithDivider = ({
     >
       <Nav.Link
         {...props}
+        as="button"
         className={styles.tabHeader}
-        // Added `target="_self"` due to stopPropagation on onCloseStaticPanel
-        // without it, the default behavior of the anchor tag (Nav.Link) is triggered
-        // and a new tab is opened
-        target="_self"
         eventKey={eventKey}
       >
         {children}
@@ -129,7 +127,17 @@ const Tabs: React.FC = () => {
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
   const closedTabs = useSelector(selectClosedTabs);
 
+  const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
+  const isModLauncherOpen =
+    // eslint-disable-next-line security/detect-object-injection -- modLauncherEventKey is not user input
+    !closedTabs[modLauncherEventKey];
+
   const onSelect = (eventKey: string) => {
+    // Automatically close the mod launcher if it's open, the + button will be shown instead
+    if (isModLauncherOpen) {
+      dispatch(sidebarSlice.actions.closeTab(modLauncherEventKey));
+    }
+
     reportEvent(Events.VIEW_SIDEBAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(eventKey)),
       initialLoad: false,
@@ -139,11 +147,6 @@ const Tabs: React.FC = () => {
   };
 
   const onOpenModLauncher = () => {
-    const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
-    const isModLauncherOpen =
-      // eslint-disable-next-line security/detect-object-injection -- modLauncherEventKey is not user input
-      !closedTabs[modLauncherEventKey];
-
     reportEvent(Events.VIEW_SIDEBAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(modLauncherEventKey)),
       initialLoad: false,
@@ -178,17 +181,13 @@ const Tabs: React.FC = () => {
     }
   };
 
-  useEffect(
-    () => {
-      reportEvent(Events.VIEW_SIDEBAR_PANEL, {
-        ...selectEventData(getExtensionFromEventKey(activeKey)),
-        initialLoad: true,
-      });
-    },
-    // Only run on initial mount, other views are handled by onSelect
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- see comment above
-    [],
-  );
+  // Other views are handled by onSelect
+  useOnMountOnly(() => {
+    reportEvent(Events.VIEW_SIDEBAR_PANEL, {
+      ...selectEventData(getExtensionFromEventKey(activeKey)),
+      initialLoad: true,
+    });
+  });
 
   useHideEmptySidebar();
 
@@ -281,15 +280,17 @@ const Tabs: React.FC = () => {
               />
             </TabWithDivider>
           ))}
-          <Button
-            size="sm"
-            variant="link"
-            className={styles.addButton}
-            aria-label="open mod launcher"
-            onClick={onOpenModLauncher}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </Button>
+          {!isModLauncherOpen && (
+            <Button
+              size="sm"
+              variant="link"
+              className={styles.addButton}
+              aria-label="Open Mod Launcher"
+              onClick={onOpenModLauncher}
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </Button>
+          )}
         </Nav>
         <Tab.Content
           className={cx(

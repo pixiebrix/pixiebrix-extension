@@ -29,7 +29,7 @@ import {
   type ModModalsRootState,
   modModalsSlice,
 } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
@@ -121,7 +121,10 @@ const store = configureStore({
   },
   middleware(getDefaultMiddleware) {
     /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-    return getDefaultMiddleware(defaultMiddlewareConfig)
+    return getDefaultMiddleware({
+      ...defaultMiddlewareConfig,
+      immutableCheck: false,
+    })
       .concat(appApi.middleware)
       .concat(modDefinitionsMiddleware)
       .concat(routerMiddleware(hashHistory))
@@ -134,7 +137,7 @@ const store = configureStore({
           whitelist: sessionChangesStateSyncActions,
         }),
       );
-    /* eslint-enable unicorn/prefer-spread */
+    /* eslint-enable unicorn/prefer-spread  */
   },
   devTools: REDUX_DEV_TOOLS,
 });

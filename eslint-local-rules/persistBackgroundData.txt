@@ -11,9 +11,10 @@
 ./src/analysis/analysisVisitors/regexAnalysis.ts
 ./src/analysis/analysisVisitors/varAnalysis/varMap.ts
 ./src/auth/authConstants.ts
+./src/auth/authStorage.ts
 ./src/auth/authTypes.ts
 ./src/auth/authUtils.ts
-./src/auth/token.ts
+./src/auth/featureFlags.ts
 ./src/components/annotationAlert/FieldAnnotationAlert.tsx
 ./src/components/AsyncButton.tsx
 ./src/components/DelayedRender.tsx
@@ -72,14 +73,14 @@
 ./src/contentScript/context.ts
 ./src/contentScript/contextMenus.ts
 ./src/contentScript/elementReference.ts
-./src/contentScript/ephemeralFormProtocol.ts
+./src/contentScript/formController.ts
 ./src/contentScript/ephemeralPanelController.tsx
 ./src/contentScript/lifecycle.ts
 ./src/contentScript/messenger/api.ts
 ./src/contentScript/messenger/runBrickTypes.ts
 ./src/contentScript/pageEditor/elementPicker.ts
 ./src/contentScript/pageEditor/types.ts
-./src/contentScript/pageState.ts
+./src/contentScript/stateController.ts
 ./src/contentScript/performanceMonitoring.ts
 ./src/contentScript/ready.ts
 ./src/contentScript/sidebarController.tsx
@@ -115,6 +116,12 @@
 ./src/contrib/uipath/UiPathRobot.ts
 ./src/contrib/zapier/contract.ts
 ./src/contrib/zapier/push.ts
+./src/data/service/api.ts
+./src/data/service/apiClient.ts
+./src/data/service/baseQuery.ts
+./src/data/service/baseService.ts
+./src/data/service/errorService.ts
+./src/data/service/requestErrorUtils.ts
 ./src/development/errorsBadge.ts
 ./src/development/messengerLogging.ts
 ./src/development/runtimeLogging.ts
@@ -131,7 +138,6 @@
 ./src/extensionContext.ts
 ./src/hooks/auth.ts
 ./src/hooks/common.ts
-./src/hooks/fetch.ts
 ./src/hooks/useAsyncState.ts
 ./src/hooks/useDebouncedEffect.ts
 ./src/hooks/useEventListener.ts
@@ -204,12 +210,6 @@
 ./src/runtime/runtimeUtils.ts
 ./src/sandbox/messenger/api.ts
 ./src/sandbox/messenger/executor.ts
-./src/services/api.ts
-./src/services/apiClient.ts
-./src/services/baseQuery.ts
-./src/services/baseService.ts
-./src/services/errorService.ts
-./src/services/requestErrorUtils.ts
 ./src/sidebar/components/RootCancelledPanel.tsx
 ./src/sidebar/components/RootErrorPanel.tsx
 ./src/sidebar/messenger/api.ts
@@ -256,7 +256,6 @@
 ./src/store/settings/settingsStorage.ts
 ./src/store/settings/settingsTypes.ts
 ./src/store/StorageInterface.ts
-./src/store/syncFlags.ts
 ./src/telemetry/BackgroundLogger.ts
 ./src/telemetry/deployments.ts
 ./src/telemetry/dnt.ts
@@ -288,7 +287,6 @@
 ./src/types/modComponentTypes.ts
 ./src/types/modDefinitionTypes.ts
 ./src/types/modTypes.ts
-./src/types/objectTypes.ts
 ./src/types/registryTypes.ts
 ./src/types/rendererTypes.ts
 ./src/types/runtimeTypes.ts
@@ -347,7 +345,7 @@
 ./src/utils/urlUtils.ts
 ./src/utils/variableUtils.ts
 ./src/validators/formValidator.ts
-./src/validators/generic.ts
+./src/validators/schemaValidator.ts
 ./src/vendors/encodings.ts
 ./src/vendors/mixpanel.ts
 ./src/vendors/Overlay.tsx

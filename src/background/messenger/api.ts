@@ -21,12 +21,11 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
-import type { AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
-export const getUID = getMethod("GET_UID", bg);
 export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
 export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
 export const setPartnerCopilotData = getNotifier(
@@ -34,8 +33,7 @@ export const setPartnerCopilotData = getNotifier(
   bg,
 );
 
-export const activateTab = getMethod("ACTIVATE_TAB", bg);
-export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
+export const focusTab = getMethod("FOCUS_TAB", bg);
 export const removeExtensionForEveryTab = getNotifier(
   "REMOVE_EXTENSION_EVERY_TAB",
   bg,
@@ -44,30 +42,12 @@ export const removeExtensionForEveryTab = getNotifier(
 export const closeTab = getMethod("CLOSE_TAB", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 
-export const sheets = {
-  isLoggedIn: getMethod("GOOGLE_DRIVE_IS_LOGGED_IN", bg),
-  getUserEmail: getMethod("GOOGLE_DRIVE_GET_USER_EMAIL", bg),
-  getAllSpreadsheets: getMethod("GOOGLE_SHEETS_GET_ALL_SPREADSHEETS", bg),
-  getSpreadsheet: getMethod("GOOGLE_SHEETS_GET_SPREADSHEET", bg),
-  getHeaders: getMethod("GOOGLE_SHEETS_GET_HEADERS", bg),
-  getAllRows: getMethod("GOOGLE_SHEETS_GET_ALL_ROWS", bg),
-  createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
-  appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
-};
-
 /**
  * Uninstall context menu and return whether the context menu was uninstalled.
  */
 export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
 export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
 export const openTab = getMethod("OPEN_TAB", bg);
-
-export const registry = {
-  syncRemote: getMethod("REGISTRY_SYNC", bg),
-  getByKinds: getMethod("REGISTRY_GET_BY_KINDS", bg),
-  find: getMethod("REGISTRY_FIND", bg),
-  clear: getMethod("REGISTRY_CLEAR", bg),
-};
 
 export const requestRun = {
   inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
@@ -81,34 +61,18 @@ export const contextMenus = {
   preload: getMethod("PRELOAD_CONTEXT_MENUS", bg),
 };
 
-export const services = {
-  locateAllForId: getMethod("LOCATE_SERVICES_FOR_ID", bg),
-  locate: getMethod("LOCATE_SERVICE", bg),
-  refresh: getMethod("REFRESH_SERVICES", bg),
-  refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
-};
-
 // `getMethod` currently strips generics, so we must copy the function signature here
 export const performConfiguredRequestInBackground = getMethod(
   "CONFIGURED_REQUEST",
   bg,
 ) as <TData>(
   integrationConfig: SanitizedIntegrationConfig | null,
-  requestConfig: AxiosRequestConfig,
+  requestConfig: NetworkRequestConfig,
+  options: { interactiveLogin: boolean },
 ) => Promise<RemoteResponse<TData>>;
 
 // Use this instead: `import reportError from "@/telemetry/reportError"`
 // export const recordError = getNotifier("RECORD_ERROR", bg);
-// Use this instead: `import reportEvent from "@/telemetry/reportEvent"`
-// export const recordEvent = getNotifier("RECORD_EVENT", bg);
-
-export const recordLog = getNotifier("RECORD_LOG", bg);
-export const clearLogs = getMethod("CLEAR_LOGS", bg);
-export const clearLog = getMethod("CLEAR_LOG", bg);
-export const clearExtensionDebugLogs = getMethod(
-  "CLEAR_EXTENSION_DEBUG_LOGS",
-  bg,
-);
 
 export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
 export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
@@ -124,5 +88,10 @@ export const ping = getMethod("PING", bg);
 
 export const collectPerformanceDiagnostics = getMethod(
   "COLLECT_PERFORMANCE_DIAGNOSTICS",
+  bg,
+);
+
+export const launchInteractiveOAuthFlow = getMethod(
+  "LAUNCH_INTERACTIVE_OAUTH_FLOW",
   bg,
 );

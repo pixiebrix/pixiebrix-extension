@@ -20,19 +20,20 @@ import { flatten, isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import { type RegistryId } from "@/types/registryTypes";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
-import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
+import { readPartnerAuthData, setPartnerAuth } from "@/auth/authStorage";
 import serviceRegistry from "@/integrations/registry";
 import axios from "axios";
-import { getBaseURL } from "@/services/baseService";
+import { getBaseURL } from "@/data/service/baseService";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import chromeP from "webext-polyfill-kinda";
-import { safeParseUrl } from "@/utils/urlUtils";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
+import { stringToBase64 } from "uint8array-extras";
+import { canParseUrl } from "@/utils/urlUtils";
 
 const TEN_HOURS = 1000 * 60 * 60 * 10;
 
@@ -77,9 +78,9 @@ export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
   );
 
   return auths
-    .filter((auth) => !isEmpty(auth.config.controlRoomUrl))
+    .filter((auth) => canParseUrl(auth.config.controlRoomUrl))
     .map((auth) => ({
-      hostname: safeParseUrl(auth.config.controlRoomUrl).hostname,
+      hostname: new URL(auth.config.controlRoomUrl).hostname,
       principalId: auth.config.username,
     }));
 }
@@ -91,16 +92,16 @@ export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
  * calling this method.
  */
 export async function launchAuthIntegration({
-  serviceId,
+  integrationId,
 }: {
-  serviceId: RegistryId;
+  integrationId: RegistryId;
 }): Promise<void> {
   expectContext("background");
 
-  const service = await serviceRegistry.lookup(serviceId);
+  const service = await serviceRegistry.lookup(integrationId);
 
   await serviceLocator.refreshLocal();
-  const allAuths = await serviceLocator.locateAllForService(serviceId);
+  const allAuths = await serviceLocator.locateAllForService(integrationId);
   const localAuths = allAuths.filter((x) => !x.proxy);
 
   if (localAuths.length === 0) {
@@ -114,9 +115,9 @@ export async function launchAuthIntegration({
   // `launchOAuth2Flow` expects the raw auth. In the case of CONTROL_ROOM_OAUTH_SERVICE_ID, they'll be the same
   // because it doesn't have any secrets.
   const config = await serviceLocator.findIntegrationConfig(localAuths[0].id);
-  const data = await launchOAuth2Flow(service, config);
+  const data = await launchOAuth2Flow(service, config, { interactive: true });
 
-  if (serviceId === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
+  if (integrationId === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
     // Hard-coding headers for now. In the future, will want to add support for defining in the service definition.
 
     if (isEmpty(config.config.controlRoomUrl)) {
@@ -170,7 +171,7 @@ export async function launchAuthIntegration({
     });
   } else {
     throw new Error(
-      `Support for login with integration not implemented: ${serviceId}`,
+      `Support for login with integration not implemented: ${integrationId}`,
     );
   }
 }
@@ -208,7 +209,7 @@ export async function _refreshPartnerToken(): Promise<void> {
     // On 401, throw the error. In the future, we might consider clearing the partnerAuth. However, currently that
     // would trigger a re-login, which may not be desirable at arbitrary times.
     const { data } = await axios.post(context.tokenUrl, params, {
-      headers: { Authorization: `Basic ${btoa(context.client_id)} ` },
+      headers: { Authorization: `Basic ${stringToBase64(context.client_id)} ` },
     });
 
     // Store for use direct calls to the partner API

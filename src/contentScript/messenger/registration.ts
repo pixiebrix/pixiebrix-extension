@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
+/**
+ * @file
+ * Do not use `getMethod` in this file; Keep only registrations here, not implementations
+ *
+ * `strictNullCheck errors` context: https://github.com/pixiebrix/pixiebrix-extension/issues/6526
+ */
+
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import {
@@ -24,36 +30,35 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle";
-import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
-import { insertButton } from "@/contentScript/pageEditor/insertButton";
+} from "@/contentScript/lifecycle"; // 275 strictNullCheck errors
+import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 300 strictNullCheck errors
+import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 300 strictNullCheck errors
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/contentScript/pageEditor/dynamic";
+} from "@/contentScript/pageEditor/dynamic"; // 300 strictNullCheck errors
 import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
-  navigateTab,
-} from "@/contentScript/pageEditor";
-import { runBrick } from "@/contentScript/executor";
+} from "@/contentScript/pageEditor"; // 300 strictNullCheck errors
+import { runBrick } from "@/contentScript/executor"; // 290 strictNullCheck errors
 import {
   cancelSelect,
   selectElement,
-} from "@/contentScript/pageEditor/elementPicker";
+} from "@/contentScript/pageEditor/elementPicker"; // 290 strictNullCheck errors
 import {
   runHeadlessPipeline,
   runMapArgs,
   runRendererPipeline,
-} from "@/contentScript/pipelineProtocol";
-import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
-import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
-import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
+} from "@/contentScript/pipelineProtocol"; // Depends on background/messenger to pass strictNullCheck
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore"; // 248 strictNullCheck errors
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation"; // 246 strictNullCheck errors
 import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
+import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Depends on background/messenger to pass strictNullCheck
 
 expectContext("contentScript");
 
@@ -63,9 +68,6 @@ declare global {
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
     RESET_TAB: typeof resetTab;
-    NAVIGATE_TAB: typeof navigateTab;
-
-    TOGGLE_QUICK_BAR: typeof toggleQuickBar;
 
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
@@ -92,6 +94,8 @@ declare global {
 
     GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
 
+    SHOW_LOGIN_BANNER: typeof showBannerFromConfig;
+
     RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
   }
 }
@@ -102,9 +106,6 @@ export default function registerMessenger(): void {
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
     RESET_TAB: resetTab,
-    NAVIGATE_TAB: navigateTab,
-
-    TOGGLE_QUICK_BAR: toggleQuickBar,
 
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,
@@ -130,6 +131,8 @@ export default function registerMessenger(): void {
     RUN_MAP_ARGS: runMapArgs,
 
     GET_COPILOT_HOST_DATA: getCopilotHostData,
+
+    SHOW_LOGIN_BANNER: showBannerFromConfig,
 
     RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
   });

@@ -19,6 +19,7 @@ import { type BrickOptions, type RunMetadata } from "@/types/runtimeTypes";
 import { define, derive } from "cooky-cutter";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 
 /**
  * Factory for BrickOptions to pass to Brick.run method.
@@ -29,6 +30,7 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
  */
 export const brickOptionsFactory = define<BrickOptions>({
   ctxt: null,
+  platform: () => contentScriptPlatform,
   logger: (i: number) =>
     new ConsoleLogger({
       extensionId: uuidSequence(i),

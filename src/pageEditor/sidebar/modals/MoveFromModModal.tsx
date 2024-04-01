@@ -70,7 +70,7 @@ const MoveFromModModal: React.FC = () => {
         const elementId = activeElement.uuid;
         dispatch(actions.removeElementFromRecipe({ elementId, keepLocalCopy }));
         hideModal();
-      } catch (error: unknown) {
+      } catch (error) {
         notify.error({
           message: "Problem removing from mod",
           error,

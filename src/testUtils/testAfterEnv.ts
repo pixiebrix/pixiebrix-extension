@@ -24,7 +24,6 @@ import $ from "jquery";
 // https://github.com/evelynhathaway/jest-location-mock
 import "jest-location-mock";
 import "./permissionsMock";
-import * as detectPageMock from "./detectPageMock";
 
 // @ts-expect-error For testing only
 global.$ = $;
@@ -41,4 +40,22 @@ browser.runtime.getManifest = jest.fn().mockReturnValue({
 
 browser.runtime.getURL = (path) => `chrome-extension://abcxyz/${path}`;
 
-jest.setMock("webext-detect-page", detectPageMock);
+// `jest-webextension-mock` is missing mocks for onRemoved: https://github.com/clarkbw/jest-webextension-mock/pull/180
+browser.tabs.onRemoved = {
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  hasListener: jest.fn(),
+  hasListeners: jest.fn(),
+};
+
+// `jest-webextension-mock` is missing mocks for onChanged: https://github.com/clarkbw/jest-webextension-mock/issues/170
+// `webext-storage` uses the chrome namespace: https://github.com/fregante/webext-storage/blob/main/source/storage-item.ts#L63
+chrome.storage.onChanged = {
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  hasListener: jest.fn(),
+  hasListeners: jest.fn(),
+  getRules: jest.fn(),
+  removeRules: jest.fn(),
+  addRules: jest.fn(),
+};

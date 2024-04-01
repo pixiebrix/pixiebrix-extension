@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { propertiesToSchema } from "@/validators/generic";
 import {
   StarterBrickABC,
   type StarterBrickConfig,
@@ -35,7 +34,6 @@ import { checkAvailable } from "@/bricks/available";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import "@/vendors/hoverintent";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import {
@@ -57,8 +55,13 @@ import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import {
+  CONTENT_SCRIPT_CAPABILITIES,
+  type PlatformCapability,
+} from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export type TourConfig = {
   /**
@@ -91,6 +94,8 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     return "tour";
   }
 
+  readonly capabilities: PlatformCapability[] = CONTENT_SCRIPT_CAPABILITIES;
+
   readonly extensionTours = new Map<UUID, RegisteredTour>();
 
   /**
@@ -107,7 +112,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     if (await this.isAvailable()) {
       const { initPopoverPool } = await import(
         /* webpackChunkName: "popoverUtils" */
-        "@/bricks/transformers/temporaryInfo/popoverUtils"
+        "@/contentScript/popoverDom"
       );
 
       await initPopoverPool();
@@ -295,14 +300,17 @@ class RemoteTourExtensionPoint extends TourStarterBrickABC {
 
   public readonly rawConfig: StarterBrickConfig<TourDefinition>;
 
-  public override get defaultOptions(): Record<string, unknown> {
+  public override get defaultOptions(): UnknownObject {
     return this._definition.defaultOptions ?? { allowUserRun: true };
   }
 
-  constructor(config: StarterBrickConfig<TourDefinition>) {
+  constructor(
+    platform: PlatformProtocol,
+    config: StarterBrickConfig<TourDefinition>,
+  ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;
@@ -330,6 +338,7 @@ class RemoteTourExtensionPoint extends TourStarterBrickABC {
 }
 
 export function fromJS(
+  platform: PlatformProtocol,
   config: StarterBrickConfig<TourDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
@@ -337,5 +346,5 @@ export function fromJS(
     throw new Error(`Expected type=tour, got ${type}`);
   }
 
-  return new RemoteTourExtensionPoint(config);
+  return new RemoteTourExtensionPoint(platform, config);
 }

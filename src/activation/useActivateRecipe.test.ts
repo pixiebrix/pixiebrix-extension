@@ -22,7 +22,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type MenuDefinition } from "@/starterBricks/contextMenu";
 import { uninstallRecipe } from "@/store/uninstallUtils";
-import { reactivateEveryTab } from "@/background/messenger/api";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
@@ -36,8 +35,10 @@ import {
   defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
+import { reactivateEveryTab } from "@/contentScript/messenger/api";
+
+jest.mock("@/contentScript/messenger/api");
 
 const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
 const uninstallRecipeMock = jest.mocked(uninstallRecipe);
@@ -45,8 +46,8 @@ const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
 
 const createDatabaseMock = jest.fn();
 
-jest.mock("@/services/api", () => {
-  const actual = jest.requireActual("@/services/api");
+jest.mock("@/data/service/api", () => {
+  const actual = jest.requireActual("@/data/service/api");
   return {
     ...actual,
     useCreateDatabaseMutation: jest.fn(() => [createDatabaseMock]),
@@ -199,12 +200,12 @@ describe("useActivateRecipe", () => {
     );
 
     expect(dispatch).toHaveBeenCalledWith(
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition,
         configuredDependencies: [],
         optionsArgs: {},
         screen: "extensionConsole",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
 
@@ -269,14 +270,14 @@ describe("useActivateRecipe", () => {
     const { dispatch } = getReduxStore();
 
     expect(dispatch).toHaveBeenCalledWith(
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition,
         configuredDependencies: [],
         optionsArgs: {
           myDatabase: createdDatabase.id,
         },
         screen: "marketplace",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
   });

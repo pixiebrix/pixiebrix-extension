@@ -19,6 +19,8 @@
 // Note that some browsers, such as Firefox, do not concatenate properties
 // into their shorthand (e.g. padding-top, padding-bottom etc. -> padding),
 // so we have to list every single property explicitly.
+import type { NativeField } from "@/types/inputTypes";
+
 const properties = [
   "direction", // RTL support
   "boxSizing",
@@ -64,13 +66,14 @@ const properties = [
  * Firefox lies about the overflow property for textareas: https://bugzilla.mozilla.org/show_bug.cgi?id=984275
  * Used https://github.com/component/textarea-caret-position/blob/master/index.js as a reference
  * XXX: Due to the complicated nature of doing visual regression testing, this method is not covered by automated testing.
- * @param element
- * @param position
+ * Warning! The coordinate values returned when the caret is not within the boundaries of the input or textarea
+ * may not be accurate. If needed, use the `snapWithin` function with the getBoundingClientRect() of the element to
+ * ensure the coordinates are within the boundaries of the element.
+ * @see snapWithin
+ * @param element -- the textarea or input element
+ * @param position -- the position of the caret in the element
  */
-export function getCaretCoordinates(
-  element: HTMLTextAreaElement | HTMLInputElement,
-  position: number,
-) {
+export function getCaretCoordinates(element: NativeField, position: number) {
   // The mirror div will replicate the textarea's style
   const div = document.createElement("div");
   div.id = "input-textarea-caret-position-mirror-div";
@@ -87,6 +90,17 @@ export function getCaretCoordinates(
   // Position off-screen
   style.position = "absolute"; // Required to return coordinates properly
 
+  let computedLineHeight: number;
+  if (computed.lineHeight === "normal") {
+    // Use a default value of 1.125 multiplied by the fontSize if the line-height is normal. This seems to be the default
+    // line-height in textareas for most browsers from observation during manual testing (not 1.2).
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/line-height#normal
+    const fontSize = Number.parseInt(computed.fontSize, 10);
+    computedLineHeight = fontSize * 1.125;
+  } else {
+    computedLineHeight = Number.parseInt(computed.lineHeight, 10);
+  }
+
   // Transfer the element's properties to the div
   for (const prop of properties) {
     if (isInput && prop === "lineHeight") {
@@ -98,12 +112,11 @@ export function getCaretCoordinates(
           Number.parseInt(computed.paddingBottom, 10) +
           Number.parseInt(computed.borderTopWidth, 10) +
           Number.parseInt(computed.borderBottomWidth, 10);
-        const targetHeight =
-          outerHeight + Number.parseInt(computed.lineHeight, 10);
+        const targetHeight = outerHeight + computedLineHeight;
         if (height > targetHeight) {
           style.lineHeight = height - outerHeight + "px";
         } else if (height === targetHeight) {
-          style.lineHeight = computed.lineHeight;
+          style.lineHeight = computedLineHeight + "px";
         } else {
           style.lineHeight = "0";
         }
@@ -121,9 +134,7 @@ export function getCaretCoordinates(
   div.textContent = element.value.slice(0, Math.max(0, position));
   // The second special handling for input type="text" vs textarea:
   // spaces need to be replaced with non-breaking spaces - http://stackoverflow.com/a/13402035/1269037
-  if (isInput)
-    // eslint-disable-next-line unicorn/consistent-destructuring
-    div.textContent = div.textContent.replaceAll(/\s/g, "\u00A0");
+  if (isInput) div.textContent = div.textContent.replaceAll(/\s/g, "\u00A0");
 
   const span = document.createElement("span");
   // Wrapping must be replicated *exactly*, including when a long word gets
@@ -137,7 +148,7 @@ export function getCaretCoordinates(
   const coordinates = {
     top: span.offsetTop + Number.parseInt(computed.borderTopWidth, 10),
     left: span.offsetLeft + Number.parseInt(computed.borderLeftWidth, 10),
-    height: Number.parseInt(computed.lineHeight, 10),
+    height: computedLineHeight,
   };
 
   div.remove();

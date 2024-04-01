@@ -18,7 +18,8 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
+
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 interface SplitArgs {
   text: string;

@@ -15,20 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { reactivateTab } from "@/contentScript/messenger/api";
-import { forEachTab } from "@/utils/extensionUtils";
 import { type Target } from "@/types/messengerTypes";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { isScriptableUrl } from "webext-content-scripts";
 import { debounce } from "lodash";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
 import { getTargetState } from "@/contentScript/ready";
-import { flagOn } from "@/auth/authUtils";
-
-export function reactivateEveryTab(): void {
-  console.debug("Reactivate all tabs");
-  void forEachTab(reactivateTab);
-}
+import { flagOn } from "@/auth/featureFlagStorage";
 
 /**
  * Log details about a navigation to the console for debugging content script/navigation bugs.

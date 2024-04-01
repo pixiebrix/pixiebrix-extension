@@ -26,7 +26,7 @@ import {
   useKBar,
   VisualState,
 } from "kbar";
-import EmotionShadowRoot from "react-shadow/emotion";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
@@ -34,21 +34,24 @@ import {
   MAX_Z_INDEX,
   PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS,
 } from "@/domConstants";
-import { useEventListener } from "@/hooks/useEventListener";
+import useEventListener from "@/hooks/useEventListener";
 import { Stylesheets } from "@/components/Stylesheets";
 import selection from "@/utils/selectionController";
+import focus from "@/utils/focusController";
 import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
 import useActionGenerators from "@/components/quickBar/useActionGenerators";
 import useActions from "@/components/quickBar/useActions";
-import FocusLock from "react-focus-lock";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import defaultActions, {
   pageEditorAction,
 } from "@/components/quickBar/defaultActions";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
-import { flagOn } from "@/auth/authUtils";
 import { onContextInvalidated } from "webext-events";
+import StopPropagation from "@/components/StopPropagation";
+import useScrollLock from "@/hooks/useScrollLock";
+import { flagOn } from "@/auth/featureFlagStorage";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -68,18 +71,16 @@ export const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
 function useAutoShow(): void {
   const { query } = useKBar();
 
-  useEventListener(QUICKBAR_EVENT_NAME, () => {
+  useEventListener(window, QUICKBAR_EVENT_NAME, () => {
     query.toggle();
   });
 
-  useEffect(() => {
+  useOnMountOnly(() => {
     if (autoShow) {
       query.toggle();
       autoShow = false;
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount; query will be defined on initial mount
-  }, []);
+  });
 }
 
 const AutoShow: React.FC = () => {
@@ -95,6 +96,8 @@ const KBarComponent: React.FC = () => {
     showing: state.visualState !== VisualState.hidden,
   }));
 
+  useScrollLock(showing);
+
   // Save the selection at the time the quick bar is shown so it can be used in quick bar actions even after the user
   // types in the quick bar search box. Restore the selection when the quick bar is hidden.
   // Must be in a useEffect, otherwise when the user types in the quick bar search box, the selection is lost because
@@ -102,10 +105,14 @@ const KBarComponent: React.FC = () => {
   useEffect(() => {
     if (showing) {
       selection.save();
+      focus.save();
       console.debug("Saving last selection:", selection.get());
+      console.debug("Saving last focus:", focus.get());
     } else {
       console.debug("Restoring last selection:", selection.get());
+      console.debug("Restoring last focus:", focus.get());
       selection.restore();
+      focus.restore();
     }
   }, [showing]);
 
@@ -134,19 +141,21 @@ const KBarComponent: React.FC = () => {
               To support react-select and any future potential emotion components we used the
               emotion variant of the react-shadow library.
             */}
-          <EmotionShadowRoot.div
+          <EmotionShadowRoot
             data-testid="quickBar"
             className="cke_editable"
+            mode="closed"
             contentEditable
             suppressContentEditableWarning
           >
             <Stylesheets href={faStyleSheet} mountOnLoad>
-              <FocusLock>
+              <StopPropagation onKeyPress onKeyDown onKeyUp onInput>
+                {/* eslint-disable-next-line react/jsx-max-depth -- Not worth simplifying */}
                 <KBarSearch style={searchStyle} />
-                <QuickBarResults />
-              </FocusLock>
+              </StopPropagation>
+              <QuickBarResults />
             </Stylesheets>
-          </EmotionShadowRoot.div>
+          </EmotionShadowRoot>
         </KBarAnimator>
       </KBarPositioner>
     </KBarPortal>
@@ -154,10 +163,13 @@ const KBarComponent: React.FC = () => {
 };
 
 export const QuickBarApp: React.FC = () => (
-  /* Disable exit animation due to #3724. `enterMs` is required too */
   <KBarProvider
     options={{
+      disableDocumentLock: true,
+
+      /* Disable exit animation due to #3724. `enterMs` is required too */
       animations: { enterMs: 300, exitMs: 0 },
+
       // Setting `toggleShortcut` to same as the Chrome-level PixieBrix `toggle-quick-bar` command shortcut defined
       // in manifest.json. However, it generally won't take effect. (And KBar does not support disabling it's shortcut)
       //

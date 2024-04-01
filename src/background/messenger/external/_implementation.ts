@@ -19,7 +19,7 @@
  * @file THIS FILE IS MEANT TO BE IMPORTED EXCLUSIVELY BY ./api.js
  */
 
-import { linkExtension } from "@/auth/token";
+import { linkExtension } from "@/auth/authStorage";
 import { type TokenAuthData } from "@/auth/authTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";

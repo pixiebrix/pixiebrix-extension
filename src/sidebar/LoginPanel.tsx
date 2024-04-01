@@ -32,12 +32,7 @@ const DefaultLogin: React.FunctionComponent = () => (
 
     <p>Register/log-in to PixieBrix to access your personal and team bricks</p>
 
-    <Button
-      className="mt-4"
-      href={DEFAULT_SERVICE_URL}
-      target="_blank"
-      variant="primary"
-    >
+    <Button className="mt-4" href={DEFAULT_SERVICE_URL} variant="primary">
       <FontAwesomeIcon icon={faSignInAlt} /> Connect Account
     </Button>
   </>
@@ -45,17 +40,12 @@ const DefaultLogin: React.FunctionComponent = () => (
 
 const PartnerAuth: React.FunctionComponent = () => (
   <>
-    <h4 className="display-6">Connect your AARI account</h4>
+    <h4 className="display-6">Connect your Automation Co-Pilot account</h4>
     <p>
       Authenticate with Automation Anywhere to continue using your team&apos;s
-      AARI extensions
+      Automation Co-Pilot extensions
     </p>
-    <Button
-      className="mt-4"
-      href={getExtensionConsoleUrl()}
-      target="_blank"
-      variant="primary"
-    >
+    <Button className="mt-4" href={getExtensionConsoleUrl()} variant="primary">
       <FontAwesomeIcon icon={faSignInAlt} /> Connect Account
     </Button>
   </>

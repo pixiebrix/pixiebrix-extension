@@ -16,8 +16,10 @@
  */
 
 import type { UserData } from "@/auth/authTypes";
-import { getUID } from "@/background/messenger/api";
+import { uuidv4 } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
+import { once } from "lodash";
+import { StorageItem } from "webext-storage";
 
 /**
  * The Person model for application error telemetry.
@@ -28,8 +30,30 @@ type TelemetryUser = {
    */
   id: UUID;
   email?: string;
-  organizationId?: UUID;
+  organizationId?: UUID | null;
 };
+
+export const uuidStorage = new StorageItem<UUID>("USER_UUID");
+
+/**
+ * Return a random ID for this browser profile.
+ * It's persisted in storage via `chrome.storage.local` and in-memory via `once`
+ *
+ * In React code, use useBrowserIdentifier
+ *
+ * @see useBrowserIdentifier
+ */
+export const getUUID = once(async (): Promise<UUID> => {
+  const existingUUID = await uuidStorage.get();
+  if (existingUUID) {
+    return existingUUID;
+  }
+
+  const newUUID = uuidv4();
+  console.debug("Generating UID for browser", { uuid: newUUID });
+  await uuidStorage.set(newUUID);
+  return newUUID;
+});
 
 /**
  * Cleans up the version name for Datadog.
@@ -62,9 +86,9 @@ export function cleanDatadogVersionName(versionName: string): string {
  * @param data the PixieBrix user data
  */
 export async function mapAppUserToTelemetryUser(
-  data: Partial<UserData>,
+  data: UserData,
 ): Promise<TelemetryUser> {
-  const browserId = await getUID();
+  const browserId = await getUUID();
   const { user, email, telemetryOrganizationId, organizationId } = data;
 
   return {

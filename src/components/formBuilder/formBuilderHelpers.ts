@@ -123,8 +123,8 @@ export const moveStringInArray = (
   }
 
   const toIndex = direction === "up" ? fromIndex - 1 : fromIndex + 1;
-  // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion -- checked with indexOf
-  [copy[fromIndex], copy[toIndex]] = [copy[toIndex]!, copy[fromIndex]!];
+  // eslint-disable-next-line security/detect-object-injection -- checked with indexOf
+  [copy[fromIndex], copy[toIndex]] = [copy[toIndex], copy[fromIndex]];
   return copy;
 };
 
@@ -171,8 +171,7 @@ export const produceSchemaOnPropertyNameChange = (
   nextPropertyName: string,
 ) =>
   produce(rjsfSchema, (draft) => {
-    // Relying on Immer to protect against object injections
-    /* eslint-disable security/detect-object-injection */
+    /* eslint-disable security/detect-object-injection -- Relying on Immer to protect against object injections */
     draft.schema.properties[nextPropertyName] =
       draft.schema.properties[propertyName];
     delete draft.schema.properties[propertyName];
@@ -198,7 +197,7 @@ export const produceSchemaOnPropertyNameChange = (
       draft.uiSchema[nextPropertyName] = draft.uiSchema[propertyName];
       delete draft.uiSchema[propertyName];
     }
-    /* eslint-enable security/detect-object-injection */
+    /* eslint-enable security/detect-object-injection  */
   });
 
 export const produceSchemaOnUiTypeChange = (
@@ -210,8 +209,7 @@ export const produceSchemaOnUiTypeChange = (
     parseUiType(nextUiType);
 
   return produce(rjsfSchema, (draft) => {
-    // Relying on Immer to protect against object injections
-    /* eslint-disable security/detect-object-injection */
+    /* eslint-disable security/detect-object-injection -- Relying on Immer to protect against object injections */
     const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
 
     switch (uiWidget) {
@@ -248,10 +246,7 @@ export const produceSchemaOnUiTypeChange = (
     }
 
     if (uiWidget) {
-      if (!draft.uiSchema[propertyName]) {
-        draft.uiSchema[propertyName] = {};
-      }
-
+      draft.uiSchema[propertyName] ??= {};
       draft.uiSchema[propertyName][UI_WIDGET] = uiWidget;
     } else if (draft.uiSchema[propertyName]) {
       delete draft.uiSchema[propertyName][UI_WIDGET];
@@ -287,7 +282,7 @@ export const produceSchemaOnUiTypeChange = (
       delete draftPropertySchema.enum;
       delete draftPropertySchema.oneOf;
     }
-    /* eslint-enable security/detect-object-injection */
+    /* eslint-enable security/detect-object-injection  */
   });
 };
 
@@ -307,9 +302,7 @@ export const normalizeSchema = (rjsfSchemaDraft: Draft<RJSFSchema>) => {
     rjsfSchemaDraft.schema.required = [];
   }
 
-  if (rjsfSchemaDraft.schema.properties == null) {
-    rjsfSchemaDraft.schema.properties = {};
-  }
+  rjsfSchemaDraft.schema.properties ??= {};
 };
 
 export const getNormalizedUiOrder = (

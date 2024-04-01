@@ -24,9 +24,9 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RequireBrickRegistry from "@/extensionConsole/components/RequireBrickRegistry";
-import { useGetRecipeQuery } from "@/services/api";
+import { useGetRecipeQuery } from "@/data/service/api";
 import { useSelector } from "react-redux";
-import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
+import { selectModHasAnyActivatedModComponents } from "@/store/extensionsSelectors";
 import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import notify from "@/utils/notify";
@@ -76,7 +76,7 @@ const ActivateModPageContent: React.FC = () => {
 const ActivateModPage: React.FunctionComponent = () => {
   const modId = useRegistryIdParam();
   const history = useHistory();
-  const isReinstall = useSelector(selectRecipeHasAnyExtensionsInstalled(modId));
+  const isReinstall = useSelector(selectModHasAnyActivatedModComponents(modId));
 
   const { isFetching, error } = useGetRecipeQuery(
     { recipeId: modId },

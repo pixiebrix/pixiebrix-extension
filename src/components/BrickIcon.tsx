@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
   faBolt,
@@ -35,13 +34,11 @@ import { MenuItemStarterBrickABC } from "@/starterBricks/menuItemExtension";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu";
 import { PanelStarterBrickABC } from "@/starterBricks/panelExtension";
 import { SidebarStarterBrickABC } from "@/starterBricks/sidebarExtension";
-import { appApi } from "@/services/api";
-import { useAsyncIcon } from "@/components/asyncIcon";
-import { type MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import { type Metadata } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
+import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 
 function getDefaultBrickIcon<T extends Metadata>(
   brick: T,
@@ -96,8 +93,6 @@ function getDefaultBrickIcon<T extends Metadata>(
   return faCube;
 }
 
-const SIZE_REGEX = /^(?<size>\d)x$/i;
-
 type BrickIconProps<T extends Metadata> = {
   brick: T;
   size?: "1x" | "2x";
@@ -122,41 +117,23 @@ type BrickIconProps<T extends Metadata> = {
  */
 const BrickIcon = <T extends Metadata>({
   brick,
-  size = "1x",
-  faIconClass = "",
+  size,
+  faIconClass,
   inheritColor = false,
 }: BrickIconProps<T>) => {
-  const { data: listings = {} } =
-    // BrickIcon only gets the data from the store. The API query must be issued by a parent component.
-    appApi.endpoints.getMarketplaceListings.useQueryState();
-
-  const listing: MarketplaceListing | null = listings[brick.id];
-
   const { data: type } = useAsyncState(async () => getType(brick), [brick]);
-
-  const listingFaIcon = useAsyncIcon(
-    listing?.fa_icon,
-    getDefaultBrickIcon(brick, type),
+  const defaultIcon = useMemo(
+    () => getDefaultBrickIcon(brick, type),
+    [brick, type],
   );
 
-  const sizeMultiplier = SIZE_REGEX.exec(size).groups?.size;
-  // Setting height and width via em allows for scaling with font size
-  const cssSize = `${sizeMultiplier}em`;
-
-  return listing?.image ? (
-    // Don't use the `width`/`height` attributes because they don't work with `em`
-    <img
-      src={listing.image.url}
-      alt="Icon"
-      style={{ width: cssSize, height: cssSize }}
-    />
-  ) : (
-    <FontAwesomeIcon
-      icon={listingFaIcon}
-      color={inheritColor ? "inherit" : listing?.icon_color ?? "darkGrey"}
-      className={faIconClass}
+  return (
+    <MarketplaceListingIcon
+      packageId={brick.id}
+      defaultIcon={defaultIcon}
       size={size}
-      fixedWidth
+      faIconClass={faIconClass}
+      inheritColor={inheritColor}
     />
   );
 };

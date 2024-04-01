@@ -63,17 +63,17 @@ interface Fiber {
   /**
    * The props used to create the output.
    */
-  memoizedProps: Record<string, unknown>;
+  memoizedProps: UnknownObject;
 
   /**
    * The resolved function/class associated with this fiber.
    */
-  type: string | Record<string, unknown>;
+  type: string | UnknownObject;
 
   /**
    * The local state associated with this fiber.
    */
-  stateNode: Node | Record<string, unknown>;
+  stateNode: Node | UnknownObject;
 }
 
 function isManaged(node: Node): boolean {
@@ -86,7 +86,7 @@ function hasReactProps(fiber: Fiber): boolean {
   return Object.keys(fiber.memoizedProps).some((x) => x !== "children");
 }
 
-function readReactProps(fiber: Fiber): Record<string, unknown> {
+function readReactProps(fiber: Fiber): UnknownObject {
   return pickBy(fiber.memoizedProps, (value, key) => key !== "children");
 }
 

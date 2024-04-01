@@ -15,17 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
+/**
+ * @file
+ * Do not use `getMethod` in this file; Keep only registrations here, not implementations
+ *
+ * `strictNullCheck errors` context: https://github.com/pixiebrix/pixiebrix-extension/issues/6526
+ */
+
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-import * as sheets from "@/contrib/google/sheets/core/sheetsApi";
 import {
   ensureContextMenu,
   preloadContextMenus,
   uninstallContextMenu,
-} from "@/background/contextMenus";
+} from "@/background/contextMenus"; // 300 strictNullCheck errors
 import {
-  activateTab,
+  focusTab,
   closeTab,
   openTab,
   requestRunInAllFrames,
@@ -33,55 +38,35 @@ import {
   requestRunInOpener,
   requestRunInTarget,
   requestRunInTop,
-} from "@/background/executor";
-import * as registry from "@/registry/packageRegistry";
-import serviceRegistry from "@/integrations/registry";
-import { performConfiguredRequest } from "@/background/requests";
-import { getAvailableVersion } from "@/background/installer";
-import { locator, refreshServices } from "@/background/locator";
-import { reactivateEveryTab } from "@/background/navigation";
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
-import { debouncedInstallStarterMods as installStarterBlueprints } from "@/background/starterMods";
-import {
-  clearExtensionDebugLogs,
-  clearLog,
-  clearLogs,
-  recordError,
-  recordLog,
-} from "@/telemetry/logging";
+} from "@/background/executor"; // Depends on contentScript/messenger to pass strictNullCheck
+import { performConfiguredRequest } from "@/background/requests"; // 24 strictNullCheck errors
+import { getAvailableVersion } from "@/background/installer"; // 300 strictNullCheck errors
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 strictNullCheck errors
+import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 300 strictNullCheck errors
 import {
   collectPerformanceDiagnostics,
   initTelemetry,
   pong,
   recordEvent,
   sendDeploymentAlert,
-  uid,
-} from "@/background/telemetry";
-import { getUserData } from "@/auth/token";
+} from "@/background/telemetry"; // 280 strictNullCheck errors
 import {
   getPartnerPrincipals,
   launchAuthIntegration,
-} from "@/background/partnerIntegrations";
+} from "@/background/partnerIntegrations"; // 39 strictNullCheck errors
 import { setCopilotProcessData } from "@/background/partnerHandlers";
+import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow";
 
 expectContext("background");
 
 declare global {
   interface MessengerMethods {
-    GOOGLE_DRIVE_IS_LOGGED_IN: typeof sheets.isLoggedIn;
-    GOOGLE_DRIVE_GET_USER_EMAIL: typeof sheets.getGoogleUserEmail;
-
-    GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: typeof sheets.getAllSpreadsheets;
-    GOOGLE_SHEETS_GET_SPREADSHEET: typeof sheets.getSpreadsheet;
-    GOOGLE_SHEETS_GET_HEADERS: typeof sheets.getHeaders;
-    GOOGLE_SHEETS_GET_ALL_ROWS: typeof sheets.getAllRows;
-    GOOGLE_SHEETS_CREATE_TAB: typeof sheets.createTab;
-    GOOGLE_SHEETS_APPEND_ROWS: typeof sheets.appendRows;
-
     GET_AVAILABLE_VERSION: typeof getAvailableVersion;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
+
+    LAUNCH_INTERACTIVE_OAUTH_FLOW: typeof launchInteractiveOAuth2Flow;
 
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
     LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
@@ -89,24 +74,13 @@ declare global {
 
     INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
 
-    GET_UID: typeof uid;
-
     PING: typeof pong;
     COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
 
-    ACTIVATE_TAB: typeof activateTab;
-    REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
+    FOCUS_TAB: typeof focusTab;
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
     CLOSE_TAB: typeof closeTab;
     OPEN_TAB: typeof openTab;
-    REGISTRY_SYNC: typeof registry.syncPackages;
-    REGISTRY_CLEAR: typeof registry.clear;
-    REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
-    REGISTRY_FIND: typeof registry.find;
-    LOCATE_SERVICES_FOR_ID: typeof locator.locateAllForService;
-    LOCATE_SERVICE: typeof locator.locate;
-    REFRESH_SERVICES: typeof refreshServices;
-    LOCATOR_REFRESH_LOCAL: typeof locator.refreshLocal;
 
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
     REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
@@ -115,33 +89,14 @@ declare global {
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
 
     CONFIGURED_REQUEST: typeof performConfiguredRequest;
-    CLEAR_SERVICE_CACHE: VoidFunction;
-    RECORD_LOG: typeof recordLog;
-    RECORD_ERROR: typeof recordError;
     RECORD_EVENT: typeof recordEvent;
-    CLEAR_LOGS: typeof clearLogs;
-    CLEAR_LOG: typeof clearLog;
-    CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
-
     INIT_TELEMETRY: typeof initTelemetry;
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
-
-    GET_USER_DATA: typeof getUserData;
   }
 }
 
 export default function registerMessenger(): void {
   registerMethods({
-    GOOGLE_DRIVE_IS_LOGGED_IN: sheets.isLoggedIn,
-    GOOGLE_DRIVE_GET_USER_EMAIL: sheets.getGoogleUserEmail,
-
-    GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: sheets.getAllSpreadsheets,
-    GOOGLE_SHEETS_GET_SPREADSHEET: sheets.getSpreadsheet,
-    GOOGLE_SHEETS_GET_HEADERS: sheets.getHeaders,
-    GOOGLE_SHEETS_GET_ALL_ROWS: sheets.getAllRows,
-    GOOGLE_SHEETS_CREATE_TAB: sheets.createTab,
-    GOOGLE_SHEETS_APPEND_ROWS: sheets.appendRows,
-
     GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
     LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
     SET_PARTNER_COPILOT_DATA: setCopilotProcessData,
@@ -154,24 +109,15 @@ export default function registerMessenger(): void {
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
     ENSURE_CONTEXT_MENU: ensureContextMenu,
 
-    GET_UID: uid,
+    LAUNCH_INTERACTIVE_OAUTH_FLOW: launchInteractiveOAuth2Flow,
 
     PING: pong,
     COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
 
-    ACTIVATE_TAB: activateTab,
-    REACTIVATE_EVERY_TAB: reactivateEveryTab,
+    FOCUS_TAB: focusTab,
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
     CLOSE_TAB: closeTab,
     OPEN_TAB: openTab,
-    REGISTRY_SYNC: registry.syncPackages,
-    REGISTRY_CLEAR: registry.clear,
-    REGISTRY_GET_BY_KINDS: registry.getByKinds,
-    REGISTRY_FIND: registry.find,
-    LOCATE_SERVICES_FOR_ID: locator.locateAllForService.bind(locator),
-    LOCATE_SERVICE: locator.locate.bind(locator),
-    LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),
-    REFRESH_SERVICES: refreshServices,
 
     REQUEST_RUN_IN_OPENER: requestRunInOpener,
     REQUEST_RUN_IN_TARGET: requestRunInTarget,
@@ -179,19 +125,9 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
 
-    CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
     CONFIGURED_REQUEST: performConfiguredRequest,
-
-    RECORD_LOG: recordLog,
-    RECORD_ERROR: recordError,
     RECORD_EVENT: recordEvent,
-    CLEAR_LOGS: clearLogs,
-    CLEAR_LOG: clearLog,
-    CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
-
     INIT_TELEMETRY: initTelemetry,
     SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
-
-    GET_USER_DATA: getUserData,
   });
 }

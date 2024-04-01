@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,10 @@ import { isBackgroundPage } from "webext-detect-page";
 if (isBackgroundPage()) {
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
-      console.error("Detected added node:", ...mutation.addedNodes);
+      console.error(
+        "Detected added node, this won't work in MV3:",
+        ...mutation.addedNodes,
+      );
     }
   });
   observer.observe(document, { childList: true, subtree: true });

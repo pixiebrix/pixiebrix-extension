@@ -21,16 +21,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { sleep } from "@/utils/timeUtils";
 import cx from "classnames";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const onReload = async (event: MouseEvent<HTMLElement>) => {
   if (event.shiftKey) {
-    await browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
+    await browser.tabs.reload(inspectedTab.tabId);
 
     browser.runtime?.reload(); // Not guaranteed
 
     // We must wait before reloading or else the loading fails
     // https://github.com/pixiebrix/pixiebrix-extension/pull/2381
-    await sleep(2000);
+    await sleep(500);
   }
 
   location.reload();
@@ -43,7 +44,7 @@ const ReloadButton: React.FunctionComponent<{ className?: string }> = ({
     type="button"
     size="sm"
     variant="light"
-    title="Shift-click to attempt to reload all contexts (in 2 seconds)"
+    title="Reload page editor. Shift-click to also reload page and extension (button only shown in dev builds)"
     className={cx("mt-auto", className)}
     onClick={onReload}
   >

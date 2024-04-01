@@ -25,7 +25,7 @@ import EditorContent from "@/pageEditor/EditorContent";
 import styles from "./Editor.module.scss";
 import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
 import InsertPane from "@/pageEditor/panes/insert/InsertPane";
-import useCurrentUrl from "./hooks/useCurrentUrl";
+import useCurrentInspectedUrl from "./hooks/useCurrentInspectedUrl";
 import NonScriptablePage from "./NonScriptablePage";
 import { isScriptableUrl } from "webext-content-scripts";
 import Loader from "@/components/Loader";
@@ -38,7 +38,7 @@ const EditorLayout: React.FunctionComponent = () => {
   const isRestricted = restrict("page-editor");
   const isStaleSession = useSelector(selectIsStaleSession);
 
-  const url = useCurrentUrl();
+  const url = useCurrentInspectedUrl();
 
   if (!url) {
     // Nearly immediate, likely never shown

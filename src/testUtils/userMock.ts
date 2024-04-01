@@ -15,30 +15,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Me } from "@/types/contract";
-import { appApi } from "@/services/api";
-import { querySuccessFactory } from "@/testUtils/rtkQueryFactories";
-
-import { userFactory } from "@/testUtils/factories/authFactories";
-
-// Instead of monkey-patching RTK Query's Redux State, we might want to instead encourage using setupRedux
-// in the render helper?
+import {
+  tokenAuthDataFactory,
+  meApiResponseFactory,
+} from "@/testUtils/factories/authFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { TEST_setAuthData } from "@/auth/authStorage";
+import { selectUserDataUpdate } from "@/auth/authUtils";
+import useLinkState from "@/auth/useLinkState";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import type { components } from "@/types/swagger";
+import { transformMeResponse } from "@/data/model/Me";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
 
-// Other things we'd need to eventually mock here:
-// - auth.ts:useLinkState
-// - auth:ts:isLinked
+const useLinkStateMock = jest.mocked(useLinkState);
 
-export function mockAnonymousUser(): void {
-  (appApi.endpoints.getMe as any).useQueryState = jest.fn(() =>
-    querySuccessFactory({}),
-  );
+export function mockAnonymousMeApiResponse(): void {
+  appApiMock.onGet("/api/me/").reply(200, {
+    // Anonymous users still get feature flags
+    flags: [],
+  });
+  useLinkStateMock.mockReturnValue(valueToAsyncState(false));
 }
 
-export function mockCachedUser(me?: Me): void {
-  (appApi.endpoints.getMe as any).useQueryState = jest.fn(() =>
-    querySuccessFactory(me ?? userFactory()),
-  );
+export async function mockAuthenticatedMeApiResponse(
+  meApiResponse?: components["schemas"]["Me"],
+): Promise<void> {
+  const meResponse = meApiResponse ?? meApiResponseFactory();
+  appApiMock.onGet("/api/me/").reply(200, meResponse);
+  const authData = selectUserDataUpdate(transformMeResponse(meResponse));
+  const tokenData = tokenAuthDataFactory({
+    ...authData,
+  });
+
+  await TEST_setAuthData(tokenData);
+  useLinkStateMock.mockReturnValue(valueToAsyncState(true));
+}
+
+export function mockErrorMeApiResponse(error: unknown): void {
+  appApiMock.onGet("/api/me/").reply(500, error);
+  // `useLinkStateMock` is partially independent of calls to `/api/me/`. It's possible for the extension to be
+  // linked (i.e., have a valid token), but that the `/api/me/` call fails do to a server issue
+  useLinkStateMock.mockReturnValue(valueToAsyncState(true));
+}
+
+/**
+ * Suggested that you call this in afterEach() in your tests:
+ *    afterEach(async () => {
+ *      await resetMeApiMocks();
+ *    });
+ */
+export async function resetMeApiMocks(): Promise<void> {
+  useLinkStateMock.mockReturnValue(valueToAsyncState(true));
+  appApiMock.reset();
+  await TEST_setAuthData({});
 }

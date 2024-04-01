@@ -29,11 +29,10 @@ import { isExpression } from "@/utils/expressionUtils";
 import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import useAsyncEffect from "use-async-effect";
-import { sheets } from "@/background/messenger/api";
 import hash from "object-hash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName } from "@/utils/formUtils";
-import { type UnknownObject } from "@/types/objectTypes";
+import { getHeaders } from "@/contrib/google/sheets/core/sheetsApi";
 
 function headerFieldSchemaForHeaders(headers: string[]): Schema {
   const headerProperties: Record<string, Schema> = Object.fromEntries(
@@ -75,7 +74,7 @@ const RowValuesField: React.FunctionComponent<{
         return;
       }
 
-      const headers = await sheets.getHeaders({
+      const headers = await getHeaders({
         googleAccount,
         spreadsheetId,
         tabName: isExpression(tabName) ? tabName.__value__ : tabName,

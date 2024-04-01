@@ -17,7 +17,6 @@
 
 import { identity, toPath } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { cleanValue, isObject } from "@/utils/objectUtils";
 import { joinName } from "@/utils/formUtils";
 
@@ -32,7 +31,7 @@ export function isSimplePath(maybePath: string, ctxt: UnknownObject): boolean {
     return false;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The regex above ensures that `maybePath` is not empty
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The regex above ensures that `maybePath` is not empty
   const head = maybePath.split(".", 1)[0]!;
   const path = head.endsWith("?") ? head.slice(0, -1) : head;
   return ctxt ? Object.hasOwn(ctxt, path) : false;
@@ -47,8 +46,7 @@ export const noopProxy: ReadProxy = {
   toJS: identity,
   get(value, prop) {
     if (isObject(value) && Object.hasOwn(value, prop)) {
-      // Checking visibility of the property above
-      // eslint-disable-next-line security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection -- Checking visibility of the property above
       return value[prop];
     }
   },
@@ -147,7 +145,7 @@ export function getFieldNamesFromPathString(
   name: string,
 ): [parentFieldName: string | undefined, fieldName: string] {
   const path = toPath(name);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The path always has at least one item
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The path always has at least one item
   const fieldName = path.pop()!;
   const parentFieldName = path.length > 0 ? joinName(null, ...path) : undefined;
   return [parentFieldName, fieldName];

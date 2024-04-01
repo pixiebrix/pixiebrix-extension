@@ -15,27 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios, {
-  type AxiosError,
-  type AxiosRequestConfig,
-  type AxiosResponse,
-  type Method,
-} from "axios";
+import axios, { type AxiosError, type AxiosResponse, type Method } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import serviceRegistry from "@/integrations/registry";
-import { getExtensionToken } from "@/auth/token";
+import { getExtensionToken } from "@/auth/authStorage";
 import { locator } from "@/background/locator";
 import { isEmpty } from "lodash";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { expectContext } from "@/utils/expectContext";
-import { absoluteApiUrl } from "@/services/apiClient";
+import { absoluteApiUrl } from "@/data/service/apiClient";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
   selectRemoteResponseErrorMessage,
   isProxiedErrorResponse,
   proxyResponseToAxiosResponse,
 } from "@/background/proxyUtils";
-import { selectAxiosError } from "@/services/requestErrorUtils";
+import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import {
   BusinessError,
   ProxiedRemoteServiceError,
@@ -118,7 +114,7 @@ function prepareErrorForMessenger(error: unknown): unknown {
 }
 
 async function serializableAxiosRequest<T>(
-  config: AxiosRequestConfig,
+  config: NetworkRequestConfig,
 ): Promise<SanitizedResponse<T>> {
   // Network requests must go through background page for permissions/CORS to work properly
   expectContext(
@@ -126,10 +122,8 @@ async function serializableAxiosRequest<T>(
     "Network requests must be made from the background page",
   );
 
-  // Axios does not perform validation, so call before the axios call.
-  assertProtocolUrl(config.url, ["https:", "http:"], {
-    baseUrl: config.baseURL,
-  });
+  // Axios does not perform validation, so call before axios
+  assertProtocolUrl(config.url, ["https:", "http:"]);
 
   const response = await axios(config);
 
@@ -145,13 +139,14 @@ export const getOAuth2AuthData = memoizeUntilSettled(
     integration: Integration,
     localConfig: IntegrationConfig,
     sanitizedIntegrationConfig: SanitizedIntegrationConfig,
+    options: { interactive: boolean },
   ): Promise<AuthData> => {
     // We wrap both the cache data lookup and the login request in the memoization here
     // instead of only around the login call, in order to avoid a race condition between
     // writing the new auth token and a second request reading from cached auth storage.
     let data = await getCachedAuthData(sanitizedIntegrationConfig.id);
     if (isEmpty(data)) {
-      data = await launchOAuth2Flow(integration, localConfig);
+      data = await launchOAuth2Flow(integration, localConfig, options);
     }
 
     return data;
@@ -160,8 +155,9 @@ export const getOAuth2AuthData = memoizeUntilSettled(
 
 async function authenticate(
   config: SanitizedIntegrationConfig,
-  request: AxiosRequestConfig,
-): Promise<AxiosRequestConfig> {
+  request: NetworkRequestConfig,
+  options: { interactive: boolean },
+): Promise<NetworkRequestConfig> {
   expectContext("background");
 
   if (config == null) {
@@ -200,7 +196,12 @@ async function authenticate(
   }
 
   if (integration.isOAuth2) {
-    const data = await getOAuth2AuthData(integration, localConfig, config);
+    const data = await getOAuth2AuthData(
+      integration,
+      localConfig,
+      config,
+      options,
+    );
     return integration.authenticateRequest(localConfig.config, request, data);
   }
 
@@ -225,7 +226,7 @@ async function authenticate(
 
 async function proxyRequest<T>(
   integrationConfig: SanitizedIntegrationConfig,
-  requestConfig: AxiosRequestConfig,
+  requestConfig: NetworkRequestConfig,
 ): Promise<RemoteResponse<T>> {
   if (integrationConfig == null) {
     throw new Error("Integration configuration is required for proxyRequest");
@@ -242,6 +243,8 @@ async function proxyRequest<T>(
         service_id: integrationConfig.serviceId,
       },
     },
+    // The PixieBrix API uses a token, so does not require/support interactive authentication
+    { interactive: false },
   );
 
   const proxyResponse = await serializableAxiosRequest<ProxyResponseData>(
@@ -267,8 +270,8 @@ async function proxyRequest<T>(
 }
 
 function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
-  // Response should be an object, but be defensive
-  if (error.response == null || !isObject(error.response)) {
+  // Response should be an object
+  if (!isObject(error.response)) {
     return false;
   }
 
@@ -287,11 +290,14 @@ function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
   ) {
     return true;
   }
+
+  return false;
 }
 
 async function _performConfiguredRequest(
   integrationConfig: SanitizedIntegrationConfig,
-  requestConfig: AxiosRequestConfig,
+  requestConfig: NetworkRequestConfig,
+  options: { interactiveLogin: boolean },
 ): Promise<RemoteResponse> {
   if (integrationConfig.proxy) {
     // Service uses the PixieBrix remote proxy to perform authentication. Proxy the request.
@@ -300,7 +306,9 @@ async function _performConfiguredRequest(
 
   try {
     return await serializableAxiosRequest(
-      await authenticate(integrationConfig, requestConfig),
+      await authenticate(integrationConfig, requestConfig, {
+        interactive: options.interactiveLogin,
+      }),
     );
   } catch (error) {
     // Try again - automatically try to get a new token using the refresh token (if applicable)
@@ -327,7 +335,9 @@ async function _performConfiguredRequest(
 
             if (isTokenRefreshed) {
               return serializableAxiosRequest(
-                await authenticate(integrationConfig, requestConfig),
+                await authenticate(integrationConfig, requestConfig, {
+                  interactive: options.interactiveLogin,
+                }),
               );
             }
           } catch (error) {
@@ -346,7 +356,9 @@ async function _performConfiguredRequest(
         await deleteCachedAuthData(integrationConfig.id);
 
         return serializableAxiosRequest(
-          await authenticate(integrationConfig, requestConfig),
+          await authenticate(integrationConfig, requestConfig, {
+            interactive: options.interactiveLogin,
+          }),
         );
       }
     }
@@ -368,7 +380,7 @@ async function getIntegrationMessageContext(
   config: SanitizedIntegrationConfig,
 ): Promise<MessageContext> {
   // Try resolving the integration to get metadata to include with the error
-  let resolvedIntegration: Integration;
+  let resolvedIntegration: Integration | undefined;
   try {
     resolvedIntegration = await serviceRegistry.lookup(config.serviceId);
   } catch {
@@ -386,12 +398,14 @@ async function getIntegrationMessageContext(
  * Perform a request either directly, or via the PixieBrix authentication proxy
  * @param integrationConfig the PixieBrix integration configuration (used to locate the full configuration)
  * @param requestConfig the unauthenticated axios request configuration
+ * @param options options, e.g., whether to prompt the user for login if necessary
  */
 export async function performConfiguredRequest<TData>(
-  integrationConfig: SanitizedIntegrationConfig | null,
-  requestConfig: AxiosRequestConfig,
-  // Note: This signature is ignored by `webext-messenger`
+  // Note: This signature is ignored by `webext-messenger` due to the generic,
   // so it must be copied into `background/messenger/api.ts`
+  integrationConfig: SanitizedIntegrationConfig | null,
+  requestConfig: NetworkRequestConfig,
+  options: { interactiveLogin: boolean },
 ): Promise<RemoteResponse<TData>> {
   if (integrationConfig != null && typeof integrationConfig !== "object") {
     throw new TypeError(
@@ -401,7 +415,7 @@ export async function performConfiguredRequest<TData>(
 
   if (!integrationConfig) {
     // No integration configuration provided. Perform request directly without authentication
-    if (!isAbsoluteUrl(requestConfig.url) && requestConfig.baseURL == null) {
+    if (!isAbsoluteUrl(requestConfig.url)) {
       throw new BusinessError(
         "expected absolute URL for request without integration",
       );
@@ -424,6 +438,7 @@ export async function performConfiguredRequest<TData>(
     return (await _performConfiguredRequest(
       integrationConfig,
       requestConfig,
+      options,
     )) as RemoteResponse<TData>;
   } catch (error) {
     throw new ContextError("Error performing request", {

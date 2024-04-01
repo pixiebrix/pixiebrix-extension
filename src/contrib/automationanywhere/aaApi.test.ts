@@ -16,62 +16,50 @@
  */
 
 import { cachedSearchBots } from "@/contrib/automationanywhere/aaApi";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { type RemoteResponse } from "@/types/contract";
 import pDefer, { type DeferredPromise } from "p-defer";
-import {
-  type SanitizedConfig,
-  type SanitizedIntegrationConfig,
-} from "@/integrations/integrationTypes";
-
+import { type SanitizedConfig } from "@/integrations/integrationTypes";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { setPlatform } from "@/platform/platformContext";
+import { platformMock } from "@/testUtils/platformMock";
 
-jest.mock("@/background/messenger/api");
+beforeEach(() => {
+  setPlatform(platformMock);
+});
 
-const performConfiguredRequestInBackgroundMock = jest.mocked(
-  performConfiguredRequestInBackground,
-);
+const requestMock = jest.mocked(platformMock.request);
 
 describe("aaApi", () => {
   it("should vary bot cache on workspace type", async () => {
     const deferred: Array<DeferredPromise<RemoteResponse>> = [];
 
-    performConfiguredRequestInBackgroundMock.mockImplementation(async () => {
+    requestMock.mockImplementation(async () => {
       const deferredResponse = pDefer<RemoteResponse>();
       deferred.push(deferredResponse);
       return deferredResponse.promise;
     });
 
-    const partialConfig = {
+    const partialConfig = sanitizedIntegrationConfigFactory({
+      serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
       config: {
         folderId: null,
       } as unknown as SanitizedConfig,
-      proxy: false,
-      serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-    } as SanitizedIntegrationConfig;
-
-    const privatePromise1 = cachedSearchBots(partialConfig, {
-      workspaceType: "private",
-      query: "",
-      value: null,
-    });
-    const privatePromise2 = cachedSearchBots(partialConfig, {
-      workspaceType: "private",
-      query: "",
-      value: null,
-    });
-    const publicPromise1 = cachedSearchBots(partialConfig, {
-      workspaceType: "public",
-      query: "",
-      value: null,
-    });
-    const publicPromise2 = cachedSearchBots(partialConfig, {
-      workspaceType: "public",
-      query: "",
-      value: null,
     });
 
-    expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledTimes(2);
+    const promiseFactory = async (workspaceType: "private" | "public") =>
+      cachedSearchBots(partialConfig, {
+        workspaceType,
+        query: "",
+        value: null,
+      });
+
+    const privatePromise1 = promiseFactory("private");
+    const privatePromise2 = promiseFactory("private");
+    const publicPromise1 = promiseFactory("public");
+    const publicPromise2 = promiseFactory("public");
+
+    expect(requestMock).toHaveBeenCalledTimes(2);
 
     for (const { reject } of deferred) {
       reject("Reject to isn't cached across tests");

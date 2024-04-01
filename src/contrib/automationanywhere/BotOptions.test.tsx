@@ -20,7 +20,6 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { render, screen } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -35,6 +34,7 @@ import {
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 import { toExpression } from "@/utils/expressionUtils";
+import { RunBot } from "@/contrib/automationanywhere/RunBot";
 
 const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
   useSanitizedIntegrationConfigFormikAdapter,
@@ -56,7 +56,7 @@ function makeBaseState() {
     },
     [
       {
-        id: AUTOMATION_ANYWHERE_RUN_BOT_ID,
+        id: RunBot.BRICK_ID,
         config: {
           service: null,
           fileId: null,

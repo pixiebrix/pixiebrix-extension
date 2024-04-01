@@ -4,6 +4,7 @@ node_modules
 db.sqlite3
 .env
 .env.*
+!.env.example
 staticfiles
 .vscode
 
@@ -51,3 +52,9 @@ pixiebrix-extension-*.zip
 
 # Storybook artifacts
 storybook-static
+
+# Playwright
+/end-to-end-tests/.output/
+/end-to-end-tests/.report/
+/end-to-end-tests/.auth/
+/playwright/.cache/

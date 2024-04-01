@@ -17,13 +17,13 @@
 
 import { valid as semVerValid } from "semver";
 import { startsWith } from "lodash";
-import validUuidRegex from "@/vendors/validateUuid";
+
 import {
   type Timestamp,
   type TimedSequence,
   type UUID,
 } from "@/types/stringTypes";
-import { v4 } from "uuid";
+import { v4, validate } from "uuid";
 import {
   INNER_SCOPE,
   type RegistryId,
@@ -59,14 +59,13 @@ export function validateTimedSequence(string: string): TimedSequence {
  * Return a random v4 UUID.
  */
 export function uuidv4(): UUID {
-  // Use uuidv4 from uuid package instead of crypto.randomUUID because randomUUID is not available in insecure contexts.
-  // This is safe for content scripts because they're in a separate JS context from the host page.
-  // https://developer.mozilla.org/en-US/docs/Web/API/crypto_property
+  // Use `uuid` package instead of `crypto.randomUUID()` because the latter isn't available on HTTP-non-S pages
+  // https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID
   return v4() as UUID;
 }
 
 export function isUUID(uuid: string): uuid is UUID {
-  return validUuidRegex.test(uuid);
+  return validate(uuid);
 }
 
 /**
@@ -76,14 +75,16 @@ export const UNSET_UUID = validateUUID("00000000-0000-4000-A000-000000000000");
 
 export function validateUUID(uuid: unknown): UUID {
   if (uuid == null) {
-    // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
-    // we can remove this check as strictNullChecks will check the call site
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    /* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion --
+    We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
+    we can remove this check as strictNullChecks will check the call site */
     return uuid as unknown as UUID;
   }
 
   if (typeof uuid !== "string") {
-    throw new TypeError("Expected UUID to be a string");
+    throw new TypeError(
+      `Expected UUID to be a string. Instead got: ${typeof uuid}`,
+    );
   }
 
   if (isUUID(uuid)) {
@@ -92,7 +93,7 @@ export function validateUUID(uuid: unknown): UUID {
 
   console.debug("Invalid UUID: %s", uuid);
 
-  throw new Error("Invalid UUID");
+  throw new Error("Invalid UUID", { cause: { uuid, type: typeof uuid } });
 }
 
 /**

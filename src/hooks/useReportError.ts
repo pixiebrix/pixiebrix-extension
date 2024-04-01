@@ -15,18 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
 import reportError from "@/telemetry/reportError";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 /**
- * React hook to report an error once.
+ * React hook to report an error if it's different from the previous error.
  */
 function useReportError(error: unknown): void {
-  useEffect(() => {
-    if (error) {
-      reportError(error);
-    }
-  }, [error]);
+  const previousError = usePreviousValue(error);
+  if (error && error !== previousError) {
+    reportError(error);
+  }
 }
 
 export default useReportError;

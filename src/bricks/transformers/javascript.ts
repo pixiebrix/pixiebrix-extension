@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { runUserJs } from "@/sandbox/messenger/api";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UiSchema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { type JSONSchema7 } from "json-schema";
 import { type JsonObject } from "type-fest";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class JavaScriptTransformer extends TransformerABC {
   static readonly BRICK_ID = validateRegistryId("@pixiebrix/javascript");
@@ -67,17 +67,20 @@ export class JavaScriptTransformer extends TransformerABC {
     },
   };
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["sandbox"];
+  }
+
   override async transform(
     input: BrickArgs<{
       function: string;
       arguments?: JsonObject;
     }>,
-    _options: BrickOptions,
+    { platform }: BrickOptions,
   ): Promise<unknown> {
-    return runUserJs({
+    return platform.runSandboxedJavascript({
       code: input.function,
       data: input.arguments,
-      blockId: this.id,
     });
   }
 }

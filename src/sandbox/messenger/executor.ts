@@ -21,11 +21,7 @@ import {
   type TemplateRenderPayload,
 } from "./api";
 import { isErrorObject } from "@/errors/errorHelpers";
-import {
-  BusinessError,
-  InvalidTemplateError,
-  PropError,
-} from "@/errors/businessErrors";
+import { BusinessError, InvalidTemplateError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
 
 export async function renderNunjucksTemplate(
@@ -90,20 +86,14 @@ export async function renderHandlebarsTemplate(
 export async function runUserJs({
   code,
   data,
-  blockId,
 }: JavaScriptPayload): Promise<string> {
   let userFunction: (context: JsonObject | undefined) => string;
   try {
-    // Returning the user-defined function allows for an anonymous function
-    // eslint-disable-next-line no-new-func, @typescript-eslint/no-unsafe-assignment
+    /* eslint-disable-next-line no-new-func, @typescript-eslint/no-unsafe-assignment
+    -- Returning the user-defined function allows for an anonymous function */
     userFunction = new Function(`return ${code}`)();
   } catch {
-    throw new PropError(
-      "Failed to construct JavaScript function",
-      blockId,
-      "function",
-      code,
-    );
+    throw new BusinessError("Failed to construct JavaScript function");
   }
 
   // See https://stackoverflow.com/a/67102501/288906

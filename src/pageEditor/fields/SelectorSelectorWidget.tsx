@@ -35,7 +35,6 @@ import {
   selectElement,
   cancelSelect,
 } from "@/contentScript/messenger/api";
-import { thisTab } from "@/pageEditor/utils";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
 import { useSelector } from "react-redux";
 import { type SettingsState } from "@/store/settings/settingsTypes";
@@ -49,6 +48,7 @@ import {
 } from "@/utils/expressionUtils";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;
@@ -181,12 +181,12 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
 
   const enableSelector = useCallback((selector: string) => {
     if (selector.trim()) {
-      void enableOverlay(thisTab, selector);
+      void enableOverlay(inspectedTab, selector);
     }
   }, []);
 
   const disableSelector = useCallback(() => {
-    void disableOverlay(thisTab);
+    void disableOverlay(inspectedTab);
   }, []);
 
   const onHighlighted = useCallback(
@@ -212,7 +212,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   useEffect(
     () => () => {
       if (isSelecting) {
-        void cancelSelect(thisTab);
+        void cancelSelect(inspectedTab);
       }
     },
     [isSelecting],
@@ -221,7 +221,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   const select = async () => {
     setSelecting(true);
     try {
-      const selected = await selectElement(thisTab, {
+      const selected = await selectElement(inspectedTab, {
         mode: selectMode,
         root,
         excludeRandomClasses,

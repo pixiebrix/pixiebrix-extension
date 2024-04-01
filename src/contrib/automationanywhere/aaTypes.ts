@@ -16,7 +16,6 @@
  */
 
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 
 export type CommunityBotArgs = {
   service: SanitizedIntegrationConfig;
@@ -42,6 +41,16 @@ export type EnterpriseBotArgs = {
 
 export type BotArgs = (CommunityBotArgs | EnterpriseBotArgs) & {
   workspaceType?: "public" | "private" | null;
+  awaitResult: boolean;
+  maxWaitMillis: number;
+};
+
+export type ApiTaskArgs = {
+  integrationConfig: SanitizedIntegrationConfig;
+  botId: string;
+  sharedRunAsUserId: number;
+  data: UnknownObject;
+  automationName: string;
   awaitResult: boolean;
   maxWaitMillis: number;
 };

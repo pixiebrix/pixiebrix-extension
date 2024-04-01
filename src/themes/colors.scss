@@ -50,6 +50,7 @@ $S3: #dedbe3;
 $S4: #cbc7d1;
 
 $S100: #fafafa;
+$S200: #efeef1;
 $S500: #928c9d;
 $S600: #686076;
 $S700: #554e65;
@@ -60,13 +61,18 @@ $W30: #ffc754;
 $W60: #e89c00;
 $W70: #b57900;
 
+// Danger
+$D600: #b4183f;
+
 /*
 * Misc Tokens
 *
 * The following color variables are colors that belong to no particular design system
 */
+$react-select-border-color: hsl(0, 0%, 80%);
 $sidebar-light-menu-icon-color: #bba8bff5;
-$input-field-border-color: #ebedf2ff;
+$input-border-color: $react-select-border-color;
+$input-focus-border-color: #80bdff;
 $neutral-surface-color: #f9f8fa;
 $neutral-surface-color-hover: #e9e6ed;
 $popover-header: #ddd;

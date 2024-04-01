@@ -16,21 +16,13 @@
  */
 
 import { resetTab } from "@/contentScript/messenger/api";
-import { thisTab } from "./utils";
 import { type Target } from "@/types/messengerTypes";
 import { updatePageEditor } from "./events";
+import {
+  allFramesInInspectedTab,
+  isCurrentTopFrame,
+} from "@/pageEditor/context/connection";
 
-const TOP_LEVEL_FRAME_ID = 0;
-
-// The pageEditor only cares for the top frame
-function isCurrentTopFrame({ tabId, frameId }: Target) {
-  return (
-    frameId === TOP_LEVEL_FRAME_ID &&
-    tabId === browser.devtools.inspectedWindow.tabId
-  );
-}
-
-// TODO: Migrate to useCurrentUrl()
 async function onNavigation(target: Target): Promise<void> {
   if (isCurrentTopFrame(target)) {
     updatePageEditor();
@@ -38,7 +30,7 @@ async function onNavigation(target: Target): Promise<void> {
 }
 
 function onEditorClose(): void {
-  resetTab(thisTab);
+  resetTab(allFramesInInspectedTab);
 }
 
 export function watchNavigation(): void {

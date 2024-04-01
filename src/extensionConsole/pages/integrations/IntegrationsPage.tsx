@@ -27,7 +27,7 @@ import IntegrationConfigEditorModal from "@/components/integrations/IntegrationC
 import PrivateIntegrationsCard from "./PrivateIntegrationsCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import { faCloud, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import ZapierIntegrationModal from "@/extensionConsole/pages/integrations/ZapierIntegrationModal";
 import notify from "@/utils/notify";
 import { useParams } from "react-router";
@@ -380,8 +380,8 @@ const IntegrationsPage: React.VFC = () => {
   return (
     <Page
       icon={faCloud}
-      title="Integrations"
-      description="Configure external accounts, resources, and APIs. Personal integrations are
+      title="Local Integrations"
+      description="Configure external accounts, resources, and APIs. Local integrations are
           stored in your browser; they are never transmitted to the PixieBrix servers or shared with your team"
       isPending={localState.isLoadingIntegrations}
       toolbar={
@@ -397,7 +397,7 @@ const IntegrationsPage: React.VFC = () => {
           caption={
             <span>
               <FontAwesomeIcon icon={faPlus} />
-              &nbsp;Add Integration
+              &nbsp;Add Local Integration
             </span>
           }
         />
@@ -422,7 +422,7 @@ const IntegrationsPage: React.VFC = () => {
       />
       <ConnectExtensionCard />
       <Card>
-        <Card.Header>Personal Integrations</Card.Header>
+        <Card.Header>Local Integrations</Card.Header>
         <PrivateIntegrationsCard
           navigate={navigate}
           integrations={localState.integrations}

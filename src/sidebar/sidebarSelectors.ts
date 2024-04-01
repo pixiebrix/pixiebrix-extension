@@ -23,7 +23,7 @@ import { isEmpty } from "lodash";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { getVisiblePanelCount } from "@/sidebar/utils";
 import { createSelector } from "@reduxjs/toolkit";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 
 export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
@@ -62,7 +62,7 @@ const selectSidebarEntries = ({ sidebar }: SidebarRootState) => [
 
 const extensionForEventKeySelector = createSelector(
   selectSidebarEntries,
-  selectExtensions,
+  selectActivatedModComponents,
   (state: SidebarRootState, eventKey: string) => eventKey,
   (entries, extensions, eventKey): ActivatedModComponent | undefined => {
     // Get sidebar entry by event key
@@ -88,7 +88,7 @@ export const selectExtensionFromEventKey =
   (state: SidebarRootState) =>
   (eventKey: string): ActivatedModComponent | undefined => {
     const sidebarEntries = selectSidebarEntries(state);
-    const extensions = selectExtensions(state);
+    const extensions = selectActivatedModComponents(state);
 
     // Get sidebar entry by event key
     const sidebarEntry = sidebarEntries.find(

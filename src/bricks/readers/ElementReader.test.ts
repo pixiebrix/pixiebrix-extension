@@ -33,8 +33,10 @@ describe("ElementReader", () => {
     expect(isVisible).toBe(false);
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests -- https://github.com/jsdom/jsdom/issues/135
-  test.skip("isVisible: true for element in document", async () => {
+  // This isn't what isVisible means, but we're testing the bare minimum.
+  // This test only checks our own checkVisibility() implementation in testEnv.js
+  // https://github.com/jsdom/jsdom/issues/135#issuecomment-29812947
+  test("isVisible: true for element in document", async () => {
     const div = document.createElement("div");
     div.innerHTML = "<p>Some text</p>";
     document.body.append(div);

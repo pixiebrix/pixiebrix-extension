@@ -26,7 +26,7 @@ import {
 } from "./pipelineTestHelpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { pixiebrixConfigurationFactory } from "@/integrations/locator";
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion, type TemplateEngine } from "@/types/runtimeTypes";
 import {

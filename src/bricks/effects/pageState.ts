@@ -17,15 +17,14 @@
 
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { type JsonObject } from "type-fest";
-import { getPageState, setPageState } from "@/contentScript/pageState";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type BrickConfig } from "@/bricks/types";
 import { isObject } from "@/utils/objectUtils";
 import { mapValues } from "lodash";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type MergeStrategy = "shallow" | "replace" | "deep";
 export type Namespace = "blueprint" | "extension" | "shared";
@@ -140,15 +139,16 @@ export class SetPageState extends TransformerABC {
       namespace?: Namespace;
       mergeStrategy?: MergeStrategy;
     }>,
-    { logger }: BrickOptions,
+    { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
     const { blueprintId = null, extensionId } = logger.context;
 
-    return setPageState({
+    return platform.state.setState({
       namespace,
       data,
       mergeStrategy,
-      extensionId,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7891
+      extensionId: extensionId!,
       blueprintId,
     });
   }
@@ -192,9 +192,15 @@ export class GetPageState extends TransformerABC {
 
   async transform(
     { namespace = "blueprint" }: BrickArgs<{ namespace?: Namespace }>,
-    { logger }: BrickOptions,
+    { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
     const { blueprintId = null, extensionId } = logger.context;
-    return getPageState({ namespace, blueprintId, extensionId });
+
+    return platform.state.getState({
+      namespace,
+      blueprintId,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7891
+      extensionId: extensionId!,
+    });
   }
 }

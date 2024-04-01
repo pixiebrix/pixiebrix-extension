@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types/objectTypes";
 import { expectContext } from "@/utils/expectContext";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { getCopilotHostData } from "@/contentScript/messenger/api";
@@ -35,6 +34,7 @@ export type ProcessDataMap = Record<string, UnknownObject>;
  * https://docs.automationanywhere.com/bundle/enterprise-v2019/page/co-pilot-map-host-data.html
  */
 type AariDataRequestData = {
+  // NOTE: the frame messaging protocol still uses aari naming, and not automation co-pilot
   aariDataRequest: "aari-data-request";
   processId: string;
   // XXX: when would botId be non-null?

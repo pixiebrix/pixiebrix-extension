@@ -17,9 +17,10 @@
 
 import { type Logger } from "@/types/loggerTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import {
   type Activity,
+  API_TASK_TYPE,
+  type ApiTaskResponse,
   type Bot,
   BOT_TYPE,
   type DeployResponse,
@@ -40,16 +41,22 @@ import {
   selectBotOutput,
 } from "@/contrib/automationanywhere/aaUtils";
 import {
+  type ApiTaskArgs,
   type CommunityBotArgs,
   type EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { castArray, cloneDeep, isEmpty, sortBy } from "lodash";
-import { type AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { sleep } from "@/utils/timeUtils";
+
+// XXX: using the ambient platform object for now. In the future, we might want to wrap all these methods in a class
+// and pass the platform and integration config as a constructor argument
+import { getPlatform } from "@/platform/platformContext";
+import { type SetRequired } from "type-fest";
 
 // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 // Same as default for Control Room
@@ -58,13 +65,32 @@ const PAGINATION_LIMIT = 100;
 export const DEFAULT_MAX_WAIT_MILLIS = 60_000;
 const POLL_MILLIS = 2000;
 
-const SORT_BY_NAME = {
+type SearchPayload = {
+  sort: Array<{
+    field: string;
+    direction: "asc" | "desc";
+  }>;
+  filter: {
+    operator: "and" | "or";
+    operands: Array<{
+      operator: "substring" | "eq";
+      field: string;
+      value: string;
+    }>;
+  };
+};
+
+const SORT_BY_NAME: Pick<SearchPayload, "sort"> = {
   sort: [
     {
       field: "name",
       direction: "asc",
     },
   ],
+};
+
+type PaginationPayload = {
+  page: { offset: number; length: number };
 };
 
 /**
@@ -75,7 +101,10 @@ const SORT_BY_NAME = {
  */
 async function fetchPages<TData>(
   config: SanitizedIntegrationConfig,
-  requestConfig: AxiosRequestConfig,
+  requestConfig: SetRequired<
+    NetworkRequestConfig<Partial<SearchPayload & PaginationPayload>>,
+    "data"
+  >,
   { maxPages = Number.MAX_SAFE_INTEGER }: { maxPages?: number } = {},
 ): Promise<TData[]> {
   // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
@@ -90,9 +119,10 @@ async function fetchPages<TData>(
     length: PAGINATION_LIMIT,
   };
 
-  const initialResponse = await performConfiguredRequestInBackground<
-    ListResponse<TData>
-  >(config, paginatedRequestConfig);
+  const initialResponse = await getPlatform().request<ListResponse<TData>>(
+    config,
+    paginatedRequestConfig,
+  );
 
   if (initialResponse.data.list == null) {
     // Use TypeError instead of BusinessError to ensure we send it to Application error telemetry if we're calling API incorrectly
@@ -111,9 +141,10 @@ async function fetchPages<TData>(
       length: PAGINATION_LIMIT,
     };
     // eslint-disable-next-line no-await-in-loop -- be conservative on number of concurrent requests to CR
-    const response = await performConfiguredRequestInBackground<
-      ListResponse<TData>
-    >(config, paginatedRequestConfig);
+    const response = await getPlatform().request<ListResponse<TData>>(
+      config,
+      paginatedRequestConfig,
+    );
     results.push(...response.data.list);
     offset += response.data.list.length;
     page += 1;
@@ -130,7 +161,7 @@ async function fetchBotFile(
   fileId: string,
 ): Promise<Bot> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
-  const response = await performConfiguredRequestInBackground<Bot>(config, {
+  const response = await getPlatform().request<Bot>(config, {
     url: `/v2/repository/files/${fileId}`,
     method: "GET",
   });
@@ -150,7 +181,7 @@ async function fetchFolder(
   folderId: string,
 ): Promise<Folder> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
-  const response = await performConfiguredRequestInBackground<Folder>(config, {
+  const response = await getPlatform().request<Folder>(config, {
     url: `/v2/repository/files/${folderId}`,
     method: "GET",
   });
@@ -174,7 +205,7 @@ async function searchBots(
     throw new TypeError("workspaceType is required");
   }
 
-  let searchPayload = {
+  let searchPayload: SearchPayload = {
     ...SORT_BY_NAME,
     filter: {
       operator: "and",
@@ -205,7 +236,8 @@ async function searchBots(
           {
             operator: "eq",
             field: "id",
-            value: options.value,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above with isNullOrBlank
+            value: options.value!,
           },
           {
             operator: "eq",
@@ -254,6 +286,101 @@ async function searchBots(
 export const cachedSearchBots = cachePromiseMethod(
   ["aa:fetchBots"],
   searchBots,
+);
+
+async function searchApiTasks(
+  config: SanitizedIntegrationConfig,
+  options: {
+    workspaceType: WorkspaceType;
+    query: string;
+    value: string | null;
+  },
+): Promise<Option[]> {
+  if (isNullOrBlank(options.workspaceType)) {
+    throw new TypeError("workspaceType is required");
+  }
+
+  let searchPayload: SearchPayload = {
+    ...SORT_BY_NAME,
+    filter: {
+      operator: "and",
+      operands: [
+        {
+          operator: "substring",
+          field: "name",
+          value: options.query ?? "",
+        },
+        {
+          operator: "eq",
+          field: "type",
+          value: API_TASK_TYPE,
+        },
+      ],
+    },
+  };
+
+  if (isNullOrBlank(options.query) && !isNullOrBlank(options.value)) {
+    // If the value is set, but not the query just return the result set for the current value to ensure we can show
+    // the label for the value. Ideally we'd show the value + a page of results to allow easily switching the value
+    // but that would require an extra request unless the sort could somehow put the known value first
+    searchPayload = {
+      ...SORT_BY_NAME,
+      filter: {
+        operator: "and",
+        operands: [
+          {
+            operator: "eq",
+            field: "id",
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above with isNullOrBlank
+            value: options.value!,
+          },
+          {
+            operator: "eq",
+            field: "type",
+            value: API_TASK_TYPE,
+          },
+        ],
+      },
+    };
+  }
+
+  let bots: Bot[];
+
+  // The folderId field on the integration is now deprecated. See BotOptions for the alert shown to user if
+  // the Page Editor configuration is only showing bots for the folder id.
+  if (isEmpty(config.config.folderId)) {
+    bots = await fetchPages<Bot>(
+      config,
+      {
+        url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
+        method: "POST",
+        data: searchPayload,
+      },
+      { maxPages: 1 },
+    );
+  } else {
+    // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
+    // include `type` field for filters or in the body or the response
+    bots = await fetchPages<Bot>(
+      config,
+      {
+        url: `/v2/repository/folders/${config.config.folderId}/list`,
+        method: "POST",
+        data: searchPayload,
+      },
+      { maxPages: 1 },
+    );
+  }
+
+  return bots.map((bot) => ({
+    value: bot.id,
+    label: bot.name,
+  }));
+}
+
+export const cachedSearchApiTasks = cachePromiseMethod(
+  ["aa:fetchApiTasks"],
+  searchApiTasks,
 );
 
 async function fetchDevices(
@@ -324,13 +451,10 @@ export const cachedFetchRunAsUsers = cachePromiseMethod(
 
 async function fetchSchema(config: SanitizedIntegrationConfig, fileId: string) {
   if (config && fileId) {
-    const response = await performConfiguredRequestInBackground<Interface>(
-      config,
-      {
-        url: `/v1/filecontent/${fileId}/interface`,
-        method: "GET",
-      },
-    );
+    const response = await getPlatform().request<Interface>(config, {
+      url: `/v1/filecontent/${fileId}/interface`,
+      method: "GET",
+    });
 
     return interfaceToInputSchema(response.data);
   }
@@ -349,7 +473,7 @@ export async function runCommunityBot({
 }: CommunityBotArgs): Promise<void> {
   // Don't bother returning the DeployResponse because it's just "0" for all community deployments
   // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-deploy.html
-  await performConfiguredRequestInBackground<DeployResponse>(service, {
+  await getPlatform().request<DeployResponse>(service, {
     url: "/v2/automations/deploy",
     method: "post",
     data: {
@@ -369,8 +493,9 @@ export async function runEnterpriseBot({
   poolIds = [],
 }: EnterpriseBotArgs) {
   // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-bot-deploy-task.html
-  const { data: deployData } =
-    await performConfiguredRequestInBackground<DeployResponse>(service, {
+  const { data: deployData } = await getPlatform().request<DeployResponse>(
+    service,
+    {
       url: "/v3/automations/deploy",
       method: "post",
       data: {
@@ -382,9 +507,46 @@ export async function runEnterpriseBot({
         poolIds,
         runAsUserIds: castArray(runAsUserIds),
       },
-    });
+    },
+  );
 
   return deployData;
+}
+
+export async function runApiTask({
+  integrationConfig,
+  botId,
+  sharedRunAsUserId,
+  data,
+  automationName,
+}: Pick<
+  ApiTaskArgs,
+  | "integrationConfig"
+  | "botId"
+  | "sharedRunAsUserId"
+  | "data"
+  | "automationName"
+>): Promise<ApiTaskResponse> {
+  const { data: response } = await getPlatform().request<ApiTaskResponse>(
+    integrationConfig,
+    {
+      url: "/v4/automations/deploy",
+      method: "post",
+      data: {
+        botId,
+        automationName,
+        executionType: "RUN_NOW",
+        headlessRequest: {
+          numberOfExecutions: 1,
+          queueOnSlotsExhaustion: false,
+          sharedRunAsUserId,
+        },
+        botInput: mapBotInput(data),
+      },
+    },
+  );
+
+  return response;
 }
 
 export async function pollEnterpriseResult({
@@ -409,7 +571,7 @@ export async function pollEnterpriseResult({
     await sleep(POLL_MILLIS);
 
     // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-progress.html
-    const { data: activityList } = await performConfiguredRequestInBackground<
+    const { data: activityList } = await getPlatform().request<
       ListResponse<Activity>
     >(service, {
       url: "/v3/activity/list",
@@ -423,7 +585,9 @@ export async function pollEnterpriseResult({
       },
     });
 
-    if (activityList.list.length === 0) {
+    const activity = activityList.list[0];
+    // Check for empty list, also narrow the type of activity to non-null
+    if (activity == null) {
       // Don't fail immediately. There may be a race-condition where the activity isn't available immediately
       // See https://github.com/pixiebrix/pixiebrix-extension/issues/6900
       return;
@@ -443,8 +607,6 @@ export async function pollEnterpriseResult({
         "Multiple activity instances found for bot deployment",
       );
     }
-
-    const activity = activityList.list[0];
 
     if (activity.status === "COMPLETED") {
       return activity;
@@ -473,11 +635,13 @@ export async function pollEnterpriseResult({
   }
 
   if (completedActivity) {
-    const { data: execution } =
-      await performConfiguredRequestInBackground<Execution>(service, {
+    const { data: execution } = await getPlatform().request<Execution>(
+      service,
+      {
         url: `/v3/activity/execution/${completedActivity.id}`,
         method: "get",
-      });
+      },
+    );
 
     return selectBotOutput(execution);
   }

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
+import "@/vendors/bootstrapWithoutRem.css";
 import "./ephemeralModal.scss";
 
 import "@/extensionContext";
@@ -29,8 +29,11 @@ import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/bricks/transformers/temporaryInfo/messenger/registration";
 import "iframe-resizer/js/iframeResizer.contentWindow";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
+import { setPlatform } from "@/platform/platformContext";
+import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
 
 function init(): void {
+  setPlatform(extensionPagePlatform);
   console.debug("Initializing ephemeral panel", { location: window.location });
   render(<EphemeralPanel />, document.querySelector("#container"));
 }

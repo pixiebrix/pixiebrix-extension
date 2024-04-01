@@ -22,6 +22,7 @@ import {
   hasSpecificErrorCause,
   isCustomAggregateError,
   isErrorObject,
+  isSpecificError,
   selectError,
   selectErrorFromErrorEvent,
   selectErrorFromRejectionEvent,
@@ -43,6 +44,7 @@ import {
   InvalidDefinitionError,
   MultipleElementsFoundError,
   NoElementsFoundError,
+  RequestSupersededError,
 } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import {
@@ -51,12 +53,13 @@ import {
 } from "@/errors/clientRequestErrors";
 import { uuidv4 } from "@/types/helpers";
 import { renderHook } from "@testing-library/react-hooks";
-import { appApi, useGetPackageQuery } from "@/services/api";
+import { appApi, useGetPackageQuery } from "@/data/service/api";
 import { Provider } from "react-redux";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import React from "react";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 
 function testStore() {
   return configureStore({
@@ -73,6 +76,7 @@ function testStore() {
 const TEST_MESSAGE = "Test message";
 
 function createUncaughtRejection(reason: string | Error) {
+  // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- We want to test both
   const promise = Promise.reject(reason);
   // eslint-disable-next-line promise/prefer-await-to-then -- Test only
   promise.catch(() => {}); // Or else it will crash Node
@@ -664,5 +668,21 @@ describe("isCustomAggregateError", () => {
     expect(
       isCustomAggregateError(new InvalidDefinitionError("aggregate error", [])),
     ).toBeTrue();
+  });
+});
+
+describe("InteractiveLoginRequiredError", () => {
+  test("is business error", () => {
+    const error = new InteractiveLoginRequiredError("message");
+    expect(isSpecificError(error, BusinessError)).toBeTrue();
+    expect(isSpecificError(serializeError(error), BusinessError)).toBeTrue();
+  });
+});
+
+describe("RequestSupersededError", () => {
+  test("is business error", () => {
+    const error = new RequestSupersededError("message");
+    expect(isSpecificError(error, BusinessError)).toBeTrue();
+    expect(isSpecificError(serializeError(error), BusinessError)).toBeTrue();
   });
 });

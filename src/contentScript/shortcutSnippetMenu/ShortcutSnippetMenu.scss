@@ -1,0 +1,154 @@
+/*!
+ * Copyright (C) 2024 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * @file Imported into the shadow DOM of the ShortcutSnippetMenu component
+
+ * https://www.figma.com/file/0FSyxGoz2Pk1gtvrzWNe7G/Business-User-Onboarding-Mods?type=design&node-id=241-2243&mode=design&t=3mXfdNhsvsgVm2zO-0
+ */
+
+@import "@/themes/colors.scss";
+
+.root {
+  // All widgets should start with zero style
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/7670
+  all: initial;
+
+  // Avoid dark scrollbar on dark websites
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/7699
+  color-scheme: light;
+
+  // Set specific height because 1) users will generally have 3+ commands, and 2) we want consistent height
+  // for empty, error, and running states
+  height: 200px;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+}
+
+.results {
+  flex-grow: 1;
+  display: flex;
+  overflow-y: auto;
+  flex-direction: column;
+  background-color: $N0;
+  color: black;
+}
+
+.noResults {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: $N0;
+  justify-content: center;
+  text-align: center;
+  color: $N300;
+  font-size: 0.875em;
+  font-family:
+    Ubuntu,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-weight: 500;
+  line-height: 14.4px;
+  word-wrap: break-word;
+
+  // Font Awesome stylesheet is not available in the Shadow DOM
+  svg {
+    margin-bottom: 8px;
+    width: 1.5em;
+    height: 1.5em;
+  }
+}
+
+.footer {
+  padding: 0.5em;
+  font-size: 0.625em;
+  color: $S600;
+  text-transform: uppercase;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-weight: 600;
+
+  border-top: 1px solid $S3;
+
+  .key {
+    color: $P600;
+  }
+
+  // Font Awesome stylesheet is not available in the Shadow DOM
+  svg {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+.result {
+  display: block;
+  text-align: left;
+
+  border: 0;
+  padding: 6px 8px;
+
+  color: $S800;
+  background-color: $N0;
+
+  &--selected,
+  &:hover {
+    background-color: $S200;
+  }
+
+  &:active {
+    background-color: $P100;
+  }
+
+  &__match {
+    font-weight: bold;
+  }
+
+  &__preview {
+    margin-top: 3px;
+    color: $S600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.status {
+  display: block;
+
+  padding: 0.5em 0.5em;
+
+  font-size: 0.85em;
+
+  &--error {
+    color: #dc3545;
+  }
+
+  &--empty {
+    color: $N400;
+  }
+
+  &--fetching {
+    color: $N400;
+  }
+}

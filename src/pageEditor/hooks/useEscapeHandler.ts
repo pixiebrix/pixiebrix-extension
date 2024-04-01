@@ -1,4 +1,5 @@
-import { useCallback, useEffect } from "react";
+import useEventListener from "@/hooks/useEventListener";
+import { useCallback } from "react";
 
 /**
  * Hook that calls a cancel callback when the used presses the Escape key.
@@ -21,16 +22,5 @@ export default function useEscapeHandler(
     [cancel],
   );
 
-  useEffect(() => {
-    // Needs to be the keydown event to prevent Google from opening the drawer
-    if (active) {
-      document.addEventListener("keydown", escapeHandler, true);
-    } else {
-      document.removeEventListener("keydown", escapeHandler);
-    }
-
-    return () => {
-      document.removeEventListener("keydown", escapeHandler);
-    };
-  }, [active, cancel, escapeHandler]);
+  useEventListener(document, "keydown", escapeHandler, { passive: !active });
 }

@@ -19,9 +19,9 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { validateRegistryId } from "@/types/helpers";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { getPageState, setPageState } from "@/contentScript/pageState";
+import { getState, setState } from "@/platform/state/stateController";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
-import { validateInput } from "@/validators/generic";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const extensionId = autoUUIDSequence();
@@ -37,7 +37,7 @@ const logger = new ConsoleLogger({
 const brickOptions = brickOptionsFactory({ logger });
 
 beforeEach(() => {
-  setPageState({
+  setState({
     namespace: "blueprint",
     blueprintId,
     extensionId,
@@ -59,13 +59,16 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     expect(
-      getPageState({ namespace: "blueprint", blueprintId, extensionId }),
+      getState({ namespace: "blueprint", blueprintId, extensionId }),
     ).toEqual({ foo: { bar: 42 } });
   });
 
   test("null is valid input", async () => {
     await expect(
-      validateInput(brick.inputSchema, { variableName: "foo", value: null }),
+      validateBrickInputOutput(brick.inputSchema, {
+        variableName: "foo",
+        value: null,
+      }),
     ).resolves.toStrictEqual({
       errors: [],
       valid: true,
@@ -86,7 +89,7 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     expect(
-      getPageState({ namespace: "blueprint", blueprintId, extensionId }),
+      getState({ namespace: "blueprint", blueprintId, extensionId }),
     ).toEqual({ foo: null });
   });
 
@@ -102,7 +105,7 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     expect(
-      getPageState({ namespace: "blueprint", blueprintId, extensionId }),
+      getState({ namespace: "blueprint", blueprintId, extensionId }),
     ).toEqual({ foo: 42, bar: 0 });
   });
 
