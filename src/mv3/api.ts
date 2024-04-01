@@ -18,8 +18,11 @@
 /** @file Temporary helpers useful for the MV3 transition */
 
 import { type Tabs } from "webextension-polyfill";
+import { once } from "lodash";
 
-export const isMV3 = (): boolean => process.env.MV !== "2";
+export const isMV3 = once(
+  (): boolean => chrome.runtime.getManifest().manifest_version === 3,
+);
 export const browserAction =
   globalThis.chrome?.browserAction ?? globalThis.chrome?.action;
 export type Tab = Tabs.Tab | chrome.tabs.Tab;
