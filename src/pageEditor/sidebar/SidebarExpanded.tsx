@@ -162,50 +162,49 @@ const SidebarExpanded: React.FunctionComponent<{
   return (
     <div className={cx(styles.root, "flex-shrink-0")}>
       <div className={styles.header}>
-        <div className={styles.actions}>
-          {" "}
-          <HomeButton />
-          <Collapse
-            dimension="width"
-            in={expanded}
-            unmountOnExit={true}
-            mountOnEnter={true}
-          >
-            <div className={styles.actionsLeft}>
-              <AddStarterBrickButton />
+        <HomeButton />
+        <Collapse
+          dimension="width"
+          in={expanded}
+          unmountOnExit={true}
+          mountOnEnter={true}
+        >
+          <div className={styles.horizontalActions}>
+            <AddStarterBrickButton />
 
-              {showDeveloperUI && <ReloadButton />}
-            </div>
-          </Collapse>
-          <Collapse
-            dimension="width"
-            in={expanded}
-            unmountOnExit={true}
-            mountOnEnter={true}
+            {showDeveloperUI && <ReloadButton />}
+          </div>
+        </Collapse>
+        <Collapse
+          dimension="width"
+          in={expanded}
+          unmountOnExit={true}
+          mountOnEnter={true}
+        >
+          <Button
+            size="sm"
+            type="button"
+            variant="light"
+            className={styles.toggle}
+            onClick={collapseSidebar}
           >
-            <Button
-              variant="light"
-              className={styles.toggle}
-              type="button"
-              onClick={collapseSidebar}
-            >
-              <FontAwesomeIcon icon={faAngleDoubleLeft} fixedWidth />
-            </Button>
-          </Collapse>
-        </div>
+            <FontAwesomeIcon icon={faAngleDoubleLeft} fixedWidth />
+          </Button>
+        </Collapse>
       </div>
 
       <Collapse in={!expanded} unmountOnExit={true} mountOnEnter={true}>
-        <div className="d-flex flex-column">
+        <div className={styles.verticalActions}>
           <Button
-            variant="light"
-            className={cx(styles.toggle, "flex-shrink-0")}
+            size="sm"
             type="button"
+            variant="light"
+            className={styles.toggle}
             onClick={collapseSidebar}
           >
             <FontAwesomeIcon icon={faAngleDoubleRight} fixedWidth />
           </Button>
-          {showDeveloperUI && <ReloadButton className="flex-shrink-0" />}
+          {showDeveloperUI && <ReloadButton />}
         </div>
       </Collapse>
       <Collapse
@@ -244,11 +243,9 @@ const SidebarExpanded: React.FunctionComponent<{
             </div>
 
             {/* Extension List */}
-            <div className={styles.extensions}>
-              <Accordion activeKey={expandedModId}>
-                <ListGroup>{listItems}</ListGroup>
-              </Accordion>
-            </div>
+            <Accordion activeKey={expandedModId} className={styles.extensions}>
+              <ListGroup>{listItems}</ListGroup>
+            </Accordion>
           </div>
         </div>
       </Collapse>

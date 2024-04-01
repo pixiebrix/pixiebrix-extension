@@ -20,7 +20,6 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { sleep } from "@/utils/timeUtils";
-import cx from "classnames";
 import { inspectedTab } from "@/pageEditor/context/connection";
 
 const onReload = async (event: MouseEvent<HTMLElement>) => {
@@ -41,11 +40,11 @@ const ReloadButton: React.FunctionComponent<{ className?: string }> = ({
   className,
 }) => (
   <Button
-    type="button"
     size="sm"
+    type="button"
     variant="light"
     title="Reload page editor. Shift-click to also reload page and extension (button only shown in dev builds)"
-    className={cx("mt-auto", className)}
+    className={className}
     onClick={onReload}
   >
     <FontAwesomeIcon icon={faSync} fixedWidth />

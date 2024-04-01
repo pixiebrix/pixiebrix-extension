@@ -31,43 +31,44 @@
 }
 
 .header {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-}
-
-.actions {
   display: flex;
-
-  button {
-    border-radius: 0;
-  }
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 
   :global(.badge) {
     margin-top: -5px;
   }
+
+  .toggle {
+    // Align right. This is not inside .horizontalActions
+    margin-left: auto;
+  }
 }
 
-.actionsLeft {
+.horizontalActions {
   display: flex;
-  :global(.btn) {
-    // Matches the height of the nav-tabs on its right
-    border: 0;
-  }
+
   > :global(.dropdown) {
     // Makes the Add button fit the height of the action bar
     display: flex;
   }
 }
 
-.toggle {
-  border: none !important;
-  border-radius: 0 !important;
-  padding: 0 !important;
-  background: transparent !important;
-  margin-left: auto;
-
-  svg {
-    margin: 5px;
+.header,
+.verticalActions {
+  :global(.btn) {
+    // Matches the height of the nav-tabs on its right
+    border-radius: 0;
+    border: 0;
   }
+}
+
+.verticalActions {
+  display: flex;
+  flex-direction: column;
+}
+
+.toggle {
+  background: transparent !important;
 }
 
 .unavailable {

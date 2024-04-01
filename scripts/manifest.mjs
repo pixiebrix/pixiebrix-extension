@@ -157,8 +157,6 @@ function customizeManifest(manifestV2, options = {}) {
     // React Refresh (HMR)
     policy.add("connect-src", "ws://127.0.0.1:8080/");
     policy.add("connect-src", "ws://127.0.0.1/");
-
-    policy.add("img-src", "https://pixiebrix-marketplace-dev.s3.amazonaws.com");
   }
 
   manifest.content_security_policy = policy.toString();
