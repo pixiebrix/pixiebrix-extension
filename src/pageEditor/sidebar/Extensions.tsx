@@ -15,25 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./Sidebar.module.scss";
+import styles from "./Extensions.module.scss";
 import React, { useMemo, useState } from "react";
-import {
-  Accordion,
-  Button,
-  FormControl,
-  InputGroup,
-  ListGroup,
-} from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Accordion, Button, FormControl, ListGroup } from "react-bootstrap";
 import {
   getModComponentItemId,
   isModSidebarItem,
   type SidebarItem,
 } from "@/pageEditor/sidebar/common";
-import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
-import cx from "classnames";
 import ModListItem from "@/pageEditor/sidebar/ModListItem";
-import useFlags from "@/hooks/useFlags";
 import arrangeSidebarItems from "@/pageEditor/sidebar/arrangeSidebarItems";
 import {
   selectActiveElementId,
@@ -47,17 +37,12 @@ import { useDispatch, useSelector } from "react-redux";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
-import HomeButton from "./HomeButton";
-import ReloadButton from "./ReloadButton";
-import AddStarterBrickButton from "./AddStarterBrickButton";
 import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/sidebar/filterSidebarItems";
 
-const SidebarExpanded: React.FunctionComponent<{
-  collapseSidebar: () => void;
-}> = ({ collapseSidebar }) => {
+const Extensions: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const activeModComponentId = useSelector(selectActiveElementId);
   const activeModId = useSelector(selectActiveRecipeId);
@@ -67,11 +52,6 @@ const SidebarExpanded: React.FunctionComponent<{
   const { availableInstalledIds, availableDynamicIds } = useSelector(
     selectExtensionAvailability,
   );
-
-  const { flagOn } = useFlags();
-  const showDeveloperUI =
-    process.env.ENVIRONMENT === "development" ||
-    flagOn("page-editor-developer");
 
   const [filterQuery, setFilterQuery] = useState("");
   const [debouncedFilterQuery] = useDebounce(filterQuery.toLowerCase(), 250, {
@@ -153,61 +133,35 @@ const SidebarExpanded: React.FunctionComponent<{
   });
 
   return (
-    <div className={cx(styles.root, styles.expanded)}>
-      <div className={styles.header}>
-        <div className={styles.actions}>
-          <div className={styles.actionsLeft}>
-            <HomeButton />
-
-            <AddStarterBrickButton />
-
-            {showDeveloperUI && <ReloadButton />}
-          </div>
-          <Button
-            variant="light"
-            className={styles.toggle}
-            type="button"
-            onClick={collapseSidebar}
-          >
-            <FontAwesomeIcon icon={faAngleDoubleLeft} fixedWidth />
-          </Button>
-        </div>
-      </div>
-
+    <>
       {/* Quick Filter */}
-      <div className={styles.searchWrapper}>
-        <div className={styles.searchContainer}>
-          <InputGroup>
-            <FormControl
-              placeholder="Quick filter"
-              value={filterQuery}
-              onChange={({ target }) => {
-                setFilterQuery(target.value);
-              }}
-            />
-          </InputGroup>
-          {filterQuery.length > 0 ? (
-            <Button
-              variant="link"
-              size="sm"
-              onClick={() => {
-                setFilterQuery("");
-              }}
-            >
-              Clear
-            </Button>
-          ) : null}
-        </div>
+      <div className={styles.filter}>
+        <FormControl
+          placeholder="Quick filter"
+          value={filterQuery}
+          onChange={({ target }) => {
+            setFilterQuery(target.value);
+          }}
+        />
+        {filterQuery.length > 0 ? (
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() => {
+              setFilterQuery("");
+            }}
+          >
+            Clear
+          </Button>
+        ) : null}
       </div>
 
       {/* Extension List */}
-      <div className={styles.extensions}>
-        <Accordion activeKey={expandedModId}>
-          <ListGroup>{listItems}</ListGroup>
-        </Accordion>
-      </div>
-    </div>
+      <Accordion activeKey={expandedModId} className={styles.list}>
+        <ListGroup>{listItems}</ListGroup>
+      </Accordion>
+    </>
   );
 };
 
-export default SidebarExpanded;
+export default Extensions;
