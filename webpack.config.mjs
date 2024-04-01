@@ -279,7 +279,7 @@ const createConfig = (env, options) =>
               const manifest = JSON.parse(jsonString);
               const customizedManifest = customizeManifest(manifest, {
                 isProduction: isProd(options),
-                manifestVersion: process.env.MV === "3" ? 3 : 2, // Default to 2 if missing
+                manifestVersion: process.env.MV === "2" ? 2 : 3, // Default to 3 if missing
                 env: process.env,
               });
 
