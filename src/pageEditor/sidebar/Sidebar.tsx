@@ -15,27 +15,118 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./Sidebar.module.scss";
 import React from "react";
-import SidebarExpanded from "./SidebarExpanded";
 import { useDispatch, useSelector } from "react-redux";
-import { selectModuleListExpanded } from "@/pageEditor/slices/editorSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { Button, Collapse } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faAngleDoubleLeft,
+  faAngleDoubleRight,
+} from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
+import useFlags from "@/hooks/useFlags";
+import { selectModuleListExpanded } from "@/pageEditor/slices/editorSelectors";
+import HomeButton from "./HomeButton";
+import ReloadButton from "./ReloadButton";
+import AddStarterBrickButton from "./AddStarterBrickButton";
+import Extensions from "./Extensions";
 
 const Sidebar: React.VFC = () => {
   const dispatch = useDispatch();
 
   const expanded = useSelector(selectModuleListExpanded);
 
+  const { flagOn } = useFlags();
+  const showDeveloperUI =
+    process.env.ENVIRONMENT === "development" ||
+    flagOn("page-editor-developer");
+
+  const collapseSidebar = () => {
+    dispatch(
+      actions.setModListExpanded({
+        isExpanded: !expanded,
+      }),
+    );
+  };
+
   return (
-    <SidebarExpanded
-      collapseSidebar={() => {
-        dispatch(
-          actions.setModListExpanded({
-            isExpanded: !expanded,
-          }),
-        );
-      }}
-    />
+    <div className={cx(styles.root, "flex-shrink-0")}>
+      {/* Expanded sidebar: Actions list (+ always visible Home button) */}
+
+      <div className={styles.header}>
+        <HomeButton />
+        <Collapse
+          dimension="width"
+          in={expanded}
+          unmountOnExit={true}
+          mountOnEnter={true}
+        >
+          <div className={styles.horizontalActions}>
+            <AddStarterBrickButton />
+            {showDeveloperUI && <ReloadButton />}
+          </div>
+        </Collapse>
+        <Collapse
+          dimension="width"
+          in={expanded}
+          unmountOnExit={true}
+          mountOnEnter={true}
+        >
+          <Button
+            size="sm"
+            type="button"
+            variant="light"
+            className={styles.toggle}
+            onClick={collapseSidebar}
+          >
+            <FontAwesomeIcon icon={faAngleDoubleLeft} fixedWidth />
+          </Button>
+        </Collapse>
+      </div>
+
+      {/* Collapsed sidebar: Actions list */}
+      <Collapse in={!expanded} unmountOnExit={true} mountOnEnter={true}>
+        <div className={styles.verticalActions}>
+          <Button
+            size="sm"
+            type="button"
+            variant="light"
+            className={styles.toggle}
+            onClick={collapseSidebar}
+          >
+            <FontAwesomeIcon icon={faAngleDoubleRight} fixedWidth />
+          </Button>
+          {showDeveloperUI && <ReloadButton />}
+        </div>
+      </Collapse>
+
+      {/* Expanded sidebar: Extensions list */}
+      <Collapse
+        dimension="width"
+        timeout={5000}
+        in={expanded}
+        unmountOnExit={true}
+        mountOnEnter={true}
+      >
+        {/*
+        Double wrapper needed so that the list does not wrap during the shrinking animation, but instead it's clipped.
+        */}
+        <div style={{ width: "270px", display: "flex", flexGrow: 1 }}>
+          <div
+            style={{
+              width: "270px",
+              display: "flex",
+              flexGrow: 1,
+              flexDirection: "column",
+            }}
+          >
+            <Extensions />
+          </div>
+        </div>
+      </Collapse>
+    </div>
   );
 };
 

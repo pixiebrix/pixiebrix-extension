@@ -15,29 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./Sidebar.module.scss";
+import styles from "./Extensions.module.scss";
 import React, { useMemo, useState } from "react";
-import {
-  Accordion,
-  Button,
-  Collapse,
-  FormControl,
-  InputGroup,
-  ListGroup,
-} from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Accordion, Button, FormControl, ListGroup } from "react-bootstrap";
 import {
   getModComponentItemId,
   isModSidebarItem,
   type SidebarItem,
 } from "@/pageEditor/sidebar/common";
-import {
-  faAngleDoubleLeft,
-  faAngleDoubleRight,
-} from "@fortawesome/free-solid-svg-icons";
-import cx from "classnames";
 import ModListItem from "@/pageEditor/sidebar/ModListItem";
-import useFlags from "@/hooks/useFlags";
 import arrangeSidebarItems from "@/pageEditor/sidebar/arrangeSidebarItems";
 import {
   selectActiveElementId,
@@ -46,23 +32,17 @@ import {
   selectExtensionAvailability,
   selectNotDeletedElements,
   selectNotDeletedExtensions,
-  selectModuleListExpanded,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
-import HomeButton from "./HomeButton";
-import ReloadButton from "./ReloadButton";
-import AddStarterBrickButton from "./AddStarterBrickButton";
 import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/sidebar/filterSidebarItems";
 
-const SidebarExpanded: React.FunctionComponent<{
-  collapseSidebar: () => void;
-}> = ({ collapseSidebar }) => {
+const Extensions: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const activeModComponentId = useSelector(selectActiveElementId);
   const activeModId = useSelector(selectActiveRecipeId);
@@ -72,13 +52,6 @@ const SidebarExpanded: React.FunctionComponent<{
   const { availableInstalledIds, availableDynamicIds } = useSelector(
     selectExtensionAvailability,
   );
-
-  const expanded = useSelector(selectModuleListExpanded);
-
-  const { flagOn } = useFlags();
-  const showDeveloperUI =
-    process.env.ENVIRONMENT === "development" ||
-    flagOn("page-editor-developer");
 
   const [filterQuery, setFilterQuery] = useState("");
   const [debouncedFilterQuery] = useDebounce(filterQuery.toLowerCase(), 250, {
@@ -160,97 +133,35 @@ const SidebarExpanded: React.FunctionComponent<{
   });
 
   return (
-    <div className={cx(styles.root, "flex-shrink-0")}>
-      <div className={styles.header}>
-        <HomeButton />
-        <Collapse
-          dimension="width"
-          in={expanded}
-          unmountOnExit={true}
-          mountOnEnter={true}
-        >
-          <div className={styles.horizontalActions}>
-            <AddStarterBrickButton />
-
-            {showDeveloperUI && <ReloadButton />}
-          </div>
-        </Collapse>
-        <Collapse
-          dimension="width"
-          in={expanded}
-          unmountOnExit={true}
-          mountOnEnter={true}
-        >
+    <>
+      {/* Quick Filter */}
+      <div className={styles.filter}>
+        <FormControl
+          placeholder="Quick filter"
+          value={filterQuery}
+          onChange={({ target }) => {
+            setFilterQuery(target.value);
+          }}
+        />
+        {filterQuery.length > 0 ? (
           <Button
+            variant="link"
             size="sm"
-            type="button"
-            variant="light"
-            className={styles.toggle}
-            onClick={collapseSidebar}
+            onClick={() => {
+              setFilterQuery("");
+            }}
           >
-            <FontAwesomeIcon icon={faAngleDoubleLeft} fixedWidth />
+            Clear
           </Button>
-        </Collapse>
+        ) : null}
       </div>
 
-      <Collapse in={!expanded} unmountOnExit={true} mountOnEnter={true}>
-        <div className={styles.verticalActions}>
-          <Button
-            size="sm"
-            type="button"
-            variant="light"
-            className={styles.toggle}
-            onClick={collapseSidebar}
-          >
-            <FontAwesomeIcon icon={faAngleDoubleRight} fixedWidth />
-          </Button>
-          {showDeveloperUI && <ReloadButton />}
-        </div>
-      </Collapse>
-      <Collapse
-        dimension="width"
-        timeout={5000}
-        in={expanded}
-        unmountOnExit={true}
-        mountOnEnter={true}
-      >
-        <div style={{ width: "270px" }}>
-          <div style={{ width: "270px" }}>
-            {/* Quick Filter */}
-            <div className={styles.searchWrapper}>
-              <div className={styles.searchContainer}>
-                <InputGroup>
-                  <FormControl
-                    placeholder="Quick filter"
-                    value={filterQuery}
-                    onChange={({ target }) => {
-                      setFilterQuery(target.value);
-                    }}
-                  />
-                </InputGroup>
-                {filterQuery.length > 0 ? (
-                  <Button
-                    variant="link"
-                    size="sm"
-                    onClick={() => {
-                      setFilterQuery("");
-                    }}
-                  >
-                    Clear
-                  </Button>
-                ) : null}
-              </div>
-            </div>
-
-            {/* Extension List */}
-            <Accordion activeKey={expandedModId} className={styles.extensions}>
-              <ListGroup>{listItems}</ListGroup>
-            </Accordion>
-          </div>
-        </div>
-      </Collapse>
-    </div>
+      {/* Extension List */}
+      <Accordion activeKey={expandedModId} className={styles.list}>
+        <ListGroup>{listItems}</ListGroup>
+      </Accordion>
+    </>
   );
 };
 
-export default SidebarExpanded;
+export default Extensions;
