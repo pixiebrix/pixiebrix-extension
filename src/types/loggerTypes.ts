@@ -16,11 +16,7 @@
  */
 
 import { type UUID } from "@/types/stringTypes";
-import {
-  type InnerDefinitionRef,
-  type RegistryId,
-  type SemVerString,
-} from "@/types/registryTypes";
+import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type ContextName } from "webext-detect-page";
 
 /**
@@ -38,7 +34,7 @@ export type MessageContext = {
   readonly deploymentId?: UUID;
   readonly blueprintId?: RegistryId;
   readonly blueprintVersion?: SemVerString;
-  readonly extensionPointId?: RegistryId | InnerDefinitionRef;
+  readonly extensionPointId?: RegistryId;
   readonly blockId?: RegistryId;
   readonly blockVersion?: SemVerString;
   readonly extensionId?: UUID;

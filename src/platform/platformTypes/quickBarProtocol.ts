@@ -16,7 +16,7 @@
  */
 
 import type { Action } from "kbar";
-import type { InnerDefinitionRef, RegistryId } from "@/types/registryTypes";
+import type { RegistryId } from "@/types/registryTypes";
 import type { UUID } from "@/types/stringTypes";
 
 /**
@@ -26,7 +26,7 @@ export type CustomAction = Action & {
   /**
    * The extension point that added this action.
    */
-  extensionPointId?: RegistryId | InnerDefinitionRef;
+  extensionPointId?: RegistryId;
   /**
    * The ModComponentBase that added the action.
    * @see ModComponentBase

@@ -19,7 +19,6 @@ export function selectEventData(
       label: modComponent.label,
       extensionId: modComponent.id,
       deploymentId: modComponent._deployment?.id,
-      extensionPointId: modComponent.extensionPointId,
       blueprintId: modComponent._recipe?.id,
       blueprintVersion: modComponent._recipe?.version,
     };
