@@ -15,8 +15,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const getBaseExtensionConsoleUrl = (extensionId: string) =>
-  `chrome-extension://${extensionId}/options.html`;
+@import "@/themes/colors.scss";
 
-export const getBasePageEditorUrl = (extensionId: string) =>
-  `chrome-extension://${extensionId}/pageEditor.html`;
+.filter {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 8px;
+  position: relative;
+
+  button {
+    z-index: 3;
+    color: black;
+    text-decoration: none;
+    position: absolute;
+    inset: 16px;
+    left: auto;
+    background: rgba(255, 255, 255, 0.5);
+    color: $N400;
+    padding: 0;
+  }
+}
+
+.list {
+  overflow-y: auto;
+  flex-basis: 0;
+  flex-grow: 1;
+
+  :global {
+    .list-group {
+      border-radius: 0;
+
+      .list-group-item {
+        padding-left: 12px;
+        padding-right: 12px;
+        border-right: none;
+        font-size: 0.875rem;
+      }
+    }
+  }
+}

@@ -19,32 +19,25 @@
 /**
  * @file Handles the definition and state of "readiness" of the content script (CS) context.
  *
- * `Symbol.for(x)` maintains the same symbol until the context is invalidated, even if
- * the CS is injected multiple times. This should not happen but it's something we
- * need to account for: https://github.com/pixiebrix/pixiebrix-extension/issues/3510
+ * There's one "content script" context per extension load. All the content scripts injected
+ * by the extension share this context and its symbols, even if injected repeatedly.
  *
- * When a context is invalidated, the CS and the changes it made may remain on the page,
- * but the new background is not able to message the old CS, so the CS must be injected
- * again. This might cause issues if the previous CS keeps "touching" the page after
- * being deactivated: https://github.com/pixiebrix/pixiebrix-extension/issues/3132
+ * When the extension is deactivated or reloaded, the content script is still kept active but it's
+ * unable to communicate to the background page/worker (because that context has been invalidated).
+ * In the console you can see multiple content scripts running at the same time, until you reload the tab.
  *
- * Using both a symbol and an attribute accounts for these 2 situations, to detect
- * and handle duplicate injections in the same session and across sessions:
- * - Same session (mistake in injection): ignore
- * - Context invalidated: CS must be injected again
+ * When the (background) context is invalidated, we must manually remove all of its listeners and
+ * attached widgets to avoid conflicts with future content script injections:
+ * https://github.com/pixiebrix/pixiebrix-extension/issues/4258
  */
 
-import { type UUID } from "@/types/stringTypes";
 import { type Target } from "@/types/messengerTypes";
 import { forbidContext } from "@/utils/expectContext";
 import { executeFunction } from "webext-content-scripts";
-import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/domConstants";
-
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const html = globalThis.document?.documentElement;
 
 // These two must be synched in `getTargetState`
 const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for("content-script-injected");
+const CONTENT_SCRIPT_READY_SYMBOL = Symbol.for("content-script-ready");
 
 /** Communicates readiness to `ensureContentScript` */
 export const ENSURE_CONTENT_SCRIPT_READY =
@@ -53,6 +46,7 @@ export const ENSURE_CONTENT_SCRIPT_READY =
 declare global {
   interface Window {
     [CONTENT_SCRIPT_INJECTED_SYMBOL]?: true;
+    [CONTENT_SCRIPT_READY_SYMBOL]?: true;
   }
 }
 
@@ -65,31 +59,25 @@ interface TargetState {
 /**
  * Returns true iff the content script has been injected in the content script Javascript VM for the window.
  */
-export function isInstalledInThisSession(): boolean {
-  return CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis;
+export function isContentScriptInstalled(): boolean {
+  return CONTENT_SCRIPT_INJECTED_SYMBOL in window;
 }
 
 /**
  * Mark that the content script has been injected in content script Javascript VM for the window.
  */
-export function setInstalledInThisSession(): void {
+export function setContentScriptInstalled(): void {
   // eslint-disable-next-line security/detect-object-injection -- symbol
   window[CONTENT_SCRIPT_INJECTED_SYMBOL] = true;
 }
 
-export function isReadyInThisDocument(): boolean {
-  return html.hasAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE);
+export function isContentScriptReady(): boolean {
+  return CONTENT_SCRIPT_READY_SYMBOL in window;
 }
 
-export function setReadyInThisDocument(uuid: UUID): void {
-  html.setAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE, uuid);
-}
-
-/** Only removes the attribute if the `uuid` matches. This avoids race conditions with the new content script */
-export function unsetReadyInThisDocument(uuid: UUID): void {
-  if (uuid === html.getAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE)) {
-    html.removeAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE);
-  }
+export function setContentScriptReady(): void {
+  // eslint-disable-next-line security/detect-object-injection -- symbol
+  window[CONTENT_SCRIPT_READY_SYMBOL] = true;
 }
 
 /**
@@ -108,13 +96,12 @@ export async function getTargetState(target: Target): Promise<TargetState> {
     const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for(
       "content-script-injected",
     );
-    const CONTENT_SCRIPT_READY_ATTRIBUTE = "data-pb-ready";
+
+    const CONTENT_SCRIPT_READY_SYMBOL = Symbol.for("content-script-ready");
     return {
       url: location.href,
       installed: CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis,
-      ready: document.documentElement.hasAttribute(
-        CONTENT_SCRIPT_READY_ATTRIBUTE,
-      ),
+      ready: CONTENT_SCRIPT_READY_SYMBOL in globalThis,
     };
   });
 }

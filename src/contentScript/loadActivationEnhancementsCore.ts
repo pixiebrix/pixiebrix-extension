@@ -19,7 +19,7 @@ import { isEmpty, startsWith } from "lodash";
 import { DEFAULT_SERVICE_URL, MARKETPLACE_URL } from "@/urlConstants";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
-import { isReadyInThisDocument } from "@/contentScript/ready";
+import { isContentScriptReady } from "@/contentScript/ready";
 import { getRegistryIdsFromActivateUrlSearchParams } from "@/activation/activationLinkUtils";
 import {
   type ACTIVATE_EVENT_DETAIL,
@@ -97,15 +97,12 @@ export async function loadActivationEnhancements(): Promise<void> {
     button.addEventListener("click", async (event) => {
       event.preventDefault();
 
-      const isContentScriptReady = await pollUntilTruthy(
-        isReadyInThisDocument,
-        {
-          maxWaitMillis: 2000,
-          intervalMillis: 100,
-        },
-      );
+      const isReady = await pollUntilTruthy(isContentScriptReady, {
+        maxWaitMillis: 2000,
+        intervalMillis: 100,
+      });
 
-      if (isContentScriptReady) {
+      if (isReady) {
         const detail: ACTIVATE_EVENT_DETAIL = {
           // The button href may have changed since the listener was added, extract ids again
           activateUrl: button.href,
