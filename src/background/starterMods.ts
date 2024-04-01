@@ -95,7 +95,7 @@ function activateModInOptionsState(
   );
 }
 
-function closeSidebarTab(state: SidebarState, id: UUID): SidebarState {
+function closeSidebarTab(state: SidebarState, modComponentId: UUID): SidebarState {
   return sidebarReducer(
     state,
     sidebarActions.closeTab(getEventKeyForPanel(id)),
