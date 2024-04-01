@@ -118,7 +118,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
         if (newPixiebrixUrl) {
           // Ensure it's connectable
           await ky
-            .get(new URL("api/me", newPixiebrixUrl), {
+            .get(new URL("api/me/", newPixiebrixUrl), {
               signal: AbortSignal.timeout(SAVING_URL_TIMEOUT_MS),
               // Ensure it returns a JSON response. It's just `{}` when the user is logged out.
             })
