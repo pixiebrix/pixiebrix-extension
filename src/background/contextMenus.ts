@@ -86,6 +86,7 @@ async function dispatchMenu(
     });
   } catch (error) {
     notify.error(target, {
+      // Handle internal/messenger errors here. The real error handling occurs in the contextMenu extension point
       error: new Error("Error handling context menu action", { cause: error }),
     });
   }

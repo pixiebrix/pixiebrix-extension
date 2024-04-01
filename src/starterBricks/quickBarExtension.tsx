@@ -183,7 +183,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
       try {
         await this.registerExtensionAction(extension);
       } catch (error) {
-        reportError(error);
+        reportError(error, { context: selectEventData(extension) });
         throw error;
       }
     });

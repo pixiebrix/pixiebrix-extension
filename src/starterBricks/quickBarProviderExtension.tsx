@@ -63,6 +63,7 @@ import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { selectEventData } from "@/telemetry/deployments";
 
 export type QuickBarProviderConfig = {
   /**
@@ -222,7 +223,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       try {
         await this.registerActionProvider(extension);
       } catch (error) {
-        reportError(error);
+        reportError(error, { context: selectEventData(extension) });
         throw error;
       }
     });
