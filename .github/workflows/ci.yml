@@ -38,7 +38,7 @@ jobs:
         with:
           name: extension-test-coverage
       - name: Upload coverage to Codecov
-        uses: Wandalen/wretry.action@v2.1.0
+        uses: Wandalen/wretry.action@v3.0.0
         with:
           action: codecov/codecov-action@v3
           with: |
