@@ -19,7 +19,7 @@ import React from "react";
 import { useRequiredModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { render, screen } from "@/sidebar/testHelpers";
 import ActivateModPanel from "@/sidebar/activateMod/ActivateModPanel";
-import sidebarSlice from "@/sidebar/sidebarSlice";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";

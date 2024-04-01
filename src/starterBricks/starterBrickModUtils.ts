@@ -27,6 +27,8 @@ import { compact, uniq } from "lodash";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
 import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProviderExtension";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
+import { type UUID } from "@/types/stringTypes";
 
 async function getStarterBrickType(
   modComponentDefinition: ModComponentDefinition,
@@ -50,6 +52,18 @@ async function getStarterBrickType(
   );
 
   return extensionPointFromRegistry?.kind ?? null;
+}
+
+export function getAllModComponentDefinitionsWithType(
+  modDefinition: ModDefinition,
+  type: StarterBrickType,
+): ModComponentDefinition[] {
+  return modDefinition.extensionPoints.filter((extensionPoint) => {
+    const definition: StarterBrickDefinition = modDefinition.definitions?.[
+      extensionPoint.id
+    ]?.definition as StarterBrickDefinition;
+    return definition?.type === type;
+  });
 }
 
 export async function getContainedStarterBrickTypes(
@@ -88,4 +102,25 @@ export async function includesQuickBarStarterBrick(
   }
 
   return false;
+}
+
+/**
+ * Find the activated mod components for a subset of Mod Component Definitions
+ * and return their ids.
+ * @param activatedModComponents the activated mod components
+ * @param modComponentDefinitions the mod component definitions
+ */
+export function getModComponentIdsForModComponentDefinitions(
+  activatedModComponents: ActivatedModComponent[],
+  modComponentDefinitions: ModComponentDefinition[],
+): UUID[] {
+  return modComponentDefinitions
+    .map((modComponentDefinition) => {
+      const activatedModComponent = activatedModComponents.find(
+        (activatedModComponent) =>
+          activatedModComponent.extensionPointId === modComponentDefinition.id,
+      );
+      return activatedModComponent?.id;
+    })
+    .filter(Boolean);
 }
