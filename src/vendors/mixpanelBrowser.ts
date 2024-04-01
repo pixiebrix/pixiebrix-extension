@@ -96,5 +96,12 @@ export function browserVersion(userAgent: string, vendor: string | null) {
   if (!matches) {
     return null;
   }
-  return parseFloat(matches[matches.length - 2]);
+
+  const versionString = matches[matches.length - 2];
+
+  if (versionString === undefined) {
+    return null;
+  }
+
+  return parseFloat(versionString);
 }
