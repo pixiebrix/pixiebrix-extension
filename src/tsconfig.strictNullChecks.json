@@ -291,6 +291,7 @@
     "./components/jsonTree/treeHooks.tsx",
     "./components/logViewer/LogToolbar.tsx",
     "./components/logViewer/details/InputDetail.tsx",
+    "./components/logViewer/details/OutputDetail.tsx",
     "./components/logViewer/logSelectors.ts",
     "./components/logViewer/logSlice.ts",
     "./components/logViewer/logViewerTypes.ts",
