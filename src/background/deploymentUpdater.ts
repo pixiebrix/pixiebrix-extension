@@ -234,7 +234,7 @@ async function deactivateMod(
   return { options, editor };
 }
 
-async function installDeployment({
+async function activateDeployment({
   optionsState,
   editorState,
   activatableDeployment,
@@ -250,11 +250,12 @@ async function installDeployment({
   let editor = editorState;
   const { deployment, modDefinition } = activatableDeployment;
 
-  const isReinstall = optionsState.extensions.some(
-    (x) => x._deployment?.id === deployment.id,
+  const isAlreadyActivated = optionsState.extensions.some(
+    (activatedModComponent) =>
+      activatedModComponent._deployment?.id === deployment.id,
   );
 
-  // Uninstall existing versions of the extensions
+  // Deactivate existing mod component versions
   const result = await deactivateMod(
     deployment.package.package_id,
     options,
@@ -264,7 +265,7 @@ async function installDeployment({
   options = result.options;
   editor = result.editor;
 
-  // Install the deployment's blueprint with the service definition
+  // Activate the deployed mod with the service definition
   options = optionsReducer(
     options,
     optionsActions.activateMod({
@@ -277,7 +278,7 @@ async function installDeployment({
       // Assume backend properly validates the options
       optionsArgs: deployment.options_config as OptionsArgs,
       screen: "background",
-      isReactivate: isReinstall,
+      isReactivate: isAlreadyActivated,
     }),
   );
 
@@ -303,7 +304,7 @@ async function installDeployments(
 
   for (const activatableDeployment of activatableDeployments) {
     // eslint-disable-next-line no-await-in-loop -- running reducer, need to update states serially
-    const result = await installDeployment({
+    const result = await activateDeployment({
       optionsState,
       editorState,
       activatableDeployment,
