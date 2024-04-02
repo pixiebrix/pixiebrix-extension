@@ -46,4 +46,14 @@ describe("customizeManifest", () => {
       }),
     ).toMatchSnapshot();
   });
+  test("beta", () => {
+    expect(
+      cleanCustomize(manifest, {
+        env: process.env,
+        isProduction: true,
+        manifestVersion: 3,
+        isBeta: true,
+      }),
+    ).toMatchSnapshot();
+  });
 });
