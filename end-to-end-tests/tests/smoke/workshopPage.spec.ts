@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../fixtures/extensionBase";
-import { WorkshopPage } from "../pageObjects/workshopPage";
+import { test, expect } from "../../fixtures/extensionBase";
+import { WorkshopPage } from "../../pageObjects/workshopPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 
@@ -28,11 +28,13 @@ test.describe("extension console workshop smoke test", () => {
     const workshopPage = new WorkshopPage(page, extensionId);
     await workshopPage.goto();
 
-    // TODO: Add test assertions after adding scope to test user in
-    //  fix for https://github.com/pixiebrix/pixiebrix-extension/issues/8057
-
     const pageTitle = await page.title();
-
     expect(pageTitle).toBe("Workshop | PixieBrix");
+
+    await expect(page.getByText("Custom Bricks")).toBeVisible();
+    const workshopListItems = page.getByRole("table").locator("tr");
+
+    // Expect at least one workshop item visible in the list
+    await expect(workshopListItems.nth(0)).toBeVisible();
   });
 });
