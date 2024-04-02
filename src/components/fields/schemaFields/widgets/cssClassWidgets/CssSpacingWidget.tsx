@@ -209,7 +209,6 @@ const CssSpacingWidget: React.VFC<
             options={marginOptions}
             onUpdate={async (option) => {
               try {
-                // XXX: What errors are we expecting here? And why not just let it bubble up?
                 await setValue(calculateNextSpacing(value, "m", option));
               } catch (error) {
                 reportError(error);
@@ -228,7 +227,6 @@ const CssSpacingWidget: React.VFC<
             options={paddingOptions}
             onUpdate={async (option) => {
               try {
-                // XXX: What errors are we expecting here? And why not just let it bubble up?
                 await setValue(calculateNextSpacing(value, "p", option));
               } catch (error) {
                 reportError(error);
