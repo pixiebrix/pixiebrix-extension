@@ -122,13 +122,20 @@ function addInternalUrlsToContentScripts(manifest, internal) {
  * @returns chrome.runtime.Manifest
  */
 function customizeManifest(manifestV2, options = {}) {
-  const { isProduction, manifestVersion, env = {} } = options;
+  const { isProduction, manifestVersion, env = {}, isBeta } = options;
   const manifest = structuredClone(manifestV2);
   manifest.version = getVersion(env);
   manifest.version_name = getVersionName(env, isProduction);
 
   if (!isProduction) {
     manifest.name = "PixieBrix - Development";
+  }
+
+  if (isBeta) {
+    manifest.icons["16"] = "icons/beta/logo16.png";
+    manifest.icons["32"] = "icons/beta/logo32.png";
+    manifest.icons["48"] = "icons/beta/logo48.png";
+    manifest.icons["128"] = "icons/beta/logo128.png";
   }
 
   if (env.CHROME_MANIFEST_KEY) {
