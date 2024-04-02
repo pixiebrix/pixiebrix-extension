@@ -22,7 +22,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { push } from "connected-react-router";
 
-function useActivateAction(modViewItem: ModViewItem): () => void | null {
+function useActivateAction(modViewItem: ModViewItem): (() => void) | null {
   const dispatch = useDispatch();
   const { mod, status } = modViewItem;
   const activate = () => {
