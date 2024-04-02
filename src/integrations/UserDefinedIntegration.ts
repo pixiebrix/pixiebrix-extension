@@ -44,11 +44,20 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { stringToBase64 } from "uint8array-extras";
 
 /**
- * Returns true if `url` is an absolute URL, based on whether the URL contains a protocol
- * @deprecated Use `isUrlRelative` instead
+ * Like selectAbsoluteUrl, but throws an integrations-specific error instead
+ * @see selectAbsoluteUrl
  */
-function isAbsoluteUrl(url: string): boolean {
-  return canParseUrl(url);
+function selectAbsoluteUrlForIntegrations(
+  url: string,
+  baseURL: string | undefined,
+): string {
+  try {
+    return selectAbsoluteUrl({ url, baseURL });
+  } catch {
+    throw new Error(
+      "Must use absolute URLs for integrations that don't define a baseURL",
+    );
+  }
 }
 
 /**
@@ -267,18 +276,10 @@ class UserDefinedIntegration<
       integrationConfig,
     );
 
-    let absoluteURL: string;
-    if (isAbsoluteUrl(requestConfig.url)) {
-      absoluteURL = requestConfig.url;
-    } else {
-      if (!baseURL) {
-        throw new Error(
-          "Must use absolute URLs for integrations that don't define a baseURL",
-        );
-      }
-
-      absoluteURL = urljoin(baseURL, requestConfig.url);
-    }
+    const absoluteURL = selectAbsoluteUrlForIntegrations(
+      requestConfig.url,
+      baseURL,
+    );
 
     const result = produce(requestConfig, (draft) => {
       draft.url = absoluteURL;
@@ -316,18 +317,10 @@ class UserDefinedIntegration<
       );
     }
 
-    let absoluteURL: string;
-    if (isAbsoluteUrl(requestConfig.url)) {
-      absoluteURL = requestConfig.url;
-    } else {
-      if (!baseURL) {
-        throw new Error(
-          "Must use absolute URLs for integrations that don't define a baseURL",
-        );
-      }
-
-      absoluteURL = urljoin(baseURL, requestConfig.url);
-    }
+    const absoluteURL = selectAbsoluteUrlForIntegrations(
+      requestConfig.url,
+      baseURL,
+    );
 
     const result = produce(requestConfig, (draft) => {
       draft.url = absoluteURL;
@@ -361,18 +354,10 @@ class UserDefinedIntegration<
       { ...integrationConfig, ...tokenData },
     );
 
-    let absoluteURL: string;
-    if (isAbsoluteUrl(requestConfig.url)) {
-      absoluteURL = requestConfig.url;
-    } else {
-      if (!baseURL) {
-        throw new Error(
-          "Must use absolute URLs for integrations that don't define a baseURL",
-        );
-      }
-
-      absoluteURL = urljoin(baseURL, requestConfig.url);
-    }
+    const absoluteURL = selectAbsoluteUrlForIntegrations(
+      requestConfig.url,
+      baseURL,
+    );
 
     const result = produce(requestConfig, (draft) => {
       draft.url = absoluteURL;
