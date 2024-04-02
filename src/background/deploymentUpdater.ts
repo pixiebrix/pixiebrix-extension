@@ -112,25 +112,27 @@ function uninstallExtensionFromStates(
 }
 
 async function deactivateModComponentsAndSaveState(
-  toUninstall: UnresolvedModComponent[],
+  modComponentsToDeactivate: UnresolvedModComponent[],
   {
     editorState,
     optionsState,
   }: { editorState: EditorState; optionsState: ModComponentState },
 ): Promise<void> {
-  // Uninstall existing versions of the extensions
-  for (const extension of toUninstall) {
+  // Deactivate existing mod components
+  for (const modComponent of modComponentsToDeactivate) {
     const result = uninstallExtensionFromStates(
       optionsState,
       editorState,
-      extension.id,
+      modComponent.id,
     );
     optionsState = result.options;
     editorState = result.editor;
   }
 
   await allSettled(
-    toUninstall.map(async ({ id }) => removeExtensionForEveryTab(id)),
+    modComponentsToDeactivate.map(async ({ id }) =>
+      removeExtensionForEveryTab(id),
+    ),
     { catch: "ignore" },
   );
 
