@@ -111,7 +111,7 @@ function uninstallExtensionFromStates(
   return { options, editor };
 }
 
-async function uninstallExtensionsAndSaveState(
+async function deactivateModComponentsAndSaveState(
   toUninstall: UnresolvedModComponent[],
   {
     editorState,
@@ -159,7 +159,7 @@ export async function deactivateAllDeployedMods(): Promise<void> {
     return;
   }
 
-  await uninstallExtensionsAndSaveState(modComponentsToDeactivate, {
+  await deactivateModComponentsAndSaveState(modComponentsToDeactivate, {
     editorState,
     optionsState,
   });
@@ -194,7 +194,7 @@ async function uninstallUnmatchedDeployments(
     return;
   }
 
-  await uninstallExtensionsAndSaveState(toUninstall, {
+  await deactivateModComponentsAndSaveState(toUninstall, {
     editorState,
     optionsState,
   });
