@@ -17,7 +17,7 @@
 
 import axios from "axios";
 import { expectContext } from "@/utils/expectContext";
-import { getErrorMessage, replaceThrownErrors } from "@/errors/errorHelpers";
+import { getErrorMessage, withBusinessError } from "@/errors/errorHelpers";
 import {
   ClientNetworkError,
   ClientNetworkPermissionError,
@@ -30,7 +30,6 @@ import {
   NO_RESPONSE_MESSAGE,
 } from "@/errors/networkErrorHelpers";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
-import { BusinessError } from "@/errors/businessErrors";
 
 export default function enrichAxiosErrors(): void {
   expectContext("extension");
@@ -51,10 +50,7 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
   console.trace("enrichBusinessRequestError", { error });
 
   // This should have already been called before attempting the request because Axios does not actually catch invalid URLs
-  const url = replaceThrownErrors(
-    BusinessError,
-    () => new URL(selectAbsoluteUrl(error.config)),
-  );
+  const url = withBusinessError(() => new URL(selectAbsoluteUrl(error.config)));
 
   assertProtocolUrl(url.href, ["https:", "http:"]);
 
