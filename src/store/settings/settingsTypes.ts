@@ -87,7 +87,9 @@ export type SettingsStateV1 = SkunkworksSettingsFlags &
     nextUpdate: number | null;
 
     /**
-     * Timestamps the update modal was first shown. Used to calculate time remaining for enforceUpdateMillis
+     * Controls a prompt in the UI that prompts the user to manually activate and/or update deployed mods.
+     * This represents the timestamp the update modal was first shown. Set to null to show the modal for the first time.
+     * Used to calculate time remaining for enforceUpdateMillis.
      *
      * @since 1.7.1
      * @see AuthState.enforceUpdateMillis

@@ -16,7 +16,7 @@
  */
 
 import { type Deployment } from "@/types/contract";
-import { isEmpty, partition } from "lodash";
+import { isEmpty } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUUID } from "@/telemetry/telemetryHelpers";
 import { isLinked, readAuthData, updateUserData } from "@/auth/authStorage";
@@ -371,15 +371,6 @@ async function selectUpdatedDeployments(
   return deployments.filter((deployment) => updatePredicate(deployment));
 }
 
-async function removeDeploymentUpdatePrompt() {
-  const settings = await getSettingsState();
-  const next = settingsSlice.reducer(
-    settings,
-    settingsSlice.actions.resetUpdatePromptTimestamp(),
-  );
-  await saveSettingsState(next);
-}
-
 /**
  * Sync activated deployments with assigned deployments.
  *
@@ -661,21 +652,21 @@ async function activateDeploymentsInBackground({
 }
 
 /**
- * Reset the update countdown timer on startup.
+ * There is a prompt in the UI shown to the user to encourage them to manually activate and/or update deployments,
+ * controlled by updatePromptTimestamp. Set updatePromptTimestamp to null to effectively hide the prompt.
  *
  * - If there was a Browser Extension update, it would have been applied
  * - We don't currently separately track timestamps for showing an update modal for deployments vs. browser extension
  * upgrades. However, in enterprise scenarios where enforceUpdateMillis is set, the IT policy is generally such
  * that IT can't reset the extension.
  */
-async function resetUpdatePromptTimestamp() {
-  // There could be a race here, but unlikely because this is run on startup
-  console.debug("Resetting updatePromptTimestamp");
+async function removeDeploymentUpdatePrompt() {
   const settings = await getSettingsState();
-  await saveSettingsState({
-    ...settings,
-    updatePromptTimestamp: null,
-  });
+  const next = settingsSlice.reducer(
+    settings,
+    settingsSlice.actions.resetUpdatePromptTimestamp(),
+  );
+  await saveSettingsState(next);
 }
 
 function initDeploymentUpdater(): void {
@@ -684,7 +675,7 @@ function initDeploymentUpdater(): void {
   registerContribBlocks();
 
   setInterval(syncDeployments, UPDATE_INTERVAL_MS);
-  void resetUpdatePromptTimestamp();
+  void removeDeploymentUpdatePrompt();
   void syncDeployments();
 }
 
