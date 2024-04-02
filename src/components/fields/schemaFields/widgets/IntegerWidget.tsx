@@ -23,7 +23,7 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 /**
  * A basic input widget for integers
  *
- * @see: NumberWidget
+ * @see NumberWidget
  */
 const IntegerWidget: React.VFC<SchemaFieldProps & FormControlProps> = (
   props,

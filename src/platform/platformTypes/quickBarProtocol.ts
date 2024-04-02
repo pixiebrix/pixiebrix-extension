@@ -41,7 +41,6 @@ export type CustomAction = Action & {
 export interface QuickBarProtocol {
   /**
    * Register a custom action with the Quick Bar.
-   * @param action
    */
   addAction(action: CustomAction): void;
 

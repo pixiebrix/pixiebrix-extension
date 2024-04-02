@@ -92,7 +92,6 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
   /**
    * Map from ModComponent to debounce refresh function, so each ModComponent can be debounced independently.
-   * @private
    */
   // Include ModComponent in the body so the method doesn't retain a reference to the ModComponent in the closure
   private readonly debouncedRefreshPanel = new Map<
@@ -104,7 +103,6 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
   /**
    * Controller to drop all listeners and timers
-   * @private
    */
   private readonly abortController = new ReusableAbortController();
 
@@ -257,7 +255,6 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    * Calculate/refresh the content for a single panel.
    * DO NOT CALL DIRECTLY
    * @see debouncedRefreshPanels
-   * @private
    */
   private async refreshComponentPanel(
     modComponent: ResolvedModComponent<SidebarConfig>,
@@ -282,7 +279,6 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   /**
    * Run/refresh the specified mod components, debouncing if applicable.
    * @param componentsToRun the mod components to run
-   * @private
    */
   private async debouncedRefreshPanels(
     componentsToRun: Array<ResolvedModComponent<SidebarConfig>>,

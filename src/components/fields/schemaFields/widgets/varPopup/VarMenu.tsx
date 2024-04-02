@@ -59,7 +59,8 @@ type VarMenuProps = {
    * The likely variable the user is interacting with.
    */
   likelyVariable: string | null;
-  /** The start index of the likelyVariable - used to
+  /**
+   * The start index of the likelyVariable - used to
    * identify when the menu needs to be repositioned
    */
   variablePosition: number | null;

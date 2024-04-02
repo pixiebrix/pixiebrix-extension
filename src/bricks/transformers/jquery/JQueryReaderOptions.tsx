@@ -179,7 +179,6 @@ const SelectorCard: React.FC<{
   selectorDefinition: SelectorDefinition;
   /**
    * Change handler, to handle changes to name and non-schema fields.
-   * @param item
    */
   onChange: (item: SelectorItem) => void;
   /**

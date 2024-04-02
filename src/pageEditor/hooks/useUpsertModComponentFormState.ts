@@ -95,8 +95,6 @@ type SaveOptions = {
 
 /**
  * @param element the page editor formik state
-
- * @param checkPermissions
  * @returns errorMessage an error message, or null if no error occurred
  */
 type SaveCallback = (config: {

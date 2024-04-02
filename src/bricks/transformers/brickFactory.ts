@@ -282,7 +282,6 @@ class UserDefinedBrick extends BrickABC {
    *  Deferred expressions don't have a JSON Schema $ref type.
    *
    * Read more: https://en.wikipedia.org/wiki/Closure_(computer_programming)
-   * @private
    */
   private capturePipelineClosures(
     args: BrickArgs,

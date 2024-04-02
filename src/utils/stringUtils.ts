@@ -19,7 +19,6 @@ import { type Nullish } from "./nullishUtils";
 
 /**
  * If a string contains an emoji, returns an object that contains the separated emoji and the remaining string.
- * @param value
  */
 export function splitStartingEmoji(value: string) {
   const emojiRegex =
@@ -71,7 +70,6 @@ export function smartAppendPeriod(string: string): string {
 
 /**
  * Returns true if the value is nullish, not a string, or a string that is empty or only contains whitespace.
- * @param value
  */
 export function isNullOrBlank(value: Nullish): true;
 export function isNullOrBlank(value: string): boolean;
