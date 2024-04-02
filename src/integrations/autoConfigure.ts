@@ -66,7 +66,7 @@ export async function autoConfigureIntegration(
     syncIntegrations,
   }: {
     upsertIntegrationConfig: (config: IntegrationConfig) => void;
-    deleteIntegrationConfig: (id?: UUID) => void;
+    deleteIntegrationConfig: (id: UUID) => void;
     syncIntegrations: () => Promise<void>;
   },
 ): Promise<void> {
