@@ -355,8 +355,8 @@ async function canAutoActivate({
 }
 
 /**
- * Return the deployments that need to be installed because they have an update
- * @param deployments the deployments
+ * Return the deployments that need to be activated because they have an update
+ * @param deployments the deployments to filter
  * @param restricted `true` if the user is a restricted user, e.g., as opposed to a developer
  */
 async function selectUpdatedDeployments(
@@ -364,12 +364,14 @@ async function selectUpdatedDeployments(
   { restricted }: { restricted: boolean },
 ): Promise<Deployment[]> {
   // Always get the freshest options slice from the local storage
-  const { extensions } = await getModComponentState();
-  const updatePredicate = makeUpdatedFilter(extensions, { restricted });
+  const { extensions: activatedModComponents } = await getModComponentState();
+  const updatePredicate = makeUpdatedFilter(activatedModComponents, {
+    restricted,
+  });
   return deployments.filter((deployment) => updatePredicate(deployment));
 }
 
-async function markAllAsInstalled() {
+async function removeDeploymentUpdatePrompt() {
   const settings = await getSettingsState();
   const next = settingsSlice.reducer(
     settings,
@@ -379,12 +381,12 @@ async function markAllAsInstalled() {
 }
 
 /**
- * Sync local deployments with provisioned deployments.
+ * Sync activated deployments with assigned deployments.
  *
- * If PixieBrix does not have the permissions required to automatically activate a deployment, opens the Options page
+ * If PixieBrix does not have the permissions required to automatically activate a deployment, open the Options page
  * so the user can click to activate the deployments.
  *
- * NOTE: if updates are snoozed, does not install updates automatically. (To not interrupt the current business
+ * NOTE: if updates are snoozed, does not activate updated deployments automatically. (To not interrupt the current business
  * process the team member is working on.)
  */
 export async function syncDeployments(): Promise<void> {
@@ -464,7 +466,7 @@ export async function syncDeployments(): Promise<void> {
   }
 
   // Always get the freshest options slice from the local storage
-  const { extensions } = await getModComponentState();
+  const { extensions: activatedModComponents } = await getModComponentState();
 
   // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment installed.
   // Now we're always sending in order to help team admins understand any gaps between number of registered users
@@ -498,7 +500,7 @@ export async function syncDeployments(): Promise<void> {
     {
       uid: await getUUID(),
       version: getExtensionVersion(),
-      active: selectInstalledDeployments(extensions),
+      active: selectInstalledDeployments(activatedModComponents),
       campaignIds,
     },
     {
@@ -507,7 +509,7 @@ export async function syncDeployments(): Promise<void> {
     },
   );
 
-  // Always uninstall unmatched deployments
+  // Always deactivate unassigned deployments
   await deactivateUnassignedDeployments(deployments);
 
   // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag currently
@@ -564,12 +566,12 @@ export async function syncDeployments(): Promise<void> {
     }
 
     // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user to
-    // manually install the deployments via the banner.
+    // manually activate the deployments via the banner.
     void browser.runtime.openOptionsPage();
     return;
   }
 
-  // Extracted activateDeploymentsInBackground into a separate function because code only uses activatableDeployments.
+  // Extracted activateDeploymentsInBackground into a separate function because code only uses activatableDeployments
   await activateDeploymentsInBackground({
     // Excludes any deployments that fail to fetch. In those cases, the user will stay on the old deployment until
     // the next heartbeat/check.
@@ -592,7 +594,7 @@ async function activateDeploymentsInBackground({
   activatableDeployments: ActivatableDeployment[];
   meApiResponse: components["schemas"]["Me"];
 }): Promise<void> {
-  // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-install.
+  // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-activate.
   // Behind a feature flag in case it causes problems for enterprise customers.
   // Could use browser.runtime.getManifest().optional_permissions here, but that also technically supports the Origin
   // type so the types wouldn't match with checkDeploymentPermissions
@@ -616,11 +618,11 @@ async function activateDeploymentsInBackground({
   const { version: extensionVersionString } = browser.runtime.getManifest();
   const extensionVersion = parseSemVer(extensionVersionString);
 
-  const installability = await Promise.all(
+  const deploymentsByAutoActivatability = await Promise.all(
     deploymentRequirements.map(
       async ({ activatableDeployment, hasPermissions }) => ({
         activatableDeployment,
-        isAutomatic: await canAutoActivate({
+        autoActivate: await canAutoActivate({
           activatableDeployment,
           hasPermissions,
           extensionVersion,
@@ -629,25 +631,30 @@ async function activateDeploymentsInBackground({
     ),
   );
 
-  const [automatic, manual] = partition(installability, (x) => x.isAutomatic);
+  const [autoActivateDeployments, manualActivateDeployments] = partition(
+    deploymentsByAutoActivatability,
+    (deployment) => deployment.autoActivate,
+  );
 
   let automaticError: boolean;
 
-  if (automatic.length > 0) {
+  if (autoActivateDeployments.length > 0) {
     try {
-      await activateDeployments(automatic.map((x) => x.activatableDeployment));
+      await activateDeployments(
+        autoActivateDeployments.map((x) => x.activatableDeployment),
+      );
     } catch (error) {
       reportError(error);
       automaticError = true;
     }
   }
 
-  if (manual.length === 0) {
-    void markAllAsInstalled();
+  if (manualActivateDeployments.length === 0) {
+    void removeDeploymentUpdatePrompt();
   }
 
   // We only want to call openOptionsPage a single time
-  if (manual.length > 0 || automaticError) {
+  if (manualActivateDeployments.length > 0 || automaticError) {
     void browser.runtime.openOptionsPage();
   }
 }
