@@ -171,38 +171,40 @@ export async function deactivateAllDeployedMods(): Promise<void> {
   });
 }
 
-async function uninstallUnmatchedDeployments(
-  deployments: Deployment[],
+async function deactivateUnassignedDeployments(
+  assignedDeployments: Deployment[],
 ): Promise<void> {
   const [optionsState, editorState] = await Promise.all([
     getModComponentState(),
     getEditorState(),
   ]);
-  const installed = selectActivatedModComponents({ options: optionsState });
+  const activatedModComponents = selectActivatedModComponents({
+    options: optionsState,
+  });
 
-  const deploymentRecipeIds = new Set(
-    deployments.map((deployment) => deployment.package.package_id),
+  const deployedModIds = new Set(
+    assignedDeployments.map((deployment) => deployment.package.package_id),
   );
 
-  const toUninstall = installed.filter(
-    (extension) =>
-      !isEmpty(extension._deployment) &&
-      !deploymentRecipeIds.has(extension._recipe?.id),
+  const modComponentsToDeactivate = activatedModComponents.filter(
+    (activatedModComponent) =>
+      !isEmpty(activatedModComponent._deployment) &&
+      !deployedModIds.has(activatedModComponent._recipe?.id),
   );
 
-  if (toUninstall.length === 0) {
+  if (modComponentsToDeactivate.length === 0) {
     // Short-circuit to skip reporting telemetry
     return;
   }
 
-  await deactivateModComponentsAndSaveState(toUninstall, {
+  await deactivateModComponentsAndSaveState(modComponentsToDeactivate, {
     editorState,
     optionsState,
   });
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
     auto: true,
-    deployments: toUninstall.map((x) => x._deployment.id),
+    deployments: modComponentsToDeactivate.map((x) => x._deployment.id),
   });
 }
 
@@ -507,7 +509,7 @@ export async function syncDeployments(): Promise<void> {
   );
 
   // Always uninstall unmatched deployments
-  await uninstallUnmatchedDeployments(deployments);
+  await deactivateUnassignedDeployments(deployments);
 
   // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag currently
   // corresponds to whether the user is a restricted user vs. developer
