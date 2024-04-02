@@ -20,6 +20,7 @@ import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty, throttle } from "lodash";
+import { signalFromEvent } from "abort-utils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import * as sidebarMv2 from "@/contentScript/sidebarDomControllerLite";
 import { type Except } from "type-fest";
@@ -141,6 +142,12 @@ export async function showSidebar(): Promise<void> {
 
       await focusCaptureDialog(
         'Please click "OK" to allow PixieBrix to open the sidebar.',
+        {
+          signal: signalFromEvent(
+            sidebarShowEvents,
+            sidebarShowEvents.coreEvent,
+          ),
+        },
       );
       await showMySidePanel();
     }
