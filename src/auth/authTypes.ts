@@ -29,10 +29,11 @@ import { type UserMilestone } from "@/data/model/UserMilestone";
 export type AuthSharing = "private" | "shared" | "built-in";
 export interface AuthOption {
   label: string;
-  /** The UUID of the auth credential
+  /**
+   * The UUID of the auth credential
    * Local integration configurations stored in Redux are not guaranteed to have a UUID.
    * See `locationIntegrationConfigsState` in useAuthOptions()
-   **/
+   */
   value: Nullishable<UUID>;
   serviceId: RegistryId;
   local: boolean;
