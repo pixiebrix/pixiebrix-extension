@@ -618,7 +618,7 @@ async function activateDeploymentsInBackground({
   const { version: extensionVersionString } = browser.runtime.getManifest();
   const extensionVersion = parseSemVer(extensionVersionString);
 
-  const deploymentsByAutoActivatability = await Promise.all(
+  const deploymentsByActivationMethod = await Promise.all(
     deploymentRequirements.map(
       async ({ activatableDeployment, hasPermissions }) => ({
         activatableDeployment,
@@ -631,30 +631,31 @@ async function activateDeploymentsInBackground({
     ),
   );
 
-  const [autoActivateDeployments, manualActivateDeployments] = partition(
-    deploymentsByAutoActivatability,
-    (deployment) => deployment.autoActivate,
-  );
+  const deploymentsToAutoActivate = deploymentsByActivationMethod
+    .filter(({ autoActivate }) => autoActivate)
+    .map(({ activatableDeployment }) => activatableDeployment);
 
-  let automaticError: boolean;
+  const deploymentsToManuallyActivate = deploymentsByActivationMethod
+    .filter(({ autoActivate }) => !autoActivate)
+    .map(({ activatableDeployment }) => activatableDeployment);
 
-  if (autoActivateDeployments.length > 0) {
+  let autoActivationError: boolean;
+
+  if (deploymentsToAutoActivate.length > 0) {
     try {
-      await activateDeployments(
-        autoActivateDeployments.map((x) => x.activatableDeployment),
-      );
+      await activateDeployments(deploymentsToAutoActivate);
     } catch (error) {
       reportError(error);
-      automaticError = true;
+      autoActivationError = true;
     }
   }
 
-  if (manualActivateDeployments.length === 0) {
+  if (deploymentsToManuallyActivate.length === 0) {
     void removeDeploymentUpdatePrompt();
   }
 
   // We only want to call openOptionsPage a single time
-  if (manualActivateDeployments.length > 0 || automaticError) {
+  if (deploymentsToManuallyActivate.length > 0 || autoActivationError) {
     void browser.runtime.openOptionsPage();
   }
 }
