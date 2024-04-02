@@ -244,9 +244,9 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(1);
+    expect(activatedModComponents).toHaveLength(1);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(1);
   });
 
@@ -291,7 +291,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
     expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
       [
@@ -306,10 +306,10 @@ describe("syncDeployments", () => {
       ],
     );
 
-    expect(extensions).toHaveLength(1);
+    expect(activatedModComponents).toHaveLength(1);
   });
 
-  test("ignore other user extensions", async () => {
+  test("ignore other mod components", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const starterBrick = starterBrickConfigFactory();
@@ -361,8 +361,8 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
-    expect(extensions).toBeArrayOfSize(2);
+    const { extensions: activatedModComponents } = await getModComponentState();
+    expect(activatedModComponents).toBeArrayOfSize(2);
     const foo = await getEditorState();
     // Expect unrelated dynamic element not to be removed
     expect(foo.elements).toBeArrayOfSize(1);
@@ -411,9 +411,11 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
-    expect(extensions).toBeArrayOfSize(1);
-    expect(extensions[0]._recipe.version).toBe(deployment.package.version);
+    const { extensions: activatedModComponents } = await getModComponentState();
+    expect(activatedModComponents).toBeArrayOfSize(1);
+    expect(activatedModComponents[0]._recipe.version).toBe(
+      deployment.package.version,
+    );
   });
 
   test("uninstall existing recipe mod component with dynamic element", async () => {
@@ -474,12 +476,14 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
-    expect(extensions).toBeArrayOfSize(1);
+    const { extensions: activatedModComponents } = await getModComponentState();
+    expect(activatedModComponents).toBeArrayOfSize(1);
     const { elements } = await getEditorState();
     // Expect dynamic element to be removed
     expect(elements).toBeArrayOfSize(0);
-    expect(extensions[0]._recipe.version).toBe(deployment.package.version);
+    expect(activatedModComponents[0]._recipe.version).toBe(
+      deployment.package.version,
+    );
   });
 
   test("opens options page if deployment does not have necessary permissions", async () => {
@@ -510,9 +514,9 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(0);
+    expect(activatedModComponents).toHaveLength(0);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
 
@@ -557,7 +561,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
     expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
       [
@@ -572,7 +576,7 @@ describe("syncDeployments", () => {
       ],
     );
 
-    expect(extensions).toHaveLength(0);
+    expect(activatedModComponents).toHaveLength(0);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
 
@@ -780,11 +784,11 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(2);
+    expect(activatedModComponents).toHaveLength(2);
 
-    const installedIds = extensions.map((x) => x.id);
+    const installedIds = activatedModComponents.map((x) => x.id);
     expect(installedIds).toContain(personalModComponent.id);
     expect(installedIds).toContain(recipeModComponent.id);
 
