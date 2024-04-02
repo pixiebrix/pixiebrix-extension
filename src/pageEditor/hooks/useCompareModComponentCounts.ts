@@ -30,7 +30,7 @@ type SourceModParts = {
 };
 
 /**
- * @returns - A function that compares the number of mod components in the redux state and the mod definition
+ * @returns A function that compares the number of mod components in the redux state and the mod definition
  */
 function useCompareModComponentCounts(): (
   unsavedModDefinition: UnsavedModDefinition,
