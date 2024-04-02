@@ -83,14 +83,20 @@ export function setContentScriptState(newState: "installed" | "ready"): void {
 // Do not use the Messenger, it cannot appear in this bundle
 export async function isTargetReady(target: Target): Promise<boolean> {
   forbidContext("contentScript");
-  const response = (await browser.tabs.sendMessage(
-    target.tabId,
-    {
-      type: CONTENT_SCRIPT_READINESS_CHECK,
-    },
-    { frameId: target.frameId },
-  )) as true | undefined;
-  return response ?? false;
+  try {
+    const response = (await browser.tabs.sendMessage(
+      target.tabId,
+      {
+        type: CONTENT_SCRIPT_READINESS_CHECK,
+      },
+      { frameId: target.frameId },
+    )) as true | undefined;
+    // `undefined` means `chrome.runtime.onMessage.addListener` was called in that context, but no one answered this specific message
+    return response ?? false;
+  } catch {
+    // No content script in the target at all
+    return false;
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/promise-function-async -- Message handlers must return undefined to "pass through", not Promise<undefined>
