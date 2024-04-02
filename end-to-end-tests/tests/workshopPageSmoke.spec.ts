@@ -28,11 +28,13 @@ test.describe("extension console workshop smoke test", () => {
     const workshopPage = new WorkshopPage(page, extensionId);
     await workshopPage.goto();
 
-    // TODO: Add test assertions after adding scope to test user in
-    //  fix for https://github.com/pixiebrix/pixiebrix-extension/issues/8057
-
     const pageTitle = await page.title();
-
     expect(pageTitle).toBe("Workshop | PixieBrix");
+
+    await expect(page.getByText("Custom Bricks")).toBeVisible();
+    const workshopListItems = page.getByRole("table").locator("tr");
+
+    // Expect at least one workshop item visible in the list
+    await expect(workshopListItems.nth(0)).toBeVisible();
   });
 });
