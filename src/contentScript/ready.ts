@@ -36,9 +36,12 @@ import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
 
 const CONTENT_SCRIPT_STATE_SYMBOL = Symbol.for("content-script-state");
 
-/** Communicates readiness to `waitForContentScript` */
-export const CONTENT_SCRIPT_READY = "LOADING/CONTENT_SCRIPT_READY";
-const CONTENT_SCRIPT_RAW_PING = "LOADING/CONTENT_SCRIPT_RAW_PING";
+/** Used by the content script to notify any listeners set by `waitForContentScript` */
+export const CONTENT_SCRIPT_READY_NOTIFICATION =
+  "CONTENT_SCRIPT_READY_NOTIFICATION";
+
+/** Used by the background (and others) to check whether the content script is ready */
+const CONTENT_SCRIPT_READINESS_CHECK = "CONTENT_SCRIPT_READINESS_CHECK";
 
 type ContentScriptState = undefined | "installed" | "ready";
 
@@ -66,10 +69,12 @@ export function setContentScriptState(newState: "installed" | "ready"): void {
     }
 
     // Notify `waitForContentScript` listeners, if any
-    void browser.runtime.sendMessage({ type: CONTENT_SCRIPT_READY });
+    void browser.runtime.sendMessage({
+      type: CONTENT_SCRIPT_READY_NOTIFICATION,
+    });
 
     // Respond to any successive `waitForContentScript` pings
-    browser.runtime.onMessage.addListener(onMessage);
+    browser.runtime.onMessage.addListener(respondToReadinessChecks);
   }
 
   window[CONTENT_SCRIPT_STATE_SYMBOL] = newState;
@@ -81,7 +86,7 @@ export async function isTargetReady(target: Target): Promise<boolean> {
   const response = (await browser.tabs.sendMessage(
     target.tabId,
     {
-      type: CONTENT_SCRIPT_RAW_PING,
+      type: CONTENT_SCRIPT_READINESS_CHECK,
     },
     { frameId: target.frameId },
   )) as true | undefined;
@@ -89,10 +94,10 @@ export async function isTargetReady(target: Target): Promise<boolean> {
 }
 
 // eslint-disable-next-line @typescript-eslint/promise-function-async -- Message handlers must return undefined to "pass through", not Promise<undefined>
-function onMessage(message: unknown): Promise<true> | undefined {
+function respondToReadinessChecks(message: unknown): Promise<true> | undefined {
   if (
     isRemoteProcedureCallRequest(message) &&
-    message.type === CONTENT_SCRIPT_RAW_PING
+    message.type === CONTENT_SCRIPT_READINESS_CHECK
   ) {
     // Do not return an unpromised `true` because `webextension-polyfill` handles it differently
     return Promise.resolve(true);

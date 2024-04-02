@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Runtime, type Tabs } from "webextension-polyfill";
+import { type Runtime, type Tabs } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import {
   errorTabDoesntExist,

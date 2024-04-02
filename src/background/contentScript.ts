@@ -18,7 +18,10 @@
 import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
 import { expectContext } from "@/utils/expectContext";
 import type { Target } from "@/types/messengerTypes";
-import { CONTENT_SCRIPT_READY, isTargetReady } from "@/contentScript/ready";
+import {
+  CONTENT_SCRIPT_READY_NOTIFICATION,
+  isTargetReady,
+} from "@/contentScript/ready";
 import { type Runtime } from "webextension-polyfill";
 import { oneEvent } from "webext-events";
 
@@ -37,7 +40,7 @@ async function onReadyNotification(
       }
 
       return (
-        message.type === CONTENT_SCRIPT_READY &&
+        message.type === CONTENT_SCRIPT_READY_NOTIFICATION &&
         target.tabId === sender.tab?.id &&
         target.frameId === sender.frameId
       );
@@ -45,11 +48,6 @@ async function onReadyNotification(
   });
 }
 
-/**
- * Ensures that the contentScript is ready on the specified page, regardless of its status.
- * - If it's not expected to be injected automatically, it also injects it into the page.
- * - If it's been injected, it will resolve once the content script is ready.
- */
 export async function waitForContentScript(
   target: Target,
   timeoutMillis = 4000,

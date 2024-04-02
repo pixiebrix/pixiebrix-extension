@@ -16,7 +16,10 @@
  */
 
 import { waitForContentScript } from "@/background/contentScript";
-import { CONTENT_SCRIPT_READY, isTargetReady } from "@/contentScript/ready";
+import {
+  CONTENT_SCRIPT_READY_NOTIFICATION,
+  isTargetReady,
+} from "@/contentScript/ready";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { TEST_setContext } from "webext-detect-page";
 import { type Runtime, type Tabs } from "webextension-polyfill";
@@ -71,7 +74,7 @@ describe("waitForContentScript", () => {
     await expect(second).toBePending();
 
     messageEvents.emit({
-      message: { type: CONTENT_SCRIPT_READY },
+      message: { type: CONTENT_SCRIPT_READY_NOTIFICATION },
       sender: {
         id: browser.runtime.id,
         tab: { id: 1 } as Tabs.Tab,
