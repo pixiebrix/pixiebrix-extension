@@ -15,150 +15,82 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  ensureContentScript,
-  initContentScriptReadyListener,
-  makeSenderKey,
-} from "@/background/contentScript";
+import { waitForContentScript } from "@/background/contentScript";
 import { CONTENT_SCRIPT_READY, isTargetReady } from "@/contentScript/ready";
-import { injectContentScript } from "webext-content-scripts";
-import { queryAdditionalPermissions } from "webext-permissions";
-import pDefer from "p-defer";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { TEST_setContext } from "webext-detect-page";
+import { type Runtime, type Tabs } from "webextension-polyfill";
 
 TEST_setContext("background");
 
-jest.mock("@/contentScript/ready", () => {
-  const actual = jest.requireActual("@/contentScript/ready");
-  return {
-    ...actual,
-    isTargetReady: jest.fn().mockRejectedValue(new Error("Not Implemented")),
-  };
-});
+jest.mock("@/contentScript/ready");
 
-jest.mock("webext-content-scripts", () => ({
-  injectContentScript: jest
-    .fn()
-    .mockRejectedValue(new Error("Not Implemented")),
-}));
-
-jest.mock("webext-permissions", () => ({
-  queryAdditionalPermissions: jest.fn().mockResolvedValue({ origins: [] }),
-}));
-
-let messageListener: any;
+let messageEvents:
+  | SimpleEventTarget<{ message: unknown; sender: Runtime.MessageSender }>
+  | undefined;
 
 const addListenerMock = jest.mocked(browser.runtime.onMessage.addListener);
-const queryAdditionalPermissionsMock = jest.mocked(queryAdditionalPermissions);
 const isTargetReadyMock = jest.mocked(isTargetReady);
-const injectContentScriptMock = jest.mocked(injectContentScript);
-
-const RUNTIME_ID = "abc123";
 
 describe("ensureContentScript", () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    messageListener = null;
+    messageEvents = new SimpleEventTarget();
 
-    addListenerMock.mockImplementation((listener: any) => {
-      messageListener = listener;
-    });
-
-    initContentScriptReadyListener();
-
-    browser.runtime.id = RUNTIME_ID;
-
-    browser.runtime.getManifest = jest.fn().mockReturnValue({
-      content_scripts: [
-        {
-          matches: ["https://*.pixiebrix.com/*"],
-          js: ["contentScript.js"],
-          css: ["contentScript.css"],
-          run_at: "document_idle",
-        },
-      ],
-    });
+    addListenerMock.mockImplementation(
+      (
+        listener: (
+          message: any,
+          sender: Runtime.MessageSender,
+        ) => Promise<any> | true | void,
+      ) => {
+        // eslint-disable-next-line @typescript-eslint/promise-function-async -- Not on messaging APIs
+        messageEvents.add(({ message, sender }) => listener(message, sender));
+      },
+    );
   });
 
   it("contentScript already ready", async () => {
     isTargetReadyMock.mockResolvedValue(true);
 
-    const injectPromise = pDefer<void>();
-    injectContentScriptMock.mockReturnValue(injectPromise.promise);
+    const first = waitForContentScript({ tabId: 1, frameId: 0 });
+    const second = waitForContentScript({ tabId: 1, frameId: 0 });
 
-    const first = ensureContentScript({ tabId: 1, frameId: 0 });
-    const second = ensureContentScript({ tabId: 1, frameId: 0 });
-
-    expect(first).toBe(second);
-    await Promise.all([first, second]);
-
-    expect(injectContentScriptMock).not.toHaveBeenCalled();
-  });
-
-  it("inject script into new page", async () => {
-    isTargetReadyMock.mockResolvedValue(false);
-
-    queryAdditionalPermissionsMock.mockResolvedValue({
-      origins: [],
-      permissions: [],
-    });
-
-    const injectPromise = pDefer<void>();
-    injectContentScriptMock.mockReturnValue(injectPromise.promise);
-
-    const first = ensureContentScript({ tabId: 1, frameId: 0 });
-    const second = ensureContentScript({ tabId: 1, frameId: 0 });
-    expect(first).toBe(second);
-
-    injectPromise.resolve();
-
-    messageListener(
-      { type: CONTENT_SCRIPT_READY },
-      { id: RUNTIME_ID, tab: { id: 1 }, frameId: 0 },
-    );
-    await Promise.all([first, second]);
+    await Promise.all([
+      expect(first).toFullfillWithinMilliseconds(20),
+      expect(second).toFullfillWithinMilliseconds(20),
+    ]);
   });
 
   it("wait for script to be ready in page", async () => {
     isTargetReadyMock.mockResolvedValue(false);
 
-    const first = ensureContentScript({ tabId: 1, frameId: 0 });
-    const second = ensureContentScript({ tabId: 1, frameId: 0 });
-    expect(first).toBe(second);
+    const first = waitForContentScript({ tabId: 1, frameId: 0 });
+    const second = waitForContentScript({ tabId: 1, frameId: 0 });
+    await expect(first).toBePending();
+    await expect(second).toBePending();
 
-    messageListener(
-      { type: CONTENT_SCRIPT_READY },
-      { id: RUNTIME_ID, tab: { id: 1 }, frameId: 0 },
-    );
-    await Promise.all([first, second]);
-
-    expect(injectContentScriptMock).not.toHaveBeenCalled();
+    messageEvents.emit({
+      message: { type: CONTENT_SCRIPT_READY },
+      sender: {
+        id: browser.runtime.id,
+        tab: { id: 1 } as Tabs.Tab,
+        frameId: 0,
+      },
+    });
+    await expect(first).resolves.toBeUndefined();
+    await expect(second).resolves.toBeUndefined();
   });
 
-  it("should not inject if site is in additionalPermissions", async () => {
+  it("wait for script to be ready in page, with timeout", async () => {
     isTargetReadyMock.mockResolvedValue(false);
 
-    queryAdditionalPermissionsMock.mockResolvedValue({
-      origins: ["https://www.example.com/*"],
-      permissions: [],
-    });
+    const first = waitForContentScript({ tabId: 1, frameId: 0 }, 10);
+    const second = waitForContentScript({ tabId: 1, frameId: 0 }, 10);
+    await expect(first).toBePending();
+    await expect(second).toBePending();
 
-    const first = ensureContentScript({ tabId: 1, frameId: 0 });
-    const second = ensureContentScript({ tabId: 1, frameId: 0 });
-    expect(first).toBe(second);
-
-    messageListener(
-      { type: CONTENT_SCRIPT_READY },
-      { id: RUNTIME_ID, tab: { id: 1 }, frameId: 0 },
-    );
-    await Promise.all([first, second]);
-
-    expect(injectContentScriptMock).not.toHaveBeenCalled();
-  });
-});
-
-describe("makeSenderKey", () => {
-  it("handles non-tab message", () => {
-    expect(makeSenderKey({ id: RUNTIME_ID })).toBe("{}");
+    await expect(first).rejects.toThrow("contentScript not ready in 10ms");
+    await expect(second).rejects.toThrow("contentScript not ready in 10ms");
   });
 });
