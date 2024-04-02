@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Tabs } from "webextension-polyfill";
+import { Runtime, type Tabs } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import {
   errorTabDoesntExist,
@@ -34,6 +34,7 @@ import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import { forEachTab } from "@/utils/extensionUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
 
 type TabId = number;
 
@@ -226,11 +227,31 @@ function unlinkTabListener(id: number): void {
   void tabToOpener.delete(String(id));
 }
 
+// eslint-disable-next-line @typescript-eslint/promise-function-async -- Message handlers must return undefined to "pass through", not Promise<undefined>
+function onMessage(
+  message: unknown,
+  sender: Runtime.MessageSender,
+): Promise<unknown> | undefined {
+  if (
+    !isRemoteProcedureCallRequest(message) ||
+    sender.id !== browser.runtime.id
+  ) {
+    return; // Don't handle message
+  }
+
+  if (message.type === "WHO_AM_I") {
+    return Promise.resolve(sender);
+  }
+
+  // Don't return anything to indicate this didn't handle the message
+}
+
 function initExecutor(): void {
   expectContext("background");
 
   browser.tabs.onCreated.addListener(linkTabListener);
   browser.tabs.onRemoved.addListener(unlinkTabListener);
+  browser.runtime.onMessage.addListener(onMessage);
 }
 
 export async function focusTab(this: MessengerMeta): Promise<void> {

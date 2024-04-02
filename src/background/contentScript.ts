@@ -25,25 +25,6 @@ import { oneEvent } from "webext-events";
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const debug = console.debug.bind(console, "ensureContentScript:");
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- Message handlers must return undefined to "pass through", not Promise<undefined>
-function onMessage(
-  message: unknown,
-  sender: Runtime.MessageSender,
-): Promise<unknown> | undefined {
-  if (
-    !isRemoteProcedureCallRequest(message) ||
-    sender.id !== browser.runtime.id
-  ) {
-    return; // Don't handle message
-  }
-
-  if (message.type === "WHO_AM_I") {
-    return Promise.resolve(sender);
-  }
-
-  // Don't return anything to indicate this didn't handle the message
-}
-
 async function onReadyNotification(
   target: Target,
   signal: AbortSignal,
@@ -79,6 +60,7 @@ export async function waitForContentScript(
   const timeout = AbortSignal.timeout(timeoutMillis);
   await waitForContentScriptWithoutTimeout(target, timeout);
   if (timeout.aborted) {
+    // TODO: Use TimeoutError after https://github.com/sindresorhus/p-timeout/issues/41
     throw new Error(`contentScript not ready in ${timeoutMillis}ms`);
   }
 
@@ -97,8 +79,4 @@ async function waitForContentScriptWithoutTimeout(
     // It did not immediately answer, so we just await its READY ping
     await readyNotificationPromise;
   }
-}
-
-export function initContentScriptRawMessagesListener() {
-  browser.runtime.onMessage.addListener(onMessage);
 }
