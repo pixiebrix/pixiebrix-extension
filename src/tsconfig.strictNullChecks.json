@@ -10,7 +10,7 @@
     "../end-to-end-tests/pageObjects/constants.ts",
     "../end-to-end-tests/pageObjects/modsPage.ts",
     "../end-to-end-tests/tests/extensionConsoleActivation.spec.ts",
-    "../end-to-end-tests/tests/modsPageSmoke.spec.ts",
+    "../end-to-end-tests/tests/smoke/modsPageSmoke.spec.ts",
     "./__mocks__/@/auth/featureFlagStorage.ts",
     "./__mocks__/@/auth/useLinkState.ts",
     "./__mocks__/@/background/messenger/strict/api.ts",

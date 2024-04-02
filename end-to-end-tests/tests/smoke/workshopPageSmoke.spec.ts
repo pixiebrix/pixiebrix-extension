@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../fixtures/extensionBase";
-import { WorkshopPage } from "../pageObjects/workshopPage";
+import { test, expect } from "../../fixtures/extensionBase";
+import { WorkshopPage } from "../../pageObjects/workshopPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 
