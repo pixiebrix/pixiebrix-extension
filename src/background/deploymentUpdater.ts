@@ -348,6 +348,7 @@ async function canAutomaticallyInstall({
 
 /**
  * Return the deployments that need to be installed because they have an update
+ * @param deployments the deployments
  * @param restricted `true` if the user is a restricted user, e.g., as opposed to a developer
  */
 async function selectUpdatedDeployments(

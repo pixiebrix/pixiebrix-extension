@@ -34,6 +34,7 @@ export function registerHandler(extensionId: UUID, handler: MenuHandler): void {
 
 /**
  * Handle a context menu action. Called from the background page.
+ * @param extensionId the extension id
  * @param args the args from the Chrome context menu action event
  * @see dispatchMenu
  */

@@ -63,6 +63,7 @@ const PRESERVE_LITERAL_VALUES = new Map<RegistryId, Set<string>>(
  *
  * For use when upgrading apiVersion v1/2 to v3. Otherwise, use toExpression.
  *
+ * @param string the string
  * @param templateEngine the template to use for text templates
  * @see toExpression
  */
@@ -71,7 +72,7 @@ export function upgradeStringToExpression(
   templateEngine: TemplateEngine,
 ): Expression {
   if (typeof string !== "string") {
-    throw new TypeError("Expected string");
+    throw new TypeError("Expected string for value");
   }
 
   const type = VARIABLE_REFERENCE_REGEX.test(string) ? "var" : templateEngine;

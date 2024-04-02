@@ -74,6 +74,7 @@ type Props = {
  *
  * NOTE: does not perform a permissions check.
  *
+ * @param modDefinition the mod definition
  * @param authOptions the integration configurations available to the user
  * @param initialOptions the initial options for the mod
  * @see checkModDefinitionPermissions

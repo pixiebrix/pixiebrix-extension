@@ -158,6 +158,7 @@ function hasRegistryScope(
 
 /**
  * Returns true if the user directly owns the mod
+ * @param mod the mod
  * @param userScope the user's scope, or null if it's not set
  */
 function isPersonal(mod: Mod, userScope: string | null): boolean {

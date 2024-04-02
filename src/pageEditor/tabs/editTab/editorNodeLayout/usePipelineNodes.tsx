@@ -127,6 +127,7 @@ function getNodePreviewElementId(
 
 /**
  * @param block the block, or null if the resolved block is not available yet
+ * @param blockConfig the block config
  */
 function getSubPipelinesForBlock(
   block: Brick | null,

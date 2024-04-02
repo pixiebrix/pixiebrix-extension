@@ -24,6 +24,7 @@ type InvalidPathInformation = {
 
 /**
  * Return which part of the key/path is invalid for a call to lodash's getIn
+ * @param value the value
  * @param path period separated path
  */
 export function getInvalidPath(
