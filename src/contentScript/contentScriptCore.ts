@@ -29,7 +29,6 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 import brickRegistry from "@/bricks/registry";
 import { initNavigation } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";
-import { CONTENT_SCRIPT_READY } from "@/contentScript/ready";
 import { initToaster } from "@/utils/notify";
 import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
 import {
@@ -101,9 +100,6 @@ export async function init(): Promise<void> {
 
   initSidebarFocusEvents();
   void initSidebarActivation();
-
-  // Notify `ensureContentScript`
-  void browser.runtime.sendMessage({ type: CONTENT_SCRIPT_READY });
 
   // Update `sidePanel`
   void renderPanelsIfVisible();

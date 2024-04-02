@@ -23,7 +23,7 @@ import { type Runtime } from "webextension-polyfill";
 import { oneEvent } from "webext-events";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
-const debug = console.debug.bind(console, "ensureContentScript:");
+const debug = console.debug.bind(console, "waitForContentScript:");
 
 async function onReadyNotification(
   target: Target,

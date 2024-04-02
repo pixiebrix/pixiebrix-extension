@@ -679,6 +679,7 @@
     "./telemetry/trace.ts",
     "./telemetry/traceHelpers.ts",
     "./testUtils/appApiMock.ts",
+    "./testUtils/extendedExpectations.ts",
     "./testUtils/factories/browserFactories.ts",
     "./testUtils/factories/databaseFactories.ts",
     "./testUtils/factories/domFactories.ts",

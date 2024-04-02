@@ -1,4 +1,3 @@
-/* eslint-disable @shopify/prefer-module-scope-constants -- Dangerous here, contains copy-pasted code, serialized functions */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -32,13 +31,14 @@
  */
 
 import { type Target } from "@/types/messengerTypes";
+import { forbidContext } from "@/utils/expectContext";
 import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
 
 const CONTENT_SCRIPT_STATE_SYMBOL = Symbol.for("content-script-state");
 
-/** Communicates readiness to `ensureContentScript` */
+/** Communicates readiness to `waitForContentScript` */
 export const CONTENT_SCRIPT_READY = "LOADING/CONTENT_SCRIPT_READY";
-export const CONTENT_SCRIPT_RAW_PING = "LOADING/CONTENT_SCRIPT_RAW_PING";
+const CONTENT_SCRIPT_RAW_PING = "LOADING/CONTENT_SCRIPT_RAW_PING";
 
 type ContentScriptState = undefined | "installed" | "ready";
 
@@ -52,12 +52,32 @@ export function getContentScriptState(): ContentScriptState {
   return window[CONTENT_SCRIPT_STATE_SYMBOL];
 }
 
-export function setContentScriptState(state: "installed" | "ready"): void {
-  window[CONTENT_SCRIPT_STATE_SYMBOL] = state;
+export function setContentScriptState(newState: "installed" | "ready"): void {
+  const currentState = getContentScriptState();
+  if (newState === "installed") {
+    if (currentState != null) {
+      throw new Error(`Content script state already set to ${currentState}`);
+    }
+  } else if (newState === "ready") {
+    if (currentState !== "installed") {
+      throw new Error(
+        `Content script state must be "installed" to set it to "ready", but it's ${currentState}`,
+      );
+    }
+
+    // Notify `waitForContentScript` listeners, if any
+    void browser.runtime.sendMessage({ type: CONTENT_SCRIPT_READY });
+
+    // Respond to any successive `waitForContentScript` pings
+    browser.runtime.onMessage.addListener(onMessage);
+  }
+
+  window[CONTENT_SCRIPT_STATE_SYMBOL] = newState;
 }
 
 // Do not use the Messenger, it cannot appear in this bundle
 export async function isTargetReady(target: Target): Promise<boolean> {
+  forbidContext("contentScript");
   const response = (await browser.tabs.sendMessage(
     target.tabId,
     {
@@ -77,10 +97,6 @@ function onMessage(message: unknown): Promise<true> | undefined {
     // Do not return an unpromised `true` because `webextension-polyfill` handles it differently
     return Promise.resolve(true);
   }
-}
-
-export function initContentScriptPingListener(): void {
-  browser.runtime.onMessage.addListener(onMessage);
 }
 
 // TODO: Move out of contentScript/ready.ts, it's unrelated logic

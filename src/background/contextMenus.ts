@@ -41,7 +41,7 @@ import type { SelectionMenuOptions } from "@/platform/platformTypes/contextMenuP
 
 const MENU_PREFIX = "pixiebrix-";
 
-// This constant must be high enough to give Chrome time to inject the content script. ensureContentScript can take
+// This constant must be high enough to give Chrome time to inject the content script. waitForContentScript can take
 // >= 1 seconds because it also waits for the content script to be ready
 const CONTEXT_SCRIPT_INSTALL_MS = 5000;
 
@@ -70,15 +70,17 @@ async function dispatchMenu(
     throw new TypeError(`Not a PixieBrix menu item: ${info.menuItemId}`);
   }
 
-  console.time("ensureContentScript");
+  console.time("waitForContentScript");
 
   // Browser will add at document_idle. But ensure it's ready before continuing
+  // TODO: Use `waitForContentScript`'s own timeout instead of pTimeout
+  // TODO: Use `logPromiseDuration` instead of `console.time`, because the former uses `console.debug` internally
   await pTimeout(waitForContentScript(target), {
     milliseconds: CONTEXT_SCRIPT_INSTALL_MS,
     message: `contentScript for context menu handler not ready in ${CONTEXT_SCRIPT_INSTALL_MS}ms`,
   });
 
-  console.timeEnd("ensureContentScript");
+  console.timeEnd("waitForContentScript");
 
   try {
     await handleMenuAction(target, {

@@ -32,7 +32,7 @@ let messageEvents:
 const addListenerMock = jest.mocked(browser.runtime.onMessage.addListener);
 const isTargetReadyMock = jest.mocked(isTargetReady);
 
-describe("ensureContentScript", () => {
+describe("waitForContentScript", () => {
   beforeEach(() => {
     jest.resetAllMocks();
     messageEvents = new SimpleEventTarget();
