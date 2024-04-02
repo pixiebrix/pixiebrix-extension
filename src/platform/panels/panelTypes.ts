@@ -20,7 +20,7 @@ import type { Location } from "@/types/starterBrickTypes";
 import type { UUID } from "@/types/stringTypes";
 import type { Placement } from "@/contentScript/popoverDom";
 import type { Except } from "type-fest";
-import { Nullishable } from "@/utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 // Match naming of the sidebar panel extension point triggers
 export type RefreshTrigger = "manual" | "statechange";
