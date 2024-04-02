@@ -396,7 +396,7 @@ class TourStepTransformer extends TransformerABC {
     }
 
     // Close button handler
-    let onCloseClick: TemporaryPanelDefinition["onCloseClick"] = noop;
+    let onCloseClick: TemporaryPanelDefinition["onCloseClick"] = null;
     if (appearance.controls?.closeButton === "cancel") {
       onCloseClick = () => {
         throw new AbortPanelAction("User closed the panel");
