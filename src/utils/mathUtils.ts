@@ -21,8 +21,8 @@ type Rect = { width: number; height: number; x: number; y: number };
  * Calculates the intersection of two rectangles and returns the result as a new rectangle.
  * If the inner box is outside the outer box, it will return a rectangle with zero area at the closest overlapping edge (if any).
  *
- * @param innerBox - The first "inner" rectangle, which will be clipped or snapped to the outerBox.
- * @param outerBox - The second "outer" rectangle, which defines the bounds of the innerBox.
+ * @param innerBox The first "inner" rectangle, which will be clipped or snapped to the outerBox.
+ * @param outerBox The second "outer" rectangle, which defines the bounds of the innerBox.
  * @returns The intersection of the two rectangles, defined by an object with properties: x, y, width, height, top, left, bottom, right.
  */
 export function snapWithin(innerBox: Rect, outerBox: Rect) {

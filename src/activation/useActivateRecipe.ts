@@ -42,8 +42,8 @@ export type ActivateRecipeFormCallback =
   /**
    * Callback for activating a recipe.
    *
-   * @param {WizardValues} formValues - The form values for recipe configuration options
-   * @param {ModDefinition} recipe - The recipe definition to install
+   * @param {WizardValues} formValues The form values for recipe configuration options
+   * @param {ModDefinition} recipe The recipe definition to install
    * @returns {Promise<ActivateResult>} a promise that resolves to an ActivateResult
    */
   (formValues: WizardValues, recipe: ModDefinition) => Promise<ActivateResult>;
@@ -61,7 +61,7 @@ function selectActivateEventData(recipe: ModDefinition) {
  * React hook to install a recipe.
  *
  * Prompts the user to grant permissions if PixieBrix does not already have the required permissions.
- * @param source - The source of the activation, only used for reporting purposes checkPermissions - Whether to check for permissions before activating the recipe
+ * @param source The source of the activation, only used for reporting purposes checkPermissions - Whether to check for permissions before activating the recipe
  * @returns - A callback that can be used to activate a recipe
  * @see useActivateRecipeWizard
  */

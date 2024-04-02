@@ -96,10 +96,10 @@ export function contextAsPlainObject<T extends UnknownObject = UnknownObject>(
 /**
  * Returns an extended state with a `@mod` variable provided.
  * @since 1.7.34
- * @param originalContext - The original context
- * @param blueprintId - The mod ID, or null if not in a mod
- * @param update - If true, the mod variable will be updated with the latest state
- * @param options - The runtime version API options
+ * @param originalContext The original context
+ * @param blueprintId The mod ID, or null if not in a mod
+ * @param update If true, the mod variable will be updated with the latest state
+ * @param options The runtime version API options
  */
 function extendModVariableContext<T extends UnknownObject = UnknownObject>(
   originalContext: T,

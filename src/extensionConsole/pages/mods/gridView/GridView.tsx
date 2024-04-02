@@ -38,8 +38,8 @@ import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/ModsPag
  *  Expands `react-table` rows recursively in chunks of
  *  `columnCount`, preserving grouped row positioning
  *  for easy grid rendering.
- *  @param rows - `react-table` rows that are either flat or grouped
- *  @param columnCount - number >= 1 of chunked rows to render grid columns
+ *  @param rows `react-table` rows that are either flat or grouped
+ *  @param columnCount number >= 1 of chunked rows to render grid columns
  *  @returns - an array of groupBy rows and/or chunked rows
  */
 export function expandGridRows(

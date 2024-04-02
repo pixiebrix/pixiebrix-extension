@@ -24,12 +24,12 @@
 
 /**
  * Generates the svg path data for a rounded rectangle overlay
- * @param dimension - Dimensions of rectangle.
- * @param width - Width.
- * @param height - Height.
- * @param [x] - Offset from top left corner in x axis. default 0.
- * @param [y] - Offset from top left corner in y axis. default 0.
- * @param [r] - Corner Radius. Keep this smaller than half of width or height.
+ * @param dimension Dimensions of rectangle.
+ * @param width Width.
+ * @param height Height.
+ * @param [x] Offset from top left corner in x axis. default 0.
+ * @param [y] Offset from top left corner in y axis. default 0.
+ * @param [r] Corner Radius. Keep this smaller than half of width or height.
  * @returns - Rounded rectangle overlay path data.
  */
 function makeOverlayPath({
