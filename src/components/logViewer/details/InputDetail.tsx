@@ -19,10 +19,11 @@ import React from "react";
 import { type LogEntry } from "@/telemetry/logging";
 import { Col, Row } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
+import { type SetRequired } from "type-fest";
 
-const InputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
-  entry,
-}) => (
+const InputDetail: React.FunctionComponent<{
+  entry: SetRequired<LogEntry, "data">;
+}> = ({ entry }) => (
   <Row>
     <Col>
       <span>Template</span>
