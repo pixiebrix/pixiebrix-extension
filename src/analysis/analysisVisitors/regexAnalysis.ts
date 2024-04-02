@@ -29,7 +29,6 @@ import { joinPathParts } from "@/utils/formUtils";
 
 /**
  * Returns the regex literal pattern, or null if the regex is a variable or template expression
- * @param blockConfig
  */
 export function extractRegexLiteral(blockConfig: BrickConfig): string | null {
   const { regex: rawRegex = "" } = blockConfig.config;

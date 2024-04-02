@@ -27,8 +27,6 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 
 /**
  * Tab inspection selection component.
- * @param onSelect
- * @constructor
  */
 const TabSelector: React.FC<{ onSelect: (tabId: number) => void }> = ({
   onSelect,
@@ -78,8 +76,6 @@ const TabSelector: React.FC<{ onSelect: (tabId: number) => void }> = ({
  * - Does not watch for the tab closing.
  *
  * @since 1.8.10
- * @param children
- * @constructor
  */
 const TabInspectionGate: React.FC = ({ children }) => {
   const [showTabSelector, setShowTabSelector] = useState(false);

@@ -23,7 +23,7 @@ import { isEqual } from "lodash";
 
 /**
  * Component that calls a callback on render if `values` object has changed.
- * @deprecated You should think twice before using this component. If you are tyring to use it, it probably means
+ * @deprecated You should think twice before using this component. If you are trying to use it, it probably means
  *  your component hierarchy and state management is inefficient/bad.
  */
 const Effect: React.FunctionComponent<{

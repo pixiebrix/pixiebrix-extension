@@ -117,7 +117,6 @@ export function getCurrentTour(): TourRun | undefined {
  * @param abortController the abort controller for the tour to abort the tour
  * @param promise (optional) the promise that resolves when the tour completes
  * @param context additional data to include in the event
- * @private
  */
 export function markTourStart(
   nonce: UUID,
@@ -186,7 +185,6 @@ export function markTourStep(
  * @param nonce the tour run nonce
  * @param error the error, or undefined if the tour completed successfully
  * @param context additional data to include in the event
- * @private
  */
 export function markTourEnd(
   nonce: UUID,

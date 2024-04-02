@@ -97,7 +97,7 @@ const slice = createSlice({
  * @param promiseOrGenerator a promise to await, of function that returns a promise to await
  * @param dependencies zero or more dependencies to trigger a re-fetch
  * @param initialValue the initial value of the state. If provided, the state will be initialized to this value and will
- *  skip the isLoading on the initial value generation.
+ * skip the isLoading on the initial value generation.
  * @see useAsyncExternalStore
  */
 function useAsyncState<T = unknown>(

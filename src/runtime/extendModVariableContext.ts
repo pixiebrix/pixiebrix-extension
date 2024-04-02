@@ -43,7 +43,6 @@ type ExtendedContext<T extends UnknownObject = UnknownObject> = T & {
 
 /**
  * Test helper to spread the mod variable into the context if the runtime version supports it.
- * @param version
  */
 export function extraEmptyModStateContext(version: ApiVersion): UnknownObject {
   if (apiVersionOptions(version).extendModVariable) {
@@ -97,10 +96,10 @@ export function contextAsPlainObject<T extends UnknownObject = UnknownObject>(
 /**
  * Returns an extended state with a `@mod` variable provided.
  * @since 1.7.34
- * @param {Object} originalContext - The original context
- * @param {RegistryId} blueprintId - The mod ID, or null if not in a mod
- * @param {boolean} update - If true, the mod variable will be updated with the latest state
- * @param {ApiVersionOptions} options - The runtime version API options
+ * @param originalContext The original context
+ * @param blueprintId The mod ID, or null if not in a mod
+ * @param update If true, the mod variable will be updated with the latest state
+ * @param options The runtime version API options
  */
 function extendModVariableContext<T extends UnknownObject = UnknownObject>(
   originalContext: T,

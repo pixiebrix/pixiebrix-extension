@@ -33,7 +33,6 @@ export function isPrimitive(value: unknown): value is Primitive {
  * Convert a string or number value to a boolean.
  * - Considers the following string values to be truthy (case and whitespace insensitive): true, t, yest, y, on, 1
  * - Considers non-zero numbers to be truthy
- * @param value
  */
 export function boolean(value: unknown): boolean {
   if (typeof value === "string") {

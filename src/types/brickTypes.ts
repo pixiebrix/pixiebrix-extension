@@ -59,7 +59,6 @@ export interface Brick extends Metadata {
 
   /**
    * Return a list of platform capabilities that may be required to run this brick.
-   * @param config
    * @since 1.8.10
    */
   getRequiredCapabilities: (
@@ -79,7 +78,6 @@ export interface Brick extends Metadata {
 
   /**
    * Returns a JSON Schema for the shape of a variable introduced by a sub-pipeline.
-   * @param _config
    * @param pipelineName the pipeline name
    * @since 1.8.4
    */
@@ -212,7 +210,6 @@ export abstract class BrickABC implements Brick {
 
   /**
    * Returns a JSON Schema for the shape of a variable introduced by a sub-pipeline.
-   * @param _config
    * @param _pipelineName the pipeline name
    * @since 1.8.4
    */

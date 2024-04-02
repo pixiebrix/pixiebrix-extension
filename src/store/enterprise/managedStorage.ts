@@ -51,7 +51,7 @@ const controller = new ReusableAbortController();
  *
  * Uses StorageItem instead of SessionValue in order to be available to all extension contexts. The background
  * script clears the timestamp on session startup. After the switchover to MV3 can use SessionValue directly.
- **
+ *
  * Introduced to avoid waiting MAX_MANAGED_STORAGE_WAIT_MILLIS on every page.
  *
  * @see initManagedStorageOncePerSession

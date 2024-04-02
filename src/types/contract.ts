@@ -212,7 +212,7 @@ export type RecipeResponse = {
 export type IconStringDefinition = `${IconPrefix} ${IconName}`;
 
 /**
- * @See components["schemas"]["Tag"]
+ * @see components["schemas"]["Tag"]
  */
 export type MarketplaceTag = Omit<components["schemas"]["Tag"], "fa_icon"> & {
   // See IconStringDefinition for type explanation

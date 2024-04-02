@@ -67,7 +67,6 @@ export type ErrorDisplayProps = DisplayProps & ErrorState;
 
 /**
  * Default error display for use with ErrorBoundary
- * @constructor
  * @see ErrorBoundary
  */
 export const DefaultErrorComponent: React.FC<ErrorDisplayProps> = ({

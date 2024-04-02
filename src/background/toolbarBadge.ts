@@ -23,7 +23,7 @@ import { type MessengerMeta } from "webext-messenger";
  * This value should be a dark enough background for white text. MV3 introduces a setBadgeTextColor method, which is
  * not supported by MV2.
  * @see https://developer.chrome.com/docs/extensions/reference/api/action#method-setBadgeTextColor
- **/
+ */
 export const DEFAULT_BADGE_COLOR = "#b4183f";
 
 export async function setToolbarBadge(

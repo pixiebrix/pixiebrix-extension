@@ -266,7 +266,6 @@ const DeploymentsContext = React.createContext<DeploymentsState>(defaultValue);
 /**
  * Provides deployment status to the children. Written as React context instead of a hook to allow for a singleton
  * instance tracking the deployment status.
- * @constructor
  * @see DeploymentBanner
  * @see useOnboarding
  */

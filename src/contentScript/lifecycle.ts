@@ -233,7 +233,6 @@ export function getActiveExtensionPoints(): StarterBrick[] {
 
 /**
  * Test helper to get internal persisted extension state
- * @constructor
  */
 export function TEST_getPersistedExtensions(): Map<UUID, StarterBrick> {
   return _persistedExtensions;
@@ -241,7 +240,6 @@ export function TEST_getPersistedExtensions(): Map<UUID, StarterBrick> {
 
 /**
  * Test helper to get internal editor extension state
- * @constructor
  */
 export function TEST_getEditorExtensions(): Map<UUID, StarterBrick> {
   return _editorExtensions;
@@ -331,8 +329,6 @@ function notifyNavigationListeners(): void {
 
 /**
  * Run an extension including unsaved changes from the Page Editor
- * @param extensionId
- * @param extensionPoint
  */
 export async function runEditorExtension(
   extensionId: UUID,

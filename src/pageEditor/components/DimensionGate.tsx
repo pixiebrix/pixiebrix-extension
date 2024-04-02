@@ -88,8 +88,6 @@ export const GatePanel: React.FunctionComponent = () => {
 
 /**
  * A React component to show a warning if the frame is in portrait layout.
- * @param children
- * @constructor
  */
 const DimensionGate: React.FunctionComponent = ({ children }) => {
   const isDimensionsWarningDismissed = useSelector(

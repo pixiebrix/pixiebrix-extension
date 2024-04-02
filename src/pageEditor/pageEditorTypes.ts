@@ -43,7 +43,7 @@ export type AddBlockLocation = {
 
   /**
    * The flavor of pipeline where a block will be added by the add block modal
-   * @see: PipelineFlavor
+   * @see PipelineFlavor
    */
   flavor: PipelineFlavor;
 

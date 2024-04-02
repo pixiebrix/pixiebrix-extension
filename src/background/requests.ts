@@ -89,7 +89,7 @@ function sanitizeResponse<T>(
 
 /**
  * Prepare the error with an AxiosError in the cause chain for being sent across messenger boundaries.
- * @SanitizedResponse
+ * @see SanitizedResponse
  */
 function prepareErrorForMessenger(error: unknown): unknown {
   if (error == null) {

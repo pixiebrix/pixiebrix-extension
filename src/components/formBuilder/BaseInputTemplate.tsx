@@ -44,7 +44,8 @@ export interface StrictBaseInputTemplateProps<
  * come up with, but a better regex-er might be able to improve it and eliminate the need to disable. */
 const DEFAULT_NUMBER_REGEX = /^-?\d*(?:\.\d*)?(?:[Ee][+-]?\d*)?$/;
 
-/* @since 1.8.7
+/**
+ * @since 1.8.7
  * Used for number inputs to store the value as a string
  * to avoid losing decimals during the conversion to number
  */
