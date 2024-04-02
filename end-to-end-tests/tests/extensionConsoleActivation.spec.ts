@@ -20,7 +20,7 @@ import { ActivateModPage } from "../pageObjects/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 
-test("can activate and use highlight keywords mod", async ({
+test("can activate a mod with no config options", async ({
   page,
   extensionId,
 }) => {
