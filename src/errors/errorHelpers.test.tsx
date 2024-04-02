@@ -28,8 +28,8 @@ import {
   selectErrorFromRejectionEvent,
   selectSpecificError,
   shouldErrorBeIgnored,
-  rewrapError,
-  rewrapErrorsIfThrownSync,
+  replaceErrorType,
+  replaceThrownErrors,
 } from "@/errors/errorHelpers";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
@@ -692,7 +692,7 @@ describe("RequestSupersededError", () => {
 describe("rewrapError", () => {
   test("rewraps error", () => {
     const error = new Error("Something happened");
-    const rewrapped = rewrapError(error, BusinessError);
+    const rewrapped = replaceErrorType(error, BusinessError);
     expect(rewrapped).toBeInstanceOf(BusinessError);
     expect(rewrapped.message).toBe("Something happened");
     expect(rewrapped.cause).toBeUndefined();
@@ -701,47 +701,49 @@ describe("rewrapError", () => {
   test("rewraps error with cause", () => {
     const cause = new Error("Cause happened");
     const error = new Error("Something happened", { cause });
-    const rewrapped = rewrapError(error, BusinessError);
+    const rewrapped = replaceErrorType(error, BusinessError);
     expect(rewrapped).toBeInstanceOf(BusinessError);
     expect(rewrapped.message).toBe("Something happened");
     expect(rewrapped.cause).toBe(cause);
   });
 });
 
-describe("rewrapErrorsIfThrownSync", () => {
+describe("rewrapErrors", () => {
   test("rewraps thrown error", () => {
     const error = new Error("Something happened");
     const action = () => {
       throw error;
     };
 
-    expect(() => rewrapErrorsIfThrownSync(BusinessError, action)).toThrow(
-      BusinessError,
-    );
+    expect(() => replaceThrownErrors(TypeError, action)).toThrow(TypeError);
   });
-
-  test("rewraps thrown error with cause", () => {
-    const cause = new Error("Cause happened");
-    const error = new Error("Something happened", { cause });
-    const action = () => {
+  test("rewraps error thrown asynchronously", async () => {
+    const error = new Error("Something happened");
+    const action = async () => {
       throw error;
     };
 
-    expect(() => rewrapErrorsIfThrownSync(BusinessError, action)).toThrow(
-      BusinessError,
+    await expect(replaceThrownErrors(TypeError, action)).rejects.toThrow(
+      TypeError,
     );
   });
+});
 
-  test("does not rewrap non-thrown error", () => {
+describe("withBusinessError", () => {
+  test("rewraps error", () => {
     const error = new Error("Something happened");
-    const action = () => error;
-    expect(rewrapErrorsIfThrownSync(BusinessError, action)).toBe(error);
+    const rewrapped = replaceErrorType(error, BusinessError);
+    expect(rewrapped).toBeInstanceOf(BusinessError);
+    expect(rewrapped.message).toBe("Something happened");
+    expect(rewrapped.cause).toBeUndefined();
   });
 
-  test("does not rewrap non-thrown error with cause", () => {
+  test("rewraps error, preserving the cause", () => {
     const cause = new Error("Cause happened");
     const error = new Error("Something happened", { cause });
-    const action = () => error;
-    expect(rewrapErrorsIfThrownSync(BusinessError, action)).toBe(error);
+    const rewrapped = replaceErrorType(error, BusinessError);
+    expect(rewrapped).toBeInstanceOf(BusinessError);
+    expect(rewrapped.message).toBe("Something happened");
+    expect(rewrapped.cause).toBe(cause);
   });
 });
