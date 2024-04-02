@@ -107,7 +107,6 @@ function filterVarMapByPath(
 
 /**
  * Recursively filter a varMap based on the variable the user is currently editing.
- * @param varMap the varMap
  * @param likelyVariable the variable the user is editing
  */
 export function filterVarMapByVariable(
@@ -127,7 +126,6 @@ export function filterVarMapByVariable(
 
 /**
  * Expand the variable map to the current level the user is editing. Only expands if the prefix matches.
- * @param varMap the variable map
  * @param likelyVariable the variable the user is editing
  */
 export function expandCurrentVariableLevel(
@@ -228,7 +226,6 @@ export function sortVarMapKeys(value: unknown): unknown {
 
 /**
  * Determine the default menu option based on the variable the user is currently editing.
- * @param options the menu options
  * @param likelyVariable the variable the user is editing
  */
 export function defaultMenuOption(

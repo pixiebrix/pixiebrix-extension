@@ -27,8 +27,6 @@ const handlers = new Map<UUID, MenuHandler>();
 
 /**
  * Register a context menu handler for the given extension. Overwrites any existing handler.
- * @param extensionId the extension id
- * @param handler the menu handler to call
  */
 export function registerHandler(extensionId: UUID, handler: MenuHandler): void {
   handlers.set(extensionId, handler);
@@ -36,7 +34,6 @@ export function registerHandler(extensionId: UUID, handler: MenuHandler): void {
 
 /**
  * Handle a context menu action. Called from the background page.
- * @param extensionId the extension id
  * @param args the args from the Chrome context menu action event
  * @see dispatchMenu
  */

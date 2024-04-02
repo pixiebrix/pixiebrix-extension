@@ -78,6 +78,10 @@ module.exports = {
     "jsdoc/no-blank-blocks": "error",
     "jsdoc/no-blank-block-descriptions": "error",
 
+    // Prefer better variable names or longer descriptions
+    // Currently on "warn" because it's ok in some cases
+    "jsdoc/informative-docs": "warn",
+
     "@shopify/react-hooks-strict-return": "error",
     "@shopify/prefer-module-scope-constants": "error",
     "@shopify/jest/no-snapshots": "warn",

@@ -47,7 +47,6 @@ export function showOutputKey(brickType: BrickType): boolean {
 
 /**
  * Generate a fresh outputKey for `brick`
- * @param brick the brick
  * @param outputKeys existing outputKeys already being used
  */
 export async function generateFreshOutputKey(

@@ -73,12 +73,11 @@ export function getTemporaryPanelSidebarEntries(): TemporaryPanelEntry[] {
 
 /**
  * Get panel definition, or error if panel is not defined for nonce.
- * @param nonce the panel nonce
  */
 export async function getPanelDefinition(
-  nonce: UUID,
+  panelNonce: UUID,
 ): Promise<TemporaryPanelEntry> {
-  const panel = panels.get(nonce);
+  const panel = panels.get(panelNonce);
 
   if (!panel) {
     throw new Error("Panel definition not found");
@@ -94,24 +93,23 @@ export async function getPanelDefinition(
 /**
  * Update a panel definition. NOTE: the caller is responsible for notifying the container to refetch the
  * panel definition.
- * @param entry the panel definition
  */
 export function updatePanelDefinition(
-  entry: Except<TemporaryPanelEntry, "type">,
+  panelDefinition: Except<TemporaryPanelEntry, "type">,
 ): void {
-  const panel = panels.get(entry.nonce);
+  const panel = panels.get(panelDefinition.nonce);
 
   if (!panel) {
-    console.warn("Unknown panel: %s", entry.nonce);
+    console.warn("Unknown panel: %s", panelDefinition.nonce);
     return;
   }
 
   // Panel entry may be undefined if the panel was registered with registerEmptyTemporaryPanel
-  if (panel.entry && panel.entry.extensionId !== entry.extensionId) {
+  if (panel.entry && panel.entry.extensionId !== panelDefinition.extensionId) {
     throw new Error("extensionId mismatch");
   }
 
-  panel.entry = entry;
+  panel.entry = panelDefinition;
 }
 
 /**

@@ -80,7 +80,6 @@ async function collectModComponentDefinitionPermissions(
 
 /**
  * Returns true if the mod definition has the necessary permissions to run. Does not request the permissions.
- * @param modDefinition the mod definition
  * @param configuredDependencies mod integration dependencies with defined configs
  * @param optionalPermissions permissions to ignore when calculating hasPermissions. Used to allow auto-deployment
  * of mods using `clipboardWrite` permission.

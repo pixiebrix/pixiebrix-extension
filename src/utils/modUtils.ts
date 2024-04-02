@@ -54,7 +54,6 @@ import {
 
 /**
  * Returns true if the mod is an UnavailableMod
- * @param mod the mod
  * @see UnavailableMod
  */
 export function isUnavailableMod(mod: Mod): mod is UnavailableMod {
@@ -139,8 +138,6 @@ function isPersonalModComponent(modComponent: ModComponentBase): boolean {
 
 /**
  * Returns true if the source of the mod component has the given scope
- * @param modComponent the mod component
- * @param scope the scope to query
  */
 function hasSourceModWithScope(
   modComponent: ModComponentBase,
@@ -151,8 +148,6 @@ function hasSourceModWithScope(
 
 /**
  * Returns true if the mod has the given scope
- * @param modDefinition the mod definition
- * @param scope the scope to query
  */
 function hasRegistryScope(
   modDefinition: ModDefinition | UnavailableMod,
@@ -163,7 +158,6 @@ function hasRegistryScope(
 
 /**
  * Returns true if the user directly owns the mod
- * @param mod the mod
  * @param userScope the user's scope, or null if it's not set
  */
 function isPersonal(mod: Mod, userScope: string | null): boolean {
@@ -420,7 +414,6 @@ export function isModOptionsSchemaEmpty(
 
 /**
  * Return the activation instructions for a mod as markdown, or null if there are none.
- * @param modDefinition the mod definition
  */
 export function getModActivationInstructions(
   modDefinition: ModDefinition,

@@ -23,7 +23,6 @@ const specialCharsRegex = /[\s.[\]]/;
  * Create a Formik field name, validating the individual path parts.
  * Wraps parts with special characters in brackets, so Formik treat it as a single property name.
  * Stringifies numeric property access as "foo.0.bar"
- * @param baseFieldName The base field name
  * @param rest the other Formik field name path parts
  * @throws Error if a path part is invalid
  */
@@ -58,7 +57,6 @@ export function joinName(
  * Works faster than joinName.
  * Use this one when there are no special characters in the name parts or
  * the parts contain already joined paths rather than individual property names
- * @param nameParts the parts of the name
  * @see joinName
  */
 export function joinPathParts(...nameParts: Array<string | number>): string {

@@ -35,7 +35,6 @@ type ModPermissionsState = AsyncState<PermissionsStatus> & {
 
 /**
  * Hook providing convenience methods for ensuring permissions for a mod prior to activation.
- * @param modDefinition the mod definition
  * @param configuredDependencies the integration configurations selected for mod activation
  * @see useCloudExtensionPermissions
  */
