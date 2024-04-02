@@ -291,10 +291,10 @@ async function activateDeployment({
 }
 
 /**
- * Install all deployments
+ * Activate a list of deployments
  * @param activatableDeployments deployments that PixieBrix already has permission to run
  */
-async function installDeployments(
+async function activateDeployments(
   activatableDeployments: ActivatableDeployment[],
 ): Promise<void> {
   let [optionsState, editorState] = await Promise.all([
@@ -635,7 +635,7 @@ async function activateDeploymentsInBackground({
 
   if (automatic.length > 0) {
     try {
-      await installDeployments(automatic.map((x) => x.activatableDeployment));
+      await activateDeployments(automatic.map((x) => x.activatableDeployment));
     } catch (error) {
       reportError(error);
       automaticError = true;
