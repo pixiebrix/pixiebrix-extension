@@ -27,7 +27,7 @@ import activationCompleteImage from "@img/blueprint-activation-complete.png";
 import styles from "./ActivateModPanel.module.scss";
 import AsyncButton from "@/components/AsyncButton";
 import { useDispatch } from "react-redux";
-import sidebarSlice from "@/sidebar/sidebarSlice";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript } from "@/contentScript/messenger/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import cx from "classnames";

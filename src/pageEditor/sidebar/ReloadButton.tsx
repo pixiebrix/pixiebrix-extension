@@ -36,12 +36,15 @@ const onReload = async (event: MouseEvent<HTMLElement>) => {
   location.reload();
 };
 
-const ReloadButton: React.FunctionComponent = () => (
+const ReloadButton: React.FunctionComponent<{ className?: string }> = ({
+  className,
+}) => (
   <Button
-    type="button"
     size="sm"
+    type="button"
     variant="light"
     title="Reload page editor. Shift-click to also reload page and extension (button only shown in dev builds)"
+    className={className}
     onClick={onReload}
   >
     <FontAwesomeIcon icon={faSync} fixedWidth />

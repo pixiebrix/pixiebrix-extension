@@ -1,127 +1,64 @@
-@import "@/themes/colors.scss";
-
 .root {
   flex-direction: column;
   display: flex;
   justify-content: flex-start;
   height: 100%;
   background: white;
+
   box-shadow: 1px 2px 8px #00000030;
+  z-index: 999; // Always on top of the content, so that the shadow is applied correctly
 
-  &.collapsed {
-    align-items: stretch;
-    z-index: 999; // Always on top of the content, but below expanded one
-  }
-  &.expanded {
-    flex: 0 0 270px;
-    width: 270px; // Preserve width during the transition
-    z-index: 1000; // Always on top of the collapsed one *and* of the content
-    &.enter,
-    &.exit.exitActive {
-      // Both `exit` and `exitActive` are needed
-      clip-path: inset(0 100% 0 0);
-    }
-    &.exitActive,
-    &.enterActive {
-      transition: clip-path 400ms;
-    }
-    &.enterActive,
-    &.exit {
-      clip-path: inset(0 0 0 0);
-    }
-  }
-
-  &.exitActive {
-    position: absolute; // Take out of the flow during the transition
-    height: 100vh !important;
-  }
-
-  label {
-    font-size: 0.875rem;
-  }
-
-  :global {
-    .list-group {
-      border-radius: 0;
-
-      .list-group-item {
-        padding-left: 12px;
-        padding-right: 12px;
-        border-right: none;
-        font-size: 0.875rem;
-      }
-    }
+  :global(.collapsing) {
+    // Match the speed of the animation with the righthand sidebar
+    // https://github.com/pixiebrix/pixiebrix-extension/pull/8125#pullrequestreview-1971309628
+    // Math:
+    // Righthand: 360px (collapsable width) -> 0.35s (Bootstrap default)
+    // Lefthand: 240px (collapsable width) -> 0.23s
+    transition-duration: 0.23s;
   }
 }
 
 .header {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-}
-
-.actions {
   display: flex;
-  justify-content: space-between;
-
-  button {
-    border-radius: 0;
-    margin-right: 0;
-    margin-left: 0;
-  }
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 
   :global(.badge) {
     margin-top: -5px;
   }
+
+  .toggle {
+    // Align right. This is not inside .horizontalActions
+    margin-left: auto;
+  }
 }
 
-.actionsLeft {
+.horizontalActions {
   display: flex;
-  :global(.btn) {
-    // Matches the height of the nav-tabs on its right
-    border: 0;
-  }
+
   > :global(.dropdown) {
     // Makes the Add button fit the height of the action bar
     display: flex;
   }
 }
 
-.toggle {
-  border: none !important;
-  border-radius: 0 !important;
-  padding: 0 !important;
-  background: transparent !important;
-  margin-bottom: auto;
-
-  svg {
-    margin: 5px;
+.header,
+.verticalActions {
+  :global(.btn) {
+    // Matches the height of the nav-tabs on its right
+    border-radius: 0;
+    border: 0;
   }
+}
+
+.verticalActions {
+  display: flex;
+  flex-direction: column;
+}
+
+.toggle {
+  background: transparent !important;
 }
 
 .unavailable {
   margin: 5px;
-}
-
-.extensions {
-  overflow-y: auto;
-  flex: 1;
-}
-
-.searchWrapper {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-  padding: 8px;
-  .searchContainer {
-    position: relative;
-    button {
-      z-index: 3;
-      color: black;
-      text-decoration: none;
-      position: absolute;
-      right: 8px;
-      top: 8px;
-      bottom: 8px;
-      background: rgba(255, 255, 255, 0.5);
-      color: $N400;
-      padding: 0;
-    }
-  }
 }

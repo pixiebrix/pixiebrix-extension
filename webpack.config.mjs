@@ -245,7 +245,6 @@ const createConfig = (env, options) =>
       new webpack.EnvironmentPlugin({
         // If not found, these values will be used as defaults
         DEBUG: !isProd(options),
-        MV: "2",
         NODE_DEBUG: false,
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
@@ -279,7 +278,7 @@ const createConfig = (env, options) =>
               const manifest = JSON.parse(jsonString);
               const customizedManifest = customizeManifest(manifest, {
                 isProduction: isProd(options),
-                manifestVersion: process.env.MV === "3" ? 3 : 2, // Default to 2 if missing
+                manifestVersion: process.env.MV === "2" ? 2 : 3, // Default to 3 if missing
                 env: process.env,
               });
 

@@ -15,12 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import {
+  defaultEventKey,
+  eventKeyForEntry,
+} from "@/store/sidebar/eventKeyUtils";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type SidebarState, type SidebarEntries } from "@/types/sidebarTypes";
 
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
-import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 
 describe("defaultEventKey", () => {
   it("returns null no content", () => {

@@ -15,8 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const getBaseExtensionConsoleUrl = (extensionId: string) =>
-  `chrome-extension://${extensionId}/options.html`;
+import { type SidebarState } from "@/types/sidebarTypes";
 
-export const getBasePageEditorUrl = (extensionId: string) =>
-  `chrome-extension://${extensionId}/pageEditor.html`;
+export const initialSidebarState: SidebarState = {
+  panels: [],
+  forms: [],
+  temporaryPanels: [],
+  staticPanels: [],
+  modActivationPanel: null,
+  activeKey: null,
+  pendingActivePanel: null,
+  closedTabs: {},
+} as const;

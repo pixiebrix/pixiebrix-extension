@@ -20,8 +20,8 @@ import {
   type SidebarRootState,
 } from "@/types/sidebarTypes";
 import { isEmpty } from "lodash";
-import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
-import { getVisiblePanelCount } from "@/sidebar/utils";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
+import { getVisiblePanelCount } from "@/store/sidebar/utils";
 import { createSelector } from "@reduxjs/toolkit";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
