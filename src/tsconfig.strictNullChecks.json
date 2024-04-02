@@ -289,6 +289,8 @@
     "./components/integrations/integrationHelpers.ts",
     "./components/jsonTree/JsonTree.tsx",
     "./components/jsonTree/treeHooks.tsx",
+    "./components/logViewer/EntryRow.tsx",
+    "./components/logViewer/LogTable.tsx",
     "./components/logViewer/LogToolbar.tsx",
     "./components/logViewer/details/InputDetail.tsx",
     "./components/logViewer/details/OutputDetail.tsx",

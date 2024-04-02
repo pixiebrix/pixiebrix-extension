@@ -22,20 +22,20 @@ import JsonTree from "@/components/jsonTree/JsonTree";
 import { type SetRequired } from "type-fest";
 
 const InputDetail: React.FunctionComponent<{
-  entry: SetRequired<LogEntry, "data">;
-}> = ({ entry }) => (
+  data: SetRequired<LogEntry, "data">["data"];
+}> = ({ data }) => (
   <Row>
     <Col>
       <span>Template</span>
-      <JsonTree data={entry.data.template} />
+      <JsonTree data={data.template} />
     </Col>
     <Col>
       <span>Context</span>
-      <JsonTree data={entry.data.templateContext} />
+      <JsonTree data={data.templateContext} />
     </Col>
     <Col>
       <span>Rendered Args</span>
-      <JsonTree data={entry.data.renderedArgs} />
+      <JsonTree data={data.renderedArgs} />
     </Col>
   </Row>
 );

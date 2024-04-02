@@ -21,11 +21,11 @@ import JsonTree from "@/components/jsonTree/JsonTree";
 import { type SetRequired } from "type-fest";
 
 const OutputDetail: React.FunctionComponent<{
-  entry: SetRequired<LogEntry, "data">;
-}> = ({ entry }) => (
+  data: SetRequired<LogEntry, "data">["data"];
+}> = ({ data }) => (
   <>
-    {entry.data.outputKey && <code>{entry.data.outputKey}</code>}
-    <JsonTree data={entry.data.output} />
+    {data.outputKey && <code>{data.outputKey}</code>}
+    <JsonTree data={data.output} />
   </>
 );
 
