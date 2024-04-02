@@ -53,7 +53,6 @@ global.AbortSignal.timeout ??= (milliseconds) => {
   return controller.signal;
 };
 
-// For some reason, throwIfAborted is not available in Jest environment even though it appears to be in JSDOM
 // TODO: Drop after jest-environment-jsdom@30
 AbortSignal.prototype.throwIfAborted ??= function () {
   if (this.aborted) {

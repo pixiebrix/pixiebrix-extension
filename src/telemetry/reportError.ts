@@ -41,7 +41,7 @@ interface ErrorReportOptions {
 /**
  * Report an error for local logs, remote telemetry, etc.
  * @param errorLike the error object, error event, or string to report. Callers should provide Error objects when
- *  possible for accurate stack traces.
+ * possible for accurate stack traces.
  * @param context Optional context for error telemetry
  * @param logToConsole Additionally log error to the browser console (default=true)
  */

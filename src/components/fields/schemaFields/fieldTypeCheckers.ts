@@ -60,7 +60,6 @@ export const hasCustomWidget = (uiSchema?: UiSchema) =>
 /**
  * Returns true if the schema uses oneOf and "const" keyword to label enum options.
  * Read more at: https://github.com/json-schema-org/json-schema-spec/issues/57#issuecomment-247861695
- * @param schema
  */
 export function isLabelledEnumField(
   schema: Schema,
@@ -107,7 +106,6 @@ export function isGoogleSheetIdField(schema: Schema): boolean {
 
 /**
  * Check if a schema matches a service field without checking anyOf/oneOf/allOf
- * @param schema
  */
 export function isSimpleServiceField(schema: Schema): boolean {
   return (

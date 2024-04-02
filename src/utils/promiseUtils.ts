@@ -21,6 +21,18 @@ import { TimeoutError } from "p-timeout";
 import { sleep } from "@/utils/timeUtils";
 
 /**
+ * Use to accept an abort signal as option object as standard practice.
+ * You don't need this type if you accept other options.
+ * @example
+ *  function fetch(url: string, {signal}: AbortSignalAsOptions = {}) {}
+ * @example
+ * function fetch(url: string, {signal, other}: {signal: AbortSignal, other: number} = {}) {}
+ */
+export type AbortSignalAsOptions = {
+  signal?: AbortSignal;
+};
+
+/**
  * A promise that never resolves.
  */
 export const foreverPendingPromise = new Promise(() => {});
@@ -199,7 +211,6 @@ export async function resolveObj<T>(
 
 /**
  * Partition an array of promise results into fulfilled values and rejected errors.
- * @param results
  */
 export function groupPromisesByStatus<T>(
   results: Array<PromiseSettledResult<T>>,

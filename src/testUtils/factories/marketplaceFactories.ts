@@ -30,7 +30,6 @@ export const marketplaceTagFactory = define<MarketplaceTag>({
 
 /**
  * Create a MarketplaceListing.package for a ModDefinition.
- * @param modDefinition
  */
 export function modDefinitionToMarketplacePackage(
   modDefinition: ModDefinition,

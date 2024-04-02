@@ -17,8 +17,8 @@
 
 /**
  * @see https://github.com/pixiebrix/pixiebrix-extension/issues/6526
- * @context Importing a file from a `strictNullCheck`ed file, will cause all of its dependencies
- *          to be strictNullChecked too. This makes it difficult to use certain files.
+ * Importing a file from a `strictNullCheck`ed file, will cause all of its dependencies to be
+ * strictNullChecked too. This makes it difficult to use certain files.
  *
  * @file    This file provides types for some common messenger methods without actually pushing
  *          them and their dependencies into the strictNullChecks config.

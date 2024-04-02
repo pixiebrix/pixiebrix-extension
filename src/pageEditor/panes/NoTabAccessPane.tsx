@@ -37,7 +37,6 @@ function getPageLabel(url: string): string | undefined {
  * required permissions, this can occur in two cases:
  * 1. The browser extension was restarted while page was open
  * 2. Permissions are blocked via runtime_blocked_hosts
- * @constructor
  */
 const NoTabAccessPane: React.FunctionComponent = () => {
   const url = useCurrentInspectedUrl();

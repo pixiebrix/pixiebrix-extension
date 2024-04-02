@@ -32,8 +32,6 @@ export type PanelListener = {
 
   /**
    * Update the panel nonce for an existing frame.
-   * @param frameNonce
-   * @param panelNonce
    */
   onSetPanelNonce: ({
     frameNonce,

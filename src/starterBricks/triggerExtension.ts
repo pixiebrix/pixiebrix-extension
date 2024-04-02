@@ -184,7 +184,6 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   /**
    * Map from mod component ID to elements a trigger is currently running on.
-   * @private
    */
   private readonly runningModComponentElements = new Map<
     UUID,
@@ -193,7 +192,6 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   /**
    * Controller to drop observers
-   * @private
    */
   private readonly observersController = new ReusableAbortController();
 
@@ -216,7 +214,6 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   /**
    * Returns true if an event should be reported, given whether it has already been reported.
    * @param alreadyReported true if the event has already been reported
-   * @private
    */
   private shouldReport(alreadyReported: boolean): boolean {
     switch (this.reportMode) {
@@ -237,7 +234,6 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   /**
    * Return true if an error should be reported.
-   * @private
    */
   private shouldReportError({
     extensionId,
@@ -266,7 +262,6 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   /**
    * Return true if an event should be reported for the given extension id.
-   * @private
    */
   private shouldReportEvent(componentId: UUID): boolean {
     const alreadyReported = this.reportedEvents.has(componentId);
@@ -440,7 +435,6 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    * trigger on a particular element.
    * @param modComponentId the UUID of the mod component
    * @param element the element the trigger is running against
-   * @private
    */
   private markRun(modComponentId: UUID, element: TriggerTarget): void {
     if (this.runningModComponentElements.has(modComponentId)) {
@@ -552,7 +546,6 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   /**
    * Run all trigger extensions for all the provided roots.
-   * @private
    */
   private debouncedRunTriggersAndNotify = this._runTriggersAndNotify; // Default to un-debounced
 

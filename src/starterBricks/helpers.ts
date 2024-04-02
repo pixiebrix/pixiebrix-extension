@@ -158,7 +158,7 @@ export async function awaitElementOnce(
  * from the DOM
  * @param element the element to acquire
  * @param extensionPointId the owner extension ID
- * @return true if the element was successfully acquired, false if it was already acquired by another extension point
+ * @returns true if the element was successfully acquired, false if it was already acquired by another extension point
  */
 export function acquireElement(
   element: HTMLElement,

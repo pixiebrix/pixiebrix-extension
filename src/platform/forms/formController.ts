@@ -142,7 +142,6 @@ export async function cancelForm(...formNonces: UUID[]): Promise<void> {
 
 /**
  * Test helper to cancel all pending forms.
- * @constructor
  */
 export async function TEST_cancelAll(): Promise<void> {
   await cancelForm(...forms.keys());

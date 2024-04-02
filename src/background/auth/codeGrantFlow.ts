@@ -37,7 +37,7 @@ import { launchWebAuthFlow } from "@/background/auth/authHelpers";
  * @param integrationConfig the integration configuration
  * @param oauth2 the instantiated OAuth2 directives
  * @param interactive If false, forces the flow to complete silently, without any user interaction. See
- *  https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/identity/launchWebAuthFlow#interactive
+ * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/identity/launchWebAuthFlow#interactive
  */
 async function codeGrantFlow(
   integrationConfig: IntegrationConfig,

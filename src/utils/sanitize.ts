@@ -40,7 +40,6 @@ export const ADD_IFRAME_CONFIG: Config = {
  *
  * https://github.com/cure53/DOMPurify?tab=readme-ov-file#can-i-configure-dompurify
  *
- * @param html
  * @param config the DOMPurify config
  */
 function sanitize(html: string, config?: Config): SafeHTML {

@@ -45,7 +45,7 @@ export async function initSidePanel(): Promise<void> {
   const existingTabs = await chrome.tabs.query({});
   await Promise.all(
     existingTabs.map(
-      async ({ id: tabId, url }) =>
+      async ({ id: tabId }) =>
         tabId &&
         chrome.sidePanel.setOptions({
           tabId,

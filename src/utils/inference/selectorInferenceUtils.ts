@@ -17,7 +17,7 @@
 
 /**
  * @file file for selector inference utilities that are independent of hints
- * @since 1.8.2 introduced so hints could reference utilities without introducing a cycle
+ * 1.8.2 introduced so hints could reference utilities without introducing a cycle
  */
 
 /**
