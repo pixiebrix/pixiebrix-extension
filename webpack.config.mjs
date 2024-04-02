@@ -254,6 +254,7 @@ const createConfig = (env, options) =>
         // Record telemetry events in development?
         DEV_EVENT_TELEMETRY: false,
         SANDBOX_LOGGING: false,
+        IS_BETA: process.env.PUBLIC_NAME === "-beta",
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
@@ -280,6 +281,7 @@ const createConfig = (env, options) =>
                 isProduction: isProd(options),
                 manifestVersion: process.env.MV === "2" ? 2 : 3, // Default to 3 if missing
                 env: process.env,
+                isBeta: process.env.PUBLIC_NAME === "-beta",
               });
 
               return JSON.stringify(customizedManifest, null, 2);
