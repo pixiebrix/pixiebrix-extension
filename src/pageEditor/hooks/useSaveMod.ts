@@ -87,7 +87,7 @@ function useSaveMod(): ModSaver {
   /**
    * Save a mod's components, options, and metadata
    * Throws errors for various bad states
-   * @return boolean indicating successful save
+   * @returns boolean indicating successful save
    */
   async function save(modId: RegistryId): Promise<boolean> {
     const modDefinition = modDefinitions?.find(

@@ -38,7 +38,6 @@ const DEFAULT_OUTPUT_KEY = "output" as SafeString;
 
 /**
  * Return true if the Page Editor should show an output field for the brick.
- * @param brickType
  */
 export function showOutputKey(brickType: BrickType): boolean {
   // Output keys for effects are ignored by the runtime (and generate a warning at runtime)

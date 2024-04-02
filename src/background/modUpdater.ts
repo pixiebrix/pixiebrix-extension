@@ -172,7 +172,7 @@ function deactivateModComponent(
  *
  * @param modId the mod registry id
  * @param reduxState the current state of the extension and editor redux stores
- * @returns {reduxState, deactivatedModComponents} new redux state with the mod components deactivated
+ * @returns new redux state with the mod components deactivated
  * and the mod components that were deactivated
  */
 export function deactivateMod(
@@ -216,7 +216,7 @@ export function deactivateMod(
 
 /**
  * Update the mod by deactivating and reactivating the mod with all the same configurations.
- **
+ *
  * We currently don't have a way to "update" activated mods directly in the extension and editor redux stores.
  *
  * The ModComponents will have new UUIDs.

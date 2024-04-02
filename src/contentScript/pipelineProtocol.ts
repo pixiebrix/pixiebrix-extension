@@ -32,8 +32,8 @@ type RunPipelineParams = {
  * @param pipeline the block pipeline
  * @param context the context, including @input, @options, and services
  * @param nonce a nonce to help the caller correlate requests/responses. (This shouldn't be necessary in practice though
- *  because the messaging framework takes care of the correlation. In this case we're just using it as a key on
- *  RendererPayload)
+ * because the messaging framework takes care of the correlation. In this case we're just using it as a key on
+ * RendererPayload)
  * @param options pipeline options to pass to reducePipeline
  * @param meta run/trace metadata
  * @param messageContext the message context for the logger

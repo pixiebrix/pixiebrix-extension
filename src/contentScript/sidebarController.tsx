@@ -20,6 +20,7 @@ import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty, throttle } from "lodash";
+import { signalFromEvent } from "abort-utils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import * as sidebarMv2 from "@/contentScript/sidebarDomControllerLite";
 import { type Except } from "type-fest";
@@ -61,9 +62,9 @@ export const isSidePanelOpen = isMV3()
 
 /**
  * Determines whether the sidebar is open.
- * @returns false when it's definitely closed
- * @returns 'unknown' when it cannot be determined, because the extra padding might be
- *          caused by the dev tools being open on the side or due to another sidebar
+ * @returns false when it's definitely closed or 'unknown' when it cannot be determined,
+ * because the extra padding might be caused by the dev tools being open on the side
+ * or due to another sidebar
  */
 // The type cannot be `undefined` due to strictNullChecks
 function isSidePanelOpenSync(): false | "unknown" {
@@ -141,6 +142,12 @@ export async function showSidebar(): Promise<void> {
 
       await focusCaptureDialog(
         'Please click "OK" to allow PixieBrix to open the sidebar.',
+        {
+          signal: signalFromEvent(
+            sidebarShowEvents,
+            sidebarShowEvents.coreEvent,
+          ),
+        },
       );
       await showMySidePanel();
     }

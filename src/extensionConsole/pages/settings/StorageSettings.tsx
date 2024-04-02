@@ -49,7 +49,6 @@ import useAsyncState from "@/hooks/useAsyncState";
 
 /**
  * React component to display local storage usage (to help identify storage problems)
- * @constructor
  */
 const StorageSettings: React.FunctionComponent = () => {
   const state = useAsyncState(

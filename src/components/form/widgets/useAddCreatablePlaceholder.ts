@@ -26,9 +26,6 @@ const CREATABLE_PLACEHOLDER = {
 
 /**
  * Adds a disabled placeholder options if creatable === true and the text-input is empty
- * @param creatable
- * @param options
- * @param textInputValue
  */
 export default function useAddCreatablePlaceholder<OptionType>({
   creatable,

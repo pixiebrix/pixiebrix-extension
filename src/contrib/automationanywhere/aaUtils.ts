@@ -36,7 +36,6 @@ const COMMUNITY_CONTROL_ROOM_REGEX =
  *
  * Returns false for malformed URLs, instead of throwing an error.
  *
- * @param hostnameOrUrl
  */
 export function isCommunityControlRoom(hostnameOrUrl: string | null): boolean {
   return COMMUNITY_CONTROL_ROOM_REGEX.test(hostnameOrUrl ?? "");
