@@ -21,11 +21,7 @@ import type {
   CssSelectorMatch,
   CssSelectorType,
 } from "css-selector-generator/types/types.js";
-import {
-  CONTENT_SCRIPT_READY_ATTRIBUTE,
-  EXTENSION_POINT_DATA_ATTR,
-  PIXIEBRIX_DATA_ATTR,
-} from "@/domConstants";
+import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/domConstants";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
 import {
   getSiteSelectorHint,
@@ -87,7 +83,6 @@ const UNSTABLE_SELECTORS = [
     // Our attributes
     EXTENSION_POINT_DATA_ATTR,
     PIXIEBRIX_DATA_ATTR,
-    CONTENT_SCRIPT_READY_ATTRIBUTE,
     "style",
   ),
 ];

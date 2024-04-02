@@ -23,7 +23,7 @@ import {
   type PanelEntry,
   type SidebarEntry,
 } from "@/types/sidebarTypes";
-import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import { getBodyForStaticPanel } from "./staticPanelUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -52,15 +52,15 @@ import {
   selectSidebarStaticPanels,
   selectSidebarTemporaryPanels,
 } from "@/sidebar/sidebarSelectors";
-import sidebarSlice from "@/sidebar/sidebarSlice";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
-import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { cancelForm } from "@/contentScript/messenger/strict/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
-import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
+import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
 

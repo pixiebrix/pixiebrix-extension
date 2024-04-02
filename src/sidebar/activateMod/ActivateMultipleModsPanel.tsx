@@ -31,7 +31,7 @@ import useActivateRecipe, {
   type ActivateResult,
 } from "@/activation/useActivateRecipe";
 import { SuccessPanel } from "@/sidebar/activateMod/ActivateModPanel";
-import sidebarSlice from "@/sidebar/sidebarSlice";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import type { ModActivationConfig } from "@/types/modTypes";
 
 type ModResultPair = {
