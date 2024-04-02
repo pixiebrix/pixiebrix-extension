@@ -29,7 +29,6 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 import brickRegistry from "@/bricks/registry";
 import { initNavigation } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";
-import { ENSURE_CONTENT_SCRIPT_READY } from "@/contentScript/ready";
 import { initToaster } from "@/utils/notify";
 import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
 import {
@@ -102,11 +101,7 @@ export async function init(): Promise<void> {
   initSidebarFocusEvents();
   void initSidebarActivation();
 
-  // Notify `ensureContentScript`
-  void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
-
   // Update `sidePanel`
-  // TODO: VERIFY: This replaces the old "sidebarController:showSidebar emitting sidebarShowEvents" in `showSidebar` right?
   void renderPanelsIfVisible();
 
   // Let the partner page know

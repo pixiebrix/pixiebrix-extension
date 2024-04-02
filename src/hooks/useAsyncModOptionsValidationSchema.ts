@@ -34,7 +34,10 @@ function isEmptySchema(schema: Schema | undefined): boolean {
 export async function getOptionsValidationSchema(
   optionsDefinitionSchema: Schema | undefined,
 ): Promise<AnyObjectSchema> {
-  if (isEmptySchema(optionsDefinitionSchema)) {
+  if (
+    optionsDefinitionSchema == null ||
+    isEmptySchema(optionsDefinitionSchema)
+  ) {
     return object().shape({});
   }
 

@@ -7,6 +7,7 @@ import {
   type IconPrefix,
 } from "@fortawesome/free-solid-svg-icons";
 import useAsyncState from "@/hooks/useAsyncState";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 type ModuleImport = Promise<{ definition: IconProp }>;
 
@@ -78,7 +79,7 @@ async function fetchFortAwesomeIcon(
  * otherwise the defaultIcon.
  */
 export function useAsyncIcon(
-  icon: IconStringDefinition | undefined,
+  icon: Nullishable<IconStringDefinition>,
   defaultIcon: IconProp,
   placeholder: IconProp = defaultIcon,
 ): IconProp {

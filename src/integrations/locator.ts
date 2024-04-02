@@ -268,7 +268,8 @@ class LazyLocatorFactory {
 
   async locate(
     serviceId: RegistryId,
-    authId: UUID,
+    // Integration configurations are not guaranteed to have a config id
+    authId?: UUID,
   ): Promise<SanitizedIntegrationConfig> {
     expectContext(
       "background",

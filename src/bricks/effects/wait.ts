@@ -77,7 +77,7 @@ export async function awaitElement({
 }: {
   selector: string;
   $root: JQuery<SelectorRoot>;
-  maxWaitMillis: number;
+  maxWaitMillis?: number;
   abortSignal?: AbortSignal;
 }): Promise<JQuery<HTMLElement | Document>> {
   if (maxWaitMillis === 0) {
@@ -139,7 +139,7 @@ export class WaitElementEffect extends EffectABC {
       isRootAware,
     }: BrickArgs<{
       selector: string | string[];
-      maxWaitMillis: number | undefined;
+      maxWaitMillis: number;
       isRootAware: boolean;
     }>,
     { logger, root, abortSignal }: BrickOptions,

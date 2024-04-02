@@ -16,6 +16,7 @@
  */
 
 import {
+  type AsyncStateArray,
   type AsyncValueArray,
   type FetchableAsyncState,
   type FetchableAsyncStateArray,
@@ -33,10 +34,7 @@ import deepEquals from "fast-deep-equal";
  *
  * @see useDerivedAsyncState
  */
-function useMergeAsyncState<
-  AsyncStates extends FetchableAsyncStateArray,
-  Result,
->(
+function useMergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   ...args: [
     ...FetchableAsyncStateArray,
     (...args: AsyncValueArray<AsyncStates>) => Result,

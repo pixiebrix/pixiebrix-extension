@@ -16,7 +16,7 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { ensureContentScript } from "@/background/messenger/strict/api";
+import { waitForContentScript } from "@/background/messenger/strict/api";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   type FrameConnectionState,
@@ -59,7 +59,7 @@ const connectToContentScript = createAsyncThunk<
   }
 
   console.debug("connectToContentScript: ensuring contentScript");
-  await ensureContentScript(inspectedTab, 4500);
+  await waitForContentScript(inspectedTab, 4500);
 
   void thunkAPI.dispatch(actions.checkAvailableDynamicElements());
   void thunkAPI.dispatch(actions.checkAvailableInstalledExtensions());
