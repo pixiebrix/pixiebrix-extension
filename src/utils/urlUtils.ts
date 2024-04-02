@@ -53,8 +53,13 @@ export function selectAbsoluteUrl({
   }
 
   assertNotNullish(baseURL, "selectAbsoluteUrl: The base URL was not provided");
-  assertValidUrl(url, baseURL);
-  return new URL(url, baseURL).href;
+
+  if (canParseUrl(url, baseURL)) {
+    return new URL(url, baseURL).href;
+  }
+
+  const baseUrlInfo = baseURL ? ` (base URL: ${String(baseURL)})` : "";
+  throw new Error(`Invalid URL: ${String(url)}${baseUrlInfo}`);
 }
 
 export function makeURL(
@@ -111,13 +116,6 @@ export function canParseUrl(url: unknown, baseURL?: unknown): url is string {
     return true;
   } catch {
     return false;
-  }
-}
-
-function assertValidUrl(url: unknown, baseURL?: unknown): void {
-  if (!canParseUrl(url, baseURL)) {
-    const baseUrlInfo = baseURL ? ` (base URL: ${String(baseURL)})` : "";
-    throw new Error(`Invalid URL: ${String(url)}${baseUrlInfo}`);
   }
 }
 

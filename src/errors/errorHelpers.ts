@@ -424,7 +424,7 @@ export type SimpleErrorObject = {
 };
 
 /**
- * Change the type of error while preserving existing properties like messag, stack and cause
+ * Change the type of error while preserving existing properties like message, stack and cause
  * @param error the error to rewrap
  * @param ErrorConstructor the new error constructor, it only works if it doesn't
  *   have additional required properties and logic in the constructor
