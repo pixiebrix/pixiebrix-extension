@@ -40,7 +40,7 @@ const CONTENT_SCRIPT_STATE_SYMBOL = Symbol.for("content-script-state");
 export const CONTENT_SCRIPT_READY = "LOADING/CONTENT_SCRIPT_READY";
 export const CONTENT_SCRIPT_RAW_PING = "LOADING/CONTENT_SCRIPT_RAW_PING";
 
-type ContentScriptState = "unset" | "installed" | "ready";
+type ContentScriptState = undefined | "installed" | "ready";
 
 declare global {
   interface Window {
@@ -49,7 +49,7 @@ declare global {
 }
 
 export function getContentScriptState(): ContentScriptState {
-  return window[CONTENT_SCRIPT_STATE_SYMBOL] ?? "unset";
+  return window[CONTENT_SCRIPT_STATE_SYMBOL];
 }
 
 export function setContentScriptState(state: "installed" | "ready"): void {

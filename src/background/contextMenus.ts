@@ -20,7 +20,7 @@ import { type Menus, type Tabs } from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import reportError from "@/telemetry/reportError";
 import { handleMenuAction, notify } from "@/contentScript/messenger/strict/api";
-import { ensureContentScript } from "@/background/contentScript";
+import { waitForContentScript } from "@/background/contentScript";
 import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/starterBricks/registry";
 import {
@@ -73,7 +73,7 @@ async function dispatchMenu(
   console.time("ensureContentScript");
 
   // Browser will add at document_idle. But ensure it's ready before continuing
-  await pTimeout(ensureContentScript(target), {
+  await pTimeout(waitForContentScript(target), {
     milliseconds: CONTEXT_SCRIPT_INSTALL_MS,
     message: `contentScript for context menu handler not ready in ${CONTEXT_SCRIPT_INSTALL_MS}ms`,
   });

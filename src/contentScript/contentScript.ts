@@ -55,7 +55,7 @@ async function initContentScript() {
   const urlInfo = top === self ? "" : `in frame ${location.href}`;
   const uuid = uuidv4();
 
-  if (getContentScriptState()) {
+  if (getContentScriptState() != null) {
     // Must prevent multiple injection because repeat messenger registration causes message handling errors:
     // https://github.com/pixiebrix/webext-messenger/issues/88
     // Prior to 1.7.31 we had been using `webext-dynamic-content-scripts` which can inject the same content script
