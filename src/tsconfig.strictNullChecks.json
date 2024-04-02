@@ -812,7 +812,7 @@
     "./vendors/encodings.ts",
     "./vendors/hoverintent.d.ts",
     "./vendors/jQueryInitialize.d.ts",
-    "./vendors/mixpanelDetectBrowser.ts",
+    "./vendors/mixpanelBrowser.ts",
     "./vendors/page-metadata-parser/parser.d.ts",
     "./vendors/pkce.ts",
     "./vendors/randomStringDetection/detector.ts",
