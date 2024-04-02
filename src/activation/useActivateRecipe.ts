@@ -42,8 +42,8 @@ export type ActivateRecipeFormCallback =
   /**
    * Callback for activating a recipe.
    *
-   * @param {WizardValues} formValues The form values for recipe configuration options
-   * @param {ModDefinition} recipe The recipe definition to install
+   * @param formValues The form values for recipe configuration options
+   * @param recipe The recipe definition to install
    * @returns {Promise<ActivateResult>} a promise that resolves to an ActivateResult
    */
   (formValues: WizardValues, recipe: ModDefinition) => Promise<ActivateResult>;
