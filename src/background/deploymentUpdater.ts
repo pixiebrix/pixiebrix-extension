@@ -88,7 +88,9 @@ const locateAllForService = locator.locateAllForService.bind(locator);
 
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
-async function setExtensionsState(state: ModComponentState): Promise<void> {
+async function saveModComponentStateAndReactivateTabs(
+  state: ModComponentState,
+): Promise<void> {
   await saveModComponentState(state);
   await forEachTab(queueReactivateTab);
 }
@@ -133,12 +135,12 @@ async function deactivateModComponentsAndSaveState(
     { catch: "ignore" },
   );
 
-  await setExtensionsState(optionsState);
+  await saveModComponentStateAndReactivateTabs(optionsState);
   await saveEditorState(editorState);
 }
 
 /**
- * Deactivate all deployed mods by deactivating all mod components associated with a deployment.
+ * Deactivate all deployed mods by deactivating all mod components associated with a deployment
  */
 export async function deactivateAllDeployedMods(): Promise<void> {
   const [optionsState, editorState] = await Promise.all([
@@ -310,7 +312,7 @@ async function installDeployments(
     editorState = result.editor;
   }
 
-  await setExtensionsState(optionsState);
+  await saveModComponentStateAndReactivateTabs(optionsState);
   await saveEditorState(editorState);
 }
 
