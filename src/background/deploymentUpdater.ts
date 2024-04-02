@@ -208,24 +208,22 @@ async function deactivateUnassignedDeployments(
   });
 }
 
-async function uninstallRecipe(
+async function deactivateMod(
+  modId: RegistryId,
   optionsState: ModComponentState,
   editorState: EditorState | undefined,
-  recipeId: RegistryId,
-): Promise<{
-  options: ModComponentState;
-  editor: EditorState | undefined;
-}> {
+): Promise<{ options: ModComponentState; editor: EditorState | undefined }> {
   let options = optionsState;
   let editor = editorState;
 
-  const recipeOptionsSelector = selectModComponentsForMod(recipeId);
-  const recipeExtensions = recipeOptionsSelector({ options: optionsState });
+  const modComponentsForModSelector = selectModComponentsForMod(modId);
+  const activatedModComponentsForMod = modComponentsForModSelector({
+    options: optionsState,
+  });
 
-  // Uninstall existing versions of the extensions
-  for (const extension of recipeExtensions) {
+  for (const activatedModComponent of activatedModComponentsForMod) {
     const result = deactivateModComponentFromStates(
-      extension.id,
+      activatedModComponent.id,
       options,
       editor,
     );
@@ -257,10 +255,10 @@ async function installDeployment({
   );
 
   // Uninstall existing versions of the extensions
-  const result = await uninstallRecipe(
+  const result = await deactivateMod(
+    deployment.package.package_id,
     options,
     editor,
-    deployment.package.package_id,
   );
 
   options = result.options;
