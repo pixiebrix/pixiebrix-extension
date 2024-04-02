@@ -104,6 +104,7 @@ const IntegrationAuthSelector: React.FunctionComponent<{
     };
 
     if (value) {
+      // eslint-disable-next-line security/detect-object-injection -- Not a user-provided value
       const integrationConfig = integrationConfigs[value];
       if (integrationConfig) {
         eventPayload = {
