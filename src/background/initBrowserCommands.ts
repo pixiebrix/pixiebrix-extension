@@ -20,7 +20,7 @@ import { type Tab } from "@/mv3/api";
 import { type Target } from "@/types/messengerTypes";
 import { expectContext } from "@/utils/expectContext";
 import { isScriptableUrl } from "webext-content-scripts";
-import { ensureContentScript } from "./contentScript";
+import { waitForContentScript } from "./contentScript";
 
 async function handleCommand(command: string, tab: Tab): Promise<void> {
   if (command !== "toggle-quick-bar" || !isScriptableUrl(tab.url)) {
@@ -32,7 +32,7 @@ async function handleCommand(command: string, tab: Tab): Promise<void> {
     frameId: 0,
   };
 
-  await ensureContentScript(target);
+  await waitForContentScript(target);
   await toggleQuickBar(target);
 }
 

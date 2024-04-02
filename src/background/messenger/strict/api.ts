@@ -23,7 +23,7 @@ import {
 } from "webext-messenger";
 
 export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL", bg);
-export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
+export const waitForContentScript = getMethod("WAIT_FOR_CONTENT_SCRIPT", bg);
 
 export const dataStore = {
   get: getMethod("GET_DATA_STORE", bg),
