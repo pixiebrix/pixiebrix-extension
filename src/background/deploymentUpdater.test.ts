@@ -368,7 +368,7 @@ describe("syncDeployments", () => {
     expect(foo.elements).toBeArrayOfSize(1);
   });
 
-  test("uninstall existing recipe mod component with no dynamic elements", async () => {
+  test("deactivate existing mod with no dynamic elements", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { deployment, modDefinition } = activatableDeploymentFactory();
@@ -418,7 +418,7 @@ describe("syncDeployments", () => {
     );
   });
 
-  test("uninstall existing recipe mod component with dynamic element", async () => {
+  test("deactivate existing mod with dynamic element", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { deployment, modDefinition } = activatableDeploymentFactory();
@@ -580,7 +580,7 @@ describe("syncDeployments", () => {
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
 
-  test("skip update and uninstall if not linked", async () => {
+  test("skip update and deactivation if not linked", async () => {
     isLinkedMock.mockResolvedValue(false);
     readAuthDataMock.mockResolvedValue({} as any);
 
@@ -711,7 +711,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    // Unmatched deployments are always uninstalled if snoozed
+    // Unassigned deployments are always deactivated if snoozed
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(0);
     expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
     expect(openOptionsPageMock.mock.calls).toHaveLength(0);

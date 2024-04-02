@@ -407,7 +407,7 @@ export async function syncDeployments(): Promise<void> {
     //   so PixieBrix cleared it out, 2) something removed the local storage entry
     // - If the user is not an enterprise user (or has not linked their extension yet), just NOP. They likely they just
     //   need to reconnect their extension. If it's a non-enterprise user, they shouldn't have any deployments
-    //   installed anyway.
+    //   activated anyway.
 
     if (disableLoginTab) {
       // IT manager has disabled opening login tab automatically
@@ -418,7 +418,7 @@ export async function syncDeployments(): Promise<void> {
       reportEvent(Events.ORGANIZATION_EXTENSION_LINK, {
         organizationId,
         managedOrganizationId,
-        // Initial marks whether this is the initial background deployment install
+        // Initial marks whether this is the initial background deployment activation
         initial: !organizationId,
         campaignIds,
         sso: true,
@@ -433,7 +433,7 @@ export async function syncDeployments(): Promise<void> {
       reportEvent(Events.ORGANIZATION_EXTENSION_LINK, {
         organizationId,
         managedOrganizationId,
-        // Initial marks whether this is the initial background deployment install
+        // Initial marks whether this is the initial background deployment activation
         initial: !organizationId,
         campaignIds,
         sso: false,
@@ -459,7 +459,7 @@ export async function syncDeployments(): Promise<void> {
   // Always get the freshest options slice from the local storage
   const { extensions: activatedModComponents } = await getModComponentState();
 
-  // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment installed.
+  // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment activated.
   // Now we're always sending in order to help team admins understand any gaps between number of registered users
   // and amount of activity when using deployments
   const client = await maybeGetLinkedApiClient();
