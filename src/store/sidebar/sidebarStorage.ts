@@ -55,7 +55,8 @@ export const persistSidebarConfig = {
   key: "sidebar",
   /**
    * We use localStorage instead of redux-persist-webextension-storage because we want to persist the sidebar state
-    @see StorageInterface */
+   * @see StorageInterface
+   */
   storage: localStorage as StorageInterface,
   version: 1,
   whitelist: ["closedTabs"],

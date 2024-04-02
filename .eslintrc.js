@@ -71,6 +71,7 @@ module.exports = {
 
     // Enable more on top of the recommendations
     "jsdoc/require-hyphen-before-param-description": ["error", "never"],
+    "jsdoc/require-asterisk-prefix": "error",
 
     "@shopify/react-hooks-strict-return": "error",
     "@shopify/prefer-module-scope-constants": "error",
