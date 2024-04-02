@@ -85,9 +85,6 @@ type ErrorOutput = {
   error: ErrorObject;
 };
 
-/**
- *
- */
 export type TraceEntryData = TraceRecordMeta & {
   /**
    * ISO timestamp when the trace element was recorded.

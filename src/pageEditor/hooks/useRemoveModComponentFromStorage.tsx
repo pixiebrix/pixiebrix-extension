@@ -73,7 +73,7 @@ export const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
  * For saved standalone mods, this callback will simply deactivate the mod and remove it from the Page Editor.
  *
  * In both cases, unsaved changes will be lost.
- **/
+ */
 export function useRemoveModComponentFromStorage(): (
   useRemoveConfig: Config,
 ) => Promise<void> {

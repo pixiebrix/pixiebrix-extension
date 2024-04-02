@@ -70,8 +70,8 @@ const properties = [
  * may not be accurate. If needed, use the `snapWithin` function with the getBoundingClientRect() of the element to
  * ensure the coordinates are within the boundaries of the element.
  * @see snapWithin
- * @param element -- the textarea or input element
- * @param position -- the position of the caret in the element
+ * @param element the textarea or input element
+ * @param position the position of the caret in the element
  */
 export function getCaretCoordinates(element: NativeField, position: number) {
   // The mirror div will replicate the textarea's style

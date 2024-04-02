@@ -41,7 +41,6 @@ export abstract class AnalysisVisitorABC
 
   /**
    * Visit the extension point definition.
-   * @param extensionPoint
    */
   visitExtensionPoint(
     extensionPoint: ModComponentFormState["extensionPoint"],

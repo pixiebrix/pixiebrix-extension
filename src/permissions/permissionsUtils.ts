@@ -74,7 +74,7 @@ export function mergePermissionsStatuses(
 
 /**
  * Request any permissions the user has not already granted. Must be called from a user gesture.
- * @returns {Promise<boolean>} true iff the all the permissions already existed, or if the user accepted
+ * @returns true iff the all the permissions already existed, or if the user accepted
  * the new permissions.
  */
 export async function ensurePermissionsFromUserGesture(

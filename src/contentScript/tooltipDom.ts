@@ -51,7 +51,7 @@ export function ensureTooltipsContainer(): Element {
  *
  * @see ensureTooltipsContainer
  * @see popoverFactory
- * @return the tooltip HTMLElement
+ * @returns the tooltip HTMLElement
  */
 // Currently using the tooltip terminology to match the filename, but will likely switch to popover in the future
 // to match the web popover API terminology.

@@ -122,7 +122,7 @@ type OpenMarketplaceOptions = {
 
 /**
  * Opens the Extension Console marketplace route. NOTE: this is not the public marketplace.
- * @return true
+ * @returns true
  * @deprecated there's no top-level marketplace route in the Extension Console anymore
  */
 export async function openMarketplace({
@@ -231,7 +231,7 @@ type ActivateModsOptions = (
  *
  * Opens redirectUrl, otherwise opens the Extension Console activation wizard.
  *
- * @return true
+ * @returns true
  * @throws Error if no mod ids are provided
  */
 export async function openActivateModPage({
@@ -271,7 +271,7 @@ export async function openActivateModPage({
 
 /**
  * Open the Extension Console
- * @return true
+ * @returns true
  */
 export async function openExtensionConsole(): Promise<boolean> {
   await browser.runtime.openOptionsPage();

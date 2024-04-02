@@ -177,33 +177,28 @@ type MenuTargetMode = "document" | "eventTarget";
 export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemStarterBrickConfig> {
   /**
    * Mapping of menu container nonce UUID to the DOM element for the menu container
-   * @protected
    */
   protected readonly menus: Map<UUID, HTMLElement>;
 
   /**
    * Set of menu container UUID that have been removed from the DOM. Track so we we know which ones we've already
    * taken action on to attempt to reacquire a menu container for
-   * @private
    */
   private readonly removed: Set<UUID>;
 
   /**
    * Set of methods to call to cancel any DOM watchers associated with this extension point
-   * @private
    */
   private readonly cancelController = new ReusableAbortController();
 
   /**
    * True if the extension point has been uninstalled
-   * @private
    */
   private uninstalled = false;
 
   /**
    * Mapping from extension id to the set of menu items that have been clicked and still running.
    * @see MenuItemStarterBrickConfig.synchronous
-   * @private
    */
   private readonly runningExtensionElements = new Map<
     UUID,
@@ -339,8 +334,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
   /**
    * Returns the selector root provided to the reader.
-   * @param $containerElement
-   * @param $buttonElement
    */
   abstract getReaderRoot({
     $containerElement,
@@ -368,7 +361,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
    * Callback when a menu is removed from the page to wait to re-install the menu if the container is re-added.
    * Used to handle SPA page transitions that don't navigate (e.g., modals, tabs, etc.)
    * @param menuNonce the menu nonce generated in attachMenus
-   * @private
    */
   private async reacquire(menuNonce: UUID): Promise<void> {
     if (this.attachMode === "watch") {
@@ -403,8 +395,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
   /**
    * Attach extension point to the provided menu containers.
-   * @param $menuContainers
-   * @private
    */
   private attachMenus($menuContainers: JQuery): void {
     const existingMenuContainers = new Set(this.menus.values());
@@ -433,7 +423,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
   /**
    * Watch for new menus to appear on the screen, e.g., due to SPA page transition, infinite scroll, etc.
-   * @private
    */
   private watchMenus(): void {
     const containerSelector = this.getContainerSelector();
@@ -461,8 +450,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
   /**
    * Find and claim the new menu containers currently on the page for the extension point.
-   * @return true iff one or more menu containers were found
-   * @private
+   * @returns true iff one or more menu containers were found
    */
   private async waitAttachMenus(): Promise<boolean> {
     if (this.uninstalled) {

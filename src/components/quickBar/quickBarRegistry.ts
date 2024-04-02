@@ -35,7 +35,6 @@ class QuickBarRegistry implements QuickBarProtocol {
    * Current set of actions, including static and generated actions.
    * @see actionGenerators
    * @see addAction
-   * @private
    */
   private readonly actions: CustomAction[] = [];
 
@@ -46,13 +45,11 @@ class QuickBarRegistry implements QuickBarProtocol {
 
   /**
    * Registry of action generators. The generators are called when the user types in the Quick Bar.
-   * @private
    */
   private readonly actionGenerators: ActionGenerator[] = [];
 
   /**
    * Abort controller for the currently running action generator.
-   * @private
    */
   private readonly generatorAbortController = new ReusableAbortController();
 
@@ -62,7 +59,6 @@ class QuickBarRegistry implements QuickBarProtocol {
    * Used to determine whether to nest a generated action under a root action because the AddQuickBarAction doesn't
    * have access to the generator.
    *
-   * @private
    * @see AddQuickBarAction
    * @see knownGeneratorRootIds
    */

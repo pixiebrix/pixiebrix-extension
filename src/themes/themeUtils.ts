@@ -59,9 +59,9 @@ export type ThemeAssets = {
   customSidebarLogo: Nullishable<string>;
   /** URL to a svg */
   toolbarIcon: Nullishable<string>;
-  /** The base theme name **/
+  /** The base theme name */
   themeName: ThemeName;
-  /** Internal attribute that tracks when the active theme was last fetched and calculated for re-fetching purposes **/
+  /** Internal attribute that tracks when the active theme was last fetched and calculated for re-fetching purposes */
   lastFetched: Nullishable<number>;
 };
 
