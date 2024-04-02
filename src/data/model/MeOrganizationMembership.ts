@@ -36,7 +36,7 @@ export type MeOrganizationMembership = {
   userOrganizationRole: UserOrganizationMembershipRole;
   /**
    * Whether the (parent) user is a manager of one or more team deployments for the organization
-   * */
+   */
   meUserIsDeploymentManager: boolean;
   organizationScope?: string;
   organizationControlRoom?: ControlRoom;

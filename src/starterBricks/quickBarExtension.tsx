@@ -203,7 +203,6 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
 
   /**
    * Add a QuickBar action for extension
-   * @private
    */
   private async registerExtensionAction(
     extension: ResolvedModComponent<QuickBarConfig>,

@@ -17,3 +17,6 @@
 
 export const getBaseExtensionConsoleUrl = (extensionId: string) =>
   `chrome-extension://${extensionId}/options.html`;
+
+export const getBasePageEditorUrl = (extensionId: string) =>
+  `chrome-extension://${extensionId}/pageEditor.html`;

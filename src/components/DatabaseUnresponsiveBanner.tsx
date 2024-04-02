@@ -39,7 +39,6 @@ const errorBanner = (
 /**
  * Banner that displays when the local registry IDB database is unresponsive.
  * @param timeoutMillis the number of milliseconds to wait before IDB is considered unresponsive
- * @constructor
  */
 const DatabaseUnresponsiveBanner: React.VoidFunctionComponent<{
   timeoutMillis?: number;

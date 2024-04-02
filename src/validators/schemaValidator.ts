@@ -81,7 +81,7 @@ export const KIND_SCHEMAS: Readonly<Record<string, ValidatorSchema>> =
  * $ref resolver factory that fetches the integration definition from the integration definition registry.
  * @param sanitize true to exclude properties associated with secrets
  * @param mode properties to include only the properties of the schema, configuration to match an
- *  IntegrationConfiguration
+ * IntegrationConfiguration
  * @see IntegrationConfig
  * @see SanitizedIntegrationConfig
  */
@@ -201,7 +201,7 @@ const builtInSchemaResolver: ResolverOptions = {
  *
  * @param schema the original schema that may contain $ref
  * @param sanitizeIntegrationDefinitions remove properties associated with secrets from integration definitions.
- *   Should generally be set to true when using for runtime validation, but false when using for UI entry validation.
+ * Should generally be set to true when using for runtime validation, but false when using for UI entry validation.
  * @see $RefParser.dereference
  */
 export async function dereference(

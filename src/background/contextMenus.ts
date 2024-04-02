@@ -46,7 +46,6 @@ const CONTEXT_SCRIPT_INSTALL_MS = 5000;
 
 /**
  * Return a unique context menu item id for the given extension id.
- * @param extensionId
  */
 function makeMenuId(extensionId: UUID): string {
   return `${MENU_PREFIX}${extensionId}`;
@@ -105,7 +104,7 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
  *
  * Safe to call on non-context menu extension ids.
  *
- * @returns {boolean} true if the contextMenu was removed, or false if the contextMenu was not found.
+ * @returns true if the contextMenu was removed, or false if the contextMenu was not found.
  */
 export async function uninstallContextMenu({
   extensionId,

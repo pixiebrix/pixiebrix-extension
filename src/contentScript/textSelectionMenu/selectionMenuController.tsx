@@ -178,7 +178,7 @@ function createSelectionMenu(): HTMLElement {
 
 /**
  * Get the reference element for the selection menu position.
- * @param range - The current selection range. Allows us to measure where the selection is on the page relative to the viewport
+ * @param range The current selection range. Allows us to measure where the selection is on the page relative to the viewport
  */
 function getPositionReference(range: Range): VirtualElement | Element {
   const { activeElement } = document;
