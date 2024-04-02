@@ -48,6 +48,8 @@ import {
 } from "@/platform/capabilities";
 import { expectContext } from "@/utils/expectContext";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { type SetRequired } from "type-fest";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export type StepInputs = {
   title: string;
@@ -352,6 +354,8 @@ class TourStepTransformer extends TransformerABC {
       },
     ];
 
+    assertNotNullish(extensionId, "Extension ID is required");
+
     const panelEntryMetadata: TemporaryPanelEntryMetadata = {
       extensionId,
       blueprintId,
@@ -422,7 +426,7 @@ class TourStepTransformer extends TransformerABC {
   /**
    * The original style of the target element before it was highlighted as part of the tour step.
    */
-  originalStyle: Record<string, string> = undefined;
+  originalStyle: Record<string, string> = {};
 
   /**
    * Wait for the target element to appear on the page according to the `wait` configuration.
@@ -458,7 +462,7 @@ class TourStepTransformer extends TransformerABC {
 
   highlightTarget(
     element: HTMLElement,
-    config: StepInputs["appearance"]["highlight"],
+    config: SetRequired<StepInputs, "appearance">["appearance"]["highlight"],
   ): void {
     if (isEmpty(config)) {
       return;
@@ -468,11 +472,12 @@ class TourStepTransformer extends TransformerABC {
       backgroundColor: element.style.backgroundColor,
     };
 
-    element.style.backgroundColor = config.backgroundColor;
+    if (config.backgroundColor)
+      element.style.backgroundColor = config.backgroundColor;
   }
 
   unhighlightTarget(element: HTMLElement): void {
-    if (this.originalStyle) {
+    if (this.originalStyle.backgroundColor != null) {
       element.style.backgroundColor = this.originalStyle.backgroundColor;
     }
   }
@@ -533,7 +538,7 @@ class TourStepTransformer extends TransformerABC {
     let result;
 
     try {
-      if (!isEmpty(onBeforeShow?.__value__)) {
+      if (onBeforeShow?.__value__) {
         await options.runPipeline(
           onBeforeShow,
           {
@@ -558,7 +563,7 @@ class TourStepTransformer extends TransformerABC {
 
       result = await this.displayStep(target, modifiedArgs, options);
 
-      if (!isEmpty(onAfterShow?.__value__)) {
+      if (onAfterShow?.__value__) {
         await options.runPipeline(
           onAfterShow,
           {

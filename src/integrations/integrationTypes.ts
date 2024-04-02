@@ -141,7 +141,7 @@ export type IntegrationConfigV1 = {
   /**
    * UUID of the integration configuration
    */
-  id: UUID | undefined;
+  id: UUID;
 
   /**
    * Registry identifier for the integration, e.g., `@pixiebrix/api`.
@@ -186,7 +186,7 @@ export interface SanitizedIntegrationConfig {
   /**
    * UUID of the integration configuration.
    */
-  // XXX: document why id is optional
+  // ID is only undefined for the PixieBrix integration
   id?: UUID;
 
   /**

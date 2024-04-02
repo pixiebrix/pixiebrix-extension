@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.8.12-alpha.1",
+  "version": "1.8.13-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "TZ=UTC jest",
@@ -164,7 +164,7 @@
     "uuid": "^9.0.1",
     "webext-content-scripts": "^2.6.1",
     "webext-detect-page": "^5.0.0",
-    "webext-events": "^2.3.0",
+    "webext-events": "^3.0.0",
     "webext-inject-on-install": "^2.1.0",
     "webext-messenger": "^0.27.0",
     "webext-patterns": "^1.4.0",

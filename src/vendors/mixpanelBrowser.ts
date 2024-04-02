@@ -1,11 +1,12 @@
 /**
  * This function detects which browser is running this script.
  * The order of the checks are important since many user agents
- * include key words used in later checks.
+ * include keywords used in later checks.
  * @param userAgent
  * @param vendor
+ *
+ * @see https://github.com/mixpanel/mixpanel-js/blob/master/src/utils.js#L1489
  */
-// https://github.com/mixpanel/mixpanel-js/blob/master/src/utils.js#L1489
 export function detectBrowser(
   userAgent: string,
   vendor: string | null,
@@ -56,4 +57,51 @@ export function detectBrowser(
   } else {
     return "";
   }
+}
+
+/**
+ * Detects the browser version that is running this script.
+ * @param userAgent
+ * @param vendor
+ *
+ * @see https://github.com/mixpanel/mixpanel-js/blob/master/src/utils.js#L1542C21-L1571C7
+ */
+export function browserVersion(userAgent: string, vendor: string | null) {
+  const browser = detectBrowser(userAgent, vendor);
+  const versionRegexes: {
+    [key: string]: RegExp;
+  } = {
+    "Internet Explorer Mobile": /rv:(\d+(\.\d+)?)/,
+    "Microsoft Edge": /Edge?\/(\d+(\.\d+)?)/,
+    Chrome: /Chrome\/(\d+(\.\d+)?)/,
+    "Chrome iOS": /CriOS\/(\d+(\.\d+)?)/,
+    "UC Browser": /(UCBrowser|UCWEB)\/(\d+(\.\d+)?)/,
+    Safari: /Version\/(\d+(\.\d+)?)/,
+    "Mobile Safari": /Version\/(\d+(\.\d+)?)/,
+    Opera: /(Opera|OPR)\/(\d+(\.\d+)?)/,
+    Firefox: /Firefox\/(\d+(\.\d+)?)/,
+    "Firefox iOS": /FxiOS\/(\d+(\.\d+)?)/,
+    Konqueror: /Konqueror:(\d+(\.\d+)?)/,
+    BlackBerry: /BlackBerry (\d+(\.\d+)?)/,
+    "Android Mobile": /android\s(\d+(\.\d+)?)/,
+    "Samsung Internet": /SamsungBrowser\/(\d+(\.\d+)?)/,
+    "Internet Explorer": /(rv:|MSIE )(\d+(\.\d+)?)/,
+    Mozilla: /rv:(\d+(\.\d+)?)/,
+  };
+  const regex = versionRegexes[browser];
+  if (regex === undefined) {
+    return null;
+  }
+  const matches = userAgent.match(regex);
+  if (!matches) {
+    return null;
+  }
+
+  const versionString = matches[matches.length - 2];
+
+  if (versionString === undefined) {
+    return null;
+  }
+
+  return parseFloat(versionString);
 }
