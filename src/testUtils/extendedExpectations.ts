@@ -25,6 +25,26 @@ declare global {
   namespace jest {
     interface Matchers<R> {
       toBePending(): Promise<CustomMatcherResult>;
+
+      /**
+       * @warning This only asserts on the amount of time that passes from
+       * this toFullfillWithinMilliseconds() call, not from the promise creation.
+       *
+       * If this is troublesome, copy the `trackSettledTime` function/pattern instead:
+       * https://github.com/pixiebrix/webext-messenger/blob/22eeba8b5b2efe3ecb6beb7a8c493f260c9499fb/source/test/helpers.ts#L28-L38
+       * https://github.com/pixiebrix/pixiebrix-extension/pull/8133#discussion_r1547932237
+       *
+       * @example
+       *   // Wrong: DO NOT await anything between the promise creation and the expect() call
+       *   const promise = getMilk();
+       *   await act(); // This will mess up the timing
+       *   await expect(promise).toFullfillWithinMilliseconds(1000);
+       *
+       *   // Correct: Await the expect() call directly
+       *   const expectation = expect(getMilk()).toFullfillWithinMilliseconds(1000);
+       *   await act();
+       *   await expectation;
+       */
       toFullfillWithinMilliseconds(
         maximumDuration: number,
       ): Promise<CustomMatcherResult>;
