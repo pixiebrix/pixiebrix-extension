@@ -324,14 +324,14 @@ type DeploymentConstraint = {
 };
 
 /**
- * Return true if the deployment can be automatically installed.
+ * Return true if the deployment can be automatically activated.
  *
- * For automatic install, the following must be true:
+ * For automatic activation, the following must be true:
  * 1. PixieBrix already has permissions for the required pages/APIs
- * 2. The user has a version of the PixieBrix browser extension compatible with the deployment
+ * 2. The user has a version of the PixieBrix Extension compatible with the deployment
  * 3. The user has exactly one (1) personal configuration for each unbound service for the deployment
  */
-async function canAutomaticallyInstall({
+async function canAutoActivate({
   activatableDeployment,
   hasPermissions,
   extensionVersion,
@@ -620,7 +620,7 @@ async function activateDeploymentsInBackground({
     deploymentRequirements.map(
       async ({ activatableDeployment, hasPermissions }) => ({
         activatableDeployment,
-        isAutomatic: await canAutomaticallyInstall({
+        isAutomatic: await canAutoActivate({
           activatableDeployment,
           hasPermissions,
           extensionVersion,
