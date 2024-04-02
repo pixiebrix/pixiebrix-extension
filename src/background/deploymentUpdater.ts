@@ -146,25 +146,27 @@ export async function deactivateAllDeployedMods(): Promise<void> {
     getModComponentState(),
     getEditorState(),
   ]);
-  const installed = selectActivatedModComponents({ options: optionsState });
+  const activatedModComponents = selectActivatedModComponents({
+    options: optionsState,
+  });
 
-  const toUninstall = installed.filter(
-    (extension) => !isEmpty(extension._deployment),
+  const modComponentsToDeactivate = activatedModComponents.filter(
+    (activatedModComponent) => !isEmpty(activatedModComponent._deployment),
   );
 
-  if (toUninstall.length === 0) {
+  if (modComponentsToDeactivate.length === 0) {
     // Short-circuit to skip reporting telemetry
     return;
   }
 
-  await uninstallExtensionsAndSaveState(toUninstall, {
+  await uninstallExtensionsAndSaveState(modComponentsToDeactivate, {
     editorState,
     optionsState,
   });
 
   reportEvent("DeploymentDeactivateAll", {
     auto: true,
-    deployments: toUninstall.map((x) => x._deployment.id),
+    deployments: modComponentsToDeactivate.map((x) => x._deployment.id),
   });
 }
 
