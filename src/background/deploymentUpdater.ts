@@ -93,20 +93,17 @@ async function setExtensionsState(state: ModComponentState): Promise<void> {
   await forEachTab(queueReactivateTab);
 }
 
-function uninstallExtensionFromStates(
+function deactivateModComponentFromStates(
+  modComponentId: UUID,
   optionsState: ModComponentState,
   editorState: EditorState | undefined,
-  extensionId: UUID,
-): {
-  options: ModComponentState;
-  editor: EditorState;
-} {
+): { options: ModComponentState; editor: EditorState } {
   const options = optionsReducer(
     optionsState,
-    optionsActions.removeExtension({ extensionId }),
+    optionsActions.removeExtension({ extensionId: modComponentId }),
   );
   const editor = editorState
-    ? editorReducer(editorState, editorActions.removeElement(extensionId))
+    ? editorReducer(editorState, editorActions.removeElement(modComponentId))
     : undefined;
   return { options, editor };
 }
@@ -120,10 +117,10 @@ async function deactivateModComponentsAndSaveState(
 ): Promise<void> {
   // Deactivate existing mod components
   for (const modComponent of modComponentsToDeactivate) {
-    const result = uninstallExtensionFromStates(
+    const result = deactivateModComponentFromStates(
+      modComponent.id,
       optionsState,
       editorState,
-      modComponent.id,
     );
     optionsState = result.options;
     editorState = result.editor;
@@ -223,7 +220,11 @@ async function uninstallRecipe(
 
   // Uninstall existing versions of the extensions
   for (const extension of recipeExtensions) {
-    const result = uninstallExtensionFromStates(options, editor, extension.id);
+    const result = deactivateModComponentFromStates(
+      extension.id,
+      options,
+      editor,
+    );
     options = result.options;
     editor = result.editor;
   }
