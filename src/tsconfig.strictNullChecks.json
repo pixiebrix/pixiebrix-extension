@@ -108,6 +108,7 @@
     "./bricks/effects/sound.ts",
     "./bricks/effects/submitPanel.ts",
     "./bricks/effects/telemetry.ts",
+    "./bricks/effects/tourEffect.ts",
     "./bricks/effects/vue.ts",
     "./bricks/effects/wait.ts",
     "./bricks/errors.ts",
