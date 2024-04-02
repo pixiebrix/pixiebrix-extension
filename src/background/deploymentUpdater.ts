@@ -139,9 +139,9 @@ async function uninstallExtensionsAndSaveState(
 }
 
 /**
- * Uninstall all deployments by uninstalling all extensions associated with a deployment.
+ * Deactivate all deployed mods by deactivating all mod components associated with a deployment.
  */
-export async function uninstallAllDeployments(): Promise<void> {
+export async function deactivateAllDeployedMods(): Promise<void> {
   const [optionsState, editorState] = await Promise.all([
     getModComponentState(),
     getEditorState(),
@@ -451,7 +451,7 @@ export async function syncDeployments(): Promise<void> {
     // 1) has never been a member of an organization,
     // 2) has left their organization,
     // 3) linked their extension to a non-organization profile
-    await uninstallAllDeployments();
+    await deactivateAllDeployedMods();
     return;
   }
 

@@ -586,13 +586,13 @@ describe("syncDeployments", () => {
 
     jest.doMock("@/background/deploymentUpdater");
 
-    const { uninstallAllDeployments } = await import(
+    const { deactivateAllDeployedMods } = await import(
       "@/background/deploymentUpdater"
     );
 
     await syncDeployments();
 
-    expect(jest.mocked(uninstallAllDeployments).mock.calls).toHaveLength(0);
+    expect(jest.mocked(deactivateAllDeployedMods).mock.calls).toHaveLength(0);
     expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(0);
   }, 10_000);
@@ -717,14 +717,14 @@ describe("syncDeployments", () => {
     expect(openOptionsPageMock.mock.calls).toHaveLength(0);
   });
 
-  test("can uninstall all deployments", async () => {
+  test("can deactivate all deployed mods", async () => {
     const personalStarterBrick = starterBrickConfigFactory();
     const personalBrick = {
       ...parsePackage(personalStarterBrick as unknown as RegistryPackage),
       timestamp: new Date(),
     };
 
-    const personalModComponent = modComponentFactory({
+    const standaloneModComponent = modComponentFactory({
       extensionPointId: personalStarterBrick.metadata.id,
     }) as ActivatedModComponent;
 
@@ -756,7 +756,7 @@ describe("syncDeployments", () => {
 
     const personalElement = (await ADAPTERS.get(
       personalStarterBrick.definition.type,
-    ).fromExtension(personalModComponent)) as ActionFormState;
+    ).fromExtension(standaloneModComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addElement(personalElement),
@@ -772,7 +772,7 @@ describe("syncDeployments", () => {
 
     await saveModComponentState({
       extensions: [
-        personalModComponent,
+        standaloneModComponent,
         deploymentModComponent,
         recipeModComponent,
       ],
@@ -788,9 +788,9 @@ describe("syncDeployments", () => {
 
     expect(activatedModComponents).toHaveLength(2);
 
-    const installedIds = activatedModComponents.map((x) => x.id);
-    expect(installedIds).toContain(personalModComponent.id);
-    expect(installedIds).toContain(recipeModComponent.id);
+    const activatedModComponentIds = activatedModComponents.map((x) => x.id);
+    expect(activatedModComponentIds).toContain(standaloneModComponent.id);
+    expect(activatedModComponentIds).toContain(recipeModComponent.id);
 
     const { elements } = await getEditorState();
     expect(elements).toBeArrayOfSize(1);
