@@ -31,9 +31,9 @@ global.$ = $;
 global.jQuery = $;
 
 // Disable onMessage handler, or else it will respond to `sendMessage` calls locally
-// @ts-expect-error For testing only
-global.browser.runtime.onMessage.addListener = jest.fn();
+browser.runtime.onMessage.addListener = jest.fn();
 
+browser.runtime.id = "mpjjildTESTIDkfjnepo";
 browser.runtime.getManifest = jest.fn().mockReturnValue({
   version: "1.5.2",
 });

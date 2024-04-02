@@ -21,6 +21,7 @@ import { expectContext } from "@/utils/expectContext";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import locateSanitizedIntegrationConfigWithRetry from "@/integrations/util/locateSanitizedIntegrationConfigWithRetry";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Return origin permissions required to use an integration with the given configuration.
@@ -38,6 +39,11 @@ export async function collectIntegrationOriginPermissions({
     // Already included in the required permissions for the extension
     return { origins: [] };
   }
+
+  assertNotNullish(
+    configId,
+    "configId is required for non-pixiebrix integrations",
+  );
 
   const localConfig = await locateSanitizedIntegrationConfigWithRetry(
     integrationId,

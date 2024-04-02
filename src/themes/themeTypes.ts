@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const DEFAULT_THEME = "default";
+export const DEFAULT_THEME = process.env.IS_BETA ? "beta" : "default";
 export const THEME_NAMES = [DEFAULT_THEME, "automation-anywhere"] as const;
 
 /**

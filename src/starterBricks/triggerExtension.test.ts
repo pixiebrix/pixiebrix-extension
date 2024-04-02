@@ -51,9 +51,6 @@ import { screen } from "@testing-library/react";
 import type { Trigger } from "@/starterBricks/triggerExtensionTypes";
 import { getPlatform } from "@/platform/platformContext";
 
-// Avoid errors being interpreted as context invalidated error
-browser.runtime.id = "abcxyz";
-
 let hidden = false;
 
 // https://github.com/jsdom/jsdom/issues/2391#issuecomment-429085358
