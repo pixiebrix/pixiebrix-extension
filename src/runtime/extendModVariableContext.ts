@@ -58,7 +58,6 @@ export function extraEmptyModStateContext(version: ApiVersion): UnknownObject {
 
 /**
  * Returns true if the context has been enriched with a mod variable.
- * @param ctxt the context
  */
 export function isModVariableContext<T extends UnknownObject = UnknownObject>(
   ctxt: unknown,
@@ -78,7 +77,6 @@ export function isModVariableContext<T extends UnknownObject = UnknownObject>(
 
 /**
  * Context with tags excluded
- * @param context the context
  */
 export function contextAsPlainObject<T extends UnknownObject = UnknownObject>(
   context: T,

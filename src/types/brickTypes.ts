@@ -78,7 +78,6 @@ export interface Brick extends Metadata {
 
   /**
    * Returns a JSON Schema for the shape of a variable introduced by a sub-pipeline.
-   * @param pipelineName the pipeline name
    * @since 1.8.4
    */
   getPipelineVariableSchema?(
@@ -210,7 +209,6 @@ export abstract class BrickABC implements Brick {
 
   /**
    * Returns a JSON Schema for the shape of a variable introduced by a sub-pipeline.
-   * @param _pipelineName the pipeline name
    * @since 1.8.4
    */
   getPipelineVariableSchema(
@@ -231,7 +229,6 @@ export abstract class BrickABC implements Brick {
 
 /**
  * Returns `true` if brick is a user-defined brick (i.e., defined in YAML not JS).
- * @param brick the brick
  * @see ExternalBlock
  */
 export function isUserDefinedBrick(brick: Brick): boolean {

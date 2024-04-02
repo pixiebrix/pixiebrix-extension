@@ -80,7 +80,6 @@ export async function getContainedStarterBrickTypes(
 
 /**
  * Returns true if the recipe includes a static or dynamic Quick Bar entries.
- * @param modDefinition the mod definition
  */
 export async function includesQuickBarStarterBrick(
   modDefinition?: ModDefinition,
@@ -107,8 +106,6 @@ export async function includesQuickBarStarterBrick(
 /**
  * Find the activated mod components for a subset of Mod Component Definitions
  * and return their ids.
- * @param activatedModComponents the activated mod components
- * @param modComponentDefinitions the mod component definitions
  */
 export function getModComponentIdsForModComponentDefinitions(
   activatedModComponents: ActivatedModComponent[],

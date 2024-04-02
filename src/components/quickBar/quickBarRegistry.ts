@@ -118,7 +118,6 @@ class QuickBarRegistry implements QuickBarProtocol {
 
   /**
    * Remove all actions added by a given extension point.
-   * @param extensionPointId the extension point registry id.
    */
   removeExtensionPointActions(extensionPointId: RegistryId): void {
     remove(this.actions, (x) => x.extensionPointId === extensionPointId);

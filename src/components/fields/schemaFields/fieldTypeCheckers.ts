@@ -74,15 +74,14 @@ export function isLabelledEnumField(
 
 /**
  * Returns true if schema is a field that should be rendered as a select or a creatable select field.
- * @param schema the field schema
  */
-export function isSelectField(schema: Schema): boolean {
-  const primitiveValues = schema.examples ?? schema.enum;
+export function isSelectField(fieldSchema: Schema): boolean {
+  const primitiveValues = fieldSchema.examples ?? fieldSchema.enum;
   const isPrimitiveSelect =
-    schema.type === "string" &&
+    fieldSchema.type === "string" &&
     Array.isArray(primitiveValues) &&
     !isEmpty(primitiveValues);
-  return isPrimitiveSelect || isLabelledEnumField(schema);
+  return isPrimitiveSelect || isLabelledEnumField(fieldSchema);
 }
 
 export function isKeyStringField(schema: Schema): boolean {

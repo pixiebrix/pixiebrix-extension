@@ -121,46 +121,48 @@ class MemoryRegistry<
 
   /**
    * Return true if the registry contains the given item
-   * @param id the registry id
    */
-  async exists(id: Id): Promise<boolean> {
-    return this._cache.has(id) || (await backgroundRegistry.find(id)) != null;
+  async exists(registryId: Id): Promise<boolean> {
+    return (
+      this._cache.has(registryId) ||
+      (await backgroundRegistry.find(registryId)) != null
+    );
   }
 
   /**
    * Return the item with the given id, or throw an error if it does not exist
-   * @param id the registry id
    * @throws DoesNotExistError if the item does not exist
    * @see exists
    */
-  async lookup(id: Id): Promise<Item> {
-    if (!id) {
+  async lookup(registryId: Id): Promise<Item> {
+    if (!registryId) {
       throw new Error("id is required");
     }
 
-    const cached = this._cache.get(id);
+    const cached = this._cache.get(registryId);
 
     if (cached) {
       return cached;
     }
 
-    const localItem = this._builtins.get(id) ?? this._internal.get(id);
+    const localItem =
+      this._builtins.get(registryId) ?? this._internal.get(registryId);
 
     if (localItem) {
       return localItem;
     }
 
-    if (isInnerDefinitionRegistryId(id)) {
+    if (isInnerDefinitionRegistryId(registryId)) {
       // Avoid the IDB lookup for internal definitions, because we know they are not there
-      throw new DoesNotExistError(id);
+      throw new DoesNotExistError(registryId);
     }
 
     // Look up in IDB
-    const raw = await backgroundRegistry.find(id);
+    const raw = await backgroundRegistry.find(registryId);
 
     if (!raw) {
-      console.debug(`Cannot find ${id as string} in registry`);
-      throw new DoesNotExistError(id);
+      console.debug(`Cannot find ${registryId as string} in registry`);
+      throw new DoesNotExistError(registryId);
     }
 
     const item = this.parse(raw.config);
