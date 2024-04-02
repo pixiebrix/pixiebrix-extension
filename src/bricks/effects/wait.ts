@@ -72,7 +72,7 @@ export class WaitEffect extends EffectABC {
 export async function awaitElement({
   selector,
   $root,
-  maxWaitMillis,
+  maxWaitMillis = 0,
   abortSignal,
 }: {
   selector: string;
@@ -80,7 +80,7 @@ export async function awaitElement({
   maxWaitMillis?: number;
   abortSignal?: AbortSignal;
 }): Promise<JQuery<HTMLElement | Document>> {
-  if (maxWaitMillis == null) {
+  if (maxWaitMillis === 0) {
     return awaitElementOnce(selector, abortSignal, $root);
   }
 

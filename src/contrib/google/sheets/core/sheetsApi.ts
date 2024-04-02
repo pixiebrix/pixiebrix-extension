@@ -29,7 +29,7 @@ import {
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
 import { getPlatform } from "@/platform/platformContext";
-import type { Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 export const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
@@ -88,7 +88,9 @@ export async function getGoogleUserEmail(
   };
 
   const userInfo = await executeRequest<UserInfo>(requestConfig, googleAccount);
-  return userInfo.email ?? "";
+
+  assertNotNullish(userInfo.email, "User email not found in Google response");
+  return userInfo.email;
 }
 
 async function batchUpdateSpreadsheet(

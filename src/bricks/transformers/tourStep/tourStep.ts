@@ -36,7 +36,7 @@ import { addOverlay } from "@/bricks/transformers/tourStep/overlay";
 import * as UNSAFE_panelController from "@/platform/panels/panelController";
 import { AbortPanelAction } from "@/bricks/errors";
 import { $safeFind } from "@/utils/domUtils";
-import { isPipelineExpression, toExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 import type {
   RefreshTrigger,
   TemporaryPanelDefinition,
@@ -538,7 +538,7 @@ class TourStepTransformer extends TransformerABC {
     let result;
 
     try {
-      if (isPipelineExpression(onBeforeShow)) {
+      if (onBeforeShow?.__value__) {
         await options.runPipeline(
           onBeforeShow,
           {
@@ -563,7 +563,7 @@ class TourStepTransformer extends TransformerABC {
 
       result = await this.displayStep(target, modifiedArgs, options);
 
-      if (isPipelineExpression(onAfterShow)) {
+      if (onAfterShow?.__value__) {
         await options.runPipeline(
           onAfterShow,
           {
