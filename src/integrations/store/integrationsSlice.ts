@@ -49,10 +49,6 @@ const integrationsSlice = createSlice({
       state,
       { payload: { id } }: PayloadAction<{ id: UUID }>,
     ) {
-      if (!state.configured[id]) {
-        throw new Error(`Integration configuration ${id} does not exist`);
-      }
-
       delete state.configured[id];
     },
     upsertIntegrationConfig(

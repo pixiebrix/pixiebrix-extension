@@ -35,9 +35,9 @@ export type PublishContext = ShareContext & {
 };
 
 type ModModalsState = {
-  showLogsContext: LogsContext;
-  showShareContext: ShareContext;
-  showPublishContext: PublishContext;
+  showLogsContext: LogsContext | null;
+  showShareContext: ShareContext | null;
+  showPublishContext: PublishContext | null;
 };
 
 export type ModModalsRootState = {
@@ -70,7 +70,8 @@ export const modModalsSlice = createSlice({
       state.showShareContext = null;
     },
     setCancelingPublish(state) {
-      state.showPublishContext.cancelingPublish = true;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Immer makes this safe
+      state.showPublishContext!.cancelingPublish = true;
     },
     closeModal() {
       return initialState;
