@@ -17,7 +17,7 @@
 
 import { cancelTemporaryPanel } from "@/contentScript/messenger/strict/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import {
   type SidebarState,
   type TemporaryPanelEntry,

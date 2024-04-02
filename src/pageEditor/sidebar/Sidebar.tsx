@@ -16,58 +16,121 @@
  */
 
 import styles from "./Sidebar.module.scss";
-
 import React from "react";
-import { CSSTransition } from "react-transition-group";
-import { type CSSTransitionProps } from "react-transition-group/CSSTransition";
-import SidebarCollapsed from "./SidebarCollapsed";
-import SidebarExpanded from "./SidebarExpanded";
 import { useDispatch, useSelector } from "react-redux";
-import { selectModuleListExpanded } from "@/pageEditor/slices/editorSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { Button, Collapse as BootstrapCollapse } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faAngleDoubleLeft,
+  faAngleDoubleRight,
+} from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
+import useFlags from "@/hooks/useFlags";
+import { selectModuleListExpanded } from "@/pageEditor/slices/editorSelectors";
+import HomeButton from "./HomeButton";
+import ReloadButton from "./ReloadButton";
+import AddStarterBrickButton from "./AddStarterBrickButton";
+import Extensions from "./Extensions";
 
-const transitionProps: CSSTransitionProps = {
-  classNames: {
-    enter: styles.enter,
-    enterActive: styles.enterActive,
-    exit: styles.exit,
-    exitActive: styles.exitActive,
-  },
-  timeout: 500,
-  unmountOnExit: true,
-  mountOnEnter: true,
-};
+/**
+ * React Bootstrap Collapsed component that includes a div wrapper.
+ * The native component only accepts one child and it alters it, so it frustratingly
+ * conflicts with our own layout.
+ */
+const CollapsedElement: React.FC<
+  Omit<React.ComponentProps<typeof BootstrapCollapse>, "children"> & {
+    className?: string;
+  }
+> = ({ children, className, ...props }) => (
+  <BootstrapCollapse unmountOnExit={true} {...props}>
+    <div className={className}>{children}</div>
+  </BootstrapCollapse>
+);
 
 const Sidebar: React.VFC = () => {
   const dispatch = useDispatch();
 
   const expanded = useSelector(selectModuleListExpanded);
 
+  const { flagOn } = useFlags();
+  const showDeveloperUI =
+    process.env.ENVIRONMENT === "development" ||
+    flagOn("page-editor-developer");
+
+  const collapseSidebar = () => {
+    dispatch(
+      actions.setModListExpanded({
+        isExpanded: !expanded,
+      }),
+    );
+  };
+
   return (
-    <>
-      <CSSTransition {...transitionProps} in={!expanded}>
-        <SidebarCollapsed
-          expandSidebar={() => {
-            dispatch(
-              actions.setModListExpanded({
-                isExpanded: true,
-              }),
-            );
+    <div className={cx(styles.root, "flex-shrink-0")}>
+      {/* Expanded sidebar: Actions list (+ always visible Home button) */}
+
+      <div className={styles.header}>
+        <HomeButton />
+        <CollapsedElement
+          dimension="width"
+          in={expanded}
+          className={styles.horizontalActions}
+        >
+          <AddStarterBrickButton />
+          {showDeveloperUI && <ReloadButton />}
+        </CollapsedElement>
+        <CollapsedElement
+          dimension="width"
+          in={expanded}
+          className="d-flex flex-grow-1"
+        >
+          <Button
+            size="sm"
+            type="button"
+            variant="light"
+            className={cx(styles.toggle, "ml-auto")}
+            onClick={collapseSidebar}
+          >
+            <FontAwesomeIcon icon={faAngleDoubleLeft} fixedWidth />
+          </Button>
+        </CollapsedElement>
+      </div>
+
+      {/* Collapsed sidebar: Actions list */}
+      <CollapsedElement in={!expanded} className={styles.verticalActions}>
+        <Button
+          size="sm"
+          type="button"
+          variant="light"
+          className={styles.toggle}
+          onClick={collapseSidebar}
+        >
+          <FontAwesomeIcon icon={faAngleDoubleRight} fixedWidth />
+        </Button>
+        {showDeveloperUI && <ReloadButton />}
+      </CollapsedElement>
+
+      {/* Expanded sidebar: Extensions list */}
+      <CollapsedElement
+        dimension="width"
+        in={expanded}
+        className="d-flex flex-column flex-grow-1"
+      >
+        {/*
+        Double wrapper needed so that the list does not wrap during the
+        shrinking animation, but instead it's clipped.
+        */}
+        <div
+          className="d-flex flex-column flex-grow-1"
+          style={{
+            width: "270px",
           }}
-        />
-      </CSSTransition>
-      <CSSTransition {...transitionProps} in={expanded}>
-        <SidebarExpanded
-          collapseSidebar={() => {
-            dispatch(
-              actions.setModListExpanded({
-                isExpanded: false,
-              }),
-            );
-          }}
-        />
-      </CSSTransition>
-    </>
+        >
+          <Extensions />
+        </div>
+      </CollapsedElement>
+    </div>
   );
 };
 
