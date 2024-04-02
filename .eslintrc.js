@@ -72,6 +72,9 @@ module.exports = {
     // Enable more on top of the recommendations
     "jsdoc/require-hyphen-before-param-description": ["error", "never"],
     "jsdoc/require-asterisk-prefix": "error",
+    "jsdoc/no-bad-blocks": ["error", { ignore: ["jest-environment-options"] }],
+    "jsdoc/no-blank-blocks": "error",
+    "jsdoc/no-blank-block-descriptions": "error",
 
     "@shopify/react-hooks-strict-return": "error",
     "@shopify/prefer-module-scope-constants": "error",
