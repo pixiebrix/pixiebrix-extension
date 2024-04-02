@@ -23,9 +23,8 @@ import "./contentScript.scss";
 import { addContentScriptIndicator } from "@/development/visualInjection";
 import { uuidv4 } from "@/types/helpers";
 import {
-  isContentScriptInstalled,
-  setContentScriptInstalled,
-  setContentScriptReady,
+  getContentScriptState,
+  setContentScriptState,
 } from "@/contentScript/ready";
 import { onContextInvalidated } from "webext-events";
 import { logPromiseDuration } from "@/utils/promiseUtils";
@@ -56,7 +55,7 @@ async function initContentScript() {
   const urlInfo = top === self ? "" : `in frame ${location.href}`;
   const uuid = uuidv4();
 
-  if (isContentScriptInstalled()) {
+  if (getContentScriptState() != null) {
     // Must prevent multiple injection because repeat messenger registration causes message handling errors:
     // https://github.com/pixiebrix/webext-messenger/issues/88
     // Prior to 1.7.31 we had been using `webext-dynamic-content-scripts` which can inject the same content script
@@ -68,8 +67,9 @@ async function initContentScript() {
   }
 
   // Do not use the Messenger, it cannot appear in this bundle
-  const context: Runtime.MessageSender | undefined =
-    await browser.runtime.sendMessage({ type: "WHO_AM_I" });
+  const context = (await browser.runtime.sendMessage({ type: "WHO_AM_I" })) as
+    | Runtime.MessageSender
+    | undefined;
   if (!context) {
     console.error(
       "contentScript: nobody answered the WHO_AM_I context check. Loading might fail later.",
@@ -83,7 +83,7 @@ async function initContentScript() {
 
   console.debug(`contentScript: importing ${uuid} ${urlInfo}`);
 
-  setContentScriptInstalled();
+  setContentScriptState("installed");
 
   // Keeping the import separate ensures that no side effects are run until this point
   const contentScriptPromise = import(
@@ -95,7 +95,7 @@ async function initContentScript() {
 
   const { init } = await contentScriptPromise;
   await logPromiseDuration("contentScript: ready", init());
-  setContentScriptReady();
+  setContentScriptState("ready");
 
   onContextInvalidated.addListener(() => {
     console.debug("contentScript: invalidated", uuid);

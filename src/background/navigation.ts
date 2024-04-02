@@ -20,7 +20,7 @@ import { canAccessTab } from "@/permissions/permissionsUtils";
 import { isScriptableUrl } from "webext-content-scripts";
 import { debounce } from "lodash";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
-import { getTargetState } from "@/contentScript/ready";
+import { isTargetReady } from "@/contentScript/ready";
 import { flagOn } from "@/auth/featureFlagStorage";
 
 /**
@@ -33,7 +33,7 @@ async function traceNavigation(target: Target): Promise<void> {
     ...target,
     tabUrl,
     isScriptableUrl: isScriptableUrl(tabUrl),
-    contentScriptState: getTargetState(target),
+    isTargetReady: isTargetReady(target),
     canInject: canInjectTab(target),
     // PixieBrix has some additional constraints on which tabs can be accessed (i.e., only http/https)
     canAccessTab: canAccessTab(target),

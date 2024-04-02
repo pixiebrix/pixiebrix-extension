@@ -1,4 +1,3 @@
-/* eslint-disable @shopify/prefer-module-scope-constants -- Dangerous here, contains copy-pasted code, serialized functions */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -33,79 +32,85 @@
 
 import { type Target } from "@/types/messengerTypes";
 import { forbidContext } from "@/utils/expectContext";
-import { executeFunction } from "webext-content-scripts";
+import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
 
-// These two must be synched in `getTargetState`
-const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for("content-script-injected");
-const CONTENT_SCRIPT_READY_SYMBOL = Symbol.for("content-script-ready");
+const CONTENT_SCRIPT_STATE_SYMBOL = Symbol.for("content-script-state");
 
-/** Communicates readiness to `ensureContentScript` */
-export const ENSURE_CONTENT_SCRIPT_READY =
-  "@@pixiebrix/script/ENSURE_CONTENT_SCRIPT_READY";
+/** Used by the content script to notify any listeners set by `waitForContentScript` */
+export const CONTENT_SCRIPT_READY_NOTIFICATION =
+  "CONTENT_SCRIPT_READY_NOTIFICATION";
+
+/** Used by the background (and others) to check whether the content script is ready */
+const CONTENT_SCRIPT_READINESS_CHECK = "CONTENT_SCRIPT_READINESS_CHECK";
+
+type ContentScriptState = undefined | "installed" | "ready";
 
 declare global {
   interface Window {
-    [CONTENT_SCRIPT_INJECTED_SYMBOL]?: true;
-    [CONTENT_SCRIPT_READY_SYMBOL]?: true;
+    [CONTENT_SCRIPT_STATE_SYMBOL]?: ContentScriptState;
   }
 }
 
-interface TargetState {
-  url: string;
-  installed: boolean;
-  ready: boolean;
+export function getContentScriptState(): ContentScriptState {
+  return window[CONTENT_SCRIPT_STATE_SYMBOL];
 }
 
-/**
- * Returns true iff the content script has been injected in the content script Javascript VM for the window.
- */
-export function isContentScriptInstalled(): boolean {
-  return CONTENT_SCRIPT_INJECTED_SYMBOL in window;
+export function setContentScriptState(newState: "installed" | "ready"): void {
+  const currentState = getContentScriptState();
+  if (newState === "installed") {
+    if (currentState != null) {
+      throw new Error(`Content script state already set to ${currentState}`);
+    }
+  } else if (newState === "ready") {
+    if (currentState !== "installed") {
+      throw new Error(
+        `Content script state must be "installed" to set it to "ready", but it's ${currentState}`,
+      );
+    }
+
+    // Notify `waitForContentScript` listeners, if any
+    void browser.runtime.sendMessage({
+      type: CONTENT_SCRIPT_READY_NOTIFICATION,
+    });
+
+    // Respond to any successive `waitForContentScript` pings
+    browser.runtime.onMessage.addListener(respondToReadinessChecks);
+  }
+
+  window[CONTENT_SCRIPT_STATE_SYMBOL] = newState;
 }
 
-/**
- * Mark that the content script has been injected in content script Javascript VM for the window.
- */
-export function setContentScriptInstalled(): void {
-  // eslint-disable-next-line security/detect-object-injection -- symbol
-  window[CONTENT_SCRIPT_INJECTED_SYMBOL] = true;
+// Do not use the Messenger, it cannot appear in this bundle
+export async function isTargetReady(target: Target): Promise<boolean> {
+  forbidContext("contentScript");
+  try {
+    const response = (await browser.tabs.sendMessage(
+      target.tabId,
+      {
+        type: CONTENT_SCRIPT_READINESS_CHECK,
+      },
+      { frameId: target.frameId },
+    )) as true | undefined;
+    // `undefined` means `chrome.runtime.onMessage.addListener` was called in that context, but no one answered this specific message
+    return response ?? false;
+  } catch {
+    // No content script in the target at all
+    return false;
+  }
 }
 
-export function isContentScriptReady(): boolean {
-  return CONTENT_SCRIPT_READY_SYMBOL in window;
+// eslint-disable-next-line @typescript-eslint/promise-function-async -- Message handlers must return undefined to "pass through", not Promise<undefined>
+function respondToReadinessChecks(message: unknown): Promise<true> | undefined {
+  if (
+    isRemoteProcedureCallRequest(message) &&
+    message.type === CONTENT_SCRIPT_READINESS_CHECK
+  ) {
+    // Do not return an unpromised `true` because `webextension-polyfill` handles it differently
+    return Promise.resolve(true);
+  }
 }
 
-export function setContentScriptReady(): void {
-  // eslint-disable-next-line security/detect-object-injection -- symbol
-  window[CONTENT_SCRIPT_READY_SYMBOL] = true;
-}
-
-/**
- * Fetches the URL and content script state from tab/frame
- * @throws Error if background page doesn't have permission to access the tab
- */
-export async function getTargetState(target: Target): Promise<TargetState> {
-  forbidContext(
-    "web",
-    "chrome.tabs is only available in chrome-extension:// pages",
-  );
-
-  return executeFunction(target, () => {
-    // This function does not have access to globals, the outside scope, nor `import()`
-    // These two symbols must be repeated inline
-    const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for(
-      "content-script-injected",
-    );
-
-    const CONTENT_SCRIPT_READY_SYMBOL = Symbol.for("content-script-ready");
-    return {
-      url: location.href,
-      installed: CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis,
-      ready: CONTENT_SCRIPT_READY_SYMBOL in globalThis,
-    };
-  });
-}
-
+// TODO: Move out of contentScript/ready.ts, it's unrelated logic
 let reloadOnNextNavigate = false;
 
 /**

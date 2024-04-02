@@ -34,6 +34,15 @@ beforeEach(async () => {
   appApiMock.reset();
   appApiMock.onPost("/api/events/").reply(201, {});
 
+  Object.defineProperty(global, "navigator", {
+    value: {
+      ...global.navigator,
+      userAgent: "Chrome",
+      vendor: "Google Inc.",
+    },
+    writable: true,
+  });
+
   browser.runtime.id = EXPECTED_RUNTIME_ID;
   browser.runtime.getManifest = jest
     .fn()

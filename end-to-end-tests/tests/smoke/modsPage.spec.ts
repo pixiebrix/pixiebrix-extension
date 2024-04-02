@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../fixtures/extensionBase";
-import { ModsPage } from "../pageObjects/modsPage";
+import { test, expect } from "../../fixtures/extensionBase";
+import { ModsPage } from "../../pageObjects/modsPage";
 import AxeBuilder from "@axe-core/playwright";
-import { checkForCriticalViolations, ensureVisibility } from "../utils";
+import { checkForCriticalViolations, ensureVisibility } from "../../utils";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 
