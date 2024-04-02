@@ -62,8 +62,8 @@ export const isSidePanelOpen = isMV3()
 /**
  * Determines whether the sidebar is open.
  * @returns false when it's definitely closed or 'unknown' when it cannot be determined,
- *   because the extra padding might be
- *   caused by the dev tools being open on the side or due to another sidebar
+ * because the extra padding might be
+ * caused by the dev tools being open on the side or due to another sidebar
  */
 // The type cannot be `undefined` due to strictNullChecks
 function isSidePanelOpenSync(): false | "unknown" {

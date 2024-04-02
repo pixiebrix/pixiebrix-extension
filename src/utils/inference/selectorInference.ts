@@ -664,9 +664,9 @@ export function findContainer(elements: HTMLElement[]): {
 }
 
 /**
- * @param name   Like "id", "data-test"
- * @param value  Like "main-nav", "user-sidebar"
- * @returns  Like "#main-nav", "[data-test='user-sidebar']"
+ * @param name Like "id", "data-test"
+ * @param value Like "main-nav", "user-sidebar"
+ * @returns Like "#main-nav", "[data-test='user-sidebar']"
  */
 export function getAttributeSelector(
   name: string,

@@ -39,8 +39,8 @@ function isPersistedState(
  * @param state a persisted redux state slice that may or may not be out of date
  * @param migrations the redux-persist migrations for the given state slice
  * @param inferPersistedVersion if needed, a function to infer the persisted version
- *    from the given state shape (states/slices to which versioning was added after this
- *    migrations architecture was created, should not need to utilize this infer function)
+ * from the given state shape (states/slices to which versioning was added after this
+ * migrations architecture was created, should not need to utilize this infer function)
  * @returns PersistedState the given state, if it is the latest version, otherwise an updated copy of the state
  */
 // Optional persisted state for backwards compatibility
