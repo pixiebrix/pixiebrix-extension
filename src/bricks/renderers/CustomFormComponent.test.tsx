@@ -129,4 +129,99 @@ describe("CustomFormComponent", () => {
       { submissionCount: 3 },
     );
   });
+
+  test("can reset on submit", async () => {
+    const initialValue = "";
+
+    // Testing the RjsfSubmitContext.Provider with the textarea widget which uses it to submit the form on enter
+    const schema: Schema = {
+      type: "object",
+      properties: {
+        prompt: { type: "string", title: "Prompt" },
+      },
+    };
+
+    const submitForm = jest.fn();
+    render(
+      <CustomFormComponent
+        schema={schema}
+        formData={{ prompt: initialValue }}
+        uiSchema={{}}
+        submitCaption="Save"
+        autoSave={false}
+        onSubmit={submitForm}
+        resetOnSubmit
+      />,
+    );
+
+    // Hidden:true because Stylesheets component sets hidden unless all stylesheets are loaded
+    const textBox = screen.getByRole("textbox", {
+      name: "Prompt",
+      hidden: true,
+    });
+
+    await userEvent.type(textBox, "Some text");
+
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(submitForm).toHaveBeenCalledWith(
+      { prompt: "Some text" },
+      { submissionCount: 1 },
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(submitForm).toHaveBeenCalledWith(
+      // Called with the initial value because the form was reset
+      { prompt: initialValue },
+      { submissionCount: 2 },
+    );
+  });
+
+  test("don't reset by default", async () => {
+    const initialValue = "";
+
+    // Testing the RjsfSubmitContext.Provider with the textarea widget which uses it to submit the form on enter
+    const schema: Schema = {
+      type: "object",
+      properties: {
+        prompt: { type: "string", title: "Prompt" },
+      },
+    };
+
+    const submitForm = jest.fn();
+    render(
+      <CustomFormComponent
+        schema={schema}
+        formData={{ prompt: initialValue }}
+        uiSchema={{}}
+        submitCaption="Save"
+        autoSave={false}
+        onSubmit={submitForm}
+      />,
+    );
+
+    // Hidden:true because Stylesheets component sets hidden unless all stylesheets are loaded
+    const textBox = screen.getByRole("textbox", {
+      name: "Prompt",
+      hidden: true,
+    });
+
+    await userEvent.type(textBox, "Some text");
+
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(submitForm).toHaveBeenCalledWith(
+      { prompt: "Some text" },
+      { submissionCount: 1 },
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(submitForm).toHaveBeenCalledWith(
+      // Called with the initial value because the form was reset
+      { prompt: "Some text" },
+      { submissionCount: 2 },
+    );
+  });
 });
