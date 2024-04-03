@@ -41,7 +41,7 @@ import {
 } from "@/types/runtimeTypes";
 import { RendererABC } from "@/types/bricks/rendererTypes";
 import { namespaceOptions } from "@/bricks/effects/pageState";
-import { ensureJsonObject, isObject } from "@/utils/objectUtils";
+import { assertObject, ensureJsonObject } from "@/utils/objectUtils";
 import { getOutputReference, validateOutputKey } from "@/runtime/runtimeTypes";
 import { type BrickConfig } from "@/bricks/types";
 import { isExpression } from "@/utils/expressionUtils";
@@ -66,19 +66,13 @@ export type Storage =
     }
   | StateStorage;
 
-function assertObject(value: unknown): asserts value is UnknownObject {
-  if (!isObject(value)) {
-    throw new BusinessError("Expected object for data");
-  }
-}
-
 type Context = { blueprintId: RegistryId | null; extensionId: UUID };
 
 /**
  * Action to perform after the onSubmit handler is executed.
  * @since 1.8.12
  */
-type PostSubmitAction = "save" | "reset";
+export type PostSubmitAction = "save" | "reset";
 
 export const CUSTOM_FORM_SCHEMA = {
   type: "object",
@@ -389,7 +383,7 @@ async function getInitialData(
   switch (storage.type) {
     case "localStorage": {
       const data = await dataStore.get(recordId);
-      assertObject(data);
+      assertObject(data, BusinessError);
       return data;
     }
 
@@ -416,7 +410,7 @@ async function getInitialData(
           missing_key: "blank",
         },
       });
-      assertObject(data);
+      assertObject(data, BusinessError);
       return data;
     }
 
