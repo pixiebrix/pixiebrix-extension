@@ -83,15 +83,15 @@ export function assertObject(
   ErrorCtor: new (...args: unknown[]) => Error = TypeError,
 ): asserts value is UnknownObject {
   if (!isObject(value)) {
-    throw new ErrorCtor("Expected object for data");
+    throw new ErrorCtor("expected object");
   }
 }
 
+/**
+ * @throws {TypeError} if the value is not an object
+ */
 export function ensureJsonObject(value: UnknownObject): JsonObject {
-  if (!isObject(value)) {
-    throw new TypeError("expected object");
-  }
-
+  assertObject(value);
   return JSON.parse(safeJsonStringify(value)) as JsonObject;
 }
 
