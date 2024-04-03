@@ -74,6 +74,12 @@ function assertObject(value: unknown): asserts value is UnknownObject {
 
 type Context = { blueprintId: RegistryId | null; extensionId: UUID };
 
+/**
+ * Action to perform after the onSubmit handler is executed.
+ * @since 1.8.12
+ */
+type PostSubmitAction = "save" | "reset";
+
 export const CUSTOM_FORM_SCHEMA = {
   type: "object",
   properties: {
@@ -142,7 +148,16 @@ export const CUSTOM_FORM_SCHEMA = {
     },
     onSubmit: {
       $ref: "https://app.pixiebrix.com/schemas/pipeline#",
-      description: "Action to perform when the form is submitted",
+      description: "Custom action to perform when the form is submitted",
+    },
+    // Added in 1.8.12 to enable resetting the form after submission, e.g., for chat/search-style interfaces
+    postSubmitAction: {
+      type: "string",
+      enum: ["save", "reset"],
+      title: "Post Submit Action",
+      description:
+        "Action to perform after the custom onSubmit handler is executed. Save will save the form data, reset will clear the form data",
+      default: "save",
     },
     successMessage: {
       type: "string",
@@ -239,6 +254,8 @@ export class CustomFormRenderer extends RendererABC {
       stylesheets = [],
       disableParentStyles,
       onSubmit,
+      // Default to save if not provided for backwards compatibility
+      postSubmitAction = "save",
     }: BrickArgs<{
       storage?: Storage;
       recordId?: string | null;
@@ -251,6 +268,7 @@ export class CustomFormRenderer extends RendererABC {
       stylesheets?: string[];
       disableParentStyles?: boolean;
       onSubmit?: PipelineExpression;
+      postSubmitAction?: PostSubmitAction;
     }>,
     { logger, runPipeline, platform }: BrickOptions,
   ): Promise<ComponentRef> {
@@ -285,7 +303,7 @@ export class CustomFormRenderer extends RendererABC {
       normalizedData,
     });
 
-    // Changed webpackChunkName to deconflict with the manual entry in webpack used to load in the stylesheets
+    // Changed webpackChunkName to de-conflict with the manual entry in webpack used to load in the stylesheets
     const { default: CustomFormComponent } = await import(
       /* webpackChunkName: "CustomFormRendererComponent" */
       "./CustomFormComponent"
@@ -303,6 +321,8 @@ export class CustomFormRenderer extends RendererABC {
         className,
         stylesheets,
         disableParentStyles,
+        // Option only applies if a custom onSubmit handler is provided
+        resetOnSubmit: onSubmit != null && postSubmitAction === "reset",
         async onSubmit(
           values: JsonObject,
           { submissionCount }: { submissionCount: number },
@@ -327,12 +347,19 @@ export class CustomFormRenderer extends RendererABC {
                   )]: normalizedValues,
                 },
               );
-            }
 
-            await setData(storage, recordId, normalizedValues, {
-              blueprintId,
-              extensionId,
-            });
+              if (postSubmitAction === "save") {
+                await setData(storage, recordId, normalizedValues, {
+                  blueprintId,
+                  extensionId,
+                });
+              }
+            } else {
+              await setData(storage, recordId, normalizedValues, {
+                blueprintId,
+                extensionId,
+              });
+            }
 
             if (!isEmpty(successMessage)) {
               platform.toasts.showNotification({

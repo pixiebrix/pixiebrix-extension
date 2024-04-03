@@ -41,6 +41,7 @@ import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
 import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import type { PipelineExpression } from "@/types/runtimeTypes";
 
 const recordIdSchema: Schema = {
   type: "string",
@@ -174,6 +175,10 @@ const FormSubmissionOptions: React.FC<{
   makeName: (...names: string[]) => string;
 }> = ({ makeName }) => {
   const [{ value: autoSave }] = useField<boolean>(makeName("autoSave"));
+  const [{ value: onSubmit }] = useField<PipelineExpression | null>(
+    makeName("onSubmit"),
+  );
+
   const hideSubmitButtonName = makeName(
     "uiSchema",
     "ui:submitButtonOptions",
@@ -220,9 +225,18 @@ const FormSubmissionOptions: React.FC<{
 
       <PipelineToggleField
         label="Custom Submit Handler"
-        description="Toggle on to run custom actions before the data is saved. Edit the actions in the Brick Actions Panel"
+        description="Toggle on to run custom actions before the data is saved/reset. Edit the actions in the Brick Actions Panel"
         name={makeName("onSubmit")}
       />
+
+      {onSubmit && (
+        <SchemaField
+          name={makeName("postSubmitAction")}
+          label="Post Submit Action"
+          schema={CUSTOM_FORM_SCHEMA.properties.postSubmitAction as Schema}
+          isRequired
+        />
+      )}
     </>
   );
 };
