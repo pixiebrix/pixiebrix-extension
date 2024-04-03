@@ -22,7 +22,7 @@ import { type CSSProperties } from "react";
 /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion --
 "Every property exists" (via Proxy), TypeScript doesn't offer such type
 Also strictNullChecks config mismatch */
-const ShadowRoot = EmotionShadowRoot.div!;
+const ShadowRoot = EmotionShadowRoot["pixiebrix-widget"]!;
 
 export const styleReset: CSSProperties = {
   all: "initial",

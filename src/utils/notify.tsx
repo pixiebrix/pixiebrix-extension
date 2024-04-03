@@ -17,7 +17,7 @@
 
 import styles from "./notify.module.scss";
 
-import React from "react";
+import React, { lazy } from "react";
 import { render } from "react-dom";
 import {
   type DefaultToastOptions,
@@ -40,6 +40,7 @@ import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebarDomController
 import ErrorIcon from "@/icons/error.svg?loadAsComponent";
 import WarningIcon from "@/icons/warning.svg?loadAsComponent";
 import type { Notification, NotificationType } from "@/utils/notificationTypes";
+import { IsolatedComponent } from "@/isolatedComponents/IsolatedComponent";
 
 const MINIMUM_NOTIFICATION_DURATION_MS = 2000;
 
@@ -126,6 +127,19 @@ export function initToaster(): void {
     error: toastStyle.error,
   };
   render(<Toaster {...{ containerStyle, toastOptions }} />, root);
+
+  const LazyButton = lazy(
+    async () =>
+      import(/* webpackChunkName: "Window" */ "@/isolatedComponents/Window"),
+  );
+
+  render(
+    <IsolatedComponent
+      webpackChunkName="Window"
+      LazyComponent={LazyButton}
+    ></IsolatedComponent>,
+    document.querySelector("ul"),
+  );
 }
 
 export function showNotification({
