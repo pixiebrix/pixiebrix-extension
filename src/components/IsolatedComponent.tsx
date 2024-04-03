@@ -29,18 +29,17 @@ const MODE = process.env.SHADOW_DOM as "open" | "closed";
  * Isolate component loaded via React.lazy() in a shadow DOM, including its styles.
  *
  * @example
- * const Component = React.lazy(() => import(
- *   /* webpackChunkName: Component /
- *   "./Component"
+ * const Moon = React.lazy(() => import(
+ *   /* webpackChunkName: Moon /
+ *   "./Moon"
  * ));
  *
  * render(
- *   <IsolatedComponent
- *     webpackChunkName="Component"
- *     className="my-class"
- *   ><Component/></IsolatedComponent>,
- *   document.querySelector('#container')
- * )
+ *   <IsolatedComponent webpackChunkName="Moon">
+ *     <Moon/>
+ *   </IsolatedComponent>,
+ *   document.querySelector('#container'),
+ * );
  */
 export const IsolatedComponent: React.VFC<{
   /**
@@ -54,13 +53,15 @@ export const IsolatedComponent: React.VFC<{
   children: JSX.Element;
 }> = ({ webpackChunkName, children, ...props }) => {
   const stylesheetUrl = chrome.runtime.getURL(`css/${webpackChunkName}.css`);
+
+  // Drop the stylesheet injected by `mini-css-extract-plugin` into the main document.
+  // This stylesheet is injected only once per document, so this observer might not
+  // be triggered for *every* instance of IsolatedComponent.
   useEffect(() => {
     const observer = new MutationObserver(() => {
       const link = document.head.querySelector<HTMLLinkElement>(
         `link[href="${stylesheetUrl}"]`,
       );
-
-      // TODO: Throw an error on timeout, the developer likely set the wrong webpackChunkName
 
       if (link) {
         // Disable stylesheet without removing it. Webpack still awaits its loading.

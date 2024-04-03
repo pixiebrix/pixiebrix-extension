@@ -16,7 +16,7 @@
  */
 
 import type AxeBuilder from "@axe-core/playwright";
-import { type Locator, expect, type Page, type Frame } from "@playwright/test";
+import { type Locator, expect, type Page, Frame } from "@playwright/test";
 import { MV } from "./env";
 
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
