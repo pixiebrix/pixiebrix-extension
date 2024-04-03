@@ -17,15 +17,52 @@
 
 import React, { Suspense, useEffect } from "react";
 import { Stylesheets } from "@/components/Stylesheets";
-import EmotionShadowRoot, { styleReset } from "@/components/EmotionShadowRoot";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
+import { css } from "code-tag";
 
 const MODE = process.env.SHADOW_DOM as "open" | "closed";
 
+const styleReset = css`
+  :host {
+    all: initial;
+    font: 16px / 1.5 sans-serif;
+    color-scheme: light;
+  }
+  :host::selection {
+    background: initial;
+  }
+`;
+
+/**
+ * Isolate component loaded via React.lazy() in a shadow DOM, including its styles.
+ *
+ * @example
+ * const Component = React.lazy(() => import(
+ *   /* webpackChunkName: Component /
+ *   "./Component"
+ * ));
+ *
+ * render(
+ *   <IsolatedComponent
+ *     webpackChunkName="Component"
+ *     className="my-class"
+ *   ><Component/></IsolatedComponent>,
+ *   document.querySelector('#container')
+ * )
+ */
 export const IsolatedComponent: React.VFC<{
-  LazyComponent: React.LazyExoticComponent<React.FC>;
+  /**
+   * It must match the `webpackChunkName` specified in the React.lazy import
+   */
   webpackChunkName: string;
+
+  /**
+   * It must be the result of React.lazy()
+   */
+  children: JSX.Element;
+
   className?: string;
-}> = ({ webpackChunkName, LazyComponent, ...props }) => {
+}> = ({ webpackChunkName, children, ...props }) => {
   const stylesheetUrl = chrome.runtime.getURL(`css/${webpackChunkName}.css`);
   useEffect(() => {
     const observer = new MutationObserver(([mutations]) => {
@@ -45,11 +82,10 @@ export const IsolatedComponent: React.VFC<{
   });
 
   return (
-    <EmotionShadowRoot style={styleReset} mode={MODE} {...props}>
+    <EmotionShadowRoot mode={MODE} {...props}>
+      <style>{styleReset}</style>
       <Stylesheets href={stylesheetUrl}>
-        <Suspense fallback={null}>
-          <LazyComponent />
-        </Suspense>
+        <Suspense fallback={null}>{children}</Suspense>
       </Stylesheets>
     </EmotionShadowRoot>
   );

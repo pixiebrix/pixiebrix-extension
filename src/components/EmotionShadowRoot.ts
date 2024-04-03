@@ -1,4 +1,8 @@
 /*
+eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion  --
+"Every property exists" (via Proxy), TypeScript doesn't offer such type
+Also strictNullChecks config mismatch */
+/*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,9 +23,11 @@
 import EmotionShadowRoot from "react-shadow/emotion";
 import { type CSSProperties } from "react";
 
-/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion --
-"Every property exists" (via Proxy), TypeScript doesn't offer such type
-Also strictNullChecks config mismatch */
+/**
+ * Wrap components in a shadow DOM. This isolates them from styles inherited from
+ * the host website. To support react-select and any future potential emotion
+ * components we used the emotion variant of the react-shadow library.
+ */
 const ShadowRoot = EmotionShadowRoot["pixiebrix-widget"]!;
 
 export const styleReset: CSSProperties = {
