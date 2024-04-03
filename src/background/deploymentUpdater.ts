@@ -642,7 +642,7 @@ async function activateDeploymentsInBackground({
   }
 
   if (deploymentsToManuallyActivate.length === 0) {
-    void removeDeploymentUpdatePrompt();
+    void hideUpdatePromptUntilNextAvailableUpdate();
   }
 
   // We only want to call openOptionsPage a single time
@@ -653,14 +653,17 @@ async function activateDeploymentsInBackground({
 
 /**
  * There is a prompt in the UI shown to the user to encourage them to manually activate and/or update deployments,
- * controlled by updatePromptTimestamp. Set updatePromptTimestamp to null to effectively hide the prompt.
+ * partially controlled by updatePromptTimestamp. Set updatePromptTimestamp to null to hide the modal until
+ * deployment updates are next available.
  *
  * - If there was a Browser Extension update, it would have been applied
  * - We don't currently separately track timestamps for showing an update modal for deployments vs. browser extension
  * upgrades. However, in enterprise scenarios where enforceUpdateMillis is set, the IT policy is generally such
  * that IT can't reset the extension.
+ *
+ * @see DeploymentModal
  */
-async function removeDeploymentUpdatePrompt() {
+async function hideUpdatePromptUntilNextAvailableUpdate() {
   const settings = await getSettingsState();
   const next = settingsSlice.reducer(
     settings,
@@ -675,7 +678,7 @@ function initDeploymentUpdater(): void {
   registerContribBlocks();
 
   setInterval(syncDeployments, UPDATE_INTERVAL_MS);
-  void removeDeploymentUpdatePrompt();
+  void hideUpdatePromptUntilNextAvailableUpdate();
   void syncDeployments();
 }
 
