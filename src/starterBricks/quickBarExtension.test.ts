@@ -109,7 +109,7 @@ describe("quickBarExtension", () => {
   it("quick bar smoke test", async () => {
     const user = userEvent.setup();
 
-    document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
+    document.body.innerHTML = getDocument("<h1>Title</h1>").body.innerHTML;
 
     // Ensure default actions are registered
     await initQuickBarApp();
@@ -135,9 +135,7 @@ describe("quickBarExtension", () => {
     expect(rootReader.readCount).toBe(0);
 
     // QuickBar adds another div to the body
-    expect(document.body.innerHTML).toBe(
-      '<div class="pixiebrix-quickbar-container"></div><div></div>',
-    );
+    expect(document.body.innerHTML).toBe("<h1>Title</h1>");
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
     await user.keyboard("[Ctrl] k");

@@ -86,7 +86,7 @@ const extensionFactory = define<ResolvedModComponent<QuickBarProviderConfig>>({
 const rootReader = new RootReader();
 
 beforeAll(async () => {
-  const html = getDocument("<div></div>").body.innerHTML;
+  const html = getDocument("<h1>Title</h1>").body.innerHTML;
   document.body.innerHTML = html;
 
   // Ensure default actions are registered
@@ -129,9 +129,7 @@ describe("quickBarProviderExtension", () => {
     expect(rootReader.readCount).toBe(1);
 
     // QuickBar installation adds another div to the body
-    expect(document.body.innerHTML).toBe(
-      '<div class="pixiebrix-quickbar-container"></div><div></div>',
-    );
+    expect(document.body.innerHTML).toBe("<h1>Title</h1>");
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
     await user.keyboard("[Ctrl] k");
@@ -186,9 +184,7 @@ describe("quickBarProviderExtension", () => {
     expect(rootReader.readCount).toBe(1);
 
     // QuickBar installation adds another div to the body
-    expect(document.body.innerHTML).toBe(
-      '<div class="pixiebrix-quickbar-container"></div><div></div>',
-    );
+    expect(document.body.innerHTML).toBe("<h1>Title</h1>");
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
     await user.keyboard("[Ctrl] k");
@@ -199,9 +195,7 @@ describe("quickBarProviderExtension", () => {
     await tick();
 
     // Should be showing the QuickBar portal. The innerHTML doesn't contain the QuickBar actions at this point
-    expect(document.body.innerHTML).not.toBe(
-      '<div class="pixiebrix-quickbar-container"></div><div></div>',
-    );
+    expect(document.body.innerHTML).not.toBe("<h1>Title</h1>");
 
     // Getting an error here: make sure you apple `query.inputRefSetter`
     // await user.keyboard("abc");

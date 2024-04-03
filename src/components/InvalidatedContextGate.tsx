@@ -20,18 +20,28 @@ import { Button } from "react-bootstrap";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
 import useDocumentVisibility from "@/hooks/useDocumentVisibility";
 
-const InvalidatedContextGate: React.FunctionComponent<{
-  contextNameTitleCase: string;
+type ContextInvalidatedProps = {
   autoReload?: boolean;
-}> = ({ children, contextNameTitleCase, autoReload }) => {
-  const wasContextInvalidated = useContextInvalidated();
+  emptyOnInvalidation?: boolean;
+  contextNameTitleCase?: string;
+};
+
+const ContextInvalidated: React.FunctionComponent<ContextInvalidatedProps> = ({
+  autoReload,
+  emptyOnInvalidation,
+  contextNameTitleCase = "Page",
+}) => {
   // Only auto-reload if the document is in the background
   const isDocumentVisible = useDocumentVisibility();
-  if (wasContextInvalidated && autoReload && !isDocumentVisible) {
+  if (autoReload && !isDocumentVisible) {
     location.reload();
   }
 
-  return wasContextInvalidated ? (
+  if (emptyOnInvalidation) {
+    return null;
+  }
+
+  return (
     <div className="d-flex flex-column align-items-center justify-content-center">
       <p>
         PixieBrix was updated or restarted. Reload the{" "}
@@ -45,6 +55,16 @@ const InvalidatedContextGate: React.FunctionComponent<{
         Reload {contextNameTitleCase}
       </Button>
     </div>
+  );
+};
+
+const InvalidatedContextGate: React.FunctionComponent<
+  ContextInvalidatedProps
+> = ({ children, ...props }) => {
+  const wasContextInvalidated = useContextInvalidated();
+
+  return wasContextInvalidated ? (
+    <ContextInvalidated {...props} />
   ) : (
     <>{children}</>
   );
