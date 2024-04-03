@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// This cannot be a CSS module because it must live inside the shadow DOM
-// and synchronously set the :host element style.
+// This cannot be a CSS module or URL because it must live inside the
+// shadow DOM and synchronously set the :host element style.
 import cssText from "./IsolatedComponent.scss?loadAsText";
 
 import React, { Suspense, useEffect } from "react";
@@ -24,6 +24,20 @@ import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 
 const MODE = process.env.SHADOW_DOM as "open" | "closed";
+
+function deactivateGlobalStyle(href: string): boolean {
+  const link = document.head.querySelector<HTMLLinkElement>(
+    `link[href="${href}"]`,
+  );
+
+  if (link) {
+    // Disable stylesheet without removing it. Webpack still awaits its loading.
+    link.media = "not all";
+    return true;
+  }
+
+  return false;
+}
 
 /**
  * Isolate component loaded via React.lazy() in a shadow DOM, including its styles.
@@ -55,17 +69,14 @@ export const IsolatedComponent: React.VFC<{
   const stylesheetUrl = chrome.runtime.getURL(`css/${webpackChunkName}.css`);
 
   // Drop the stylesheet injected by `mini-css-extract-plugin` into the main document.
-  // This stylesheet is injected only once per document, so this observer might not
-  // be triggered for *every* instance of IsolatedComponent.
   useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const link = document.head.querySelector<HTMLLinkElement>(
-        `link[href="${stylesheetUrl}"]`,
-      );
+    if (deactivateGlobalStyle(stylesheetUrl)) {
+      // This stylesheet is injected only once per document, don't await further injections.
+      return;
+    }
 
-      if (link) {
-        // Disable stylesheet without removing it. Webpack still awaits its loading.
-        link.media = "not all";
+    const observer = new MutationObserver(() => {
+      if (deactivateGlobalStyle(stylesheetUrl)) {
         observer.disconnect();
       }
     });
