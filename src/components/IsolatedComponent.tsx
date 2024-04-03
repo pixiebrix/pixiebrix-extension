@@ -61,6 +61,9 @@ export const IsolatedComponent: React.VFC<{
       const link = document.head.querySelector<HTMLLinkElement>(
         `link[href="${stylesheetUrl}"]`,
       );
+
+      // TODO: Throw an error on timeout, the developer likely set the wrong webpackChunkName
+
       if (link) {
         // Disable stylesheet without removing it. Webpack still awaits its loading.
         link.media = "not all";
