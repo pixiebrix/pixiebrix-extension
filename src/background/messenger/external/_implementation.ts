@@ -271,9 +271,8 @@ export async function openActivateModPage({
 
 /**
  * Open the Extension Console
- * @returns true
  */
-export async function openExtensionConsole(): Promise<boolean> {
+export async function openExtensionConsole(): Promise<true> {
   await browser.runtime.openOptionsPage();
   return true;
 }

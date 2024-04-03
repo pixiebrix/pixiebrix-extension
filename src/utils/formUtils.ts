@@ -58,7 +58,6 @@ export function joinName(
  * Works faster than joinName.
  * Use this one when there are no special characters in the name parts or
  * the parts contain already joined paths rather than individual property names
- * @param nameParts the parts of the name
  * @see joinName
  */
 export function joinPathParts(...nameParts: Array<string | number>): string {

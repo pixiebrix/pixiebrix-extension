@@ -157,7 +157,6 @@ function parseEncodedOptions(
 
 /**
  * Parse a mod activation URL into an array of mod ids and initial options.
- * @param searchParams the activation URL search params
  */
 export function parseModActivationUrlSearchParams(
   searchParams: URLSearchParams,

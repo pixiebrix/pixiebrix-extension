@@ -13,7 +13,6 @@ const QUOTA_ERRORS = [
 
 /**
  * Delete an IndexedDB database.
- * @param databaseName the database name
  * @throws Error if the database cannot be deleted because it is in use
  */
 export async function deleteDatabase(databaseName: string): Promise<void> {
