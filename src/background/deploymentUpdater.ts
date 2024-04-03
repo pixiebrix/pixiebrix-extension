@@ -213,8 +213,8 @@ async function deactivateMod(
   optionsState: ModComponentState,
   editorState: EditorState | undefined,
 ): Promise<{ options: ModComponentState; editor: EditorState | undefined }> {
-  let options = optionsState;
-  let editor = editorState;
+  let _optionsState = optionsState;
+  let _editorState = editorState;
 
   const modComponentsForModSelector = selectModComponentsForMod(modId);
   const activatedModComponentsForMod = modComponentsForModSelector({
@@ -224,14 +224,14 @@ async function deactivateMod(
   for (const activatedModComponent of activatedModComponentsForMod) {
     const result = deactivateModComponentFromStates(
       activatedModComponent.id,
-      options,
-      editor,
+      _optionsState,
+      _editorState,
     );
-    options = result.options;
-    editor = result.editor;
+    _optionsState = result.options;
+    _editorState = result.editor;
   }
 
-  return { options, editor };
+  return { options: _optionsState, editor: _editorState };
 }
 
 async function activateDeployment({
@@ -246,8 +246,8 @@ async function activateDeployment({
   options: ModComponentState;
   editor: EditorState | undefined;
 }> {
-  let options = optionsState;
-  let editor = editorState;
+  let _optionsState = optionsState;
+  let _editorState = editorState;
   const { deployment, modDefinition } = activatableDeployment;
 
   const isAlreadyActivated = optionsState.extensions.some(
@@ -258,16 +258,16 @@ async function activateDeployment({
   // Deactivate existing mod component versions
   const result = await deactivateMod(
     deployment.package.package_id,
-    options,
-    editor,
+    _optionsState,
+    _editorState,
   );
 
-  options = result.options;
-  editor = result.editor;
+  _optionsState = result.options;
+  _editorState = result.editor;
 
   // Activate the deployed mod with the service definition
-  options = optionsReducer(
-    options,
+  _optionsState = optionsReducer(
+    _optionsState,
     optionsActions.activateMod({
       modDefinition,
       deployment,
@@ -287,7 +287,7 @@ async function activateDeployment({
     auto: true,
   });
 
-  return { options, editor };
+  return { options: _optionsState, editor: _editorState };
 }
 
 /**
