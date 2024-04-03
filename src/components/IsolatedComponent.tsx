@@ -52,8 +52,6 @@ export const IsolatedComponent: React.VFC<{
    * It must be the result of React.lazy()
    */
   children: JSX.Element;
-
-  className?: string;
 }> = ({ webpackChunkName, children, ...props }) => {
   const stylesheetUrl = chrome.runtime.getURL(`css/${webpackChunkName}.css`);
   useEffect(() => {
@@ -77,7 +75,8 @@ export const IsolatedComponent: React.VFC<{
   });
 
   return (
-    <EmotionShadowRoot mode={MODE} {...props}>
+    // `pb-name` used to visually identify it in the Chrome DevTools
+    <EmotionShadowRoot mode={MODE} pb-name={webpackChunkName} {...props}>
       <style>{cssText}</style>
       <Stylesheets href={stylesheetUrl}>
         <Suspense fallback={null}>{children}</Suspense>

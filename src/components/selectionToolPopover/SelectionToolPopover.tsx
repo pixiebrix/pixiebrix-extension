@@ -14,19 +14,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import "@/vendors/bootstrapWithoutRem.css";
+import "bootstrap-switch-button-react/src/style.css";
+import styles from "./SelectionToolPopover.module.scss";
 
 import React, { type ChangeEvent, useEffect, useState } from "react";
-import ReactDOM from "react-dom";
-import bootstrap from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import Draggable from "react-draggable";
-import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import switchStyle from "@/components/form/widgets/switchButton/SwitchButtonWidget.module.scss?loadAsUrl";
-import switchButtonStyle from "bootstrap-switch-button-react/src/style.css?loadAsUrl";
-import custom from "./SelectionToolPopover.module.scss?loadAsUrl";
-import { Stylesheets } from "@/components/Stylesheets";
 import { Button, FormLabel } from "react-bootstrap";
 import pluralize from "@/utils/pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -66,100 +62,63 @@ const SelectionToolPopover: React.FC<{
   }, [setSelectionHandler]);
 
   return (
-    // To support react-select and any future potential emotion components we used the
-    // emotion variant of the react-shadow library.
+    <Draggable>
+      <div className={styles.root}>
+        <div className={styles.header}>
+          <FontAwesomeIcon icon={faGripHorizontal} size="1x" />
+          {`Selection Tool: ${matchingCount} ${pluralize(
+            matchingCount,
+            "matching element",
+            "matching elements",
+          )}`}
+        </div>
+        <div className={styles.body}>
+          <SwitchButtonWidget
+            name="allowMulti"
+            value={multiEnabled}
+            onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+              setMultiEnabled(target.value);
+              if (!target.value) {
+                setSimilarEnabled(false);
+              }
 
-    <EmotionShadowRoot>
-      <Stylesheets href={[bootstrap, switchStyle, switchButtonStyle, custom]}>
-        <Draggable>
-          <div className="popover-wrapper">
-            <div className="popover-wrapper-header">
-              <FontAwesomeIcon icon={faGripHorizontal} size="1x" />
-              {`Selection Tool: ${matchingCount} ${pluralize(
-                matchingCount,
-                "matching element",
-                "matching elements",
-              )}`}
-            </div>
-            <div className="d-flex align-items-center popover-wrapper-body">
+              onChangeMultiSelection(target.value);
+            }}
+          />
+          <FormLabel className="align-middle mx-3 mb-0">
+            Select Multiple
+          </FormLabel>
+
+          {multiEnabled && (
+            <>
               <SwitchButtonWidget
-                name="allowMulti"
-                value={multiEnabled}
+                name="allowSimilar"
+                value={similarEnabled}
                 onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-                  setMultiEnabled(target.value);
-                  if (!target.value) {
-                    setSimilarEnabled(false);
-                  }
-
-                  onChangeMultiSelection(target.value);
+                  setSimilarEnabled(target.value);
+                  onChangeSimilarSelection(target.value);
                 }}
               />
               <FormLabel className="align-middle mx-3 mb-0">
-                Select Multiple
+                Select Similar
               </FormLabel>
+            </>
+          )}
 
-              {multiEnabled && (
-                <>
-                  <SwitchButtonWidget
-                    name="allowSimilar"
-                    value={similarEnabled}
-                    onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-                      setSimilarEnabled(target.value);
-                      onChangeSimilarSelection(target.value);
-                    }}
-                  />
-                  <FormLabel className="align-middle mx-3 mb-0">
-                    Select Similar
-                  </FormLabel>
-                </>
-              )}
-
-              <Button size="sm" variant="info" onClick={onCancel}>
-                Cancel
-              </Button>
-              <Button
-                className="info ml-1"
-                size="sm"
-                variant="primary"
-                onClick={onDone}
-              >
-                Done
-              </Button>
-            </div>
-          </div>
-        </Draggable>
-      </Stylesheets>
-    </EmotionShadowRoot>
-  );
-};
-
-export const showSelectionToolPopover = ({
-  rootElement,
-  isMulti,
-  handleCancel,
-  handleDone,
-  handleMultiChange,
-  handleSimilarChange,
-  setSelectionHandler,
-}: {
-  rootElement: HTMLElement;
-  isMulti: boolean;
-  handleCancel: () => void;
-  handleDone: () => void;
-  handleMultiChange: (value: boolean) => void;
-  handleSimilarChange: (value: boolean) => void;
-  setSelectionHandler: SetSelectionHandlerType;
-}) => {
-  ReactDOM.render(
-    <SelectionToolPopover
-      isMulti={isMulti}
-      onDone={handleDone}
-      onCancel={handleCancel}
-      onChangeMultiSelection={handleMultiChange}
-      onChangeSimilarSelection={handleSimilarChange}
-      setSelectionHandler={setSelectionHandler}
-    />,
-    rootElement,
+          <Button size="sm" variant="info" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button
+            className="info ml-1"
+            size="sm"
+            variant="primary"
+            onClick={onDone}
+          >
+            Done
+          </Button>
+        </div>
+      </div>
+    </Draggable>
   );
 };
 
