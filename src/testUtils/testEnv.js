@@ -21,6 +21,7 @@ import { TextEncoder, TextDecoder } from "node:util";
 // eslint-disable-next-line import/no-unassigned-import -- It's a polyfill
 import "urlpattern-polyfill";
 
+process.env.SHADOW_ROOT = "open";
 process.env.SERVICE_URL = "https://app.pixiebrix.com";
 process.env.MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace/";
 

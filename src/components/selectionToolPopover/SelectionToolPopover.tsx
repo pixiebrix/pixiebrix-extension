@@ -29,7 +29,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGripHorizontal } from "@fortawesome/free-solid-svg-icons";
 
 export type SelectionHandlerType = (count: number) => void;
-type SetSelectionHandlerType = (handler: SelectionHandlerType | null) => void;
+export type SetSelectionHandlerType = (
+  handler: SelectionHandlerType | null,
+) => void;
 
 const SelectionToolPopover: React.FC<{
   isMulti: boolean;

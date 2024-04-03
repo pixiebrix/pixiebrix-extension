@@ -17,7 +17,7 @@
  */
 
 import Overlay from "@/vendors/Overlay";
-import ReactDOM, { render } from "react-dom";
+import ReactDOM from "react-dom";
 import {
   expandedCssSelector,
   findContainer,
@@ -37,8 +37,7 @@ import { $safeFind, findSingleElement } from "@/utils/domUtils";
 import inferSingleElementSelector from "@/utils/inference/inferSingleElementSelector";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { onContextInvalidated } from "webext-events";
-import React from "react";
-import { IsolatedComponent } from "@/components/IsolatedComponent";
+import showSelectionToolPopover from "@/components/selectionToolPopover/showSelectionToolPopover";
 
 /**
  * Primary overlay that moved with the user's mouse/selection.
@@ -381,26 +380,15 @@ export async function userSelectElement({
       // Hide the FAB so it doesn't conflict with the selection tool. Is a NOP if the FAB is not on the page
       $(`#${FLOATING_ACTION_BUTTON_CONTAINER_ID}`).hide();
 
-      const SelectionToolPopover = React.lazy(
-        async () =>
-          import(
-            /* webpackChunkName: "SelectionToolPopover" */ "@/components/selectionToolPopover/SelectionToolPopover"
-          ),
-      );
-
-      render(
-        <IsolatedComponent webpackChunkName="SelectionToolPopover">
-          <SelectionToolPopover
-            isMulti={isMulti}
-            onCancel={cancel}
-            onDone={handleDone}
-            onChangeMultiSelection={handleMultiSelectionChange}
-            onChangeSimilarSelection={handleSimilarSelectionChange}
-            setSelectionHandler={setSelectionHandler}
-          />
-        </IsolatedComponent>,
-        multiSelectionToolElement,
-      );
+      showSelectionToolPopover({
+        rootElement: multiSelectionToolElement,
+        isMulti,
+        onCancel: cancel,
+        onDone: handleDone,
+        onChangeMultiSelection: handleMultiSelectionChange,
+        onChangeSimilarSelection: handleSimilarSelectionChange,
+        setSelectionHandler,
+      });
     }
 
     function removeMultiSelectionTool() {

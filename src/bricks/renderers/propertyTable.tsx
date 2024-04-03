@@ -22,7 +22,7 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { isValidUrl } from "@/utils/urlUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { IsolatedComponent } from "@/components/IsolatedComponent";
-import TreeNode from "primereact/treenode";
+import type TreeNode from "primereact/treenode";
 
 interface Item {
   key: string;
