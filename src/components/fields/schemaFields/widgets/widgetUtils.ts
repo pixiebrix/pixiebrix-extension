@@ -20,7 +20,6 @@ import { isEmpty } from "lodash";
 
 /**
  * Return true if the schema allows user to provide custom properties.
- * @param objectSchema the object schema
  */
 export function isCustomizableObjectSchema(objectSchema: Schema): boolean {
   // Allow additional properties for empty schema (empty schema allows shape)

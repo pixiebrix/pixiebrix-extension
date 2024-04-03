@@ -102,13 +102,16 @@ const IntegrationAuthSelector: React.FunctionComponent<{
       auth_sharing_type: sharingType,
       auth_is_local: local,
     };
-    // eslint-disable-next-line security/detect-object-injection -- UUID, does not come from user input
-    const integrationConfig = integrationConfigs[value];
-    if (integrationConfig) {
-      eventPayload = {
-        ...eventPayload,
-        ...sanitizeConfigArgs(integrationConfig.config),
-      };
+
+    if (value) {
+      // eslint-disable-next-line security/detect-object-injection -- Not a user-provided value
+      const integrationConfig = integrationConfigs[value];
+      if (integrationConfig) {
+        eventPayload = {
+          ...eventPayload,
+          ...sanitizeConfigArgs(integrationConfig.config),
+        };
+      }
     }
 
     reportEvent(Events.AUTH_WIDGET_SELECT, eventPayload);
@@ -132,7 +135,7 @@ const IntegrationAuthSelector: React.FunctionComponent<{
     }
 
     // Automatically default the field value if there's only one option available
-    await helpers.setValue(option.value);
+    await helpers.setValue(option.value ?? null);
     void reportSelectEvent(option, false);
   }, [helpers, authOptions, field.value]);
 
@@ -166,7 +169,7 @@ const IntegrationAuthSelector: React.FunctionComponent<{
           }
 
           console.debug(`Selected option ${option.value} (${option.label})`);
-          await helpers.setValue(option.value);
+          await helpers.setValue(option.value ?? null);
           void reportSelectEvent(option, true);
         }}
       />

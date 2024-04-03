@@ -133,8 +133,6 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
 
 /**
  * React Component Panel to automatically activate multiple mods and show a success message.
- * @param modId the mod id
- *
  * @since 1.7.35
  */
 const ActivateMultipleModsPanel: React.FC<{ mods: ModActivationConfig[] }> = ({

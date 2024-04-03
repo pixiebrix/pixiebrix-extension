@@ -20,6 +20,8 @@ import {
   type ThemeName,
   THEME_NAMES,
 } from "@/themes/themeTypes";
+import betaLogo from "@img/beta-logo.svg";
+import betaLogoSmall from "@img/beta-logo-small.svg";
 import logo from "@img/logo.svg";
 import logoSmall from "@img/logo-small.svg";
 import aaLogo from "@img/aa-logo.svg";
@@ -42,6 +44,10 @@ type ThemeLogoMap = {
 };
 
 export const THEME_LOGOS: ThemeLogoMap = {
+  beta: {
+    regular: betaLogo,
+    small: betaLogoSmall,
+  },
   default: {
     regular: logo,
     small: logoSmall,

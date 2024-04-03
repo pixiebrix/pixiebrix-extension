@@ -57,7 +57,6 @@ export function getReferenceForElement(
 
 /**
  * Return the element for a given reference id.
- * @param id the element reference
  */
 export function getElementForReference(
   id: ElementReference,

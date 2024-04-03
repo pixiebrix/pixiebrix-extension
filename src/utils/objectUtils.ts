@@ -68,7 +68,6 @@ export function deepPickBy(
 
 /**
  * Returns true if value is non-null and has a typeof "object". Also returns true for arrays.
- * @param value the value.
  */
 export function isObject(value: unknown): value is UnknownObject {
   return Boolean(value) && typeof value === "object";
