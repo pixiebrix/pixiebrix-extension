@@ -265,9 +265,12 @@ export async function validateBrickInputOutput(
   // first input argument.
   const validatorSchema = cloneDeep(schema);
 
+  // Must pass a baseUrl because otherwise $RefParser.resolve will throw when running in an `about:srcdoc` iframe
+  const baseUrl = "https://app.pixiebrix.com/schemas/base";
+
   // The @cfworker/json-schema Validator supports $ref, so we don't need to
   // dereference the schema, we can just resolve the integration and built-in refs.
-  const refs = await $RefParser.resolve(validatorSchema, {
+  const refs = await $RefParser.resolve(baseUrl, validatorSchema, {
     resolve: {
       // Exclude secret properties, because they aren't passed to the runtime
       integrationDefinitionResolver: integrationResolverFactory({
