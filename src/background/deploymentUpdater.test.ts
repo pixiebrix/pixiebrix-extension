@@ -131,6 +131,7 @@ beforeEach(async () => {
   } as any);
 
   await resetManagedStorage();
+  refreshRegistriesMock.mockReset();
 });
 
 afterEach(async () => {
@@ -824,7 +825,6 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
     const { extensions: activatedModComponents } = await getModComponentState();
-    console.log("activatedModComponents", activatedModComponents);
     expect(activatedModComponents).toHaveLength(1);
     expect(activatedModComponents[0]._recipe.id).toBe(
       deployment.package.package_id,
@@ -863,6 +863,5 @@ describe("syncDeployments", () => {
     expect(expectedModComponents[0]._recipe.id).toBe(
       updatedDeployment.package.package_id,
     );
-    console.log("expectedModComponents", expectedModComponents);
   });
 });
