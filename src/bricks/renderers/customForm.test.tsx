@@ -33,6 +33,7 @@ import { dataStore } from "@/background/messenger/strict/api";
 import { type Schema } from "@/types/schemaTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
+import { toExpression } from "@/utils/expressionUtils";
 
 const dataStoreGetMock = jest.mocked(dataStore.get);
 
@@ -201,7 +202,7 @@ describe("form data normalization", () => {
 });
 
 describe("CustomFormRenderer", () => {
-  test("Render autosaved form", async () => {
+  test("Render auto-saved form", async () => {
     const brick = new CustomFormRenderer();
 
     dataStoreGetMock.mockResolvedValue({});
@@ -225,6 +226,44 @@ describe("CustomFormRenderer", () => {
 
     expect(screen.queryByText("Submit")).not.toBeInTheDocument();
     expect(screen.getByRole("textbox", { hidden: true })).toBeInTheDocument();
+  });
+
+  test("Supports postSubmitAction reset", async () => {
+    const brick = new CustomFormRenderer();
+    const runPipelineMock = jest.fn();
+
+    dataStoreGetMock.mockResolvedValue({});
+
+    const { Component, props } = await brick.render(
+      {
+        storage: { type: "localStorage" },
+        recordId: "test",
+        onSubmit: toExpression("pipeline", []),
+        postSubmitAction: "reset",
+        submitCaption: "Submit",
+        uiSchema: {
+          "ui:submitButtonOptions": { label: "Submit" },
+        },
+        schema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+          },
+        },
+      } as any,
+      brickOptionsFactory({ runPipeline: () => runPipelineMock }),
+    );
+
+    render(<Component {...props} />);
+
+    // Is hidden because fields only show up once CSS is loaded
+    const textBox = screen.getByRole("textbox");
+    await userEvent.type(textBox, "Some text");
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+    expect(runPipelineMock).toHaveBeenCalledOnce();
+    // Value should get reset
+    expect(textBox).toHaveValue("");
   });
 
   test("is page state aware", async () => {

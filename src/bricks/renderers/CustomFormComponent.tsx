@@ -76,12 +76,6 @@ const CustomFormComponent: React.FunctionComponent<{
   stylesheets: newStylesheets,
   disableParentStyles = false,
 }) => {
-  // Must use a React key to reset the form: https://github.com/rjsf-team/react-jsonschema-form/issues/953
-  const [key, setKey] = useState(0);
-  const resetForm = (): void => {
-    setKey((prev) => prev + 1);
-  };
-
   // Use useRef instead of useState because we don't need/want a re-render when count changes
   // This ref is used to track the onSubmit run number for runtime tracing
   const submissionCountRef = useRef(0);
@@ -92,6 +86,14 @@ const CustomFormComponent: React.FunctionComponent<{
     // XXX: is there a reason this is in a useEffect? Is it to prevent issues with defaulting to `{}`?
     valuesRef.current = formData ?? {};
   }, [formData]);
+
+  // Use a React key to reset the form: https://github.com/rjsf-team/react-jsonschema-form/issues/953
+  const [key, setKey] = useState(0);
+  const resetForm = (): void => {
+    // Ensure valuesRef is in sync with the initial data passed to the form
+    valuesRef.current = formData;
+    setKey((prev) => prev + 1);
+  };
 
   const { stylesheets } = useStylesheetsContextWithFormDefault({
     newStylesheets,
