@@ -28,7 +28,8 @@ import { type CSSProperties } from "react";
  * the host website. To support react-select and any future potential emotion
  * components we used the emotion variant of the react-shadow library.
  */
-const ShadowRoot = EmotionShadowRoot["pixiebrix-widget"]!;
+const ShadowRoot = EmotionShadowRoot.div!;
+// TODO: Use EmotionShadowRoot["pixiebrix-widget"] to avoid any CSS conflicts. Requires snapshot/test updates
 
 export const styleReset: CSSProperties = {
   all: "initial",

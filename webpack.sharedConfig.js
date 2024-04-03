@@ -116,6 +116,10 @@ const shared = {
         type: "asset/source",
       },
       {
+        resourceQuery: /loadAsText/,
+        type: "asset/source",
+      },
+      {
         // CSS-only, must include .css or else it may output .scss files
         test: /\.s?css$/,
         resourceQuery: /loadAsUrl/,

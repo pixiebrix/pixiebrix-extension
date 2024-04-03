@@ -15,23 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// This cannot be a CSS module because it must live inside the shadow DOM
+// and synchronously set the :host element style.
+import cssText from "./IsolatedComponent.scss?loadAsText";
+
 import React, { Suspense, useEffect } from "react";
 import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
-import { css } from "code-tag";
 
 const MODE = process.env.SHADOW_DOM as "open" | "closed";
-
-const styleReset = css`
-  :host {
-    all: initial;
-    font: 16px / 1.5 sans-serif;
-    color-scheme: light;
-  }
-  :host::selection {
-    background: initial;
-  }
-`;
 
 /**
  * Isolate component loaded via React.lazy() in a shadow DOM, including its styles.
@@ -65,7 +57,7 @@ export const IsolatedComponent: React.VFC<{
 }> = ({ webpackChunkName, children, ...props }) => {
   const stylesheetUrl = chrome.runtime.getURL(`css/${webpackChunkName}.css`);
   useEffect(() => {
-    const observer = new MutationObserver(([mutations]) => {
+    const observer = new MutationObserver(() => {
       const link = document.head.querySelector<HTMLLinkElement>(
         `link[href="${stylesheetUrl}"]`,
       );
@@ -83,7 +75,7 @@ export const IsolatedComponent: React.VFC<{
 
   return (
     <EmotionShadowRoot mode={MODE} {...props}>
-      <style>{styleReset}</style>
+      <style>{cssText}</style>
       <Stylesheets href={stylesheetUrl}>
         <Suspense fallback={null}>{children}</Suspense>
       </Stylesheets>
