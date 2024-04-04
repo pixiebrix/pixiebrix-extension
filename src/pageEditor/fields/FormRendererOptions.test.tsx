@@ -7,8 +7,8 @@ import React from "react";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import userEvent from "@testing-library/user-event";
 import FormRendererOptions from "@/pageEditor/fields/FormRendererOptions";
+import { toggleBootstrapSwitch } from "@/testUtils/userEventHelpers";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -62,15 +62,16 @@ describe("FormRendererOptions", () => {
 
     await waitForEffect();
 
-    const element = screen.getByText("Custom Submit Handler");
+    // FIXME: is something defaulting the onSubmit pipeline to be toggled to be an empty pipeline?
+    expect(screen.queryByText(/save data/i)).not.toBeVisible();
 
-    // TODO: fix a11y of bootstrap-switch-button-react so we can target in tests
-    // eslint-disable-next-line testing-library/no-node-access -- use of bootstrap-switch-button-react is not accessible
-    const fieldGroup = element.nextSibling as HTMLElement;
-    // eslint-disable-next-line testing-library/no-node-access -- use of bootstrap-switch-button-react is not accessible
-    await userEvent.click(fieldGroup.querySelector(".switch"));
+    await toggleBootstrapSwitch("Custom Submit Handler");
 
     // Field defaults to save data
-    expect(screen.getByText(/save data/i)).toBeInTheDocument();
+    expect(screen.getByText(/save data/i)).toBeVisible();
+
+    await toggleBootstrapSwitch("Custom Submit Handler");
+
+    expect(screen.queryByText(/save data/i)).not.toBeVisible();
   });
 });
