@@ -180,7 +180,7 @@ describe("DeploymentsContext", () => {
         <Component />
       </DeploymentsProvider>,
       {
-        setupRedux: (dispatch) => {
+        setupRedux(dispatch) {
           dispatch(
             extensionsSlice.actions.activateMod({
               modDefinition: oldModDefinition,
@@ -222,7 +222,7 @@ describe("DeploymentsContext", () => {
         <Component />
       </DeploymentsProvider>,
       {
-        setupRedux: (dispatch) => {
+        setupRedux(dispatch) {
           dispatch(
             extensionsSlice.actions.activateMod({
               modDefinition,
