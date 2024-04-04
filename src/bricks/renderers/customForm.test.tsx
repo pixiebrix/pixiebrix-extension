@@ -225,7 +225,7 @@ describe("CustomFormRenderer", () => {
     render(<Component {...props} />);
 
     expect(screen.queryByText("Submit")).not.toBeInTheDocument();
-    expect(screen.getByRole("textbox", { hidden: true })).toBeInTheDocument();
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
   });
 
   test("Supports postSubmitAction reset", async () => {
@@ -256,15 +256,55 @@ describe("CustomFormRenderer", () => {
 
     render(<Component {...props} />);
 
-    // Is hidden because fields only show up once CSS is loaded
     const textBox = screen.getByRole("textbox");
     await userEvent.type(textBox, "Some text");
+    expect(textBox).toHaveValue("Some text");
     await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(runPipelineMock).toHaveBeenCalledOnce();
-    // Value should get reset
-    expect(textBox).toHaveValue("");
+    // Need to get new textbox reference, because the old one is removed when the key changes
+    expect(screen.getByRole("textbox")).toHaveValue("");
   });
+
+  test.each(["undefined", "save"])(
+    "postSubmitAction: %s doesn't reset",
+    async (postSubmitAction) => {
+      const brick = new CustomFormRenderer();
+      const runPipelineMock = jest.fn();
+
+      dataStoreGetMock.mockResolvedValue({});
+
+      const { Component, props } = await brick.render(
+        {
+          storage: { type: "localStorage" },
+          recordId: "test",
+          onSubmit: toExpression("pipeline", []),
+          postSubmitAction,
+          submitCaption: "Submit",
+          uiSchema: {
+            "ui:submitButtonOptions": { label: "Submit" },
+          },
+          schema: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+            },
+          },
+        } as any,
+        brickOptionsFactory({ runPipeline: () => runPipelineMock }),
+      );
+
+      render(<Component {...props} />);
+
+      const textBox = screen.getByRole("textbox");
+      await userEvent.type(textBox, "Some text");
+      await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+      expect(runPipelineMock).toHaveBeenCalledOnce();
+      // Need to get new textbox reference, because the old one is removed if/when the key changes
+      expect(screen.getByRole("textbox")).toHaveValue("Some text");
+    },
+  );
 
   test("is page state aware", async () => {
     const brick = new CustomFormRenderer();
