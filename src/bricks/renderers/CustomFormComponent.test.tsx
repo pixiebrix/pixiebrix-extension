@@ -133,7 +133,6 @@ describe("CustomFormComponent", () => {
   test("can reset on submit", async () => {
     const initialValue = "";
 
-    // Testing the RjsfSubmitContext.Provider with the textarea widget which uses it to submit the form on enter
     const schema: Schema = {
       type: "object",
       properties: {
@@ -154,10 +153,8 @@ describe("CustomFormComponent", () => {
       />,
     );
 
-    // Hidden:true because Stylesheets component sets hidden unless all stylesheets are loaded
     const textBox = screen.getByRole("textbox", {
       name: "Prompt",
-      hidden: true,
     });
 
     await userEvent.type(textBox, "Some text");
@@ -181,7 +178,6 @@ describe("CustomFormComponent", () => {
   test("don't reset by default", async () => {
     const initialValue = "";
 
-    // Testing the RjsfSubmitContext.Provider with the textarea widget which uses it to submit the form on enter
     const schema: Schema = {
       type: "object",
       properties: {
@@ -201,10 +197,8 @@ describe("CustomFormComponent", () => {
       />,
     );
 
-    // Hidden:true because Stylesheets component sets hidden unless all stylesheets are loaded
     const textBox = screen.getByRole("textbox", {
       name: "Prompt",
-      hidden: true,
     });
 
     await userEvent.type(textBox, "Some text");
@@ -219,7 +213,7 @@ describe("CustomFormComponent", () => {
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
 
     expect(submitForm).toHaveBeenCalledWith(
-      // Called with the initial value because the form was reset
+      // Called with same value because the form was not reset
       { prompt: "Some text" },
       { submissionCount: 2 },
     );
