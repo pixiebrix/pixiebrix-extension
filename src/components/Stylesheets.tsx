@@ -33,10 +33,14 @@ export const Stylesheets: React.FC<{
    */
   mountOnLoad?: boolean;
 }> = ({ href, children, mountOnLoad = false }) => {
-  const urls = uniq(castArray(href));
   const [resolved, setResolved] = useState<string[]>([]);
+  if (href.length === 0) {
+    // Shortcut if no stylesheets are needed
+    return <>{children}</>;
+  }
 
   // `every` returns true for empty arrays
+  const urls = uniq(castArray(href));
   const allResolved = urls.every((url) => resolved.includes(url));
 
   return (

@@ -62,14 +62,28 @@ export const IsolatedComponent: React.VFC<{
   webpackChunkName: string;
 
   /**
+   * If true, the component will not attempt to load the stylesheet.
+   *
+   * @example <IsolatedComponent webpackChunkName="Moon" noStyle>
+   */
+  noStyle?: boolean;
+
+  /**
    * It must be the result of React.lazy()
    */
   children: JSX.Element;
-}> = ({ webpackChunkName, children, ...props }) => {
-  const stylesheetUrl = chrome.runtime.getURL(`css/${webpackChunkName}.css`);
+}> = ({ webpackChunkName, children, noStyle, ...props }) => {
+  const stylesheetUrl = noStyle
+    ? null
+    : chrome.runtime.getURL(`css/${webpackChunkName}.css`);
 
   // Drop the stylesheet injected by `mini-css-extract-plugin` into the main document.
   useEffect(() => {
+    if (!stylesheetUrl) {
+      // This component doesn't generate any stylesheets
+      return;
+    }
+
     if (deactivateGlobalStyle(stylesheetUrl)) {
       // This stylesheet is injected only once per document, don't await further injections.
       return;
@@ -87,10 +101,10 @@ export const IsolatedComponent: React.VFC<{
   });
 
   return (
-    // `pb-name` used to visually identify it in the Chrome DevTools
+    // `pb-name` is used to visually identify it in the dev tools
     <EmotionShadowRoot mode={MODE} pb-name={webpackChunkName} {...props}>
       <style>{cssText}</style>
-      <Stylesheets href={stylesheetUrl}>
+      <Stylesheets href={stylesheetUrl ?? []}>
         <Suspense fallback={null}>{children}</Suspense>
       </Stylesheets>
     </EmotionShadowRoot>
