@@ -182,6 +182,8 @@ function mapBotOutput(value: OutputValue): BotOutput {
 
     case "TABLE": {
       if (value.table == null) {
+        // This should never happen, but be defensive just in case,
+        // since it's an api payload
         return [];
       }
 
