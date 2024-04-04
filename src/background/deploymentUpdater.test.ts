@@ -244,9 +244,9 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(1);
+    expect(activatedModComponents).toHaveLength(1);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(1);
   });
 
@@ -291,7 +291,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
     expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
       [
@@ -306,10 +306,10 @@ describe("syncDeployments", () => {
       ],
     );
 
-    expect(extensions).toHaveLength(1);
+    expect(activatedModComponents).toHaveLength(1);
   });
 
-  test("ignore other user extensions", async () => {
+  test("ignore other mod components", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const starterBrick = starterBrickConfigFactory();
@@ -361,14 +361,14 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
-    expect(extensions).toBeArrayOfSize(2);
+    const { extensions: activatedModComponents } = await getModComponentState();
+    expect(activatedModComponents).toBeArrayOfSize(2);
     const foo = await getEditorState();
     // Expect unrelated dynamic element not to be removed
     expect(foo.elements).toBeArrayOfSize(1);
   });
 
-  test("uninstall existing recipe mod component with no dynamic elements", async () => {
+  test("deactivate existing mod with no dynamic elements", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { deployment, modDefinition } = activatableDeploymentFactory();
@@ -411,12 +411,14 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
-    expect(extensions).toBeArrayOfSize(1);
-    expect(extensions[0]._recipe.version).toBe(deployment.package.version);
+    const { extensions: activatedModComponents } = await getModComponentState();
+    expect(activatedModComponents).toBeArrayOfSize(1);
+    expect(activatedModComponents[0]._recipe.version).toBe(
+      deployment.package.version,
+    );
   });
 
-  test("uninstall existing recipe mod component with dynamic element", async () => {
+  test("deactivate existing mod with dynamic element", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { deployment, modDefinition } = activatableDeploymentFactory();
@@ -474,12 +476,14 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
-    expect(extensions).toBeArrayOfSize(1);
+    const { extensions: activatedModComponents } = await getModComponentState();
+    expect(activatedModComponents).toBeArrayOfSize(1);
     const { elements } = await getEditorState();
     // Expect dynamic element to be removed
     expect(elements).toBeArrayOfSize(0);
-    expect(extensions[0]._recipe.version).toBe(deployment.package.version);
+    expect(activatedModComponents[0]._recipe.version).toBe(
+      deployment.package.version,
+    );
   });
 
   test("opens options page if deployment does not have necessary permissions", async () => {
@@ -510,9 +514,9 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(0);
+    expect(activatedModComponents).toHaveLength(0);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
 
@@ -557,7 +561,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
     expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
       [
@@ -572,23 +576,23 @@ describe("syncDeployments", () => {
       ],
     );
 
-    expect(extensions).toHaveLength(0);
+    expect(activatedModComponents).toHaveLength(0);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
 
-  test("skip update and uninstall if not linked", async () => {
+  test("skip update and deactivation if not linked", async () => {
     isLinkedMock.mockResolvedValue(false);
     readAuthDataMock.mockResolvedValue({} as any);
 
     jest.doMock("@/background/deploymentUpdater");
 
-    const { uninstallAllDeployments } = await import(
+    const { deactivateAllDeployedMods } = await import(
       "@/background/deploymentUpdater"
     );
 
     await syncDeployments();
 
-    expect(jest.mocked(uninstallAllDeployments).mock.calls).toHaveLength(0);
+    expect(jest.mocked(deactivateAllDeployedMods).mock.calls).toHaveLength(0);
     expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(0);
   }, 10_000);
@@ -707,20 +711,20 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    // Unmatched deployments are always uninstalled if snoozed
+    // Unassigned deployments are always deactivated if snoozed
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(0);
     expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
     expect(openOptionsPageMock.mock.calls).toHaveLength(0);
   });
 
-  test("can uninstall all deployments", async () => {
+  test("can deactivate all deployed mods", async () => {
     const personalStarterBrick = starterBrickConfigFactory();
     const personalBrick = {
       ...parsePackage(personalStarterBrick as unknown as RegistryPackage),
       timestamp: new Date(),
     };
 
-    const personalModComponent = modComponentFactory({
+    const standaloneModComponent = modComponentFactory({
       extensionPointId: personalStarterBrick.metadata.id,
     }) as ActivatedModComponent;
 
@@ -752,7 +756,7 @@ describe("syncDeployments", () => {
 
     const personalElement = (await ADAPTERS.get(
       personalStarterBrick.definition.type,
-    ).fromExtension(personalModComponent)) as ActionFormState;
+    ).fromExtension(standaloneModComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addElement(personalElement),
@@ -768,7 +772,7 @@ describe("syncDeployments", () => {
 
     await saveModComponentState({
       extensions: [
-        personalModComponent,
+        standaloneModComponent,
         deploymentModComponent,
         recipeModComponent,
       ],
@@ -780,13 +784,13 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(2);
+    expect(activatedModComponents).toHaveLength(2);
 
-    const installedIds = extensions.map((x) => x.id);
-    expect(installedIds).toContain(personalModComponent.id);
-    expect(installedIds).toContain(recipeModComponent.id);
+    const activatedModComponentIds = activatedModComponents.map((x) => x.id);
+    expect(activatedModComponentIds).toContain(standaloneModComponent.id);
+    expect(activatedModComponentIds).toContain(recipeModComponent.id);
 
     const { elements } = await getEditorState();
     expect(elements).toBeArrayOfSize(1);
