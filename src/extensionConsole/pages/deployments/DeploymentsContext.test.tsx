@@ -149,7 +149,6 @@ describe("DeploymentsContext", () => {
           created_at: validateTimestamp("2021-01-01T12:52:16.189Z"),
         },
       });
-    const registryId = deployment.package.package_id;
 
     // Remove package from the deployment so that it can be updated
     const oldDeploymentCopy = { ...deployment };
@@ -166,7 +165,11 @@ describe("DeploymentsContext", () => {
 
     axiosMock.onPost("/api/deployments/").reply(200, [updatedDeployment]);
     axiosMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .onGet(
+        `/api/registry/bricks/${encodeURIComponent(
+          updatedDeployment.package.package_id,
+        )}/`,
+      )
       .reply(
         200,
         packageConfigDetailFactory({
