@@ -16,17 +16,35 @@
  */
 
 import React from "react";
-import InvalidatedContextGate from "@/components/InvalidatedContextGate";
 import { render } from "react-dom";
+import { mergeSignals } from "abort-utils";
+import { onContextInvalidated } from "webext-events";
+import AbortSignalGate from "@/components/AbortSignalGate";
 
-// TODO: Use createRoot(document.createDocumentFragment()) and root.unmount() when switching to React 18
-export function renderWidget(widget: JSX.Element): void {
+// TODO: When switching to React 18, use:
+// createRoot(document.createDocumentFragment())
+// signal.onabort = () => root.unmount()
+// instead of AbortSignalGate
+export function renderWidget(
+  widget: JSX.Element,
+  {
+    signal,
+    position = "after",
+  }: {
+    signal?: AbortSignal;
+    position?: "before" | "after";
+  } = {},
+): void {
+  if (signal) {
+    signal = mergeSignals(signal, onContextInvalidated.signal);
+  } else {
+    signal = onContextInvalidated.signal;
+  }
+
   const insertionPoint = document.createDocumentFragment();
   render(
-    <InvalidatedContextGate emptyOnInvalidation>
-      {widget}
-    </InvalidatedContextGate>,
+    <AbortSignalGate signal={signal}>{widget}</AbortSignalGate>,
     insertionPoint,
   );
-  document.body.after(insertionPoint);
+  document.body[position](insertionPoint);
 }
