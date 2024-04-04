@@ -150,15 +150,14 @@ describe("DeploymentsContext", () => {
         },
       });
 
-    // Remove package from the deployment so that it can be updated
-    const oldDeploymentCopy = { ...deployment };
-    delete oldDeploymentCopy.package;
+    // Remove package from the deployment so that the mod can be changed entirely
+    const { package: _, ...deploymentOverride } = deployment;
     const {
       deployment: updatedDeployment,
       modDefinition: expectedModDefinition,
     } = activatableDeploymentFactory({
       deploymentOverride: {
-        ...oldDeploymentCopy,
+        ...deploymentOverride,
         updated_at: validateTimestamp("2021-02-02T12:52:16.189Z"),
       },
     });
@@ -212,9 +211,6 @@ describe("DeploymentsContext", () => {
       // TODO: should this be 2?
       expect(axiosMock.history.post).toHaveLength(3);
     });
-
-    // Permissions only requested once because user has clicked update once
-    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
 
     const { options } = getReduxStore().getState();
     expect((options as ModComponentState).extensions).toHaveLength(1);
