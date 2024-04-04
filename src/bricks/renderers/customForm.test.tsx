@@ -36,6 +36,7 @@ import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { toExpression } from "@/utils/expressionUtils";
 
 const dataStoreGetMock = jest.mocked(dataStore.get);
+const dataStoreSetSpy = jest.spyOn(dataStore, "set");
 
 describe("form data normalization", () => {
   const normalizationTestCases = [
@@ -202,6 +203,10 @@ describe("form data normalization", () => {
 });
 
 describe("CustomFormRenderer", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   test("Render auto-saved form", async () => {
     const brick = new CustomFormRenderer();
 
@@ -262,11 +267,14 @@ describe("CustomFormRenderer", () => {
     await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(runPipelineMock).toHaveBeenCalledOnce();
+
+    expect(dataStoreSetSpy).not.toHaveBeenCalled();
+
     // Need to get new textbox reference, because the old one is removed when the key changes
     expect(screen.getByRole("textbox")).toHaveValue("");
   });
 
-  test.each(["undefined", "save"])(
+  test.each([undefined, "save"])(
     "postSubmitAction: %s doesn't reset",
     async (postSubmitAction) => {
       const brick = new CustomFormRenderer();
@@ -296,13 +304,18 @@ describe("CustomFormRenderer", () => {
 
       render(<Component {...props} />);
 
+      const value = "Some text";
       const textBox = screen.getByRole("textbox");
-      await userEvent.type(textBox, "Some text");
+      await userEvent.type(textBox, value);
       await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
       expect(runPipelineMock).toHaveBeenCalledOnce();
+      expect(dataStoreSetSpy).toHaveBeenCalledExactlyOnceWith("test", {
+        name: value,
+      });
+
       // Need to get new textbox reference, because the old one is removed if/when the key changes
-      expect(screen.getByRole("textbox")).toHaveValue("Some text");
+      expect(screen.getByRole("textbox")).toHaveValue(value);
     },
   );
 
