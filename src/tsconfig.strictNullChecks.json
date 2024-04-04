@@ -820,6 +820,7 @@
     "./utils/postMessage.ts",
     "./utils/preventNativeFormSubmission.ts",
     "./utils/promiseUtils.ts",
+    "./utils/reactUtils.tsx",
     "./utils/registryUtils.ts",
     "./utils/sanitize.ts",
     "./utils/schemaUtils.ts",
