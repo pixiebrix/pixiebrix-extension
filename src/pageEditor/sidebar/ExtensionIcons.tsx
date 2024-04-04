@@ -30,7 +30,7 @@ export const ExtensionIcon: React.FunctionComponent<{
   type: StarterBrickType;
 }> = ({ type }) => (
   <FontAwesomeIcon
-    fixedWidth={true}
+    fixedWidth
     icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece}
   />
 );
