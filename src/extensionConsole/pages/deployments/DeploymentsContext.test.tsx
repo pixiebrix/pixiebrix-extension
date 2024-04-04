@@ -34,9 +34,6 @@ import {
 } from "@/testUtils/factories/deploymentFactories";
 import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
-import { activatedModComponentFactory } from "@/testUtils/factories/modComponentFactories";
-import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
-import { services } from "@/background/messenger/strict/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import { validateTimestamp } from "@/types/helpers";
 
