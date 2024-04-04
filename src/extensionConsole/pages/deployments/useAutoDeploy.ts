@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
+import {
+  activateDeployments,
+  deactivateUnassignedDeployments,
+} from "@/extensionConsole/pages/deployments/activateDeployments";
 import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { type ModComponentBase } from "@/types/modComponentTypes";
@@ -87,6 +90,11 @@ function useAutoDeploy({
       // Attempt to automatically deploy the deployments
       try {
         setIsActivationInProgress(true);
+        // await deactivateUnassignedDeployments({
+        //   dispatch,
+        //   assignedDeployments: activatableDeployments,
+        //   activatedModComponents: installedExtensions,
+        // });
         await activateDeployments({
           dispatch,
           activatableDeployments,
