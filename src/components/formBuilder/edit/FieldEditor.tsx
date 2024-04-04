@@ -132,7 +132,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
         }}
         isRequired
       />
-      <Collapse in={submitToolbar}>
+      <Collapse in={Boolean(submitToolbar)}>
         <SchemaField
           name={joinName(uiOptionsPath, "submitToolbar", "icon")}
           schema={{ $ref: "https://app.pixiebrix.com/schemas/icon#" }}

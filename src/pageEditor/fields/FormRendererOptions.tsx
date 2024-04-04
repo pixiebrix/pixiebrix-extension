@@ -43,6 +43,7 @@ import useAsyncEffect from "use-async-effect";
 import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import type { PipelineExpression } from "@/types/runtimeTypes";
+import { Collapse } from "react-bootstrap";
 
 const recordIdSchema: Schema = {
   type: "string",
@@ -243,7 +244,7 @@ const FormSubmissionOptions: React.FC<{
         }}
       />
 
-      {onSubmit && (
+      <Collapse in={Boolean(onSubmit)}>
         <FieldTemplate
           name={makeName("postSubmitAction")}
           label="Post Submit Action"
@@ -258,7 +259,7 @@ const FormSubmissionOptions: React.FC<{
             await postSubmitHelpers.setValue(value);
           }}
         />
-      )}
+      </Collapse>
     </>
   );
 };
