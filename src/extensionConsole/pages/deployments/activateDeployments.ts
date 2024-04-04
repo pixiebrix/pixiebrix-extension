@@ -91,7 +91,7 @@ export async function activateDeployments({
       await activateDeployment({
         dispatch,
         activatableDeployment,
-        activatedModComponents: activatedModComponents,
+        activatedModComponents,
       });
     } catch (error) {
       errors.push(error);
