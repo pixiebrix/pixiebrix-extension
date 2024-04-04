@@ -24,7 +24,7 @@ import {
   type Variable,
 } from "@/contrib/automationanywhere/contract";
 import { type JSONSchema7Type } from "json-schema";
-import { mapValues } from "lodash";
+import { mapValues, zipWith } from "lodash";
 import { type Primitive } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { boolean } from "@/utils/typeUtils";
@@ -146,27 +146,21 @@ export function mapBotInput(data: UnknownObject) {
   });
 }
 
+type BotOutput = Primitive | UnknownObject | UnknownObject[];
+
 function mapBotTableValue(tableValue: TableValue): UnknownObject[] {
   const { schema, rows } = tableValue;
   return rows.map((row) => {
-    const rowObject: UnknownObject = {};
-    for (const [index, value] of row.values.entries()) {
-      // eslint-disable-next-line security/detect-object-injection -- Using index lookups
-      const columnSchema = schema[index];
-      if (columnSchema == null) {
-        continue;
-      }
-
-      rowObject[columnSchema.name] = mapBotOutput(value);
-    }
-
-    return rowObject;
+    const newEntries: Array<[string, BotOutput]> = zipWith(
+      schema,
+      row.values,
+      (columnSchema, rowValue) => [columnSchema.name, mapBotOutput(rowValue)],
+    );
+    return Object.fromEntries(newEntries);
   });
 }
 
-function mapBotOutput(
-  value: OutputValue,
-): Primitive | UnknownObject | UnknownObject[] {
+function mapBotOutput(value: OutputValue): BotOutput {
   switch (value.type) {
     case "STRING": {
       return value.string;
@@ -196,7 +190,6 @@ function mapBotOutput(
 
     default: {
       const exhaustiveCheck: never = value.type;
-      console.log("*** TABLE:", value);
       throw new BusinessError(
         `Type not supported by PixieBrix: ${exhaustiveCheck}`,
       );
@@ -206,7 +199,7 @@ function mapBotOutput(
 
 export function selectBotOutput(
   execution: Pick<Execution, "botOutVariables">,
-): Record<string, Primitive | UnknownObject | UnknownObject[]> {
+): Record<string, BotOutput> {
   return mapValues(execution.botOutVariables?.values ?? {}, (value) =>
     mapBotOutput(value),
   );
