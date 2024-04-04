@@ -237,7 +237,7 @@ describe("DeploymentsContext", () => {
 
     const {
       options: { extensions: initialActivatedModComponents },
-    } = getReduxStore().getState();
+    } = getReduxStore().getState() as { options: ModComponentState };
     expect(initialActivatedModComponents).toHaveLength(1);
     expect(initialActivatedModComponents[0]._deployment).toBeUndefined();
 
@@ -259,7 +259,7 @@ describe("DeploymentsContext", () => {
 
     const {
       options: { extensions: activatedModComponents },
-    } = getReduxStore().getState();
+    } = getReduxStore().getState() as { options: ModComponentState };
     expect(activatedModComponents).toHaveLength(1);
     expect(activatedModComponents[0]._deployment?.id).toBe(deployment.id);
   });
