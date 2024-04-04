@@ -16,6 +16,7 @@
  */
 
 import React, { useEffect } from "react";
+import ReactDOM from "react-dom";
 import {
   KBarAnimator,
   KBarPortal,
@@ -29,7 +30,10 @@ import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
-import { MAX_Z_INDEX } from "@/domConstants";
+import {
+  MAX_Z_INDEX,
+  PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS,
+} from "@/domConstants";
 import useEventListener from "@/hooks/useEventListener";
 import { Stylesheets } from "@/components/Stylesheets";
 import selection from "@/utils/selectionController";
@@ -43,11 +47,11 @@ import defaultActions, {
   pageEditorAction,
 } from "@/components/quickBar/defaultActions";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import { onContextInvalidated } from "webext-events";
 import StopPropagation from "@/components/StopPropagation";
 import useScrollLock from "@/hooks/useScrollLock";
 import { flagOn } from "@/auth/featureFlagStorage";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
-import { renderWidget } from "@/utils/reactUtils";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -121,9 +125,6 @@ const KBarComponent: React.FC = () => {
   // Library references:
   // - hotkey: https://github.com/github/hotkey/blob/main/src/utils.ts#L1
   // - Salesforce: https://salesforce.stackexchange.com/questions/183771/disable-keyboard-shortcuts-in-lightning-experience
-
-  // TODO: Drop contentEditable stuff since we have <StopPropagation>
-  // TODO: Use <IsolatedComponent> instead of KBarPortal and EmotionShadowRoot
 
   return (
     <KBarPortal>
@@ -212,8 +213,17 @@ export const initQuickBarApp = once(async () => {
     quickBarRegistry.addAction(pageEditorAction);
   }
 
-  renderWidget(<QuickBarApp />);
+  const container = document.createElement("div");
+  container.className = PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS;
+  document.body.prepend(container);
+  ReactDOM.render(<QuickBarApp />, container);
   console.debug("Initialized quick bar");
+
+  onContextInvalidated.addListener(() => {
+    console.debug("Removed quick bar due to context invalidation");
+    ReactDOM.unmountComponentAtNode(container);
+    container.remove();
+  });
 });
 
 /**
