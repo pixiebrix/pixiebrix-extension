@@ -119,6 +119,9 @@ export const FAILURE_STATUSES = new Set([
   "RUN_TIMED_OUT",
 ]);
 
+// Note: The following AA response types were reverse-engineered from the
+// Automation Anywhere Run Bot API response payloads.
+
 type TableColumnSchema = {
   name: string;
   type: string;
