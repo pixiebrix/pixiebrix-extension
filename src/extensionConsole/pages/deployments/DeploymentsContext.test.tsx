@@ -211,6 +211,57 @@ describe("DeploymentsContext", () => {
     expect((options as ModComponentState).extensions).toHaveLength(1);
   });
 
+  it("updating deploymented reactivates mod that was previously unmanaged", async () => {
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    mockDeploymentActivationRequests(deployment, modDefinition);
+
+    const { getReduxStore } = render(
+      <DeploymentsProvider>
+        <Component />
+      </DeploymentsProvider>,
+      {
+        setupRedux: (dispatch) => {
+          dispatch(
+            extensionsSlice.actions.activateMod({
+              modDefinition,
+              // No deployment, so that the mod is unmanaged
+              screen: "extensionConsole",
+              isReactivate: false,
+            }),
+          );
+        },
+      },
+    );
+
+    const {
+      options: { extensions: initialActivatedModComponents },
+    } = getReduxStore().getState();
+    expect(initialActivatedModComponents).toHaveLength(1);
+    expect(initialActivatedModComponents[0]._deployment).toBeUndefined();
+
+    expect(screen.queryAllByTestId("Component")).toHaveLength(1);
+    expect(screen.queryAllByTestId("Error")).toHaveLength(0);
+
+    await waitFor(() => {
+      // Initial fetch with old activated deployed mod
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
+
+    await userEvent.click(screen.getByText("Update"));
+
+    await waitFor(() => {
+      // Refetch after deployment activation
+      // TODO: should this be 2?
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
+
+    const {
+      options: { extensions: activatedModComponents },
+    } = getReduxStore().getState();
+    expect(activatedModComponents).toHaveLength(1);
+    expect(activatedModComponents[0]._deployment?.id).toBe(deployment.id);
+  });
+
   it("remounting the DeploymentsProvider doesn't refetch the deployments", async () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     mockDeploymentActivationRequests(deployment, modDefinition);
