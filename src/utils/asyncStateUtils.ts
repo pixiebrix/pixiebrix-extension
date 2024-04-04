@@ -212,7 +212,6 @@ export function loadingAsyncStateFactory<Value>(): AsyncState<Value> {
 
 /**
  * Lift a known value to a FetchableAsyncState.
- * @param value the value
  */
 export function valueToAsyncState<Value>(
   value: Value,
@@ -232,7 +231,6 @@ export function valueToAsyncState<Value>(
 
 /**
  * Lift a known value to a FetchableAsyncState.
- * @param error the error
  */
 export function errorToAsyncState<Value>(error: unknown): AsyncState<Value> {
   return {
@@ -249,7 +247,6 @@ export function errorToAsyncState<Value>(error: unknown): AsyncState<Value> {
 
 /**
  * Lift a known value to a UseCachedQueryResult.
- * @param value the value
  * @see UseCachedQueryResult
  */
 export function valueToAsyncCacheState<Value>(

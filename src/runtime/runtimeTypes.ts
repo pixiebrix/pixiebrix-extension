@@ -53,7 +53,6 @@ const OUTPUT_KEY_REGEX = /[A-Z_a-z]\w{0,30}/;
 
 /**
  * Validates and returns if `key` is a valid brick output key (i.e., variable name), or throws a TypeError.
- * @param key the key to test
  */
 export function validateOutputKey(key: string): OutputKey {
   if (OUTPUT_KEY_REGEX.test(key)) {
@@ -65,7 +64,6 @@ export function validateOutputKey(key: string): OutputKey {
 
 /**
  * Type guard for OutputKey
- * @param value the value to check
  */
 export function isOutputKey(value: unknown): value is OutputKey {
   return typeof value === "string" && OUTPUT_KEY_REGEX.test(value);
@@ -73,7 +71,6 @@ export function isOutputKey(value: unknown): value is OutputKey {
 
 /**
  * Returns a reference to the given output key. Currently, this is just the output key prefixed with `@`.
- * @param outputKey the output key
  */
 export function getOutputReference(outputKey: OutputKey): string {
   return VARIABLE_REFERENCE_PREFIX + outputKey;

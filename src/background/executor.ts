@@ -142,7 +142,6 @@ export async function requestRunInTop(
 
 /**
  * Run a brick in the top-level frame of all OTHER tabs.
- * @param request the run request
  */
 export async function requestRunInOtherTabs(
   this: MessengerMeta,
