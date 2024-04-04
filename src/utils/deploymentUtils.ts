@@ -59,13 +59,16 @@ export function isDeploymentActive(extensionLike: {
  * - Same as above, but ignore deployments where the user has a newer version of the blueprint installed because that
  *   means they are doing local deployment on the blueprint.
  *
- * @param installed the user's currently installed extensions (including for paused deployments)
+ * @param activatedModComponents the user's currently installed extensions (including for paused deployments)
  * @param restricted `true` if the user is a restricted organization user (i.e., as opposed to a developer)
  */
 export const makeUpdatedFilter =
-  (installed: ModComponentBase[], { restricted }: { restricted: boolean }) =>
+  (
+    activatedModComponents: ModComponentBase[],
+    { restricted }: { restricted: boolean },
+  ) =>
   (deployment: Deployment) => {
-    const deploymentMatch = installed.find(
+    const deploymentMatch = activatedModComponents.find(
       (extension) => extension._deployment?.id === deployment.id,
     );
 
@@ -78,10 +81,10 @@ export const makeUpdatedFilter =
     }
 
     // Local copies an unrestricted user (i.e., a developer role) is working on
-    const blueprintMatch = installed.find(
-      (extension) =>
-        extension._deployment == null &&
-        extension._recipe?.id === deployment.package.package_id,
+    const blueprintMatch = activatedModComponents.find(
+      (modComponent) =>
+        modComponent._deployment == null &&
+        modComponent._recipe?.id === deployment.package.package_id,
     );
 
     if (!deploymentMatch && !blueprintMatch) {

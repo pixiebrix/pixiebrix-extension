@@ -40,7 +40,10 @@ async function activateDeployment({
 
   // Clear existing activated mod deployments
   for (const modComponent of activatedModComponents) {
-    if (modComponent._deployment?.id === deployment.id) {
+    if (
+      modComponent._deployment?.id === deployment.id ||
+      modComponent._recipe?.id === deployment.package.name
+    ) {
       dispatch(
         actions.removeExtension({
           extensionId: modComponent.id,
