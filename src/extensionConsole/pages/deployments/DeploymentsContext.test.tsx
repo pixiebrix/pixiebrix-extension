@@ -44,6 +44,27 @@ const getLinkedApiClientMock = jest.mocked(getLinkedApiClient);
 
 const requestPermissionsMock = jest.mocked(browser.permissions.request);
 
+const mockDeploymentActivationRequests = (
+  deployment: Deployment,
+  modDefinition: ModDefinition,
+) => {
+  axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
+  axiosMock
+    .onGet(
+      `/api/registry/bricks/${encodeURIComponent(
+        deployment.package.package_id,
+      )}/`,
+    )
+    .reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
+  requestPermissionsMock.mockResolvedValue(true);
+};
+
 const Component: React.FC = () => {
   const deployments = useContext(DeploymentsContext);
   return (
@@ -99,19 +120,7 @@ describe("DeploymentsContext", () => {
 
   it("activate single deployment from empty state", async () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
-    const registryId = deployment.package.package_id;
-
-    axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
-    axiosMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
-    requestPermissionsMock.mockResolvedValue(true);
+    mockDeploymentActivationRequests(deployment, modDefinition);
 
     const { getReduxStore } = render(
       <DeploymentsProvider>
@@ -141,7 +150,7 @@ describe("DeploymentsContext", () => {
     expect((options as ModComponentState).extensions).toHaveLength(1);
   });
 
-  it("updating existing deployment mod id deactivates old mod", async () => {
+  it("updating deployment mod id deactivates old mod", async () => {
     const { deployment, modDefinition: oldModDefinition } =
       activatableDeploymentFactory({
         deploymentOverride: {
@@ -162,21 +171,7 @@ describe("DeploymentsContext", () => {
       },
     });
 
-    axiosMock.onPost("/api/deployments/").reply(200, [updatedDeployment]);
-    axiosMock
-      .onGet(
-        `/api/registry/bricks/${encodeURIComponent(
-          updatedDeployment.package.package_id,
-        )}/`,
-      )
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition: expectedModDefinition,
-          packageVersionUUID: updatedDeployment.package.id,
-        }),
-      );
-    requestPermissionsMock.mockResolvedValue(true);
+    mockDeploymentActivationRequests(updatedDeployment, expectedModDefinition);
 
     const { getReduxStore } = render(
       <DeploymentsProvider>
@@ -218,19 +213,7 @@ describe("DeploymentsContext", () => {
 
   it("remounting the DeploymentsProvider doesn't refetch the deployments", async () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
-    const registryId = deployment.package.package_id;
-
-    axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
-    axiosMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
-    requestPermissionsMock.mockResolvedValue(true);
+    mockDeploymentActivationRequests(deployment, modDefinition);
 
     const { rerender } = render(
       <DeploymentsProvider>
@@ -280,19 +263,7 @@ describe("DeploymentsContext", () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
     const { deployment, modDefinition } = activatableDeploymentFactory();
-    const registryId = deployment.package.package_id;
-
-    axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
-    axiosMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
-    requestPermissionsMock.mockResolvedValue(true);
+    mockDeploymentActivationRequests(deployment, modDefinition);
 
     const { rerender } = render(
       <DeploymentsProvider>
