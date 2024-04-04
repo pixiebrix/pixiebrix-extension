@@ -18,7 +18,6 @@
 import styles from "./notify.module.scss";
 
 import React from "react";
-import { render } from "react-dom";
 import {
   type DefaultToastOptions,
   toast,
@@ -26,10 +25,7 @@ import {
   type ToastOptions,
 } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
-import {
-  NOTIFICATIONS_Z_INDEX,
-  PIXIEBRIX_NOTIFICATION_CLASS,
-} from "@/domConstants";
+import { NOTIFICATIONS_Z_INDEX } from "@/domConstants";
 import reportError from "@/telemetry/reportError";
 import { type Except, type RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -40,6 +36,7 @@ import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebarDomController
 import ErrorIcon from "@/icons/error.svg?loadAsComponent";
 import WarningIcon from "@/icons/warning.svg?loadAsComponent";
 import type { Notification, NotificationType } from "@/utils/notificationTypes";
+import { renderWidget } from "./reactUtils";
 
 const MINIMUM_NOTIFICATION_DURATION_MS = 2000;
 
@@ -107,13 +104,6 @@ function getMessageDisplayTimeMs(message: string): number {
 }
 
 export function initToaster(): void {
-  const root = document.createElement("div");
-  root.className = PIXIEBRIX_NOTIFICATION_CLASS; // Used to visually identify the element in the DOM
-  // This style cannot be on containerStyle because it overrides some of its props there
-  root.setAttribute("style", "all: initial");
-
-  document.body.append(root);
-
   const containerStyle: React.CSSProperties = {
     zIndex: NOTIFICATIONS_Z_INDEX,
     fontFamily: "sans-serif",
@@ -125,7 +115,7 @@ export function initToaster(): void {
     success: toastStyle.success,
     error: toastStyle.error,
   };
-  render(<Toaster {...{ containerStyle, toastOptions }} />, root);
+  renderWidget(<Toaster {...{ containerStyle, toastOptions }} />);
 }
 
 export function showNotification({
