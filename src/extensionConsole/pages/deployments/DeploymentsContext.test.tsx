@@ -34,6 +34,10 @@ import {
 } from "@/testUtils/factories/deploymentFactories";
 import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
+import { activatedModComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
+import { services } from "@/background/messenger/strict/api";
+import extensionsSlice from "@/store/extensionsSlice";
 
 const axiosMock = new MockAdapter(axios);
 axiosMock.onGet("/api/me/").reply(200, { flags: [] });
@@ -134,6 +138,76 @@ describe("DeploymentsContext", () => {
 
     // Permissions only requested once because user has clicked update once
     expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
+
+    const { options } = getReduxStore().getState();
+    expect((options as ModComponentState).extensions).toHaveLength(1);
+  });
+
+  it("updating existing deployment mod id deactivates old mod", async () => {
+    const { deployment, modDefinition: oldModDefinition } =
+      activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
+
+    // Remove package from the deployment so that it can be updated
+    delete deployment.package;
+    const {
+      deployment: updatedDeployment,
+      modDefinition: expectedModDefinition,
+    } = activatableDeploymentFactory({
+      deploymentOverride: {
+        ...deployment,
+      },
+    });
+
+    axiosMock.onPost("/api/deployments/").reply(200, [updatedDeployment]);
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition: expectedModDefinition,
+          packageVersionUUID: updatedDeployment.package.id,
+        }),
+      );
+    requestPermissionsMock.mockResolvedValue(true);
+
+    const { getReduxStore } = render(
+      <DeploymentsProvider>
+        <Component />
+      </DeploymentsProvider>,
+      {
+        setupRedux: (dispatch) => {
+          dispatch(
+            extensionsSlice.actions.activateMod({
+              modDefinition: oldModDefinition,
+              deployment,
+              // Assume validation on the backend for options
+              optionsArgs: deployment.options_config,
+              screen: "extensionConsole",
+              isReactivate: false,
+            }),
+          );
+        },
+      },
+    );
+
+    expect(screen.queryAllByTestId("Component")).toHaveLength(1);
+    expect(screen.queryAllByTestId("Error")).toHaveLength(0);
+
+    await waitFor(() => {
+      // Initial fetch with no installed deployments
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
+
+    await userEvent.click(screen.getByText("Update"));
+
+    await waitFor(() => {
+      // Refetch after deployment activation
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
+
+    // Permissions only requested once because user has clicked update once
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(0);
 
     const { options } = getReduxStore().getState();
     expect((options as ModComponentState).extensions).toHaveLength(1);
