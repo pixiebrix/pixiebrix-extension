@@ -18,6 +18,9 @@
 import useAbortSignal from "@/hooks/useAbortSignal";
 import React from "react";
 
+/**
+ * Render children until the signal is aborted
+ */
 const AbortSignalGate: React.FunctionComponent<{ signal: AbortSignal }> = ({
   signal,
   children,

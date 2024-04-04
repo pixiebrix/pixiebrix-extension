@@ -92,7 +92,7 @@ const toastOptions: ToastStyle = {
   },
 };
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Constant
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const containerStyle = {
   zIndex: NOTIFICATIONS_Z_INDEX,
   fontFamily: "sans-serif",

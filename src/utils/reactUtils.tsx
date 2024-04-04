@@ -19,15 +19,37 @@ import { render, unmountComponentAtNode } from "react-dom";
 import { mergeSignals } from "abort-utils";
 import { onContextInvalidated } from "webext-events";
 
+/**
+ * Render a React component in the document, with defaults that reduce conflicts.
+ * It's automatically removed on context invalidated.
+ *
+ * @param widget The React component to render.
+ * @param name A name used to visually identify the widget in the dev tools.
+ * @param signal An signal that will abort the remove the widget when aborted.
+ * @param position The method to use on `document.body` to attach the widget (e.g. "before" -> `document.body.before()`)
+ *
+ * @example
+ *   renderWidget({
+ *     name: "MyWidget",
+ *     widget: <MyWidget />,
+ *   });
+ *
+ * @example
+ *   renderWidget({
+ *     name: "notifications",
+ *     widget: <Toast message="Oopsie" />,
+ *     signal: AbortSignal.timeout(1000),
+ *     position: "before",
+ *   });
+ */
 export function renderWidget({
-  widget,
   name,
+  widget,
   signal,
   position = "after",
 }: {
-  widget: JSX.Element;
-  /** Used to visually identify the element in the dev tools. One word, no "pixiebrix-" */
   name: string;
+  widget: JSX.Element;
   signal?: AbortSignal;
   position?: "before" | "after";
 }): void {
@@ -37,12 +59,16 @@ export function renderWidget({
     signal = onContextInvalidated.signal;
   }
 
+  if (signal.aborted) {
+    return;
+  }
+
   // TODO: When switching to React 18, use document.createDocumentFragment()
   // React DOM 17 supports rendering into fragments but then DOM events don't work at all.
   // This will let us leave no trace in the DOM when the widget is unmounted.
-  const root = document.createElement("div");
-  root.setAttribute("pixiebrix", name);
-  root.setAttribute("style", "all: initial");
+  const root = document.createElement("pixiebrix-widget"); // Custom element to avoid CSS conflicts
+  root.setAttribute("pb-name", name); // For identification in the dev tools
+  root.setAttribute("style", "display: block; all: initial");
 
   // Attach to document *before* rendering, because some effects might need it (e.g. dialogElement.showModal())
   document.body[position](root);
