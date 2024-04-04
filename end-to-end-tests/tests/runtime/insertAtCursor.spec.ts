@@ -68,18 +68,27 @@ test("8157: can insert at cursor", async ({ page, extensionId }) => {
   await sideBarPage.getByRole("button", { name: "Insert at Cursor" }).click();
   await expect(editable).toHaveText("aHello world!b");
 
-  // Draft.js
+  // Draft.js - target by aria-label
   const editor = page.getByLabel("rdw-editor");
   await editor.scrollIntoViewIfNeeded();
 
-  const content = editor.locator("div").nth(1);
-  await content.click();
-  await content.pressSequentially("start");
-  await expect(page.getByText("start")).toBeVisible();
+  await editor.click();
 
-  await page.getByText("start").click();
+  // Need to simulate the mouse entering the sidebar to track focus on MV2
+  // https://github.com/pixiebrix/pixiebrix-extension/blob/1794863937f343fbc8e3a4434eace74191f8dfbd/src/contentScript/sidebarController.tsx#L563-L563
+  const sidebarFrame = page.locator("#pixiebrix-extension");
+
+  if (await sidebarFrame.count()) {
+    await sidebarFrame.dispatchEvent("mouseenter");
+  }
 
   await sideBarPage.getByRole("button", { name: "Insert at Cursor" }).click();
 
-  await expect(page.getByText("startHello world!")).toBeVisible();
+  await expect(editor.getByText("Hello world!")).toBeVisible();
+
+  await editor.click();
+  await editor.press("ArrowLeft");
+  await sideBarPage.getByRole("button", { name: "Insert at Cursor" }).click();
+
+  await expect(editor.getByText("Hello worldHello world!!")).toBeVisible();
 });
