@@ -21,7 +21,7 @@ import { ActivateModPage } from "../../pageObjects/modsPage";
 import { test as base } from "@playwright/test";
 import { getSidebarPage } from "../../utils";
 
-test("8157: can insert in draftjs editor", async ({ page, extensionId }) => {
+test("8157: can insert at cursor", async ({ page, extensionId }) => {
   const modId = "@pixies/test/insert-at-cursor";
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -57,6 +57,16 @@ test("8157: can insert in draftjs editor", async ({ page, extensionId }) => {
 
   await sideBarPage.getByRole("button", { name: "Insert at Cursor" }).click();
   await expect(textarea).toHaveValue("aHello world!b");
+
+  // Basic content editable
+  const editable = page.locator("div[contenteditable]").first();
+  await textarea.scrollIntoViewIfNeeded();
+  await editable.click();
+  await editable.pressSequentially("ab");
+  await editable.press("ArrowLeft");
+
+  await sideBarPage.getByRole("button", { name: "Insert at Cursor" }).click();
+  await expect(editable).toHaveText("aHello world!b");
 
   // Draft.js
   const editor = page.getByLabel("rdw-editor");
