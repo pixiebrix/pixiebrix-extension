@@ -90,4 +90,37 @@ describe("FormRendererOptions", () => {
 
     expectToBeCollapsed(screen.getByText(/save data/i));
   });
+
+  it("toggles textarea submit toolbar", async () => {
+    const brick = createNewConfiguredBrick(CustomFormRenderer.BRICK_ID);
+
+    const initialValues = sidebarPanelFormStateFactory({}, [brick]);
+
+    render(
+      <FormRendererOptions
+        name="extension.blockPipeline.0"
+        configKey="config"
+      />,
+      {
+        initialValues,
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(initialValues));
+          dispatch(editorActions.selectElement(initialValues.uuid));
+          dispatch(editorActions.setElementActiveNodeId(brick.instanceId));
+        },
+      },
+    );
+
+    await waitForEffect();
+
+    expectToBeCollapsed(screen.getByText(/select icon/i));
+
+    await toggleBootstrapSwitch("Include Submit Toolbar?");
+
+    expectToBeExpanded(screen.getByText(/select icon/i));
+
+    await toggleBootstrapSwitch("Include Submit Toolbar?");
+
+    expectToBeCollapsed(screen.getByText(/select icon/i));
+  });
 });
