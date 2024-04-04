@@ -29,7 +29,10 @@ import Icon from "@/icons/Icon";
 export const ExtensionIcon: React.FunctionComponent<{
   type: StarterBrickType;
 }> = ({ type }) => (
-  <FontAwesomeIcon icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece} />
+  <FontAwesomeIcon
+    fixedWidth={true}
+    icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece}
+  />
 );
 
 export const NotAvailableIcon: React.FunctionComponent = () => (
