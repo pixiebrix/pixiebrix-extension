@@ -22,23 +22,19 @@ import useDocumentVisibility from "@/hooks/useDocumentVisibility";
 
 type ContextInvalidatedProps = {
   autoReload?: boolean;
-  emptyOnInvalidation?: boolean;
-  contextNameTitleCase?: string;
+
+  /** The name to show on "Reload Context Name" button */
+  contextNameTitleCase: string;
 };
 
-const ContextInvalidated: React.FunctionComponent<ContextInvalidatedProps> = ({
+const InformationPanel: React.FunctionComponent<ContextInvalidatedProps> = ({
   autoReload,
-  emptyOnInvalidation,
-  contextNameTitleCase = "Page",
+  contextNameTitleCase,
 }) => {
   // Only auto-reload if the document is in the background
   const isDocumentVisible = useDocumentVisibility();
   if (autoReload && !isDocumentVisible) {
     location.reload();
-  }
-
-  if (emptyOnInvalidation) {
-    return null;
   }
 
   return (
@@ -58,13 +54,18 @@ const ContextInvalidated: React.FunctionComponent<ContextInvalidatedProps> = ({
   );
 };
 
+/**
+ * A gate that shows an information panel with a reload button if the context was invalidated.
+ *
+ * Use `<AbortSignalGate signal={onContextInvalidated.signal}>` if you just want to unmount the children instead.
+ */
 const InvalidatedContextGate: React.FunctionComponent<
   ContextInvalidatedProps
 > = ({ children, ...props }) => {
   const wasContextInvalidated = useContextInvalidated();
 
   return wasContextInvalidated ? (
-    <ContextInvalidated {...props} />
+    <InformationPanel {...props} />
   ) : (
     <>{children}</>
   );
