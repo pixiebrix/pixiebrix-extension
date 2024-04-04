@@ -15,24 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "use-sync-external-store/shim";
 
 export default function useAbortSignal(signal: AbortSignal): boolean {
-  const [isAborted, setIsAborted] = useState(signal.aborted);
-  useEffect(() => {
-    if (signal.aborted) {
-      // No need to add an event listener if the signal is already aborted
-      return;
-    }
-
-    const handler = () => {
-      setIsAborted(true);
-    };
-
-    signal.addEventListener("abort", handler);
-    return () => {
-      signal.removeEventListener("abort", handler);
-    };
-  }, [signal]);
-  return isAborted;
+  return useSyncExternalStore(
+    (callback: () => void) => {
+      const unsubscribe = new AbortController();
+      signal.addEventListener("abort", callback, {
+        signal: unsubscribe.signal,
+        once: true,
+      });
+      return () => {
+        unsubscribe.abort();
+      };
+    },
+    () => signal.aborted,
+  );
 }

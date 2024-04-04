@@ -91,5 +91,9 @@ export function showModal(props: {
   // In React apps, you should use the React modal component
   expectContext("contentScript");
 
-  renderWidget(<IframeModal {...props} />);
+  renderWidget({
+    name: "iframe-modal",
+    widget: <IframeModal {...props} />,
+    signal: props.controller.signal,
+  });
 }

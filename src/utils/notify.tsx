@@ -18,12 +18,7 @@
 import styles from "./notify.module.scss";
 
 import React from "react";
-import {
-  type DefaultToastOptions,
-  toast,
-  Toaster,
-  type ToastOptions,
-} from "react-hot-toast";
+import { toast, Toaster, type ToastOptions } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
 import { NOTIFICATIONS_Z_INDEX } from "@/domConstants";
 import reportError from "@/telemetry/reportError";
@@ -74,8 +69,10 @@ const getIcon = (
   color: string,
 ) => <Icon style={{ height: 24, color, flex: "0 0 24px" }} />;
 
+// Override for built-in toasts
+// These colors match react-hot-toast’s status icons
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const toastStyle: ToastStyle = {
+const toastOptions: ToastStyle = {
   success: {
     style: {
       border: "solid 2px #61d345",
@@ -95,6 +92,12 @@ const toastStyle: ToastStyle = {
   },
 };
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Constant
+const containerStyle = {
+  zIndex: NOTIFICATIONS_Z_INDEX,
+  fontFamily: "sans-serif",
+} satisfies React.CSSProperties;
+
 function getMessageDisplayTimeMs(message: string): number {
   const wpm = 100; // 180 is the average words read per minute, make it slower
   return Math.max(
@@ -104,18 +107,10 @@ function getMessageDisplayTimeMs(message: string): number {
 }
 
 export function initToaster(): void {
-  const containerStyle: React.CSSProperties = {
-    zIndex: NOTIFICATIONS_Z_INDEX,
-    fontFamily: "sans-serif",
-  };
-
-  // Override for built-in toasts
-  const toastOptions: DefaultToastOptions = {
-    // These colors match react-hot-toast’s status icons
-    success: toastStyle.success,
-    error: toastStyle.error,
-  };
-  renderWidget(<Toaster {...{ containerStyle, toastOptions }} />);
+  renderWidget({
+    name: "notifications",
+    widget: <Toaster {...{ containerStyle, toastOptions }} />,
+  });
 }
 
 export function showNotification({
@@ -162,7 +157,7 @@ export function showNotification({
 
     case "warning": {
       // eslint-disable-next-line security/detect-object-injection -- Filtered
-      toast(component, merge(options, toastStyle[type]));
+      toast(component, merge(options, toastOptions[type]));
       break;
     }
 
