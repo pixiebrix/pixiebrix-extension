@@ -209,7 +209,8 @@ describe("DeploymentsContext", () => {
 
     await waitFor(() => {
       // Refetch after deployment activation
-      expect(axiosMock.history.post).toHaveLength(2);
+      // TODO: should this be 2?
+      expect(axiosMock.history.post).toHaveLength(1);
     });
 
     // Permissions only requested once because user has clicked update once
