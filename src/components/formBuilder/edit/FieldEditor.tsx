@@ -43,7 +43,7 @@ import SelectWidget, {
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import { uniq } from "lodash";
+import { uniq, partial } from "lodash";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import databaseSchema from "@schemas/database.json";
@@ -97,14 +97,15 @@ function shouldShowPlaceholderText(uiType: UiType): boolean {
 const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
   uiOptionsPath,
 }) => {
-  const [{ value: submitToolbar }] = useField<boolean>(
-    `${uiOptionsPath}.submitToolbar`,
+  const configName = partial(joinName, uiOptionsPath);
+  const [{ value: showSubmitToolbar = false }] = useField<boolean | null>(
+    configName("submitToolbar", "show"),
   );
 
   return (
     <>
       <SchemaField
-        name={joinName(uiOptionsPath, "rows")}
+        name={configName("rows")}
         schema={{
           type: "number",
           title: "# Rows",
@@ -113,7 +114,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
         }}
       />
       <SchemaField
-        name={joinName(uiOptionsPath, "submitOnEnter")}
+        name={configName("submitOnEnter")}
         schema={{
           type: "boolean",
           title: "Submit Form on Enter?",
@@ -123,7 +124,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
         isRequired
       />
       <SchemaField
-        name={joinName(uiOptionsPath, "submitToolbar", "show")}
+        name={configName("submitToolbar", "show")}
         schema={{
           type: "boolean",
           title: "Include Submit Toolbar?",
@@ -132,9 +133,9 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
         }}
         isRequired
       />
-      <Collapse in={Boolean(submitToolbar)}>
+      <Collapse in={showSubmitToolbar}>
         <SchemaField
-          name={joinName(uiOptionsPath, "submitToolbar", "icon")}
+          name={configName("submitToolbar", "icon")}
           schema={{ $ref: "https://app.pixiebrix.com/schemas/icon#" }}
           label="Select Icon"
           description="Select the icon that appears in the bottom right of the Submit Toolbar"

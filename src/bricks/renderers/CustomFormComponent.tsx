@@ -83,7 +83,7 @@ const CustomFormComponent: React.FunctionComponent<{
   // Track values during onChange or prop updates, so we can access it our RjsfSubmitContext submitForm callback
   const valuesRef = useRef<UnknownObject>(formData);
   useEffect(() => {
-    // XXX: is there a reason this is in a useEffect? Is it to prevent issues with defaulting to `{}`?
+    // XXX: is there a reason this is in a useEffect? Is it to prevent issues with defaulting to a fresh `{}`?
     valuesRef.current = formData ?? {};
   }, [formData]);
 
