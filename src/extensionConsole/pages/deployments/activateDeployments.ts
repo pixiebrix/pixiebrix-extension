@@ -29,17 +29,17 @@ const { actions } = extensionsSlice;
 async function activateDeployment({
   dispatch,
   activatableDeployment,
-  installed,
+  activatedModComponents,
 }: {
   dispatch: Dispatch;
   activatableDeployment: ActivatableDeployment;
-  installed: ModComponentBase[];
+  activatedModComponents: ModComponentBase[];
 }): Promise<void> {
   const { deployment, modDefinition } = activatableDeployment;
-  let isReinstall = false;
+  let isReactivate = false;
 
-  // Clear existing installations of the blueprint
-  for (const extension of installed) {
+  // Clear existing activations of the deployed mod
+  for (const extension of activatedModComponents) {
     // Extension won't have recipe if it was locally created by a developer
     if (extension._recipe?.id === deployment.package.package_id) {
       dispatch(
@@ -48,11 +48,11 @@ async function activateDeployment({
         }),
       );
 
-      isReinstall = true;
+      isReactivate = true;
     }
   }
 
-  // Install the blueprint with the service definition
+  // Activate the mod with service definition
   dispatch(
     actions.activateMod({
       modDefinition,
@@ -64,7 +64,7 @@ async function activateDeployment({
       // Assume validation on the backend for options
       optionsArgs: deployment.options_config,
       screen: "extensionConsole",
-      isReactivate: isReinstall,
+      isReactivate,
     }),
   );
 
@@ -91,7 +91,7 @@ export async function activateDeployments({
       await activateDeployment({
         dispatch,
         activatableDeployment,
-        installed,
+        activatedModComponents: installed,
       });
     } catch (error) {
       errors.push(error);
