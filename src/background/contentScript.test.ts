@@ -60,8 +60,8 @@ describe("waitForContentScript", () => {
     const second = waitForContentScript({ tabId: 1, frameId: 0 });
 
     await Promise.all([
-      expect(first).toFullfillWithinMilliseconds(20),
-      expect(second).toFullfillWithinMilliseconds(20),
+      expect(first).toFulfillWithinMilliseconds(20),
+      expect(second).toFulfillWithinMilliseconds(20),
     ]);
   });
 

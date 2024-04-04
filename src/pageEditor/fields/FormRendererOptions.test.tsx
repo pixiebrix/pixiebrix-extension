@@ -14,6 +14,24 @@ beforeAll(() => {
   registerDefaultWidgets();
 });
 
+// TODO: figure out how to properly add to extendedExpectations
+function expectToBeCollapsed(element: HTMLElement): void {
+  // eslint-disable-next-line testing-library/no-node-access -- traversing known React Bootstrap structure
+  const collapse = element.closest(".collapse");
+
+  expect(collapse).toBeDefined();
+  expect(collapse.classList.contains("show")).toBeFalse();
+}
+
+// TODO: figure out how to properly add to extendedExpectations
+function expectToBeExpanded(element: HTMLElement): void {
+  // eslint-disable-next-line testing-library/no-node-access -- traversing known React Bootstrap structure
+  const collapse = element.closest(".collapse");
+
+  expect(collapse).toBeDefined();
+  expect(collapse.classList.contains("show")).toBeTrue();
+}
+
 describe("FormRendererOptions", () => {
   it("smoke test", async () => {
     const brick = createNewConfiguredBrick(CustomFormRenderer.BRICK_ID);
@@ -62,16 +80,14 @@ describe("FormRendererOptions", () => {
 
     await waitForEffect();
 
-    // FIXME: is something defaulting the onSubmit pipeline to be toggled to be an empty pipeline?
-    expect(screen.queryByText(/save data/i)).not.toBeVisible();
+    expectToBeCollapsed(screen.getByText(/save data/i));
 
     await toggleBootstrapSwitch("Custom Submit Handler");
 
-    // Field defaults to save data
-    expect(screen.getByText(/save data/i)).toBeVisible();
+    expectToBeExpanded(screen.getByText(/save data/i));
 
     await toggleBootstrapSwitch("Custom Submit Handler");
 
-    expect(screen.queryByText(/save data/i)).not.toBeVisible();
+    expectToBeCollapsed(screen.getByText(/save data/i));
   });
 });
