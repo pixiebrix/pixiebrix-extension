@@ -76,11 +76,11 @@ async function activateDeployment({
 export async function activateDeployments({
   dispatch,
   activatableDeployments,
-  installed,
+  activatedModComponents,
 }: {
   dispatch: Dispatch;
   activatableDeployments: ActivatableDeployment[];
-  installed: ModComponentBase[];
+  activatedModComponents: ModComponentBase[];
 }): Promise<void> {
   // Activate as many as we can
   const errors = [];
@@ -91,7 +91,7 @@ export async function activateDeployments({
       await activateDeployment({
         dispatch,
         activatableDeployment,
-        activatedModComponents: installed,
+        activatedModComponents: activatedModComponents,
       });
     } catch (error) {
       errors.push(error);
