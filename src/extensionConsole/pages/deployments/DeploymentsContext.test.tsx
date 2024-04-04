@@ -38,6 +38,7 @@ import { activatedModComponentFactory } from "@/testUtils/factories/modComponent
 import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
 import { services } from "@/background/messenger/strict/api";
 import extensionsSlice from "@/store/extensionsSlice";
+import { validateTimestamp } from "@/types/helpers";
 
 const axiosMock = new MockAdapter(axios);
 axiosMock.onGet("/api/me/").reply(200, { flags: [] });
@@ -145,17 +146,24 @@ describe("DeploymentsContext", () => {
 
   it("updating existing deployment mod id deactivates old mod", async () => {
     const { deployment, modDefinition: oldModDefinition } =
-      activatableDeploymentFactory();
+      activatableDeploymentFactory({
+        deploymentOverride: {
+          updated_at: validateTimestamp("2021-01-01T12:52:16.189Z"),
+          created_at: validateTimestamp("2021-01-01T12:52:16.189Z"),
+        },
+      });
     const registryId = deployment.package.package_id;
 
     // Remove package from the deployment so that it can be updated
-    delete deployment.package;
+    const oldDeploymentCopy = { ...deployment };
+    delete oldDeploymentCopy.package;
     const {
       deployment: updatedDeployment,
       modDefinition: expectedModDefinition,
     } = activatableDeploymentFactory({
       deploymentOverride: {
-        ...deployment,
+        ...oldDeploymentCopy,
+        updated_at: validateTimestamp("2021-02-02T12:52:16.189Z"),
       },
     });
 
@@ -181,8 +189,6 @@ describe("DeploymentsContext", () => {
             extensionsSlice.actions.activateMod({
               modDefinition: oldModDefinition,
               deployment,
-              // Assume validation on the backend for options
-              optionsArgs: deployment.options_config,
               screen: "extensionConsole",
               isReactivate: false,
             }),
@@ -203,11 +209,11 @@ describe("DeploymentsContext", () => {
 
     await waitFor(() => {
       // Refetch after deployment activation
-      expect(axiosMock.history.post).toHaveLength(1);
+      expect(axiosMock.history.post).toHaveLength(2);
     });
 
     // Permissions only requested once because user has clicked update once
-    expect(requestPermissionsMock).toHaveBeenCalledTimes(0);
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
 
     const { options } = getReduxStore().getState();
     expect((options as ModComponentState).extensions).toHaveLength(1);
