@@ -133,6 +133,7 @@ function customizeManifest(manifestV2, options = {}) {
 
   if (isBeta) {
     manifest.name = "PixieBrix BETA";
+    manifest.short_name = "PixieBrix BETA";
 
     manifest.icons["16"] = "icons/beta/logo16.png";
     manifest.icons["32"] = "icons/beta/logo32.png";
