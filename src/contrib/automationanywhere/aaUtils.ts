@@ -20,6 +20,7 @@ import {
   type Execution,
   type Interface,
   type OutputValue,
+  type TableValue,
   type Variable,
 } from "@/contrib/automationanywhere/contract";
 import { type JSONSchema7Type } from "json-schema";
@@ -145,7 +146,27 @@ export function mapBotInput(data: UnknownObject) {
   });
 }
 
-function mapBotOutput(value: OutputValue): Primitive | UnknownObject {
+function mapBotTableValue(tableValue: TableValue): UnknownObject[] {
+  const { schema, rows } = tableValue;
+  return rows.map((row) => {
+    const rowObject: UnknownObject = {};
+    for (const [index, value] of row.values.entries()) {
+      // eslint-disable-next-line security/detect-object-injection -- Using index lookups
+      const columnSchema = schema[index];
+      if (columnSchema == null) {
+        continue;
+      }
+
+      rowObject[columnSchema.name] = mapBotOutput(value);
+    }
+
+    return rowObject;
+  });
+}
+
+function mapBotOutput(
+  value: OutputValue,
+): Primitive | UnknownObject | UnknownObject[] {
   switch (value.type) {
     case "STRING": {
       return value.string;
@@ -165,8 +186,17 @@ function mapBotOutput(value: OutputValue): Primitive | UnknownObject {
       );
     }
 
+    case "TABLE": {
+      if (value.table == null) {
+        return [];
+      }
+
+      return mapBotTableValue(value.table);
+    }
+
     default: {
       const exhaustiveCheck: never = value.type;
+      console.log("*** TABLE:", value);
       throw new BusinessError(
         `Type not supported by PixieBrix: ${exhaustiveCheck}`,
       );
@@ -176,7 +206,7 @@ function mapBotOutput(value: OutputValue): Primitive | UnknownObject {
 
 export function selectBotOutput(
   execution: Pick<Execution, "botOutVariables">,
-): Record<string, Primitive | UnknownObject> {
+): Record<string, Primitive | UnknownObject | UnknownObject[]> {
   return mapValues(execution.botOutVariables?.values ?? {}, (value) =>
     mapBotOutput(value),
   );
