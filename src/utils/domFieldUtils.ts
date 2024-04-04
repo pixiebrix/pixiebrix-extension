@@ -98,6 +98,7 @@ export async function setFieldValue(
     if (field.textContent === "" && isDraftJsField(field)) {
       // Special handling for DraftJS if the field is empty
       // https://github.com/pixiebrix/pixiebrix-extension/issues/7630
+      // XXX: should this just always send a paste command for Draft.js fields?
       dispatchPasteForDraftJs(field, String(value));
     } else {
       // It automatically triggers an `input` event
