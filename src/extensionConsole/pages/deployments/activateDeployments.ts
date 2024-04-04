@@ -39,12 +39,12 @@ async function activateDeployment({
   let isReactivate = false;
 
   // Clear existing activations of the deployed mod
-  for (const extension of activatedModComponents) {
+  for (const modComponent of activatedModComponents) {
     // Extension won't have recipe if it was locally created by a developer
-    if (extension._recipe?.id === deployment.package.package_id) {
+    if (modComponent._recipe?.id === deployment.package.package_id) {
       dispatch(
         actions.removeExtension({
-          extensionId: extension.id,
+          extensionId: modComponent.id,
         }),
       );
 
