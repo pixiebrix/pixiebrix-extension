@@ -201,7 +201,7 @@ describe("DeploymentsContext", () => {
     expect(screen.queryAllByTestId("Error")).toHaveLength(0);
 
     await waitFor(() => {
-      // Initial fetch with no installed deployments
+      // Initial fetch with old activated deployed mod
       expect(axiosMock.history.post).toHaveLength(1);
     });
 
@@ -210,7 +210,7 @@ describe("DeploymentsContext", () => {
     await waitFor(() => {
       // Refetch after deployment activation
       // TODO: should this be 2?
-      expect(axiosMock.history.post).toHaveLength(1);
+      expect(axiosMock.history.post).toHaveLength(3);
     });
 
     // Permissions only requested once because user has clicked update once
