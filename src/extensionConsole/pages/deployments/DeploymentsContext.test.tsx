@@ -36,6 +36,8 @@ import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
 import extensionsSlice from "@/store/extensionsSlice";
 import { validateTimestamp } from "@/types/helpers";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type Deployment } from "@/types/contract";
 
 const axiosMock = new MockAdapter(axios);
 axiosMock.onGet("/api/me/").reply(200, { flags: [] });
