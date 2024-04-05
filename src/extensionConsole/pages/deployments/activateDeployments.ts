@@ -126,7 +126,9 @@ export function deactivateUnassignedModComponents({
       deactivatedModComponents.push(modComponent);
     } catch (error) {
       reportError(
-        new Error(`Error deactivating unassigned mod components: ${error}`),
+        new Error("Error deactivating unassigned mod component", {
+          cause: error,
+        }),
       );
     }
   }
