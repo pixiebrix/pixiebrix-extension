@@ -170,17 +170,22 @@ function useDeployments(): DeploymentsState {
   );
 
   // Fallback values for loading/error states
-  const { activatableDeployments, extensionUpdateRequired, permissions } =
-    deploymentUpdateState.data ?? {
-      // `useAutoDeploy` expects `null` to represent deployment loading state. It tries to activate once available
-      activatableDeployments: null as ActivatableDeployment[] | null,
-      extensionUpdateRequired: false as boolean,
-      permissions: [] as Permissions.Permissions,
-    };
+  const {
+    activatableDeployments,
+    unassignedModComponents,
+    extensionUpdateRequired,
+    permissions,
+  } = deploymentUpdateState.data ?? {
+    // `useAutoDeploy` expects `null` to represent deployment loading state. It tries to activate once available
+    activatableDeployments: null as ActivatableDeployment[] | null,
+    extensionUpdateRequired: false as boolean,
+    permissions: [] as Permissions.Permissions,
+  };
 
   const { isAutoDeploying } = useAutoDeploy({
     activatableDeployments,
     activatedModComponents,
+    unassignedModComponents,
     extensionUpdateRequired,
   });
 

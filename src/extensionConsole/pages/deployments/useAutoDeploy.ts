@@ -37,11 +37,13 @@ type UseAutoDeployReturn = {
 function useAutoDeploy({
   activatableDeployments,
   activatedModComponents,
+  unassignedModComponents,
   extensionUpdateRequired,
 }: {
   // Expects nullish value if activatableDeployments are uninitialized/not loaded yet
   activatableDeployments: Nullishable<ActivatableDeployment[]>;
   activatedModComponents: ModComponentBase[];
+  unassignedModComponents: ModComponentBase[];
   extensionUpdateRequired: boolean;
 }): UseAutoDeployReturn {
   const dispatch = useDispatch<Dispatch>();
