@@ -19,10 +19,7 @@ import { setCKEditorData } from "@/pageScript/messenger/api";
 import { getSelectorForElement } from "@/contentScript/elementReference";
 import { hasCKEditorClass } from "@/contrib/ckeditor/ckeditorDom";
 import { boolean } from "@/utils/typeUtils";
-import {
-  insertIntoDraftJs,
-  isDraftJsField,
-} from "@/contrib/draftjs/draftJsDom";
+import { isDraftJsField, setDraftJs } from "@/contrib/draftjs/draftJsDom";
 
 export type FieldElement =
   | HTMLInputElement
@@ -86,6 +83,11 @@ export async function setFieldValue(
     return;
   }
 
+  if (isDraftJsField(field)) {
+    setDraftJs(field, String(value));
+    return;
+  }
+
   if (field.isContentEditable) {
     // XXX: Maybe use text-field-edit so that the focus is not altered
 
@@ -93,16 +95,10 @@ export async function setFieldValue(
     field.focus();
 
     // `insertText` acts as a "paste", so if no text is selected it's just appended
-    // FIXME: selectAll is not working on draftjs fields when run from an action in the MV2 sidebar because
-    //  the field.focus() doesn't appear to focus the field
     document.execCommand("selectAll", false);
 
-    if (isDraftJsField(field)) {
-      insertIntoDraftJs(field, String(value));
-    } else {
-      // It automatically triggers an `input` event
-      document.execCommand("insertText", false, String(value));
-    }
+    // It automatically triggers an `input` event
+    document.execCommand("insertText", false, String(value));
 
     return;
   }
