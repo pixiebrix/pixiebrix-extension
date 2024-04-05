@@ -106,3 +106,28 @@ export async function activateDeployments({
     throw errors[0];
   }
 }
+
+export async function deactivateUnassignedModComponents({
+  dispatch,
+  unassignedModComponents,
+}: {
+  dispatch: Dispatch;
+  unassignedModComponents: ModComponentBase[];
+}) {
+  // TODO: wrap in try catch and report error
+
+  for (const modComponent of unassignedModComponents) {
+    dispatch(
+      actions.removeExtension({
+        extensionId: modComponent.id,
+      }),
+    );
+  }
+
+  reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
+    auto: true,
+    deployments: unassignedModComponents.map(
+      (modComponent) => modComponent._deployment.id,
+    ),
+  });
+}
