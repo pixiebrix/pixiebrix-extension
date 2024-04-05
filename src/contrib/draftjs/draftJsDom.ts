@@ -21,18 +21,21 @@
  * - See example for regression testing at {@link https://pbx.vercel.app/advanced-fields/}
  */
 
+import { sleep } from "@/utils/timeUtils";
+
 /**
  * Insert text into a Draft.js field at the cursor.
  */
 export function insertIntoDraftJs(field: HTMLElement, value: string): void {
-  // Using execCommand with `insertText` causes data corruption. See:
+  // Using execCommand with `insertText` causes data corruption. At first, it might appear to work because
+  // the text shows. However, editor interaction will be broken.
+  // See:
   // - https://github.com/pixiebrix/pixiebrix-extension/issues/7630
   // - https://github.com/pixiebrix/pixiebrix-extension/issues/8157
-  // Draft.js can handle the Clipboard `paste` event. Which doesn't work in general contentEditable fields.
+  // Draft.js can handle the Clipboard `paste` event. Which doesn't work in regular contentEditable fields.
   // Source: https://github.com/facebookarchive/draft-js/issues/616#issuecomment-426047799
   const data = new DataTransfer();
   data.setData("text/plain", value);
-  // Note that this event doesn't do anything in regular contentEditable fields.
   field.dispatchEvent(
     new ClipboardEvent("paste", {
       clipboardData: data,
@@ -45,16 +48,20 @@ export function insertIntoDraftJs(field: HTMLElement, value: string): void {
 /**
  * Set the current value of a Draft.js field.
  */
-export function setDraftJs(field: HTMLElement, value: string): void {
-  // FIXME: selectAll doesn't seem to do anything on our demo site. Might have to mess with the Draft.js API in the
-  //   page script.
+export async function setDraftJs(
+  field: HTMLElement,
+  value: string,
+): Promise<void> {
+  // XXX: the sleep approach might be flaky. Might be able to wait for selectionchange
   // https://github.com/facebookarchive/draft-js/issues/1386#issuecomment-341420754
+  // https://github.com/facebookarchive/draft-js/issues/616#issuecomment-1049062655
+
   field.focus();
-  field.click();
+
+  await sleep(1);
   document.execCommand("selectAll", false);
 
-  // At first, document.execCommand "insertText" appears to work. However, backspace, etc. won't work because the field
-  // is corrupted.
+  await sleep(1);
   insertIntoDraftJs(field, value);
 }
 

@@ -84,7 +84,7 @@ export async function setFieldValue(
   }
 
   if (isDraftJsField(field)) {
-    setDraftJs(field, String(value));
+    await setDraftJs(field, String(value));
     return;
   }
 
