@@ -26,9 +26,13 @@ const useDeactivateUnassignedDeploymentsEffect = (
 ) => {
   const dispatch = useDispatch<Dispatch>();
   useEffect(() => {
+    if (unassignedModComponents.length === 0) return;
+
     deactivateUnassignedModComponents({
       dispatch,
       unassignedModComponents,
     });
   }, []);
 };
+
+export default useDeactivateUnassignedDeploymentsEffect;

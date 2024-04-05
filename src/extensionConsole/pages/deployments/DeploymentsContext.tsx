@@ -53,6 +53,7 @@ import type { Deployment } from "@/types/contract";
 import useBrowserIdentifier from "@/hooks/useBrowserIdentifier";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import type { Permissions } from "webextension-polyfill";
+import useDeactivateUnassignedDeploymentsEffect from "@/extensionConsole/pages/deployments/useDeactivateUnassignedDeploymentsEffect";
 
 export type DeploymentsState = {
   /**
@@ -189,6 +190,8 @@ function useDeployments(): DeploymentsState {
     unassignedModComponents,
     extensionUpdateRequired,
   });
+
+  useDeactivateUnassignedDeploymentsEffect(unassignedModComponents);
 
   const handleUpdateFromUserGesture = useCallback(async () => {
     // IMPORTANT: can't do a fetch or any potentially stalling operation (including IDB calls) because the call to

@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  activateDeployments,
-  deactivateUnassignedModComponents,
-} from "@/extensionConsole/pages/deployments/activateDeployments";
+import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { type ModComponentBase } from "@/types/modComponentTypes";
@@ -76,13 +73,6 @@ function useAutoDeploy({
         isActivationInProgress
       ) {
         return;
-      }
-
-      if (unassignedModComponents.length > 0) {
-        deactivateUnassignedModComponents({
-          dispatch,
-          unassignedModComponents,
-        });
       }
 
       // No deployments to deploy or user interaction required
