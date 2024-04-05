@@ -212,6 +212,40 @@ describe("DeploymentsContext", () => {
     expect((options as ModComponentState).extensions).toHaveLength(1);
   });
 
+  it("automatically deactivates unassigned deployments", async () => {
+    const { deployment, modDefinition } = activatableDeploymentFactory({});
+    // Deployment has been unassigned
+    axiosMock.onPost("/api/deployments/").reply(200, []);
+
+    const { getReduxStore } = render(
+      <DeploymentsProvider>
+        <Component />
+      </DeploymentsProvider>,
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            extensionsSlice.actions.activateMod({
+              modDefinition,
+              deployment,
+              screen: "extensionConsole",
+              isReactivate: false,
+            }),
+          );
+        },
+      },
+    );
+
+    await waitFor(() => {
+      // Initial fetch with unassigned mod
+      expect(axiosMock.history.post).toHaveLength(2);
+    });
+
+    const {
+      options: { extensions: activatedModComponents },
+    } = getReduxStore().getState();
+    expect(activatedModComponents).toHaveLength(0);
+  });
+
   it("updating deployment reactivates mod that was previously unmanaged for restricted user", async () => {
     axiosMock.onGet("/api/me/").reply(200, { flags: ["restricted-uninstall"] });
     const { deployment, modDefinition } = activatableDeploymentFactory();
