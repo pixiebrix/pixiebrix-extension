@@ -46,7 +46,7 @@ import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import { useGetDeploymentsQuery } from "@/data/service/api";
 import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import useMemoCompare from "@/hooks/useMemoCompare";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import type { Deployment } from "@/types/contract";
@@ -121,6 +121,16 @@ function useDeployments(): DeploymentsState {
         restricted: restrict("uninstall"),
       });
 
+      const deployedModIds = new Set(
+        deployments.map((deployment) => deployment.package.package_id),
+      );
+
+      const unassignedModComponents = activeExtensions.filter(
+        (activeModComponent) =>
+          !isEmpty(activeModComponent._deployment) &&
+          !deployedModIds.has(activeModComponent._recipe?.id),
+      );
+
       const updatedDeployments = deployments.filter((x) => isUpdated(x));
 
       const [activatableDeployments] = await Promise.all([
@@ -150,6 +160,7 @@ function useDeployments(): DeploymentsState {
 
       return {
         activatableDeployments,
+        unassignedModComponents,
         extensionUpdateRequired: checkExtensionUpdateRequired(
           activatableDeployments,
         ),
