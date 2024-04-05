@@ -57,7 +57,7 @@ describe("useAutoDeploy", () => {
 
       const activatableDeployments: ActivatableDeployment[] | undefined =
         undefined;
-      const installedExtensions = [
+      const activatedModComponents = [
         modComponentFactory(),
         modComponentFactory(),
       ];
@@ -66,7 +66,7 @@ describe("useAutoDeploy", () => {
       const { result } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
-          installedExtensions,
+          activatedModComponents,
           extensionUpdateRequired,
         }),
       );
@@ -78,7 +78,7 @@ describe("useAutoDeploy", () => {
       mockHooks();
 
       const activatableDeployments: ActivatableDeployment[] = [];
-      const installedExtensions = [
+      const activatedModComponents = [
         modComponentFactory(),
         modComponentFactory(),
       ];
@@ -87,7 +87,7 @@ describe("useAutoDeploy", () => {
       const { result } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
-          installedExtensions,
+          activatedModComponents,
           extensionUpdateRequired,
         }),
       );
@@ -107,7 +107,7 @@ describe("useAutoDeploy", () => {
       const activatableDeployments: ActivatableDeployment[] = [
         activatableDeploymentFactory(),
       ];
-      const installedExtensions = [
+      const activatedModComponents = [
         modComponentFactory(),
         modComponentFactory(),
       ];
@@ -116,7 +116,7 @@ describe("useAutoDeploy", () => {
       const { result, waitForValueToChange } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
-          installedExtensions,
+          activatedModComponents,
           extensionUpdateRequired,
         }),
       );
@@ -125,7 +125,7 @@ describe("useAutoDeploy", () => {
       expect(activateDeployments).toHaveBeenCalledWith({
         dispatch: expect.any(Function),
         activatableDeployments,
-        installed: installedExtensions,
+        activatedModComponents,
       });
 
       await waitForValueToChange(() => result.current.isAutoDeploying);
@@ -138,7 +138,7 @@ describe("useAutoDeploy", () => {
       const activatableDeployments: ActivatableDeployment[] = [
         activatableDeploymentFactory(),
       ];
-      const installedExtensions = [
+      const activatedModComponents = [
         modComponentFactory(),
         modComponentFactory(),
       ];
@@ -147,7 +147,7 @@ describe("useAutoDeploy", () => {
       const { result, waitForValueToChange } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
-          installedExtensions,
+          activatedModComponents,
           extensionUpdateRequired,
         }),
       );
@@ -171,7 +171,7 @@ describe("useAutoDeploy", () => {
       const activatableDeployment: ActivatableDeployment =
         activatableDeploymentFactory();
 
-      const installedExtensions = [
+      const activatedModComponents = [
         modComponentFactory(),
         modComponentFactory(),
       ];
@@ -181,7 +181,7 @@ describe("useAutoDeploy", () => {
         ({ activatableDeployments }) =>
           useAutoDeploy({
             activatableDeployments,
-            installedExtensions,
+            activatedModComponents,
             extensionUpdateRequired,
           }),
         {
@@ -208,7 +208,7 @@ describe("useAutoDeploy", () => {
       const activatableDeployments: ActivatableDeployment[] = [
         activatableDeploymentFactory(),
       ];
-      const installedExtensions = [
+      const activatedModComponents = [
         modComponentFactory(),
         modComponentFactory(),
       ];
@@ -217,7 +217,7 @@ describe("useAutoDeploy", () => {
       const { result } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
-          installedExtensions,
+          activatedModComponents,
           extensionUpdateRequired,
         }),
       );
@@ -231,7 +231,7 @@ describe("useAutoDeploy", () => {
       const activatableDeployments: ActivatableDeployment[] = [
         activatableDeploymentFactory(),
       ];
-      const installedExtensions = [
+      const activatedModComponents = [
         modComponentFactory(),
         modComponentFactory(),
       ];
@@ -240,7 +240,7 @@ describe("useAutoDeploy", () => {
       const { result } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
-          installedExtensions,
+          activatedModComponents,
           extensionUpdateRequired,
         }),
       );

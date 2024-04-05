@@ -129,4 +129,93 @@ describe("CustomFormComponent", () => {
       { submissionCount: 3 },
     );
   });
+
+  test("can reset on submit", async () => {
+    const initialValue = "";
+
+    const schema: Schema = {
+      type: "object",
+      properties: {
+        prompt: { type: "string", title: "Prompt" },
+      },
+    };
+
+    const submitForm = jest.fn();
+    render(
+      <CustomFormComponent
+        schema={schema}
+        formData={{ prompt: initialValue }}
+        uiSchema={{}}
+        submitCaption="Save"
+        autoSave={false}
+        onSubmit={submitForm}
+        resetOnSubmit
+      />,
+    );
+
+    const textBox = screen.getByRole("textbox", {
+      name: "Prompt",
+    });
+
+    await userEvent.type(textBox, "Some text");
+
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(submitForm).toHaveBeenCalledWith(
+      { prompt: "Some text" },
+      { submissionCount: 1 },
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(submitForm).toHaveBeenCalledWith(
+      // Called with the initial value because the form was reset
+      { prompt: initialValue },
+      { submissionCount: 2 },
+    );
+  });
+
+  test("don't reset by default", async () => {
+    const initialValue = "";
+
+    const schema: Schema = {
+      type: "object",
+      properties: {
+        prompt: { type: "string", title: "Prompt" },
+      },
+    };
+
+    const submitForm = jest.fn();
+    render(
+      <CustomFormComponent
+        schema={schema}
+        formData={{ prompt: initialValue }}
+        uiSchema={{}}
+        submitCaption="Save"
+        autoSave={false}
+        onSubmit={submitForm}
+      />,
+    );
+
+    const textBox = screen.getByRole("textbox", {
+      name: "Prompt",
+    });
+
+    await userEvent.type(textBox, "Some text");
+
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(submitForm).toHaveBeenCalledWith(
+      { prompt: "Some text" },
+      { submissionCount: 1 },
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(submitForm).toHaveBeenCalledWith(
+      // Called with same value because the form was not reset
+      { prompt: "Some text" },
+      { submissionCount: 2 },
+    );
+  });
 });
