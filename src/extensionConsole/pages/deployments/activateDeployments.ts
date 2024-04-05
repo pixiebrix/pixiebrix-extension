@@ -106,3 +106,37 @@ export async function activateDeployments({
     throw errors[0];
   }
 }
+
+export function deactivateUnassignedModComponents({
+  dispatch,
+  unassignedModComponents,
+}: {
+  dispatch: Dispatch;
+  unassignedModComponents: ModComponentBase[];
+}) {
+  const deactivatedModComponents = [];
+
+  for (const modComponent of unassignedModComponents) {
+    try {
+      dispatch(
+        actions.removeExtension({
+          extensionId: modComponent.id,
+        }),
+      );
+      deactivatedModComponents.push(modComponent);
+    } catch (error) {
+      reportError(
+        new Error("Error deactivating unassigned mod component", {
+          cause: error,
+        }),
+      );
+    }
+  }
+
+  reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
+    auto: true,
+    deployments: deactivatedModComponents.map(
+      (modComponent) => modComponent._deployment.id,
+    ),
+  });
+}
