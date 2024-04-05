@@ -1,13 +1,14 @@
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { type JsonObject } from "type-fest";
 import type { Nullishable } from "@/utils/nullishUtils";
+import { type MessageContext } from "@/types/loggerTypes";
+import { isRegistryId } from "@/types/helpers";
 
 /**
  * Select data to report to the team admins for the deployment
  */
 export function selectEventData(
   modComponent: Nullishable<ModComponentBase>,
-): JsonObject {
+): MessageContext {
   if (modComponent == null) {
     return {};
   }
@@ -19,9 +20,11 @@ export function selectEventData(
       label: modComponent.label,
       extensionId: modComponent.id,
       deploymentId: modComponent._deployment?.id,
-      extensionPointId: modComponent.extensionPointId,
-      blueprintId: modComponent._recipe?.id ?? null,
-      blueprintVersion: modComponent._recipe?.version ?? null,
+      extensionPointId: isRegistryId(modComponent.extensionPointId)
+        ? modComponent.extensionPointId
+        : undefined,
+      blueprintId: modComponent._recipe?.id,
+      blueprintVersion: modComponent._recipe?.version,
     };
   }
 
@@ -30,7 +33,7 @@ export function selectEventData(
       label: modComponent.label,
       extensionId: modComponent.id,
       blueprintId: modComponent._recipe?.id,
-      blueprintVersion: modComponent._recipe?.version ?? null,
+      blueprintVersion: modComponent._recipe?.version,
     };
   }
 

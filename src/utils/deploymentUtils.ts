@@ -81,21 +81,21 @@ export const makeUpdatedFilter =
     }
 
     // Local copies an unrestricted user (i.e., a developer role) is working on
-    const blueprintMatch = activatedModComponents.find(
+    const modMatch = activatedModComponents.find(
       (modComponent) =>
         modComponent._deployment == null &&
         modComponent._recipe?.id === deployment.package.package_id,
     );
 
-    if (!deploymentMatch && !blueprintMatch) {
+    if (!deploymentMatch && !modMatch) {
       return true;
     }
 
     if (
-      blueprintMatch &&
+      modMatch &&
       gte(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- blueprintMatch is checked above
-        blueprintMatch._recipe!.version!,
+        modMatch._recipe!.version!,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- deployment package is checked above
         deployment.package.version!,
       )

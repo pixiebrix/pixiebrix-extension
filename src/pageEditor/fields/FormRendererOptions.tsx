@@ -28,6 +28,7 @@ import { useField, useFormikContext } from "formik";
 import { partial } from "lodash";
 import {
   CUSTOM_FORM_SCHEMA,
+  type PostSubmitAction,
   type Storage,
 } from "@/bricks/renderers/customForm";
 import AppApiIntegrationDependencyField from "@/components/fields/schemaFields/AppApiIntegrationDependencyField";
@@ -41,6 +42,8 @@ import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
 import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import type { PipelineExpression } from "@/types/runtimeTypes";
+import { Collapse } from "react-bootstrap";
 
 const recordIdSchema: Schema = {
   type: "string",
@@ -62,15 +65,20 @@ function usePruneUnusedServiceDependencies() {
   }, [formState, setFormState]);
 }
 
-type StringOption = {
+type StringOption<Value extends string = string> = {
   label: string;
-  value: string;
+  value: Value;
 };
 
 const storageTypeOptions: Options<StringOption> = [
   { value: "state", label: "Mod Variables / Page State" },
   { value: "database", label: "Database" },
   { value: "localStorage", label: "Local Storage (Deprecated)" },
+];
+
+const postSubmitActionOptions: Options<StringOption<PostSubmitAction>> = [
+  { value: "save", label: "Save Data" },
+  { value: "reset", label: "Reset Form" },
 ];
 
 const DEFAULT_STORAGE_TYPE = "state";
@@ -174,6 +182,12 @@ const FormSubmissionOptions: React.FC<{
   makeName: (...names: string[]) => string;
 }> = ({ makeName }) => {
   const [{ value: autoSave }] = useField<boolean>(makeName("autoSave"));
+  const [{ value: postSubmitAction = "save" }, , postSubmitHelpers] =
+    useField<PostSubmitAction>(makeName("postSubmitAction"));
+  const [{ value: onSubmit }] = useField<PipelineExpression | null>(
+    makeName("onSubmit"),
+  );
+
   const hideSubmitButtonName = makeName(
     "uiSchema",
     "ui:submitButtonOptions",
@@ -220,9 +234,32 @@ const FormSubmissionOptions: React.FC<{
 
       <PipelineToggleField
         label="Custom Submit Handler"
-        description="Toggle on to run custom actions before the data is saved. Edit the actions in the Brick Actions Panel"
+        description="Toggle on to run custom actions before the data is saved or form is reset. Edit the actions in the Brick Actions Panel"
         name={makeName("onSubmit")}
+        onAfterChange={async (value) => {
+          // Clean up the postSubmitAction if the custom submit handler is disabled
+          if (!value) {
+            await postSubmitHelpers.setValue(null);
+          }
+        }}
       />
+
+      <Collapse in={Boolean(onSubmit)}>
+        <FieldTemplate
+          name={makeName("postSubmitAction")}
+          label="Post Submit Action"
+          description="The action to perform after the custom submit handler is run"
+          as={Select}
+          options={postSubmitActionOptions}
+          value={
+            postSubmitActionOptions.find((x) => x.value === postSubmitAction) ??
+            postSubmitActionOptions[0]
+          }
+          onChange={async ({ value }: StringOption<PostSubmitAction>) => {
+            await postSubmitHelpers.setValue(value);
+          }}
+        />
+      </Collapse>
     </>
   );
 };

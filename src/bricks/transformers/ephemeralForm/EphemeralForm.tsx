@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React from "react";
 import {
   cancelForm,
   getFormDefinition,
@@ -24,12 +24,12 @@ import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type Target } from "@/types/messengerTypes";
 import { validateUUID } from "@/types/helpers";
-import reportError from "@/telemetry/reportError";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import useAsyncState from "@/hooks/useAsyncState";
 import { EphemeralFormContent } from "./EphemeralFormContent";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import useReportError from "@/hooks/useReportError";
 
 const ModalLayout: React.FC = ({ children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
@@ -66,13 +66,7 @@ const EphemeralForm: React.FC = () => {
     error,
   } = useAsyncState(async () => getFormDefinition(target, nonce), [nonce]);
 
-  // Report error once
-  useEffect(() => {
-    if (error) {
-      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2769
-      reportError(error);
-    }
-  }, [error]);
+  useReportError(error);
 
   if (isLoading) {
     return (

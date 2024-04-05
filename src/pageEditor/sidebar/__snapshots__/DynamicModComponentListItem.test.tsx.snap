@@ -13,7 +13,7 @@ exports[`DynamicModComponentListItem it renders active element 1`] = `
       >
         <svg
           aria-hidden="true"
-          class="svg-inline--fa fa-window-maximize fa-w-16 "
+          class="svg-inline--fa fa-window-maximize fa-w-16 fa-fw "
           data-icon="window-maximize"
           data-prefix="fas"
           focusable="false"
@@ -105,7 +105,7 @@ exports[`DynamicModComponentListItem it renders not active element 1`] = `
       >
         <svg
           aria-hidden="true"
-          class="svg-inline--fa fa-window-maximize fa-w-16 "
+          class="svg-inline--fa fa-window-maximize fa-w-16 fa-fw "
           data-icon="window-maximize"
           data-prefix="fas"
           focusable="false"

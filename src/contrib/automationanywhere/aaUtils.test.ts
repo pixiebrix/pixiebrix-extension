@@ -191,6 +191,109 @@ describe("selectBotOutput", () => {
               },
             ],
           },
+          out_Table: {
+            type: "TABLE",
+            boolean: "",
+            string: "",
+            number: "",
+            dictionary: [],
+            table: {
+              schema: [
+                {
+                  name: "Date",
+                  type: "STRING",
+                  subtype: "STRING",
+                },
+                {
+                  name: "Items",
+                  type: "STRING",
+                  subtype: "STRING",
+                },
+                {
+                  name: "Total",
+                  type: "STRING",
+                  subtype: "STRING",
+                },
+              ],
+              rows: [
+                {
+                  values: [
+                    {
+                      type: "STRING",
+                      string: "2022-01-01",
+                      number: "",
+                      boolean: "",
+                      dictionary: [],
+                    },
+                    {
+                      type: "STRING",
+                      string: "Foo, bar, baz",
+                      number: "",
+                      boolean: "",
+                      dictionary: [],
+                    },
+                    {
+                      type: "STRING",
+                      string: "42",
+                      number: "",
+                      boolean: "",
+                      dictionary: [],
+                    },
+                  ],
+                },
+                {
+                  values: [
+                    {
+                      type: "STRING",
+                      string: "2022-01-02",
+                      number: "",
+                      boolean: "",
+                      dictionary: [],
+                    },
+                    {
+                      type: "STRING",
+                      string: "Qux, quux",
+                      number: "",
+                      boolean: "",
+                      dictionary: [],
+                    },
+                    {
+                      type: "STRING",
+                      string: "24",
+                      number: "",
+                      boolean: "",
+                      dictionary: [],
+                    },
+                  ],
+                },
+                {
+                  values: [
+                    {
+                      type: "STRING",
+                      string: "2022-01-03",
+                      number: "",
+                      boolean: "",
+                      dictionary: [],
+                    },
+                    {
+                      type: "STRING",
+                      string: "Corge",
+                      number: "",
+                      boolean: "",
+                      dictionary: [],
+                    },
+                    {
+                      type: "STRING",
+                      string: "12",
+                      number: "",
+                      boolean: "",
+                      dictionary: [],
+                    },
+                  ],
+                },
+              ],
+            },
+          },
         },
       },
     };
@@ -204,6 +307,23 @@ describe("selectBotOutput", () => {
         baz: true,
         qux: 42,
       },
+      out_Table: [
+        {
+          Date: "2022-01-01",
+          Items: "Foo, bar, baz",
+          Total: "42",
+        },
+        {
+          Date: "2022-01-02",
+          Items: "Qux, quux",
+          Total: "24",
+        },
+        {
+          Date: "2022-01-03",
+          Items: "Corge",
+          Total: "12",
+        },
+      ],
     });
   });
 });
