@@ -177,8 +177,8 @@ export const selectDirtyMetadataForModId =
 const modComponentIsDirtySelector = createSelector(
   selectIsModComponentDirtyById,
   (_state: RootState, modComponentId: UUID) => modComponentId,
-  // eslint-disable-next-line security/detect-object-injection -- id extracted from component
   (isModComponentDirtyById, modComponentId) =>
+    // eslint-disable-next-line security/detect-object-injection -- UUID
     isModComponentDirtyById[modComponentId] ?? false,
 );
 
