@@ -115,11 +115,6 @@ const ModalContent: React.FC<ContentProps> = ({
     [onSave, onClose],
   );
 
-  const validationSchemaState = useAsyncState<Yup.AnyObjectSchema>(
-    async () => createYupValidationSchema(integration),
-    [integration.schema],
-  );
-
   const Editor = useMemo<React.FC<BlockOptionProps>>(() => {
     if (optionsRegistry.has(integration.id)) {
       return optionsRegistry.get(integration.id);
@@ -127,6 +122,11 @@ const ModalContent: React.FC<ContentProps> = ({
 
     return genericOptionsFactory(integration.schema, integration.uiSchema);
   }, [integration]);
+
+  const validationSchemaState = useAsyncState<Yup.AnyObjectSchema>(
+    async () => createYupValidationSchema(integration),
+    [integration.schema],
+  );
 
   const renderBody: RenderBody = () => (
     <Modal.Body>
