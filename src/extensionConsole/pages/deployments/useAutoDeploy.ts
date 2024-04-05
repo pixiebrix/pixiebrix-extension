@@ -36,12 +36,12 @@ type UseAutoDeployReturn = {
 
 function useAutoDeploy({
   activatableDeployments,
-  installedExtensions,
+  activatedModComponents,
   extensionUpdateRequired,
 }: {
   // Expects nullish value if activatableDeployments are uninitialized/not loaded yet
   activatableDeployments: Nullishable<ActivatableDeployment[]>;
-  installedExtensions: ModComponentBase[];
+  activatedModComponents: ModComponentBase[];
   extensionUpdateRequired: boolean;
 }): UseAutoDeployReturn {
   const dispatch = useDispatch<Dispatch>();
@@ -52,7 +52,7 @@ function useAutoDeploy({
   ] = useState(true);
   // Only `true` while deployments are being activated. Prevents multiple activations from happening at once.
   const [isActivationInProgress, setIsActivationInProgress] = useState(false);
-  const { hasPermissions } = useModPermissions(installedExtensions);
+  const { hasPermissions } = useModPermissions(activatedModComponents);
   const { restrict } = useFlags();
 
   /**
@@ -90,7 +90,7 @@ function useAutoDeploy({
         await activateDeployments({
           dispatch,
           activatableDeployments,
-          activatedModComponents: installedExtensions,
+          activatedModComponents: activatedModComponents,
         });
         notify.success("Updated team deployments");
       } catch (error) {

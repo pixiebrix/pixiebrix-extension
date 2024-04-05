@@ -66,7 +66,7 @@ describe("useAutoDeploy", () => {
       const { result } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
-          installedExtensions,
+          activatedModComponents: installedExtensions,
           extensionUpdateRequired,
         }),
       );
@@ -87,7 +87,7 @@ describe("useAutoDeploy", () => {
       const { result } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
-          installedExtensions,
+          activatedModComponents: installedExtensions,
           extensionUpdateRequired,
         }),
       );
@@ -116,7 +116,7 @@ describe("useAutoDeploy", () => {
       const { result, waitForValueToChange } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
-          installedExtensions,
+          activatedModComponents: installedExtensions,
           extensionUpdateRequired,
         }),
       );
@@ -147,7 +147,7 @@ describe("useAutoDeploy", () => {
       const { result, waitForValueToChange } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
-          installedExtensions,
+          activatedModComponents: installedExtensions,
           extensionUpdateRequired,
         }),
       );
@@ -181,7 +181,7 @@ describe("useAutoDeploy", () => {
         ({ activatableDeployments }) =>
           useAutoDeploy({
             activatableDeployments,
-            installedExtensions,
+            activatedModComponents: installedExtensions,
             extensionUpdateRequired,
           }),
         {
@@ -217,7 +217,7 @@ describe("useAutoDeploy", () => {
       const { result } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
-          installedExtensions,
+          activatedModComponents: installedExtensions,
           extensionUpdateRequired,
         }),
       );
@@ -240,7 +240,7 @@ describe("useAutoDeploy", () => {
       const { result } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
-          installedExtensions,
+          activatedModComponents: installedExtensions,
           extensionUpdateRequired,
         }),
       );
