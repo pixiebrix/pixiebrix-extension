@@ -94,10 +94,10 @@ export type DeploymentsState = {
 function useDeployments(): DeploymentsState {
   const dispatch = useDispatch<Dispatch>();
   const { data: browserIdentifier } = useBrowserIdentifier();
-  const activeExtensions = useSelector(selectActivatedModComponents);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
   const { state: flagsState } = useFlags();
   const activeDeployments = useMemoCompare<InstalledDeployment[]>(
-    selectInstalledDeployments(activeExtensions),
+    selectInstalledDeployments(activatedModComponents),
     isEqual,
   );
 
@@ -117,7 +117,7 @@ function useDeployments(): DeploymentsState {
     deploymentsState,
     flagsState,
     async (deployments: Deployment[], { restrict }: Restrict) => {
-      const isUpdated = makeUpdatedFilter(activeExtensions, {
+      const isUpdated = makeUpdatedFilter(activatedModComponents, {
         restricted: restrict("uninstall"),
       });
 
@@ -125,7 +125,7 @@ function useDeployments(): DeploymentsState {
         deployments.map((deployment) => deployment.package.package_id),
       );
 
-      const unassignedModComponents = activeExtensions.filter(
+      const unassignedModComponents = activatedModComponents.filter(
         (activeModComponent) =>
           !isEmpty(activeModComponent._deployment) &&
           !deployedModIds.has(activeModComponent._recipe?.id),
@@ -180,7 +180,7 @@ function useDeployments(): DeploymentsState {
 
   const { isAutoDeploying } = useAutoDeploy({
     activatableDeployments,
-    installedExtensions: activeExtensions,
+    installedExtensions: activatedModComponents,
     extensionUpdateRequired,
   });
 
@@ -235,13 +235,13 @@ function useDeployments(): DeploymentsState {
       await activateDeployments({
         dispatch,
         activatableDeployments,
-        activatedModComponents: activeExtensions,
+        activatedModComponents: activatedModComponents,
       });
       notify.success("Updated team deployments");
     } catch (error) {
       notify.error({ message: "Error updating team deployments", error });
     }
-  }, [dispatch, activatableDeployments, permissions, activeExtensions]);
+  }, [dispatch, activatableDeployments, permissions, activatedModComponents]);
 
   const updateExtension = useCallback(async () => {
     await reloadIfNewVersionIsReady();
