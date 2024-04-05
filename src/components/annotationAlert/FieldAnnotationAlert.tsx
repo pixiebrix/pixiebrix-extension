@@ -28,7 +28,6 @@ import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 const FieldAnnotationAlert: React.FunctionComponent<
   FieldAnnotation & { className?: string }
 > = ({ message, type, actions, className }) => {
-  console.log({ message, type, actions });
   let Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   switch (type) {
     case AnnotationType.Error: {
