@@ -242,7 +242,7 @@ describe("DeploymentsContext", () => {
 
     const {
       options: { extensions: activatedModComponents },
-    } = getReduxStore().getState();
+    } = getReduxStore().getState() as { options: ModComponentState };
     expect(activatedModComponents).toHaveLength(0);
   });
 
