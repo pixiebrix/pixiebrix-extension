@@ -16,11 +16,24 @@
  */
 
 /**
- * DraftJS doesn't handle `insertText` correctly in most cases, but it can handle this
- * event. Note that this event doesn't do anything in regular contentEditable fields.
- * Source: https://github.com/facebookarchive/draft-js/issues/616#issuecomment-426047799
+ * @file This file contains utility functions for interacting with Draft.js editors.
+ * - See {@link https://draftjs.org/} for more information.
+ * - See example for regression testing at {@link https://pbx.vercel.app/advanced-fields/}
  */
-export function dispatchPasteForDraftJs(field: HTMLElement, value: string) {
+
+import { sleep } from "@/utils/timeUtils";
+
+/**
+ * Insert text into a Draft.js field at the cursor.
+ */
+export function insertIntoDraftJs(field: HTMLElement, value: string): void {
+  // Using execCommand with `insertText` causes data corruption. At first, it might appear to work because
+  // the text shows. However, editor interaction will be broken.
+  // See:
+  // - https://github.com/pixiebrix/pixiebrix-extension/issues/7630
+  // - https://github.com/pixiebrix/pixiebrix-extension/issues/8157
+  // Draft.js can handle the Clipboard `paste` event. Which doesn't work in regular contentEditable fields.
+  // Source: https://github.com/facebookarchive/draft-js/issues/616#issuecomment-426047799
   const data = new DataTransfer();
   data.setData("text/plain", value);
   field.dispatchEvent(
@@ -32,6 +45,29 @@ export function dispatchPasteForDraftJs(field: HTMLElement, value: string) {
   );
 }
 
+/**
+ * Set the current value of a Draft.js field.
+ */
+export async function setDraftJs(
+  field: HTMLElement,
+  value: string,
+): Promise<void> {
+  // XXX: the sleep approach might be flaky. Might be able to wait for selectionchange
+  // https://github.com/facebookarchive/draft-js/issues/1386#issuecomment-341420754
+  // https://github.com/facebookarchive/draft-js/issues/616#issuecomment-1049062655
+
+  field.focus();
+
+  await sleep(1);
+  document.execCommand("selectAll", false);
+
+  await sleep(1);
+  insertIntoDraftJs(field, value);
+}
+
+/**
+ * Return true if the element is or is contained inside a DraftJS field.
+ */
 export function isDraftJsField(element: HTMLElement): boolean {
   return Boolean(element.closest(".DraftEditor-root"));
 }
