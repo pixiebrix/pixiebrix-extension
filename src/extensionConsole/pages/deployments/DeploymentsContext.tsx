@@ -187,7 +187,6 @@ function useDeployments(): DeploymentsState {
   const { isAutoDeploying } = useAutoDeploy({
     activatableDeployments,
     activatedModComponents,
-    unassignedModComponents,
     extensionUpdateRequired,
   });
 

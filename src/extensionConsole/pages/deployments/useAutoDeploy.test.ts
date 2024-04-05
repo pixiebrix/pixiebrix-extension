@@ -67,7 +67,6 @@ describe("useAutoDeploy", () => {
         useAutoDeploy({
           activatableDeployments,
           activatedModComponents,
-          unassignedModComponents: [],
           extensionUpdateRequired,
         }),
       );
@@ -89,7 +88,6 @@ describe("useAutoDeploy", () => {
         useAutoDeploy({
           activatableDeployments,
           activatedModComponents,
-          unassignedModComponents: [],
           extensionUpdateRequired,
         }),
       );
@@ -119,7 +117,6 @@ describe("useAutoDeploy", () => {
         useAutoDeploy({
           activatableDeployments,
           activatedModComponents,
-          unassignedModComponents: [],
           extensionUpdateRequired,
         }),
       );
@@ -151,7 +148,6 @@ describe("useAutoDeploy", () => {
         useAutoDeploy({
           activatableDeployments,
           activatedModComponents,
-          unassignedModComponents: [],
           extensionUpdateRequired,
         }),
       );
@@ -186,7 +182,6 @@ describe("useAutoDeploy", () => {
           useAutoDeploy({
             activatableDeployments,
             activatedModComponents,
-            unassignedModComponents: [],
             extensionUpdateRequired,
           }),
         {
@@ -223,7 +218,6 @@ describe("useAutoDeploy", () => {
         useAutoDeploy({
           activatableDeployments,
           activatedModComponents,
-          unassignedModComponents: [],
           extensionUpdateRequired,
         }),
       );
@@ -247,7 +241,6 @@ describe("useAutoDeploy", () => {
         useAutoDeploy({
           activatableDeployments,
           activatedModComponents,
-          unassignedModComponents: [],
           extensionUpdateRequired,
         }),
       );
