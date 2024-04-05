@@ -102,7 +102,7 @@ function useAutoDeploy({
         await activateDeployments({
           dispatch,
           activatableDeployments,
-          activatedModComponents: activatedModComponents,
+          activatedModComponents,
         });
         notify.success("Updated team deployments");
       } catch (error) {
