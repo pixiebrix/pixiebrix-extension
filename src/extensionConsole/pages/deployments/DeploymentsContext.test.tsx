@@ -205,7 +205,6 @@ describe("DeploymentsContext", () => {
 
     await waitFor(() => {
       // Refetch after deployment activation
-      // TODO: should this be 2?
       expect(axiosMock.history.post).toHaveLength(3);
     });
 
@@ -251,12 +250,6 @@ describe("DeploymentsContext", () => {
     });
 
     await userEvent.click(screen.getByText("Update"));
-
-    await waitFor(() => {
-      // Refetch after deployment activation
-      // TODO: should this be 2?
-      //expect(axiosMock.history.post).toHaveLength(1);
-    });
 
     const {
       options: { extensions: activatedModComponents },
