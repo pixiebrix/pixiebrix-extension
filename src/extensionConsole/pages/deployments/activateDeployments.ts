@@ -107,7 +107,7 @@ export async function activateDeployments({
   }
 }
 
-export async function deactivateUnassignedModComponents({
+export function deactivateUnassignedModComponents({
   dispatch,
   unassignedModComponents,
 }: {

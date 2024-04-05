@@ -179,6 +179,7 @@ function useDeployments(): DeploymentsState {
     // `useAutoDeploy` expects `null` to represent deployment loading state. It tries to activate once available
     activatableDeployments: null as ActivatableDeployment[] | null,
     extensionUpdateRequired: false as boolean,
+    unassignedModComponents: [],
     permissions: [] as Permissions.Permissions,
   };
 
@@ -240,7 +241,7 @@ function useDeployments(): DeploymentsState {
       await activateDeployments({
         dispatch,
         activatableDeployments,
-        activatedModComponents: activatedModComponents,
+        activatedModComponents,
       });
       notify.success("Updated team deployments");
     } catch (error) {
