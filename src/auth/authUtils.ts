@@ -26,7 +26,6 @@ import { type MeOrganizationMembership } from "@/data/model/MeOrganizationMember
 import { convertToLegacyUserRole } from "@/data/model/UserOrganizationMembershipRole";
 import { type Me } from "@/data/model/Me";
 
-// Used by the app
 function selectOrganizations(
   organizationMemberships: Nullishable<MeOrganizationMembership[]>,
 ): AuthUserOrganization[] {
