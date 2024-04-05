@@ -48,6 +48,7 @@
     "./auth/authTypes.ts",
     "./auth/authUtils.ts",
     "./auth/featureFlagStorage.ts",
+    "./auth/selectAuthUserOrganizations.ts",
     "./auth/useLinkState.ts",
     "./auth/usePartnerAuthData.ts",
     "./background/auth/authHelpers.test.ts",
