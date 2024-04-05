@@ -107,17 +107,17 @@ const ModalContent: React.FC<ContentProps> = ({
     `Configure ${truncate(integration.name, { length: 15 })}`,
   );
 
-  const validationSchemaState = useAsyncState<Yup.AnyObjectSchema>(
-    async () => createYupValidationSchema(integration),
-    [integration.schema],
-  );
-
   const onSubmit = useCallback<OnSubmit<IntegrationConfig>>(
     async (newIntegrationConfig) => {
       await onSave(newIntegrationConfig);
       onClose();
     },
     [onSave, onClose],
+  );
+
+  const validationSchemaState = useAsyncState<Yup.AnyObjectSchema>(
+    async () => createYupValidationSchema(integration),
+    [integration.schema],
   );
 
   const Editor = useMemo<React.FC<BlockOptionProps>>(() => {
