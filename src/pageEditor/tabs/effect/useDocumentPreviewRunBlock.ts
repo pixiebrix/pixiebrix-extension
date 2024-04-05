@@ -20,8 +20,8 @@ import { usePreviewInfo } from "@/pageEditor/tabs/effect/BrickPreview";
 import { isTriggerExtensionPoint } from "@/pageEditor/starterBricks/formStateTypes";
 import { useSelector } from "react-redux";
 import {
-  selectActiveElement,
-  selectActiveElementNodeInfo,
+  selectActiveModComponentFormState,
+  selectActiveModComponentNodeInfo,
   selectParentBlockInfo,
 } from "@/pageEditor/slices/editorSelectors";
 import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
@@ -109,10 +109,10 @@ export default function useDocumentPreviewRunBlock(
     apiVersion,
     integrationDependencies,
     extensionPoint,
-  } = useSelector(selectActiveElement);
+  } = useSelector(selectActiveModComponentFormState);
 
   const { blockConfig } = useSelector(
-    selectActiveElementNodeInfo(blockInstanceId),
+    selectActiveModComponentNodeInfo(blockInstanceId),
   );
 
   const {

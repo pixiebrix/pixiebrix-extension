@@ -29,7 +29,7 @@ import {
   useUpdateRecipeMutation as useUpdateRecipeMutationMock,
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
 } from "@/data/service/api";
-import { selectElements } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentFormStates } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
 import menuItem from "@/pageEditor/starterBricks/menuItem";
 import pDefer from "p-defer";
@@ -252,7 +252,7 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isSaving).toBe(true);
 
     // Check new element added to redux store
-    const elements = selectElements(store.getState());
+    const elements = selectModComponentFormStates(store.getState());
     expect(elements).toHaveLength(2);
     expect(elements[0].recipe).toStrictEqual({
       ...recipe.metadata,
@@ -293,7 +293,7 @@ describe("saving a Recipe Extension", () => {
     await creatingElementDeferred.promise;
 
     // Check the original recipe element is uninstalled
-    expect(selectElements(store.getState())).toHaveLength(1);
+    expect(selectModComponentFormStates(store.getState())).toHaveLength(1);
 
     // Waiting for the saveElementAsPersonalExtension to complete entirely
     await savingElementPromise;
@@ -347,7 +347,7 @@ describe("saving a Recipe Extension", () => {
       modId: newRecipeMeta.id,
     });
 
-    const elements = selectElements(store.getState());
+    const elements = selectModComponentFormStates(store.getState());
     expect(elements).toHaveLength(1);
     expect(createMock).toHaveBeenCalledTimes(1);
 
@@ -441,7 +441,7 @@ describe("saving a Recipe Extension", () => {
       modId: newRecipeMeta.id,
     });
 
-    const elements = selectElements(store.getState());
+    const elements = selectModComponentFormStates(store.getState());
     expect(elements).toHaveLength(1);
     expect(createMock).toHaveBeenCalledTimes(1);
 

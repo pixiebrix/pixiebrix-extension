@@ -21,9 +21,9 @@ import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import {
-  selectActiveElement,
+  selectActiveModComponentFormState,
   selectEditorModalVisibilities,
-  selectInstalledRecipeMetadatas,
+  selectInstalledModMetadatas,
 } from "@/pageEditor/slices/editorSelectors";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import notify from "@/utils/notify";
@@ -58,11 +58,11 @@ const formStateSchema = object({
 });
 
 const AddToRecipeModal: React.FC = () => {
-  const { isAddToRecipeModalVisible: show } = useSelector(
+  const { isAddToModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
-  const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
-  const activeElement = useSelector(selectActiveElement);
+  const recipeMetadatas = useSelector(selectInstalledModMetadatas);
+  const activeElement = useSelector(selectActiveModComponentFormState);
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
 
   const recipeMetadataById = useMemo(() => {

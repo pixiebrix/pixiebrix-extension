@@ -27,7 +27,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
-import { selectModuleListExpanded } from "@/pageEditor/slices/editorSelectors";
+import { selectIsEditorSidebarExpanded } from "@/pageEditor/slices/editorSelectors";
 import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
@@ -51,7 +51,7 @@ const CollapsedElement: React.FC<
 const Sidebar: React.VFC = () => {
   const dispatch = useDispatch();
 
-  const expanded = useSelector(selectModuleListExpanded);
+  const expanded = useSelector(selectIsEditorSidebarExpanded);
 
   const { flagOn } = useFlags();
   const showDeveloperUI =

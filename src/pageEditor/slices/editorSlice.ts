@@ -37,11 +37,11 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
-  selectActiveElement,
-  selectActiveElementUIState,
+  selectActiveModComponentFormState,
+  selectActiveModComponentUIState,
   selectActiveNodeUIState,
-  selectNotDeletedElements,
-  selectNotDeletedExtensions,
+  selectNotDeletedModComponentFormStates,
+  selectNotDeletedActivatedModComponents,
 } from "./editorSelectors";
 import {
   isQuickBarExtensionPoint,
@@ -127,7 +127,7 @@ const cloneActiveExtension = createAsyncThunk<
 >("editor/cloneActiveExtension", async (arg, thunkAPI) => {
   const state = thunkAPI.getState();
   const newElement = await produce(
-    selectActiveElement(state),
+    selectActiveModComponentFormState(state),
     async (draft) => {
       draft.uuid = uuidv4();
       draft.label += " (Copy)";
@@ -152,8 +152,10 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
   void,
   { state: EditorRootState & ModComponentsRootState }
 >("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
-  const elements = selectNotDeletedElements(thunkAPI.getState());
-  const extensions = selectNotDeletedExtensions(thunkAPI.getState());
+  const elements = selectNotDeletedModComponentFormStates(thunkAPI.getState());
+  const extensions = selectNotDeletedActivatedModComponents(
+    thunkAPI.getState(),
+  );
   const extensionPoints = await getInstalledExtensionPoints(inspectedTab);
   const installedExtensionPoints = new Map(
     extensionPoints.map((extensionPoint) => [
@@ -224,7 +226,7 @@ const checkAvailableDynamicElements = createAsyncThunk<
   void,
   { state: EditorRootState }
 >("editor/checkAvailableDynamicElements", async (arg, thunkAPI) => {
-  const elements = selectNotDeletedElements(thunkAPI.getState());
+  const elements = selectNotDeletedModComponentFormStates(thunkAPI.getState());
   const tabUrl = await getCurrentInspectedURL();
   const availableElementIds = await Promise.all(
     elements.map(async ({ uuid, extensionPoint: elementExtensionPoint }) => {
@@ -252,7 +254,7 @@ const checkActiveElementAvailability = createAsyncThunk<
   const tabUrl = await getCurrentInspectedURL();
   const state = thunkAPI.getState();
   // The currently selected element in the page editor
-  const activeElement = selectActiveElement(state);
+  const activeElement = selectActiveModComponentFormState(state);
   // Calculate new availability for the active element
   const isAvailable = await isElementAvailable(
     tabUrl,
@@ -682,8 +684,8 @@ export const editorSlice = createSlice({
       }>,
     ) {
       const { nodeId, direction } = action.payload;
-      const element = selectActiveElement({ editor: state });
-      const elementUiState = selectActiveElementUIState({ editor: state });
+      const element = selectActiveModComponentFormState({ editor: state });
+      const elementUiState = selectActiveModComponentUIState({ editor: state });
       const { pipelinePath, index } = elementUiState.pipelineMap[nodeId];
       const pipeline = get(element, pipelinePath);
 
@@ -712,8 +714,8 @@ export const editorSlice = createSlice({
     },
     removeNode(state, action: PayloadAction<UUID>) {
       const nodeIdToRemove = action.payload;
-      const element = selectActiveElement({ editor: state });
-      const elementUiState = selectActiveElementUIState({ editor: state });
+      const element = selectActiveModComponentFormState({ editor: state });
+      const elementUiState = selectActiveModComponentUIState({ editor: state });
       const { pipelinePath, index } =
         elementUiState.pipelineMap[nodeIdToRemove];
       const pipeline: BrickConfig[] = get(element, pipelinePath);
@@ -755,7 +757,9 @@ export const editorSlice = createSlice({
         return;
       }
 
-      const elements = selectNotDeletedElements({ editor: state });
+      const elements = selectNotDeletedModComponentFormStates({
+        editor: state,
+      });
       const recipeElements = elements.filter(
         (element) => element.recipe?.id === recipeId,
       );

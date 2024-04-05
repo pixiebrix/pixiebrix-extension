@@ -28,13 +28,13 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import DataTabJsonTree from "./DataTabJsonTree";
 import StateTab from "./tabs/StateTab";
 import ConfigurationTab from "./tabs/ConfigurationTab";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
 
 const FoundationDataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const activeElement = useSelector(selectActiveElement);
+  const activeElement = useSelector(selectActiveModComponentFormState);
   const {
     extension: { blockPipeline },
     extensionPoint,

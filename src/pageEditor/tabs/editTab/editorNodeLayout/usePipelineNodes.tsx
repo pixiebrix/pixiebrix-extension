@@ -61,7 +61,7 @@ import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import {
-  selectActiveElement,
+  selectActiveModComponentFormState,
   selectActiveNodeId,
   selectCollapsedNodes,
   selectNodePreviewActiveElement,
@@ -195,7 +195,7 @@ const usePipelineNodes = (): {
   nodes: EditorNodeProps[];
 } => {
   const dispatch = useDispatch();
-  const activeElement = useSelector(selectActiveElement);
+  const activeElement = useSelector(selectActiveModComponentFormState);
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectActiveElementTraces);
   const maybePipelineMap = useSelector(selectPipelineMap);

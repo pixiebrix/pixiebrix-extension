@@ -36,7 +36,7 @@ import analysisSlice from "@/analysis/analysisSlice";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
 import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
@@ -58,7 +58,7 @@ const pageEditorAnalysisManager = new ReduxAnalysisManager();
 async function selectActiveModFormStates(
   state: RootState,
 ): Promise<ModComponentFormState[]> {
-  const element = selectActiveElement(state);
+  const element = selectActiveModComponentFormState(state);
 
   if (element?.recipe) {
     const dirtyElements = state.editor.elements.filter(
@@ -183,7 +183,7 @@ async function varAnalysisFactory(
   state: RootState,
 ) {
   const trace = selectActiveElementTraces(state);
-  const extension = selectActiveElement(state);
+  const extension = selectActiveModComponentFormState(state);
 
   // The potential mod known mod variables
   const formStates = await selectActiveModFormStates(state);

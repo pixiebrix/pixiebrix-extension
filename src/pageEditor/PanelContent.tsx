@@ -32,7 +32,7 @@ import {
   removeInstalledExtension,
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
-import { selectActiveElement } from "./slices/editorSelectors";
+import { selectActiveModComponentFormState } from "./slices/editorSelectors";
 import { formStateToDynamicElement } from "./starterBricks/adapter";
 import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
 import ReduxPersistenceContext, {
@@ -66,7 +66,7 @@ const cleanUpStarterBrickForElement = (
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
-  const activeElement = useSelector(selectActiveElement);
+  const activeElement = useSelector(selectActiveModComponentFormState);
 
   const onNavigation = useCallback(() => {
     dispatch(tabStateActions.connectToContentScript());

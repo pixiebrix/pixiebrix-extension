@@ -18,8 +18,8 @@
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectActiveRecipeId,
-  selectDirtyMetadataForRecipeId,
+  selectActiveModId,
+  selectDirtyMetadataForModId,
 } from "@/pageEditor/slices/editorSelectors";
 import { Card, Container } from "react-bootstrap";
 import Loader from "@/components/Loader";
@@ -59,13 +59,13 @@ const editModSchema = object({
 
 const selectFirstModComponent = createSelector(
   selectActivatedModComponents,
-  selectActiveRecipeId,
+  selectActiveModId,
   (extensions, activeRecipeId) =>
     extensions.find((x) => x._recipe?.id === activeRecipeId),
 );
 
 const ModMetadataEditor: React.VoidFunctionComponent = () => {
-  const modId = useSelector(selectActiveRecipeId);
+  const modId = useSelector(selectActiveModId);
   const {
     data: modDefinition,
     isFetching,
@@ -83,7 +83,7 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
     latestModVersion &&
     lt(installedModVersion, latestModVersion);
 
-  const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(modId));
+  const dirtyMetadata = useSelector(selectDirtyMetadataForModId(modId));
   const savedMetadata = modDefinition?.metadata;
   const metadata = dirtyMetadata ?? savedMetadata;
 

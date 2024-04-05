@@ -19,7 +19,7 @@ import React from "react";
 import { render, screen, within } from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
 import brickRegistry from "@/bricks/registry";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import {
@@ -327,7 +327,7 @@ describe("can add a node", () => {
 
     // Adding a node in the middle of the sub pipeline, between JQ and Echo nodes
     const reduxState = getReduxStore().getState() as EditorRootState;
-    const currentElement = selectActiveElement(reduxState);
+    const currentElement = selectActiveModComponentFormState(reduxState);
     const jqNodeId = (
       currentElement.extension.blockPipeline[1].config
         .body as PipelineExpression

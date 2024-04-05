@@ -21,13 +21,13 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
-import { selectElements } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentFormStates } from "@/pageEditor/slices/editorSelectors";
 
 function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
   const dispatch = useDispatch();
   const resetExtension = useResetExtension();
-  const elements = useSelector(selectElements);
+  const elements = useSelector(selectModComponentFormStates);
 
   return useCallback(
     async (recipeId: RegistryId) => {

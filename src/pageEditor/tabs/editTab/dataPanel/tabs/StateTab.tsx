@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
@@ -26,7 +26,7 @@ import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 
 const StateTab: React.FC = () => {
-  const activeElement = useSelector(selectActiveElement);
+  const activeElement = useSelector(selectActiveModComponentFormState);
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid),
   );

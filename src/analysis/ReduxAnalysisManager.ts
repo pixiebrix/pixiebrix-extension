@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
 import {
   type AnyAction,
   type ListenerEffect,
@@ -95,7 +95,7 @@ class ReduxAnalysisManager {
           return;
         }
 
-        const activeElement = selectActiveElement(state);
+        const activeElement = selectActiveModComponentFormState(state);
         if (activeElement == null) {
           return;
         }

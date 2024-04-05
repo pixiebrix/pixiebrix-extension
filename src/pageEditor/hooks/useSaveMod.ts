@@ -18,8 +18,8 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectDirtyRecipeMetadata,
-  selectDirtyRecipeOptionDefinitions,
+  selectDirtyModMetadata,
+  selectDirtyModOptionsDefinitions,
   selectGetDeletedComponentIdsForMod,
 } from "@/pageEditor/slices/editorSelectors";
 import {
@@ -78,8 +78,8 @@ function useSaveMod(): ModSaver {
   const getDeletedComponentIdsForMod = useSelector(
     selectGetDeletedComponentIdsForMod,
   );
-  const allDirtyModOptions = useSelector(selectDirtyRecipeOptionDefinitions);
-  const allDirtyModMetadatas = useSelector(selectDirtyRecipeMetadata);
+  const allDirtyModOptions = useSelector(selectDirtyModOptionsDefinitions);
+  const allDirtyModMetadatas = useSelector(selectDirtyModMetadata);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
   const { buildAndValidateMod } = useBuildAndValidateMod();

@@ -21,7 +21,7 @@ import styles from "./VarMenu.module.scss";
 import { selectKnownVarsForActiveNode } from "./varSelectors";
 import VariablesTree from "./VariablesTree";
 import {
-  selectActiveElement,
+  selectActiveModComponentFormState,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
@@ -155,7 +155,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   variablePosition,
 }) => {
   const dispatch = useDispatch();
-  const activeElement = useSelector(selectActiveElement);
+  const activeElement = useSelector(selectActiveModComponentFormState);
   const pipelineMap = useSelector(selectPipelineMap) ?? {};
   const { allBricks } = useAllBricks();
 

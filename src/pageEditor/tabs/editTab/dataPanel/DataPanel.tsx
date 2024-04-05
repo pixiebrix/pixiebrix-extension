@@ -39,7 +39,7 @@ import PageStateTab from "./tabs/PageStateTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import {
-  selectActiveElement,
+  selectActiveModComponentFormState,
   selectActiveNodeId,
   selectActiveNodeInfo,
   selectNodePreviewActiveElement,
@@ -82,7 +82,7 @@ const DataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const activeElement = useSelector(selectActiveElement);
+  const activeElement = useSelector(selectActiveModComponentFormState);
 
   const {
     blockId: brickId,

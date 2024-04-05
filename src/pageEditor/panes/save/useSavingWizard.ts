@@ -19,8 +19,8 @@ import { actions as savingExtensionActions } from "./savingExtensionSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsSaving, selectIsWizardOpen } from "./savingExtensionSelectors";
 import {
-  selectActiveElement,
-  selectElements,
+  selectActiveModComponentFormState,
+  selectModComponentFormStates,
 } from "@/pageEditor/slices/editorSelectors";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
@@ -80,8 +80,8 @@ const useSavingWizard = () => {
   const isWizardOpen = useSelector(selectIsWizardOpen);
   const isSaving = useSelector(selectIsSaving);
   const extensions = useSelector(selectActivatedModComponents);
-  const elements = useSelector(selectElements);
-  const element = useSelector(selectActiveElement);
+  const elements = useSelector(selectModComponentFormStates);
+  const element = useSelector(selectActiveModComponentFormState);
 
   const { data: recipes } = useAllModDefinitions();
   const { data: editablePackages } = useGetEditablePackagesQuery();

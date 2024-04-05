@@ -20,17 +20,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { Button, Modal } from "react-bootstrap";
 import {
-  selectActiveRecipeId,
+  selectActiveModId,
   selectEditorModalVisibilities,
 } from "@/pageEditor/slices/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 
 const SaveAsNewRecipeModal: React.FC = () => {
-  const { isSaveAsNewRecipeModalVisible: show } = useSelector(
+  const { isSaveAsNewModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
 
-  const recipeId = useSelector(selectActiveRecipeId);
+  const recipeId = useSelector(selectActiveModId);
   const { data: recipe, isFetching } = useOptionalModDefinition(recipeId);
   const recipeName = recipe?.metadata?.name ?? "this mod";
 

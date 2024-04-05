@@ -30,8 +30,8 @@ import ElementWizard from "@/pageEditor/ElementWizard";
 import { logActions } from "@/components/logViewer/logSlice";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
-  selectActiveElement,
-  selectSelectionSeq,
+  selectActiveModComponentFormState,
+  selectEditorUpdateKey,
 } from "@/pageEditor/slices/editorSelectors";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 
@@ -76,8 +76,8 @@ const EditorPaneContent: React.VoidFunctionComponent<{
 };
 
 const EditorPane: React.VFC = () => {
-  const activeElement = useSelector(selectActiveElement);
-  const selectionSeq = useSelector(selectSelectionSeq);
+  const activeElement = useSelector(selectActiveModComponentFormState);
+  const selectionSeq = useSelector(selectEditorUpdateKey);
   // Key to force reload of component when user selects a different element from the sidebar
   const key = `${activeElement.uuid}-${activeElement.installed}-${selectionSeq}`;
 

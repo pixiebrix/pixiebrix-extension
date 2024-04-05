@@ -19,7 +19,7 @@ import React from "react";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { getPageState } from "@/contentScript/messenger/strict/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
 import { faExternalLinkAlt, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
@@ -36,7 +36,7 @@ const expandTopLevelNodes: ShouldExpandNodeInitially = (keyPath, data, level) =>
   level <= 1;
 
 const PageStateTab: React.VFC = () => {
-  const activeElement = useSelector(selectActiveElement);
+  const activeElement = useSelector(selectActiveModComponentFormState);
 
   const state = useAsyncState<{
     Private: UnknownObject | string;

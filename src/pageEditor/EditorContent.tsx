@@ -27,10 +27,10 @@ import EditorPane from "@/pageEditor/panes/EditorPane";
 import ModEditorPane from "@/pageEditor/panes/ModEditorPane";
 import HomePane from "@/pageEditor/panes/HomePane";
 import {
-  selectActiveElementId,
-  selectActiveRecipeId,
+  selectActiveModComponentId,
+  selectActiveModId,
   selectErrorState,
-  selectExtensionAvailability,
+  selectModComponentAvailability,
 } from "@/pageEditor/slices/editorSelectors";
 import {
   selectTabHasPermissions,
@@ -48,10 +48,10 @@ const EditorContent: React.FC = () => {
   );
   const sessionId = useSelector(selectSessionId);
   const { isBetaError, editorError } = useSelector(selectErrorState);
-  const activeElementId = useSelector(selectActiveElementId);
-  const activeRecipeId = useSelector(selectActiveRecipeId);
+  const activeElementId = useSelector(selectActiveModComponentId);
+  const activeRecipeId = useSelector(selectActiveModId);
   const { isPendingInstalledExtensions, isPendingDynamicExtensions } =
-    useSelector(selectExtensionAvailability);
+    useSelector(selectModComponentAvailability);
 
   const url = useCurrentInspectedUrl();
 

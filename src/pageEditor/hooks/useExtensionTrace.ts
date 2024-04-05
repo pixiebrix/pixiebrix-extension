@@ -19,7 +19,7 @@ import { getLatestRunByExtensionId, type TraceRecord } from "@/telemetry/trace";
 import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
-import { selectActiveElementId } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentId } from "@/pageEditor/slices/editorSelectors";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import { isEqual } from "lodash";
 import { useRef } from "react";
@@ -47,7 +47,7 @@ function selectTraceMetadata(record: TraceRecord) {
  */
 function useExtensionTrace() {
   const dispatch = useDispatch();
-  const extensionId = useSelector(selectActiveElementId);
+  const extensionId = useSelector(selectActiveModComponentId);
   const extensionTrace = useSelector(selectActiveElementTraces);
 
   const checkingNewEntriesRef = useRef(false);

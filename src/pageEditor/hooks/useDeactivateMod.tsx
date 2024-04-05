@@ -23,7 +23,7 @@ import {
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
-import { selectElements } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentFormStates } from "@/pageEditor/slices/editorSelectors";
 import { uniq } from "lodash";
 import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -42,7 +42,7 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const extensions = useSelector(selectActivatedModComponents);
-  const elements = useSelector(selectElements);
+  const elements = useSelector(selectModComponentFormStates);
   const { showConfirmation } = useModals();
 
   return useCallback(
