@@ -20,7 +20,7 @@ import { getSelectorForElement } from "@/contentScript/elementReference";
 import { hasCKEditorClass } from "@/contrib/ckeditor/ckeditorDom";
 import { boolean } from "@/utils/typeUtils";
 import {
-  dispatchPasteForDraftJs,
+  insertIntoDraftJs,
   isDraftJsField,
 } from "@/contrib/draftjs/draftJsDom";
 
@@ -93,13 +93,12 @@ export async function setFieldValue(
     field.focus();
 
     // `insertText` acts as a "paste", so if no text is selected it's just appended
-    document.execCommand("selectAll");
+    // FIXME: selectAll is not working on draftjs fields when run from an action in the MV2 sidebar because
+    //  the field.focus() doesn't appear to focus the field
+    document.execCommand("selectAll", false);
 
-    if (field.textContent === "" && isDraftJsField(field)) {
-      // Special handling for DraftJS if the field is empty
-      // https://github.com/pixiebrix/pixiebrix-extension/issues/7630
-      // XXX: should this just always send a paste command for Draft.js fields?
-      dispatchPasteForDraftJs(field, String(value));
+    if (isDraftJsField(field)) {
+      insertIntoDraftJs(field, String(value));
     } else {
       // It automatically triggers an `input` event
       document.execCommand("insertText", false, String(value));

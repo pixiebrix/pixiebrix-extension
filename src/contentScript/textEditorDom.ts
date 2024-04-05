@@ -21,7 +21,7 @@ import { getSelectorForElement } from "@/contentScript/elementReference";
 import { expectContext } from "@/utils/expectContext";
 import focusController from "@/utils/focusController";
 import {
-  dispatchPasteForDraftJs,
+  insertIntoDraftJs,
   isDraftJsField,
 } from "@/contrib/draftjs/draftJsDom";
 
@@ -81,11 +81,7 @@ export async function insertAtCursorWithCustomEditorSupport(text: string) {
   }
 
   if (isDraftJsField(element)) {
-    // Must always use paste. Otherwise, the editor will become corrupted
-    // More information/context:
-    // - https://github.com/pixiebrix/pixiebrix-extension/issues/7630
-    // - https://github.com/pixiebrix/pixiebrix-extension/issues/8157
-    dispatchPasteForDraftJs(element, text);
+    insertIntoDraftJs(element, text);
     return;
   }
 

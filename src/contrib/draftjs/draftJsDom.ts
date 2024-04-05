@@ -16,11 +16,20 @@
  */
 
 /**
+ * @file This file contains utility functions for interacting with Draft.js editors.
+ * - See {@link https://draftjs.org/} for more information.
+ * - See example for regression testing at {@link https://pbx.vercel.app/advanced-fields/}
+ */
+
+/**
  * DraftJS doesn't handle `insertText` correctly in most cases, but it can handle this
  * event. Note that this event doesn't do anything in regular contentEditable fields.
  * Source: https://github.com/facebookarchive/draft-js/issues/616#issuecomment-426047799
  */
-export function dispatchPasteForDraftJs(field: HTMLElement, value: string) {
+export function insertIntoDraftJs(field: HTMLElement, value: string): void {
+  // Using execCommand causes data corruption. See:
+  // - https://github.com/pixiebrix/pixiebrix-extension/issues/7630
+  // - https://github.com/pixiebrix/pixiebrix-extension/issues/8157
   const data = new DataTransfer();
   data.setData("text/plain", value);
   field.dispatchEvent(
@@ -32,6 +41,9 @@ export function dispatchPasteForDraftJs(field: HTMLElement, value: string) {
   );
 }
 
+/**
+ * Return true if the element is or is contained inside a DraftJS field.
+ */
 export function isDraftJsField(element: HTMLElement): boolean {
   return Boolean(element.closest(".DraftEditor-root"));
 }
