@@ -23,48 +23,8 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
 import { type Dispatch } from "@reduxjs/toolkit";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
-import { isEmpty } from "lodash";
 
 const { actions } = extensionsSlice;
-
-export async function deactivateUnassignedDeployments({
-  dispatch,
-  assignedDeployments,
-  activatedModComponents,
-}: {
-  dispatch: Dispatch;
-  assignedDeployments: ActivatableDeployment[];
-  activatedModComponents: ModComponentBase[];
-}) {
-  const unassignedModComponents = activatedModComponents.filter(
-    (modComponent) => {
-      !isEmpty(modComponent._deployment) &&
-        !assignedDeployments.some(
-          (deployment) =>
-            deployment.deployment.id === modComponent._deployment.id,
-        );
-    },
-  );
-
-  if (unassignedModComponents.length > 0) {
-    return;
-  }
-
-  for (const modComponent of unassignedModComponents) {
-    dispatch(
-      actions.removeExtension({
-        extensionId: modComponent.id,
-      }),
-    );
-  }
-
-  reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
-    auto: true,
-    deployments: unassignedModComponents.map(
-      (modComponent) => modComponent._deployment.id,
-    ),
-  });
-}
 
 async function activateDeployment({
   dispatch,

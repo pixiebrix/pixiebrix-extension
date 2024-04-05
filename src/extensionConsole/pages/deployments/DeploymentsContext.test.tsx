@@ -367,8 +367,6 @@ describe("DeploymentsContext", () => {
     jest.useRealTimers();
   });
 
-  it("deactivates old mod components if deployed mod id is changed", () => {});
-
   it("unlinked extension error is ignored", async () => {
     getLinkedApiClientMock.mockRejectedValue(new ExtensionNotLinkedError());
     axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);

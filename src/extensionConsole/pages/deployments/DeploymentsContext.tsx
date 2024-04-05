@@ -43,10 +43,7 @@ import {
   reloadIfNewVersionIsReady,
 } from "@/utils/extensionUtils";
 import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
-import {
-  activateDeployments,
-  deactivateUnassignedDeployments,
-} from "@/extensionConsole/pages/deployments/activateDeployments";
+import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import { useGetDeploymentsQuery } from "@/data/service/api";
 import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
 import { isEqual } from "lodash";
@@ -224,11 +221,6 @@ function useDeployments(): DeploymentsState {
     }
 
     try {
-      // await deactivateUnassignedDeployments({
-      //   dispatch,
-      //   assignedDeployments: activatableDeployments,
-      //   activatedModComponents: activeExtensions,
-      // });
       await activateDeployments({
         dispatch,
         activatableDeployments,
