@@ -442,7 +442,6 @@
     "./extensionConsole/pages/useRegistryIdParam.ts",
     "./extensionConsole/pages/workshop/workshopTypes.ts",
     "./extensionConsole/pages/workshop/workshopUtils.ts",
-    "./extensionConsole/pages/deployments/useDeactivateUnassignedDeploymentsEffect.ts",
     "./extensionConsole/toggleSidebar.tsx",
     "./extensionContext.ts",
     "./globals.d.ts",
