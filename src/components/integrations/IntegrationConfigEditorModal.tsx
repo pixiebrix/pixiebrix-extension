@@ -44,7 +44,6 @@ import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
 import useAsyncState from "@/hooks/useAsyncState";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { Validator } from "@cfworker/json-schema";
-import type { Schema as ValidatorSchema } from "@cfworker/json-schema";
 import type * as Yup from "yup";
 import {
   createYupValidationSchema,
@@ -114,20 +113,11 @@ const ModalContent: React.FC<ContentProps> = ({
   );
 
   const onSubmit = useCallback<OnSubmit<IntegrationConfig>>(
-    async (newIntegrationConfig, { setErrors }) => {
-      const schema = buildSchema(integration);
-      const validator = new Validator(schema as ValidatorSchema);
-      const { valid, errors } = validator.validate(newIntegrationConfig);
-      console.log({ newIntegrationConfig, valid, errors });
-
-      if (valid) {
-        await onSave(newIntegrationConfig);
-        onClose();
-      } else {
-        setErrors(convertSchemaErrorsToFormikErrors(errors));
-      }
+    async (newIntegrationConfig) => {
+      await onSave(newIntegrationConfig);
+      onClose();
     },
-    [integration, onSave, onClose],
+    [onSave, onClose],
   );
 
   const Editor = useMemo<React.FC<BlockOptionProps>>(() => {
@@ -202,6 +192,12 @@ const ModalContent: React.FC<ContentProps> = ({
         {({ data: validationSchema }) => (
           <Form
             validationSchema={validationSchema}
+            validate={(values) => {
+              const schema = buildSchema(integration);
+              const validator = new Validator(schema as Validator);
+              const { errors } = validator.validate(values);
+              return convertSchemaErrorsToFormikErrors(errors);
+            }}
             initialValues={initialValues}
             onSubmit={onSubmit}
             renderBody={renderBody}

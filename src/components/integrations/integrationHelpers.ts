@@ -26,7 +26,6 @@ import { dereference } from "@/validators/schemaValidator";
 import { type OutputUnit } from "@cfworker/json-schema";
 import { type FormikErrors } from "formik";
 import { cloneDeep, set } from "lodash";
-import { f } from "node_modules/msw/lib/glossary-de6278a9";
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
 
@@ -120,8 +119,6 @@ export async function createYupValidationSchema(
       errMessages: getValidationErrMessages(
         schema.properties?.config as Schema,
       ),
-      logging: true,
-      logDetailed: [{ key: "folderId" }],
     });
   } catch (error) {
     reportError(
