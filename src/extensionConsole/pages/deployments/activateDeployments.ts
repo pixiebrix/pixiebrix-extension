@@ -114,19 +114,26 @@ export function deactivateUnassignedModComponents({
   dispatch: Dispatch;
   unassignedModComponents: ModComponentBase[];
 }) {
-  // TODO: wrap in try catch and report error
+  const deactivatedModComponents = [];
 
   for (const modComponent of unassignedModComponents) {
-    dispatch(
-      actions.removeExtension({
-        extensionId: modComponent.id,
-      }),
-    );
+    try {
+      dispatch(
+        actions.removeExtension({
+          extensionId: modComponent.id,
+        }),
+      );
+      deactivatedModComponents.push(modComponent);
+    } catch (error) {
+      reportError(
+        new Error(`Error deactivating unassigned mod components: ${error}`),
+      );
+    }
   }
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
     auto: true,
-    deployments: unassignedModComponents.map(
+    deployments: deactivatedModComponents.map(
       (modComponent) => modComponent._deployment.id,
     ),
   });
