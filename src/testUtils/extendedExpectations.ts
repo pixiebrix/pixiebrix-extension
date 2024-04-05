@@ -28,7 +28,7 @@ declare global {
 
       /**
        * @warning This only asserts on the amount of time that passes from
-       * this toFullfillWithinMilliseconds() call, not from the promise creation.
+       * this toFulfillWithinMilliseconds() call, not from the promise creation.
        *
        * If this is troublesome, copy the `trackSettledTime` function/pattern instead:
        * https://github.com/pixiebrix/webext-messenger/blob/22eeba8b5b2efe3ecb6beb7a8c493f260c9499fb/source/test/helpers.ts#L28-L38
@@ -38,14 +38,14 @@ declare global {
        *   // Wrong: DO NOT await anything between the promise creation and the expect() call
        *   const promise = getMilk();
        *   await act(); // This will mess up the timing
-       *   await expect(promise).toFullfillWithinMilliseconds(1000);
+       *   await expect(promise).toFulfillWithinMilliseconds(1000);
        *
        *   // Correct: Await the expect() call directly
-       *   const expectation = expect(getMilk()).toFullfillWithinMilliseconds(1000);
+       *   const expectation = expect(getMilk()).toFulfillWithinMilliseconds(1000);
        *   await act();
        *   await expectation;
        */
-      toFullfillWithinMilliseconds(
+      toFulfillWithinMilliseconds(
         maximumDuration: number,
       ): Promise<CustomMatcherResult>;
     }
@@ -64,7 +64,7 @@ async function trackSettleTime(promise: Promise<unknown>): Promise<number> {
 
 expect.extend({
   // Extracted and adapted from https://github.com/pixiebrix/webext-messenger/blob/22eeba8b5b2efe3ecb6beb7a8c493f260c9499fb/source/test/helpers.ts#L40
-  async toFullfillWithinMilliseconds(
+  async toFulfillWithinMilliseconds(
     promise: Promise<unknown>,
     maximumDuration: number,
   ) {
@@ -73,7 +73,7 @@ expect.extend({
     return {
       pass: duration < maximumDuration,
       message: () =>
-        `Expected promise to be fullfilled within ${maximumDuration}ms, but it took ${duration}ms`,
+        `Expected promise to be fulfilled within ${maximumDuration}ms, but it took ${duration}ms`,
     };
   },
 

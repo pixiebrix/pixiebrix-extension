@@ -29,7 +29,7 @@ export const API_TASK_TYPE = "application/vnd.aa.headlessbot";
 
 // Bots in the "Private" workspace are also referred to as Local bots
 export type WorkspaceType = "public" | "private";
-type VariableType = "STRING" | "NUMBER" | "BOOLEAN" | "DICTIONARY";
+type VariableType = "STRING" | "NUMBER" | "BOOLEAN" | "DICTIONARY" | "TABLE";
 
 export type Variable = {
   name: string;
@@ -119,6 +119,25 @@ export const FAILURE_STATUSES = new Set([
   "RUN_TIMED_OUT",
 ]);
 
+// Note: The following AA response types were reverse-engineered from the
+// Automation Anywhere Run Bot API response payloads.
+
+type TableColumnSchema = {
+  name: string;
+  type: string;
+  subtype: string;
+};
+
+type TableRow = {
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive type
+  values: OutputValue[];
+};
+
+export type TableValue = {
+  schema: TableColumnSchema[];
+  rows: TableRow[];
+};
+
 export type OutputValue = {
   type: VariableType;
   string: string;
@@ -128,6 +147,8 @@ export type OutputValue = {
     key: string;
     value: OutputValue;
   }>;
+  // Seems like table property is optional on the response value objects
+  table?: TableValue;
 };
 
 export type Activity = {

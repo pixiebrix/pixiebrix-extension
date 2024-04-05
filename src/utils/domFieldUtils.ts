@@ -19,6 +19,10 @@ import { setCKEditorData } from "@/pageScript/messenger/api";
 import { getSelectorForElement } from "@/contentScript/elementReference";
 import { hasCKEditorClass } from "@/contrib/ckeditor/ckeditorDom";
 import { boolean } from "@/utils/typeUtils";
+import {
+  dispatchPasteForDraftJs,
+  isDraftJsField,
+} from "@/contrib/draftjs/draftJsDom";
 
 export type FieldElement =
   | HTMLInputElement
@@ -37,23 +41,6 @@ export function isFieldElement(
     element instanceof HTMLInputElement ||
     element instanceof HTMLTextAreaElement ||
     element instanceof HTMLSelectElement
-  );
-}
-
-/**
- * DraftJS doesn't handle `insertText` correctly in some cases, but it can handle this
- * event. Note that this event doesn't do anything in regular contentEditable fields.
- * Source: https://github.com/facebookarchive/draft-js/issues/616#issuecomment-426047799
- */
-export function dispatchPasteForDraftJs(field: HTMLElement, value: string) {
-  const data = new DataTransfer();
-  data.setData("text/plain", value);
-  field.dispatchEvent(
-    new ClipboardEvent("paste", {
-      clipboardData: data,
-      bubbles: true,
-      cancelable: true,
-    }),
   );
 }
 
@@ -108,9 +95,10 @@ export async function setFieldValue(
     // `insertText` acts as a "paste", so if no text is selected it's just appended
     document.execCommand("selectAll");
 
-    if (field.textContent === "" && field.closest(".DraftEditor-root")) {
+    if (field.textContent === "" && isDraftJsField(field)) {
       // Special handling for DraftJS if the field is empty
       // https://github.com/pixiebrix/pixiebrix-extension/issues/7630
+      // XXX: should this just always send a paste command for Draft.js fields?
       dispatchPasteForDraftJs(field, String(value));
     } else {
       // It automatically triggers an `input` event

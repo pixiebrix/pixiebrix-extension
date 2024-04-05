@@ -35,7 +35,12 @@ const PipelineToggleField: React.VoidFunctionComponent<{
   name: string;
   label: string;
   description: string;
-}> = ({ name, label, description }) => {
+  /**
+   * Handler called after the value changes, e.g., to set/clean-up dependent fields.
+   * @since 1.8.12
+   */
+  onAfterChange?: (value: boolean) => void;
+}> = ({ name, label, description, onAfterChange }) => {
   const { setFieldValue } = useFormikContext<ModComponentFormState>();
   const [{ value }] = useField<PipelineExpression | null>(name);
 
@@ -52,6 +57,8 @@ const PipelineToggleField: React.VoidFunctionComponent<{
         } else {
           await setFieldValue(name, null);
         }
+
+        onAfterChange?.(target.value);
       }}
     />
   );
