@@ -19,10 +19,7 @@ import { setCKEditorData } from "@/pageScript/messenger/api";
 import { getSelectorForElement } from "@/contentScript/elementReference";
 import { hasCKEditorClass } from "@/contrib/ckeditor/ckeditorDom";
 import { boolean } from "@/utils/typeUtils";
-import {
-  dispatchPasteForDraftJs,
-  isDraftJsField,
-} from "@/contrib/draftjs/draftJsDom";
+import { isDraftJsField, setDraftJs } from "@/contrib/draftjs/draftJsDom";
 
 export type FieldElement =
   | HTMLInputElement
@@ -86,6 +83,11 @@ export async function setFieldValue(
     return;
   }
 
+  if (isDraftJsField(field)) {
+    await setDraftJs(field, String(value));
+    return;
+  }
+
   if (field.isContentEditable) {
     // XXX: Maybe use text-field-edit so that the focus is not altered
 
@@ -93,17 +95,10 @@ export async function setFieldValue(
     field.focus();
 
     // `insertText` acts as a "paste", so if no text is selected it's just appended
-    document.execCommand("selectAll");
+    document.execCommand("selectAll", false);
 
-    if (field.textContent === "" && isDraftJsField(field)) {
-      // Special handling for DraftJS if the field is empty
-      // https://github.com/pixiebrix/pixiebrix-extension/issues/7630
-      // XXX: should this just always send a paste command for Draft.js fields?
-      dispatchPasteForDraftJs(field, String(value));
-    } else {
-      // It automatically triggers an `input` event
-      document.execCommand("insertText", false, String(value));
-    }
+    // It automatically triggers an `input` event
+    document.execCommand("insertText", false, String(value));
 
     return;
   }
