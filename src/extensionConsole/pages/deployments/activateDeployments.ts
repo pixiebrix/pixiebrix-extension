@@ -29,30 +29,32 @@ const { actions } = extensionsSlice;
 async function activateDeployment({
   dispatch,
   activatableDeployment,
-  installed,
+  activatedModComponents,
 }: {
   dispatch: Dispatch;
   activatableDeployment: ActivatableDeployment;
-  installed: ModComponentBase[];
+  activatedModComponents: ModComponentBase[];
 }): Promise<void> {
   const { deployment, modDefinition } = activatableDeployment;
-  let isReinstall = false;
+  let isReactivate = false;
 
-  // Clear existing installations of the blueprint
-  for (const extension of installed) {
-    // Extension won't have recipe if it was locally created by a developer
-    if (extension._recipe?.id === deployment.package.package_id) {
+  // Clear existing activated mod deployments
+  for (const modComponent of activatedModComponents) {
+    if (
+      modComponent._deployment?.id === deployment.id ||
+      modComponent._recipe?.id === deployment.package.package_id
+    ) {
       dispatch(
         actions.removeExtension({
-          extensionId: extension.id,
+          extensionId: modComponent.id,
         }),
       );
 
-      isReinstall = true;
+      isReactivate = true;
     }
   }
 
-  // Install the blueprint with the service definition
+  // Activate the mod with service definition
   dispatch(
     actions.activateMod({
       modDefinition,
@@ -64,7 +66,7 @@ async function activateDeployment({
       // Assume validation on the backend for options
       optionsArgs: deployment.options_config,
       screen: "extensionConsole",
-      isReactivate: isReinstall,
+      isReactivate,
     }),
   );
 
@@ -76,11 +78,11 @@ async function activateDeployment({
 export async function activateDeployments({
   dispatch,
   activatableDeployments,
-  installed,
+  activatedModComponents,
 }: {
   dispatch: Dispatch;
   activatableDeployments: ActivatableDeployment[];
-  installed: ModComponentBase[];
+  activatedModComponents: ModComponentBase[];
 }): Promise<void> {
   // Activate as many as we can
   const errors = [];
@@ -91,7 +93,7 @@ export async function activateDeployments({
       await activateDeployment({
         dispatch,
         activatableDeployment,
-        installed,
+        activatedModComponents,
       });
     } catch (error) {
       errors.push(error);

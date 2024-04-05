@@ -125,7 +125,7 @@ describe("useAutoDeploy", () => {
       expect(activateDeployments).toHaveBeenCalledWith({
         dispatch: expect.any(Function),
         activatableDeployments,
-        installed: installedExtensions,
+        activatedModComponents: installedExtensions,
       });
 
       await waitForValueToChange(() => result.current.isAutoDeploying);

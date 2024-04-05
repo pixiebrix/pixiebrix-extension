@@ -131,6 +131,7 @@ beforeEach(async () => {
   } as any);
 
   await resetManagedStorage();
+  refreshRegistriesMock.mockReset();
 });
 
 afterEach(async () => {
@@ -795,5 +796,72 @@ describe("syncDeployments", () => {
     const { elements } = await getEditorState();
     expect(elements).toBeArrayOfSize(1);
     expect(elements[0]).toEqual(personalElement);
+  });
+
+  test("deactivates old mod when deployed mod id is changed", async () => {
+    isLinkedMock.mockResolvedValue(true);
+
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+
+    appApiMock.onGet("/api/me/").reply(200, {
+      flags: [],
+    });
+
+    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+
+    appApiMock
+      .onGet(
+        `/api/registry/bricks/${encodeURIComponent(
+          deployment.package.package_id,
+        )}/`,
+      )
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
+
+    await syncDeployments();
+    const { extensions: activatedModComponents } = await getModComponentState();
+    expect(activatedModComponents).toHaveLength(1);
+    expect(activatedModComponents[0]._recipe.id).toBe(
+      deployment.package.package_id,
+    );
+
+    // Remove package from the deployment so that it can be updated
+    delete deployment.package;
+    const {
+      deployment: updatedDeployment,
+      modDefinition: updatedModDefinition,
+    } = activatableDeploymentFactory({
+      deploymentOverride: {
+        ...deployment,
+      },
+    });
+
+    appApiMock.onPost("/api/deployments/").reply(201, [updatedDeployment]);
+
+    appApiMock
+      .onGet(
+        `/api/registry/bricks/${encodeURIComponent(
+          updatedDeployment.package.package_id,
+        )}/`,
+      )
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition: updatedModDefinition,
+          packageVersionUUID: updatedDeployment.package.id,
+        }),
+      );
+
+    await syncDeployments();
+    const { extensions: expectedModComponents } = await getModComponentState();
+    expect(expectedModComponents).toHaveLength(1);
+    expect(expectedModComponents[0]._recipe.id).toBe(
+      updatedDeployment.package.package_id,
+    );
   });
 });

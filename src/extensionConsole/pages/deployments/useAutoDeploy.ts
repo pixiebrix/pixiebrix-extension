@@ -90,7 +90,7 @@ function useAutoDeploy({
         await activateDeployments({
           dispatch,
           activatableDeployments,
-          installed: installedExtensions,
+          activatedModComponents: installedExtensions,
         });
         notify.success("Updated team deployments");
       } catch (error) {

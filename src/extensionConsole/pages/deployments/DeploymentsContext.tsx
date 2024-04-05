@@ -224,7 +224,7 @@ function useDeployments(): DeploymentsState {
       await activateDeployments({
         dispatch,
         activatableDeployments,
-        installed: activeExtensions,
+        activatedModComponents: activeExtensions,
       });
       notify.success("Updated team deployments");
     } catch (error) {
