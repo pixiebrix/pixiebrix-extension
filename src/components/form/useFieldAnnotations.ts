@@ -124,6 +124,7 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
   }
 
   const { error, touched } = formik.getFieldMeta(fieldPath);
+  console.log({ error, touched, fieldPath });
   const showFormikError =
     (showUntouchedErrors || touched) &&
     typeof error === "string" &&

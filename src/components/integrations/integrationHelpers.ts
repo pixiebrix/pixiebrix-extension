@@ -15,8 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { getValidationErrMessages } from "@/components/fields/fieldUtils";
+import { type Integration } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isRequired } from "@/utils/schemaUtils";
+import { dereference } from "@/validators/schemaValidator";
+import { cloneDeep } from "lodash";
+import { buildYup } from "schema-to-yup";
+import * as Yup from "yup";
 
 export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   const result: UnknownObject = {};
@@ -69,4 +75,54 @@ export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   }
 
   return result;
+}
+
+export function buildSchema(integration: Integration): Schema {
+  return {
+    type: "object",
+    properties: {
+      organization: {
+        type: "string",
+      },
+      label: {
+        type: "string",
+        // @ts-expect-error -- expects JSONSchema7 type `required: string[]`
+        // (one level up), but only works with JSONSchema4 `required: boolean`
+        required: true,
+      },
+      config: integration.schema,
+    },
+    required: ["config"],
+  };
+}
+
+export async function createYupValidationSchema(
+  integration: Integration,
+): Promise<Yup.AnyObjectSchema> {
+  try {
+    const schema = buildSchema(integration);
+
+    // Dereference because buildYup doesn't support $ref:
+    // https://github.com/kristianmandrup/schema-to-yup?tab=readme-ov-file#refs
+    const dereferencedSchema = await dereference(schema, {
+      // Include secrets, so they can be validated
+      sanitizeIntegrationDefinitions: false,
+    });
+
+    // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
+    return buildYup(cloneDeep(dereferencedSchema), {
+      errMessages: getValidationErrMessages(
+        schema.properties?.config as Schema,
+      ),
+      logging: true,
+      logDetailed: [{ key: "folderId" }],
+    });
+  } catch (error) {
+    reportError(
+      new Error("Error building Yup validator from JSON Schema", {
+        cause: error,
+      }),
+    );
+    return Yup.object();
+  }
 }
