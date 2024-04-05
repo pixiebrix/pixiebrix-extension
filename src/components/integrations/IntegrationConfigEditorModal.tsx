@@ -49,6 +49,7 @@ import type * as Yup from "yup";
 import {
   createYupValidationSchema,
   buildSchema,
+  convertSchemaErrorsToFormikErrors,
 } from "@/components/integrations/integrationHelpers";
 
 export type IntegrationConfigEditorModalProps = {
@@ -114,18 +115,16 @@ const ModalContent: React.FC<ContentProps> = ({
 
   const onSubmit = useCallback<OnSubmit<IntegrationConfig>>(
     async (newIntegrationConfig, { setErrors }) => {
-      try {
-        const schema = buildSchema(integration);
-        const validator = new Validator(schema as ValidatorSchema);
-        const { valid, errors } = validator.validate(newIntegrationConfig);
-        console.log({ valid, errors });
+      const schema = buildSchema(integration);
+      const validator = new Validator(schema as ValidatorSchema);
+      const { valid, errors } = validator.validate(newIntegrationConfig);
+      console.log({ newIntegrationConfig, valid, errors });
 
-        if (valid) {
-          await onSave(newIntegrationConfig);
-          onClose();
-        }
-      } catch (error) {
-        console.error(error);
+      if (valid) {
+        await onSave(newIntegrationConfig);
+        onClose();
+      } else {
+        setErrors(convertSchemaErrorsToFormikErrors(errors));
       }
     },
     [integration, onSave, onClose],
@@ -138,8 +137,6 @@ const ModalContent: React.FC<ContentProps> = ({
 
     return genericOptionsFactory(integration.schema, integration.uiSchema);
   }, [integration]);
-
-  console.log({ integration, initialValues, validationSchemaState });
 
   const renderBody: RenderBody = () => (
     <Modal.Body>
@@ -204,7 +201,7 @@ const ModalContent: React.FC<ContentProps> = ({
       <AsyncStateGate state={validationSchemaState}>
         {({ data: validationSchema }) => (
           <Form
-            // ValidationSchema={validationSchema}
+            validationSchema={validationSchema}
             initialValues={initialValues}
             onSubmit={onSubmit}
             renderBody={renderBody}

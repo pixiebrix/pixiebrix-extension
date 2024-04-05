@@ -16,11 +16,17 @@
  */
 
 import { getValidationErrMessages } from "@/components/fields/fieldUtils";
-import { type Integration } from "@/integrations/integrationTypes";
+import {
+  type IntegrationConfig,
+  type Integration,
+} from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isRequired } from "@/utils/schemaUtils";
 import { dereference } from "@/validators/schemaValidator";
-import { cloneDeep } from "lodash";
+import { type OutputUnit } from "@cfworker/json-schema";
+import { type FormikErrors } from "formik";
+import { cloneDeep, set } from "lodash";
+import { f } from "node_modules/msw/lib/glossary-de6278a9";
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
 
@@ -125,4 +131,27 @@ export async function createYupValidationSchema(
     );
     return Yup.object();
   }
+}
+
+export function convertInstanceLocationToFormikPath(
+  instanceLocation: string,
+): string {
+  return instanceLocation.replace("#/", "").replaceAll("/", ".");
+}
+
+export function convertSchemaErrorsToFormikErrors(
+  schemaErrors: OutputUnit[],
+): FormikErrors<IntegrationConfig> {
+  const errors = {};
+
+  const filteredErrors = schemaErrors.filter(
+    (error) => !["#", "#/config"].includes(error.instanceLocation),
+  );
+
+  for (const { error, instanceLocation } of filteredErrors) {
+    const formikPath = convertInstanceLocationToFormikPath(instanceLocation);
+    set(errors, formikPath, error);
+  }
+
+  return errors;
 }
