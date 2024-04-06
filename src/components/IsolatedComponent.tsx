@@ -31,6 +31,7 @@ type LazyComponentImportFunction = () => Promise<{
 }>;
 
 // Drop the stylesheet injected by `mini-css-extract-plugin` into the main document.
+// Until this is resolved https://github.com/webpack-contrib/mini-css-extract-plugin/issues/1092#issuecomment-2037540032
 async function discardStylesheetsWhilePending(
   importFunction: LazyComponentImportFunction,
 ) {
@@ -43,6 +44,7 @@ async function discardStylesheetsWhilePending(
         if (node instanceof HTMLLinkElement && node.href.startsWith(baseUrl)) {
           // Disable stylesheet without removing it. Webpack still awaits its loading.
           node.media = "not all";
+          node.dataset.pixiebrix = "Disabled by IsolatedComponent";
         }
       }
     }
