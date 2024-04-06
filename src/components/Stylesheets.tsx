@@ -21,6 +21,33 @@ import oneEvent from "one-event";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
+ * Detect and extract font-face rules because Chrome fails to load them from
+ * the shadow DOM's stylesheets: https://issues.chromium.org/issues/41085401
+ */
+async function extractFontFaceRulesToMainDocument(
+  link: HTMLLinkElement | null,
+) {
+  const isShadowRoot = link?.getRootNode() instanceof ShadowRoot;
+  if (!isShadowRoot) {
+    return;
+  }
+
+  if (!link.sheet) {
+    await oneEvent(link, "load");
+    assertNotNullish(link.sheet, "The stylesheet wasn't parsed after loading");
+  }
+
+  const fontFaceStylesheet = new CSSStyleSheet();
+  for (const rule of link.sheet.cssRules) {
+    if (rule instanceof CSSFontFaceRule) {
+      fontFaceStylesheet.insertRule(rule.cssText);
+    }
+  }
+
+  document.adoptedStyleSheets.push(fontFaceStylesheet);
+}
+
+/**
  * Loads one or more stylesheets and hides the content until they're done loading.
  *
  * Does not support changing the initial href(s)
@@ -41,7 +68,6 @@ export const Stylesheets: React.FC<{
     return <>{children}</>;
   }
 
-  // `every` returns true for empty arrays
   const urls = uniq(castArray(href));
   const allResolved = urls.every((url) => resolved.includes(url));
 
@@ -55,32 +81,7 @@ export const Stylesheets: React.FC<{
         return (
           <link
             rel="stylesheet"
-            ref={async (link) => {
-              // Detect and extract font-face rules because they're
-              // not loaded from the shadow DOM's stylesheets
-              // https://issues.chromium.org/issues/41085401
-              const isShadowRoot = link?.getRootNode() instanceof ShadowRoot;
-              if (!isShadowRoot) {
-                return;
-              }
-
-              if (!link.sheet) {
-                await oneEvent(link, "load");
-                assertNotNullish(
-                  link.sheet,
-                  "The stylesheet wasn't parsed after loading",
-                );
-              }
-
-              const fontFaceStylesheet = new CSSStyleSheet();
-              for (const rule of link.sheet.cssRules) {
-                if (rule instanceof CSSFontFaceRule) {
-                  fontFaceStylesheet.insertRule(rule.cssText);
-                }
-              }
-
-              document.adoptedStyleSheets.push(fontFaceStylesheet);
-            }}
+            ref={extractFontFaceRulesToMainDocument}
             href={href}
             key={href}
             onLoad={resolve}
