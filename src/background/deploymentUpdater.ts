@@ -186,25 +186,27 @@ async function deactivateUnassignedDeployments(
     assignedDeployments.map((deployment) => deployment.package.package_id),
   );
 
-  const modComponentsToDeactivate = activatedModComponents.filter(
+  const unassignedModComponents = activatedModComponents.filter(
     (activatedModComponent) =>
       !isEmpty(activatedModComponent._deployment) &&
       !deployedModIds.has(activatedModComponent._recipe?.id),
   );
 
-  if (modComponentsToDeactivate.length === 0) {
+  if (unassignedModComponents.length === 0) {
     // Short-circuit to skip reporting telemetry
     return;
   }
 
-  await deactivateModComponentsAndSaveState(modComponentsToDeactivate, {
+  await deactivateModComponentsAndSaveState(unassignedModComponents, {
     editorState,
     optionsState,
   });
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
     auto: true,
-    deployments: modComponentsToDeactivate.map((x) => x._deployment.id),
+    deployments: unassignedModComponents.map(
+      (modComponent) => modComponent._deployment.id,
+    ),
   });
 }
 

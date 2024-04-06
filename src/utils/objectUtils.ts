@@ -68,16 +68,30 @@ export function deepPickBy(
 
 /**
  * Returns true if value is non-null and has a typeof "object". Also returns true for arrays.
+ * @see assertObject
  */
 export function isObject(value: unknown): value is UnknownObject {
   return Boolean(value) && typeof value === "object";
 }
 
-export function ensureJsonObject(value: UnknownObject): JsonObject {
+/**
+ * Asserts that the value is an object or an array
+ * @see isObject
+ */
+export function assertObject(
+  value: unknown,
+  ErrorCtor: new (...args: unknown[]) => Error = TypeError,
+): asserts value is UnknownObject {
   if (!isObject(value)) {
-    throw new TypeError("expected object");
+    throw new ErrorCtor("expected object");
   }
+}
 
+/**
+ * @throws {TypeError} if the value is not an object
+ */
+export function ensureJsonObject(value: UnknownObject): JsonObject {
+  assertObject(value);
   return JSON.parse(safeJsonStringify(value)) as JsonObject;
 }
 

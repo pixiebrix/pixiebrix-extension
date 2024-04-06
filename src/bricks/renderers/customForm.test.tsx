@@ -33,8 +33,10 @@ import { dataStore } from "@/background/messenger/strict/api";
 import { type Schema } from "@/types/schemaTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
+import { toExpression } from "@/utils/expressionUtils";
 
 const dataStoreGetMock = jest.mocked(dataStore.get);
+const dataStoreSetSpy = jest.spyOn(dataStore, "set");
 
 describe("form data normalization", () => {
   const normalizationTestCases = [
@@ -201,7 +203,11 @@ describe("form data normalization", () => {
 });
 
 describe("CustomFormRenderer", () => {
-  test("Render autosaved form", async () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test("Render auto-saved form", async () => {
     const brick = new CustomFormRenderer();
 
     dataStoreGetMock.mockResolvedValue({});
@@ -224,8 +230,94 @@ describe("CustomFormRenderer", () => {
     render(<Component {...props} />);
 
     expect(screen.queryByText("Submit")).not.toBeInTheDocument();
-    expect(screen.getByRole("textbox", { hidden: true })).toBeInTheDocument();
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
   });
+
+  test("Supports postSubmitAction reset", async () => {
+    const brick = new CustomFormRenderer();
+    const runPipelineMock = jest.fn();
+
+    dataStoreGetMock.mockResolvedValue({});
+
+    const { Component, props } = await brick.render(
+      {
+        storage: { type: "localStorage" },
+        recordId: "test",
+        onSubmit: toExpression("pipeline", []),
+        postSubmitAction: "reset",
+        submitCaption: "Submit",
+        uiSchema: {
+          "ui:submitButtonOptions": { label: "Submit" },
+        },
+        schema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+          },
+        },
+      } as any,
+      brickOptionsFactory({ runPipeline: () => runPipelineMock }),
+    );
+
+    render(<Component {...props} />);
+
+    const textBox = screen.getByRole("textbox");
+    await userEvent.type(textBox, "Some text");
+    expect(textBox).toHaveValue("Some text");
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+    expect(runPipelineMock).toHaveBeenCalledOnce();
+
+    expect(dataStoreSetSpy).not.toHaveBeenCalled();
+
+    // Need to get new textbox reference, because the old one is removed when the key changes
+    expect(screen.getByRole("textbox")).toHaveValue("");
+  });
+
+  test.each([undefined, "save"])(
+    "postSubmitAction: %s doesn't reset",
+    async (postSubmitAction) => {
+      const brick = new CustomFormRenderer();
+      const runPipelineMock = jest.fn();
+
+      dataStoreGetMock.mockResolvedValue({});
+
+      const { Component, props } = await brick.render(
+        {
+          storage: { type: "localStorage" },
+          recordId: "test",
+          onSubmit: toExpression("pipeline", []),
+          postSubmitAction,
+          submitCaption: "Submit",
+          uiSchema: {
+            "ui:submitButtonOptions": { label: "Submit" },
+          },
+          schema: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+            },
+          },
+        } as any,
+        brickOptionsFactory({ runPipeline: () => runPipelineMock }),
+      );
+
+      render(<Component {...props} />);
+
+      const value = "Some text";
+      const textBox = screen.getByRole("textbox");
+      await userEvent.type(textBox, value);
+      await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+      expect(runPipelineMock).toHaveBeenCalledOnce();
+      expect(dataStoreSetSpy).toHaveBeenCalledExactlyOnceWith("test", {
+        name: value,
+      });
+
+      // Need to get new textbox reference, because the old one is removed if/when the key changes
+      expect(screen.getByRole("textbox")).toHaveValue(value);
+    },
+  );
 
   test("is page state aware", async () => {
     const brick = new CustomFormRenderer();

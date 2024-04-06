@@ -185,9 +185,7 @@ describe("SelectorAnalysis", () => {
     expect(analysis.getAnnotations()).toStrictEqual([
       {
         analysisId: "selector",
-        message: expect.stringMatching(
-          /Selector appears to contain random characters/,
-        ),
+        message: expect.stringMatching(/Selector appears to contain generated/),
         position: {
           path: "extension.blockPipeline.0.config.rootSelector",
         },
@@ -195,9 +193,7 @@ describe("SelectorAnalysis", () => {
       },
       {
         analysisId: "selector",
-        message: expect.stringMatching(
-          /Selector appears to contain random characters/,
-        ),
+        message: expect.stringMatching(/Selector appears to contain generated/),
         position: {
           path: "extension.blockPipeline.0.config.elements.0.selector",
         },
@@ -230,9 +226,7 @@ describe("SelectorAnalysis", () => {
     expect(analysis.getAnnotations()).toStrictEqual([
       {
         analysisId: "selector",
-        message: expect.stringMatching(
-          /Selector appears to contain random characters/,
-        ),
+        message: expect.stringMatching(/Selector appears to contain generated/),
         position: {
           path: "extension.blockPipeline.0.config.selectors.simple",
         },
@@ -240,9 +234,7 @@ describe("SelectorAnalysis", () => {
       },
       {
         analysisId: "selector",
-        message: expect.stringMatching(
-          /Selector appears to contain random characters/,
-        ),
+        message: expect.stringMatching(/Selector appears to contain generated/),
         position: {
           path: "extension.blockPipeline.0.config.selectors.complex.selector",
         },

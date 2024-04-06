@@ -356,6 +356,7 @@
     "./contrib/ckeditor/ckeditor.test.ts",
     "./contrib/ckeditor/ckeditorDom.ts",
     "./contrib/ckeditor/ckeditorProtocol.ts",
+    "./contrib/draftjs/draftJsDom.ts",
     "./contrib/google/sheets/core/getSheetIdIntegrationOutputKey.ts",
     "./contrib/google/sheets/core/handleGoogleRequestRejection.ts",
     "./contrib/google/sheets/core/schemas.ts",

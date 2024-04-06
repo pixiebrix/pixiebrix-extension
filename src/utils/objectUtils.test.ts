@@ -19,7 +19,9 @@ import {
   removeUndefined,
   mapObject,
   isUnknownObjectArray,
+  assertObject,
 } from "@/utils/objectUtils";
+import { BusinessError } from "@/errors/businessErrors";
 
 describe("removeUndefined", () => {
   test("remove top-level undefined", () => {
@@ -84,5 +86,31 @@ describe("isUnknownObjectArray", () => {
 
   test("non-array", () => {
     expect(isUnknownObjectArray({ foo: "bar" })).toBe(false);
+  });
+});
+
+describe("assertObject", () => {
+  it("accepts an array", () => {
+    expect(() => {
+      assertObject([]);
+    }).not.toThrow();
+  });
+
+  it("accepts an object", () => {
+    expect(() => {
+      assertObject({ foo: "bar" });
+    }).not.toThrow();
+  });
+
+  it.each([null, undefined])("rejects nullish: %s", (value) => {
+    expect(() => {
+      assertObject(value);
+    }).toThrow(TypeError);
+  });
+
+  it("throws custom error", () => {
+    expect(() => {
+      assertObject(42, BusinessError);
+    }).toThrow(BusinessError);
   });
 });

@@ -18,7 +18,6 @@
 import pTimeout from "p-timeout";
 import { type Menus, type Tabs } from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
-import reportError from "@/telemetry/reportError";
 import { handleMenuAction, notify } from "@/contentScript/messenger/strict/api";
 import { waitForContentScript } from "@/background/contentScript";
 import { expectContext } from "@/utils/expectContext";
@@ -87,11 +86,9 @@ async function dispatchMenu(
       args: info,
     });
   } catch (error) {
-    // Handle internal/messenger errors here. The real error handling occurs in the contextMenu extension point
-    reportError(error);
     notify.error(target, {
-      message: "Error handling context menu action",
-      reportError: false,
+      // Handle internal/messenger errors here. The real error handling occurs in the contextMenu extension point
+      error: new Error("Error handling context menu action", { cause: error }),
     });
   }
 }
