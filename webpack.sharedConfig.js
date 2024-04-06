@@ -49,7 +49,7 @@ const shared = {
       // Lighter jQuery version
       jquery: "jquery/dist/jquery.slim.min.js",
     },
-    extensions: [".ts", ".tsx", ".jsx", ".js"],
+    extensions: [".ts", ".tsx", ".jsx", ".js", ".mjs"],
     fallback: {
       fs: false,
       crypto: false,

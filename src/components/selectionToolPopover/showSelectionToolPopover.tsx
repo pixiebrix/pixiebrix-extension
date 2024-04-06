@@ -22,7 +22,10 @@
 
 import React from "react";
 import { render } from "react-dom";
-import { IsolatedComponent } from "@/components/IsolatedComponent";
+import {
+  IsolatedComponent,
+  reactLazyIsolatedComponent,
+} from "@/components/IsolatedComponent";
 import type Component from "@/components/selectionToolPopover/SelectionToolPopover";
 
 export default function showSelectionToolPopover({
@@ -31,10 +34,10 @@ export default function showSelectionToolPopover({
 }: {
   rootElement: HTMLElement;
 } & React.ComponentProps<typeof Component>) {
-  const SelectionToolPopover = React.lazy(
+  const SelectionToolPopover = reactLazyIsolatedComponent(
     async () =>
       import(
-        /* webpackChunkName: "SelectionToolPopover" */ "@/components/selectionToolPopover/SelectionToolPopover"
+        /* webpackChunkName: "isolated/SelectionToolPopover" */ "@/components/selectionToolPopover/SelectionToolPopover"
       ),
   );
 

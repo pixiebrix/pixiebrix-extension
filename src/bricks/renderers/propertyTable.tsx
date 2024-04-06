@@ -21,7 +21,10 @@ import { sortBy, isPlainObject } from "lodash";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { isValidUrl } from "@/utils/urlUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { IsolatedComponent } from "@/components/IsolatedComponent";
+import {
+  IsolatedComponent,
+  reactLazyIsolatedComponent,
+} from "@/components/IsolatedComponent";
 import type TreeNode from "primereact/treenode";
 
 interface Item {
@@ -117,10 +120,10 @@ export class PropertyTableRenderer extends RendererABC {
   );
 
   async render({ data }: BrickArgs, { ctxt }: BrickOptions) {
-    const LazyPropertyTree = React.lazy(
+    const LazyPropertyTree = reactLazyIsolatedComponent(
       async () =>
         import(
-          /* webpackChunkName: "PropertyTree" */
+          /* webpackChunkName: "isolated/PropertyTree" */
           "./PropertyTree"
         ),
     );

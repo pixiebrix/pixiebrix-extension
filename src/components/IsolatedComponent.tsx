@@ -19,24 +19,58 @@
 // shadow DOM and synchronously set the :host element style.
 import cssText from "./IsolatedComponent.scss?loadAsText";
 
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense } from "react";
 import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
+import isolatedComponentList from "./isolatedComponentList";
 
 const MODE = process.env.SHADOW_DOM as "open" | "closed";
 
-function deactivateGlobalStyle(href: string): boolean {
-  const link = document.head.querySelector<HTMLLinkElement>(
-    `link[href="${href}"]`,
-  );
+type LazyComponentImportFunction = () => Promise<{
+  default: React.ComponentType<unknown>;
+}>;
 
-  if (link) {
-    // Disable stylesheet without removing it. Webpack still awaits its loading.
-    link.media = "not all";
-    return true;
+// Drop the stylesheet injected by `mini-css-extract-plugin` into the main document.
+async function discardStylesheetsWhilePending(
+  importFunction: LazyComponentImportFunction,
+) {
+  const baseUrl = chrome.runtime.getURL("");
+
+  const observer = new MutationObserver((mutations) => {
+    // Use for of
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        if (node instanceof HTMLLinkElement && node.href.startsWith(baseUrl)) {
+          // Disable stylesheet without removing it. Webpack still awaits its loading.
+          node.media = "not all";
+        }
+      }
+    }
+  });
+
+  observer.observe(document.head, {
+    childList: true,
+  });
+
+  // Call and discard. React.lazy() will call it again and use the result or the error.
+  // This is fine because import() does not re-fetch/re-run the module.
+  try {
+    await importFunction();
+  } catch {
+    // React.lazy() will take care of it
+  } finally {
+    observer.disconnect();
   }
+}
 
-  return false;
+// Wrap React.lazy() to isolate the component in a shadow DOM
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- It must be `any`
+export function reactLazyIsolatedComponent<T extends React.ComponentType<any>>(
+  importFunction: LazyComponentImportFunction,
+): React.LazyExoticComponent<T> {
+  void discardStylesheetsWhilePending(importFunction);
+
+  return React.lazy(importFunction) as React.LazyExoticComponent<T>;
 }
 
 /**
@@ -73,32 +107,17 @@ export const IsolatedComponent: React.VFC<{
    */
   children: JSX.Element;
 }> = ({ webpackChunkName, children, noStyle, ...props }) => {
+  if (
+    !isolatedComponentList.some((url) => url.endsWith("/" + webpackChunkName))
+  ) {
+    throw new Error(
+      `Isolated component "${webpackChunkName}" is not listed in isolatedComponentList.mjs. Add it there and restart webpack to create it.`,
+    );
+  }
+
   const stylesheetUrl = noStyle
     ? null
-    : chrome.runtime.getURL(`css/${webpackChunkName}.css`);
-
-  // Drop the stylesheet injected by `mini-css-extract-plugin` into the main document.
-  useEffect(() => {
-    if (!stylesheetUrl) {
-      // This component doesn't generate any stylesheets
-      return;
-    }
-
-    if (deactivateGlobalStyle(stylesheetUrl)) {
-      // This stylesheet is injected only once per document, don't await further injections.
-      return;
-    }
-
-    const observer = new MutationObserver(() => {
-      if (deactivateGlobalStyle(stylesheetUrl)) {
-        observer.disconnect();
-      }
-    });
-    observer.observe(document.head, { childList: true });
-    return () => {
-      observer.disconnect();
-    };
-  });
+    : chrome.runtime.getURL(`${webpackChunkName}.css`);
 
   return (
     // `pb-name` is used to visually identify it in the dev tools

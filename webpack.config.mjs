@@ -30,11 +30,11 @@ import { compact } from "lodash-es";
 import mergeWithShared from "./webpack.sharedConfig.js";
 import { parseEnv, loadEnv } from "./scripts/env.mjs";
 import customizeManifest from "./scripts/manifest.mjs";
-import { createRequire } from "node:module";
 import DiscardFilePlugin from "./scripts/DiscardFilePlugin.mjs";
+import isolatedComponentList from "./src/components/isolatedComponentList.mjs";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
-
-const require = createRequire(import.meta.url);
+import bootstrapIconsPackage from "bootstrap-icons/package.json" with { type: "json" };
+import simpleIconsPackage from "simple-icons/package.json" with { type: "json" };
 
 loadEnv();
 
@@ -48,11 +48,9 @@ console.log(
   process.env.REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST,
 );
 
-if (!process.env.SOURCE_VERSION) {
-  process.env.SOURCE_VERSION = execSync("git rev-parse --short HEAD")
-    .toString()
-    .trim();
-}
+process.env.SOURCE_VERSION ??= execSync("git rev-parse --short HEAD")
+  .toString()
+  .trim();
 
 // Configure sourcemaps
 // Disable sourcemaps on CI unless it's a PUBLIC_RELEASE
@@ -113,19 +111,17 @@ const createConfig = (env, options) =>
     entry: Object.fromEntries(
       [
         "background/background",
-        // Components rendered within the Shadow DOM, such as those used by the Document Renderer brick in the sidebar,
-        // are isolated from global styles. This prevents access to CSS module classes used by these components.
-        // To resolve this, add the root component of the affected component hierarchy to the webpack function that
-        // bundles styles. This will make the CSS available to be loaded by the component tree.
-        // Additionally, remember to add the related JavaScript file to the DiscardFilePlugin.mjs file to exclude
-        // it from the bundle, as it is not needed for rendering in this context.
+
+        // TODO: Move to isolatedComponentList.mjs and use <IsolatedComponent/>
         "bricks/renderers/CustomFormComponent",
         "bricks/renderers/documentView/DocumentView",
         "bricks/transformers/ephemeralForm/EphemeralFormContent",
+
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",
         "contentScript/setExtensionIdInApp",
+
         "pageEditor/pageEditor",
         "extensionConsole/options",
         "sidebar/sidebar",
@@ -142,6 +138,9 @@ const createConfig = (env, options) =>
 
         // The script that gets injected into the host page
         "pageScript/pageScript",
+
+        // The isolated components whose CSS will be loaded in a shadow DOM
+        ...isolatedComponentList,
       ].map((name) => [path.basename(name), `./src/${name}`]),
     ),
 
@@ -306,7 +305,7 @@ const createConfig = (env, options) =>
       rules: [
         {
           test: /\.s?css$/,
-          resourceQuery: { not: [/loadAsUrl/] },
+          resourceQuery: { not: [/loadAsUrl|loadAsText/] },
           use: [MiniCssExtractPlugin.loader, "css-loader"],
         },
         {
@@ -329,9 +328,7 @@ const createConfig = (env, options) =>
           type: "asset/resource",
           generator: {
             emit: false,
-            publicPath: `https://cdn.jsdelivr.net/npm/bootstrap-icons@${
-              require("bootstrap-icons/package.json").version
-            }/`,
+            publicPath: `https://cdn.jsdelivr.net/npm/bootstrap-icons@${bootstrapIconsPackage.version}/`,
             filename: "icons/[name][ext]",
           },
         },
@@ -340,9 +337,7 @@ const createConfig = (env, options) =>
           type: "asset/resource",
           generator: {
             emit: false,
-            publicPath: `https://cdn.jsdelivr.net/npm/simple-icons@${
-              require("simple-icons/package.json").version
-            }/`,
+            publicPath: `https://cdn.jsdelivr.net/npm/simple-icons@${simpleIconsPackage.version}/`,
             filename: "icons/[name][ext]",
           },
         },
