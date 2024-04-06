@@ -89,7 +89,6 @@ export function propertiesToSchema(
 
 /**
  * Return the names of top-level properties in a JSON Schema or object.
- * @param inputSchema the input schema
  * @see propertiesToSchema
  */
 export function inputProperties(inputSchema: Schema): SchemaProperties {

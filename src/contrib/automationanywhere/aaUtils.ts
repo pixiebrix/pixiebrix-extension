@@ -20,10 +20,11 @@ import {
   type Execution,
   type Interface,
   type OutputValue,
+  type TableValue,
   type Variable,
 } from "@/contrib/automationanywhere/contract";
 import { type JSONSchema7Type } from "json-schema";
-import { mapValues } from "lodash";
+import { mapValues, zipWith } from "lodash";
 import { type Primitive } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { boolean } from "@/utils/typeUtils";
@@ -145,7 +146,21 @@ export function mapBotInput(data: UnknownObject) {
   });
 }
 
-function mapBotOutput(value: OutputValue): Primitive | UnknownObject {
+type BotOutput = Primitive | UnknownObject | UnknownObject[];
+
+function mapBotTableValue(tableValue: TableValue): UnknownObject[] {
+  const { schema, rows } = tableValue;
+  return rows.map((row) => {
+    const newEntries: Array<[string, BotOutput]> = zipWith(
+      schema,
+      row.values,
+      (columnSchema, rowValue) => [columnSchema.name, mapBotOutput(rowValue)],
+    );
+    return Object.fromEntries(newEntries);
+  });
+}
+
+function mapBotOutput(value: OutputValue): BotOutput {
   switch (value.type) {
     case "STRING": {
       return value.string;
@@ -165,6 +180,16 @@ function mapBotOutput(value: OutputValue): Primitive | UnknownObject {
       );
     }
 
+    case "TABLE": {
+      if (value.table == null) {
+        // This should never happen, but be defensive just in case,
+        // since it's an api payload
+        return [];
+      }
+
+      return mapBotTableValue(value.table);
+    }
+
     default: {
       const exhaustiveCheck: never = value.type;
       throw new BusinessError(
@@ -176,7 +201,7 @@ function mapBotOutput(value: OutputValue): Primitive | UnknownObject {
 
 export function selectBotOutput(
   execution: Pick<Execution, "botOutVariables">,
-): Record<string, Primitive | UnknownObject> {
+): Record<string, BotOutput> {
   return mapValues(execution.botOutVariables?.values ?? {}, (value) =>
     mapBotOutput(value),
   );

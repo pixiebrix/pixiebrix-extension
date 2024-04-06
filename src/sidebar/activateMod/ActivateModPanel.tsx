@@ -383,7 +383,6 @@ const ActivateModWizardPanel: React.FC<RequiredModDefinition> = (modState) => {
 
 /**
  * React Component Panel for activating a single mod, which may require end-user configuration.
- * @param modId the mod id
  */
 const ActivateModPanel: React.FC<{ mod: ModActivationConfig }> = ({ mod }) => {
   // Memoize to array reference doesn't change on re-render

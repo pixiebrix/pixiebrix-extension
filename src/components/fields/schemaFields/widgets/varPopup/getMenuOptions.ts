@@ -28,7 +28,6 @@ import { excludeIntegrationVariables } from "@/components/fields/schemaFields/wi
 
 /**
  * Convert every node in the existence tree which IS_ARRAY to an array
- * @param node The node to convert
  */
 function convertArrayNodesToArrays(node: ExistenceNode): void {
   for (const [key, childNode] of Object.entries(node)) {

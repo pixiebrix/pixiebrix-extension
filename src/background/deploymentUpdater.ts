@@ -16,7 +16,7 @@
  */
 
 import { type Deployment } from "@/types/contract";
-import { isEmpty, partition } from "lodash";
+import { isEmpty } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUUID } from "@/telemetry/telemetryHelpers";
 import { isLinked, readAuthData, updateUserData } from "@/auth/authStorage";
@@ -88,146 +88,155 @@ const locateAllForService = locator.locateAllForService.bind(locator);
 
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
-async function setExtensionsState(state: ModComponentState): Promise<void> {
+async function saveModComponentStateAndReactivateTabs(
+  state: ModComponentState,
+): Promise<void> {
   await saveModComponentState(state);
   await forEachTab(queueReactivateTab);
 }
 
-function uninstallExtensionFromStates(
+function deactivateModComponentFromStates(
+  modComponentId: UUID,
   optionsState: ModComponentState,
   editorState: EditorState | undefined,
-  extensionId: UUID,
-): {
-  options: ModComponentState;
-  editor: EditorState;
-} {
+): { options: ModComponentState; editor: EditorState } {
   const options = optionsReducer(
     optionsState,
-    optionsActions.removeExtension({ extensionId }),
+    optionsActions.removeExtension({ extensionId: modComponentId }),
   );
   const editor = editorState
-    ? editorReducer(editorState, editorActions.removeElement(extensionId))
+    ? editorReducer(editorState, editorActions.removeElement(modComponentId))
     : undefined;
   return { options, editor };
 }
 
-async function uninstallExtensionsAndSaveState(
-  toUninstall: UnresolvedModComponent[],
+async function deactivateModComponentsAndSaveState(
+  modComponentsToDeactivate: UnresolvedModComponent[],
   {
     editorState,
     optionsState,
   }: { editorState: EditorState; optionsState: ModComponentState },
 ): Promise<void> {
-  // Uninstall existing versions of the extensions
-  for (const extension of toUninstall) {
-    const result = uninstallExtensionFromStates(
+  // Deactivate existing mod components
+  for (const modComponent of modComponentsToDeactivate) {
+    const result = deactivateModComponentFromStates(
+      modComponent.id,
       optionsState,
       editorState,
-      extension.id,
     );
     optionsState = result.options;
     editorState = result.editor;
   }
 
   await allSettled(
-    toUninstall.map(async ({ id }) => removeExtensionForEveryTab(id)),
+    modComponentsToDeactivate.map(async ({ id }) =>
+      removeExtensionForEveryTab(id),
+    ),
     { catch: "ignore" },
   );
 
-  await setExtensionsState(optionsState);
+  await saveModComponentStateAndReactivateTabs(optionsState);
   await saveEditorState(editorState);
 }
 
 /**
- * Uninstall all deployments by uninstalling all extensions associated with a deployment.
+ * Deactivate all deployed mods by deactivating all mod components associated with a deployment
  */
-export async function uninstallAllDeployments(): Promise<void> {
+export async function deactivateAllDeployedMods(): Promise<void> {
   const [optionsState, editorState] = await Promise.all([
     getModComponentState(),
     getEditorState(),
   ]);
-  const installed = selectActivatedModComponents({ options: optionsState });
+  const activatedModComponents = selectActivatedModComponents({
+    options: optionsState,
+  });
 
-  const toUninstall = installed.filter(
-    (extension) => !isEmpty(extension._deployment),
+  const modComponentsToDeactivate = activatedModComponents.filter(
+    (activatedModComponent) => !isEmpty(activatedModComponent._deployment),
   );
 
-  if (toUninstall.length === 0) {
+  if (modComponentsToDeactivate.length === 0) {
     // Short-circuit to skip reporting telemetry
     return;
   }
 
-  await uninstallExtensionsAndSaveState(toUninstall, {
+  await deactivateModComponentsAndSaveState(modComponentsToDeactivate, {
     editorState,
     optionsState,
   });
 
   reportEvent("DeploymentDeactivateAll", {
     auto: true,
-    deployments: toUninstall.map((x) => x._deployment.id),
+    deployments: modComponentsToDeactivate.map((x) => x._deployment.id),
   });
 }
 
-async function uninstallUnmatchedDeployments(
-  deployments: Deployment[],
+async function deactivateUnassignedDeployments(
+  assignedDeployments: Deployment[],
 ): Promise<void> {
   const [optionsState, editorState] = await Promise.all([
     getModComponentState(),
     getEditorState(),
   ]);
-  const installed = selectActivatedModComponents({ options: optionsState });
+  const activatedModComponents = selectActivatedModComponents({
+    options: optionsState,
+  });
 
-  const deploymentRecipeIds = new Set(
-    deployments.map((deployment) => deployment.package.package_id),
+  const deployedModIds = new Set(
+    assignedDeployments.map((deployment) => deployment.package.package_id),
   );
 
-  const toUninstall = installed.filter(
-    (extension) =>
-      !isEmpty(extension._deployment) &&
-      !deploymentRecipeIds.has(extension._recipe?.id),
+  const unassignedModComponents = activatedModComponents.filter(
+    (activatedModComponent) =>
+      !isEmpty(activatedModComponent._deployment) &&
+      !deployedModIds.has(activatedModComponent._recipe?.id),
   );
 
-  if (toUninstall.length === 0) {
+  if (unassignedModComponents.length === 0) {
     // Short-circuit to skip reporting telemetry
     return;
   }
 
-  await uninstallExtensionsAndSaveState(toUninstall, {
+  await deactivateModComponentsAndSaveState(unassignedModComponents, {
     editorState,
     optionsState,
   });
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
     auto: true,
-    deployments: toUninstall.map((x) => x._deployment.id),
+    deployments: unassignedModComponents.map(
+      (modComponent) => modComponent._deployment.id,
+    ),
   });
 }
 
-async function uninstallRecipe(
+async function deactivateMod(
+  modId: RegistryId,
   optionsState: ModComponentState,
   editorState: EditorState | undefined,
-  recipeId: RegistryId,
-): Promise<{
-  options: ModComponentState;
-  editor: EditorState | undefined;
-}> {
-  let options = optionsState;
-  let editor = editorState;
+): Promise<{ options: ModComponentState; editor: EditorState | undefined }> {
+  let _optionsState = optionsState;
+  let _editorState = editorState;
 
-  const recipeOptionsSelector = selectModComponentsForMod(recipeId);
-  const recipeExtensions = recipeOptionsSelector({ options: optionsState });
+  const modComponentsForModSelector = selectModComponentsForMod(modId);
+  const activatedModComponentsForMod = modComponentsForModSelector({
+    options: optionsState,
+  });
 
-  // Uninstall existing versions of the extensions
-  for (const extension of recipeExtensions) {
-    const result = uninstallExtensionFromStates(options, editor, extension.id);
-    options = result.options;
-    editor = result.editor;
+  for (const activatedModComponent of activatedModComponentsForMod) {
+    const result = deactivateModComponentFromStates(
+      activatedModComponent.id,
+      _optionsState,
+      _editorState,
+    );
+    _optionsState = result.options;
+    _editorState = result.editor;
   }
 
-  return { options, editor };
+  return { options: _optionsState, editor: _editorState };
 }
 
-async function installDeployment({
+async function activateDeployment({
   optionsState,
   editorState,
   activatableDeployment,
@@ -239,27 +248,28 @@ async function installDeployment({
   options: ModComponentState;
   editor: EditorState | undefined;
 }> {
-  let options = optionsState;
-  let editor = editorState;
+  let _optionsState = optionsState;
+  let _editorState = editorState;
   const { deployment, modDefinition } = activatableDeployment;
 
-  const isReinstall = optionsState.extensions.some(
-    (x) => x._deployment?.id === deployment.id,
+  const isAlreadyActivated = optionsState.extensions.some(
+    (activatedModComponent) =>
+      activatedModComponent._deployment?.id === deployment.id,
   );
 
-  // Uninstall existing versions of the extensions
-  const result = await uninstallRecipe(
-    options,
-    editor,
+  // Deactivate existing mod component versions
+  const result = await deactivateMod(
     deployment.package.package_id,
+    _optionsState,
+    _editorState,
   );
 
-  options = result.options;
-  editor = result.editor;
+  _optionsState = result.options;
+  _editorState = result.editor;
 
-  // Install the deployment's blueprint with the service definition
-  options = optionsReducer(
-    options,
+  // Activate the deployed mod with the service definition
+  _optionsState = optionsReducer(
+    _optionsState,
     optionsActions.activateMod({
       modDefinition,
       deployment,
@@ -270,7 +280,7 @@ async function installDeployment({
       // Assume backend properly validates the options
       optionsArgs: deployment.options_config as OptionsArgs,
       screen: "background",
-      isReactivate: isReinstall,
+      isReactivate: isAlreadyActivated,
     }),
   );
 
@@ -279,14 +289,14 @@ async function installDeployment({
     auto: true,
   });
 
-  return { options, editor };
+  return { options: _optionsState, editor: _editorState };
 }
 
 /**
- * Install all deployments
+ * Activate a list of deployments
  * @param activatableDeployments deployments that PixieBrix already has permission to run
  */
-async function installDeployments(
+async function activateDeployments(
   activatableDeployments: ActivatableDeployment[],
 ): Promise<void> {
   let [optionsState, editorState] = await Promise.all([
@@ -296,7 +306,7 @@ async function installDeployments(
 
   for (const activatableDeployment of activatableDeployments) {
     // eslint-disable-next-line no-await-in-loop -- running reducer, need to update states serially
-    const result = await installDeployment({
+    const result = await activateDeployment({
       optionsState,
       editorState,
       activatableDeployment,
@@ -305,7 +315,7 @@ async function installDeployments(
     editorState = result.editor;
   }
 
-  await setExtensionsState(optionsState);
+  await saveModComponentStateAndReactivateTabs(optionsState);
   await saveEditorState(editorState);
 }
 
@@ -316,14 +326,14 @@ type DeploymentConstraint = {
 };
 
 /**
- * Return true if the deployment can be automatically installed.
+ * Return true if the deployment can be automatically activated.
  *
- * For automatic install, the following must be true:
+ * For automatic activation, the following must be true:
  * 1. PixieBrix already has permissions for the required pages/APIs
- * 2. The user has a version of the PixieBrix browser extension compatible with the deployment
+ * 2. The user has a version of the PixieBrix Extension compatible with the deployment
  * 3. The user has exactly one (1) personal configuration for each unbound service for the deployment
  */
-async function canAutomaticallyInstall({
+async function canAutoActivate({
   activatableDeployment,
   hasPermissions,
   extensionVersion,
@@ -347,8 +357,8 @@ async function canAutomaticallyInstall({
 }
 
 /**
- * Return the deployments that need to be installed because they have an update
- * @param deployments the deployments
+ * Return the deployments that need to be activated because they have an update
+ * @param deployments the deployments to filter
  * @param restricted `true` if the user is a restricted user, e.g., as opposed to a developer
  */
 async function selectUpdatedDeployments(
@@ -356,27 +366,20 @@ async function selectUpdatedDeployments(
   { restricted }: { restricted: boolean },
 ): Promise<Deployment[]> {
   // Always get the freshest options slice from the local storage
-  const { extensions } = await getModComponentState();
-  const updatePredicate = makeUpdatedFilter(extensions, { restricted });
+  const { extensions: activatedModComponents } = await getModComponentState();
+  const updatePredicate = makeUpdatedFilter(activatedModComponents, {
+    restricted,
+  });
   return deployments.filter((deployment) => updatePredicate(deployment));
 }
 
-async function markAllAsInstalled() {
-  const settings = await getSettingsState();
-  const next = settingsSlice.reducer(
-    settings,
-    settingsSlice.actions.resetUpdatePromptTimestamp(),
-  );
-  await saveSettingsState(next);
-}
-
 /**
- * Sync local deployments with provisioned deployments.
+ * Sync activated deployments with assigned deployments.
  *
- * If PixieBrix does not have the permissions required to automatically activate a deployment, opens the Options page
+ * If PixieBrix does not have the permissions required to automatically activate a deployment, open the Options page
  * so the user can click to activate the deployments.
  *
- * NOTE: if updates are snoozed, does not install updates automatically. (To not interrupt the current business
+ * NOTE: if updates are snoozed, does not activate updated deployments automatically. (To not interrupt the current business
  * process the team member is working on.)
  */
 export async function syncDeployments(): Promise<void> {
@@ -406,7 +409,7 @@ export async function syncDeployments(): Promise<void> {
     //   so PixieBrix cleared it out, 2) something removed the local storage entry
     // - If the user is not an enterprise user (or has not linked their extension yet), just NOP. They likely they just
     //   need to reconnect their extension. If it's a non-enterprise user, they shouldn't have any deployments
-    //   installed anyway.
+    //   activated anyway.
 
     if (disableLoginTab) {
       // IT manager has disabled opening login tab automatically
@@ -417,7 +420,7 @@ export async function syncDeployments(): Promise<void> {
       reportEvent(Events.ORGANIZATION_EXTENSION_LINK, {
         organizationId,
         managedOrganizationId,
-        // Initial marks whether this is the initial background deployment install
+        // Initial marks whether this is the initial background deployment activation
         initial: !organizationId,
         campaignIds,
         sso: true,
@@ -432,7 +435,7 @@ export async function syncDeployments(): Promise<void> {
       reportEvent(Events.ORGANIZATION_EXTENSION_LINK, {
         organizationId,
         managedOrganizationId,
-        // Initial marks whether this is the initial background deployment install
+        // Initial marks whether this is the initial background deployment activation
         initial: !organizationId,
         campaignIds,
         sso: false,
@@ -451,14 +454,14 @@ export async function syncDeployments(): Promise<void> {
     // 1) has never been a member of an organization,
     // 2) has left their organization,
     // 3) linked their extension to a non-organization profile
-    await uninstallAllDeployments();
+    await deactivateAllDeployedMods();
     return;
   }
 
   // Always get the freshest options slice from the local storage
-  const { extensions } = await getModComponentState();
+  const { extensions: activatedModComponents } = await getModComponentState();
 
-  // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment installed.
+  // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment activated.
   // Now we're always sending in order to help team admins understand any gaps between number of registered users
   // and amount of activity when using deployments
   const client = await maybeGetLinkedApiClient();
@@ -490,7 +493,7 @@ export async function syncDeployments(): Promise<void> {
     {
       uid: await getUUID(),
       version: getExtensionVersion(),
-      active: selectInstalledDeployments(extensions),
+      active: selectInstalledDeployments(activatedModComponents),
       campaignIds,
     },
     {
@@ -499,8 +502,8 @@ export async function syncDeployments(): Promise<void> {
     },
   );
 
-  // Always uninstall unmatched deployments
-  await uninstallUnmatchedDeployments(deployments);
+  // Always deactivate unassigned deployments
+  await deactivateUnassignedDeployments(deployments);
 
   // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag currently
   // corresponds to whether the user is a restricted user vs. developer
@@ -556,12 +559,12 @@ export async function syncDeployments(): Promise<void> {
     }
 
     // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user to
-    // manually install the deployments via the banner.
+    // manually activate the deployments via the banner.
     void browser.runtime.openOptionsPage();
     return;
   }
 
-  // Extracted activateDeploymentsInBackground into a separate function because code only uses activatableDeployments.
+  // Extracted activateDeploymentsInBackground into a separate function because code only uses activatableDeployments
   await activateDeploymentsInBackground({
     // Excludes any deployments that fail to fetch. In those cases, the user will stay on the old deployment until
     // the next heartbeat/check.
@@ -584,7 +587,7 @@ async function activateDeploymentsInBackground({
   activatableDeployments: ActivatableDeployment[];
   meApiResponse: components["schemas"]["Me"];
 }): Promise<void> {
-  // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-install.
+  // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-activate.
   // Behind a feature flag in case it causes problems for enterprise customers.
   // Could use browser.runtime.getManifest().optional_permissions here, but that also technically supports the Origin
   // type so the types wouldn't match with checkDeploymentPermissions
@@ -608,11 +611,11 @@ async function activateDeploymentsInBackground({
   const { version: extensionVersionString } = browser.runtime.getManifest();
   const extensionVersion = parseSemVer(extensionVersionString);
 
-  const installability = await Promise.all(
+  const deploymentsByActivationMethod = await Promise.all(
     deploymentRequirements.map(
       async ({ activatableDeployment, hasPermissions }) => ({
         activatableDeployment,
-        isAutomatic: await canAutomaticallyInstall({
+        autoActivate: await canAutoActivate({
           activatableDeployment,
           hasPermissions,
           extensionVersion,
@@ -621,45 +624,54 @@ async function activateDeploymentsInBackground({
     ),
   );
 
-  const [automatic, manual] = partition(installability, (x) => x.isAutomatic);
+  const deploymentsToAutoActivate = deploymentsByActivationMethod
+    .filter(({ autoActivate }) => autoActivate)
+    .map(({ activatableDeployment }) => activatableDeployment);
 
-  let automaticError: boolean;
+  const deploymentsToManuallyActivate = deploymentsByActivationMethod
+    .filter(({ autoActivate }) => !autoActivate)
+    .map(({ activatableDeployment }) => activatableDeployment);
 
-  if (automatic.length > 0) {
+  let autoActivationError: boolean;
+
+  if (deploymentsToAutoActivate.length > 0) {
     try {
-      await installDeployments(automatic.map((x) => x.activatableDeployment));
+      await activateDeployments(deploymentsToAutoActivate);
     } catch (error) {
       reportError(error);
-      automaticError = true;
+      autoActivationError = true;
     }
   }
 
-  if (manual.length === 0) {
-    void markAllAsInstalled();
+  if (deploymentsToManuallyActivate.length === 0) {
+    void hideUpdatePromptUntilNextAvailableUpdate();
   }
 
   // We only want to call openOptionsPage a single time
-  if (manual.length > 0 || automaticError) {
+  if (deploymentsToManuallyActivate.length > 0 || autoActivationError) {
     void browser.runtime.openOptionsPage();
   }
 }
 
 /**
- * Reset the update countdown timer on startup.
+ * There is a prompt in the UI shown to the user to encourage them to manually activate and/or update deployments,
+ * partially controlled by updatePromptTimestamp. Set updatePromptTimestamp to null to hide the modal until
+ * deployment updates are next available.
  *
  * - If there was a Browser Extension update, it would have been applied
  * - We don't currently separately track timestamps for showing an update modal for deployments vs. browser extension
  * upgrades. However, in enterprise scenarios where enforceUpdateMillis is set, the IT policy is generally such
  * that IT can't reset the extension.
+ *
+ * @see DeploymentModal
  */
-async function resetUpdatePromptTimestamp() {
-  // There could be a race here, but unlikely because this is run on startup
-  console.debug("Resetting updatePromptTimestamp");
+async function hideUpdatePromptUntilNextAvailableUpdate() {
   const settings = await getSettingsState();
-  await saveSettingsState({
-    ...settings,
-    updatePromptTimestamp: null,
-  });
+  const next = settingsSlice.reducer(
+    settings,
+    settingsSlice.actions.resetUpdatePromptTimestamp(),
+  );
+  await saveSettingsState(next);
 }
 
 function initDeploymentUpdater(): void {
@@ -668,7 +680,7 @@ function initDeploymentUpdater(): void {
   registerContribBlocks();
 
   setInterval(syncDeployments, UPDATE_INTERVAL_MS);
-  void resetUpdatePromptTimestamp();
+  void hideUpdatePromptUntilNextAvailableUpdate();
   void syncDeployments();
 }
 

@@ -121,7 +121,7 @@ export const triggerFormStateFactory = (
 export const sidebarPanelFormStateFactory = (
   override?: FactoryConfig<SidebarFormState>,
   pipelineOverride?: BrickPipeline,
-) => {
+): SidebarFormState => {
   const defaultTriggerProps = sidebar.fromNativeElement(
     "https://test.com",
     metadataFactory({

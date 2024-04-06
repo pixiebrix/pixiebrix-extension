@@ -15,20 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema } from "@/types/schemaTypes";
-import { isEmpty } from "lodash";
+import { deactivateUnassignedModComponents } from "@/extensionConsole/pages/deployments/activateDeployments";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import type { Dispatch } from "@reduxjs/toolkit";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 
-/**
- * Return true if the schema allows user to provide custom properties.
- */
-export function isCustomizableObjectSchema(objectSchema: Schema): boolean {
-  // Allow additional properties for empty schema (empty schema allows shape)
-  if (isEmpty(objectSchema)) {
-    return true;
-  }
+const useDeactivateUnassignedDeploymentsEffect = (
+  unassignedModComponents: ModComponentBase[],
+) => {
+  const dispatch = useDispatch<Dispatch>();
+  useEffect(() => {
+    if (unassignedModComponents.length === 0) return;
 
-  return (
-    "additionalProperties" in objectSchema &&
-    objectSchema.additionalProperties !== false
-  );
-}
+    deactivateUnassignedModComponents({
+      dispatch,
+      unassignedModComponents,
+    });
+  }, [unassignedModComponents]);
+};
+
+export default useDeactivateUnassignedDeploymentsEffect;
