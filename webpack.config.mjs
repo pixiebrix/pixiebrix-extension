@@ -297,7 +297,11 @@ const createConfig = (env, options) =>
           "static",
         ],
       }),
-      new DiscardFilePlugin(),
+
+      // These files are not used, they're only webpack entry points in order to generate
+      // a full CSS files that can be injected in shadow DOM. See this for more context:
+      // https://github.com/webpack-contrib/mini-css-extract-plugin/issues/1092#issuecomment-2037540032
+      new DiscardFilePlugin(isolatedComponentList),
 
       isHMR &&
         new ReactRefreshWebpackPlugin({
