@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  selectElement,
-  userSelectElement,
-} from "@/contentScript/pageEditor/elementPicker";
+import { userSelectElement } from "@/contentScript/pageEditor/elementPicker";
+import { selectElement } from "./selectElement";
 import { BusinessError } from "@/errors/businessErrors";
 import { showSelectionToolPopover } from "@/components/selectionToolPopover/SelectionToolPopover";
 
