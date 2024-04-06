@@ -28,10 +28,7 @@ const InvalidatedContextGate: React.FunctionComponent<{
   // Only auto-reload if the document is in the background
   const isDocumentVisible = useDocumentVisibility();
   if (wasContextInvalidated && autoReload && !isDocumentVisible) {
-    setTimeout(() => {
-      // If you reload too soon, Chrome might not be ready to serve the page yet
-      location.reload();
-    }, 500);
+    location.reload();
   }
 
   return wasContextInvalidated ? (

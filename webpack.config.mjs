@@ -30,11 +30,12 @@ import { compact } from "lodash-es";
 import mergeWithShared from "./webpack.sharedConfig.js";
 import { parseEnv, loadEnv } from "./scripts/env.mjs";
 import customizeManifest from "./scripts/manifest.mjs";
+import { createRequire } from "node:module";
 import DiscardFilePlugin from "./scripts/DiscardFilePlugin.mjs";
 import isolatedComponentList from "./src/components/isolatedComponentList.mjs";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
-import bootstrapIconsPackage from "bootstrap-icons/package.json" assert { type: "json" };
-import simpleIconsPackage from "simple-icons/package.json" assert { type: "json" };
+
+const require = createRequire(import.meta.url);
 
 loadEnv();
 
@@ -48,9 +49,11 @@ console.log(
   process.env.REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST,
 );
 
-process.env.SOURCE_VERSION ??= execSync("git rev-parse --short HEAD")
-  .toString()
-  .trim();
+if (!process.env.SOURCE_VERSION) {
+  process.env.SOURCE_VERSION = execSync("git rev-parse --short HEAD")
+    .toString()
+    .trim();
+}
 
 // Configure sourcemaps
 // Disable sourcemaps on CI unless it's a PUBLIC_RELEASE
@@ -328,7 +331,9 @@ const createConfig = (env, options) =>
           type: "asset/resource",
           generator: {
             emit: false,
-            publicPath: `https://cdn.jsdelivr.net/npm/bootstrap-icons@${bootstrapIconsPackage.version}/`,
+            publicPath: `https://cdn.jsdelivr.net/npm/bootstrap-icons@${
+              require("bootstrap-icons/package.json").version
+            }/`,
             filename: "icons/[name][ext]",
           },
         },
@@ -337,7 +342,9 @@ const createConfig = (env, options) =>
           type: "asset/resource",
           generator: {
             emit: false,
-            publicPath: `https://cdn.jsdelivr.net/npm/simple-icons@${simpleIconsPackage.version}/`,
+            publicPath: `https://cdn.jsdelivr.net/npm/simple-icons@${
+              require("simple-icons/package.json").version
+            }/`,
             filename: "icons/[name][ext]",
           },
         },

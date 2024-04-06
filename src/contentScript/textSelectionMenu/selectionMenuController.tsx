@@ -166,7 +166,7 @@ function createSelectionMenu(): HTMLElement {
 
   render(
     <IsolatedComponent
-      webpackChunkName="SelectionMenu"
+      name="SelectionMenu"
       lazy={async () =>
         import(
           /* webpackChunkName: "isolated/SelectionMenu" */

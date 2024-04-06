@@ -67,21 +67,15 @@ async function discardStylesheetsWhilePending(
 
 type Props<T> = {
   /**
-   * It must match the `webpackChunkName` specified in the React.lazy import
+   * It must match the `import()`ed component's filename
    */
-  webpackChunkName: string;
+  name: string;
 
   /**
-   * @example () => import(/* webpackChunkName: "Moon" * /, "@/components/Moon")
+   * It must follow the format `isolated/${name}` specified above
+   * @example () => import(/* webpackChunkName: "isolated/Moon" * /, "@/components/Moon")
    */
   lazy: LazyFactory<T>;
-
-  /**
-   * If true, the component will not attempt to load the stylesheet.
-   *
-   * @example <IsolatedComponent webpackChunkName="Moon" noStyle>
-   */
-  noStyle?: boolean;
 
   /**
    * It must be the result of React.lazy()
@@ -89,42 +83,42 @@ type Props<T> = {
   factory: (
     Component: React.LazyExoticComponent<React.ComponentType<T>>,
   ) => JSX.Element;
+
+  /**
+   * If true, the component will not attempt to load the stylesheet.
+   *
+   * @example <IsolatedComponent name="Moon" noStyle>
+   */
+  noStyle?: boolean;
 };
 
 /**
  * Isolate component loaded via React.lazy() in a shadow DOM, including its styles.
  *
  * @example
- * const Moon = React.lazy(() => import(
- *   /* webpackChunkName: Moon /
- *   "./Moon"
- * ));
- *
  * render(
- *   <IsolatedComponent webpackChunkName="Moon">
- *     <Moon/>
- *   </IsolatedComponent>,
+ *   <IsolatedComponent
+ *     name="Moon"
+ *     lazy={() => import(/* webpackChunkName: "isolated/Moon" * / "@/components/Moon")}
+ *     factory={(Moon) => <Moon />}
+ *   />,
  *   document.querySelector('#container'),
  * );
  */
 export default function IsolatedComponent<T>({
-  webpackChunkName,
+  name,
   factory,
   noStyle,
   lazy,
   ...props
 }: Props<T>) {
-  if (
-    !isolatedComponentList.some((url) => url.endsWith("/" + webpackChunkName))
-  ) {
+  if (!isolatedComponentList.some((url) => url.endsWith("/" + name))) {
     throw new Error(
-      `Isolated component "${webpackChunkName}" is not listed in isolatedComponentList.mjs. Add it there and restart webpack to create it.`,
+      `Isolated component "${name}" is not listed in isolatedComponentList.mjs. Add it there and restart webpack to create it.`,
     );
   }
 
-  const stylesheetUrl = noStyle
-    ? null
-    : chrome.runtime.getURL(`${webpackChunkName}.css`);
+  const stylesheetUrl = noStyle ? null : chrome.runtime.getURL(`${name}.css`);
 
   // `discard` one must be called before `React.lazy`
   void discardStylesheetsWhilePending(lazy);
@@ -132,7 +126,7 @@ export default function IsolatedComponent<T>({
 
   return (
     // `pb-name` is used to visually identify it in the dev tools
-    <EmotionShadowRoot mode={MODE} pb-name={webpackChunkName} {...props}>
+    <EmotionShadowRoot mode={MODE} pb-name={name} {...props}>
       <style>{cssText}</style>
       <Stylesheets href={stylesheetUrl ?? []}>
         <Suspense fallback={null}>{factory(LazyComponent)}</Suspense>

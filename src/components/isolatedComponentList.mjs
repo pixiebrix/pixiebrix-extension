@@ -29,10 +29,10 @@
 // - Use relative paths from the `src` directory
 // - Do not start with `/`
 // - Do not add the file extension
-const components = [
+const isolatedComponentList = [
   "bricks/renderers/PropertyTree",
   "components/selectionToolPopover/SelectionToolPopover",
   "contentScript/textSelectionMenu/SelectionMenu",
 ];
 
-export default components;
+export default isolatedComponentList;

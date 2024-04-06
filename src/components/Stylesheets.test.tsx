@@ -63,25 +63,24 @@ it("renders the children after the stylesheet is loaded when multiple stylesheet
   );
 
   // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- Not a visible element
-  const stylesheets = container.querySelectorAll("link");
+  const stylesheets = container.querySelectorAll("link") as unknown as [
+    HTMLLinkElement,
+    HTMLLinkElement,
+  ];
   expect(stylesheets).toHaveLength(2);
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Asserted via length
-  expect(stylesheets[0]!).toHaveAttribute(
+  expect(stylesheets[0]).toHaveAttribute(
     "href",
     "https://example.com/style1.css",
   );
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Asserted via length
-  expect(stylesheets[1]!).toHaveAttribute(
+  expect(stylesheets[1]).toHaveAttribute(
     "href",
     "https://example.com/style2.css",
   );
 
   expect(screen.queryByRole("button")).not.toBeInTheDocument();
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Asserted via length
-  fireEvent.load(stylesheets[0]!);
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Asserted via length
-  fireEvent.load(stylesheets[1]!);
+  fireEvent.load(stylesheets[0]);
+  fireEvent.load(stylesheets[1]);
 
   // Now it should be visible
   expect(screen.getByRole("button")).toBeInTheDocument();

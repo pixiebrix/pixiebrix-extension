@@ -15,11 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file This file exists to facilitate testing/mocking. The function cannot live
- * in SelectionToolPopover.tsx because it must import it asynchronously.
- */
-
 import React from "react";
 import { render } from "react-dom";
 import IsolatedComponent from "@/components/IsolatedComponent";
@@ -33,7 +28,7 @@ export default function showSelectionToolPopover({
 } & React.ComponentProps<typeof Component>) {
   render(
     <IsolatedComponent
-      webpackChunkName="SelectionToolPopover"
+      name="SelectionToolPopover"
       lazy={async () =>
         import(
           /* webpackChunkName: "isolated/SelectionToolPopover" */

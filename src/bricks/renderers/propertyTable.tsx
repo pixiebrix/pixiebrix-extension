@@ -119,7 +119,7 @@ export class PropertyTableRenderer extends RendererABC {
   async render({ data }: BrickArgs, { ctxt }: BrickOptions) {
     const PropertyTree: React.FC<{ value: TreeNode[] }> = ({ value }) => (
       <IsolatedComponent
-        webpackChunkName="PropertyTree"
+        name="PropertyTree"
         lazy={async () =>
           import(
             /* webpackChunkName: "isolated/PropertyTree" */
