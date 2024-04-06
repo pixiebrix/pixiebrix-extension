@@ -47,7 +47,7 @@ import {
 } from "@/contentScript/pageEditor"; // 300 strictNullCheck errors
 import { runBrick } from "@/contentScript/executor"; // 290 strictNullCheck errors
 import { cancelSelect } from "@/contentScript/pageEditor/elementPicker"; // 290 strictNullCheck errors
-import { selectElement } from "@/contentScript/pageEditor/selectElement";
+import selectElement from "@/contentScript/pageEditor/selectElement"; // 290 strictNullCheck errors
 import {
   runHeadlessPipeline,
   runMapArgs,
