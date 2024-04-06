@@ -91,7 +91,7 @@ exports[`customizeManifest beta 1`] = `
   },
   "manifest_version": 3,
   "minimum_chrome_version": "116.0",
-  "name": "PixieBrix",
+  "name": "PixieBrix BETA",
   "optional_permissions": [
     "clipboardWrite",
   ],
@@ -116,7 +116,7 @@ exports[`customizeManifest beta 1`] = `
       "sandbox.html",
     ],
   },
-  "short_name": "PixieBrix",
+  "short_name": "PixieBrix BETA",
   "side_panel": {
     "default_path": "sidebar.html",
   },

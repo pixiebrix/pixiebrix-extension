@@ -16,7 +16,7 @@
  */
 
 import cx from "classnames";
-import React, { useEffect } from "react";
+import React from "react";
 import { Button, Modal, Popover } from "react-bootstrap";
 import {
   cancelTemporaryPanel,
@@ -26,7 +26,6 @@ import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type Target } from "@/types/messengerTypes";
 import { validateUUID } from "@/types/helpers";
-import reportError from "@/telemetry/reportError";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
 import useTemporaryPanelDefinition from "@/bricks/transformers/temporaryInfo/useTemporaryPanelDefinition";
@@ -35,6 +34,7 @@ import { startCase } from "lodash";
 import { type PanelButton } from "@/types/sidebarTypes";
 import { ClosePanelAction } from "@/bricks/errors";
 import styles from "./EphemeralPanel.module.scss";
+import useReportError from "@/hooks/useReportError";
 
 type Mode = "modal" | "popover";
 
@@ -98,13 +98,7 @@ const EphemeralPanel: React.FC = () => {
     initialNonce,
   );
 
-  // Report error once
-  useEffect(() => {
-    if (error) {
-      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2769
-      reportError(error);
-    }
-  }, [error]);
+  useReportError(error);
 
   if (isLoading) {
     return (

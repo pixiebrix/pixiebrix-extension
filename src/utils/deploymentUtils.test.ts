@@ -45,7 +45,7 @@ import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinition
 
 describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(
-    "unmatched deployment",
+    "unassigned deployment",
     ({ restricted }) => {
       const modComponents = [modComponentFactory()];
 
