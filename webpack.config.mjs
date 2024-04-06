@@ -33,8 +33,8 @@ import customizeManifest from "./scripts/manifest.mjs";
 import DiscardFilePlugin from "./scripts/DiscardFilePlugin.mjs";
 import isolatedComponentList from "./src/components/isolatedComponentList.mjs";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
-import bootstrapIconsPackage from "bootstrap-icons/package.json" with { type: "json" };
-import simpleIconsPackage from "simple-icons/package.json" with { type: "json" };
+import bootstrapIconsPackage from "bootstrap-icons/package.json" assert { type: "json" };
+import simpleIconsPackage from "simple-icons/package.json" assert { type: "json" };
 
 loadEnv();
 

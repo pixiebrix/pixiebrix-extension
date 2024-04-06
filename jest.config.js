@@ -56,7 +56,16 @@ const config = {
   silent: true,
   testEnvironment: "./src/testUtils/FixJsdomEnvironment.js",
   modulePaths: ["/src"],
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
+  moduleFileExtensions: [
+    "ts",
+    "tsx",
+    "js",
+    "jsx",
+    "mjs",
+    "yaml",
+    "yml",
+    "json",
+  ],
   modulePathIgnorePatterns: ["<rootDir>/headers.json", "<rootDir>/dist/"],
   testPathIgnorePatterns: ["/end-to-end-tests"],
   transform: {
