@@ -56,7 +56,8 @@ const ApiTaskOptionsContent: React.FC<{
   const [{ value: botId }] = useField<string>(configName("botId"));
   const [{ value: awaitResult }] = useField<boolean>(configName("awaitResult"));
 
-  // If workspaceType is not set, but there is a task selected, look up the file ID and set the workspaceType from the file info
+  // If workspaceType is not set, but there is a task selected, look up the
+  // file ID and set the workspaceType from the file info
   useAsyncEffect(
     async (isMounted) => {
       if (workspaceTypeFieldValue || !botId) {
@@ -75,11 +76,11 @@ const ApiTaskOptionsContent: React.FC<{
   );
 
   const remoteSchemaState = useAsyncState(async () => {
-    if (!botId) {
-      return null;
+    if (botId) {
+      return cachedFetchSchema(controlRoomConfig, botId);
     }
 
-    return cachedFetchSchema(controlRoomConfig, botId);
+    return null;
   }, [controlRoomConfig, botId]);
 
   // Don't care about pending/error state b/c we just fall back to displaying the folderId
@@ -142,6 +143,7 @@ const ApiTaskOptionsContent: React.FC<{
           noOptonsMessage={TasksNoOptionsMessage}
           factoryArgs={factoryArgs}
           config={controlRoomConfig}
+          isClearable
         />
       }
 
