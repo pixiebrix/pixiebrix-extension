@@ -44,5 +44,7 @@ $border: rgba(0, 0, 0, 0.3);
 }
 
 .body {
+  display: flex;
+  align-items: center;
   padding: 12px;
 }

@@ -36,8 +36,8 @@ it("renders the children after the stylesheet is loaded", () => {
     </Stylesheets>,
   );
 
-  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- Not a visible element
-  const stylesheet = container.querySelector("link");
+  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access, @typescript-eslint/no-unnecessary-type-assertion -- Not a visible element
+  const stylesheet = container.querySelector("link")!;
   expect(stylesheet).toHaveAttribute("href", "https://example.com/style.css");
 
   // It should be in the document but not visible
@@ -65,19 +65,23 @@ it("renders the children after the stylesheet is loaded when multiple stylesheet
   // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- Not a visible element
   const stylesheets = container.querySelectorAll("link");
   expect(stylesheets).toHaveLength(2);
-  expect(stylesheets[0]).toHaveAttribute(
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Asserted via length
+  expect(stylesheets[0]!).toHaveAttribute(
     "href",
     "https://example.com/style1.css",
   );
-  expect(stylesheets[1]).toHaveAttribute(
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Asserted via length
+  expect(stylesheets[1]!).toHaveAttribute(
     "href",
     "https://example.com/style2.css",
   );
 
   expect(screen.queryByRole("button")).not.toBeInTheDocument();
 
-  fireEvent.load(stylesheets[0]);
-  fireEvent.load(stylesheets[1]);
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Asserted via length
+  fireEvent.load(stylesheets[0]!);
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Asserted via length
+  fireEvent.load(stylesheets[1]!);
 
   // Now it should be visible
   expect(screen.getByRole("button")).toBeInTheDocument();
@@ -90,8 +94,9 @@ it("renders the children immediately even when the loading of the stylesheet fai
     </Stylesheets>,
   );
 
-  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- Not a visible element
-  const stylesheet = container.querySelector("link");
+  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access, @typescript-eslint/no-unnecessary-type-assertion -- Not a visible element
+  const stylesheet = container.querySelector("link")!;
+  expect(stylesheet).not.toBeNull();
   expect(stylesheet).toHaveAttribute("href", "https://example.com/style.css");
 
   expect(screen.queryByRole("button")).not.toBeInTheDocument();

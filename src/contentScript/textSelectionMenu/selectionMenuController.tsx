@@ -169,7 +169,7 @@ function createSelectionMenu(): HTMLElement {
       webpackChunkName="SelectionMenu"
       lazy={async () =>
         import(
-          /* webpackChunkName: "SelectionMenu" */
+          /* webpackChunkName: "isolated/SelectionMenu" */
           "@/contentScript/textSelectionMenu/SelectionMenu"
         )
       }

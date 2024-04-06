@@ -32,6 +32,7 @@
 const components = [
   "bricks/renderers/PropertyTree",
   "components/selectionToolPopover/SelectionToolPopover",
+  "contentScript/textSelectionMenu/SelectionMenu",
 ];
 
 export default components;
