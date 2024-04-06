@@ -39,7 +39,7 @@ import { getSelectionRange } from "@/utils/domUtils";
 import { snapWithin } from "@/utils/mathUtils";
 import ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
 import { SELECTION_MENU_READY_ATTRIBUTE } from "@/domConstants";
-import { IsolatedComponent } from "@/components/IsolatedComponent";
+import IsolatedComponent from "@/components/IsolatedComponent";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
@@ -164,21 +164,22 @@ function createSelectionMenu(): HTMLElement {
   selectionMenu = tooltipFactory();
   selectionMenu.dataset.testid = "pixiebrix-selection-menu";
 
-  const TextSelectionMenu = React.lazy(
-    async () =>
-      import(
-        /* webpackChunkName: "SelectionMenu" */
-        "@/contentScript/textSelectionMenu/SelectionMenu"
-      ),
-  );
-
   render(
-    <IsolatedComponent webpackChunkName="SelectionMenu">
-      <TextSelectionMenu
-        registry={selectionMenuActionRegistry}
-        onHide={hideSelectionMenu}
-      />
-    </IsolatedComponent>,
+    <IsolatedComponent
+      webpackChunkName="SelectionMenu"
+      lazy={async () =>
+        import(
+          /* webpackChunkName: "SelectionMenu" */
+          "@/contentScript/textSelectionMenu/SelectionMenu"
+        )
+      }
+      factory={(SelectionMenu) => (
+        <SelectionMenu
+          registry={selectionMenuActionRegistry}
+          onHide={hideSelectionMenu}
+        />
+      )}
+    />,
     selectionMenu,
   );
 

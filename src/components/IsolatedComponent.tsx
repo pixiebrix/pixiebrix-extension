@@ -26,14 +26,14 @@ import isolatedComponentList from "./isolatedComponentList";
 
 const MODE = process.env.SHADOW_DOM as "open" | "closed";
 
-type LazyComponentImportFunction = () => Promise<{
-  default: React.ComponentType<unknown>;
+type LazyFactory<T> = () => Promise<{
+  default: React.ComponentType<T>;
 }>;
 
 // Drop the stylesheet injected by `mini-css-extract-plugin` into the main document.
 // Until this is resolved https://github.com/webpack-contrib/mini-css-extract-plugin/issues/1092#issuecomment-2037540032
 async function discardStylesheetsWhilePending(
-  importFunction: LazyComponentImportFunction,
+  lazyFactory: LazyFactory<unknown>,
 ) {
   const baseUrl = chrome.runtime.getURL("");
 
@@ -57,7 +57,7 @@ async function discardStylesheetsWhilePending(
   // Call and discard. React.lazy() will call it again and use the result or the error.
   // This is fine because import() does not re-fetch/re-run the module.
   try {
-    await importFunction();
+    await lazyFactory();
   } catch {
     // React.lazy() will take care of it
   } finally {
@@ -65,15 +65,31 @@ async function discardStylesheetsWhilePending(
   }
 }
 
-// Wrap React.lazy() to isolate the component in a shadow DOM
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- It must be `any`
-export function reactLazyIsolatedComponent<T extends React.ComponentType<any>>(
-  importFunction: LazyComponentImportFunction,
-): React.LazyExoticComponent<T> {
-  void discardStylesheetsWhilePending(importFunction);
+type Props<T> = {
+  /**
+   * It must match the `webpackChunkName` specified in the React.lazy import
+   */
+  webpackChunkName: string;
 
-  return React.lazy(importFunction) as React.LazyExoticComponent<T>;
-}
+  /**
+   * @example () => import(/* webpackChunkName: "Moon" * /, "@/components/Moon")
+   */
+  lazy: LazyFactory<T>;
+
+  /**
+   * If true, the component will not attempt to load the stylesheet.
+   *
+   * @example <IsolatedComponent webpackChunkName="Moon" noStyle>
+   */
+  noStyle?: boolean;
+
+  /**
+   * It must be the result of React.lazy()
+   */
+  factory: (
+    Component: React.LazyExoticComponent<React.ComponentType<T>>,
+  ) => JSX.Element;
+};
 
 /**
  * Isolate component loaded via React.lazy() in a shadow DOM, including its styles.
@@ -91,24 +107,13 @@ export function reactLazyIsolatedComponent<T extends React.ComponentType<any>>(
  *   document.querySelector('#container'),
  * );
  */
-export const IsolatedComponent: React.VFC<{
-  /**
-   * It must match the `webpackChunkName` specified in the React.lazy import
-   */
-  webpackChunkName: string;
-
-  /**
-   * If true, the component will not attempt to load the stylesheet.
-   *
-   * @example <IsolatedComponent webpackChunkName="Moon" noStyle>
-   */
-  noStyle?: boolean;
-
-  /**
-   * It must be the result of React.lazy()
-   */
-  children: JSX.Element;
-}> = ({ webpackChunkName, children, noStyle, ...props }) => {
+export default function IsolatedComponent<T>({
+  webpackChunkName,
+  factory,
+  noStyle,
+  lazy,
+  ...props
+}: Props<T>) {
   if (
     !isolatedComponentList.some((url) => url.endsWith("/" + webpackChunkName))
   ) {
@@ -121,13 +126,17 @@ export const IsolatedComponent: React.VFC<{
     ? null
     : chrome.runtime.getURL(`${webpackChunkName}.css`);
 
+  // `discard` one must be called before `React.lazy`
+  void discardStylesheetsWhilePending(lazy);
+  const LazyComponent = React.lazy(lazy);
+
   return (
     // `pb-name` is used to visually identify it in the dev tools
     <EmotionShadowRoot mode={MODE} pb-name={webpackChunkName} {...props}>
       <style>{cssText}</style>
       <Stylesheets href={stylesheetUrl ?? []}>
-        <Suspense fallback={null}>{children}</Suspense>
+        <Suspense fallback={null}>{factory(LazyComponent)}</Suspense>
       </Stylesheets>
     </EmotionShadowRoot>
   );
-};
+}
