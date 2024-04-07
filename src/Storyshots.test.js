@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* global jest */
 import initStoryshots from "@storybook/addon-storyshots";
 
 // https://plainenglish.io/blog/storybook-snapshot-testing
