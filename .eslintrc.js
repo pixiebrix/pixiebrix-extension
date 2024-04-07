@@ -90,9 +90,6 @@ module.exports = {
         ],
       },
     ],
-    // TODO: Gradually fix and then drop https://github.com/pixiebrix/eslint-config-pixiebrix/pull/150
-    "@typescript-eslint/no-unsafe-assignment": "warn",
-    "@typescript-eslint/no-unsafe-member-access": "warn",
 
     "no-restricted-imports": [
       "error",
@@ -130,6 +127,14 @@ module.exports = {
     ],
   },
   overrides: [
+    {
+      files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+      rules: {
+        // TODO: Gradually fix and then drop https://github.com/pixiebrix/eslint-config-pixiebrix/pull/150
+        "@typescript-eslint/no-unsafe-assignment": "warn",
+        "@typescript-eslint/no-unsafe-member-access": "warn",
+      },
+    },
     {
       // TODO: consider packaging e2e tests in a mono-repo structure for specific linting rules
       files: ["end-to-end-tests/**"], // Or *.test.js
