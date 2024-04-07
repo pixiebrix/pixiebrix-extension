@@ -44,11 +44,8 @@ module.exports = {
     // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/index.js
     "pixiebrix",
   ],
-  plugins: ["local-rules", "@shopify"],
+  plugins: ["local-rules"],
   rules: {
-    "@shopify/react-hooks-strict-return": "error",
-    "@shopify/prefer-module-scope-constants": "error",
-    "@shopify/jest/no-snapshots": "warn",
     "new-cap": [
       "error",
       {
@@ -109,11 +106,6 @@ module.exports = {
             message:
               'Use this instead: import { NetworkRequestConfig } from "@/types/networkTypes"',
           },
-          {
-            group: ["react-shadow/emotion"],
-            message:
-              'Use this instead: import EmotionShadowRoot from "@/components/EmotionShadowRoot"',
-          },
         ],
       }),
     ],
@@ -128,12 +120,6 @@ module.exports = {
           'Use `getExtensionConsoleUrl` instead of `browser.runtime.getURL("options.html")` because it automatically handles paths/routes',
         selector:
           "CallExpression[callee.object.property.name='runtime'][callee.property.name='getURL'][arguments.0.value='options.html']",
-      },
-      {
-        message:
-          'Instead of `<div onClick/>`, use: import { ClickableElement } from "@/components/ClickableElement"',
-        selector:
-          "JSXOpeningElement[name.name='div'][attributes.0.name.name='onClick']",
       },
       {
         message:
@@ -189,7 +175,6 @@ module.exports = {
       rules: {
         "unicorn/prefer-spread": "off",
         "local-rules/noCrossBoundaryImports": "off",
-        "jest/prefer-expect-resolves": "error",
       },
     },
     {
