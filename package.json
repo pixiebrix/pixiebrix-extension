@@ -290,7 +290,7 @@
     "terser-webpack-plugin": "^5.3.10",
     "ts-loader": "^9.5.1",
     "type-fest": "^4.14.0",
-    "typescript": "^5.4.3",
+    "typescript": "^5.4.4",
     "typescript-plugin-css-modules": "^5.1.0",
     "webpack": "^5.91.0",
     "webpack-build-notifier": "^2.3.0",
