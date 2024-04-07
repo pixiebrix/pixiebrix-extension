@@ -59,18 +59,6 @@ module.exports = {
       "error",
       { ignore: ["eslint-enable"] },
     ],
-    "react/no-array-index-key": "error",
-    "react/no-unstable-nested-components": ["error", { allowAsProps: true }],
-    "react/forbid-elements": [
-      "error",
-      {
-        forbid: [
-          { element: "b", message: "use <strong> instead" },
-          { element: "i", message: "use <em> instead" },
-        ],
-      },
-    ],
-    "react/jsx-max-depth": ["error", { max: 5 }],
     "local-rules/noNullRtkQueryArgs": "error",
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/noExpressionLiterals": "error",
@@ -157,7 +145,7 @@ module.exports = {
   },
   overrides: [
     {
-      // (TODO: consider packaging e2e tests in a mono-repo structure for specific linting rules)
+      // TODO: consider packaging e2e tests in a mono-repo structure for specific linting rules
       files: ["end-to-end-tests/**"], // Or *.test.js
       rules: {
         "no-restricted-imports": "off",
