@@ -230,16 +230,6 @@ module.exports = {
       },
     },
     {
-      // These rules should not be enabled for JS files
-      files: ["*.js", "*.mjs", "*.cjs"],
-      rules: {
-        "@typescript-eslint/no-unsafe-member-access": "off",
-        "@typescript-eslint/no-unsafe-call": "off",
-        "@typescript-eslint/no-unsafe-assignment": "off",
-        "@typescript-eslint/no-unsafe-return": "off",
-      },
-    },
-    {
       files: ["./src/*"],
       rules: {
         "no-restricted-imports": [
