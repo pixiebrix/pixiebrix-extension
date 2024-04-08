@@ -301,8 +301,8 @@ export class CustomFormRenderer extends RendererABC {
     });
 
     const CustomFormComponent: React.FunctionComponent<
-      CustomFormComponentProps & { disableParentStyles?: boolean }
-    > = ({ disableParentStyles, ...props }) => (
+      CustomFormComponentProps
+    > = (props) => (
       <IsolatedComponent
         name="CustomFormComponent"
         noStyle={disableParentStyles}
@@ -327,7 +327,6 @@ export class CustomFormRenderer extends RendererABC {
         submitCaption,
         className,
         stylesheets,
-        disableParentStyles,
         // Option only applies if a custom onSubmit handler is provided
         resetOnSubmit: onSubmit != null && postSubmitAction === "reset",
         async onSubmit(

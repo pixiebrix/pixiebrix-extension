@@ -109,9 +109,7 @@ export class DocumentRenderer extends RendererABC {
     }>,
     options: BrickOptions,
   ): Promise<ComponentRef> {
-    const DocumentView: React.FC<
-      DocumentViewProps & { disableParentStyles?: boolean }
-    > = ({ disableParentStyles, ...props }) => (
+    const DocumentView: React.FC<DocumentViewProps> = (props) => (
       <IsolatedComponent
         name="DocumentView"
         noStyle={disableParentStyles}
@@ -130,7 +128,6 @@ export class DocumentRenderer extends RendererABC {
       props: {
         body,
         stylesheets,
-        disableParentStyles,
         options,
       },
     };

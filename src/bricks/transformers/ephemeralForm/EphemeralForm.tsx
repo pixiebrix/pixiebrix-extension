@@ -42,6 +42,22 @@ const PanelLayout: React.FC = ({ children }) => (
   <div className="p-3">{children}</div>
 );
 
+const EphemeralFormContent: React.FunctionComponent<
+  EphemeralFormContentProps
+> = (props) => (
+  <IsolatedComponent
+    name="EphemeralFormContent"
+    noStyle={props.definition.disableParentStyles}
+    lazy={async () =>
+      import(
+        /* webpackChunkName: "isolated/EphemeralFormContent" */
+        "./EphemeralFormContent"
+      )
+    }
+    factory={(EphemeralFormContent) => <EphemeralFormContent {...props} />}
+  />
+);
+
 /**
  * @see FormTransformer
  */
@@ -97,22 +113,6 @@ const EphemeralForm: React.FC = () => {
       </FormContainer>
     );
   }
-
-  const EphemeralFormContent: React.FunctionComponent<
-    EphemeralFormContentProps
-  > = (props) => (
-    <IsolatedComponent
-      name="EphemeralFormContent"
-      noStyle={props.definition.disableParentStyles}
-      lazy={async () =>
-        import(
-          /* webpackChunkName: "isolated/EphemeralFormContent" */
-          "./EphemeralFormContent"
-        )
-      }
-      factory={(EphemeralFormContent) => <EphemeralFormContent {...props} />}
-    />
-  );
 
   return (
     <FormContainer>
