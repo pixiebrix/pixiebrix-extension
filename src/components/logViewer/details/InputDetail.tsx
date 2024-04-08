@@ -19,22 +19,23 @@ import React from "react";
 import { type LogEntry } from "@/telemetry/logging";
 import { Col, Row } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
+import { type SetRequired } from "type-fest";
 
-const InputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
-  entry,
-}) => (
+const InputDetail: React.FunctionComponent<{
+  data: SetRequired<LogEntry, "data">["data"];
+}> = ({ data }) => (
   <Row>
     <Col>
       <span>Template</span>
-      <JsonTree data={entry.data.template} />
+      <JsonTree data={data.template} />
     </Col>
     <Col>
       <span>Context</span>
-      <JsonTree data={entry.data.templateContext} />
+      <JsonTree data={data.templateContext} />
     </Col>
     <Col>
       <span>Rendered Args</span>
-      <JsonTree data={entry.data.renderedArgs} />
+      <JsonTree data={data.renderedArgs} />
     </Col>
   </Row>
 );

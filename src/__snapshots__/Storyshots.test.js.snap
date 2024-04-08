@@ -3065,12 +3065,32 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
         </thead>
         <tbody>
           <tr
-            className="mainRow"
+            className="mainRow expandable"
             onClick={[Function]}
           >
             <td
               className="caret"
-            />
+            >
+              <span>
+                <svg
+                  aria-hidden="true"
+                  className="svg-inline--fa fa-caret-right fa-w-6 "
+                  data-icon="caret-right"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  style={{}}
+                  viewBox="0 0 192 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                    fill="currentColor"
+                    style={{}}
+                  />
+                </svg>
+              </span>
+            </td>
             <td>
               12/4/22, 12:12 AM
             </td>

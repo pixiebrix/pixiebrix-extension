@@ -36,7 +36,7 @@ class AssignModVariable extends EffectABC {
   ): Promise<Schema | undefined> {
     const { variableName: variableExpression } = _config.config;
 
-    let name = "";
+    let name: string | null = "";
     try {
       name = castTextLiteralOrThrow(variableExpression);
     } catch {
@@ -92,7 +92,7 @@ class AssignModVariable extends EffectABC {
     }>,
     { logger }: BrickOptions,
   ): Promise<void> {
-    const { blueprintId = null, extensionId } = logger.context;
+    const { blueprintId = null, extensionId = null } = logger.context;
 
     setState({
       namespace: "blueprint",
