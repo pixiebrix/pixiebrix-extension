@@ -15,9 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { onContextInvalidated } from "webext-events";
-import useAbortSignal from "./useAbortSignal";
+import useAbortSignal from "@/hooks/useAbortSignal";
+import React from "react";
 
-export default function useContextInvalidated(): boolean {
-  return useAbortSignal(onContextInvalidated.signal);
-}
+/**
+ * Render children until the signal is aborted
+ */
+const AbortSignalGate: React.FunctionComponent<{ signal: AbortSignal }> = ({
+  signal,
+  children,
+}) => {
+  const aborted = useAbortSignal(signal);
+  return aborted ? null : <>{children}</>;
+};
+
+export default AbortSignalGate;

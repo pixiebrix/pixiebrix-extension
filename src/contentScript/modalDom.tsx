@@ -16,11 +16,10 @@
  */
 
 import React from "react";
-import { scrollbarWidth } from "@xobotyi/scrollbar-width";
-import { render, unmountComponentAtNode } from "react-dom";
-import { mergeSignals } from "abort-utils";
-import { onContextInvalidated } from "webext-events";
 import { expectContext } from "@/utils/expectContext";
+import { renderWidget } from "@/utils/reactUtils";
+import useScrollLock from "@/hooks/useScrollLock";
+import useAbortSignal from "@/hooks/useAbortSignal";
 
 // This cannot be moved to globals.d.ts because it's a module augmentation
 // https://stackoverflow.com/a/42085876/288906
@@ -29,41 +28,16 @@ declare module "react" {
     onClose?: ReactEventHandler<T> | undefined;
   }
 }
-/**
- * Show a modal with the given URL in the host page
- * @param url the URL to show
- * @param controller AbortController to cancel the modal
- * @param onOutsideClick callback to call when the user clicks outside the modal
- */
-export function showModal({
-  url,
-  controller,
-  onOutsideClick,
-}: {
+
+const IframeModal: React.VFC<{
   url: URL;
   controller: AbortController;
   onOutsideClick?: () => void;
-}): void {
-  // In React apps, should use React modal component
-  expectContext("contentScript");
+}> = ({ url, controller, onOutsideClick }) => {
+  const aborted = useAbortSignal(controller.signal);
+  useScrollLock(!aborted);
 
-  // Using `<style>` will avoid overriding the site’s inline styles
-  const style = document.createElement("style");
-
-  const scrollableRoot =
-    window.getComputedStyle(document.body).overflowY === "scroll"
-      ? "body"
-      : "html";
-  style.textContent += `${scrollableRoot} {overflow: hidden !important}`; // Disable scrollbar
-
-  // Preserve space initially taken by scrollbar
-  style.textContent += `html {padding-inline-end: ${scrollbarWidth()}px  !important}`;
-
-  const container = document.createElement("div");
-  const shadowRoot = container.attachShadow({ mode: "closed" });
-  document.body.append(container, style);
-  render(
-    // TODO: Wrap into separate component and use useScrollLock hook
+  return aborted ? null : (
     <dialog
       onClose={() => {
         controller.abort();
@@ -99,16 +73,27 @@ export function showModal({
           colorScheme: "normal", // Match parent color scheme #1650
         }}
       />
-    </dialog>,
-    shadowRoot,
+    </dialog>
   );
+};
 
-  mergeSignals(controller, onContextInvalidated.signal).addEventListener(
-    "abort",
-    () => {
-      unmountComponentAtNode(container);
-      style.remove();
-      container.remove();
-    },
-  );
+/**
+ * Show a modal with the given URL in the host page
+ * @param url the page to show in the modal
+ * @param controller AbortController to cancel the modal
+ * @param onOutsideClick callback to call when the user clicks outside the modal
+ */
+export function showModal(props: {
+  url: URL;
+  controller: AbortController;
+  onOutsideClick?: () => void;
+}): void {
+  // In React apps, you should use the React modal component
+  expectContext("contentScript");
+
+  renderWidget({
+    name: "iframe-modal",
+    widget: <IframeModal {...props} />,
+    signal: props.controller.signal,
+  });
 }

@@ -15,9 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { onContextInvalidated } from "webext-events";
+import { renderHook } from "@testing-library/react-hooks";
 import useAbortSignal from "./useAbortSignal";
 
-export default function useContextInvalidated(): boolean {
-  return useAbortSignal(onContextInvalidated.signal);
-}
+it("returns the initial state of the signal", () => {
+  const active = renderHook(() => useAbortSignal(new AbortController().signal));
+  expect(active.result.current).toBe(false);
+
+  const aborted = renderHook(() => useAbortSignal(AbortSignal.abort()));
+  expect(aborted.result.current).toBe(true);
+});
+
+it("updates the state when the signal is aborted", () => {
+  const controller = new AbortController();
+  const { result } = renderHook(() => useAbortSignal(controller.signal));
+  expect(result.current).toBe(false);
+
+  controller.abort();
+  expect(result.current).toBe(true);
+});

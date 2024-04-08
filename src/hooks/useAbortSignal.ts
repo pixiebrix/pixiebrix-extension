@@ -15,9 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { onContextInvalidated } from "webext-events";
-import useAbortSignal from "./useAbortSignal";
+import { useSyncExternalStore } from "use-sync-external-store/shim";
 
-export default function useContextInvalidated(): boolean {
-  return useAbortSignal(onContextInvalidated.signal);
+export default function useAbortSignal(signal: AbortSignal): boolean {
+  return useSyncExternalStore(
+    (callback: () => void) => {
+      const unsubscribe = new AbortController();
+      signal.addEventListener("abort", callback, {
+        signal: unsubscribe.signal,
+        once: true,
+      });
+      return () => {
+        unsubscribe.abort();
+      };
+    },
+    () => signal.aborted,
+  );
 }
