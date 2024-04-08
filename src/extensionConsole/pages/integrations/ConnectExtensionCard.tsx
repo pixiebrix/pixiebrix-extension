@@ -20,7 +20,6 @@ import { getBaseURL } from "@/data/service/baseService";
 import { useAsyncEffect } from "use-async-effect";
 import { isLinked } from "@/auth/authStorage";
 import { Card } from "react-bootstrap";
-import urljoin from "url-join";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -52,7 +51,7 @@ const ConnectExtensionCard: React.FunctionComponent = () => {
         </p>
         {serviceURL && (
           <a
-            href={urljoin(serviceURL, "extension")}
+            href={new URL("extension", serviceURL).href}
             className="btn btn-primary"
             rel="noreferrer"
             target="_blank"

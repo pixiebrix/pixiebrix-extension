@@ -26,7 +26,6 @@ import { uuidv4, validateSemVerString } from "@/types/helpers";
 import { getUserData } from "@/auth/authStorage";
 import {
   isAppRequestError,
-  selectAbsoluteUrl,
   selectAxiosError,
 } from "@/data/service/requestErrorUtils";
 import { type ErrorItem } from "@/types/contract";
@@ -42,6 +41,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { isObject } from "@/utils/objectUtils";
 import type { Timestamp } from "@/types/stringTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { selectAbsoluteUrl } from "@/utils/urlUtils";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;

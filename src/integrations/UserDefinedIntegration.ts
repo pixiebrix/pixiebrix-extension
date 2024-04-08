@@ -19,7 +19,6 @@ import { produce } from "immer";
 import { renderMustache } from "@/runtime/mapArgs";
 import { testMatchPatterns } from "@/bricks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
-import urljoin from "url-join";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { BusinessError, NotConfiguredError } from "@/errors/businessErrors";
 import { IncompatibleServiceError } from "@/errors/genericErrors";
@@ -39,10 +38,27 @@ import {
   type TokenContext,
 } from "@/integrations/integrationTypes";
 import { type SemVerString } from "@/types/registryTypes";
-import { canParseUrl, isAbsoluteUrl } from "@/utils/urlUtils";
+import { canParseUrl, selectAbsoluteUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { stringToBase64 } from "uint8array-extras";
+
+/**
+ * Like selectAbsoluteUrl, but throws an integrations-specific error instead
+ * @see selectAbsoluteUrl
+ */
+function selectAbsoluteUrlForIntegrations(
+  url: string,
+  baseURL: string | undefined,
+): string {
+  try {
+    return selectAbsoluteUrl({ url, baseURL });
+  } catch {
+    throw new Error(
+      "Must use absolute URLs for integrations that don't define a baseURL",
+    );
+  }
+}
 
 /**
  * An integration hydrated from a user-defined definition. Has the ability to authenticate requests because it has
@@ -221,14 +237,22 @@ class UserDefinedIntegration<
     requestConfig: NetworkRequestConfig,
     baseURL?: string,
   ): void {
-    const absoluteURL =
-      baseURL && !isAbsoluteUrl(requestConfig.url)
-        ? urljoin(baseURL, requestConfig.url)
-        : requestConfig.url;
+    let absoluteURL: string | undefined;
 
-    if (!this.isAvailable(absoluteURL)) {
+    try {
+      absoluteURL = selectAbsoluteUrl({
+        url: requestConfig.url,
+        baseURL,
+      });
+    } catch {
+      // Handled later
+    }
+
+    if (!absoluteURL || !this.isAvailable(absoluteURL)) {
       throw new IncompatibleServiceError(
-        `Integration ${this.id} cannot be used to authenticate requests to ${absoluteURL}`,
+        `Integration ${this.id} cannot be used to authenticate requests to ${
+          absoluteURL ?? requestConfig.url
+        }`,
       );
     }
   }
@@ -252,18 +276,10 @@ class UserDefinedIntegration<
       integrationConfig,
     );
 
-    let absoluteURL: string;
-    if (isAbsoluteUrl(requestConfig.url)) {
-      absoluteURL = requestConfig.url;
-    } else {
-      if (!baseURL) {
-        throw new Error(
-          "Must use absolute URLs for integrations that don't define a baseURL",
-        );
-      }
-
-      absoluteURL = urljoin(baseURL, requestConfig.url);
-    }
+    const absoluteURL = selectAbsoluteUrlForIntegrations(
+      requestConfig.url,
+      baseURL,
+    );
 
     const result = produce(requestConfig, (draft) => {
       draft.url = absoluteURL;
@@ -301,18 +317,10 @@ class UserDefinedIntegration<
       );
     }
 
-    let absoluteURL: string;
-    if (isAbsoluteUrl(requestConfig.url)) {
-      absoluteURL = requestConfig.url;
-    } else {
-      if (!baseURL) {
-        throw new Error(
-          "Must use absolute URLs for integrations that don't define a baseURL",
-        );
-      }
-
-      absoluteURL = urljoin(baseURL, requestConfig.url);
-    }
+    const absoluteURL = selectAbsoluteUrlForIntegrations(
+      requestConfig.url,
+      baseURL,
+    );
 
     const result = produce(requestConfig, (draft) => {
       draft.url = absoluteURL;
@@ -346,18 +354,10 @@ class UserDefinedIntegration<
       { ...integrationConfig, ...tokenData },
     );
 
-    let absoluteURL: string;
-    if (isAbsoluteUrl(requestConfig.url)) {
-      absoluteURL = requestConfig.url;
-    } else {
-      if (!baseURL) {
-        throw new Error(
-          "Must use absolute URLs for integrations that don't define a baseURL",
-        );
-      }
-
-      absoluteURL = urljoin(baseURL, requestConfig.url);
-    }
+    const absoluteURL = selectAbsoluteUrlForIntegrations(
+      requestConfig.url,
+      baseURL,
+    );
 
     const result = produce(requestConfig, (draft) => {
       draft.url = absoluteURL;

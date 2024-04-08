@@ -30,8 +30,8 @@ import {
   isTemplateExpression,
   isVarExpression,
 } from "@/utils/expressionUtils";
-import { isAbsoluteUrl } from "@/utils/urlUtils";
 import { allSettled } from "@/utils/promiseUtils";
+import { isUrlRelative } from "@/utils/urlUtils";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call
@@ -72,19 +72,8 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
     ) {
       const url = requestUrl.__value__;
 
-      if (!isAbsoluteUrl(url)) {
-        return;
-      }
-
-      if (url.startsWith("http://")) {
-        this.annotations.push({
-          position: nestedPosition(position, "config.url"),
-          message:
-            "PixieBrix does not support calls using http: because they are insecure. Please use https: instead.",
-          analysisId: this.id,
-          type: AnnotationType.Warning,
-        });
-
+      if (isUrlRelative(url)) {
+        // Don't attempt to validate relative URLs
         return;
       }
 
@@ -99,6 +88,18 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
           message: getErrorMessage(error),
           analysisId: this.id,
           type: AnnotationType.Error,
+        });
+
+        return;
+      }
+
+      if (parsedURL.protocol !== "https:") {
+        this.annotations.push({
+          position: nestedPosition(position, "config.url"),
+          message:
+            "PixieBrix does not support calls using http: because they are insecure. Please use https: instead.",
+          analysisId: this.id,
+          type: AnnotationType.Warning,
         });
 
         return;
