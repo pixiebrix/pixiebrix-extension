@@ -23,12 +23,12 @@ import {
 import { type Schema } from "@/types/schemaTypes";
 import { isRequired } from "@/utils/schemaUtils";
 import { dereference } from "@/validators/schemaValidator";
-import { type OutputUnit } from "@cfworker/json-schema";
-import { FormikValues, type FormikErrors } from "formik";
+import { type FormikValues, type FormikErrors } from "formik";
 import { cloneDeep, set } from "lodash";
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
 import {
+  type OutputUnit,
   Validator,
   type Schema as ValidatorSchema,
 } from "@cfworker/json-schema";
