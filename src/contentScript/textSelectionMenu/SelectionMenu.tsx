@@ -68,7 +68,9 @@ const ToolbarItem: React.FC<
       fontSize: `${ICON_SIZE_PX}px`,
     }}
     title={selectButtonTitle(title, selection)}
-    onMouseDown={() => {
+    onMouseDown={(event) => {
+      event.preventDefault(); // Prevent the selection element from losing focus
+
       // Some websites like Gmail might change the selection on mousedown, so we save it before that happens:
       // https://github.com/pixiebrix/pixiebrix-extension/issues/7729
 
@@ -77,7 +79,6 @@ const ToolbarItem: React.FC<
       lastKnownSelection = getSelection().toString();
     }}
     onClick={() => {
-      // Add fallback just in case the mousedown event didn't fire
       handler(lastKnownSelection ?? getSelection().toString());
       onHide();
     }}

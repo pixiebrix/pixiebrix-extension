@@ -130,7 +130,6 @@ export async function resolveForm(
 
 /**
  * Cancel some forms. Is a NOP if a form is no longer registered.
- * @param formNonces the form nonces
  */
 export async function cancelForm(...formNonces: UUID[]): Promise<void> {
   for (const formNonce of formNonces) {

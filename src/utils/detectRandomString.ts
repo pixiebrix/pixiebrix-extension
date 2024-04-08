@@ -16,7 +16,7 @@
  */
 
 import detectRandomString from "@/vendors/randomStringDetection/detector";
-import { round } from "lodash";
+import { isEqual, round, uniq } from "lodash";
 
 // Checks, in order:
 // - has numbers surrounded by letters: r4Nd0m
@@ -26,19 +26,35 @@ const suspiciousRegex = /[a-z]\d+[a-z]|^\.?[_-]|[_-]$/i;
 // Excludes numbers and symbols
 const nonLetters = /[^a-z]/gi;
 
-export function guessUsefulness(string: string) {
-  const detectorFactor = round(Number(detectRandomString(string)), 2);
+export function selectorTypes(selector: string): string[] {
+  try {
+    const tokens = $.find.tokenize(selector);
+    return uniq(tokens.flatMap((xs) => xs.map((x) => x.type)));
+  } catch {
+    return [];
+  }
+}
+
+export function guessUsefulness(selector: string) {
+  const detectorFactor = round(Number(detectRandomString(selector)), 2);
 
   // Useful to catch short sequences like `.d_b-3` that wouldn't otherwise be detected
   // by the other factors, without sacrificing short human classes like `.nav`
-  const meaningfulCharacters = string.replaceAll(nonLetters, "").length;
-  const lettersFactor = round(1 - meaningfulCharacters / string.length, 2);
+  const meaningfulCharacters = selector.replaceAll(nonLetters, "").length;
+  const lettersFactor = round(1 - meaningfulCharacters / selector.length, 2);
 
-  const isSuspicious = suspiciousRegex.test(string);
+  const isSuspicious = suspiciousRegex.test(selector);
 
   const isRandom =
-    isSuspicious || lettersFactor >= 0.5 || detectorFactor >= 0.5;
-  return { string, detectorFactor, isSuspicious, lettersFactor, isRandom };
+    (isSuspicious || lettersFactor >= 0.5 || detectorFactor >= 0.5) &&
+    !isEqual(selectorTypes(selector), ["TAG"]);
+  return {
+    string: selector,
+    detectorFactor,
+    isSuspicious,
+    lettersFactor,
+    isRandom,
+  };
 }
 
 export function isRandomString(string: string): boolean {

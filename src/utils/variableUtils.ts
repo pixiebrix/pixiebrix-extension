@@ -60,7 +60,6 @@ export function freshIdentifier(
 
 /**
  * Returns a variable reference expression for the given variable name.
- * @param variableName the variable name
  */
 export function getVariableExpression<TValue extends string | null>(
   variableName: OutputKey | null,

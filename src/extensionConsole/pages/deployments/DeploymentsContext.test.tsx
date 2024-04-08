@@ -34,13 +34,37 @@ import {
 } from "@/testUtils/factories/deploymentFactories";
 import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
+import extensionsSlice from "@/store/extensionsSlice";
+import { validateTimestamp } from "@/types/helpers";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type Deployment } from "@/types/contract";
 
 const axiosMock = new MockAdapter(axios);
-axiosMock.onGet("/api/me/").reply(200, { flags: [] });
 
 const getLinkedApiClientMock = jest.mocked(getLinkedApiClient);
 
 const requestPermissionsMock = jest.mocked(browser.permissions.request);
+
+const mockDeploymentActivationRequests = (
+  deployment: Deployment,
+  modDefinition: ModDefinition,
+) => {
+  axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
+  axiosMock
+    .onGet(
+      `/api/registry/bricks/${encodeURIComponent(
+        deployment.package.package_id,
+      )}/`,
+    )
+    .reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
+  requestPermissionsMock.mockResolvedValue(true);
+};
 
 const Component: React.FC = () => {
   const deployments = useContext(DeploymentsContext);
@@ -59,6 +83,7 @@ const Component: React.FC = () => {
 
 describe("DeploymentsContext", () => {
   beforeEach(() => {
+    axiosMock.onGet("/api/me/").reply(200, { flags: [] });
     jest.clearAllMocks();
     axiosMock.resetHistory();
 
@@ -97,19 +122,7 @@ describe("DeploymentsContext", () => {
 
   it("activate single deployment from empty state", async () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
-    const registryId = deployment.package.package_id;
-
-    axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
-    axiosMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
-    requestPermissionsMock.mockResolvedValue(true);
+    mockDeploymentActivationRequests(deployment, modDefinition);
 
     const { getReduxStore } = render(
       <DeploymentsProvider>
@@ -139,21 +152,115 @@ describe("DeploymentsContext", () => {
     expect((options as ModComponentState).extensions).toHaveLength(1);
   });
 
+  it("updating deployment mod id deactivates old mod", async () => {
+    const { deployment, modDefinition: oldModDefinition } =
+      activatableDeploymentFactory({
+        deploymentOverride: {
+          updated_at: validateTimestamp("2021-01-01T12:52:16.189Z"),
+          created_at: validateTimestamp("2021-01-01T12:52:16.189Z"),
+        },
+      });
+
+    // Remove package from the deployment so that the mod can be changed entirely
+    const { package: _, ...deploymentOverride } = deployment;
+    const {
+      deployment: updatedDeployment,
+      modDefinition: expectedModDefinition,
+    } = activatableDeploymentFactory({
+      deploymentOverride: {
+        ...deploymentOverride,
+        updated_at: validateTimestamp("2021-02-02T12:52:16.189Z"),
+      },
+    });
+
+    mockDeploymentActivationRequests(updatedDeployment, expectedModDefinition);
+
+    const { getReduxStore } = render(
+      <DeploymentsProvider>
+        <Component />
+      </DeploymentsProvider>,
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            extensionsSlice.actions.activateMod({
+              modDefinition: oldModDefinition,
+              deployment,
+              screen: "extensionConsole",
+              isReactivate: false,
+            }),
+          );
+        },
+      },
+    );
+
+    expect(screen.queryAllByTestId("Component")).toHaveLength(1);
+    expect(screen.queryAllByTestId("Error")).toHaveLength(0);
+
+    await waitFor(() => {
+      // Initial fetch with old activated deployed mod
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
+
+    await userEvent.click(screen.getByText("Update"));
+
+    await waitFor(() => {
+      // Refetch after deployment activation
+      expect(axiosMock.history.post).toHaveLength(3);
+    });
+
+    const { options } = getReduxStore().getState();
+    expect((options as ModComponentState).extensions).toHaveLength(1);
+  });
+
+  it("updating deployment reactivates mod that was previously unmanaged for restricted user", async () => {
+    axiosMock.onGet("/api/me/").reply(200, { flags: ["restricted-uninstall"] });
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    mockDeploymentActivationRequests(deployment, modDefinition);
+
+    const { getReduxStore } = render(
+      <DeploymentsProvider>
+        <Component />
+      </DeploymentsProvider>,
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            extensionsSlice.actions.activateMod({
+              modDefinition,
+              // No deployment, so that the mod is unmanaged
+              screen: "extensionConsole",
+              isReactivate: false,
+            }),
+          );
+        },
+      },
+    );
+
+    const {
+      options: { extensions: initialActivatedModComponents },
+    } = getReduxStore().getState() as { options: ModComponentState };
+    expect(initialActivatedModComponents).toHaveLength(1);
+    expect(initialActivatedModComponents[0]._deployment).toBeUndefined();
+
+    expect(screen.queryAllByTestId("Component")).toHaveLength(1);
+    expect(screen.queryAllByTestId("Error")).toHaveLength(0);
+
+    await waitFor(() => {
+      // Initial fetch with old activated deployed mod
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
+
+    await userEvent.click(screen.getByText("Update"));
+
+    const {
+      options: { extensions: activatedModComponents },
+    } = getReduxStore().getState() as { options: ModComponentState };
+    expect(activatedModComponents).toHaveLength(1);
+    expect(activatedModComponents[0]._deployment?.id).toBe(deployment.id);
+  });
+
   it("remounting the DeploymentsProvider doesn't refetch the deployments", async () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
-    const registryId = deployment.package.package_id;
-
-    axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
-    axiosMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
-    requestPermissionsMock.mockResolvedValue(true);
+    mockDeploymentActivationRequests(deployment, modDefinition);
 
     const { rerender } = render(
       <DeploymentsProvider>
@@ -203,19 +310,7 @@ describe("DeploymentsContext", () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
     const { deployment, modDefinition } = activatableDeploymentFactory();
-    const registryId = deployment.package.package_id;
-
-    axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
-    axiosMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
-    requestPermissionsMock.mockResolvedValue(true);
+    mockDeploymentActivationRequests(deployment, modDefinition);
 
     const { rerender } = render(
       <DeploymentsProvider>

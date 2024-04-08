@@ -50,8 +50,6 @@ export function getLatestBrickCall(
 
 /**
  * Returns true if a trace record matches the given branch prefix
- * @param prefix the branch prefix
- * @param record the trace record
  */
 export function hasBranchPrefix(
   prefix: Branch[],

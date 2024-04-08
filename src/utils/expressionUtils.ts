@@ -165,8 +165,6 @@ export function castTextLiteralOrThrow(
 
 /**
  * Create an expression from an expression type and value.
- * @param type the expression type
- * @param value the expression value
  */
 export function toExpression<
   TValue extends string | null,

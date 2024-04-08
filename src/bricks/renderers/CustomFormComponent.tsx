@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import cx from "classnames";
@@ -60,6 +60,7 @@ const CustomFormComponent: React.FunctionComponent<{
     values: UnknownObject,
     { submissionCount }: { submissionCount: number },
   ) => Promise<void>;
+  resetOnSubmit?: boolean;
   className?: string;
   stylesheets?: string[];
   disableParentStyles?: boolean;
@@ -71,21 +72,44 @@ const CustomFormComponent: React.FunctionComponent<{
   autoSave,
   className,
   onSubmit,
+  resetOnSubmit = false,
   stylesheets: newStylesheets,
   disableParentStyles = false,
 }) => {
   // Use useRef instead of useState because we don't need/want a re-render when count changes
+  // This ref is used to track the onSubmit run number for runtime tracing
   const submissionCountRef = useRef(0);
+
   // Track values during onChange or prop updates, so we can access it our RjsfSubmitContext submitForm callback
   const valuesRef = useRef<UnknownObject>(formData);
   useEffect(() => {
+    // XXX: is there a reason this is in a useEffect? Is it to prevent issues with defaulting to a fresh `{}`?
     valuesRef.current = formData ?? {};
   }, [formData]);
+
+  // Use a React key to reset the form: https://github.com/rjsf-team/react-jsonschema-form/issues/953
+  const [key, setKey] = useState(0);
+  const resetForm = (): void => {
+    // Ensure valuesRef is in sync with the initial data passed to the form
+    valuesRef.current = formData;
+    setKey((prev) => prev + 1);
+  };
 
   const { stylesheets } = useStylesheetsContextWithFormDefault({
     newStylesheets,
     disableParentStyles,
   });
+
+  const submitData = async (data: UnknownObject): Promise<void> => {
+    submissionCountRef.current += 1;
+    await onSubmit(data, {
+      submissionCount: submissionCountRef.current,
+    });
+
+    if (resetOnSubmit) {
+      resetForm();
+    }
+  };
 
   return (
     <div
@@ -100,14 +124,12 @@ const CustomFormComponent: React.FunctionComponent<{
           <RjsfSubmitContext.Provider
             value={{
               async submitForm() {
-                submissionCountRef.current += 1;
-                await onSubmit(valuesRef.current, {
-                  submissionCount: submissionCountRef.current,
-                });
+                await submitData(valuesRef.current);
               },
             }}
           >
             <JsonSchemaForm
+              key={key}
               // Deep clone the schema because otherwise the schema is not extensible
               // This breaks validation when @cfworker/json-schema dereferences the schema
               // See https://github.com/cfworker/cfworker/blob/263260ea661b6f8388116db7b8daa859e0d28b25/packages/json-schema/src/dereference.ts#L115
@@ -122,17 +144,11 @@ const CustomFormComponent: React.FunctionComponent<{
                 valuesRef.current = formData ?? {};
 
                 if (autoSave) {
-                  submissionCountRef.current += 1;
-                  await onSubmit(formData ?? {}, {
-                    submissionCount: submissionCountRef.current,
-                  });
+                  await submitData(formData ?? {});
                 }
               }}
               onSubmit={async ({ formData }: IChangeEvent<UnknownObject>) => {
-                submissionCountRef.current += 1;
-                await onSubmit(formData ?? {}, {
-                  submissionCount: submissionCountRef.current,
-                });
+                await submitData(formData ?? {});
               }}
             >
               {autoSave || uiSchema["ui:submitButtonOptions"]?.norender ? (

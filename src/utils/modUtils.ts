@@ -37,7 +37,6 @@ import {
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { InvalidTypeError } from "@/errors/genericErrors";
-import reportError from "@/telemetry/reportError";
 import { assertNotNullish } from "./nullishUtils";
 import {
   minimalSchemaFactory,
@@ -54,7 +53,6 @@ import {
 
 /**
  * Returns true if the mod is an UnavailableMod
- * @param mod the mod
  * @see UnavailableMod
  */
 export function isUnavailableMod(mod: Mod): mod is UnavailableMod {
@@ -139,8 +137,6 @@ function isPersonalModComponent(modComponent: ModComponentBase): boolean {
 
 /**
  * Returns true if the source of the mod component has the given scope
- * @param modComponent the mod component
- * @param scope the scope to query
  */
 function hasSourceModWithScope(
   modComponent: ModComponentBase,
@@ -151,8 +147,6 @@ function hasSourceModWithScope(
 
 /**
  * Returns true if the mod has the given scope
- * @param modDefinition the mod definition
- * @param scope the scope to query
  */
 function hasRegistryScope(
   modDefinition: ModDefinition | UnavailableMod,
@@ -226,8 +220,6 @@ export function getSharingSource({
       "Mod is not a ModDefinition or ResolvedModComponent",
       { mod, organization, scope, installedExtensions },
     );
-
-    reportError(error);
 
     throw error;
   }
@@ -420,7 +412,6 @@ export function isModOptionsSchemaEmpty(
 
 /**
  * Return the activation instructions for a mod as markdown, or null if there are none.
- * @param modDefinition the mod definition
  */
 export function getModActivationInstructions(
   modDefinition: ModDefinition,

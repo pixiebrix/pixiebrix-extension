@@ -3,10 +3,10 @@
 exports[`ModsPageLayout renders 1`] = `
 <DocumentFragment>
   <div
-    class="root row"
+    class="root"
   >
     <div
-      class="root col-xl-2 col-md-3 col-sm-12"
+      class="root"
     >
       <form
         class=""
@@ -206,7 +206,7 @@ exports[`ModsPageLayout renders 1`] = `
       </div>
     </div>
     <div
-      class="mainContainer col-xl-10 col-md-9 col-sm-12"
+      class="mainContainer"
     >
       <div
         class="d-flex justify-content-between align-items-center mb-3"
