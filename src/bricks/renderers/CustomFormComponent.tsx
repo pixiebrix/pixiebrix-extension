@@ -27,12 +27,12 @@ import { Stylesheets } from "@/components/Stylesheets";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import validator from "@/validators/formValidator";
 import { type IChangeEvent } from "@rjsf/core";
+import { templates } from "@/components/formBuilder/RjsfTemplates";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
-import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { cloneDeep } from "lodash";
 
 const FIELDS = {

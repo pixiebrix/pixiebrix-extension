@@ -18,7 +18,6 @@
 import React, { useContext } from "react";
 import bootstrap from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import bootstrapOverrides from "@/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
-import custom from "@/bricks/renderers/customForm.css?loadAsUrl";
 
 export type StylesheetsContextType = {
   stylesheets: string[] | null;
@@ -76,28 +75,6 @@ export function useStylesheetsContextWithDocumentDefault({
       // `webpack.config.mjs`. We build styles needed to render documents separately from the rest of the sidebar
       // in order to isolate the rendered document from the custom Bootstrap theme included in the Sidebar app
       "/DocumentView.css",
-    ],
-    disableParentStyles,
-  });
-}
-
-export function useStylesheetsContextWithFormDefault({
-  newStylesheets,
-  disableParentStyles,
-}: {
-  newStylesheets: string[] | undefined;
-  disableParentStyles: boolean;
-}): {
-  stylesheets: string[];
-} {
-  return useStylesheetsContextWithDefaultValues({
-    newStylesheets,
-    defaultStylesheets: [
-      bootstrap,
-      bootstrapOverrides,
-      // EphemeralFormContent.css is an artifact produced by webpack, see the entrypoints.
-      "/EphemeralFormContent.css",
-      custom,
     ],
     disableParentStyles,
   });

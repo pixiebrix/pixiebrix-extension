@@ -32,6 +32,7 @@
 const isolatedComponentList = [
   "bricks/renderers/PropertyTree",
   "bricks/renderers/CustomFormComponent",
+  "bricks/transformers/ephemeralForm/EphemeralFormContent",
   "components/selectionToolPopover/SelectionToolPopover",
   "contentScript/textSelectionMenu/SelectionMenu",
 ];

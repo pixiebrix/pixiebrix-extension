@@ -117,7 +117,6 @@ const createConfig = (env, options) =>
 
         // TODO: Move to isolatedComponentList.mjs and use <IsolatedComponent/>
         "bricks/renderers/documentView/DocumentView",
-        "bricks/transformers/ephemeralForm/EphemeralFormContent",
 
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",

@@ -22,7 +22,6 @@ export default class DiscardFilePlugin {
 
           // TODO: Use <IsolatedComponent/> and move these to isolatedComponentList
           delete assets["DocumentView.js"];
-          delete assets["EphemeralFormContent.js"];
         },
       );
     });
