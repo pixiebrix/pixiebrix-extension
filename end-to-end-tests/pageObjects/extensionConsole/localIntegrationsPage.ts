@@ -45,7 +45,7 @@ export class LocalIntegrationsPage {
     });
   }
 
-  async createNewIntegration(integrationName: string, buttonTestId: string) {
+  async createNewIntegration(integrationName: string) {
     await this.page
       .getByRole("button", { name: "Add Local Integration" })
       .click();
@@ -56,6 +56,6 @@ export class LocalIntegrationsPage {
 
     await this.page.getByText(integrationName).hover();
 
-    await this.page.getByTestId(buttonTestId).click();
+    await this.page.getByTestId(`${integrationName} button`).click();
   }
 }

@@ -29,8 +29,7 @@ test.describe("Local Integrations Page", () => {
     await localIntegrationsPage.goto();
 
     await localIntegrationsPage.createNewIntegration(
-      "Automation Anywhere Control",
-      "Automation Anywhere Control Room button",
+      "Automation Anywhere Control Room",
     );
 
     await page.getByLabel("Label").fill("AA Control Room");
