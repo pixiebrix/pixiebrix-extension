@@ -24,6 +24,7 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const UIPATH_SERVICE_IDS: RegistryId[] = [
   "uipath/cloud",
@@ -167,26 +168,31 @@ export class RunProcess extends TransformerABC {
       );
     }
 
+    const startedJob = startData.value[0];
+    assertNotNullish(startedJob, "UiPath job not found");
+
     const poll = async () => {
       const { data: resultData } = await platform.request<JobsResponse>(
         uipath,
         {
-          url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
+          url: `/odata/Jobs?$filter=Id eq ${startedJob.Id}`,
           method: "get",
         },
       );
 
-      if (resultData.value.length === 0) {
-        logger.error(`UiPath job not found: ${startData.value[0].Id}`);
+      const jobResult = resultData.value[0];
+
+      if (jobResult == null) {
+        logger.error(`UiPath job not found: ${startedJob.Id}`);
         throw new BusinessError("UiPath job not found");
       }
 
-      if (resultData.value[0].State === "Successful") {
-        return JSON.parse(resultData.value[0].OutputArguments);
+      if (jobResult.State === "Successful") {
+        return JSON.parse(jobResult.OutputArguments);
       }
 
-      if (resultData.value[0].State === "Faulted") {
-        logger.error(`UiPath job failed: ${resultData.value[0].Info}`);
+      if (jobResult.State === "Faulted") {
+        logger.error(`UiPath job failed: ${jobResult.Info}`);
         throw new BusinessError("UiPath job failed");
       }
     };

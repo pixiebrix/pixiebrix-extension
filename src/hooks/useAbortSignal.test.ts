@@ -15,29 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { type LogEntry } from "@/telemetry/logging";
-import { Col, Row } from "react-bootstrap";
-import JsonTree from "@/components/jsonTree/JsonTree";
-import { type SetRequired } from "type-fest";
+import { renderHook } from "@testing-library/react-hooks";
+import useAbortSignal from "./useAbortSignal";
 
-const InputDetail: React.FunctionComponent<{
-  data: SetRequired<LogEntry, "data">["data"];
-}> = ({ data }) => (
-  <Row>
-    <Col>
-      <span>Template</span>
-      <JsonTree data={data.template} />
-    </Col>
-    <Col>
-      <span>Context</span>
-      <JsonTree data={data.templateContext} />
-    </Col>
-    <Col>
-      <span>Rendered Args</span>
-      <JsonTree data={data.renderedArgs} />
-    </Col>
-  </Row>
-);
+it("returns the initial state of the signal", () => {
+  const active = renderHook(() => useAbortSignal(new AbortController().signal));
+  expect(active.result.current).toBe(false);
 
-export default InputDetail;
+  const aborted = renderHook(() => useAbortSignal(AbortSignal.abort()));
+  expect(aborted.result.current).toBe(true);
+});
+
+it("updates the state when the signal is aborted", () => {
+  const controller = new AbortController();
+  const { result } = renderHook(() => useAbortSignal(controller.signal));
+  expect(result.current).toBe(false);
+
+  controller.abort();
+  expect(result.current).toBe(true);
+});

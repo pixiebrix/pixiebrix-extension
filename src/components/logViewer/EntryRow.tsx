@@ -31,39 +31,39 @@ const dateFormat = new Intl.DateTimeFormat("en-US", {
   timeStyle: "short",
 });
 
-const ErrorDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
-  entry,
+const ErrorDetail: React.FunctionComponent<{ error: LogEntry["error"] }> = ({
+  error,
 }) => {
   const detail = useMemo(() => {
-    if (isErrorObject(entry.error)) {
-      const { detailsElement } = getErrorDetails(entry.error);
+    if (isErrorObject(error)) {
+      const { detailsElement } = getErrorDetails(error);
       return detailsElement;
     }
 
-    return String(entry.error);
-  }, [entry.error]);
+    return String(error);
+  }, [error]);
 
   return <div style={{ whiteSpace: "pre-wrap" }}>{detail}</div>;
 };
 
+const Detail: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
+  if (typeof entry.error === "object" && entry.error) {
+    return <ErrorDetail error={entry.error} />;
+  }
+
+  if (entry.data?.renderedArgs != null) {
+    return <InputDetail data={entry.data} />;
+  }
+
+  if (entry.data?.output != null) {
+    return <OutputDetail data={entry.data} />;
+  }
+
+  return null;
+};
+
 const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
   const [expanded, setExpanded] = useState(false);
-
-  const Detail = useMemo(() => {
-    if (typeof entry.error === "object" && entry.error) {
-      return ErrorDetail;
-    }
-
-    if (entry.data?.renderedArgs != null) {
-      return InputDetail;
-    }
-
-    if (entry.data?.output != null) {
-      return OutputDetail;
-    }
-
-    return null;
-  }, [entry]);
 
   const expandable = Boolean(Detail);
 

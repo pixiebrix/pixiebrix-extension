@@ -18,13 +18,14 @@
 import React from "react";
 import { type LogEntry } from "@/telemetry/logging";
 import JsonTree from "@/components/jsonTree/JsonTree";
+import { type SetRequired } from "type-fest";
 
-const OutputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
-  entry,
-}) => (
+const OutputDetail: React.FunctionComponent<{
+  data: SetRequired<LogEntry, "data">["data"];
+}> = ({ data }) => (
   <>
-    {entry.data.outputKey && <code>{entry.data.outputKey}</code>}
-    <JsonTree data={entry.data.output} />
+    {data.outputKey && <code>{data.outputKey}</code>}
+    <JsonTree data={data.output} />
   </>
 );
 

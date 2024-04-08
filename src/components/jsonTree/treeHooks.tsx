@@ -42,7 +42,7 @@ export function useLabelRenderer() {
           href="#"
           onClick={async (event) => {
             await writeToClipboard({
-              text: getPathFromArray(keyPath.reverse()),
+              text: getPathFromArray([...keyPath].reverse()),
             });
             event.preventDefault();
             event.stopPropagation();
