@@ -20,22 +20,28 @@ import { Button } from "react-bootstrap";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
 import useDocumentVisibility from "@/hooks/useDocumentVisibility";
 
-const InvalidatedContextGate: React.FunctionComponent<{
-  contextNameTitleCase: string;
+type ContextInvalidatedProps = {
   autoReload?: boolean;
-}> = ({ children, contextNameTitleCase, autoReload }) => {
-  const wasContextInvalidated = useContextInvalidated();
+
+  /** The name to show on "Reload Context Name" button */
+  contextNameTitleCase: string;
+};
+
+const InformationPanel: React.FunctionComponent<ContextInvalidatedProps> = ({
+  autoReload,
+  contextNameTitleCase,
+}) => {
   // Only auto-reload if the document is in the background
   const isDocumentVisible = useDocumentVisibility();
-  if (wasContextInvalidated && autoReload && !isDocumentVisible) {
+  if (autoReload && !isDocumentVisible) {
     setTimeout(() => {
       // If you reload too soon, Chrome might not be ready to serve the page yet
       // TODO: Poll the page until it's ready instead of a timeout. Then auto-reload by default
       location.reload();
-    }, 500);
+    }, 1000);
   }
 
-  return wasContextInvalidated ? (
+  return (
     <div className="d-flex flex-column align-items-center justify-content-center">
       <p>
         PixieBrix was updated or restarted. Reload the{" "}
@@ -49,6 +55,21 @@ const InvalidatedContextGate: React.FunctionComponent<{
         Reload {contextNameTitleCase}
       </Button>
     </div>
+  );
+};
+
+/**
+ * A gate that shows an information panel with a reload button if the context was invalidated.
+ *
+ * Use `<AbortSignalGate signal={onContextInvalidated.signal}>` if you just want to unmount the children instead.
+ */
+const InvalidatedContextGate: React.FunctionComponent<
+  ContextInvalidatedProps
+> = ({ children, ...props }) => {
+  const wasContextInvalidated = useContextInvalidated();
+
+  return wasContextInvalidated ? (
+    <InformationPanel {...props} />
   ) : (
     <>{children}</>
   );

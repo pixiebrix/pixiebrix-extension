@@ -50,7 +50,7 @@ export type SelectWidgetOnChange<
 export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
   CustomFieldWidgetProps<TOption["value"], SelectLike<TOption>> & {
     isClearable?: boolean;
-    options: TOption[];
+    options?: TOption[];
     isLoading?: boolean;
     loadError?: unknown;
     loadingMessage?: string;

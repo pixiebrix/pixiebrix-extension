@@ -18,34 +18,12 @@
 import { isErrorObject } from "@/errors/errorHelpers";
 import { testMatchPatterns } from "@/bricks/available";
 import { getBaseURL } from "@/data/service/baseService";
-import urljoin from "url-join";
 import {
   isAxiosError,
   type SerializableAxiosError,
 } from "@/errors/networkErrorHelpers";
-import { isAbsoluteUrl, withoutTrailingSlash } from "@/utils/urlUtils";
+import { selectAbsoluteUrl, withoutTrailingSlash } from "@/utils/urlUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
-import { assertNotNullish } from "@/utils/nullishUtils";
-
-/**
- * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless
- * they were passed in with the URL instead of as params.
- */
-export function selectAbsoluteUrl({
-  url,
-  baseURL,
-}: {
-  url?: string;
-  baseURL?: string;
-}): string {
-  assertNotNullish(url, "selectAbsoluteUrl: The URL was not provided");
-  if (isAbsoluteUrl(url)) {
-    return url;
-  }
-
-  assertNotNullish(baseURL, "selectAbsoluteUrl: The base URL was not provided");
-  return urljoin(baseURL, url);
-}
 
 /**
  * Return true iff the error corresponds to a request to PixieBrix API.

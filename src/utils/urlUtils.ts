@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { BusinessError } from "@/errors/businessErrors";
 import { isNullOrBlank } from "@/utils/stringUtils";
-import { type Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish } from "./nullishUtils";
 
 const SPACE_ENCODED_VALUE = "%20";
 
@@ -27,10 +28,38 @@ export const LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT = "plus";
 export const URL_INPUT_SPACE_ENCODING_DEFAULT = "percent";
 
 /**
- * Returns true if `url` is an absolute URL, based on whether the URL contains a schema
+ * Returns true if `url` lacks a protocol and hostname, indicating it's a relative URL
  */
-export function isAbsoluteUrl(url: string): boolean {
-  return /(^|:)\/\//.test(url);
+export function isUrlRelative(url: string): boolean {
+  return !url.startsWith("//") && !url.includes("://");
+}
+
+/**
+ * Get the absolute URL from a request configuration, ensuring it's fully parseable
+ *
+ * @warning Does NOT include the query params from the request unless
+ * they were passed in with the URL instead of as params.
+ */
+export function selectAbsoluteUrl({
+  url,
+  baseURL,
+}: {
+  url?: string;
+  baseURL?: string;
+}): string {
+  assertNotNullish(url, "selectAbsoluteUrl: The URL was not provided");
+  if (canParseUrl(url)) {
+    return url;
+  }
+
+  assertNotNullish(baseURL, "selectAbsoluteUrl: The base URL was not provided");
+
+  if (canParseUrl(url, baseURL)) {
+    return new URL(url, baseURL).href;
+  }
+
+  const baseUrlInfo = baseURL ? ` (base URL: ${String(baseURL)})` : "";
+  throw new Error(`Invalid URL: ${String(url)}${baseUrlInfo}`);
 }
 
 export function makeURL(
@@ -53,28 +82,6 @@ export function makeURL(
   }
 
   return result.href;
-}
-
-/**
- * Returns true if `value` is a valid absolute URL with a protocol in `protocols`
- * @param value the value to check
- * @param protocols valid protocols including colon, defaults to http: and https:
- */
-export function isValidUrl(
-  value: Nullishable<string>,
-  { protocols = ["http:", "https:"] }: { protocols?: string[] } = {},
-): value is string {
-  if (isNullOrBlank(value)) {
-    return false;
-  }
-
-  try {
-    // eslint-disable-next-line -- string null checks thinks this is still nullishable
-    const url = new URL(value as string);
-    return protocols.includes(url.protocol);
-  } catch {
-    return false;
-  }
 }
 
 /**
@@ -102,12 +109,34 @@ export function urlsMatch(url1: string | URL, url2: string | URL): boolean {
  *
  */
 // TODO: Use `URL.canParse` after dropping support for Chrome <120
-export function canParseUrl(url: string): boolean {
+export function canParseUrl(url: unknown, baseURL?: unknown): url is string {
   try {
     // eslint-disable-next-line no-new -- Equivalent to URL.canParse
-    new URL(url);
+    new URL(url as string, baseURL as string);
     return true;
   } catch {
     return false;
+  }
+}
+
+/**
+ * Returns a URL with one of the allow-listed schemas, or throws a BusinessError
+ * @param url an absolute or relative URL
+ * @param allowedProtocols the protocol allow-list, including the colon (e.g., "https:")
+ * @throws BusinessError if the URL is invalid
+ */
+export function assertProtocolUrl(
+  url: string,
+  allowedProtocols: string[],
+): void {
+  if (!canParseUrl(url)) {
+    throw new BusinessError(`Invalid URL: ${url}`);
+  }
+
+  const { protocol } = new URL(url);
+  if (!allowedProtocols.includes(protocol)) {
+    throw new BusinessError(
+      `Unsupported protocol: ${protocol}. Use ${allowedProtocols.join(", ")}`,
+    );
   }
 }

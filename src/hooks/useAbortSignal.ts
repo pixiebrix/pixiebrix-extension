@@ -15,29 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { type LogEntry } from "@/telemetry/logging";
-import { Col, Row } from "react-bootstrap";
-import JsonTree from "@/components/jsonTree/JsonTree";
-import { type SetRequired } from "type-fest";
+import { useSyncExternalStore } from "use-sync-external-store/shim";
 
-const InputDetail: React.FunctionComponent<{
-  data: SetRequired<LogEntry, "data">["data"];
-}> = ({ data }) => (
-  <Row>
-    <Col>
-      <span>Template</span>
-      <JsonTree data={data.template} />
-    </Col>
-    <Col>
-      <span>Context</span>
-      <JsonTree data={data.templateContext} />
-    </Col>
-    <Col>
-      <span>Rendered Args</span>
-      <JsonTree data={data.renderedArgs} />
-    </Col>
-  </Row>
-);
-
-export default InputDetail;
+export default function useAbortSignal(signal: AbortSignal): boolean {
+  return useSyncExternalStore(
+    (callback: () => void) => {
+      const unsubscribe = new AbortController();
+      signal.addEventListener("abort", callback, {
+        signal: unsubscribe.signal,
+        once: true,
+      });
+      return () => {
+        unsubscribe.abort();
+      };
+    },
+    () => signal.aborted,
+  );
+}

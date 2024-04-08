@@ -77,10 +77,9 @@ function useActivateRecipe(
 
   return useCallback(
     async (formValues: WizardValues, recipe: ModDefinition) => {
-      const recipeExtensions = extensions.filter(
+      const isReactivate = extensions.some(
         (extension) => extension._recipe?.id === recipe.metadata.id,
       );
-      const isReactivate = !isEmpty(recipeExtensions);
 
       if (source === "extensionConsole") {
         // Note: The prefix "Marketplace" on the telemetry event name

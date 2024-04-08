@@ -18,40 +18,10 @@
 import {
   type UserDataUpdate,
   type AuthState,
-  type AuthUserOrganization,
   type OrganizationAuthState,
 } from "@/auth/authTypes";
-import { type Nullishable } from "@/utils/nullishUtils";
-import { type MeOrganizationMembership } from "@/data/model/MeOrganizationMembership";
-import { convertToLegacyUserRole } from "@/data/model/UserOrganizationMembershipRole";
 import { type Me } from "@/data/model/Me";
-
-// Used by the app
-function selectOrganizations(
-  organizationMemberships: Nullishable<MeOrganizationMembership[]>,
-): AuthUserOrganization[] {
-  if (organizationMemberships == null) {
-    return [];
-  }
-
-  return organizationMemberships.map(
-    ({
-      organizationId,
-      organizationName,
-      organizationControlRoom,
-      userOrganizationRole,
-      organizationScope,
-      meUserIsDeploymentManager,
-    }) => ({
-      id: organizationId,
-      name: organizationName,
-      control_room: organizationControlRoom,
-      role: convertToLegacyUserRole(userOrganizationRole),
-      scope: organizationScope,
-      isDeploymentManager: meUserIsDeploymentManager,
-    }),
-  );
-}
+import selectAuthUserOrganizations from "@/auth/selectAuthUserOrganizations";
 
 export function selectUserDataUpdate({
   email,
@@ -63,7 +33,7 @@ export function selectUserDataUpdate({
   enforceUpdateMillis,
   partnerPrincipals,
 }: Me): UserDataUpdate {
-  const organizations = selectOrganizations(organizationMemberships);
+  const organizations = selectAuthUserOrganizations(organizationMemberships);
   const groups = groupMemberships.map(({ groupId, groupName }) => ({
     id: groupId,
     name: groupName,
@@ -99,7 +69,7 @@ export function selectExtensionAuthState({
   partner,
   enforceUpdateMillis,
 }: Me): AuthState {
-  const organizations = selectOrganizations(organizationMemberships);
+  const organizations = selectAuthUserOrganizations(organizationMemberships);
   const groups = groupMemberships.map(({ groupId, groupName }) => ({
     id: groupId,
     name: groupName,

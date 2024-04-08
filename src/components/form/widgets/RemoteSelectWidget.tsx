@@ -48,9 +48,9 @@ type RemoteSelectWidgetProps<T = unknown> = CustomFieldWidgetProps<
 };
 
 export function useOptionsResolver<T>(
-  config: SanitizedIntegrationConfig,
+  config: SanitizedIntegrationConfig | null,
   optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>,
-  factoryArgs: UnknownObject,
+  factoryArgs?: UnknownObject,
 ): FetchableAsyncState<Array<Option<T>>> {
   return useAsyncState<Array<Option<T>>>(async () => {
     if (isPromise(optionsFactory)) {
