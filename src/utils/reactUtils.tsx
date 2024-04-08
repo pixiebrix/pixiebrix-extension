@@ -47,19 +47,23 @@ export function renderWidget({
   widget,
   signal,
   position = "after",
+  keepAfterInvalidation = false,
 }: {
   name: string;
   widget: JSX.Element;
   signal?: AbortSignal;
   position?: "before" | "after";
+  keepAfterInvalidation?: boolean;
 }): void {
-  if (signal) {
-    signal = mergeSignals(signal, onContextInvalidated.signal);
-  } else {
-    signal = onContextInvalidated.signal;
+  if (!keepAfterInvalidation) {
+    if (signal) {
+      signal = mergeSignals(signal, onContextInvalidated.signal);
+    } else {
+      signal = onContextInvalidated.signal;
+    }
   }
 
-  if (signal.aborted) {
+  if (signal?.aborted) {
     return;
   }
 
@@ -74,7 +78,7 @@ export function renderWidget({
   document.body[position](root);
   render(widget, root);
 
-  signal.addEventListener("abort", () => {
+  signal?.addEventListener("abort", () => {
     root.remove();
     unmountComponentAtNode(root);
   });

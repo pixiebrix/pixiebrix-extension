@@ -109,6 +109,10 @@ function getMessageDisplayTimeMs(message: string): number {
 export function initToaster(): void {
   renderWidget({
     name: "notifications",
+    // We want to keep the notifications on the page because they might
+    // inform the user of the context invalidation.
+    // In the future we might want to still drop the widget after a minute or so.
+    keepAfterInvalidation: true,
     widget: <Toaster {...{ containerStyle, toastOptions }} />,
   });
 }
