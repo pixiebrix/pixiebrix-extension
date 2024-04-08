@@ -86,7 +86,7 @@ export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   return result;
 }
 
-export function buildSchema(integration: Integration): Schema {
+function buildSchema(integration: Integration): Schema {
   return {
     type: "object",
     properties: {
