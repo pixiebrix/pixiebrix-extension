@@ -16,7 +16,7 @@
  */
 
 import { test, expect } from "../../fixtures/extensionBase";
-import { ModsPage } from "../../pageObjects/modsPage";
+import { ModsPage } from "../../pageObjects/extensionConsole/modsPage";
 import AxeBuilder from "@axe-core/playwright";
 import { checkForCriticalViolations, ensureVisibility } from "../../utils";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only

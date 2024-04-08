@@ -131,8 +131,8 @@ export async function createYupValidationSchema(
   }
 }
 
-export function validateIntegrationConfig(values: FormikValues) {
-  return (integration: Integration): FormikErrors<FormikValues> => {
+export function validateIntegrationConfig(integration: Integration) {
+  return (values: FormikValues): FormikErrors<FormikValues> => {
     const schema = buildSchema(integration);
 
     const validator = new Validator(
