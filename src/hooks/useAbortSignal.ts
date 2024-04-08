@@ -15,23 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: grid;
-  grid-template-columns: 180px auto;
-  gap: 40px;
-  height: 100%;
-}
+import { useSyncExternalStore } from "use-sync-external-store/shim";
 
-.filterTitle {
-  font-size: 1.125rem;
-}
-
-.mainContainer {
-  // Flex is required to prevent AutoSizer overflow with siblings
-  display: flex;
-  flex-direction: column;
-}
-
-.blueprintsList {
-  overflow-y: scroll;
+export default function useAbortSignal(signal: AbortSignal): boolean {
+  return useSyncExternalStore(
+    (callback: () => void) => {
+      const unsubscribe = new AbortController();
+      signal.addEventListener("abort", callback, {
+        signal: unsubscribe.signal,
+        once: true,
+      });
+      return () => {
+        unsubscribe.abort();
+      };
+    },
+    () => signal.aborted,
+  );
 }
