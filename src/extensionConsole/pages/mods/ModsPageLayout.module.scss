@@ -16,6 +16,9 @@
  */
 
 .root {
+  display: grid;
+  grid-template-columns: 180px auto;
+  gap: 40px;
   height: 100%;
 }
 

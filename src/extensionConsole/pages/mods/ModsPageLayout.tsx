@@ -17,7 +17,7 @@
 
 import styles from "./ModsPageLayout.module.scss";
 
-import { Card, Col, Row as BootstrapRow } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import React, { useContext, useMemo } from "react";
 import {
   type Column,
@@ -155,12 +155,12 @@ const ModsPageLayout: React.FunctionComponent<{
   );
 
   return (
-    <BootstrapRow className={styles.root}>
+    <div className={styles.root}>
       <ModsPageSidebar
         teamFilters={teamFilters}
         tableInstance={tableInstance}
       />
-      <Col className={styles.mainContainer} sm={12} md={9} xl={10}>
+      <div className={styles.mainContainer}>
         <ModsPageToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
@@ -187,8 +187,8 @@ const ModsPageLayout: React.FunctionComponent<{
             </AutoSizer>
           )}
         </div>
-      </Col>
-    </BootstrapRow>
+      </div>
+    </div>
   );
 };
 
