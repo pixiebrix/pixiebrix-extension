@@ -18,18 +18,9 @@
 import styles from "./notify.module.scss";
 
 import React from "react";
-import { render } from "react-dom";
-import {
-  type DefaultToastOptions,
-  toast,
-  Toaster,
-  type ToastOptions,
-} from "react-hot-toast";
+import { toast, Toaster, type ToastOptions } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
-import {
-  NOTIFICATIONS_Z_INDEX,
-  PIXIEBRIX_NOTIFICATION_CLASS,
-} from "@/domConstants";
+import { NOTIFICATIONS_Z_INDEX } from "@/domConstants";
 import reportError from "@/telemetry/reportError";
 import { type Except, type RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -40,6 +31,7 @@ import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebarDomController
 import ErrorIcon from "@/icons/error.svg?loadAsComponent";
 import WarningIcon from "@/icons/warning.svg?loadAsComponent";
 import type { Notification, NotificationType } from "@/utils/notificationTypes";
+import { renderWidget } from "./reactUtils";
 
 const MINIMUM_NOTIFICATION_DURATION_MS = 2000;
 
@@ -77,8 +69,10 @@ const getIcon = (
   color: string,
 ) => <Icon style={{ height: 24, color, flex: "0 0 24px" }} />;
 
+// Override for built-in toasts
+// These colors match react-hot-toast’s status icons
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const toastStyle: ToastStyle = {
+const toastOptions: ToastStyle = {
   success: {
     style: {
       border: "solid 2px #61d345",
@@ -98,6 +92,12 @@ const toastStyle: ToastStyle = {
   },
 };
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
+const containerStyle = {
+  zIndex: NOTIFICATIONS_Z_INDEX,
+  fontFamily: "sans-serif",
+} satisfies React.CSSProperties;
+
 function getMessageDisplayTimeMs(message: string): number {
   const wpm = 100; // 180 is the average words read per minute, make it slower
   return Math.max(
@@ -107,25 +107,14 @@ function getMessageDisplayTimeMs(message: string): number {
 }
 
 export function initToaster(): void {
-  const root = document.createElement("div");
-  root.className = PIXIEBRIX_NOTIFICATION_CLASS; // Used to visually identify the element in the DOM
-  // This style cannot be on containerStyle because it overrides some of its props there
-  root.setAttribute("style", "all: initial");
-
-  document.body.append(root);
-
-  const containerStyle: React.CSSProperties = {
-    zIndex: NOTIFICATIONS_Z_INDEX,
-    fontFamily: "sans-serif",
-  };
-
-  // Override for built-in toasts
-  const toastOptions: DefaultToastOptions = {
-    // These colors match react-hot-toast’s status icons
-    success: toastStyle.success,
-    error: toastStyle.error,
-  };
-  render(<Toaster {...{ containerStyle, toastOptions }} />, root);
+  renderWidget({
+    name: "notifications",
+    // We want to keep the notifications on the page because they might
+    // inform the user of the context invalidation.
+    // In the future we might want to still drop the widget after a minute or so.
+    keepAfterInvalidation: true,
+    widget: <Toaster {...{ containerStyle, toastOptions }} />,
+  });
 }
 
 export function showNotification({
@@ -172,7 +161,7 @@ export function showNotification({
 
     case "warning": {
       // eslint-disable-next-line security/detect-object-injection -- Filtered
-      toast(component, merge(options, toastStyle[type]));
+      toast(component, merge(options, toastOptions[type]));
       break;
     }
 

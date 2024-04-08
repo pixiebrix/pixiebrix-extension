@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isValidUrl } from "@/utils/urlUtils";
+import { canParseUrl } from "@/utils/urlUtils";
 import { type RequiredMeOrganizationThemeResponse } from "@/data/service/responseTypeHelpers";
 
 export type OrganizationTheme = {
@@ -40,11 +40,11 @@ export function transformOrganizationThemeResponse(
     showSidebarHeaderLogo: response.show_sidebar_logo ?? true,
   };
 
-  if (isValidUrl(response.logo)) {
+  if (canParseUrl(response.logo)) {
     theme.logoUrl = new URL(response.logo);
   }
 
-  if (isValidUrl(response.toolbar_icon)) {
+  if (canParseUrl(response.toolbar_icon)) {
     theme.toolbarIconUrl = new URL(response.toolbar_icon);
   }
 

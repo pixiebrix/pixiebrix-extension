@@ -183,6 +183,10 @@ export type AuthUserOrganization = {
    * True if the user is a manager of at least one team deployment.
    */
   isDeploymentManager: boolean;
+  /**
+   * The Automation Anywhere Control Room information
+   */
+  control_room?: ControlRoom;
 };
 
 export type AuthState = {

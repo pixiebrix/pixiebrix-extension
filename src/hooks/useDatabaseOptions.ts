@@ -23,6 +23,7 @@ import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type Database, type Organization } from "@/types/contract";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function databasesToOptions(
   databases: Database[],
@@ -33,6 +34,7 @@ function databasesToOptions(
       (x) => x.id === database.organization_id,
     );
 
+    assertNotNullish(database.id, "Database must have a valid id");
     return {
       label: `${database.name} - ${organization?.name ?? "Private"}`,
       value: database.id,

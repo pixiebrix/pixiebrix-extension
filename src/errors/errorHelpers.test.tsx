@@ -28,6 +28,8 @@ import {
   selectErrorFromRejectionEvent,
   selectSpecificError,
   shouldErrorBeIgnored,
+  replaceErrorType,
+  replaceThrownErrors,
 } from "@/errors/errorHelpers";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
@@ -684,5 +686,64 @@ describe("RequestSupersededError", () => {
     const error = new RequestSupersededError("message");
     expect(isSpecificError(error, BusinessError)).toBeTrue();
     expect(isSpecificError(serializeError(error), BusinessError)).toBeTrue();
+  });
+});
+
+describe("rewrapError", () => {
+  test("rewraps error", () => {
+    const error = new Error("Something happened");
+    const rewrapped = replaceErrorType(error, BusinessError);
+    expect(rewrapped).toBeInstanceOf(BusinessError);
+    expect(rewrapped.message).toBe("Something happened");
+    expect(rewrapped.cause).toBeUndefined();
+  });
+
+  test("rewraps error with cause", () => {
+    const cause = new Error("Cause happened");
+    const error = new Error("Something happened", { cause });
+    const rewrapped = replaceErrorType(error, BusinessError);
+    expect(rewrapped).toBeInstanceOf(BusinessError);
+    expect(rewrapped.message).toBe("Something happened");
+    expect(rewrapped.cause).toBe(cause);
+  });
+});
+
+describe("rewrapErrors", () => {
+  test("rewraps thrown error", () => {
+    const error = new Error("Something happened");
+    const action = () => {
+      throw error;
+    };
+
+    expect(() => replaceThrownErrors(TypeError, action)).toThrow(TypeError);
+  });
+  test("rewraps error thrown asynchronously", async () => {
+    const error = new Error("Something happened");
+    const action = async () => {
+      throw error;
+    };
+
+    await expect(replaceThrownErrors(TypeError, action)).rejects.toThrow(
+      TypeError,
+    );
+  });
+});
+
+describe("withBusinessError", () => {
+  test("rewraps error", () => {
+    const error = new Error("Something happened");
+    const rewrapped = replaceErrorType(error, BusinessError);
+    expect(rewrapped).toBeInstanceOf(BusinessError);
+    expect(rewrapped.message).toBe("Something happened");
+    expect(rewrapped.cause).toBeUndefined();
+  });
+
+  test("rewraps error, preserving the cause", () => {
+    const cause = new Error("Cause happened");
+    const error = new Error("Something happened", { cause });
+    const rewrapped = replaceErrorType(error, BusinessError);
+    expect(rewrapped).toBeInstanceOf(BusinessError);
+    expect(rewrapped.message).toBe("Something happened");
+    expect(rewrapped.cause).toBe(cause);
   });
 });

@@ -19,7 +19,7 @@ import React from "react";
 import { RendererABC } from "@/types/bricks/rendererTypes";
 import { sortBy, isPlainObject } from "lodash";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import { isValidUrl } from "@/utils/urlUtils";
+import { canParseUrl } from "@/utils/urlUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 
 interface Item {
@@ -32,7 +32,7 @@ interface Item {
 }
 
 function richValue(value: unknown): unknown {
-  if (typeof value === "string" && isValidUrl(value)) {
+  if (canParseUrl(value)) {
     return (
       <a href={value} target="_blank" rel="noopener noreferrer">
         {value}

@@ -34,6 +34,7 @@ import { isEmpty } from "lodash";
 import { $safeFind } from "@/utils/domUtils";
 import { type TooltipPosition } from "intro.js/src/core/steps";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type Step = {
   title: string;
@@ -120,14 +121,15 @@ export class TourEffect extends EffectABC {
       disableInteraction = false,
       steps = [] as Step[],
       isRootAware = false,
-    }: BrickArgs,
+    }: BrickArgs<{
+      showProgress?: boolean;
+      showBullets?: boolean;
+      disableInteraction?: boolean;
+      steps?: Step[];
+      isRootAware?: boolean;
+    }>,
     { root, abortSignal: blockAbortSignal, logger }: BrickOptions,
   ): Promise<void> {
-    const { extensionId, label, extensionLabel, blueprintId } = logger.context;
-    const nonce = uuidv4();
-    const abortController = new AbortController();
-    const stylesheetLink = await injectStylesheet(stylesheetUrl);
-
     if (steps.length === 0) {
       throw new PropError(
         "Must provide at least one step",
@@ -136,6 +138,11 @@ export class TourEffect extends EffectABC {
         steps,
       );
     }
+
+    const { extensionId, label, extensionLabel, blueprintId } = logger.context;
+    const nonce = uuidv4();
+    const abortController = new AbortController();
+    const stylesheetLink = await injectStylesheet(stylesheetUrl);
 
     // NOTE: we're not using $safeFindElementsWithRootMode in this method because:
     // - it assumes that the selector is a top level prop when generating error messages
@@ -159,7 +166,9 @@ export class TourEffect extends EffectABC {
         throw new BusinessError("A tour is already in progress");
       }
 
-      const [firstStep] = steps as Step[];
+      const [firstStep] = steps;
+      assertNotNullish(firstStep, "Must provide at least one step");
+
       if (
         !isEmpty(firstStep.element) &&
         $safeFind(firstStep.element, $root).length === 0
@@ -169,6 +178,8 @@ export class TourEffect extends EffectABC {
         );
       }
 
+      assertNotNullish(extensionId, "extensionId is required to run a tour");
+
       // Try to identify the tour via step name. If step name is not provided, identify via ModComponentBase.label.
       // The Show Tour Brick is run as part of buttons/triggers, so the label won't affect the auto-run behavior
       // for tour extensions.
@@ -176,8 +187,8 @@ export class TourEffect extends EffectABC {
         nonce,
         {
           id: extensionId,
-          label: label ?? extensionLabel,
-          _recipe: { id: blueprintId },
+          label: label ?? extensionLabel ?? "",
+          _recipe: blueprintId ? { id: blueprintId } : undefined,
         },
         { abortController, context: logger.context },
       );
@@ -187,7 +198,7 @@ export class TourEffect extends EffectABC {
           showProgress,
           showBullets,
           disableInteraction,
-          steps: (steps as Step[]).map(({ element, ...rest }) => ({
+          steps: steps.map(({ element, ...rest }) => ({
             ...rest,
             element: isEmpty(element)
               ? undefined
@@ -199,7 +210,7 @@ export class TourEffect extends EffectABC {
           // the individual step. There's a PR that pending: https://github.com/usablica/intro.js/pull/1266/files
           const currentStep = this._currentStep;
           const title = this._introItems[currentStep]?.title;
-          const label = isEmpty(title) ? `Step ${currentStep}` : title;
+          const label = title || `Step ${currentStep}`;
           markTourStep(nonce, { step: label, context: logger.context });
         })
         .oncomplete(() => {

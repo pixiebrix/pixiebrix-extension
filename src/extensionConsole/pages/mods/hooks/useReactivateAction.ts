@@ -23,8 +23,9 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { push } from "connected-react-router";
 import notify from "@/utils/notify";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
-const useReactivateAction = (modViewItem: ModViewItem): (() => void | null) => {
+const useReactivateAction = (modViewItem: ModViewItem): (() => void) | null => {
   const dispatch = useDispatch();
   const { restrict } = useFlags();
   const { mod, unavailable, status, sharing } = modViewItem;
@@ -37,7 +38,12 @@ const useReactivateAction = (modViewItem: ModViewItem): (() => void | null) => {
     if (hasModDefinition) {
       const blueprintId = isModDefinition(mod)
         ? mod.metadata.id
-        : mod._recipe.id;
+        : mod._recipe?.id;
+
+      assertNotNullish(
+        blueprintId,
+        "blueprintId is required to reactivate mod",
+      );
 
       reportEvent(Events.START_MOD_ACTIVATE, {
         blueprintId,

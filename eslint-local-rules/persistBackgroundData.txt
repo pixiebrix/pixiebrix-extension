@@ -126,7 +126,6 @@
 ./src/development/messengerLogging.ts
 ./src/development/runtimeLogging.ts
 ./src/domConstants.ts
-./src/errors/assertProtocolUrl.ts
 ./src/errors/businessErrors.ts
 ./src/errors/clientRequestErrors.ts
 ./src/errors/contextInvalidated.ts
