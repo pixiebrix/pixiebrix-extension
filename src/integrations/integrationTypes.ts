@@ -152,7 +152,7 @@ export type IntegrationConfigV1 = {
    * Human-readable label for the configuration to distinguish it from other configurations for the same integration in the
    * interface.
    */
-  label: string | undefined;
+  label: string;
 
   /**
    * Configuration including all data

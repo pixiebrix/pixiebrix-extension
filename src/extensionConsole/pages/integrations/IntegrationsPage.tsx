@@ -160,7 +160,7 @@ const componentState = createSlice({
 
         state.editingIntegrationConfig = {
           id: uuidv4(),
-          label: undefined,
+          label: "",
           integrationId: selectedIntegration.id,
           config: {},
         } as IntegrationConfig;

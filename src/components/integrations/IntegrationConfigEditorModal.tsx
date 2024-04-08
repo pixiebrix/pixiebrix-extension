@@ -194,7 +194,13 @@ const ModalContent: React.FC<ContentProps> = ({
             validationSchema={validationSchema}
             validate={(values) => {
               const schema = buildSchema(integration);
-              const validator = new Validator(schema as Validator);
+
+              const validator = new Validator(
+                schema as Validator,
+                "2019-09",
+                false,
+              );
+
               const { errors } = validator.validate(values);
               return convertSchemaErrorsToFormikErrors(errors);
             }}
