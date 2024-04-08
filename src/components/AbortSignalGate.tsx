@@ -15,23 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: grid;
-  grid-template-columns: 180px auto;
-  gap: 40px;
-  height: 100%;
-}
+import useAbortSignal from "@/hooks/useAbortSignal";
+import React from "react";
 
-.filterTitle {
-  font-size: 1.125rem;
-}
+/**
+ * Render children until the signal is aborted
+ */
+const AbortSignalGate: React.FunctionComponent<{ signal: AbortSignal }> = ({
+  signal,
+  children,
+}) => {
+  const aborted = useAbortSignal(signal);
+  return aborted ? null : <>{children}</>;
+};
 
-.mainContainer {
-  // Flex is required to prevent AutoSizer overflow with siblings
-  display: flex;
-  flex-direction: column;
-}
-
-.blueprintsList {
-  overflow-y: scroll;
-}
+export default AbortSignalGate;
