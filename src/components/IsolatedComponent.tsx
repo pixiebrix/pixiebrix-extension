@@ -78,7 +78,8 @@ type Props<T> = {
   lazy: LazyFactory<T>;
 
   /**
-   * It must be the result of React.lazy()
+   * A function that provides the loaded component as an argument, and calls it
+   * @example (Moon) => <Moon size={5} />
    */
   factory: (
     Component: React.LazyExoticComponent<React.ComponentType<T>>,
@@ -100,7 +101,7 @@ type Props<T> = {
  *   <IsolatedComponent
  *     name="Moon"
  *     lazy={() => import(/* webpackChunkName: "isolated/Moon" * / "@/components/Moon")}
- *     factory={(Moon) => <Moon />}
+ *     factory={(Moon) => <Moon size={56} />}
  *   />,
  *   document.querySelector('#container'),
  * );
