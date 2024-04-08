@@ -236,6 +236,11 @@ module.exports = {
                 message:
                   'Use root-based imports (`import "@/something"`) instead of relative imports.',
               },
+              {
+                group: ["../*"],
+                message:
+                  'Use root-based imports (`import "@/something"`) instead of relative imports.',
+              },
             ],
           }),
         ],
