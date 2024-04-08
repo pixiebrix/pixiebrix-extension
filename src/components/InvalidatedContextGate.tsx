@@ -38,7 +38,7 @@ const InformationPanel: React.FunctionComponent<ContextInvalidatedProps> = ({
       // If you reload too soon, Chrome might not be ready to serve the page yet
       // TODO: Poll the page until it's ready instead of a timeout. Then auto-reload by default
       location.reload();
-    }, 500);
+    }, 1000);
   }
 
   return (
