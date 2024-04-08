@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { RendererABC } from "@/types/bricks/rendererTypes";
-import DocumentViewLazy from "./documentView/DocumentViewLazy";
 import { validateRegistryId } from "@/types/helpers";
 import {
   type BrickArgs,
@@ -28,6 +28,8 @@ import {
   DOCUMENT_ELEMENT_TYPES,
   type DocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
+import IsolatedComponent from "@/components/IsolatedComponent";
+import { type DocumentViewProps } from "./documentView/DocumentViewProps";
 
 export const DOCUMENT_SCHEMA: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -107,8 +109,24 @@ export class DocumentRenderer extends RendererABC {
     }>,
     options: BrickOptions,
   ): Promise<ComponentRef> {
+    const DocumentView: React.FC<
+      DocumentViewProps & { disableParentStyles?: boolean }
+    > = ({ disableParentStyles, ...props }) => (
+      <IsolatedComponent
+        name="DocumentView"
+        noStyle={disableParentStyles}
+        lazy={async () =>
+          import(
+            /* webpackChunkName: "isolated/DocumentView" */
+            "./documentView/DocumentView"
+          )
+        }
+        factory={(DocumentView) => <DocumentView {...props} />}
+      />
+    );
+
     return {
-      Component: DocumentViewLazy,
+      Component: DocumentView,
       props: {
         body,
         stylesheets,

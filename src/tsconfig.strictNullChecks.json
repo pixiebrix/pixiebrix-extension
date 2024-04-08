@@ -208,7 +208,6 @@
     "./components/StopPropagation.tsx",
     "./components/Stylesheets.test.tsx",
     "./components/Stylesheets.tsx",
-    "./components/StylesheetsContext.ts",
     "./components/TooltipIconButton.tsx",
     "./components/UnstyledButton.tsx",
     "./components/addBlockModal/TagList.tsx",

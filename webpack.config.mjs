@@ -115,9 +115,6 @@ const createConfig = (env, options) =>
       [
         "background/background",
 
-        // TODO: Move to isolatedComponentList.mjs and use <IsolatedComponent/>
-        "bricks/renderers/documentView/DocumentView",
-
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",
