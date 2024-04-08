@@ -15,23 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: grid;
-  grid-template-columns: 180px auto;
-  gap: 40px;
-  height: 100%;
-}
+import { deactivateUnassignedModComponents } from "@/extensionConsole/pages/deployments/activateDeployments";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import type { Dispatch } from "@reduxjs/toolkit";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 
-.filterTitle {
-  font-size: 1.125rem;
-}
+const useDeactivateUnassignedDeploymentsEffect = (
+  unassignedModComponents: ModComponentBase[],
+) => {
+  const dispatch = useDispatch<Dispatch>();
+  useEffect(() => {
+    if (unassignedModComponents.length === 0) return;
 
-.mainContainer {
-  // Flex is required to prevent AutoSizer overflow with siblings
-  display: flex;
-  flex-direction: column;
-}
+    deactivateUnassignedModComponents({
+      dispatch,
+      unassignedModComponents,
+    });
+  }, [unassignedModComponents]);
+};
 
-.blueprintsList {
-  overflow-y: scroll;
-}
+export default useDeactivateUnassignedDeploymentsEffect;

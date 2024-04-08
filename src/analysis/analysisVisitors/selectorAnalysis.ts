@@ -213,7 +213,7 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
       this.annotations.push({
         position,
         message:
-          "Selector appears to contain random characters. This may indicate a value that changes across page reloads or application updates.",
+          "Selector appears to contain generated or utility values. This may indicate a value that changes across page reloads or application updates.",
         analysisId: this.id,
         type: AnnotationType.Warning,
       });
