@@ -17,7 +17,7 @@
 
 import React, { useContext } from "react";
 import bootstrap from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
-import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
+import bootstrapOverrides from "@/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
 import custom from "@/bricks/renderers/customForm.css?loadAsUrl";
 
 export type StylesheetsContextType = {
@@ -76,8 +76,6 @@ export function useStylesheetsContextWithDocumentDefault({
       // `webpack.config.mjs`. We build styles needed to render documents separately from the rest of the sidebar
       // in order to isolate the rendered document from the custom Bootstrap theme included in the Sidebar app
       "/DocumentView.css",
-      // Required because it can be nested in the DocumentView.
-      "/CustomFormComponent.css",
     ],
     disableParentStyles,
   });
@@ -97,9 +95,8 @@ export function useStylesheetsContextWithFormDefault({
     defaultStylesheets: [
       bootstrap,
       bootstrapOverrides,
-      // CustomFormComponent.css and EphemeralFormContent.css are artifacts produced by webpack, see the entrypoints.
+      // EphemeralFormContent.css is an artifact produced by webpack, see the entrypoints.
       "/EphemeralFormContent.css",
-      "/CustomFormComponent.css",
       custom,
     ],
     disableParentStyles,

@@ -116,7 +116,6 @@ const createConfig = (env, options) =>
         "background/background",
 
         // TODO: Move to isolatedComponentList.mjs and use <IsolatedComponent/>
-        "bricks/renderers/CustomFormComponent",
         "bricks/renderers/documentView/DocumentView",
         "bricks/transformers/ephemeralForm/EphemeralFormContent",
 

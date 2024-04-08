@@ -31,6 +31,7 @@
 // - Do not add the file extension
 const isolatedComponentList = [
   "bricks/renderers/PropertyTree",
+  "bricks/renderers/CustomFormComponent",
   "components/selectionToolPopover/SelectionToolPopover",
   "contentScript/textSelectionMenu/SelectionMenu",
 ];
