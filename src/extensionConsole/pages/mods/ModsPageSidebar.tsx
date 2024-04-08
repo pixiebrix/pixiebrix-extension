@@ -1,7 +1,7 @@
 import styles from "./ListFilters.module.scss";
 
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Col, Form, Nav, type NavLinkProps } from "react-bootstrap";
+import { Form, Nav, type NavLinkProps } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import modsPageSlice, { type ActiveTab } from "./modsPageSlice";
@@ -176,7 +176,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
   };
 };
 
-const ModsPageSidebar: React.FunctionComponent<ModsPageSidebarProps> = ({
+const ModsPageSidebar: React.VoidFunctionComponent<ModsPageSidebarProps> = ({
   teamFilters,
   tableInstance,
 }) => {
@@ -213,7 +213,7 @@ const ModsPageSidebar: React.FunctionComponent<ModsPageSidebarProps> = ({
   }, [globalFilter, debouncedSearchInput, setActiveTab, setGlobalFilter]);
 
   return (
-    <Col sm={12} md={3} xl={2} className={styles.root}>
+    <div className={styles.root}>
       <Form>
         <Form.Control
           id="query"
@@ -307,7 +307,7 @@ const ModsPageSidebar: React.FunctionComponent<ModsPageSidebarProps> = ({
           rel="noopener noreferrer"
         />
       </Nav>
-    </Col>
+    </div>
   );
 };
 
