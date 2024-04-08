@@ -24,10 +24,14 @@ import { type Schema } from "@/types/schemaTypes";
 import { isRequired } from "@/utils/schemaUtils";
 import { dereference } from "@/validators/schemaValidator";
 import { type OutputUnit } from "@cfworker/json-schema";
-import { type FormikErrors } from "formik";
+import { FormikValues, type FormikErrors } from "formik";
 import { cloneDeep, set } from "lodash";
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
+import {
+  Validator,
+  type Schema as ValidatorSchema,
+} from "@cfworker/json-schema";
 
 export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   const result: UnknownObject = {};
@@ -91,13 +95,10 @@ export function buildSchema(integration: Integration): Schema {
       },
       label: {
         type: "string",
-        // @ts-expect-error -- expects JSONSchema7 type `required: string[]`
-        // (one level up), but only works with JSONSchema4 `required: boolean`
-        required: true,
       },
       config: integration.schema,
     },
-    required: ["config"],
+    required: ["config", "label"],
   };
 }
 
@@ -128,6 +129,21 @@ export async function createYupValidationSchema(
     );
     return Yup.object();
   }
+}
+
+export function validateIntegrationConfig(values: FormikValues) {
+  return (integration: Integration): FormikErrors<FormikValues> => {
+    const schema = buildSchema(integration);
+
+    const validator = new Validator(
+      schema as ValidatorSchema,
+      "2019-09",
+      false,
+    );
+
+    const { errors } = validator.validate(values);
+    return convertSchemaErrorsToFormikErrors(errors);
+  };
 }
 
 export function convertInstanceLocationToFormikPath(

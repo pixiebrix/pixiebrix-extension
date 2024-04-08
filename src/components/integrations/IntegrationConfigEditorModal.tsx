@@ -43,12 +43,10 @@ import { type UUID } from "@/types/stringTypes";
 import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
 import useAsyncState from "@/hooks/useAsyncState";
 import AsyncStateGate from "@/components/AsyncStateGate";
-import { Validator } from "@cfworker/json-schema";
 import type * as Yup from "yup";
 import {
   createYupValidationSchema,
-  buildSchema,
-  convertSchemaErrorsToFormikErrors,
+  validateIntegrationConfig,
 } from "@/components/integrations/integrationHelpers";
 
 export type IntegrationConfigEditorModalProps = {
@@ -192,18 +190,7 @@ const ModalContent: React.FC<ContentProps> = ({
         {({ data: validationSchema }) => (
           <Form
             validationSchema={validationSchema}
-            validate={(values) => {
-              const schema = buildSchema(integration);
-
-              const validator = new Validator(
-                schema as Validator,
-                "2019-09",
-                false,
-              );
-
-              const { errors } = validator.validate(values);
-              return convertSchemaErrorsToFormikErrors(errors);
-            }}
+            validate={validateIntegrationConfig(integration)}
             initialValues={initialValues}
             onSubmit={onSubmit}
             renderBody={renderBody}
