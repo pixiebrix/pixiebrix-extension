@@ -36,7 +36,7 @@ export default function showSelectionToolPopover({
         )
       }
       factory={(SelectionToolPopover) => <SelectionToolPopover {...props} />}
-    ></IsolatedComponent>,
+    />,
     rootElement,
   );
 }

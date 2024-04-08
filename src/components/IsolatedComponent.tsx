@@ -23,6 +23,7 @@ import React, { Suspense } from "react";
 import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import isolatedComponentList from "./isolatedComponentList";
+import { signalFromPromise } from "abort-utils";
 
 const MODE = process.env.SHADOW_DOM as "open" | "closed";
 
@@ -32,13 +33,10 @@ type LazyFactory<T> = () => Promise<{
 
 // Drop the stylesheet injected by `mini-css-extract-plugin` into the main document.
 // Until this is resolved https://github.com/webpack-contrib/mini-css-extract-plugin/issues/1092#issuecomment-2037540032
-async function discardStylesheetsWhilePending(
-  lazyFactory: LazyFactory<unknown>,
-) {
+async function discardNewStylesheets(signal: AbortSignal) {
   const baseUrl = chrome.runtime.getURL("");
 
   const observer = new MutationObserver((mutations) => {
-    // Use for of
     for (const mutation of mutations) {
       for (const node of mutation.addedNodes) {
         if (node instanceof HTMLLinkElement && node.href.startsWith(baseUrl)) {
@@ -54,15 +52,9 @@ async function discardStylesheetsWhilePending(
     childList: true,
   });
 
-  // Call and discard. React.lazy() will call it again and use the result or the error.
-  // This is fine because import() does not re-fetch/re-run the module.
-  try {
-    await lazyFactory();
-  } catch {
-    // React.lazy() will take care of it
-  } finally {
+  signal.addEventListener("abort", () => {
     observer.disconnect();
-  }
+  });
 }
 
 type Props<T> = {
@@ -119,11 +111,11 @@ export default function IsolatedComponent<T>({
     );
   }
 
-  const stylesheetUrl = noStyle ? null : chrome.runtime.getURL(`${name}.css`);
-
-  // `discard` one must be called before `React.lazy`
-  void discardStylesheetsWhilePending(lazy);
+  // `discard` must be called before `React.lazy`
+  void discardNewStylesheets(signalFromPromise(lazy()));
   const LazyComponent = React.lazy(lazy);
+
+  const stylesheetUrl = noStyle ? null : chrome.runtime.getURL(`${name}.css`);
 
   return (
     // `pb-name` is used to visually identify it in the dev tools
