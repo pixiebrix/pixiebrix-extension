@@ -91,6 +91,7 @@ const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
         <>
           <ul className="list-group mb-2">
             {field.value?.map((_, index) => (
+              // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
               <li className="list-group-item py-1" key={index}>
                 <SchemaField
                   name={joinName(name, String(index))}

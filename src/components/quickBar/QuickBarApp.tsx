@@ -150,7 +150,7 @@ const KBarComponent: React.FC = () => {
           >
             <Stylesheets href={faStyleSheet} mountOnLoad>
               <StopPropagation onKeyPress onKeyDown onKeyUp onInput>
-                {}
+                {/* eslint-disable-next-line react/jsx-max-depth -- Not worth simplifying */}
                 <KBarSearch style={searchStyle} />
               </StopPropagation>
               <QuickBarResults />

@@ -67,7 +67,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({
               }
 
               const { Component, props } = documentBranch;
-
+              // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
               return <Component key={index} {...props} />;
             })}
           </Stylesheets>
