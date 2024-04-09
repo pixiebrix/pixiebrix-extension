@@ -65,7 +65,7 @@ export const test = base.extend<{
     await modsPage.goto();
 
     await use(page);
-    await page.close();
+    // The page is closed by the context fixture `.close` cleanup step
   },
   async extensionId({ context }, use) {
     const extensionId = await getExtensionId(context);
