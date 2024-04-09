@@ -51,6 +51,8 @@ const ApiTaskOptionsContent: React.FC<{
   configName: (...keys: string[]) => string;
   sanitizedConfig: SanitizedIntegrationConfig;
 }> = ({ configName, sanitizedConfig: controlRoomConfig }) => {
+  console.log("*** render ApiTaskOptionsContent");
+
   const [{ value: workspaceTypeFieldValue }, , { setValue: setWorkspaceType }] =
     useField<WorkspaceType | null>(configName("workspaceType"));
   const [{ value: botId }] = useField<string>(configName("botId"));
@@ -60,7 +62,13 @@ const ApiTaskOptionsContent: React.FC<{
   // file ID and set the workspaceType from the file info
   useAsyncEffect(
     async (isMounted) => {
-      if (workspaceTypeFieldValue || !botId) {
+      if (workspaceTypeFieldValue) {
+        return;
+      }
+
+      // Default the workspace type to "private" because that's compatible with both CE and EE
+      if (!botId) {
+        await setWorkspaceType("private");
         return;
       }
 
@@ -94,7 +102,7 @@ const ApiTaskOptionsContent: React.FC<{
   }, [controlRoomConfig]);
 
   // Additional args passed to the remote options factories
-  const factoryArgs = useMemo(
+  const taskSelectFactoryArgs = useMemo(
     () => ({
       // Default to "private" because that's compatible with both CE and EE
       // The workspaceType can be temporarily null when switching between CR configurations
@@ -128,7 +136,7 @@ const ApiTaskOptionsContent: React.FC<{
 
       {
         // Use AsyncRemoteSelectWidget instead of RemoteSelectWidget because the former can handle
-        // Control Rooms with lots of bots
+        // Control Rooms with lots of bots by passing in a search query to the api calls
         // https://github.com/pixiebrix/pixiebrix-extension/issues/5260
         <ConnectedFieldTemplate
           label="API Task"
@@ -141,9 +149,15 @@ const ApiTaskOptionsContent: React.FC<{
           optionsFactory={cachedSearchApiTasks}
           loadingMessage={TasksLoadingMessage}
           noOptonsMessage={TasksNoOptionsMessage}
-          factoryArgs={factoryArgs}
+          factoryArgs={taskSelectFactoryArgs}
           config={controlRoomConfig}
           isClearable
+          // Due to quirks with the memoization inside react-select, we need
+          // to force this to re-render when the integration config or the
+          // workspace fields change in order to force a fetch of new options
+          // from the api.
+          // See: https://github.com/JedWatson/react-select/issues/1581
+          key={`${controlRoomConfig.id}-${workspaceTypeFieldValue}`}
         />
       }
 

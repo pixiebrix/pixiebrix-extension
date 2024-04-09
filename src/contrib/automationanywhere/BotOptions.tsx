@@ -30,12 +30,12 @@ import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import RequireIntegrationConfig from "@/integrations/components/RequireIntegrationConfig";
 import {
   cachedFetchBotFile,
-  cachedSearchBots,
   cachedFetchDevicePools,
   cachedFetchDevices,
   cachedFetchFolder,
   cachedFetchRunAsUsers,
   cachedFetchSchema,
+  cachedSearchBots,
 } from "@/contrib/automationanywhere/aaApi";
 import { type WorkspaceType } from "./contract";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
@@ -72,7 +72,8 @@ const BotOptionsContent: React.FunctionComponent<{
     configName("awaitResult"),
   );
 
-  // Default the workspaceType based on the file id
+  // If workspaceType is not set, but there is a bot selected, look up the
+  // file ID and set the workspaceType from the file info
   useAsyncEffect(
     async (isMounted) => {
       if (isCommunityControlRoom(controlRoomConfig.config.controlRoomUrl)) {
@@ -81,17 +82,22 @@ const BotOptionsContent: React.FunctionComponent<{
         return;
       }
 
-      // `workspaceType` is optional because it's not required to run the
-      // bot. However, we need it to populate dropdowns for the fields in
-      // the fieldset
-      if (workspaceTypeFieldValue == null && fileId) {
-        const { workspaceType: workspaceTypeFromBotFile } =
-          await cachedFetchBotFile(controlRoomConfig, fileId);
-        const workspaceTypeNewValue: WorkspaceType =
-          workspaceTypeFromBotFile === "PUBLIC" ? "public" : "private";
-        if (isMounted()) {
-          await setWorkspaceType(workspaceTypeNewValue);
-        }
+      if (workspaceTypeFieldValue) {
+        return;
+      }
+
+      // Default the workspace type to "private" because that's compatible with both CE and EE
+      if (!fileId) {
+        await setWorkspaceType("private");
+        return;
+      }
+
+      const { workspaceType: workspaceTypeFromBotFile } =
+        await cachedFetchBotFile(controlRoomConfig, fileId);
+      const workspaceTypeNewValue: WorkspaceType =
+        workspaceTypeFromBotFile === "PUBLIC" ? "public" : "private";
+      if (isMounted()) {
+        await setWorkspaceType(workspaceTypeNewValue);
       }
     },
     [controlRoomConfig, fileId, workspaceTypeFieldValue],
@@ -116,7 +122,7 @@ const BotOptionsContent: React.FunctionComponent<{
   }, [controlRoomConfig]);
 
   // Additional args passed to the remote options factories
-  const factoryArgs = useMemo(
+  const botSelectFactoryArgs = useMemo(
     () => ({
       // Default to "private" because that's compatible with both CE and EE
       // The workspaceType can be temporarily null when switching between CR configurations
@@ -152,7 +158,7 @@ const BotOptionsContent: React.FunctionComponent<{
 
       {
         // Use AsyncRemoteSelectWidget instead of RemoteSelectWidget because the former can handle
-        // Control Rooms with lots of bots
+        // Control Rooms with lots of bots by passing in a search query to the api calls
         // https://github.com/pixiebrix/pixiebrix-extension/issues/5260
         <ConnectedFieldTemplate
           label="Bot"
@@ -162,11 +168,18 @@ const BotOptionsContent: React.FunctionComponent<{
           defaultOptions
           // Refresh results when the integration config or workspace type changes
           cacheOptions={`${controlRoomConfig.id}-${workspaceTypeFieldValue}`}
-          optionsFactory={partial(cachedSearchBots, controlRoomConfig)}
+          optionsFactory={cachedSearchBots}
           loadingMessage={BotLoadingMessage}
           noOptonsMessage={BotNoOptionsMessage}
-          factoryArgs={factoryArgs}
+          factoryArgs={botSelectFactoryArgs}
+          config={controlRoomConfig}
           isClearable
+          // Due to quirks with the memoization inside react-select, we need
+          // to force this to re-render when the integration config or the
+          // workspace fields change in order to force a fetch of new options
+          // from the api.
+          // See: https://github.com/JedWatson/react-select/issues/1581
+          key={`${controlRoomConfig.id}-${workspaceTypeFieldValue}`}
         />
       }
 
@@ -177,7 +190,7 @@ const BotOptionsContent: React.FunctionComponent<{
           description="The device to run the bot on"
           as={RemoteSelectWidget}
           optionsFactory={cachedFetchDevices}
-          factoryArgs={factoryArgs}
+          factoryArgs={botSelectFactoryArgs}
           config={controlRoomConfig}
         />
       ) : (
@@ -207,7 +220,7 @@ const BotOptionsContent: React.FunctionComponent<{
                     description="The user(s) to run the bots"
                     as={RemoteMultiSelectWidget}
                     optionsFactory={cachedFetchRunAsUsers}
-                    factoryArgs={factoryArgs}
+                    factoryArgs={botSelectFactoryArgs}
                     blankValue={[]}
                     config={controlRoomConfig}
                   />
@@ -217,7 +230,7 @@ const BotOptionsContent: React.FunctionComponent<{
                     description="A device pool that has at least one active device (optional)"
                     as={RemoteMultiSelectWidget}
                     optionsFactory={cachedFetchDevicePools}
-                    factoryArgs={factoryArgs}
+                    factoryArgs={botSelectFactoryArgs}
                     blankValue={[]}
                     config={controlRoomConfig}
                   />

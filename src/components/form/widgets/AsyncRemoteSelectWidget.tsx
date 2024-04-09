@@ -26,6 +26,7 @@ import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useDebouncedCallback } from "use-debounce";
+import { type UnknownObject } from "@/globals";
 
 type DefaultFactoryArgs = {
   /**
@@ -40,22 +41,23 @@ type DefaultFactoryArgs = {
 
 export type AsyncOptionsFactory<
   Args extends DefaultFactoryArgs = DefaultFactoryArgs,
-  T = unknown,
+  TValue = unknown,
 > = (
   config: SanitizedIntegrationConfig | null,
   factoryArgs?: Args,
-) => Promise<Array<Option<T>>>;
+) => Promise<Array<Option<TValue>>>;
 
 type AsyncRemoteSelectWidgetProps<
-  Args extends DefaultFactoryArgs = DefaultFactoryArgs,
+  ExtraArgs extends UnknownObject = UnknownObject,
   TValue = unknown,
 > = CustomFieldWidgetProps<TValue, SelectLike<Option<TValue>>> & {
   isClearable?: boolean;
-  optionsFactory: AsyncOptionsFactory<Args, TValue>;
+  optionsFactory: AsyncOptionsFactory<DefaultFactoryArgs & ExtraArgs, TValue>;
   config: SanitizedIntegrationConfig | null;
   factoryArgs?: UnknownObject;
   loadingMessage?: React.FC<{ inputValue: string }>;
   defaultOptions?: boolean | Array<Option<TValue>>;
+  placeholder?: React.ReactNode;
 };
 
 /**
@@ -151,6 +153,7 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
           loadOptions={loadOptions}
           onChange={patchedOnChange}
           value={selectedOption}
+          placeholder="Type to search..."
           {...selectProps}
         />
       </div>
