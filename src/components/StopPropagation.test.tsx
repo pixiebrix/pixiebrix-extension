@@ -23,7 +23,6 @@ describe("StopPropagation", () => {
   it("stops propagation of click events", () => {
     const onClick = jest.fn();
     render(
-      // eslint-disable-next-line no-restricted-syntax -- Test only, no A11Y concerns
       <div onClick={onClick}>
         <StopPropagation onClick>
           <button>Click me</button>

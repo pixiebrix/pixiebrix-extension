@@ -115,7 +115,7 @@ const PanelContent: React.FC = () => {
             <DatabaseUnresponsiveBanner />
             <DimensionGate>
               <RequireAuth LoginPage={LoginCard}>
-                {/* eslint-disable-next-line react/jsx-max-depth -- Not worth simplifying */}
+                {}
                 <EditorLayout />
               </RequireAuth>
             </DimensionGate>

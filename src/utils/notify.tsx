@@ -47,7 +47,6 @@ const Message: React.FunctionComponent<{
   <>
     <div className={styles.message}>
       {message.split("\n").map((line, number) => (
-        // eslint-disable-next-line react/no-array-index-key -- Will not be updated
         <div key={number}>{line}</div>
       ))}
     </div>

@@ -19,7 +19,7 @@ import { validateRegistryId } from "@/types/helpers";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { initShortcutSnippetMenuController } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
+import { initSnippetShortcutMenuController } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { propertiesToSchema } from "@/utils/schemaUtils";
@@ -74,7 +74,7 @@ class AddTextSnippets extends EffectABC {
   }
 
   override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
-    return ["shortcutSnippetMenu"];
+    return ["snippetShortcutMenu"];
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -120,7 +120,7 @@ class AddTextSnippets extends EffectABC {
     }
 
     for (const { shortcut, title, text } of snippets) {
-      platform.shortcutSnippetMenu.register({
+      platform.snippetShortcutMenu.register({
         componentId: logger.context.extensionId,
         shortcut: normalizeShortcut(shortcut),
         title,
@@ -133,7 +133,7 @@ class AddTextSnippets extends EffectABC {
 
     const { snippetShortcutMenu } = await getSettingsState();
     if (snippetShortcutMenu) {
-      initShortcutSnippetMenuController();
+      initSnippetShortcutMenuController();
     }
   }
 }

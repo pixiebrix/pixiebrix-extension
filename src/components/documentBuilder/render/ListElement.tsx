@@ -144,7 +144,6 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
           },
         );
         return (
-          // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
           <DocumentContext.Provider key={index} value={elementContext}>
             <Component {...props} />
           </DocumentContext.Provider>

@@ -17,16 +17,16 @@
 
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { useCallback } from "react";
-import type SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
-import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
+import type { SnippetShortcut } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
+import type SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
 
 /**
  * React hook to sync React with the shortcut snippet registry.
  * @param registry the registry to watch
  */
-function useShortcutSnippetRegistry(
+function useSnippetShortcutRegistry(
   registry: SnippetRegistry,
-): ShortcutSnippet[] {
+): SnippetShortcut[] {
   const subscribe = useCallback(
     (callback: () => void) => {
       registry.onChange.add(callback);
@@ -37,9 +37,9 @@ function useShortcutSnippetRegistry(
     [registry],
   );
 
-  const getSnapshot = useCallback(() => registry.shortcutSnippets, [registry]);
+  const getSnapshot = useCallback(() => registry.snippetShortcuts, [registry]);
 
   return useSyncExternalStore(subscribe, getSnapshot);
 }
 
-export default useShortcutSnippetRegistry;
+export default useSnippetShortcutRegistry;

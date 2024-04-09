@@ -62,7 +62,6 @@ const ServicesRow: React.FunctionComponent<{
         <FieldAnnotationAlert message={error} type={AnnotationType.Error} />
       )}
       {configurable.map(({ dependency: { integrationId } }, valueIndex) => (
-        // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
         <div key={valueIndex} className="max-750">
           <ServiceFieldError servicesError={error} fieldIndex={valueIndex} />
           <Card className={styles.integrationCard}>
