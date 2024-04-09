@@ -76,7 +76,7 @@ jobs:
       - name: Upload to Chrome Web Store (automatically publishes)
         run: npx chrome-webstore-upload-cli@3 upload --auto-publish
         env:
-          EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
+          EXTENSION_ID: mpapkmgkphbggmlekkfnoilmafnbfile
           CLIENT_ID: ${{ secrets.WEBSTORE_UPLOAD_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.WEBSTORE_UPLOAD_CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.WEBSTORE_UPLOAD_REFRESH_TOKEN }}
