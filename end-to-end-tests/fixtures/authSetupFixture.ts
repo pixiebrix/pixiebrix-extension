@@ -22,9 +22,22 @@ import {
   launchPersistentContextForExtension,
 } from "./utils";
 import fs from "node:fs/promises";
-import fsSync from "node:fs";
 import path from "node:path";
 import * as os from "node:os";
+
+// Create a local auth directory to store the profile paths
+const createAuthProfilePathDirectory = async () => {
+  const authPath = path.join(__dirname, "../.auth");
+  try {
+    await fs.mkdir(authPath);
+  } catch (error) {
+    if (
+      !(error instanceof Error && "code" in error && error.code === "EEXIST")
+    ) {
+      throw error;
+    }
+  }
+};
 
 export const test = base.extend<{
   contextAndPage: { context: BrowserContext; page: Page };
@@ -45,10 +58,7 @@ export const test = base.extend<{
     );
 
     // Create a local auth directory to store the profile paths
-    const authPath = path.join(__dirname, "../.auth");
-    if (!fsSync.existsSync(authPath)) {
-      await fs.mkdir(authPath);
-    }
+    await createAuthProfilePathDirectory();
 
     const context = await launchPersistentContextForExtension(
       chromiumChannel,
