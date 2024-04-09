@@ -40,14 +40,15 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
   await expect(page.getByText("Admin Console")).toBeVisible();
 
   let extensionConsolePage: Page;
-  // Sometimes get the following error "Error: Could not establish connection. Receiving end does not exist." when trying to click on the "Open Extension Console" button.
-  // Thus, a retry is added to ensure the extension console loads with authenticated user.
+  // Sometimes get the following error "Error: Could not establish connection. Receiving end does not exist."
+  // when trying to click on the "Open Extension Console" button. This happens when the Extension has not fully
+  // initialized to be able to receive messages via the external messenger api, which happens when the Extension
+  // reloads after linking. Thus, we wrap the following with an `expect.toPass` retry.
   await expect(async () => {
     // Ensure the extension console loads with authenticated user
     const extensionConsolePagePromise = context.waitForEvent("page", {
       timeout: 2000,
     });
-    // Extension console
     await page
       .locator("button")
       .filter({ hasText: "Open Extension Console" })
@@ -58,7 +59,7 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
     await expect(extensionConsolePage.locator("#container")).toContainText(
       "Extension Console",
     );
-  }).toPass({ timeout: 6000 });
+  }).toPass({ timeout: 10_000 });
 
   await ensureVisibility(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above
