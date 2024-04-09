@@ -21,14 +21,10 @@ import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
-import { dereference } from "@/validators/schemaValidator";
-import { cloneDeep, truncate } from "lodash";
+import { truncate } from "lodash";
 import genericOptionsFactory, {
   type BlockOptionProps,
 } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { buildYup } from "schema-to-yup";
-import * as Yup from "yup";
-import reportError from "@/telemetry/reportError";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldRuntimeContext, {
@@ -39,16 +35,19 @@ import Form, {
   type RenderBody,
   type RenderSubmit,
 } from "@/components/form/Form";
-import { getValidationErrMessages } from "@/components/fields/fieldUtils";
 import {
   type Integration,
   type IntegrationConfig,
 } from "@/integrations/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type Schema } from "@/types/schemaTypes";
 import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
 import useAsyncState from "@/hooks/useAsyncState";
 import AsyncStateGate from "@/components/AsyncStateGate";
+import type * as Yup from "yup";
+import {
+  createYupValidationSchema,
+  validateIntegrationConfig,
+} from "@/components/integrations/integrationHelpers";
 
 export type IntegrationConfigEditorModalProps = {
   /**
@@ -94,51 +93,6 @@ type ContentProps = {
   onClose: () => void;
   onDelete?: (id: UUID) => void;
 };
-
-async function createYupValidationSchema(
-  integration: Integration,
-): Promise<Yup.AnyObjectSchema> {
-  try {
-    // Dereference because buildYup doesn't support $ref:
-    // https://github.com/kristianmandrup/schema-to-yup?tab=readme-ov-file#refs
-    const schema = await dereference(
-      {
-        type: "object",
-        properties: {
-          organization: {
-            type: "string",
-          },
-          label: {
-            type: "string",
-            // @ts-expect-error -- expects JSONSchema7 type `required: string[]`
-            // (one level up), but only works with JSONSchema4 `required: boolean`
-            required: true,
-          },
-          config: integration.schema,
-        },
-        required: ["config"],
-      },
-      {
-        // Include secrets, so they can be validated
-        sanitizeIntegrationDefinitions: false,
-      },
-    );
-
-    // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
-    return buildYup(cloneDeep(schema), {
-      errMessages: getValidationErrMessages(
-        schema.properties?.config as Schema,
-      ),
-    });
-  } catch (error) {
-    reportError(
-      new Error("Error building Yup validator from JSON Schema", {
-        cause: error,
-      }),
-    );
-    return Yup.object();
-  }
-}
 
 const ModalContent: React.FC<ContentProps> = ({
   integration,
@@ -236,6 +190,7 @@ const ModalContent: React.FC<ContentProps> = ({
         {({ data: validationSchema }) => (
           <Form
             validationSchema={validationSchema}
+            validate={validateIntegrationConfig(integration)}
             initialValues={initialValues}
             onSubmit={onSubmit}
             renderBody={renderBody}

@@ -22,6 +22,7 @@ One-time setup:
 
 - To run tests in interactive UI mode, use `npm run test:e2e -- --ui`. This view shows you the entire test suite and
   allows you to run individual tests in a specific browser.
+  - If this is the first time you've run the tests in interactive mode, the tests may be filtered. Expand the collapsed section next to the Filter searchbox to see the filterable "projects"
 - You can also run specific test files in the CLI by providing a path matcher to the
   command: `npm run test:e2e -- smoke` (runs all tests with "smoke" in the path).
 - You can also run tests within the Intellij IDE by clicking on the play button next to the test definition. (

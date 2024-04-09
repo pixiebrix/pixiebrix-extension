@@ -16,8 +16,8 @@
  */
 
 import { expect, type Page } from "@playwright/test";
-import { getBaseExtensionConsoleUrl } from "./constants";
-import { ensureVisibility } from "../utils";
+import { getBaseExtensionConsoleUrl } from "../constants";
+import { ensureVisibility } from "../../utils";
 
 export class ModsPage {
   private readonly extensionConsoleUrl: string;
