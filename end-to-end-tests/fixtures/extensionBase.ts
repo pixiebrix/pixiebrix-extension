@@ -35,6 +35,7 @@ import {
 import fs from "node:fs/promises";
 import { getBaseExtensionConsoleUrl } from "../pageObjects/constants";
 import { ensureVisibility } from "../utils";
+import * as url from "node:url";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // see: https://github.com/microsoft/playwright/issues/26693
@@ -44,8 +45,10 @@ const getStoredCookies = async (): Promise<Cookie[]> => {
   let fileBuffer;
   try {
     fileBuffer = await fs.readFile(
-      // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname throws "cannot use 'import meta' outside a module"
-      path.join(__dirname, "../.auth/user.json"),
+      path.join(
+        path.dirname(url.fileURLToPath(import.meta.url)),
+        "../.auth/user.json",
+      ),
     );
   } catch (error) {
     // If the file does not exist, we are likely running authenticate setup for the first time. Return an empty array.
