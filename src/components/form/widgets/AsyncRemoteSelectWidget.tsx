@@ -26,7 +26,6 @@ import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useDebouncedCallback } from "use-debounce";
-import { type UnknownObject } from "@/globals";
 
 type DefaultFactoryArgs = {
   /**

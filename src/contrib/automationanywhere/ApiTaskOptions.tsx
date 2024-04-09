@@ -51,8 +51,6 @@ const ApiTaskOptionsContent: React.FC<{
   configName: (...keys: string[]) => string;
   sanitizedConfig: SanitizedIntegrationConfig;
 }> = ({ configName, sanitizedConfig: controlRoomConfig }) => {
-  console.log("*** render ApiTaskOptionsContent");
-
   const [{ value: workspaceTypeFieldValue }, , { setValue: setWorkspaceType }] =
     useField<WorkspaceType | null>(configName("workspaceType"));
   const [{ value: botId }] = useField<string>(configName("botId"));
