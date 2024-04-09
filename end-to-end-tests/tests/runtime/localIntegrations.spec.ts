@@ -38,7 +38,9 @@ test.describe("Local Integrations Page", () => {
       .getByTestId("toggle-config.folderId")
       .getByRole("button")
       .click();
-    await page.getByTestId("string").click();
+    await page.getByLabel("Folder ID").click();
+
+    await expect(page.getByLabel("Folder ID")).toBeFocused();
 
     await page.keyboard.press("Tab");
 

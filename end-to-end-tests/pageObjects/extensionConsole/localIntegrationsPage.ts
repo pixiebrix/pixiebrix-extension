@@ -38,11 +38,9 @@ export class LocalIntegrationsPage {
 
     await expect(
       this.page.getByRole("heading", { name: "Local Integrations" }),
-    ).toBeVisible({ timeout: 10_000 });
+    ).toBeVisible();
 
-    await expect(this.page.getByTestId("loader")).not.toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(this.page.getByTestId("loader")).not.toBeVisible();
   }
 
   async createNewIntegration(integrationName: string) {
