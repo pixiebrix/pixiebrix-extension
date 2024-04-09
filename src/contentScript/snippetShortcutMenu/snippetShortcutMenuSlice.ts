@@ -25,7 +25,7 @@ import {
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
 
-import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
+import type { SnippetShortcut } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
 
 export type MenuState = {
   /**
@@ -36,7 +36,7 @@ export type MenuState = {
   /**
    * The sorted list of search results
    */
-  results: ShortcutSnippet[];
+  results: SnippetShortcut[];
   /**
    * The index of the selected result, or nullish if no result is selected/available.
    */
@@ -45,8 +45,8 @@ export type MenuState = {
   /**
    * The latest active shortcut snippet, or null if no shortcut snippet has been run.
    */
-  activeShortcutSnippet: Nullishable<{
-    shortcutSnippet: ShortcutSnippet;
+  activeSnippetShortcut: Nullishable<{
+    snippetShortcut: SnippetShortcut;
     state: AsyncState;
   }>;
 };
@@ -55,18 +55,18 @@ export const initialState: MenuState = {
   query: null,
   results: [],
   selectedIndex: null,
-  activeShortcutSnippet: null,
+  activeSnippetShortcut: null,
 };
 
-export function selectSelectedShortcutSnippet(
+export function selectSelectedSnippetShortcut(
   state: MenuState,
-): Nullishable<ShortcutSnippet> {
+): Nullishable<SnippetShortcut> {
   return state.selectedIndex == null
     ? null
     : state.results[state.selectedIndex];
 }
 
-export const shortcutSnippetMenuSlice = createSlice({
+export const snippetShortcutMenuSlice = createSlice({
   name: "snippetShortcutMenuSlice",
   initialState,
   reducers: {
@@ -93,15 +93,15 @@ export const shortcutSnippetMenuSlice = createSlice({
     search(
       state,
       action: PayloadAction<{
-        shortcutSnippets: ShortcutSnippet[];
+        snippetShortcuts: SnippetShortcut[];
         query: Nullishable<string>;
       }>,
     ) {
-      const { shortcutSnippets, query } = action.payload;
+      const { snippetShortcuts, query } = action.payload;
       state.query = query;
 
-      // For performance, could consider adding a setShortcutSnippets action to avoid sorting on every search
-      const sortedSnippets = sortBy(shortcutSnippets, "shortcut");
+      // For performance, could consider adding a setSnippetShortcuts action to avoid sorting on every search
+      const sortedSnippets = sortBy(snippetShortcuts, "shortcut");
       if (query == null) {
         state.results = sortedSnippets;
         state.selectedIndex = null;
@@ -117,31 +117,31 @@ export const shortcutSnippetMenuSlice = createSlice({
 
     // Async thunks don't work with React useReducer so write async logic as a hook
     // https://github.com/reduxjs/redux-toolkit/issues/754
-    setShortcutSnippetLoading(
+    setSnippetShortcutLoading(
       state,
       action: PayloadAction<{
-        shortcutSnippet: ShortcutSnippet;
+        snippetShortcut: SnippetShortcut;
       }>,
     ) {
-      const { shortcutSnippet } = action.payload;
-      state.activeShortcutSnippet = {
-        shortcutSnippet,
+      const { snippetShortcut } = action.payload;
+      state.activeSnippetShortcut = {
+        snippetShortcut,
         state: loadingAsyncStateFactory(),
       };
     },
     // In practice, the menu will be hidden on success. This state is for Storybook where the component is persistent
-    setShortcutSnippetSuccess(
+    setSnippetShortcutSuccess(
       state,
       action: PayloadAction<{
         text: string;
       }>,
     ) {
       const { text } = action.payload;
-      if (state.activeShortcutSnippet) {
-        state.activeShortcutSnippet.state = valueToAsyncState(text);
+      if (state.activeSnippetShortcut) {
+        state.activeSnippetShortcut.state = valueToAsyncState(text);
       }
     },
-    setShortcutSnippetError(
+    setSnippetShortcutError(
       state,
       action: PayloadAction<{
         error: unknown;
@@ -149,8 +149,8 @@ export const shortcutSnippetMenuSlice = createSlice({
     ) {
       // Assumes only one shortcut snippet at a time
       const { error } = action.payload;
-      if (state.activeShortcutSnippet) {
-        state.activeShortcutSnippet.state = errorToAsyncState(error);
+      if (state.activeSnippetShortcut) {
+        state.activeSnippetShortcut.state = errorToAsyncState(error);
       }
     },
   },

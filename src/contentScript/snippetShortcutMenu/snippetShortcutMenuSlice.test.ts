@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { shortcutSnippetMenuSlice } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuSlice";
-import { type ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
+import { snippetShortcutMenuSlice } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuSlice";
+import { type SnippetShortcut } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
-describe("shortcutSnippetMenuSlice", () => {
+describe("snippetShortcutMenuSlice", () => {
   it.each(["test", "TeSt"])("case matches query: %s", (query) => {
-    const shortcutSnippet: ShortcutSnippet = {
+    const snippetShortcut: SnippetShortcut = {
       componentId: autoUUIDSequence(),
       shortcut: "test",
       title: "Test",
@@ -29,17 +29,17 @@ describe("shortcutSnippetMenuSlice", () => {
     };
 
     expect(
-      shortcutSnippetMenuSlice.reducer(
+      snippetShortcutMenuSlice.reducer(
         undefined,
-        shortcutSnippetMenuSlice.actions.search({
+        snippetShortcutMenuSlice.actions.search({
           query,
-          shortcutSnippets: [shortcutSnippet],
+          snippetShortcuts: [snippetShortcut],
         }),
       ),
     ).toStrictEqual({
-      activeShortcutSnippet: null,
+      activeSnippetShortcut: null,
       query,
-      results: [shortcutSnippet],
+      results: [snippetShortcut],
       selectedIndex: 0,
     });
   });

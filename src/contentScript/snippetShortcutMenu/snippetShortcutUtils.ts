@@ -86,7 +86,7 @@ export async function replaceAtCommandKey({
 
   if (range?.startContainer.nodeType === Node.TEXT_NODE) {
     if (range.startOffset !== range.endOffset) {
-      // Shouldn't happen in practice because shortcutSnippetMenuController hides the menu on selection
+      // Shouldn't happen in practice because snippetShortcutMenuController hides the menu on selection
       throw new Error("Expected a single cursor position");
     }
 

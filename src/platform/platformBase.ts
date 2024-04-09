@@ -37,7 +37,7 @@ import type { ContextMenuProtocol } from "@/platform/platformTypes/contextMenuPr
 import type { BadgeProtocol } from "@/platform/platformTypes/badgeProtocol";
 import type { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
 import type { TextSelectionMenuProtocol } from "@/platform/platformTypes/textSelectionMenuProtocol";
-import type { ShortcutSnippetMenuProtocol } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
+import type { SnippetShortcutMenuProtocol } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
 import type { ClipboardProtocol } from "@/platform/platformTypes/clipboardProtocol";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
@@ -161,10 +161,10 @@ export class PlatformBase implements PlatformProtocol {
     );
   }
 
-  get shortcutSnippetMenu(): ShortcutSnippetMenuProtocol {
+  get snippetShortcutMenu(): SnippetShortcutMenuProtocol {
     throw new PlatformCapabilityNotAvailableError(
       this.platformName,
-      "shortcutSnippetMenu",
+      "snippetShortcutMenu",
     );
   }
 
