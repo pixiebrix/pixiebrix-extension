@@ -15,22 +15,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expect, test as setup } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "./fixtures/authSetupFixture";
 import {
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
   SERVICE_URL,
 } from "./env";
+import { ensureVisibility } from "./utils";
 
-const authFile = "end-to-end-tests/.auth/user.json";
-
-setup("authenticate", async ({ page }) => {
+test("authenticate", async ({ contextAndPage: { context, page } }) => {
   await page.goto(`${SERVICE_URL}/login/email`);
-
   await page.getByLabel("Email").fill(E2E_TEST_USER_EMAIL_UNAFFILIATED);
   await page.getByLabel("Password").fill(E2E_TEST_USER_PASSWORD_UNAFFILIATED);
   await page.getByRole("button", { name: "Log in" }).click();
   await page.waitForURL(SERVICE_URL);
+  await ensureVisibility(
+    page.getByText(
+      "Successfully linked the Browser Extension to your PixieBrix account",
+    ),
+    { timeout: 10_000 },
+  );
   await expect(page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED)).toBeVisible();
-  await page.context().storageState({ path: authFile });
+  await expect(page.getByText("Admin Console")).toBeVisible();
+
+  // Ensure the extension console loads with authenticated user
+  const extensionConsolePagePromise = context.waitForEvent("page", {
+    timeout: 10_000,
+  });
+  // Extension console
+  await page
+    .locator("button")
+    .filter({ hasText: "Open Extension Console" })
+    .click();
+
+  const extensionConsolePage = await extensionConsolePagePromise;
+
+  await expect(extensionConsolePage.locator("#container")).toContainText(
+    "Extension Console",
+  );
+  await ensureVisibility(
+    extensionConsolePage.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
+    { timeout: 10_000 },
+  );
 });
