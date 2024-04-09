@@ -73,23 +73,21 @@ jobs:
           if-no-files-found: error
 
   upload:
-    # Currently disable via `false &&`
-    # TODO: Enable once the secrets are in.
     # https://github.com/fregante/chrome-webstore-upload-keys
-    if: ${{ false && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta') }}
+    if: ${{ !contains(github.ref, 'alpha') && !contains(github.ref, 'beta') }}
     needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: build-for-store
+          name: build-for-store-mv2
       - name: Upload to Chrome Web Store (without publishing)
         run: npx chrome-webstore-upload-cli@3 upload
         env:
           EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
-          CLIENT_ID: ${{ secrets.CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+          CLIENT_ID: ${{ secrets.WEBSTORE_UPLOAD_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.WEBSTORE_UPLOAD_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.WEBSTORE_UPLOAD_REFRESH_TOKEN }}
   notify:
     needs: build
     runs-on: ubuntu-latest
