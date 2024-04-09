@@ -18,17 +18,17 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import StopPropagation from "./StopPropagation";
-import { UnstyledButton } from "@/components/UnstyledButton";
+import ClickableElement from "@/components/ClickableElement";
 
 describe("StopPropagation", () => {
   it("stops propagation of click events", () => {
     const onClick = jest.fn();
     render(
-      <UnstyledButton onClick={onClick}>
+      <ClickableElement onClick={onClick}>
         <StopPropagation onClick>
           <button>Click me</button>
         </StopPropagation>
-      </UnstyledButton>,
+      </ClickableElement>,
     );
 
     fireEvent.click(screen.getByText("Click me"));
