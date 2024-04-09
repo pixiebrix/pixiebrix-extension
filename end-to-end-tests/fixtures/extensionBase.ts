@@ -43,10 +43,7 @@ process.env.PW_CHROMIUM_ATTACH_TO_OTHER = "1";
 const getStoredCookies = async (): Promise<Cookie[]> => {
   let fileBuffer;
   try {
-    fileBuffer = await fs.readFile(
-      // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname throws "cannot use 'import meta' outside a module"
-      path.join(__dirname, "../.auth/user.json"),
-    );
+    fileBuffer = await fs.readFile(path.join(__dirname, "../.auth/user.json"));
   } catch (error) {
     // If the file does not exist, we are likely running authenticate setup for the first time. Return an empty array.
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
