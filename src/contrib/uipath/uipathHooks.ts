@@ -30,6 +30,7 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import cachePromise from "@/utils/cachePromise";
 import useAsyncState from "@/hooks/useAsyncState";
 import { getPlatform } from "@/platform/platformContext";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const optionalFetchReleases = optionalFactory(fetchReleases);
 
@@ -59,6 +60,11 @@ export function useSelectedRelease(releaseKeyFieldName: string) {
   const { data: sanitizedConfig } =
     useSanitizedIntegrationConfigFormikAdapter(UIPATH_SERVICE_IDS);
 
+  assertNotNullish(
+    sanitizedConfig,
+    "Sanitized config is required to fetch the release",
+  );
+
   const releasesPromise = useMemo(
     async () =>
       cachePromise(["uipath:useSelectedRelease", sanitizedConfig], async () =>
@@ -68,10 +74,9 @@ export function useSelectedRelease(releaseKeyFieldName: string) {
   );
 
   const { data: selectedRelease } = useAsyncState(async () => {
-    const options = await releasesPromise;
-    const { data: release } = (options as ReleaseOption[]).find(
-      (option) => option.data.Key === releaseKey,
-    );
+    const options = (await releasesPromise) as ReleaseOption[];
+    const { data: release } =
+      options.find((option) => option.data.Key === releaseKey) ?? {};
     const schema = release ? releaseSchema(release) : null;
     return {
       release,

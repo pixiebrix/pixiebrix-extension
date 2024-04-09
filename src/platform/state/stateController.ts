@@ -98,7 +98,7 @@ export function setState({
   namespace: string;
   data: JsonObject;
   mergeStrategy: MergeStrategy;
-  extensionId: UUID;
+  extensionId: UUID | null;
   blueprintId: RegistryId | null;
 }) {
   assertPlatformCapability("state");

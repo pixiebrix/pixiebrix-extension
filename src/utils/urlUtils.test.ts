@@ -15,37 +15,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { assertProtocolUrl } from "@/errors/assertProtocolUrl";
 import { BusinessError } from "@/errors/businessErrors";
-import { makeURL } from "@/utils/urlUtils";
+import {
+  assertProtocolUrl,
+  makeURL,
+  selectAbsoluteUrl,
+  isUrlRelative,
+} from "@/utils/urlUtils";
 
 describe("assertHttpsUrl", () => {
   test("parses HTTPS URLs", () => {
-    expect(assertProtocolUrl("https://example.com", ["https:"])).toStrictEqual(
-      new URL("https://example.com"),
-    );
+    expect(() => {
+      assertProtocolUrl("https://example.com", ["https:"]);
+    }).not.toThrow();
   });
   test("rejects HTTP URLs if not specified", () => {
-    expect(() => assertProtocolUrl("http://example.com", ["https:"])).toThrow(
-      new BusinessError("Unsupported protocol: http:. Use https:"),
-    );
+    expect(() => {
+      assertProtocolUrl("http://example.com", ["https:"]);
+    }).toThrow(new BusinessError("Unsupported protocol: http:. Use https:"));
   });
   test("allows HTTP URLs if specified", () => {
-    expect(assertProtocolUrl("https://example.com", ["https:"])).toStrictEqual(
-      new URL("http://example.com"),
-    );
+    expect(() => {
+      assertProtocolUrl("https://example.com", ["https:"]);
+    }).not.toThrow();
   });
   test("rejects unsupported protocol", () => {
-    expect(() =>
-      assertProtocolUrl("file://foo.txt", ["http:", "https:"]),
-    ).toThrow(
+    expect(() => {
+      assertProtocolUrl("file://foo.txt", ["http:", "https:"]);
+    }).toThrow(
       new BusinessError("Unsupported protocol: file:. Use http:, https:"),
     );
   });
   test("rejects invalid URLs", () => {
-    expect(() => assertProtocolUrl("https::/example.com", ["https:"])).toThrow(
-      new BusinessError("Invalid URL: https::/example.com"),
-    );
+    expect(() => {
+      assertProtocolUrl("https::/example.com", ["https:"]);
+    }).toThrow(new BusinessError("Invalid URL: https::/example.com"));
   });
 });
 
@@ -101,5 +105,62 @@ describe("makeURL", () => {
   test("preserve hash and query string", () => {
     const origin = "https://pixiebrix.com?foo=bar#example";
     expect(makeURL(origin)).toBe("https://pixiebrix.com/?foo=bar#example");
+  });
+});
+
+describe("selectAbsoluteUrl", () => {
+  it("combines URL", () => {
+    expect(
+      selectAbsoluteUrl({ url: "/foo", baseURL: "https://example.com" }),
+    ).toBe("https://example.com/foo");
+  });
+
+  it("handles trailing baseURL slash", () => {
+    expect(
+      selectAbsoluteUrl({ url: "/foo", baseURL: "https://example.com/" }),
+    ).toBe("https://example.com/foo");
+  });
+
+  it("handles absolute URL", () => {
+    expect(
+      selectAbsoluteUrl({
+        url: "https://example.com/foo",
+        baseURL: "https://example.com/",
+      }),
+    ).toBe("https://example.com/foo");
+  });
+
+  it("throws if URL is not provided", () => {
+    expect(() => selectAbsoluteUrl({ baseURL: "https://example.com" })).toThrow(
+      new Error("selectAbsoluteUrl: The URL was not provided"),
+    );
+  });
+
+  it("throws if baseURL is not provided on a relative URL", () => {
+    expect(() => selectAbsoluteUrl({ url: "/foo" })).toThrow(
+      new Error("selectAbsoluteUrl: The base URL was not provided"),
+    );
+  });
+
+  it("throws if URL is invalid", () => {
+    expect(() =>
+      selectAbsoluteUrl({ url: "/path", baseURL: "invalid" }),
+    ).toThrow(new Error("Invalid URL: /path (base URL: invalid)"));
+  });
+});
+
+describe("isUrlRelative", () => {
+  it("returns true for relative URLs", () => {
+    expect(isUrlRelative("foo")).toBe(true);
+    expect(isUrlRelative("/foo")).toBe(true);
+    expect(isUrlRelative("./foo")).toBe(true);
+    expect(isUrlRelative("../foo")).toBe(true);
+  });
+
+  it("returns false for absolute URLs", () => {
+    expect(isUrlRelative("https://example.com/foo")).toBe(false);
+    expect(isUrlRelative("http://example.com/foo")).toBe(false);
+    expect(isUrlRelative("file://example.com/foo")).toBe(false);
+    expect(isUrlRelative("//example.com/foo")).toBe(false);
   });
 });

@@ -42,20 +42,20 @@ export type AsyncOptionsFactory<
   Args extends DefaultFactoryArgs = DefaultFactoryArgs,
   T = unknown,
 > = (
-  config: SanitizedIntegrationConfig,
+  config: SanitizedIntegrationConfig | null,
   factoryArgs?: Args,
 ) => Promise<Array<Option<T>>>;
 
 type AsyncRemoteSelectWidgetProps<
   Args extends DefaultFactoryArgs = DefaultFactoryArgs,
-  T = unknown,
-> = CustomFieldWidgetProps<T, SelectLike<Option<T>>> & {
+  TValue = unknown,
+> = CustomFieldWidgetProps<TValue, SelectLike<Option<TValue>>> & {
   isClearable?: boolean;
-  optionsFactory: AsyncOptionsFactory<Args, T>;
+  optionsFactory: AsyncOptionsFactory<Args, TValue>;
   config: SanitizedIntegrationConfig | null;
   factoryArgs?: UnknownObject;
   loadingMessage?: React.FC<{ inputValue: string }>;
-  defaultOptions?: boolean | Array<Option<T>>;
+  defaultOptions?: boolean | Array<Option<TValue>>;
 };
 
 /**
@@ -141,7 +141,7 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
     knownOptions?.find((option: Option) => value === option.value) ??
     // Not great UX, if the result is not in the default options, we'll just show the value
     // instead of the label.
-    (value ? { value, label: value } : null);
+    (value ? ({ value, label: value } as Option<unknown>) : null);
 
   return (
     <div className="d-flex">
