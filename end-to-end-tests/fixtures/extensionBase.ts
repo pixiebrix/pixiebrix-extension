@@ -23,6 +23,7 @@ import {
   getExtensionId,
   launchPersistentContextForExtension,
 } from "./utils";
+import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // see: https://github.com/microsoft/playwright/issues/26693
@@ -55,9 +56,14 @@ export const test = base.extend<{
     await use(context);
     await context.close();
   },
-  async page({ context }, use) {
+  async page({ context, extensionId }, use) {
     // Re-use the initial context page if it exists
     const page = context.pages()[0] || (await context.newPage());
+
+    // Start off test from the extension console, and ensure it is done loading
+    const modsPage = new ModsPage(page, extensionId);
+    await modsPage.goto();
+
     await use(page);
     await page.close();
   },

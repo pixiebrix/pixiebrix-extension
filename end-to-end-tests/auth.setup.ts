@@ -39,9 +39,9 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
   await expect(page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED)).toBeVisible();
   await expect(page.getByText("Admin Console")).toBeVisible();
 
+  let extensionConsolePage: Page;
   // Sometimes get the following error "Error: Could not establish connection. Receiving end does not exist." when trying to click on the "Open Extension Console" button.
   // Thus, a retry is added to ensure the extension console loads with authenticated user.
-  let extensionConsolePage: Page;
   await expect(async () => {
     // Ensure the extension console loads with authenticated user
     const extensionConsolePagePromise = context.waitForEvent("page", {
@@ -61,7 +61,8 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
   }).toPass({ timeout: 6000 });
 
   await ensureVisibility(
-    extensionConsolePage.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above
+    extensionConsolePage!.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
     { timeout: 10_000 },
   );
 });
