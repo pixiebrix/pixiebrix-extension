@@ -152,7 +152,6 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
           loadOptions={loadOptions}
           onChange={patchedOnChange}
           value={selectedOption}
-          placeholder="Type to search..."
           {...selectProps}
         />
       </div>

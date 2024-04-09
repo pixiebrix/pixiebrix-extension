@@ -174,6 +174,7 @@ const BotOptionsContent: React.FunctionComponent<{
           factoryArgs={botSelectFactoryArgs}
           config={controlRoomConfig}
           isClearable
+          placeholder={"Type to search Bots..."}
           // Due to quirks with the memoization inside react-select, we need
           // to force this to re-render when the integration config or the
           // workspace fields change in order to force a fetch of new options
