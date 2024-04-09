@@ -35,7 +35,6 @@ import {
 import fs from "node:fs/promises";
 import { getBaseExtensionConsoleUrl } from "../pageObjects/constants";
 import { ensureVisibility } from "../utils";
-import * as url from "node:url";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // see: https://github.com/microsoft/playwright/issues/26693
@@ -44,12 +43,7 @@ process.env.PW_CHROMIUM_ATTACH_TO_OTHER = "1";
 const getStoredCookies = async (): Promise<Cookie[]> => {
   let fileBuffer;
   try {
-    fileBuffer = await fs.readFile(
-      path.join(
-        path.dirname(url.fileURLToPath(import.meta.url)),
-        "../.auth/user.json",
-      ),
-    );
+    fileBuffer = await fs.readFile(path.join(__dirname, "../.auth/user.json"));
   } catch (error) {
     // If the file does not exist, we are likely running authenticate setup for the first time. Return an empty array.
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
