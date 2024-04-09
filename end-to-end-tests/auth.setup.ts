@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expect } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 import { test } from "./fixtures/authSetupFixture";
 import {
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
@@ -39,21 +39,27 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
   await expect(page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED)).toBeVisible();
   await expect(page.getByText("Admin Console")).toBeVisible();
 
-  // Ensure the extension console loads with authenticated user
-  const extensionConsolePagePromise = context.waitForEvent("page", {
-    timeout: 10_000,
-  });
-  // Extension console
-  await page
-    .locator("button")
-    .filter({ hasText: "Open Extension Console" })
-    .click();
+  // Sometimes get the following error "Error: Could not establish connection. Receiving end does not exist." when trying to click on the "Open Extension Console" button.
+  // Thus, a retry is added to ensure the extension console loads with authenticated user.
+  let extensionConsolePage: Page;
+  await expect(async () => {
+    // Ensure the extension console loads with authenticated user
+    const extensionConsolePagePromise = context.waitForEvent("page", {
+      timeout: 2000,
+    });
+    // Extension console
+    await page
+      .locator("button")
+      .filter({ hasText: "Open Extension Console" })
+      .click();
 
-  const extensionConsolePage = await extensionConsolePagePromise;
+    extensionConsolePage = await extensionConsolePagePromise;
 
-  await expect(extensionConsolePage.locator("#container")).toContainText(
-    "Extension Console",
-  );
+    await expect(extensionConsolePage.locator("#container")).toContainText(
+      "Extension Console",
+    );
+  }).toPass({ timeout: 6000 });
+
   await ensureVisibility(
     extensionConsolePage.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
     { timeout: 10_000 },
