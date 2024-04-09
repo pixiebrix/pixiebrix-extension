@@ -139,7 +139,7 @@ const ApiTaskOptionsContent: React.FC<{
         <ConnectedFieldTemplate
           label="API Task"
           name={configName("botId")}
-          description="The Automation Anywhere API Task to run. Type a query to search available tasks by name"
+          description="The Automation Anywhere API Task to run"
           as={AsyncRemoteSelectWidget}
           defaultOptions
           // Ensure we get current results, because there's not a refresh button

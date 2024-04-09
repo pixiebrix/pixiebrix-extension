@@ -163,7 +163,7 @@ const BotOptionsContent: React.FunctionComponent<{
         <ConnectedFieldTemplate
           label="Bot"
           name={configName("fileId")}
-          description="The Automation Anywhere bot to run. Type a query to search available bots by name"
+          description="The Automation Anywhere bot to run"
           as={AsyncRemoteSelectWidget}
           defaultOptions
           // Refresh results when the integration config or workspace type changes
