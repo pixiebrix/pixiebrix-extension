@@ -21,9 +21,9 @@ import userEvent from "@testing-library/user-event";
 import { uuidv4 } from "@/types/helpers";
 import { rectFactory } from "@/testUtils/factories/domFactories";
 import {
-  initShortcutSnippetMenuController,
+  initSnippetShortcutMenuController,
   snippetRegistry,
-} from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
+} from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 
 // I couldn't get shadow-dom-testing-library working
 jest.mock("react-shadow/emotion", () => ({
@@ -41,8 +41,8 @@ jest.mock("react-shadow/emotion", () => ({
 (Range.prototype.getClientRects as any) = jest.fn(() => [rectFactory()]);
 (Element.prototype.scrollIntoViewIfNeeded as any) = jest.fn();
 
-describe("shortcutSnippetMenuController", () => {
-  async function triggerShortcutSnippetMenu() {
+describe("snippetShortcutMenuController", () => {
+  async function triggerSnippetShortcutMenu() {
     const user = userEvent.setup();
     const textbox = screen.getByRole("textbox");
     await user.click(textbox);
@@ -52,7 +52,7 @@ describe("shortcutSnippetMenuController", () => {
   }
 
   beforeAll(() => {
-    initShortcutSnippetMenuController();
+    initSnippetShortcutMenuController();
   });
 
   // TODO: figure out how to properly isolate tests - adding multiple tests cause flakiness
@@ -72,10 +72,10 @@ describe("shortcutSnippetMenuController", () => {
 
     expect(screen.queryByRole("menu")).not.toBeInTheDocument();
 
-    const user = await triggerShortcutSnippetMenu();
+    const user = await triggerSnippetShortcutMenu();
 
     await expect(screen.findByRole("menu")).resolves.toBeInTheDocument();
-    expect(snippetRegistry.shortcutSnippets).toHaveLength(1);
+    expect(snippetRegistry.snippetShortcuts).toHaveLength(1);
 
     const textbox = screen.getByRole("textbox");
     await user.type(textbox, " ");

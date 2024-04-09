@@ -18,7 +18,7 @@
 import {
   normalizePreview,
   replaceAtCommandKey,
-} from "@/contentScript/shortcutSnippetMenu/shortcutSnippetUtils";
+} from "@/contentScript/snippetShortcutMenu/snippetShortcutUtils";
 
 // `jsdom` doesn't implement execCommand
 document.execCommand = jest.fn().mockReturnValue(true);
