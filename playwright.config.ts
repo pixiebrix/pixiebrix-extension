@@ -1,16 +1,16 @@
 import { defineConfig } from "@playwright/test";
 import { CI } from "./end-to-end-tests/env";
 import fs from "node:fs";
-import path from "node:path";
+import { getAuthProfilePathFile } from "./end-to-end-tests/fixtures/utils";
 
 // Speed up local development by skipping the authentication setup if it's already done.
 // NOTE: You will have to restart the test runner if you need to re-run the auth setup.
-const isAuthSetupDone = () => {
+const isAuthSetupDone = (chromiumChannel: "msedge" | "chrome") => {
   if (CI) {
     return false;
   }
 
-  const filePath = path.join(__dirname, "./end-to-end-tests/.auth/user.json");
+  const filePath = getAuthProfilePathFile(chromiumChannel);
   return fs.existsSync(filePath);
 };
 
@@ -47,7 +47,17 @@ export default defineConfig<{ chromiumChannel: string }>({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: "setup",
+      name: "chromeSetup",
+      use: {
+        chromiumChannel: "chrome",
+      },
+      testMatch: /.*\.setup\.ts/,
+    },
+    {
+      name: "edgeSetup",
+      use: {
+        chromiumChannel: "msedge",
+      },
       testMatch: /.*\.setup\.ts/,
     },
     {
@@ -55,14 +65,14 @@ export default defineConfig<{ chromiumChannel: string }>({
       use: {
         chromiumChannel: "chrome",
       },
-      dependencies: isAuthSetupDone() ? [] : ["setup"],
+      dependencies: isAuthSetupDone("chrome") ? [] : ["chromeSetup"],
     },
     {
       name: "edge",
       use: {
         chromiumChannel: "msedge",
       },
-      dependencies: isAuthSetupDone() ? [] : ["setup"],
+      dependencies: isAuthSetupDone("msedge") ? [] : ["edgeSetup"],
     },
   ],
 });

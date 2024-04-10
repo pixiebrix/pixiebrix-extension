@@ -17,16 +17,14 @@
 
 import { userSelectElement } from "@/contentScript/pageEditor/elementPicker";
 import { BusinessError } from "@/errors/businessErrors";
-import { showSelectionToolPopover } from "@/components/selectionToolPopover/SelectionToolPopover";
+import showSelectionToolPopover from "@/components/selectionToolPopover/showSelectionToolPopover";
 
 // Mock because the React vs. JSDOM event handling and dom manipulation isn't playing nicely together
-jest.mock("@/components/selectionToolPopover/SelectionToolPopover");
+jest.mock("@/components/selectionToolPopover/showSelectionToolPopover");
 
 const showSelectionToolPopoverMock = jest.mocked(showSelectionToolPopover);
 
-beforeAll(() => {
-  Element.prototype.scrollTo = jest.fn();
-});
+Element.prototype.scrollTo = jest.fn();
 
 beforeEach(() => {
   showSelectionToolPopoverMock.mockClear();

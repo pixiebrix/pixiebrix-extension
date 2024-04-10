@@ -21,6 +21,8 @@ import { sortBy, isPlainObject } from "lodash";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { canParseUrl } from "@/utils/urlUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import IsolatedComponent from "@/components/IsolatedComponent";
+import type TreeNode from "primereact/treenode";
 
 interface Item {
   key: string;
@@ -115,13 +117,21 @@ export class PropertyTableRenderer extends RendererABC {
   );
 
   async render({ data }: BrickArgs, { ctxt }: BrickOptions) {
-    const PropertyTree = await import(
-      /* webpackChunkName: "widgets" */
-      "./PropertyTree"
+    const PropertyTree: React.FC<{ value: TreeNode[] }> = ({ value }) => (
+      <IsolatedComponent
+        name="PropertyTree"
+        lazy={async () =>
+          import(
+            /* webpackChunkName: "isolated/PropertyTree" */
+            "./PropertyTree"
+          )
+        }
+        factory={(PropertyTree) => <PropertyTree value={value} />}
+      />
     );
 
     return {
-      Component: PropertyTree.default,
+      Component: PropertyTree,
       props: {
         value: shapeData(data ?? ctxt),
       },

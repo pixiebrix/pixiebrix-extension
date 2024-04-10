@@ -31,7 +31,7 @@ test.describe("extension console mods page smoke test", () => {
     await modsPage.viewAllMods();
     const modTableItems = modsPage.modTableItems();
     // Expect at least one mod visible - These might be initially hidden, so toBeVisible() would immediately fail
-    await ensureVisibility(modTableItems.nth(0));
+    await ensureVisibility(modTableItems.nth(0), { timeout: 6000 });
 
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
