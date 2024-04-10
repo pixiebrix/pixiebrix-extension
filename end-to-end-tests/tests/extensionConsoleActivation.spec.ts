@@ -41,3 +41,5 @@ test("can activate a mod with no config options", async ({
     }),
   );
 });
+
+test("can activate a mod with built-in integration", async ({}) => {});
