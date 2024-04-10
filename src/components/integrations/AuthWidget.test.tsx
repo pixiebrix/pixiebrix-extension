@@ -166,15 +166,12 @@ describe("AuthWidget", () => {
       },
     );
 
-    const dereferenced = await dereference(
-      integrationWithOptionalField as Schema,
-      {
-        sanitizeIntegrationDefinitions: false,
-      },
-    );
-
-    appApiMock.onGet("/api/services/").reply(200, [dereferenced]);
-    appApiMock.onGet("/api/registry/bricks/").reply(200, [dereferenced]);
+    appApiMock
+      .onGet("/api/services/")
+      .reply(200, [integrationWithOptionalField]);
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(200, [integrationWithOptionalField]);
     await refreshRegistries();
 
     renderContent(authOption1, authOption2);
