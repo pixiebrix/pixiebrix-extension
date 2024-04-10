@@ -16,24 +16,27 @@
  */
 
 import React from "react";
-import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import SelectionToolPopover from "@/components/selectionToolPopover/SelectionToolPopover";
+import { render } from "react-dom";
+import IsolatedComponent from "@/components/IsolatedComponent";
+import type Component from "@/components/selectionToolPopover/SelectionToolPopover";
 
-export default {
-  title: "Components/SelectionToolPopover",
-  component: SelectionToolPopover,
-  argTypes: {},
-  parameters: {
-    // Popovers not compatible with Storyshots? Modals aren't.
-    storyshots: false,
-  },
-} as ComponentMeta<typeof SelectionToolPopover>;
-
-const Template: ComponentStory<typeof SelectionToolPopover> = (args) => (
-  <div>
-    <SelectionToolPopover {...args} setSelectionHandler={(handler) => {}} />
-  </div>
-);
-
-export const Default = Template.bind({});
-Default.args = {};
+export default function showSelectionToolPopover({
+  rootElement,
+  ...props
+}: {
+  rootElement: HTMLElement;
+} & React.ComponentProps<typeof Component>) {
+  render(
+    <IsolatedComponent
+      name="SelectionToolPopover"
+      lazy={async () =>
+        import(
+          /* webpackChunkName: "isolated/SelectionToolPopover" */
+          "@/components/selectionToolPopover/SelectionToolPopover"
+        )
+      }
+      factory={(SelectionToolPopover) => <SelectionToolPopover {...props} />}
+    />,
+    rootElement,
+  );
+}

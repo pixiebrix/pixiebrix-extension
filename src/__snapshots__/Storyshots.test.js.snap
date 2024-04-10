@@ -3513,22 +3513,85 @@ exports[`Storyshots Editor/LogToolbar Default 1`] = `
 
 exports[`Storyshots Enhancements/SelectionMenu Emoji Buttons 1`] = `
 <div
-  style={
-    {
-      "all": "initial",
+  aria-label="Text selection menu"
+  aria-orientation="horizontal"
+  className="toolbar"
+  role="menu"
+>
+  <button
+    className="toolbarItem"
+    onClick={[Function]}
+    onMouseDown={[Function]}
+    role="menuitem"
+    style={
+      {
+        "fontSize": "16px",
+      }
     }
-  }
-/>
+    title=" Emoji"
+  >
+    😊
+  </button>
+  <button
+    className="toolbarItem"
+    onClick={[Function]}
+    onMouseDown={[Function]}
+    role="menuitem"
+    style={
+      {
+        "fontSize": "16px",
+      }
+    }
+    title=" Emoji"
+  >
+    😊
+  </button>
+</div>
 `;
 
 exports[`Storyshots Enhancements/SelectionMenu Mixed Buttons 1`] = `
 <div
-  style={
-    {
-      "all": "initial",
+  aria-label="Text selection menu"
+  aria-orientation="horizontal"
+  className="toolbar"
+  role="menu"
+>
+  <button
+    className="toolbarItem"
+    onClick={[Function]}
+    onMouseDown={[Function]}
+    role="menuitem"
+    style={
+      {
+        "fontSize": "16px",
+      }
     }
-  }
-/>
+    title=" Emoji"
+  >
+    😊
+  </button>
+  <button
+    className="toolbarItem"
+    onClick={[Function]}
+    onMouseDown={[Function]}
+    role="menuitem"
+    style={
+      {
+        "fontSize": "16px",
+      }
+    }
+    title="No Emoji"
+  >
+    <span
+      className="root"
+      dangerouslySetInnerHTML={
+        {
+          "__html": "",
+        }
+      }
+    />
+  </button>
+</div>
 `;
 
 exports[`Storyshots Enhancements/SnippetShortcutMenu Demo 1`] = `

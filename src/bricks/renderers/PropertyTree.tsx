@@ -15,25 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "primereact/resources/themes/saga-blue/theme.css";
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
+
 import { TreeTable } from "primereact/treetable";
 import type TreeNode from "primereact/treenode";
 import { Column } from "primereact/column";
-import { Stylesheets } from "@/components/Stylesheets";
 import React from "react";
-
-import theme from "primereact/resources/themes/saga-blue/theme.css?loadAsUrl";
-import primereact from "primereact/resources/primereact.min.css?loadAsUrl";
-import primeicons from "primeicons/primeicons.css?loadAsUrl";
 
 const PropertyTree: React.FunctionComponent<{ value: TreeNode[] }> = ({
   value,
 }) => (
-  <Stylesheets href={[theme, primereact, primeicons]}>
-    <TreeTable value={value}>
-      <Column field="name" header="Property" expander />
-      <Column field="value" header="Value" />
-    </TreeTable>
-  </Stylesheets>
+  <TreeTable value={value}>
+    <Column field="name" header="Property" expander />
+    <Column field="value" header="Value" />
+  </TreeTable>
 );
 
 export default PropertyTree;

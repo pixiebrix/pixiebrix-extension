@@ -21,8 +21,8 @@ import IntegrationConfigEditorModal from "@/components/integrations/IntegrationC
 import { render, screen } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
-// FIXME: this is coming through as a module with default being a JSON object. (yaml-jest-transform is being applied)
-import pipedriveYaml from "@contrib/integrations/pipedrive.yaml?loadAsText";
+// FIXME: Use ?loadAsText when supported by Jest https://github.com/jestjs/jest/pull/6282
+import pipedriveYaml from "@contrib/integrations/pipedrive.yaml";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import { within } from "@testing-library/react";
