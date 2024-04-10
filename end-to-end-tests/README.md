@@ -11,8 +11,10 @@ One-time setup:
 
 - Set up your .env file:
   - Copy `.env.example` to `.env.development`.
-  - Fill in the required values for the test user password `E2E_TEST_USER_PASSWORD_UNAFFILIATED` and
-    uncomment `REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1`
+  - Fill in the required values:
+    - The test user password `E2E_TEST_USER_PASSWORD_UNAFFILIATED`
+    - Uncomment `REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1`
+    - Uncomment `SHADOW_DOM=open`
   - `MV` will determine the manifest version for the both the extension and the tests.
 - Install browsers: Execute `npx playwright install chromium chrome msedge`.
 
@@ -23,6 +25,7 @@ One-time setup:
 - To run tests in interactive UI mode, use `npm run test:e2e -- --ui`. This view shows you the entire test suite and
   allows you to run individual tests in a specific browser.
   - If this is the first time you've run the tests in interactive mode, the tests may be filtered. Expand the collapsed section next to the Filter searchbox to see the filterable "projects"
+  - For faster local development, you can filter out the setup projects to skip rerunning the authentication setup by unticking the `edgeSetup` and `chromeSetup` projects.
 - You can also run specific test files in the CLI by providing a path matcher to the
   command: `npm run test:e2e -- smoke` (runs all tests with "smoke" in the path).
 - You can also run tests within the Intellij IDE by clicking on the play button next to the test definition. (
@@ -93,7 +96,8 @@ Playwright's built-in `test` object with extension-specific features.
 ### Playwright Configuration
 
 Configure test execution via `.playwright.config.ts`, including timeout and retry options. The setup
-project `./auth.setup.ts` handles user authentication and saves credentials in `./.auth/user.json`.
+projects run `./auth.setup.ts` which handles user authentication and saves the path to the logged in and linked profile
+paths in `.auth`.
 
 ### GitHub CI Integration
 
