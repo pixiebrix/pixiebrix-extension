@@ -18,7 +18,7 @@
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
-import { validateBrickInputOutput } from "@/validators/schemaValidator";
+import { resolveSchemaAndValidate } from "@/validators/schemaValidator";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
 import { toExpression } from "@/utils/expressionUtils";
 
@@ -29,7 +29,7 @@ describe("IdentityTransformer.schema", () => {
     "allows validateInput: %s",
     async (value) => {
       await expect(
-        validateBrickInputOutput(brick.inputSchema, value),
+        resolveSchemaAndValidate(brick.inputSchema, value),
       ).resolves.toStrictEqual({
         errors: [],
         valid: true,

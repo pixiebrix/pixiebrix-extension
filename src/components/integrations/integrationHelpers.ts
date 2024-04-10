@@ -22,7 +22,10 @@ import {
 } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isRequired } from "@/utils/schemaUtils";
-import { dereference } from "@/validators/schemaValidator";
+import {
+  dereference,
+  resolveSchemaAndValidate,
+} from "@/validators/schemaValidator";
 import { type FormikValues, type FormikErrors } from "formik";
 import { cloneDeep, set } from "lodash";
 import { buildYup } from "schema-to-yup";
@@ -131,17 +134,11 @@ export async function createYupValidationSchema(
   }
 }
 
-export function validateIntegrationConfig(integration: Integration) {
-  return (values: FormikValues): FormikErrors<FormikValues> => {
+export async function validateIntegrationConfig(integration: Integration) {
+  return async (values: FormikValues): Promise<FormikErrors<FormikValues>> => {
     const schema = buildSchema(integration);
 
-    const validator = new Validator(
-      schema as ValidatorSchema,
-      "2019-09",
-      false,
-    );
-
-    const { errors } = validator.validate(values);
+    const { errors } = await resolveSchemaAndValidate(schema, values);
     return convertSchemaErrorsToFormikErrors(errors);
   };
 }

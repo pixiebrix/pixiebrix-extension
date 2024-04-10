@@ -249,7 +249,7 @@ export async function dereference(
  *
  * To avoid secret leakage, does not validate the secret `$ref`s of properties accepting an integration configuration.
  */
-export async function validateBrickInputOutput(
+export async function resolveSchemaAndValidate(
   schema: Schema,
   instance: unknown,
 ): Promise<ValidationResult> {

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateBrickInputOutput } from "@/validators/schemaValidator";
+import { resolveSchemaAndValidate } from "@/validators/schemaValidator";
 import {
   arraySchema,
   castSchema,
@@ -61,7 +61,7 @@ export async function throwIfInvalidInput(
   brick: Brick,
   brickArgs: RenderedArgs,
 ): Promise<void> {
-  const validationResult = await validateBrickInputOutput(
+  const validationResult = await resolveSchemaAndValidate(
     castSchema(brick.inputSchema),
     excludeUndefined(brickArgs),
   );
@@ -94,7 +94,7 @@ export async function logIfInvalidOutput(
 ): Promise<void> {
   if (!isEmpty(brick.outputSchema)) {
     const baseSchema = castSchema(brick.outputSchema);
-    const validationResult = await validateBrickInputOutput(
+    const validationResult = await resolveSchemaAndValidate(
       hasMultipleTargets(window) ? arraySchema(baseSchema) : baseSchema,
       excludeUndefined(output),
     );
