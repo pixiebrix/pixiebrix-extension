@@ -37,8 +37,6 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { produce } from "immer";
 import { userEvent } from "@/pageEditor/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { dereference } from "@/validators/schemaValidator";
-import { type Schema } from "@/types/schemaTypes";
 
 const { remoteConfig, integrationDefinition } =
   generateIntegrationAndRemoteConfig();
