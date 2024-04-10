@@ -21,7 +21,7 @@ import fs from "node:fs/promises";
 import {
   getAuthProfilePathFile,
   getExtensionId,
-  launchPersistentContextForExtension,
+  launchPersistentContextWithExtension,
 } from "./utils";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 
@@ -48,7 +48,7 @@ export const test = base.extend<{
       recursive: true,
     });
 
-    const context = await launchPersistentContextForExtension(
+    const context = await launchPersistentContextWithExtension(
       chromiumChannel,
       temporaryProfileDirectory,
     );

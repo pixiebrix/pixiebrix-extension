@@ -19,7 +19,7 @@ import { test as base, type BrowserContext, type Page } from "@playwright/test";
 import { REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST } from "../env";
 import {
   getAuthProfilePathFile,
-  launchPersistentContextForExtension,
+  launchPersistentContextWithExtension,
 } from "./utils";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -60,7 +60,7 @@ export const test = base.extend<{
     // Create a local auth directory to store the profile paths
     await createAuthProfilePathDirectory();
 
-    const context = await launchPersistentContextForExtension(
+    const context = await launchPersistentContextWithExtension(
       chromiumChannel,
       authSetupProfileDirectory,
     );

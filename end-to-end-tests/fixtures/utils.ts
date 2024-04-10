@@ -19,7 +19,7 @@ import { type BrowserContext, chromium } from "@playwright/test";
 import { CI, MV, PWDEBUG, SLOWMO } from "../env";
 import path from "node:path";
 
-export const launchPersistentContextForExtension = async (
+export const launchPersistentContextWithExtension = async (
   chromiumChannel: "chrome" | "msedge",
   profileDirectory: string,
 ) => {
