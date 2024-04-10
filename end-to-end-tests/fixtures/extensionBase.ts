@@ -39,7 +39,10 @@ export const test = base.extend<{
     let authSetupProfileDirectory: string;
 
     try {
-      await fs.readFile(getAuthProfilePathFile(chromiumChannel), "utf8");
+      authSetupProfileDirectory = await fs.readFile(
+        getAuthProfilePathFile(chromiumChannel),
+        "utf8",
+      );
     } catch (error) {
       if (
         error instanceof Error &&
@@ -56,7 +59,8 @@ export const test = base.extend<{
     }
 
     const temporaryProfileDirectory = await fs.mkdtemp(
-      path.join(path.dirname(authSetupProfileDirectory), "e2e-test-"),
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- checked above
+      path.join(path.dirname(authSetupProfileDirectory!), "e2e-test-"),
     );
     // Copy the auth setup profile to a new temp directory to avoid modifying the original auth profile
     await fs.cp(authSetupProfileDirectory, temporaryProfileDirectory, {
