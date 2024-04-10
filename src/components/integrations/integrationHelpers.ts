@@ -30,11 +30,7 @@ import { type FormikValues, type FormikErrors } from "formik";
 import { cloneDeep, set } from "lodash";
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
-import {
-  type OutputUnit,
-  Validator,
-  type Schema as ValidatorSchema,
-} from "@cfworker/json-schema";
+import { type OutputUnit } from "@cfworker/json-schema";
 
 export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   const result: UnknownObject = {};
