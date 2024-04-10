@@ -36,5 +36,5 @@ const listener = excludeAltClicksEtc((event: MouseEvent) => {
  * https://github.com/pixiebrix/pixiebrix-extension/issues/7809
  */
 export default function openAllLinksInPopups(signal?: AbortSignal) {
-  document.body.addEventListener("click", listener, { signal, capture: true });
+  document.body.addEventListener("click", listener, { signal });
 }
