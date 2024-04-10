@@ -190,7 +190,9 @@ const ModalContent: React.FC<ContentProps> = ({
         {({ data: validationSchema }) => (
           <Form
             validationSchema={validationSchema}
-            validate={validateIntegrationConfig(integration)}
+            validate={async (values) =>
+              (await validateIntegrationConfig(integration))(values)
+            }
             initialValues={initialValues}
             onSubmit={onSubmit}
             renderBody={renderBody}
