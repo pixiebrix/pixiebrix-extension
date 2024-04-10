@@ -42,6 +42,8 @@ test("8206: clicking links doesn't crash browser", async ({
     sideBarPage.getByRole("heading", { name: "Sidebar Links" }),
   ).toBeVisible();
 
+  await sideBarPage.getByTitle("Open Extension Console").click();
+
   await sideBarPage.getByRole("link", { name: "Markdown Text Link" }).click();
 
   // Is a react-bootstrap button link variant
