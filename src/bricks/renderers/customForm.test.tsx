@@ -16,7 +16,8 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { screen } from "shadow-dom-testing-library";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
@@ -228,9 +229,10 @@ describe("CustomFormRenderer", () => {
     );
 
     render(<Component {...props} />);
+    await waitForEffect();
 
     expect(screen.queryByText("Submit")).not.toBeInTheDocument();
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByShadowRole("textbox")).toBeInTheDocument();
   });
 
   test("Supports postSubmitAction reset", async () => {
@@ -261,17 +263,19 @@ describe("CustomFormRenderer", () => {
 
     render(<Component {...props} />);
 
-    const textBox = screen.getByRole("textbox");
+    await waitForEffect();
+
+    const textBox = screen.getByShadowRole("textbox");
     await userEvent.type(textBox, "Some text");
     expect(textBox).toHaveValue("Some text");
-    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+    await userEvent.click(screen.getByShadowRole("button", { name: "Submit" }));
 
     expect(runPipelineMock).toHaveBeenCalledOnce();
 
     expect(dataStoreSetSpy).not.toHaveBeenCalled();
 
     // Need to get new textbox reference, because the old one is removed when the key changes
-    expect(screen.getByRole("textbox")).toHaveValue("");
+    expect(screen.getByShadowRole("textbox")).toHaveValue("");
   });
 
   test.each([undefined, "save"])(
@@ -304,10 +308,14 @@ describe("CustomFormRenderer", () => {
 
       render(<Component {...props} />);
 
+      await waitForEffect();
+
       const value = "Some text";
-      const textBox = screen.getByRole("textbox");
+      const textBox = screen.getByShadowRole("textbox");
       await userEvent.type(textBox, value);
-      await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+      await userEvent.click(
+        screen.getByShadowRole("button", { name: "Submit" }),
+      );
 
       expect(runPipelineMock).toHaveBeenCalledOnce();
       expect(dataStoreSetSpy).toHaveBeenCalledExactlyOnceWith("test", {
@@ -315,7 +323,7 @@ describe("CustomFormRenderer", () => {
       });
 
       // Need to get new textbox reference, because the old one is removed if/when the key changes
-      expect(screen.getByRole("textbox")).toHaveValue(value);
+      expect(screen.getByShadowRole("textbox")).toHaveValue(value);
     },
   );
 
