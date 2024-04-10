@@ -15,8 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { getValidationErrMessages } from "@/components/fields/fieldUtils";
+import {
+  type IntegrationConfig,
+  type Integration,
+} from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isRequired } from "@/utils/schemaUtils";
+import { dereference } from "@/validators/schemaValidator";
+import { type FormikValues, type FormikErrors } from "formik";
+import { cloneDeep, set } from "lodash";
+import { buildYup } from "schema-to-yup";
+import * as Yup from "yup";
+import {
+  type OutputUnit,
+  Validator,
+  type Schema as ValidatorSchema,
+} from "@cfworker/json-schema";
 
 export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   const result: UnknownObject = {};
@@ -69,4 +84,87 @@ export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   }
 
   return result;
+}
+
+function buildSchema(integration: Integration): Schema {
+  return {
+    type: "object",
+    properties: {
+      organization: {
+        type: "string",
+      },
+      label: {
+        type: "string",
+      },
+      config: integration.schema,
+    },
+    required: ["config", "label"],
+  };
+}
+
+export async function createYupValidationSchema(
+  integration: Integration,
+): Promise<Yup.AnyObjectSchema> {
+  try {
+    const schema = buildSchema(integration);
+
+    // Dereference because buildYup doesn't support $ref:
+    // https://github.com/kristianmandrup/schema-to-yup?tab=readme-ov-file#refs
+    const dereferencedSchema = await dereference(schema, {
+      // Include secrets, so they can be validated
+      sanitizeIntegrationDefinitions: false,
+    });
+
+    // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
+    return buildYup(cloneDeep(dereferencedSchema), {
+      errMessages: getValidationErrMessages(
+        schema.properties?.config as Schema,
+      ),
+    });
+  } catch (error) {
+    reportError(
+      new Error("Error building Yup validator from JSON Schema", {
+        cause: error,
+      }),
+    );
+    return Yup.object();
+  }
+}
+
+export function validateIntegrationConfig(integration: Integration) {
+  return (values: FormikValues): FormikErrors<FormikValues> => {
+    const schema = buildSchema(integration);
+
+    const validator = new Validator(
+      schema as ValidatorSchema,
+      "2019-09",
+      false,
+    );
+
+    const { errors } = validator.validate(values);
+    return convertSchemaErrorsToFormikErrors(errors);
+  };
+}
+
+export function convertInstanceLocationToFormikPath(
+  instanceLocation: string,
+): string {
+  return instanceLocation.replace("#/", "").replaceAll("/", ".");
+}
+
+export function convertSchemaErrorsToFormikErrors(
+  schemaErrors: OutputUnit[],
+): FormikErrors<IntegrationConfig> {
+  const errors = {};
+
+  const filteredErrors = schemaErrors.filter(
+    (error) => !["#", "#/config"].includes(error.instanceLocation),
+  );
+
+  for (const { error, instanceLocation } of filteredErrors) {
+    const formikPath = convertInstanceLocationToFormikPath(instanceLocation);
+    set(errors, formikPath, error);
+  }
+
+  return errors;
 }

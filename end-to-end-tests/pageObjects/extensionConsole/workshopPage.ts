@@ -16,7 +16,7 @@
  */
 
 import { type Page } from "@playwright/test";
-import { getBaseExtensionConsoleUrl } from "./constants";
+import { getBaseExtensionConsoleUrl } from "../constants";
 
 export class WorkshopPage {
   private readonly extensionConsoleUrl: string;

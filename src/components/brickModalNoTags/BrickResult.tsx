@@ -69,6 +69,7 @@ const BrickResult = <T extends Metadata>({
           variant="primary"
           className="mb-1 text-nowrap"
           onClick={onSelect}
+          data-testid={`${brick.name} button`}
         >
           {selectCaption}
         </Button>

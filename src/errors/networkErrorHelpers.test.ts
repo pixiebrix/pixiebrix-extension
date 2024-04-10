@@ -21,6 +21,7 @@ import {
   isSingleObjectBadRequestError,
   NO_INTERNET_MESSAGE,
   NO_RESPONSE_MESSAGE,
+  safeGuessStatusText,
   selectNetworkErrorMessage,
 } from "@/errors/networkErrorHelpers";
 import MockAdapter from "axios-mock-adapter";
@@ -111,5 +112,15 @@ describe("selectNetworkErrorMessage", () => {
         "These aren't the droids you're looking for",
       );
     }
+  });
+});
+
+describe("safeGuessStatusText", () => {
+  it("returns http statusText", () => {
+    expect(safeGuessStatusText(200)).toBe("OK");
+  });
+
+  it("doesn't throw error on invalid code", () => {
+    expect(safeGuessStatusText(-200)).toBe("Unknown");
   });
 });

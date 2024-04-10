@@ -18,7 +18,7 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import pDefer, { type DeferredPromise } from "p-defer";
-import { isAbsoluteUrl } from "@/utils/urlUtils";
+import { isUrlRelative } from "@/utils/urlUtils";
 import { escapeRegExp } from "lodash";
 
 /**
@@ -58,7 +58,7 @@ export function onDeferredGet(
 export function onApiPost(
   absoluteOrRelativeUrl: string,
 ): MockAdapter.RequestHandler {
-  if (isAbsoluteUrl(absoluteOrRelativeUrl)) {
+  if (!isUrlRelative(absoluteOrRelativeUrl)) {
     return appApiMock.onPost(absoluteOrRelativeUrl);
   }
 
@@ -70,7 +70,7 @@ export function onApiPost(
 export function onApiGet(
   absoluteOrRelativeUrl: string,
 ): MockAdapter.RequestHandler {
-  if (isAbsoluteUrl(absoluteOrRelativeUrl)) {
+  if (!isUrlRelative(absoluteOrRelativeUrl)) {
     return appApiMock.onGet(absoluteOrRelativeUrl);
   }
 

@@ -46,7 +46,6 @@ const esmPackages = [
   "text-field-edit",
   "trim-repeated",
   "uint8array-extras",
-  "url-join",
   "urlpattern-polyfill",
   "use-debounce",
   "uuid",
@@ -99,15 +98,15 @@ const config = {
     "!**/vendor/**",
   ],
   moduleNameMapper: {
+    "^@contrib/([^?]+)": "<rootDir>/contrib/$1",
+    "^@schemas/([^?]+)": "<rootDir>/schemas/$1",
+
     "\\.s?css$": "identity-obj-proxy",
     "\\.(gif|svg|png)$": "<rootDir>/src/__mocks__/stringMock.js",
 
     "\\?loadAsUrl$": "<rootDir>/src/__mocks__/stringMock.js",
     "\\?loadAsText$": "<rootDir>/src/__mocks__/stringMock.js",
     "\\?loadAsComponent$": "<rootDir>/src/__mocks__/stringMock.js",
-
-    "^@contrib/(.*?)(\\?loadAsText)?$": "<rootDir>/contrib/$1",
-    "^@schemas/(.*)": "<rootDir>/schemas/$1",
 
     // Auto-mocks. See documentation in ./src/__mocks__/readme.md
     "^@/(.*)$": ["<rootDir>/src/__mocks__/@/$1", "<rootDir>/src/$1"],
