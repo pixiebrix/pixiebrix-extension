@@ -18,7 +18,7 @@
 import { getLocalISOString, ParseDate } from "@/bricks/transformers/parseDate";
 import { register, type TimeZone, unregister } from "timezone-mock";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { resolveSchemaAndValidate } from "@/validators/schemaValidator";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { BusinessError } from "@/errors/businessErrors";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
@@ -61,7 +61,7 @@ describe("ParseDate block", () => {
 
     expect(result).toMatchSnapshot();
 
-    const validation = await resolveSchemaAndValidate(
+    const validation = await validateBrickInputOutput(
       brick.outputSchema,
       result,
     );
@@ -101,7 +101,7 @@ describe("ParseDate block", () => {
 
     expect(result).toMatchSnapshot();
 
-    const validation = await resolveSchemaAndValidate(
+    const validation = await validateBrickInputOutput(
       brick.outputSchema,
       result,
     );

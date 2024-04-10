@@ -23,8 +23,8 @@ import {
 import { type Schema } from "@/types/schemaTypes";
 import { isRequired } from "@/utils/schemaUtils";
 import {
-  dereference,
-  resolveSchemaAndValidate,
+  dereferenceForYup,
+  validateIntegrationConfiguration,
 } from "@/validators/schemaValidator";
 import { type FormikValues, type FormikErrors } from "formik";
 import { cloneDeep, set } from "lodash";
@@ -109,7 +109,7 @@ export async function createYupValidationSchema(
 
     // Dereference because buildYup doesn't support $ref:
     // https://github.com/kristianmandrup/schema-to-yup?tab=readme-ov-file#refs
-    const dereferencedSchema = await dereference(schema, {
+    const dereferencedSchema = await dereferenceForYup(schema, {
       // Include secrets, so they can be validated
       sanitizeIntegrationDefinitions: false,
     });
@@ -134,7 +134,7 @@ export async function validateIntegrationConfig(integration: Integration) {
   return async (values: FormikValues): Promise<FormikErrors<FormikValues>> => {
     const schema = buildSchema(integration);
 
-    const { errors } = await resolveSchemaAndValidate(schema, values);
+    const { errors } = await validateIntegrationConfiguration(schema, values);
     return convertSchemaErrorsToFormikErrors(errors);
   };
 }

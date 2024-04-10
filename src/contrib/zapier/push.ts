@@ -16,7 +16,7 @@
  */
 
 import { pixiebrixConfigurationFactory } from "@/integrations/locator";
-import { resolveSchemaAndValidate } from "@/validators/schemaValidator";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { type Webhook } from "@/contrib/zapier/contract";
 import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
@@ -85,7 +85,7 @@ export class PushZap extends EffectABC {
       throw new BusinessError(`No Zapier hook found for name: ${pushKey}`);
     }
 
-    const validation = await resolveSchemaAndValidate(
+    const validation = await validateBrickInputOutput(
       webhook.input_schema,
       data,
     );

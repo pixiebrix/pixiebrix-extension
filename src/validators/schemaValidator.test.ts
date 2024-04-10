@@ -16,8 +16,8 @@
  */
 
 import {
-  dereference,
-  resolveSchemaAndValidate,
+  dereferenceForYup,
+  validateBrickInputOutput,
   validatePackageDefinition,
 } from "@/validators/schemaValidator";
 import { loadBrickYaml } from "@/runtime/brickYaml";
@@ -112,13 +112,13 @@ describe("validateBrickInputOutput", () => {
       db: uuidv4(),
     };
 
-    const result = await resolveSchemaAndValidate(inputSchema, inputInstance);
+    const result = await validateBrickInputOutput(inputSchema, inputInstance);
     expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
   });
 
   it("can validate empty brick input schema (frozen object)", async () => {
-    const result = await resolveSchemaAndValidate(SCHEMA_EMPTY_OBJECT, {});
+    const result = await validateBrickInputOutput(SCHEMA_EMPTY_OBJECT, {});
     expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
   });
@@ -149,7 +149,7 @@ describe("dereference", () => {
     integrationRegistry.register([fromJS(integrationDefinition)]);
 
     await expect(
-      dereference(
+      dereferenceForYup(
         {
           type: "object",
           properties: {
@@ -184,7 +184,7 @@ describe("dereference", () => {
     integrationRegistry.register([fromJS(integrationDefinition)]);
 
     await expect(
-      dereference(
+      dereferenceForYup(
         {
           type: "object",
           properties: {

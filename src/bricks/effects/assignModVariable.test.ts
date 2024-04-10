@@ -21,7 +21,7 @@ import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { getState, setState } from "@/platform/state/stateController";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
-import { resolveSchemaAndValidate } from "@/validators/schemaValidator";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const extensionId = autoUUIDSequence();
@@ -65,7 +65,7 @@ describe("@pixiebrix/state/assign", () => {
 
   test("null is valid input", async () => {
     await expect(
-      resolveSchemaAndValidate(brick.inputSchema, {
+      validateBrickInputOutput(brick.inputSchema, {
         variableName: "foo",
         value: null,
       }),

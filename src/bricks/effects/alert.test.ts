@@ -17,7 +17,7 @@
 
 import { AlertEffect } from "@/bricks/effects/alert";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { resolveSchemaAndValidate } from "@/validators/schemaValidator";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { platformMock } from "@/testUtils/platformMock";
 
@@ -26,7 +26,7 @@ const brick = new AlertEffect();
 describe("AlertEffect", () => {
   it("type is optional", async () => {
     await expect(
-      resolveSchemaAndValidate(brick.inputSchema, { message: "Hello, world!" }),
+      validateBrickInputOutput(brick.inputSchema, { message: "Hello, world!" }),
     ).resolves.toStrictEqual({
       errors: [],
       valid: true,
