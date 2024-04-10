@@ -36,12 +36,31 @@ export const test = base.extend<{
 }>({
   chromiumChannel: ["chrome", { option: true }],
   async context({ chromiumChannel }, use) {
-    const authSetupProfileDirectory = await fs.readFile(
-      getAuthProfilePathFile(chromiumChannel),
-      "utf8",
-    );
+    let authSetupProfileDirectory: string;
+
+    try {
+      authSetupProfileDirectory = await fs.readFile(
+        getAuthProfilePathFile(chromiumChannel),
+        "utf8",
+      );
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        "code" in error &&
+        error.code === "ENOENT"
+      ) {
+        console.log(
+          "No auth setup profile found. Make sure that the `auth.setup` project has been run first to create the " +
+            "profile. (If using UI mode, make sure that the chromeSetup and/or the edgeSetup projects are not filtered out)",
+        );
+      }
+
+      throw error;
+    }
+
     const temporaryProfileDirectory = await fs.mkdtemp(
-      path.join(path.dirname(authSetupProfileDirectory), "e2e-test-"),
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- checked above
+      path.join(path.dirname(authSetupProfileDirectory!), "e2e-test-"),
     );
     // Copy the auth setup profile to a new temp directory to avoid modifying the original auth profile
     await fs.cp(authSetupProfileDirectory, temporaryProfileDirectory, {
