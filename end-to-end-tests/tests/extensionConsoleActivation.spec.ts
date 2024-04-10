@@ -42,4 +42,17 @@ test("can activate a mod with no config options", async ({
   );
 });
 
-test("can activate a mod with built-in integration", async ({}) => {});
+test("can activate a mod with built-in integration", async ({
+  page,
+  extensionId,
+}) => {
+  const modId = "@pixies/giphy/giphy-search";
+
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.goto();
+
+  await expect(
+    page.locator(".form-group").filter({ hasText: /^GIPHY — ✨ Built-in$/ }),
+  ).toBeVisible();
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+});
