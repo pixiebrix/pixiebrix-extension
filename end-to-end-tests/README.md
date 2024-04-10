@@ -28,6 +28,8 @@ One-time setup:
   - For faster local development, you can filter out the setup projects to skip rerunning the authentication setup by unticking the `edgeSetup` and `chromeSetup` projects.
 - You can also run specific test files in the CLI by providing a path matcher to the
   command: `npm run test:e2e -- smoke` (runs all tests with "smoke" in the path).
+  - You can skip the auth setup by including the `--no-deps` flag.
+  - See more cli arguments here: https://playwright.dev/docs/test-cli
 - You can also run tests within the Intellij IDE by clicking on the play button next to the test definition. (
   until [this Jetbrains issue](https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only)
   is resolved, you must include an unused playwright import as shown
