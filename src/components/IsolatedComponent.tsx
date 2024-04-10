@@ -30,8 +30,12 @@ type LazyFactory<T> = () => Promise<{
   default: React.ComponentType<T>;
 }>;
 
-// Drop the stylesheet injected by `mini-css-extract-plugin` into the main document.
-// Until this is resolved https://github.com/webpack-contrib/mini-css-extract-plugin/issues/1092#issuecomment-2037540032
+/**
+ * Drop the stylesheet injected by `mini-css-extract-plugin` into the main document.
+ *
+ * @warning The `lazyFactory` function never not be called outside `discardStylesheetsWhilePending`
+ * because this helper must catch the stylesheets injected when the factory is first called.
+ */
 async function discardStylesheetsWhilePending(
   lazyFactory: LazyFactory<unknown>,
 ) {
@@ -119,7 +123,8 @@ export default function IsolatedComponent<T>({
     );
   }
 
-  // `discard` must be called before `React.lazy`
+  // `discard` must be called before `React.lazy`.
+  // `discardStylesheetsWhilePending` is needed until this is resolved https://github.com/webpack-contrib/mini-css-extract-plugin/issues/1092#issuecomment-2037540032
   void discardStylesheetsWhilePending(lazy);
   const LazyComponent = React.lazy(lazy);
 
