@@ -19,7 +19,11 @@ import { test, expect } from "../../fixtures/extensionBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
-import { ensureVisibility, getSidebarPage } from "../../utils";
+import {
+  ensureVisibility,
+  getSidebarPage,
+  waitForSelectionMenuReadiness,
+} from "../../utils";
 import { MV } from "../../env";
 
 test.describe("Insert at Cursor", () => {
@@ -115,6 +119,9 @@ test.describe("Insert at Cursor", () => {
     const ckeditorEditingArea = page.getByLabel("Editor editing area: main");
     await ckeditorEditingArea.scrollIntoViewIfNeeded();
 
+    await waitForSelectionMenuReadiness(page);
+    // Focus on the editor
+    await ckeditorEditingArea.getByText("This is an editor").click();
     await ckeditorEditingArea.getByText("This is an editor").selectText();
     const insertAtCursorMenuItem = page.getByRole("menuitem", { name: "⬇️" });
     await ensureVisibility(insertAtCursorMenuItem);

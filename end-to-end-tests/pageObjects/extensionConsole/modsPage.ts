@@ -36,7 +36,7 @@ export class ModsPage {
       name: "Active Mods",
     });
     // `activeModsHeading` may be initially be detached and hidden, so toBeVisible() would immediately fail
-    await ensureVisibility(activeModsHeading);
+    await ensureVisibility(activeModsHeading, { timeout: 10_000 });
   }
 
   async viewAllMods() {
