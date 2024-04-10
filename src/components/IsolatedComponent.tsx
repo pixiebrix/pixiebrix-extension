@@ -23,7 +23,6 @@ import React, { Suspense } from "react";
 import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import isolatedComponentList from "./isolatedComponentList";
-import { signalFromPromise } from "abort-utils";
 
 const MODE = process.env.SHADOW_DOM as "open" | "closed";
 
@@ -33,7 +32,9 @@ type LazyFactory<T> = () => Promise<{
 
 // Drop the stylesheet injected by `mini-css-extract-plugin` into the main document.
 // Until this is resolved https://github.com/webpack-contrib/mini-css-extract-plugin/issues/1092#issuecomment-2037540032
-async function discardNewStylesheets(signal: AbortSignal) {
+async function discardStylesheetsWhilePending(
+  lazyFactory: LazyFactory<unknown>,
+) {
   const baseUrl = chrome.runtime.getURL("");
 
   const observer = new MutationObserver((mutations) => {
@@ -52,9 +53,16 @@ async function discardNewStylesheets(signal: AbortSignal) {
     childList: true,
   });
 
-  signal.addEventListener("abort", () => {
+  // Call and discard. React.lazy() will call it again and use the result or the error.
+  // This is fine because import() does not re-fetch/re-run the module.
+  try {
+    // The function must be first called *after* the observer is set up.
+    await lazyFactory();
+  } catch {
+    // React.lazy() will take care of it
+  } finally {
     observer.disconnect();
-  });
+  }
 }
 
 type Props<T> = {
@@ -112,7 +120,7 @@ export default function IsolatedComponent<T>({
   }
 
   // `discard` must be called before `React.lazy`
-  void discardNewStylesheets(signalFromPromise(lazy()));
+  void discardStylesheetsWhilePending(lazy);
   const LazyComponent = React.lazy(lazy);
 
   const stylesheetUrl = noStyle ? null : chrome.runtime.getURL(`${name}.css`);
