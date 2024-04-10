@@ -55,7 +55,7 @@ test("8206: clicking links doesn't crash browser", async ({
 
   // FIXME: get these selectors working
   // PixieBrix uses 2 layers of frames to get around the host page CSP. Test page has 2 layers
-  // const pixiebrixFrame = page.frameLocator("iframe").first();
+  // const pixiebrixFrame = sideBarPage.frameLocator("iframe").first();
   // const mainFrame = pixiebrixFrame.frameLocator("iframe").first();
   // await expect(mainFrame.getByText("Alpha")).toBeVisible();
   //
