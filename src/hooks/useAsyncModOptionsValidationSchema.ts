@@ -16,7 +16,7 @@
  */
 
 import { type AnyObjectSchema, object } from "yup";
-import { dereference } from "@/validators/schemaValidator";
+import { dereferenceForYup } from "@/validators/schemaValidator";
 import { isEmpty, mapValues } from "lodash";
 import { type Schema } from "@/types/schemaTypes";
 import { buildYup } from "schema-to-yup";
@@ -44,7 +44,7 @@ export async function getOptionsValidationSchema(
   // Dereference because buildYup doesn't support $ref:
   // https://github.com/kristianmandrup/schema-to-yup?tab=readme-ov-file#refs
   // NOTE: sometimes this schema comes in as a non-extensible object. Dereference clones the object for us.
-  const dereferencedSchema = await dereference(optionsDefinitionSchema, {
+  const dereferencedSchema = await dereferenceForYup(optionsDefinitionSchema, {
     // Include secrets (if any), so they can be validated. As of 1.8.10, there's no "secret" mod input type
     // exposed via the Page Editor, though.
     sanitizeIntegrationDefinitions: false,
