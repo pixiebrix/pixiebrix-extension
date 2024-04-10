@@ -59,7 +59,7 @@ type RequiredPartnerState = {
    *
    * @see RequiredPartnerState.hasPartner
    */
-  partnerKey: string | null;
+  partnerKey: Nullishable<string>;
 
   /**
    * True if the user's account is a partner account and must have an integration configured for the partner.
@@ -106,7 +106,7 @@ function decidePartnerIntegrationIds({
     return new Set<RegistryId>([CONTROL_ROOM_TOKEN_INTEGRATION_ID]);
   }
 
-  return PARTNER_MAP.get(partnerId) ?? new Set();
+  return PARTNER_MAP.get(partnerId ?? "") ?? new Set();
 }
 
 /**
@@ -118,9 +118,9 @@ function decideIsMissingPartnerJwt({
   managedPartnerId,
   partnerAuthData,
 }: {
-  authMethodOverride: string;
+  authMethodOverride: string | null;
   hasControlRoom: boolean;
-  managedPartnerId: string;
+  managedPartnerId?: string;
   partnerAuthData: unknown;
 }): boolean {
   if (authMethodOverride === "pixiebrix-token") {
@@ -174,9 +174,9 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   const integrationConfigs = useSelector(selectIntegrationConfigs);
 
   // Read enterprise managed state
-  const { data: managedState = {} } = useManagedStorageState();
+  const { data: managedState } = useManagedStorageState();
   const { controlRoomUrl: managedControlRoomUrl, partnerId: managedPartnerId } =
-    managedState;
+    managedState ?? {};
 
   // Prefer the latest remote data, but use local data to avoid blocking page load
   let partner: Nullishable<UserPartner> = null;

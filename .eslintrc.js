@@ -43,44 +43,9 @@ module.exports = {
   extends: [
     // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/index.js
     "pixiebrix",
-    "plugin:jsdoc/recommended-typescript-error",
   ],
-  plugins: ["local-rules", "@shopify", "jsdoc"],
+  plugins: ["local-rules"],
   rules: {
-    // No need to add or remove spacing
-    "jsdoc/tag-lines": "off",
-
-    // Conflicts with our usage of @since
-    "jsdoc/check-values": "off",
-
-    // Function/parameter names should be self-explanatory, descriptions are useful but not required
-    "jsdoc/require-jsdoc": "off",
-    "jsdoc/require-returns": "off",
-    "jsdoc/require-param": "off",
-
-    // Enable later, most objects don't follow the correct format
-    "jsdoc/check-param-names": "off",
-
-    // Add our own tags
-    "jsdoc/check-tag-names": [
-      "error",
-      {
-        definedTags: ["warning", "note", "knip", "context"],
-      },
-    ],
-
-    // Enable more on top of the recommendations
-    "jsdoc/require-hyphen-before-param-description": ["error", "never"],
-    "jsdoc/require-asterisk-prefix": "error",
-    "jsdoc/check-line-alignment": "error",
-    "jsdoc/check-indentation": "warn", // Can't outfix the existing errors,I'll leave it as warning
-    "jsdoc/no-bad-blocks": ["error", { ignore: ["jest-environment-options"] }],
-    "jsdoc/no-blank-blocks": "error",
-    "jsdoc/no-blank-block-descriptions": "error",
-
-    "@shopify/react-hooks-strict-return": "error",
-    "@shopify/prefer-module-scope-constants": "error",
-    "@shopify/jest/no-snapshots": "warn",
     "new-cap": [
       "error",
       {
@@ -91,18 +56,6 @@ module.exports = {
       "error",
       { ignore: ["eslint-enable"] },
     ],
-    "react/no-array-index-key": "error",
-    "react/no-unstable-nested-components": ["error", { allowAsProps: true }],
-    "react/forbid-elements": [
-      "error",
-      {
-        forbid: [
-          { element: "b", message: "use <strong> instead" },
-          { element: "i", message: "use <em> instead" },
-        ],
-      },
-    ],
-    "react/jsx-max-depth": ["error", { max: 5 }],
     "local-rules/noNullRtkQueryArgs": "error",
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/noExpressionLiterals": "error",
@@ -137,9 +90,6 @@ module.exports = {
         ],
       },
     ],
-    // TODO: Gradually fix and then drop https://github.com/pixiebrix/eslint-config-pixiebrix/pull/150
-    "@typescript-eslint/no-unsafe-assignment": "warn",
-    "@typescript-eslint/no-unsafe-member-access": "warn",
 
     "no-restricted-imports": [
       "error",
@@ -175,12 +125,6 @@ module.exports = {
       },
       {
         message:
-          'Instead of `<div onClick/>`, use: import { ClickableElement } from "@/components/ClickableElement"',
-        selector:
-          "JSXOpeningElement[name.name='div'][attributes.0.name.name='onClick']",
-      },
-      {
-        message:
           "Prefer using `getSelectionRange()` helper or check `selection.rangeCount` first: https://github.com/pixiebrix/pixiebrix-extension/pull/7989",
         selector: "CallExpression[callee.property.name='getRangeAt']",
       },
@@ -189,11 +133,20 @@ module.exports = {
   },
   overrides: [
     {
-      // (TODO: consider packaging e2e tests in a mono-repo structure for specific linting rules)
+      files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+      rules: {
+        // TODO: Gradually fix and then drop https://github.com/pixiebrix/eslint-config-pixiebrix/pull/150
+        "@typescript-eslint/no-unsafe-assignment": "warn",
+        "@typescript-eslint/no-unsafe-member-access": "warn",
+      },
+    },
+    {
+      // TODO: consider packaging e2e tests in a mono-repo structure for specific linting rules
       files: ["end-to-end-tests/**"], // Or *.test.js
       rules: {
         "no-restricted-imports": "off",
         "unicorn/prefer-dom-node-dataset": "off",
+        "unicorn/prefer-module": "off", // `import.meta.dirname` throws "cannot use 'import meta' outside a module"
         "no-restricted-syntax": [
           "error",
           {
@@ -233,7 +186,6 @@ module.exports = {
       rules: {
         "unicorn/prefer-spread": "off",
         "local-rules/noCrossBoundaryImports": "off",
-        "jest/prefer-expect-resolves": "error",
       },
     },
     {
@@ -271,16 +223,6 @@ module.exports = {
       rules: {
         "testing-library/render-result-naming-convention": "off",
         "testing-library/no-await-sync-queries": "off",
-      },
-    },
-    {
-      // These rules should not be enabled for JS files
-      files: ["*.js", "*.mjs", "*.cjs"],
-      rules: {
-        "@typescript-eslint/no-unsafe-member-access": "off",
-        "@typescript-eslint/no-unsafe-call": "off",
-        "@typescript-eslint/no-unsafe-assignment": "off",
-        "@typescript-eslint/no-unsafe-return": "off",
       },
     },
     {

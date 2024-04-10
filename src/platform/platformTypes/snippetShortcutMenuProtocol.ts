@@ -17,7 +17,7 @@
 
 import type { UUID } from "@/types/stringTypes";
 
-export type ShortcutSnippet = {
+export type SnippetShortcut = {
   /**
    * The mod component id that owns the command/snippet
    */
@@ -46,12 +46,12 @@ export type ShortcutSnippet = {
  * Protocol for a text command popover triggered by a command key
  * @since 1.8.10
  */
-export interface ShortcutSnippetMenuProtocol {
+export interface SnippetShortcutMenuProtocol {
   /**
    * Register a text command
-   * @param shortcutSnippet the command definition
+   * @param snippetShortcut the command definition
    */
-  register(shortcutSnippet: ShortcutSnippet): void;
+  register(snippetShortcut: SnippetShortcut): void;
 
   /**
    * Unregister all text commands for a given mod component

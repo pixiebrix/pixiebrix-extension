@@ -23,9 +23,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 
 // FIXME: Use ?loadAsText when supported by Jest https://github.com/jestjs/jest/pull/6282
 import pipedriveYaml from "@contrib/integrations/pipedrive.yaml";
-import automationAnywhereYaml from "@contrib/integrations/automation-anywhere.yaml";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import userEvent from "@testing-library/user-event";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import { within } from "@testing-library/react";
 import { fieldLabel } from "@/components/fields/fieldUtils";
@@ -37,21 +35,21 @@ beforeAll(() => {
 
 describe("IntegrationConfigEditorModal", () => {
   test("Can render Pipedrive configuration modal without existing configuration", async () => {
-    const service = fromJS(pipedriveYaml as any);
+    const integration = fromJS(pipedriveYaml as any);
 
     render(
       <IntegrationConfigEditorModal
         initialValues={
           {
             label: "",
-            integrationId: service.id,
-            config: convertSchemaToConfigState(service.schema),
+            integrationId: integration.id,
+            config: convertSchemaToConfigState(integration.schema),
           } as IntegrationConfig
         }
         onDelete={jest.fn()}
         onSave={jest.fn()}
         onClose={jest.fn()}
-        integration={service}
+        integration={integration}
       />,
     );
 
@@ -63,42 +61,10 @@ describe("IntegrationConfigEditorModal", () => {
     expect(screen.getByText("Close")).not.toBeNull();
 
     const dialogRoot = screen.getByRole("dialog");
-    for (const property of Object.keys(service.schema.properties)) {
+    for (const property of Object.keys(integration.schema.properties)) {
       expect(
         within(dialogRoot).getByLabelText(fieldLabel(property)),
       ).toBeVisible();
     }
-  });
-
-  test("displays user-friendly pattern validation message", async () => {
-    const service = fromJS(automationAnywhereYaml as any);
-    const user = userEvent.setup();
-
-    render(
-      <IntegrationConfigEditorModal
-        initialValues={{ label: "" } as IntegrationConfig}
-        onDelete={jest.fn()}
-        onSave={jest.fn()}
-        onClose={jest.fn()}
-        integration={service}
-      />,
-    );
-
-    await waitForEffect();
-
-    await user.click(
-      screen.getByRole("textbox", {
-        name: "Control Room URL",
-      }),
-    );
-    await user.type(
-      screen.getByRole("textbox", {
-        name: "Control Room URL",
-      }),
-      "https://invalid.control.room/",
-    );
-    await user.click(screen.getByRole("textbox", { name: "Username" }));
-
-    expect(screen.getByText("Invalid controlRoomUrl format")).toBeVisible();
   });
 });

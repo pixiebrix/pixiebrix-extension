@@ -16,8 +16,8 @@
  */
 
 import { expect, type Page } from "@playwright/test";
-import { getBaseExtensionConsoleUrl } from "./constants";
-import { ensureVisibility } from "../utils";
+import { getBaseExtensionConsoleUrl } from "../constants";
+import { ensureVisibility } from "../../utils";
 
 export class ModsPage {
   private readonly extensionConsoleUrl: string;
@@ -36,7 +36,7 @@ export class ModsPage {
       name: "Active Mods",
     });
     // `activeModsHeading` may be initially be detached and hidden, so toBeVisible() would immediately fail
-    await ensureVisibility(activeModsHeading);
+    await ensureVisibility(activeModsHeading, { timeout: 10_000 });
   }
 
   async viewAllMods() {

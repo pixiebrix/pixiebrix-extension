@@ -19,17 +19,17 @@ import type { ComponentMeta, ComponentStory } from "@storybook/react";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { uuidv4 } from "@/types/helpers";
 import { action } from "@storybook/addon-actions";
-import ShortcutSnippetMenu from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetMenu";
-import SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
+import SnippetShortcutMenu from "@/contentScript/snippetShortcutMenu/SnippetShortcutMenu";
+import SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
 import { sleep } from "@/utils/timeUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 
 export default {
-  title: "Enhancements/ShortcutSnippetMenu",
-  component: ShortcutSnippetMenu,
-} as ComponentMeta<typeof ShortcutSnippetMenu>;
+  title: "Enhancements/SnippetShortcutMenu",
+  component: SnippetShortcutMenu,
+} as ComponentMeta<typeof SnippetShortcutMenu>;
 
-const Template: ComponentStory<typeof ShortcutSnippetMenu> = ({
+const Template: ComponentStory<typeof SnippetShortcutMenu> = ({
   registry,
   commandKey,
 }) => {
@@ -48,7 +48,7 @@ const Template: ComponentStory<typeof ShortcutSnippetMenu> = ({
       </div>
       {element && (
         <div>
-          <ShortcutSnippetMenu
+          <SnippetShortcutMenu
             commandKey={commandKey}
             registry={registry}
             element={element}
@@ -104,7 +104,7 @@ snippetRegistry.register(emojiSnippet);
 snippetRegistry.register(slowErrorSnippet);
 
 /**
- * Demo of the ShortcutSnippetMenu component to test/verify the query and command handling.
+ * Demo of the SnippetShortcutMenu component to test/verify the query and command handling.
  */
 export const Demo = Template.bind({});
 Demo.args = {

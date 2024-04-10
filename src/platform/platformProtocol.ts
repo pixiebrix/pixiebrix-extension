@@ -34,7 +34,7 @@ import type { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
 import type { DebuggerProtocol } from "@/platform/platformTypes/debuggerProtocol";
 import type { StateProtocol } from "@/platform/platformTypes/stateProtocol";
 import type { TemplateProtocol } from "@/platform/platformTypes/templateProtocol";
-import type { ShortcutSnippetMenuProtocol } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
+import type { SnippetShortcutMenuProtocol } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
 import type { TextSelectionMenuProtocol } from "@/platform/platformTypes/textSelectionMenuProtocol";
 import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
 import type { QuickBarProtocol } from "@/platform/platformTypes/quickBarProtocol";
@@ -170,7 +170,7 @@ export interface PlatformProtocol {
    * The registry for the text editor command popover.
    * @since 1.8.10
    */
-  get shortcutSnippetMenu(): ShortcutSnippetMenuProtocol;
+  get snippetShortcutMenu(): SnippetShortcutMenuProtocol;
 
   /**
    * Protocol for showing notification toasts to the user

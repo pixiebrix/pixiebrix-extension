@@ -36,6 +36,7 @@ import {
   ERROR_TAB_DOES_NOT_EXIST,
   ERROR_TARGET_CLOSED_EARLY,
 } from "@/errors/knownErrorMessages";
+import { BusinessError } from "./businessErrors";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
@@ -422,3 +423,58 @@ export type SimpleErrorObject = {
   message?: string;
   stack?: string;
 };
+
+/**
+ * Change the type of error while preserving existing properties like message, stack and cause
+ * @param error the error to swap
+ * @param ErrorConstructor the new error constructor, it only works if it doesn't
+ * have additional required properties and logic in the constructor
+ */
+export function replaceErrorType(
+  error: unknown,
+  ErrorConstructor: new (message: string) => Error,
+): Error {
+  const newError = new ErrorConstructor(getErrorMessage(error));
+  if (error instanceof Error) {
+    // Preserve the original error's enumerable properties
+    Object.assign(newError, error);
+
+    // Attach known props (they're non-enumerable)
+    newError.stack = error.stack;
+    newError.cause = error.cause;
+  }
+
+  return newError;
+}
+
+/**
+ * Call function and replace the type of thrown errors with the provided ErrorConstructor
+ * @param ErrorConstructor the new error constructor, it only works if it doesn't
+ * have additional required properties and logic in the constructor
+ * @param fn the function to call and replace any thrown errors
+ */
+export function replaceThrownErrors<T>(
+  ErrorConstructor: new (message: string) => Error,
+  fn: () => T,
+): T {
+  try {
+    const returnValue = fn();
+    if (isObject(returnValue) && typeof returnValue.catch === "function") {
+      // eslint-disable-next-line promise/prefer-await-to-then -- More readable with .catch()
+      return returnValue.catch((error: unknown) => {
+        throw replaceErrorType(error, ErrorConstructor);
+      }) as T;
+    }
+
+    return returnValue;
+  } catch (error) {
+    throw replaceErrorType(error, ErrorConstructor);
+  }
+}
+
+/**
+ * Call function and convert all thrown errors to BusinessErrors
+ */
+export function withBusinessError<T>(fn: () => T): T {
+  return replaceThrownErrors(BusinessError, fn);
+}

@@ -20,8 +20,13 @@ import styles from "./Form.module.scss";
 import React, { type ReactElement } from "react";
 // eslint-disable-next-line no-restricted-imports -- importing the original file for our custom component
 import { Alert, Button, Form as BootstrapForm } from "react-bootstrap";
-// eslint-disable-next-line no-restricted-imports -- importing the original file for our custom component
-import { Formik, type FormikHelpers, type FormikValues } from "formik";
+import {
+  // eslint-disable-next-line no-restricted-imports -- importing the original file for our custom component
+  Formik,
+  type FormikErrors,
+  type FormikHelpers,
+  type FormikValues,
+} from "formik";
 import type * as yup from "yup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
@@ -87,6 +92,13 @@ type FormProps = {
   onSubmit: OnSubmit;
 
   /**
+   * Additional validation logic to run on the form
+   */
+  validate?: (
+    values: FormikValues,
+  ) => FormikErrors<FormikValues> | Promise<unknown>;
+
+  /**
    * The yup validation schema for the form
    */
   validationSchema?: yup.AnyObjectSchema;
@@ -138,6 +150,7 @@ const Form: React.FC<FormProps> = ({
   renderStatus = defaultRenderStatus,
   onSubmit,
   validationSchema,
+  validate,
   enableAnalysisFieldErrors,
   showUntouchedErrors,
   showFieldActions,
@@ -153,6 +166,7 @@ const Form: React.FC<FormProps> = ({
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
+      validate={validate}
       validateOnMount={validateOnMount}
       enableReinitialize={enableReinitialize}
       onSubmit={onSubmit}
