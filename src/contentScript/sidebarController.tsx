@@ -211,7 +211,10 @@ export async function renderPanelsIfVisible(): Promise<void> {
   expectContext("contentScript");
 
   if (isLoadedInIframe()) {
-    console.warn("renderPanelsIfVisible should not be called from a frame");
+    // The top-level frame is responsible for managing the panels for the sidebar
+    console.warn(
+      "sidebarController:renderPanelsIfVisible should not be called from a frame",
+    );
     return;
   }
 

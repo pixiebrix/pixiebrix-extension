@@ -103,8 +103,10 @@ export async function init(): Promise<void> {
   void initSidebarActivation();
 
   if (!isLoadedInIframe()) {
-    // FIXME: do we want to do this? It will cause the panels to be reset on non-SPA navigation/reload
-    // Update `sidePanel`
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8209
+    // Reset panels in `sidePanel` on content script initialization (which happens on non-SPA reload/navigation).
+    // That's the safe behavior for now to avoid showing stale data/invalid forms.
+    // Re-examine this call when we implement: https://www.notion.so/pixiebrix/0efdedb6c1e44b088e65106202e08c28
     void renderPanelsIfVisible();
   }
 
