@@ -49,6 +49,7 @@ import {
 } from "@/telemetry/logging";
 import { fetchFeatureFlags } from "@/auth/featureFlagStorage";
 import { locator, refreshServices } from "@/background/locator";
+import { closeTab, focusTab, openTab } from "@/background/tabs";
 
 expectContext("background");
 
@@ -89,6 +90,10 @@ declare global {
     LOCATE_SERVICE: typeof locator.locate;
     REFRESH_SERVICES: typeof refreshServices;
     LOCATOR_REFRESH_LOCAL: typeof locator.refreshLocal;
+
+    OPEN_TAB: typeof openTab;
+    CLOSE_TAB: typeof closeTab;
+    FOCUS_TAB: typeof focusTab;
   }
 }
 
@@ -129,5 +134,9 @@ export default function registerMessenger(): void {
     LOCATE_SERVICE: locator.locate.bind(locator),
     LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),
     REFRESH_SERVICES: refreshServices,
+
+    OPEN_TAB: openTab,
+    CLOSE_TAB: closeTab,
+    FOCUS_TAB: focusTab,
   });
 }

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { RendererABC } from "@/types/bricks/rendererTypes";
-import DocumentViewLazy from "./documentView/DocumentViewLazy";
 import { validateRegistryId } from "@/types/helpers";
 import {
   type BrickArgs,
@@ -28,6 +28,8 @@ import {
   DOCUMENT_ELEMENT_TYPES,
   type DocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
+import IsolatedComponent from "@/components/IsolatedComponent";
+import { type DocumentViewProps } from "./documentView/DocumentViewProps";
 
 export const DOCUMENT_SCHEMA: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -107,12 +109,30 @@ export class DocumentRenderer extends RendererABC {
     }>,
     options: BrickOptions,
   ): Promise<ComponentRef> {
+    const DocumentView: React.FC<DocumentViewProps> = (props) => (
+      <IsolatedComponent
+        name="DocumentView"
+        noStyle={disableParentStyles}
+        lazy={async () =>
+          import(
+            /* webpackChunkName: "isolated/DocumentView" */
+            "./documentView/DocumentView"
+          )
+        }
+        factory={(DocumentView) => <DocumentView {...props} />}
+        // It must fill the frame even if `noStyle` is set, so set it as a style prop
+        // TODO: The parent node should instead make sure that the children fill
+        // the sidebar vertically (via a simple `.d-flex`), but this this requires
+        // verifying that other components aren't broken by this.
+        style={{ height: "100%" }}
+      />
+    );
+
     return {
-      Component: DocumentViewLazy,
+      Component: DocumentView,
       props: {
         body,
         stylesheets,
-        disableParentStyles,
         options,
       },
     };

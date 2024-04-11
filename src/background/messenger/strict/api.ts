@@ -83,3 +83,7 @@ export const services = {
   refresh: getMethod("REFRESH_SERVICES", bg),
   refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
 };
+
+export const openTab = getMethod("OPEN_TAB", bg);
+export const closeTab = getMethod("CLOSE_TAB", bg);
+export const focusTab = getMethod("FOCUS_TAB", bg);
