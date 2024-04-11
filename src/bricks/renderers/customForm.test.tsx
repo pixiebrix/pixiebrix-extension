@@ -27,7 +27,6 @@ import {
   normalizeIncomingFormData,
   normalizeOutgoingFormData,
 } from "./customForm";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 
 import { dataStore } from "@/background/messenger/strict/api";
@@ -38,6 +37,16 @@ import { toExpression } from "@/utils/expressionUtils";
 
 const dataStoreGetMock = jest.mocked(dataStore.get);
 const dataStoreSetSpy = jest.spyOn(dataStore, "set");
+
+// I couldn't get shadow-dom-testing-library working
+jest.mock("react-shadow/emotion", () => ({
+  __esModule: true,
+  default: {
+    div(props: any) {
+      return <div {...props}></div>;
+    },
+  },
+}));
 
 describe("form data normalization", () => {
   const normalizationTestCases = [
@@ -187,7 +196,7 @@ describe("form data normalization", () => {
       />,
     );
 
-    await waitForEffect();
+    await expect(screen.findByRole("button")).resolves.toBeInTheDocument();
 
     // Make sure the form renders the data without errors
     expect(asFragment()).toMatchSnapshot();
@@ -229,10 +238,9 @@ describe("CustomFormRenderer", () => {
     );
 
     render(<Component {...props} />);
-    await waitForEffect();
 
     expect(screen.queryByText("Submit")).not.toBeInTheDocument();
-    expect(screen.getByShadowRole("textbox")).toBeInTheDocument();
+    await expect(screen.findByRole("textbox")).resolves.toBeInTheDocument();
   });
 
   test("Supports postSubmitAction reset", async () => {
@@ -263,19 +271,17 @@ describe("CustomFormRenderer", () => {
 
     render(<Component {...props} />);
 
-    await waitForEffect();
-
-    const textBox = screen.getByShadowRole("textbox");
+    const textBox = await screen.findByRole("textbox");
     await userEvent.type(textBox, "Some text");
     expect(textBox).toHaveValue("Some text");
-    await userEvent.click(screen.getByShadowRole("button", { name: "Submit" }));
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(runPipelineMock).toHaveBeenCalledOnce();
 
     expect(dataStoreSetSpy).not.toHaveBeenCalled();
 
     // Need to get new textbox reference, because the old one is removed when the key changes
-    expect(screen.getByShadowRole("textbox")).toHaveValue("");
+    expect(screen.getByRole("textbox")).toHaveValue("");
   });
 
   test.each([undefined, "save"])(
@@ -308,14 +314,12 @@ describe("CustomFormRenderer", () => {
 
       render(<Component {...props} />);
 
-      await waitForEffect();
-
       const value = "Some text";
-      const textBox = screen.getByShadowRole("textbox");
+      const textBox = await screen.findByRole("textbox");
+
       await userEvent.type(textBox, value);
-      await userEvent.click(
-        screen.getByShadowRole("button", { name: "Submit" }),
-      );
+
+      await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
       expect(runPipelineMock).toHaveBeenCalledOnce();
       expect(dataStoreSetSpy).toHaveBeenCalledExactlyOnceWith("test", {
@@ -323,7 +327,7 @@ describe("CustomFormRenderer", () => {
       });
 
       // Need to get new textbox reference, because the old one is removed if/when the key changes
-      expect(screen.getByShadowRole("textbox")).toHaveValue(value);
+      expect(screen.getByRole("textbox")).toHaveValue(value);
     },
   );
 
