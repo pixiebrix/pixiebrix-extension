@@ -19,6 +19,7 @@ import { test, expect } from "../fixtures/extensionBase";
 import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
+import { getSidebarPage } from "../utils";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -55,4 +56,23 @@ test("can activate a mod with built-in integration", async ({
     page.locator(".form-group").filter({ hasText: /^GIPHY — ✨ Built-in$/ }),
   ).toBeVisible();
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+  await page.goto("/");
+  await page.getByText("Index of  /").click();
+  await page.keyboard.press("Meta+M");
+  await page.getByRole("option", { name: "GIPHY Search" }).click();
+  await page
+    .frameLocator('iframe[title="Modal content"]')
+    .getByLabel("Search Query*")
+    .fill("kitten");
+  await page
+    .frameLocator('iframe[title="Modal content"]')
+    .getByRole("button", { name: "Search" })
+    .click();
+  // TODO: It looks like the "Please click 'ok' to allow PixieBrix to open the sidebar modal is preventing the test from
+  //  continuing
+  await page.pause();
+  const sidebarPage = await getSidebarPage(page, extensionId);
+  await expect(
+    sidebarPage.getByRole("heading", { name: 'GIPHY Results for "kitten"' }),
+  ).toBeVisible();
 });
