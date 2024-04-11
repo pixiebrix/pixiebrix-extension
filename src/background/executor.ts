@@ -203,10 +203,24 @@ export async function requestRunInAllFrames(
 
 export async function openTab(
   this: MessengerMeta,
-  createProperties: Tabs.CreateCreatePropertiesType,
+  {
+    newWindow,
+    ...createProperties
+  }: Tabs.CreateCreatePropertiesType & { newWindow?: boolean },
 ): Promise<void> {
   // Natively links the new tab to its opener + opens it right next to it
   const openerTabId = this.trace[0].tab?.id;
+
+  if (newWindow) {
+    const { tabs } = await browser.windows.create(createProperties);
+
+    if (tabs?.[0]?.id) {
+      rememberOpener(tabs[0]?.id, openerTabId);
+    }
+
+    return;
+  }
+
   const newTab = await browser.tabs.create({
     ...createProperties,
     openerTabId,

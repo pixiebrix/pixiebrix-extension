@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { openTab } from "@/background/messenger/api";
 import excludeAltClicksEtc from "filter-altered-clicks";
 
 /**
@@ -43,7 +44,10 @@ export default function openAllLinksInPopups({
             return;
           }
 
-          window.open(eventTarget.href);
+          // Open a new window instead of a new tab because changing the tab will close the sidebar
+          // https://github.com/pixiebrix/pixiebrix-extension/pull/8216#issuecomment-2048914921
+          // TODO: Remove `newWindow` after https://github.com/microsoft/MicrosoftEdge-Extensions/issues/142
+          void openTab({ url: eventTarget.href, newWindow: true });
           event.preventDefault();
           return;
         }
