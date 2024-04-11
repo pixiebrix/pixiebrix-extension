@@ -15,43 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
-import { isEmpty, partial } from "lodash";
+import React from "react";
+import { partial } from "lodash";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import {
-  COMMON_PROPERTIES,
-  ENTERPRISE_EDITION_COMMON_PROPERTIES,
-} from "@/contrib/automationanywhere/RunBot";
+import { COMMON_PROPERTIES } from "@/contrib/automationanywhere/RunBot";
 import { type Schema } from "@/types/schemaTypes";
 import { useField } from "formik";
-import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import RequireIntegrationConfig from "@/integrations/components/RequireIntegrationConfig";
 import {
-  cachedFetchBotFile,
   cachedFetchDevicePools,
   cachedFetchDevices,
-  cachedFetchFolder,
   cachedFetchRunAsUsers,
-  cachedFetchSchema,
   cachedSearchBots,
 } from "@/contrib/automationanywhere/aaApi";
 import { type WorkspaceType } from "./contract";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { useAsyncEffect } from "use-async-effect";
-import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
 import { joinName } from "@/utils/formUtils";
-import useAsyncState from "@/hooks/useAsyncState";
-import { WORKSPACE_OPTIONS } from "@/contrib/automationanywhere/util";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import RemoteFileInputArguments from "@/contrib/automationanywhere/RemoteFileInputArguments";
+import useWorkspaceTypeOptionsFactoryArgs from "@/contrib/automationanywhere/useWorkspaceTypeOptionsFactoryArgs";
+import WorkspaceTypeField from "@/contrib/automationanywhere/WorkspaceTypeField";
+import FolderIdConfigAlert from "@/contrib/automationanywhere/FolderIdConfigAlert";
+import AwaitResultField from "@/contrib/automationanywhere/AwaitResultField";
 
 const BotLoadingMessage: React.FC = () => <span>Searching bots...</span>;
 const BotNoOptionsMessage: React.FC = () => (
@@ -62,99 +55,30 @@ const BotOptionsContent: React.FunctionComponent<{
   configName: (...keys: string[]) => string;
   sanitizedConfig: SanitizedIntegrationConfig;
 }> = ({ configName, sanitizedConfig: controlRoomConfig }) => {
-  const [{ value: workspaceTypeFieldValue }, , { setValue: setWorkspaceType }] =
-    useField<WorkspaceType | null>(configName("workspaceType"));
-  const [{ value: fileId }] = useField<string>(configName("fileId"));
+  const workspaceTypeFieldName = configName("workspaceType");
+  const [{ value: workspaceTypeFieldValue }] = useField<WorkspaceType | null>(
+    workspaceTypeFieldName,
+  );
+  const fileIdFieldName = configName("fileId");
   const [{ value: isAttended = false }] = useField<boolean>(
     configName("isAttended"),
   );
-  const [{ value: awaitResult }] = useField<boolean | null>(
-    configName("awaitResult"),
-  );
-
-  // If workspaceType is not set, but there is a bot selected, look up the
-  // file ID and set the workspaceType from the file info
-  useAsyncEffect(
-    async (isMounted) => {
-      if (isCommunityControlRoom(controlRoomConfig.config.controlRoomUrl)) {
-        // In community edition, each user just works in their own private workspace
-        await setWorkspaceType("private");
-        return;
-      }
-
-      if (workspaceTypeFieldValue) {
-        return;
-      }
-
-      // Default the workspace type to "private" because that's compatible with both CE and EE
-      if (!fileId) {
-        await setWorkspaceType("private");
-        return;
-      }
-
-      const { workspaceType: workspaceTypeFromBotFile } =
-        await cachedFetchBotFile(controlRoomConfig, fileId);
-      const workspaceTypeNewValue: WorkspaceType =
-        workspaceTypeFromBotFile === "PUBLIC" ? "public" : "private";
-      if (isMounted()) {
-        await setWorkspaceType(workspaceTypeNewValue);
-      }
-    },
-    [controlRoomConfig, fileId, workspaceTypeFieldValue],
-  );
-
-  const remoteSchemaState = useAsyncState(async () => {
-    if (fileId) {
-      return cachedFetchSchema(controlRoomConfig, fileId);
-    }
-
-    return null;
-  }, [controlRoomConfig, fileId]);
-
-  // Don't care about pending/error state b/c we just fall back to displaying the folderId
-  const { data: folder } = useAsyncState(async () => {
-    const folderId = controlRoomConfig.config?.folderId;
-    if (folderId) {
-      return cachedFetchFolder(controlRoomConfig, folderId);
-    }
-
-    return null;
-  }, [controlRoomConfig]);
 
   // Additional args passed to the remote options factories
-  const botSelectFactoryArgs = useMemo(
-    () => ({
-      // Default to "private" because that's compatible with both CE and EE
-      // The workspaceType can be temporarily null when switching between CR configurations
-      workspaceType: workspaceTypeFieldValue ?? "private",
-    }),
-    [workspaceTypeFieldValue],
-  );
+  const botSelectFactoryArgs = useWorkspaceTypeOptionsFactoryArgs({
+    workspaceTypeFieldName,
+    fileIdFieldName,
+    controlRoomConfig,
+  });
 
   return (
     <>
-      {!isCommunityControlRoom(controlRoomConfig.config.controlRoomUrl) && (
-        <ConnectedFieldTemplate
-          label="Workspace"
-          name={configName("workspaceType")}
-          description="The Control Room Workspace"
-          as={SelectWidget}
-          defaultValue="private"
-          options={WORKSPACE_OPTIONS}
-        />
-      )}
+      <WorkspaceTypeField
+        workspaceTypeFieldName={workspaceTypeFieldName}
+        controlRoomConfig={controlRoomConfig}
+      />
 
-      {!isEmpty(controlRoomConfig.config.folderId) && (
-        <Alert variant="info">
-          <FontAwesomeIcon icon={faInfoCircle} /> Displaying available bots from
-          folder{" "}
-          {folder?.name
-            ? `'${folder.name}' (${controlRoomConfig.config.folderId})`
-            : controlRoomConfig.config.folderId}{" "}
-          configured on the integration. To choose from all bots in the
-          workspace, remove the folder from the integration configuration.
-        </Alert>
-      )}
+      <FolderIdConfigAlert controlRoomConfig={controlRoomConfig} />
 
       {
         // Use AsyncRemoteSelectWidget instead of RemoteSelectWidget because the former can handle
@@ -239,36 +163,19 @@ const BotOptionsContent: React.FunctionComponent<{
               )}
             </>
           )}
-          <ConnectedFieldTemplate
-            label="Await Result"
-            name={configName("awaitResult")}
-            description="Wait for the bot to run and return the output"
-            as={BooleanWidget}
+
+          <AwaitResultField
+            awaitResultFieldName={configName("awaitResult")}
+            maxWaitMillisFieldName={configName("maxWaitMillis")}
           />
-          {awaitResult && (
-            <SchemaField
-              label="Result Timeout (Milliseconds)"
-              name={configName("maxWaitMillis")}
-              schema={
-                ENTERPRISE_EDITION_COMMON_PROPERTIES.maxWaitMillis as Schema
-              }
-              // Mark as required so the widget defaults to showing the number entry
-              isRequired
-            />
-          )}
         </>
       )}
 
-      {fileId && (
-        <ChildObjectField
-          heading="Input Arguments"
-          name={configName("data")}
-          schema={remoteSchemaState.data}
-          schemaError={remoteSchemaState.error}
-          schemaLoading={remoteSchemaState.isLoading}
-          isRequired
-        />
-      )}
+      <RemoteFileInputArguments
+        fileIdFieldName={fileIdFieldName}
+        inputDataFieldName={configName("data")}
+        controlRoomConfig={controlRoomConfig}
+      />
     </>
   );
 };
