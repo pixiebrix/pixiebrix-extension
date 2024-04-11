@@ -24,19 +24,23 @@ import { RUN_API_TASK_INPUT_SCHEMA } from "@/contrib/automationanywhere/RunApiTa
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { useField } from "formik";
-import { cachedSearchApiTasks } from "@/contrib/automationanywhere/aaApi";
 import { type WorkspaceType } from "@/contrib/automationanywhere/contract";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
+import { type AsyncSelectStatusMessage } from "@/components/form/widgets/AsyncRemoteSelectWidget";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import RemoteFileInputArguments from "@/contrib/automationanywhere/RemoteFileInputArguments";
 import useWorkspaceTypeOptionsFactoryArgs from "@/contrib/automationanywhere/useWorkspaceTypeOptionsFactoryArgs";
 import WorkspaceTypeField from "@/contrib/automationanywhere/WorkspaceTypeField";
 import FolderIdConfigAlert from "@/contrib/automationanywhere/FolderIdConfigAlert";
 import AwaitResultField from "@/contrib/automationanywhere/AwaitResultField";
+import RemoteFileSelectField from "@/contrib/automationanywhere/RemoteFileSelectField";
+import { cachedSearchApiTasks } from "@/contrib/automationanywhere/aaApi";
 
-const TasksLoadingMessage: React.FC = () => <span>Searching tasks...</span>;
-const TasksNoOptionsMessage: React.FC = () => <span>No tasks found</span>;
+const TasksLoadingMessage: AsyncSelectStatusMessage = () => (
+  <span>Searching tasks...</span>
+);
+const TasksNoOptionsMessage: AsyncSelectStatusMessage = () => (
+  <span>No tasks found</span>
+);
 
 const ApiTaskOptionsContent: React.FC<{
   configName: (...keys: string[]) => string;
@@ -64,33 +68,18 @@ const ApiTaskOptionsContent: React.FC<{
 
       <FolderIdConfigAlert controlRoomConfig={controlRoomConfig} />
 
-      {
-        // Use AsyncRemoteSelectWidget instead of RemoteSelectWidget because the former can handle
-        // Control Rooms with lots of bots by passing in a search query to the api calls
-        // https://github.com/pixiebrix/pixiebrix-extension/issues/5260
-        <ConnectedFieldTemplate
-          label="API Task"
-          name={configName("botId")}
-          description="The Automation Anywhere API Task to run"
-          as={AsyncRemoteSelectWidget}
-          defaultOptions
-          // Ensure we get current results, because there's not a refresh button
-          cacheOptions={false}
-          optionsFactory={cachedSearchApiTasks}
-          loadingMessage={TasksLoadingMessage}
-          noOptonsMessage={TasksNoOptionsMessage}
-          factoryArgs={taskSelectFactoryArgs}
-          config={controlRoomConfig}
-          isClearable
-          placeholder={"Type to search API Tasks..."}
-          // Due to quirks with the memoization inside react-select, we need
-          // to force this to re-render when the integration config or the
-          // workspace fields change in order to force a fetch of new options
-          // from the api.
-          // See: https://github.com/JedWatson/react-select/issues/1581
-          key={`${controlRoomConfig.id}-${workspaceTypeFieldValue}`}
-        />
-      }
+      <RemoteFileSelectField
+        fileIdFieldName={fileIdFieldName}
+        label={"API Task"}
+        description={"The Automation Anywhere API Task to run"}
+        placeholder={"Type to search API Tasks..."}
+        workspaceTypeFieldValue={workspaceTypeFieldValue}
+        controlRoomConfig={controlRoomConfig}
+        optionsFactory={cachedSearchApiTasks}
+        extraFactoryArgs={taskSelectFactoryArgs}
+        loadingMessage={TasksLoadingMessage}
+        noOptionsMessage={TasksNoOptionsMessage}
+      />
 
       <SchemaField
         name={configName("sharedRunAsUserId")}

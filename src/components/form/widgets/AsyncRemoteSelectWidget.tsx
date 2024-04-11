@@ -20,12 +20,12 @@ import {
   type Option,
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import AsyncSelect from "react-select/async";
+import AsyncSelect, { type AsyncProps } from "react-select/async";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useDebouncedCallback } from "use-debounce";
+import { type GroupBase } from "react-select";
 
 type DefaultFactoryArgs = {
   /**
@@ -41,23 +41,25 @@ type DefaultFactoryArgs = {
 export type AsyncOptionsFactory<
   Args extends DefaultFactoryArgs = DefaultFactoryArgs,
   TValue = unknown,
-> = (
-  config: SanitizedIntegrationConfig | null,
-  factoryArgs?: Args,
-) => Promise<Array<Option<TValue>>>;
+> = (factoryArgs?: Args) => Promise<Array<Option<TValue>>>;
 
-type AsyncRemoteSelectWidgetProps<
+export type AsyncRemoteSelectWidgetProps<
   ExtraArgs extends UnknownObject = UnknownObject,
   TValue = unknown,
 > = CustomFieldWidgetProps<TValue, SelectLike<Option<TValue>>> & {
-  isClearable?: boolean;
   optionsFactory: AsyncOptionsFactory<DefaultFactoryArgs & ExtraArgs, TValue>;
-  config: SanitizedIntegrationConfig | null;
-  factoryArgs?: UnknownObject;
-  loadingMessage?: React.FC<{ inputValue: string }>;
-  defaultOptions?: boolean | Array<Option<TValue>>;
-  placeholder?: React.ReactNode;
-};
+  extraFactoryArgs?: ExtraArgs;
+} & Pick<
+    AsyncProps<Option<TValue>, false, GroupBase<Option<TValue>>>,
+    | "isClearable"
+    | "placeholder"
+    | "defaultOptions"
+    | "loadingMessage"
+    | "noOptionsMessage"
+  >;
+
+// See: react-select Props --> loadingMessage, noOptionsMessage
+export type AsyncSelectStatusMessage = React.FC<{ inputValue: string }>;
 
 /**
  * Widget for selecting values retrieved from a 3rd party API based on the user query.
@@ -68,13 +70,12 @@ type AsyncRemoteSelectWidgetProps<
  * @see RemoteSelectWidget
  */
 const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
-  config,
-  optionsFactory,
-  factoryArgs,
-  onChange,
   name,
   value,
-  ...selectProps
+  onChange,
+  optionsFactory,
+  extraFactoryArgs,
+  ...asyncSelectProps
 }) => {
   const [knownOptions, setKnownOptions] = useState<Option[]>([]);
 
@@ -85,8 +86,8 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
     (query: string, callback: (options: Option[]) => void) => {
       const generate = async () => {
         try {
-          const rawOptions = (await optionsFactory(config, {
-            ...factoryArgs,
+          const rawOptions = (await optionsFactory({
+            ...extraFactoryArgs,
             query,
             value,
           })) as Option[];
@@ -152,7 +153,7 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
           loadOptions={loadOptions}
           onChange={patchedOnChange}
           value={selectedOption}
-          {...selectProps}
+          {...asyncSelectProps}
         />
       </div>
     </div>

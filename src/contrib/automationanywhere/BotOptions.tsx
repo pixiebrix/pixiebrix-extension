@@ -37,7 +37,7 @@ import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelect
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
+import { type AsyncSelectStatusMessage } from "@/components/form/widgets/AsyncRemoteSelectWidget";
 import { joinName } from "@/utils/formUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import RemoteFileInputArguments from "@/contrib/automationanywhere/RemoteFileInputArguments";
@@ -45,10 +45,13 @@ import useWorkspaceTypeOptionsFactoryArgs from "@/contrib/automationanywhere/use
 import WorkspaceTypeField from "@/contrib/automationanywhere/WorkspaceTypeField";
 import FolderIdConfigAlert from "@/contrib/automationanywhere/FolderIdConfigAlert";
 import AwaitResultField from "@/contrib/automationanywhere/AwaitResultField";
+import RemoteFileSelectField from "@/contrib/automationanywhere/RemoteFileSelectField";
 
-const BotLoadingMessage: React.FC = () => <span>Searching bots...</span>;
-const BotNoOptionsMessage: React.FC = () => (
-  <span>No bots found for query...</span>
+const BotLoadingMessage: AsyncSelectStatusMessage = () => (
+  <span>Searching bots...</span>
+);
+const BotNoOptionsMessage: AsyncSelectStatusMessage = () => (
+  <span>No bots found</span>
 );
 
 const BotOptionsContent: React.FunctionComponent<{
@@ -77,37 +80,20 @@ const BotOptionsContent: React.FunctionComponent<{
         workspaceTypeFieldName={workspaceTypeFieldName}
         controlRoomConfig={controlRoomConfig}
       />
-
+      s
       <FolderIdConfigAlert controlRoomConfig={controlRoomConfig} />
-
-      {
-        // Use AsyncRemoteSelectWidget instead of RemoteSelectWidget because the former can handle
-        // Control Rooms with lots of bots by passing in a search query to the api calls
-        // https://github.com/pixiebrix/pixiebrix-extension/issues/5260
-        <ConnectedFieldTemplate
-          label="Bot"
-          name={configName("fileId")}
-          description="The Automation Anywhere bot to run"
-          as={AsyncRemoteSelectWidget}
-          defaultOptions
-          // Refresh results when the integration config or workspace type changes
-          cacheOptions={`${controlRoomConfig.id}-${workspaceTypeFieldValue}`}
-          optionsFactory={cachedSearchBots}
-          loadingMessage={BotLoadingMessage}
-          noOptonsMessage={BotNoOptionsMessage}
-          factoryArgs={botSelectFactoryArgs}
-          config={controlRoomConfig}
-          isClearable
-          placeholder={"Type to search Bots..."}
-          // Due to quirks with the memoization inside react-select, we need
-          // to force this to re-render when the integration config or the
-          // workspace fields change in order to force a fetch of new options
-          // from the api.
-          // See: https://github.com/JedWatson/react-select/issues/1581
-          key={`${controlRoomConfig.id}-${workspaceTypeFieldValue}`}
-        />
-      }
-
+      <RemoteFileSelectField
+        fileIdFieldName={fileIdFieldName}
+        label="Bot"
+        description="The Automation Anywhere bot to run"
+        workspaceTypeFieldValue={workspaceTypeFieldValue}
+        controlRoomConfig={controlRoomConfig}
+        optionsFactory={cachedSearchBots}
+        placeholder={"Type to search Bots..."}
+        extraFactoryArgs={botSelectFactoryArgs}
+        loadingMessage={BotLoadingMessage}
+        noOptionsMessage={BotNoOptionsMessage}
+      />
       {isCommunityControlRoom(controlRoomConfig.config.controlRoomUrl) ? (
         <ConnectedFieldTemplate
           label="Device"
@@ -170,7 +156,6 @@ const BotOptionsContent: React.FunctionComponent<{
           />
         </>
       )}
-
       <RemoteFileInputArguments
         fileIdFieldName={fileIdFieldName}
         inputDataFieldName={configName("data")}

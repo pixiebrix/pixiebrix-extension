@@ -23,7 +23,7 @@ import type { WorkspaceType } from "@/contrib/automationanywhere/contract";
 import { cachedFetchBotFile } from "@/contrib/automationanywhere/aaApi";
 import { useMemo } from "react";
 
-type WorkspaceTypeFactoryArgs = {
+export type WorkspaceTypeFactoryArgs = {
   workspaceType: WorkspaceType;
 };
 
