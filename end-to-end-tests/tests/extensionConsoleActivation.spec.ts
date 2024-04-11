@@ -21,6 +21,7 @@ import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 import { test as base } from "@playwright/test";
 import { getSidebarPage } from "../utils";
 import path from "node:path";
+import { VALID_UUID_REGEX } from "@/utils/uuidUtils";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -53,6 +54,12 @@ test("can activate a mod with built-in integration", async ({
 
   await context.route("https://app.pixiebrix.com/api/proxy/", async (route) => {
     if (route.request().serviceWorker()) {
+      expect(route.request().postDataJSON()).toMatchObject({
+        url: "https://api.giphy.com/v1/gifs/search",
+        auth_id: expect.stringMatching(VALID_UUID_REGEX),
+        service_id: "@pixies/giphy/giphy-service",
+      });
+
       return route.fulfill({
         path: path.join(__dirname, "../fixtures/responses/giphy-search.json"),
       });
@@ -75,6 +82,7 @@ test("can activate a mod with built-in integration", async ({
   await page.keyboard.press("Meta+M");
   await page.getByRole("option", { name: "GIPHY Search" }).click();
 
+  // Search for "kitten" keyword
   const giphySearchModal = page.frameLocator('iframe[title="Modal content"]');
   await giphySearchModal.getByLabel("Search Query*").fill("kitten");
   await giphySearchModal.getByRole("button", { name: "Search" }).click();
