@@ -52,6 +52,9 @@ test("can activate a mod with built-in integration", async ({
 }) => {
   const modId = "@pixies/giphy/giphy-search";
 
+  // The giphy search request is proxied through the PixieBrix server, which is kicked off in the background/service
+  // worker. Playwright experimentally supports mocking service worker requests, see
+  // https://playwright.dev/docs/service-workers-experimental#routing-service-worker-requests-only
   await context.route("https://app.pixiebrix.com/api/proxy/", async (route) => {
     if (route.request().serviceWorker()) {
       expect(route.request().postDataJSON()).toMatchObject({
@@ -87,17 +90,8 @@ test("can activate a mod with built-in integration", async ({
   await giphySearchModal.getByLabel("Search Query*").fill("kitten");
   await giphySearchModal.getByRole("button", { name: "Search" }).click();
 
-  const conditionallyPerformUserGesture = async () => {
-    await expect(page.getByRole("button", { name: "OK" })).toBeVisible();
-    await page.getByRole("button", { name: "OK" }).click();
-    return getSidebarPage(page, extensionId);
-  };
-
-  const sidebarPage = await Promise.race([
-    conditionallyPerformUserGesture(),
-    getSidebarPage(page, extensionId),
-  ]);
-
+  // Ensure the sidebar mod is working properly
+  const sidebarPage = await getSidebarPage(page, extensionId);
   await expect(
     sidebarPage.getByRole("heading", { name: 'GIPHY Results for "kitten"' }),
   ).toBeVisible();

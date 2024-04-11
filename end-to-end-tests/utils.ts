@@ -81,10 +81,22 @@ export async function getSidebarPage(page: Page, extensionId: string) {
             .url()
             .startsWith(`chrome-extension://${extensionId}/sidebar.html`),
         );
-    await expect(() => {
-      sidebarPage = findSidebarPage(page);
+
+    // In MV3, the sidebar sometimes requires the user to interact with modal to open the sidebar via a user gesture
+    const conditionallyPerformUserGesture = async () => {
+      await expect(page.getByRole("button", { name: "OK" })).toBeVisible();
+      await page.getByRole("button", { name: "OK" }).click();
+      return findSidebarPage(page);
+    };
+
+    await expect(async () => {
+      sidebarPage = await Promise.race([
+        conditionallyPerformUserGesture(),
+        findSidebarPage(page),
+      ]);
       expect(sidebarPage).toBeDefined();
     }).toPass({ timeout: 5000 });
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion  -- checked above
     return sidebarPage!;
   }
