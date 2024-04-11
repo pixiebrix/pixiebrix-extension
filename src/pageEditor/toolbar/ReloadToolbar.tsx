@@ -27,10 +27,7 @@ import { Events } from "@/telemetry/events";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
-import {
-  allFramesInInspectedTab,
-  inspectedTab,
-} from "@/pageEditor/context/connection";
+import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
@@ -100,10 +97,7 @@ const ReloadToolbar: React.FunctionComponent<{
 
   const run = useCallback(async () => {
     const { asDynamicElement: factory } = ADAPTERS.get(element.type);
-    // Iframes don't control the sidebar, so they should not receive messages regarding it
-    const target =
-      element.type === "actionPanel" ? inspectedTab : allFramesInInspectedTab;
-    updateDynamicElement(target, factory(element));
+    updateDynamicElement(allFramesInInspectedTab, factory(element));
   }, [element]);
 
   const manualRun = async () => {
