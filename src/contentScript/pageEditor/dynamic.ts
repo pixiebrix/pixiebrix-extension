@@ -34,6 +34,7 @@ import { type JsonObject } from "type-fest";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { $safeFind } from "@/utils/domUtils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 let _overlay: Overlay | null = null;
 
@@ -100,6 +101,15 @@ export async function updateDynamicElement({
   extensionPointConfig,
   extension: extensionConfig,
 }: DynamicDefinition): Promise<void> {
+  // Iframes should not attempt to control the sidebar
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/8226
+  if (
+    isLoadedInIframe() &&
+    extensionPointConfig.definition.type === "actionPanel"
+  ) {
+    return;
+  }
+
   expectContext("contentScript");
 
   // HACK: adjust behavior when using the Page Editor
