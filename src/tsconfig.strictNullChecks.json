@@ -78,6 +78,7 @@
     "./background/setToolbarIconFromTheme.test.ts",
     "./background/setToolbarIconFromTheme.ts",
     "./background/sidePanel.ts",
+    "./background/tabs.ts",
     "./background/toolbarBadge.ts",
     "./background/walkthroughModalTrigger.ts",
     "./bricks/available.ts",
