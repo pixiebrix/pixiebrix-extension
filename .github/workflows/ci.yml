@@ -197,6 +197,7 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
+      SHADOW_DOM: open
       SERVICE_URL: https://app.pixiebrix.com
       MV: ${{ matrix.MV }}
       CHROME_MANIFEST_KEY: ${{ matrix.CHROME_MANIFEST_KEY }}

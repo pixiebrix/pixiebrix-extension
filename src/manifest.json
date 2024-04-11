@@ -66,21 +66,15 @@
     "bundles/*",
     "sandbox.html",
     "frame.html",
-    "frame.css",
     "sidebar.html",
-    "sidebar.css",
-    "pageEditor.css",
     "pageScript.js",
     "ephemeralForm.html",
     "walkthroughModal.html",
     "ephemeralPanel.html",
-    "ephemeralModal.css",
-    "DocumentView.css",
-    "CustomFormComponent.css",
-    "EphemeralFormContent.css",
     "audio/*",
     "user-icons/*",
-    "img/*"
+    "img/*",
+    "*.css"
   ],
   "browser_action": {
     "default_title": "PixieBrix",

@@ -20,13 +20,11 @@ import Overlay from "@/vendors/Overlay";
 import ReactDOM from "react-dom";
 import { expandedCssSelector } from "@/utils/inference/selectorInference";
 import { compact, difference, uniq } from "lodash";
-import {
-  type SelectionHandlerType,
-  showSelectionToolPopover,
-} from "@/components/selectionToolPopover/SelectionToolPopover";
+import type { SelectionHandlerType } from "@/components/selectionToolPopover/SelectionToolPopover";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 import { onContextInvalidated } from "webext-events";
+import showSelectionToolPopover from "@/components/selectionToolPopover/showSelectionToolPopover";
 
 /**
  * Primary overlay that moved with the user's mouse/selection.
@@ -372,12 +370,10 @@ export async function userSelectElement({
       showSelectionToolPopover({
         rootElement: multiSelectionToolElement,
         isMulti,
-        handleCancel: cancel,
-        handleDone() {
-          handleDone();
-        },
-        handleMultiChange: handleMultiSelectionChange,
-        handleSimilarChange: handleSimilarSelectionChange,
+        onCancel: cancel,
+        onDone: handleDone,
+        onChangeMultiSelection: handleMultiSelectionChange,
+        onChangeSimilarSelection: handleSimilarSelectionChange,
         setSelectionHandler,
       });
     }

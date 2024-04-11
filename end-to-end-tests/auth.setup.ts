@@ -15,22 +15,55 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expect, test as setup } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
+import { test } from "./fixtures/authSetupFixture";
 import {
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
   SERVICE_URL,
 } from "./env";
+import { ensureVisibility } from "./utils";
 
-const authFile = "end-to-end-tests/.auth/user.json";
-
-setup("authenticate", async ({ page }) => {
+test("authenticate", async ({ contextAndPage: { context, page } }) => {
   await page.goto(`${SERVICE_URL}/login/email`);
-
   await page.getByLabel("Email").fill(E2E_TEST_USER_EMAIL_UNAFFILIATED);
   await page.getByLabel("Password").fill(E2E_TEST_USER_PASSWORD_UNAFFILIATED);
   await page.getByRole("button", { name: "Log in" }).click();
   await page.waitForURL(SERVICE_URL);
+  await ensureVisibility(
+    page.getByText(
+      "Successfully linked the Browser Extension to your PixieBrix account",
+    ),
+    { timeout: 10_000 },
+  );
   await expect(page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED)).toBeVisible();
-  await page.context().storageState({ path: authFile });
+  await expect(page.getByText("Admin Console")).toBeVisible();
+
+  let extensionConsolePage: Page;
+  // Sometimes get the following error "Error: Could not establish connection. Receiving end does not exist."
+  // when trying to click on the "Open Extension Console" button. This happens when the Extension has not fully
+  // initialized to be able to receive messages via the external messenger api, which happens when the Extension
+  // reloads after linking. Thus, we wrap the following with an `expect.toPass` retry.
+  await expect(async () => {
+    // Ensure the extension console loads with authenticated user
+    const extensionConsolePagePromise = context.waitForEvent("page", {
+      timeout: 2000,
+    });
+    await page
+      .locator("button")
+      .filter({ hasText: "Open Extension Console" })
+      .click();
+
+    extensionConsolePage = await extensionConsolePagePromise;
+
+    await expect(extensionConsolePage.locator("#container")).toContainText(
+      "Extension Console",
+    );
+  }).toPass({ timeout: 10_000 });
+
+  await ensureVisibility(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above
+    extensionConsolePage!.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
+    { timeout: 10_000 },
+  );
 });

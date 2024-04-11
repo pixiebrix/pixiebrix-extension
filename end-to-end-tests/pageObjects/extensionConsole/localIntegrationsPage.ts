@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Page } from "@playwright/test";
-import { getBaseExtensionConsoleUrl } from "./constants";
+import { expect, type Page } from "@playwright/test";
+import { getBaseExtensionConsoleUrl } from "../constants";
 
-export class WorkshopPage {
+export class LocalIntegrationsPage {
   private readonly extensionConsoleUrl: string;
 
   constructor(
@@ -32,8 +32,28 @@ export class WorkshopPage {
     await this.page.goto(this.extensionConsoleUrl);
     await this.page
       .getByRole("link", {
-        name: "Workshop",
+        name: "Local Integrations",
       })
       .click();
+
+    await expect(
+      this.page.getByRole("heading", { name: "Local Integrations" }),
+    ).toBeVisible();
+
+    await expect(this.page.getByTestId("loader")).not.toBeVisible();
+  }
+
+  async createNewIntegration(integrationName: string) {
+    await this.page
+      .getByRole("button", { name: "Add Local Integration" })
+      .click();
+
+    await this.page
+      .getByPlaceholder("Start typing to find results")
+      .fill(integrationName);
+
+    await this.page.getByText(integrationName).first().hover();
+
+    await this.page.getByTestId(`${integrationName} button`).click();
   }
 }

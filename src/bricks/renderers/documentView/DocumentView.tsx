@@ -15,21 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "@/vendors/bootstrapWithoutRem.css";
+import "@/sidebar/sidebarBootstrapOverrides.scss";
 import { buildDocumentBranch } from "@/components/documentBuilder/documentTree";
 import React from "react";
-import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { type DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { Stylesheets } from "@/components/Stylesheets";
 import { joinPathParts } from "@/utils/formUtils";
-import StylesheetsContext, {
-  useStylesheetsContextWithDocumentDefault,
-} from "@/components/StylesheetsContext";
 
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,
-  stylesheets: newStylesheets,
-  disableParentStyles,
+  stylesheets,
   options,
   meta,
   onAction,
@@ -44,35 +41,26 @@ const DocumentView: React.FC<DocumentViewProps> = ({
     throw new Error("meta.extensionId is required for DocumentView");
   }
 
-  const { stylesheets } = useStylesheetsContextWithDocumentDefault({
-    newStylesheets,
-    disableParentStyles,
-  });
-
   return (
     // Wrap in a React context provider that passes BrickOptions down to any embedded bricks
     <DocumentContext.Provider value={{ options, onAction }}>
-      <EmotionShadowRoot className="h-100">
-        <StylesheetsContext.Provider value={{ stylesheets }}>
-          <Stylesheets href={stylesheets}>
-            {body.map((documentElement, index) => {
-              const documentBranch = buildDocumentBranch(documentElement, {
-                staticId: joinPathParts("body", "children"),
-                // Root of the document, so no branches taken yet
-                branches: [],
-              });
+      <Stylesheets href={stylesheets}>
+        {body.map((documentElement, index) => {
+          const documentBranch = buildDocumentBranch(documentElement, {
+            staticId: joinPathParts("body", "children"),
+            // Root of the document, so no branches taken yet
+            branches: [],
+          });
 
-              if (documentBranch == null) {
-                return null;
-              }
+          if (documentBranch == null) {
+            return null;
+          }
 
-              const { Component, props } = documentBranch;
-              // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
-              return <Component key={index} {...props} />;
-            })}
-          </Stylesheets>
-        </StylesheetsContext.Provider>
-      </EmotionShadowRoot>
+          const { Component, props } = documentBranch;
+          // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
+          return <Component key={index} {...props} />;
+        })}
+      </Stylesheets>
     </DocumentContext.Provider>
   );
 };

@@ -1,14 +1,14 @@
-import React from "react";
+import React, { type ComponentPropsWithoutRef } from "react";
 import { render, screen } from "@testing-library/react";
-import ShortcutSnippetMenu from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetMenu";
-import SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
+import SnippetShortcutMenu from "@/contentScript/snippetShortcutMenu/SnippetShortcutMenu";
+import SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 // I couldn't get shadow-dom-testing-library working
 jest.mock("react-shadow/emotion", () => ({
   __esModule: true,
   default: {
-    div(props: any) {
+    div(props: ComponentPropsWithoutRef<"div">) {
       return <div {...props}></div>;
     },
   },
@@ -31,7 +31,7 @@ describe("Shortcut Snippet Menu", () => {
     const element: HTMLInputElement = screen.getByRole("textbox");
 
     render(
-      <ShortcutSnippetMenu
+      <SnippetShortcutMenu
         commandKey="\\"
         registry={registry}
         element={element}
@@ -52,7 +52,7 @@ describe("Shortcut Snippet Menu", () => {
     const element: HTMLInputElement = screen.getByRole("textbox");
 
     render(
-      <ShortcutSnippetMenu
+      <SnippetShortcutMenu
         commandKey="\\"
         registry={registry}
         element={element}

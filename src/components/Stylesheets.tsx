@@ -17,6 +17,35 @@
 
 import React, { useState } from "react";
 import { castArray, uniq } from "lodash";
+import oneEvent from "one-event";
+import { assertNotNullish } from "@/utils/nullishUtils";
+
+/**
+ * Detect and extract font-face rules because Chrome fails to load them from
+ * the shadow DOM's stylesheets: https://issues.chromium.org/issues/41085401
+ */
+async function extractFontFaceRulesToMainDocument(
+  link: HTMLLinkElement | null,
+) {
+  const isShadowRoot = link?.getRootNode() instanceof ShadowRoot;
+  if (!isShadowRoot) {
+    return;
+  }
+
+  if (!link.sheet) {
+    await oneEvent(link, "load");
+    assertNotNullish(link.sheet, "The stylesheet wasn't parsed after loading");
+  }
+
+  const fontFaceStylesheet = new CSSStyleSheet();
+  for (const rule of link.sheet.cssRules) {
+    if (rule instanceof CSSFontFaceRule) {
+      fontFaceStylesheet.insertRule(rule.cssText);
+    }
+  }
+
+  document.adoptedStyleSheets.push(fontFaceStylesheet);
+}
 
 /**
  * Loads one or more stylesheets and hides the content until they're done loading.
@@ -24,7 +53,7 @@ import { castArray, uniq } from "lodash";
  * Does not support changing the initial href(s)
  */
 export const Stylesheets: React.FC<{
-  href: string | string[];
+  href?: string | string[];
   /**
    * If true, we mount the component after the stylesheets are loaded.
    * Chrome doesn't focus on the hidden elements so we want to make sure that component is rendered after the stylesheets are loaded.
@@ -33,10 +62,13 @@ export const Stylesheets: React.FC<{
    */
   mountOnLoad?: boolean;
 }> = ({ href, children, mountOnLoad = false }) => {
-  const urls = uniq(castArray(href));
   const [resolved, setResolved] = useState<string[]>([]);
+  if (!href?.length) {
+    // Shortcut if no stylesheets are needed
+    return <>{children}</>;
+  }
 
-  // `every` returns true for empty arrays
+  const urls = uniq(castArray(href));
   const allResolved = urls.every((url) => resolved.includes(url));
 
   return (
@@ -49,6 +81,7 @@ export const Stylesheets: React.FC<{
         return (
           <link
             rel="stylesheet"
+            ref={extractFontFaceRulesToMainDocument}
             href={href}
             key={href}
             onLoad={resolve}

@@ -15,21 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense } from "react";
-import { type DocumentViewProps } from "./DocumentViewProps";
+import { type Page } from "@playwright/test";
+import { getBaseExtensionConsoleUrl } from "../constants";
 
-const DocumentView = React.lazy(
-  async () =>
-    import(
-      /* webpackChunkName: "components-lazy" */
-      "./DocumentView"
-    ),
-);
+export class WorkshopPage {
+  private readonly extensionConsoleUrl: string;
 
-const DocumentViewLazy: React.FC<DocumentViewProps> = (props) => (
-  <Suspense fallback={null}>
-    <DocumentView {...props} />
-  </Suspense>
-);
+  constructor(
+    private readonly page: Page,
+    extensionId: string,
+  ) {
+    this.extensionConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
+  }
 
-export default DocumentViewLazy;
+  async goto() {
+    await this.page.goto(this.extensionConsoleUrl);
+    await this.page
+      .getByRole("link", {
+        name: "Workshop",
+      })
+      .click();
+  }
+}

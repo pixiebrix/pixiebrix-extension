@@ -21,6 +21,7 @@ import { TextEncoder, TextDecoder } from "node:util";
 // eslint-disable-next-line import/no-unassigned-import -- It's a polyfill
 import "urlpattern-polyfill";
 
+process.env.SHADOW_ROOT = "open";
 process.env.SERVICE_URL = "https://app.pixiebrix.com";
 process.env.MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace/";
 
@@ -56,7 +57,6 @@ global.AbortSignal.timeout ??= (milliseconds) => {
 // TODO: Drop after jest-environment-jsdom@30
 AbortSignal.prototype.throwIfAborted ??= function () {
   if (this.aborted) {
-    // eslint-disable-next-line @typescript-eslint/no-throw-literal -- copy implementation from JSDOM
     throw this.reason;
   }
 };
@@ -73,14 +73,12 @@ HTMLImageElement.prototype.decode = jest.fn();
 URL.createObjectURL = jest.fn();
 URL.revokeObjectURL = jest.fn();
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class -- The mocks must be defined in the prototype
 globalThis.CanvasRenderingContext2D = class {};
 globalThis.CanvasRenderingContext2D.prototype.drawImage = jest.fn();
 globalThis.CanvasRenderingContext2D.prototype.getImageData = jest
   .fn()
   .mockReturnValue("image data");
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class -- The mocks must be defined in the prototype
 globalThis.OffscreenCanvas = class {};
 globalThis.OffscreenCanvas.prototype.getContext = jest.fn(
   () => new CanvasRenderingContext2D(),
