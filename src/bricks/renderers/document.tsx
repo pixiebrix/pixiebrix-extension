@@ -120,6 +120,11 @@ export class DocumentRenderer extends RendererABC {
           )
         }
         factory={(DocumentView) => <DocumentView {...props} />}
+        // It must fill the frame even if `noStyle` is set, so set it as a style prop
+        // TODO: The parent node should instead make sure that the children fill
+        // the sidebar vertically (via a simple `.d-flex`), but this this requires
+        // verifying that other components aren't broken by this.
+        style={{ height: "100%" }}
       />
     );
 
