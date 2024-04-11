@@ -101,6 +101,8 @@ export async function updateDynamicElement({
   extensionPointConfig,
   extension: extensionConfig,
 }: DynamicDefinition): Promise<void> {
+  expectContext("contentScript");
+
   // Iframes should not attempt to control the sidebar
   // https://github.com/pixiebrix/pixiebrix-extension/pull/8226
   if (
@@ -109,8 +111,6 @@ export async function updateDynamicElement({
   ) {
     return;
   }
-
-  expectContext("contentScript");
 
   // HACK: adjust behavior when using the Page Editor
   if (extensionPointConfig.definition.type === "trigger") {
