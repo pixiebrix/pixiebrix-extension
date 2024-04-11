@@ -19,6 +19,7 @@ import { type Tabs } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import { type MessengerMeta } from "webext-messenger";
 import { SessionMap } from "@/mv3/SessionStorage";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type TabId = number;
 
@@ -46,28 +47,38 @@ export async function openTab(
   createProperties: Tabs.CreateCreatePropertiesType,
 ): Promise<void> {
   // Natively links the new tab to its opener + opens it right next to it
-  const openerTabId = this.trace[0].tab?.id;
+  const openerTabId = this.trace[0]?.tab?.id;
+
   const newTab = await browser.tabs.create({
     ...createProperties,
     openerTabId,
   });
-  rememberOpener(newTab.id, openerTabId);
+
+  if (openerTabId && newTab.id) {
+    rememberOpener(newTab.id, openerTabId);
+  }
 }
 
 export async function focusTab(this: MessengerMeta): Promise<void> {
-  await browser.tabs.update(this.trace[0].tab.id, {
+  const id = this.trace[0]?.tab?.id;
+  assertNotNullish(id, "focusTab can only be called from a tab");
+  await browser.tabs.update(id, {
     active: true,
   });
 }
 
 export async function closeTab(this: MessengerMeta): Promise<void> {
-  // Allow `closeTab` to return before closing the tab or else the Messenger won't be able to respond #2051
-  setTimeout(async () => browser.tabs.remove(this.trace[0].tab.id), 100);
+  const id = this.trace[0]?.tab?.id;
+  assertNotNullish(id, "closeTab can only be called from a tab");
+
+  // Allow `closeTab` to return before closing the tab or else
+  // the Messenger won't be able to respond #2051
+  setTimeout(async () => browser.tabs.remove(id), 100);
 }
 
 async function linkTabListener({ id, openerTabId }: Tabs.Tab): Promise<void> {
   // `openerTabId` may be missing when created via `tabs.create()`
-  if (openerTabId) {
+  if (id && openerTabId) {
     rememberOpener(id, openerTabId);
   }
 }
