@@ -211,7 +211,8 @@ export async function renderPanelsIfVisible(): Promise<void> {
   expectContext("contentScript");
 
   if (isLoadedInIframe()) {
-    // The top-level frame is responsible for managing the panels for the sidebar
+    // The top-level frame is responsible for managing the panels for the sidebar.
+    // Include this isLoadedInIframe check as a stop gap to prevent accidental calls from iframes.
     console.warn(
       "sidebarController:renderPanelsIfVisible should not be called from a frame",
     );
@@ -306,7 +307,8 @@ export function removeExtensions(extensionIds: UUID[]): void {
 
   console.debug("sidebarController:removeExtensions", { extensionIds });
 
-  // Avoid unnecessary messaging. Also, prevent issues if this method is called as cleanup from a frame
+  // Avoid unnecessary messaging. More importantly, renderPanelsIfVisible should not be called from iframes. Iframes
+  // might call removeExtensions as part of cleanup
   if (extensionIds.length === 0) {
     return;
   }
