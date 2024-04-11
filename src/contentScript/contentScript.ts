@@ -30,6 +30,8 @@ import { onContextInvalidated } from "webext-events";
 import { logPromiseDuration } from "@/utils/promiseUtils";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { type Runtime } from "webextension-polyfill";
+import { isMicrosoftEdge } from "@/utils/browserUtils";
+import openAllLinksInPopups from "@/utils/openAllLinksInPopups";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
@@ -78,6 +80,17 @@ async function initContentScript() {
     console.warn("contentScript: not available in tabless iframes", {
       context,
     });
+
+    // This iframe is likely appearing in the sidePanel, created by the user,
+    // but Edge crashes on [target="_blank"] links in the sidePanel.
+    // https://github.com/pixiebrix/pixiebrix-extension/pull/8216#issuecomment-2048732773
+    if (isMicrosoftEdge()) {
+      openAllLinksInPopups({
+        // If they don't have target="_blank", the user wants the navigation to happen in the same tab
+        onlyTargetBlank: true,
+      });
+    }
+
     return;
   }
 

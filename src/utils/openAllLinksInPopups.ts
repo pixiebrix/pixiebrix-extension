@@ -17,24 +17,38 @@
 
 import excludeAltClicksEtc from "filter-altered-clicks";
 
-const listener = excludeAltClicksEtc((event: MouseEvent) => {
-  // `composedPath` is used to support clicks in an `open` Shadow DOM
-  // https://github.com/pixiebrix/pixiebrix-extension/issues/8206
-  for (const eventTarget of event.composedPath()) {
-    if (eventTarget instanceof HTMLAnchorElement) {
-      window.open(eventTarget.href);
-      event.preventDefault();
-      return;
-    }
-  }
-});
-
 /**
  * Causes all unaltered links to open in new tabs.
  *
  * This is only used for Edge at the moment. You can achieve the same result via a single `<base target="_blank">` tag in the `<head>`.
  * https://github.com/pixiebrix/pixiebrix-extension/issues/7809
  */
-export default function openAllLinksInPopups(signal?: AbortSignal) {
-  document.body.addEventListener("click", listener, { signal });
+export default function openAllLinksInPopups({
+  onlyTargetBlank,
+  signal,
+}: { signal?: AbortSignal; onlyTargetBlank?: boolean } = {}) {
+  document.body.addEventListener(
+    "click",
+    excludeAltClicksEtc((event: MouseEvent) => {
+      // `composedPath` is used to support clicks in an `open` Shadow DOM
+      // https://github.com/pixiebrix/pixiebrix-extension/issues/8206
+      for (const eventTarget of event.composedPath()) {
+        if (eventTarget instanceof HTMLAnchorElement) {
+          if (onlyTargetBlank && eventTarget.target !== "_blank") {
+            return;
+          }
+
+          // Ignore same-page links
+          if (eventTarget.getAttribute("href")?.startsWith("#")) {
+            return;
+          }
+
+          window.open(eventTarget.href);
+          event.preventDefault();
+          return;
+        }
+      }
+    }),
+    { signal },
+  );
 }
