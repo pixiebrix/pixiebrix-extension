@@ -21,6 +21,20 @@ import { LocalIntegrationsPage } from "../../pageObjects/extensionConsole/localI
 import { test as base } from "@playwright/test";
 
 test.describe("Local Integrations Page", () => {
+  test("can create a new integration", async ({ page, extensionId }) => {
+    const localIntegrationsPage = new LocalIntegrationsPage(page, extensionId);
+    await localIntegrationsPage.goto();
+
+    await localIntegrationsPage.createNewIntegration("OpenAI");
+
+    await page.getByLabel("Label").fill("Open AI");
+    await page.getByLabel("API Key").fill("sooper-sekrit");
+
+    await page.getByRole("button", { name: "Save" }).click();
+
+    await expect(page.getByRole("cell", { name: "Open AI" })).toBeVisible();
+  });
+
   test("#8067: blank numeric text integration configuration field validated on save", async ({
     page,
     extensionId,
@@ -51,10 +65,14 @@ test.describe("Local Integrations Page", () => {
 
     // Verify that the other fields are also validated
     await page.getByLabel("Control Room URL").click();
+    await expect(page.getByLabel("Control Room URL")).toBeFocused();
+
     await page.keyboard.press("Tab");
     await expect(
-      page.getByText('String does not match format "uri".'),
+      page.getByText("controlRoomUrl is a required field"),
     ).toBeVisible();
+
+    await expect(page.getByLabel("Username")).toBeFocused();
 
     await page.keyboard.press("Tab");
     await expect(page.getByText("username is a required field")).toBeVisible();

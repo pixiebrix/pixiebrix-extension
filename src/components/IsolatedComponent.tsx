@@ -33,7 +33,7 @@ type LazyFactory<T> = () => Promise<{
 /**
  * Drop the stylesheet injected by `mini-css-extract-plugin` into the main document.
  *
- * @warning The `lazyFactory` function never not be called outside `discardStylesheetsWhilePending`
+ * @warning The `lazyFactory` function should never be called outside `discardStylesheetsWhilePending`
  * because this helper must catch the stylesheets injected when the factory is first called.
  */
 async function discardStylesheetsWhilePending(

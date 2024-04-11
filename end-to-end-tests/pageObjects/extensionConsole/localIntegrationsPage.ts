@@ -52,7 +52,7 @@ export class LocalIntegrationsPage {
       .getByPlaceholder("Start typing to find results")
       .fill(integrationName);
 
-    await this.page.getByText(integrationName).hover();
+    await this.page.getByText(integrationName).first().hover();
 
     await this.page.getByTestId(`${integrationName} button`).click();
   }

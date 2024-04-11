@@ -16,7 +16,7 @@
  */
 
 import {
-  dereference,
+  dereferenceForYup,
   validateBrickInputOutput,
   validatePackageDefinition,
 } from "@/validators/schemaValidator";
@@ -149,7 +149,7 @@ describe("dereference", () => {
     integrationRegistry.register([fromJS(integrationDefinition)]);
 
     await expect(
-      dereference(
+      dereferenceForYup(
         {
           type: "object",
           properties: {
@@ -184,7 +184,7 @@ describe("dereference", () => {
     integrationRegistry.register([fromJS(integrationDefinition)]);
 
     await expect(
-      dereference(
+      dereferenceForYup(
         {
           type: "object",
           properties: {
