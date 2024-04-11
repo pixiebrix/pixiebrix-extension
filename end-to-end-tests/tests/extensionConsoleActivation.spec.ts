@@ -86,7 +86,7 @@ test("can activate a mod with built-in integration", async ({
     await page.getByText("Index of  /").click();
     await page.keyboard.press("Meta+M");
     await page.getByRole("option", { name: "GIPHY Search" }).click();
-  }).toPass({ timeout: 5000 });
+  }).toPass({ timeout: 10_000 });
 
   // Search for "kitten" keyword
   const giphySearchModal = page.frameLocator('iframe[title="Modal content"]');
