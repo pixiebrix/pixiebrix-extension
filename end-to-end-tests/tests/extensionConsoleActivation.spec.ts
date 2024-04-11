@@ -68,7 +68,7 @@ test("can activate a mod with built-in integration", async ({
     .frameLocator('iframe[title="Modal content"]')
     .getByRole("button", { name: "Search" })
     .click();
-  // TODO: It looks like the "Please click 'ok' to allow PixieBrix to open the sidebar modal is preventing the test from
+  // TODO: It looks like the "Please click 'ok' to allow PixieBrix to open the sidebar" modal is preventing the test from
   //  continuing
   await page.pause();
   const sidebarPage = await getSidebarPage(page, extensionId);
