@@ -25,7 +25,13 @@ async function openSidebar(page: Page, extensionId: string) {
   // The mod contains a trigger to open the sidebar on h1. If the sidePanel is already open, it's a NOP
   await page.click("h1");
 
-  return getSidebarPage(page, extensionId);
+  const sideBarPage = await getSidebarPage(page, extensionId);
+
+  await expect(
+    sideBarPage.getByRole("heading", { name: "Sidebar Links" }),
+  ).toBeVisible();
+
+  return sideBarPage;
 }
 
 test("8206: clicking links doesn't crash browser", async ({
@@ -41,17 +47,16 @@ test("8206: clicking links doesn't crash browser", async ({
 
   await page.goto("/");
 
-  let sideBarPage = await openSidebar(page, extensionId);
-
-  await expect(
-    sideBarPage.getByRole("heading", { name: "Sidebar Links" }),
-  ).toBeVisible();
-
-  await sideBarPage.getByTitle("Open Extension Console").click();
-
   // On MS Edge, opening a new tab closes the sidebar, so we have to re-open it on the page after clicking each link
   // See https://github.com/w3c/webextensions/issues/588. Alternatively, it might work to change the
-  // openAllLinksInPopups behavior to open in a new window instead of a new tab.
+  // openAllLinksInPopups behavior to open in a new window instead of a new tab
+  let sideBarPage = await openSidebar(page, extensionId);
+
+  // FIXME: on MS Edge, the click steps fail because MS Edge closes the sidebar when the new tab is opened
+  //   Error: locator.click: Target page, context or browser has been closed
+  // Using `void` didn't seem to help
+  await sideBarPage.getByTitle("Open Extension Console").click();
+
   sideBarPage = await openSidebar(page, extensionId);
 
   await sideBarPage.getByRole("link", { name: "Markdown Text Link" }).click();
