@@ -20,6 +20,7 @@ import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import { getSidebarPage } from "../utils";
+import path from "node:path";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -46,8 +47,19 @@ test("can activate a mod with no config options", async ({
 test("can activate a mod with built-in integration", async ({
   page,
   extensionId,
+  context,
 }) => {
   const modId = "@pixies/giphy/giphy-search";
+
+  await context.route("https://app.pixiebrix.com/api/proxy/", async (route) => {
+    if (route.request().serviceWorker()) {
+      return route.fulfill({
+        path: path.join(__dirname, "../fixtures/responses/giphy-search.json"),
+      });
+    }
+
+    return route.continue();
+  });
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();
@@ -57,21 +69,27 @@ test("can activate a mod with built-in integration", async ({
   ).toBeVisible();
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
   await page.goto("/");
+
+  // Open quickbar
   await page.getByText("Index of  /").click();
   await page.keyboard.press("Meta+M");
   await page.getByRole("option", { name: "GIPHY Search" }).click();
-  await page
-    .frameLocator('iframe[title="Modal content"]')
-    .getByLabel("Search Query*")
-    .fill("kitten");
-  await page
-    .frameLocator('iframe[title="Modal content"]')
-    .getByRole("button", { name: "Search" })
-    .click();
-  // TODO: It looks like the "Please click 'ok' to allow PixieBrix to open the sidebar" modal is preventing the test from
-  //  continuing
-  await page.pause();
-  const sidebarPage = await getSidebarPage(page, extensionId);
+
+  const giphySearchModal = page.frameLocator('iframe[title="Modal content"]');
+  await giphySearchModal.getByLabel("Search Query*").fill("kitten");
+  await giphySearchModal.getByRole("button", { name: "Search" }).click();
+
+  const conditionallyPerformUserGesture = async () => {
+    await expect(page.getByRole("button", { name: "OK" })).toBeVisible();
+    await page.getByRole("button", { name: "OK" }).click();
+    return getSidebarPage(page, extensionId);
+  };
+
+  const sidebarPage = await Promise.race([
+    conditionallyPerformUserGesture(),
+    getSidebarPage(page, extensionId),
+  ]);
+
   await expect(
     sidebarPage.getByRole("heading", { name: 'GIPHY Results for "kitten"' }),
   ).toBeVisible();
