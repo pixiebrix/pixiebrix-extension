@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Runtime, type Tabs } from "webextension-polyfill";
+import { type Runtime } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import {
   errorTabDoesntExist,
@@ -28,31 +28,16 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import type { RunBrickRequest } from "@/contentScript/messenger/runBrickTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { canAccessTab } from "@/permissions/permissionsUtils";
-import { SessionMap } from "@/mv3/SessionStorage";
 import { allSettled } from "@/utils/promiseUtils";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import { forEachTab } from "@/utils/extensionUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
-
-type TabId = number;
+import { tabToOpener, tabToTarget } from "./tabs";
 
 // Arbitrary number of tabs above which performance *might* be degraded
 const LARGE_AMOUNT_OF_TABS = 20;
-
-// TODO: One tab could have multiple targets, but `tabToTarget` currently only supports one at a time
-const tabToTarget = new SessionMap<TabId>("tabToTarget", import.meta.url);
-
-// We shouldn't need to store this value, but Chrome loses it often
-// https://bugs.chromium.org/p/chromium/issues/detail?id=967150
-const tabToOpener = new SessionMap<TabId>("tabToOpener", import.meta.url);
-
-function rememberOpener(newTabId: TabId, openerTabId: TabId): void {
-  // FIXME: include frame information in tabToTarget
-  void tabToTarget.set(String(openerTabId), newTabId);
-  void tabToOpener.set(String(newTabId), openerTabId);
-}
 
 async function safelyRunBrick(
   { tabId, frameId }: Target,
@@ -201,31 +186,6 @@ export async function requestRunInAllFrames(
   return fulfilled;
 }
 
-export async function openTab(
-  this: MessengerMeta,
-  createProperties: Tabs.CreateCreatePropertiesType,
-): Promise<void> {
-  // Natively links the new tab to its opener + opens it right next to it
-  const openerTabId = this.trace[0].tab?.id;
-  const newTab = await browser.tabs.create({
-    ...createProperties,
-    openerTabId,
-  });
-  rememberOpener(newTab.id, openerTabId);
-}
-
-async function linkTabListener({ id, openerTabId }: Tabs.Tab): Promise<void> {
-  // `openerTabId` may be missing when created via `tabs.create()`
-  if (openerTabId) {
-    rememberOpener(id, openerTabId);
-  }
-}
-
-function unlinkTabListener(id: number): void {
-  void tabToTarget.delete(String(id));
-  void tabToOpener.delete(String(id));
-}
-
 // eslint-disable-next-line @typescript-eslint/promise-function-async -- Message handlers must return undefined to "pass through", not Promise<undefined>
 function onMessage(
   message: unknown,
@@ -248,20 +208,7 @@ function onMessage(
 function initExecutor(): void {
   expectContext("background");
 
-  browser.tabs.onCreated.addListener(linkTabListener);
-  browser.tabs.onRemoved.addListener(unlinkTabListener);
   browser.runtime.onMessage.addListener(onMessage);
-}
-
-export async function focusTab(this: MessengerMeta): Promise<void> {
-  await browser.tabs.update(this.trace[0].tab.id, {
-    active: true,
-  });
-}
-
-export async function closeTab(this: MessengerMeta): Promise<void> {
-  // Allow `closeTab` to return before closing the tab or else the Messenger won't be able to respond #2051
-  setTimeout(async () => browser.tabs.remove(this.trace[0].tab.id), 100);
 }
 
 export default initExecutor;

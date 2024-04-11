@@ -33,13 +33,11 @@ export const setPartnerCopilotData = getNotifier(
   bg,
 );
 
-export const focusTab = getMethod("FOCUS_TAB", bg);
 export const removeExtensionForEveryTab = getNotifier(
   "REMOVE_EXTENSION_EVERY_TAB",
   bg,
 );
 
-export const closeTab = getMethod("CLOSE_TAB", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 
 /**
@@ -47,7 +45,6 @@ export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
  */
 export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
 export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
-export const openTab = getMethod("OPEN_TAB", bg);
 
 export const requestRun = {
   inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
