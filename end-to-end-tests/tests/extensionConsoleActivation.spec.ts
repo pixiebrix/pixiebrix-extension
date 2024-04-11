@@ -81,10 +81,12 @@ test("can activate a mod with built-in integration", async ({
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
   await page.goto("/");
 
-  // Open quickbar
-  await page.getByText("Index of  /").click();
-  await page.keyboard.press("Meta+M");
-  await page.getByRole("option", { name: "GIPHY Search" }).click();
+  // Open quickbar; it may take a few seconds for the context script to be ready
+  await expect(async () => {
+    await page.getByText("Index of  /").click();
+    await page.keyboard.press("Meta+M");
+    await page.getByRole("option", { name: "GIPHY Search" }).click();
+  }).toPass({ timeout: 5000 });
 
   // Search for "kitten" keyword
   const giphySearchModal = page.frameLocator('iframe[title="Modal content"]');
