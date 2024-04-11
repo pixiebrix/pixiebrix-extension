@@ -55,6 +55,7 @@ import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import axios from "axios";
 import { initDeferredLoginController } from "@/contentScript/integrations/deferredLoginController";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 setPlatform(contentScriptPlatform);
 
@@ -101,8 +102,11 @@ export async function init(): Promise<void> {
   initSidebarFocusEvents();
   void initSidebarActivation();
 
-  // Update `sidePanel`
-  void renderPanelsIfVisible();
+  if (!isLoadedInIframe()) {
+    // FIXME: do we want to do this? It will cause the panels to be reset on non-SPA navigation/reload
+    // Update `sidePanel`
+    void renderPanelsIfVisible();
+  }
 
   // Let the partner page know
   initPartnerIntegrations();

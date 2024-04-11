@@ -210,6 +210,11 @@ export async function updateSidebar(
 export async function renderPanelsIfVisible(): Promise<void> {
   expectContext("contentScript");
 
+  if (isLoadedInIframe()) {
+    console.warn("renderPanelsIfVisible should not be called from a frame");
+    return;
+  }
+
   if (await isSidePanelOpen()) {
     void sidebarInThisTab.renderPanels(getTimedSequence(), panels);
   } else {
@@ -297,6 +302,11 @@ export function removeExtensions(extensionIds: UUID[]): void {
   expectContext("contentScript");
 
   console.debug("sidebarController:removeExtensions", { extensionIds });
+
+  // Avoid unnecessary messaging. Also, prevent issues if this method is called as cleanup from a frame
+  if (extensionIds.length === 0) {
+    return;
+  }
 
   // `panels` is const, so replace the contents
   const current = panels.splice(0);
