@@ -57,6 +57,7 @@ test("can activate a mod with built-in integration", async ({
   // https://playwright.dev/docs/service-workers-experimental#routing-service-worker-requests-only
   await context.route("https://app.pixiebrix.com/api/proxy/", async (route) => {
     if (route.request().serviceWorker()) {
+      // Ensure the mod was properly activated with the built-in integration configuration
       expect(route.request().postDataJSON()).toMatchObject({
         url: "https://api.giphy.com/v1/gifs/search",
         auth_id: expect.stringMatching(VALID_UUID_REGEX),
