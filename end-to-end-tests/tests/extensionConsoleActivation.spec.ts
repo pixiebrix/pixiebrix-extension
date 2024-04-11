@@ -81,6 +81,8 @@ test("can activate a mod with built-in integration", async ({
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
   await page.goto("/");
 
+  await page.waitForTimeout(5000);
+
   // Open quickbar; it may take a few seconds for the content script to be ready
   await expect(async () => {
     await page.getByText("Index of  /").click();
