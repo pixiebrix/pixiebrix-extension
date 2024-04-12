@@ -93,21 +93,21 @@ const AddToRecipeModal: React.FC = () => {
       return;
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- recipe id is from select options
-    const recipeMetadata = modMetadataById[recipeId];
+    // eslint-disable-next-line security/detect-object-injection -- mod id is from select options
+    const modMetadata = modMetadataById[recipeId];
 
     try {
-      const elementId = activeModComponentFormState.uuid;
+      const modComponentId = activeModComponentFormState.uuid;
       dispatch(
         editorActions.addElementToRecipe({
-          elementId,
-          recipeMetadata,
+          elementId: modComponentId,
+          recipeMetadata: modMetadata,
           keepLocalCopy,
         }),
       );
       if (!keepLocalCopy) {
         await removeModComponentFromStorage({
-          extensionId: elementId,
+          extensionId: modComponentId,
         });
       }
 

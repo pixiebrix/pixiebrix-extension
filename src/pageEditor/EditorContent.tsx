@@ -58,8 +58,8 @@ const EditorContent: React.FC = () => {
   useEffect(() => {
     console.debug("EditorContent debug effect", {
       url,
-      isPendingInstalledExtensions: isPendingInstalledModComponents,
-      isPendingDynamicExtensions: isPendingDynamicModComponents,
+      isPendingInstalledModComponents,
+      isPendingDynamicModComponents,
       isConnectingToContentScript,
     });
   }, [
@@ -69,7 +69,7 @@ const EditorContent: React.FC = () => {
     isConnectingToContentScript,
   ]);
 
-  const isPendingExtensions =
+  const isPendingModComponents =
     isPendingInstalledModComponents || isPendingDynamicModComponents;
 
   // Fetch-and-cache marketplace content for rendering in the Brick Selection modal
@@ -121,7 +121,7 @@ const EditorContent: React.FC = () => {
     return <ModEditorPane />;
   }
 
-  if (isPendingExtensions || isConnectingToContentScript) {
+  if (isPendingModComponents || isConnectingToContentScript) {
     // Avoid flashing the panes below while the state is loading. This condition should probably
     // not be moved below <HomePane>
     // It loads fast enough to not require a <Loader> either.

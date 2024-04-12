@@ -194,7 +194,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     };
   }, [dispatch]);
 
-  const extensionPointLabel = activeModComponentFormState?.type
+  const starterBrickLabel = activeModComponentFormState?.type
     ? ADAPTERS.get(activeModComponentFormState.type).label
     : "";
 
@@ -251,7 +251,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
               <div className={styles.sourceItem} key={source}>
                 <SourceLabel
                   source={source}
-                  extensionPointLabel={extensionPointLabel}
+                  extensionPointLabel={starterBrickLabel}
                   blocksInfo={blocksInfo}
                   allBlocks={allBricks}
                 />
@@ -269,7 +269,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
           <div className={styles.sourceItem} key={source}>
             <SourceLabel
               source={source}
-              extensionPointLabel={extensionPointLabel}
+              extensionPointLabel={starterBrickLabel}
               blocksInfo={blocksInfo}
               allBlocks={allBricks}
             />

@@ -106,11 +106,11 @@ class ReduxAnalysisManager {
           return;
         }
 
-        const extensionId = activeModComponentFormState.uuid;
+        const modComponentId = activeModComponentFormState.uuid;
 
         listenerApi.dispatch(
           analysisSlice.actions.startAnalysis({
-            extensionId,
+            extensionId: modComponentId,
             analysisId: analysis.id,
           }),
         );
@@ -120,7 +120,7 @@ class ReduxAnalysisManager {
         } catch (error) {
           listenerApi.dispatch(
             analysisSlice.actions.failAnalysis({
-              extensionId,
+              extensionId: modComponentId,
               analysisId: analysis.id,
               error: serializeError(error),
             }),
@@ -130,14 +130,18 @@ class ReduxAnalysisManager {
 
         listenerApi.dispatch(
           analysisSlice.actions.finishAnalysis({
-            extensionId,
+            extensionId: modComponentId,
             analysisId: analysis.id,
             annotations: analysis.getAnnotations(),
           }),
         );
 
         if (effectConfig?.postAnalysisAction) {
-          effectConfig.postAnalysisAction(analysis, extensionId, listenerApi);
+          effectConfig.postAnalysisAction(
+            analysis,
+            modComponentId,
+            listenerApi,
+          );
         }
       };
 

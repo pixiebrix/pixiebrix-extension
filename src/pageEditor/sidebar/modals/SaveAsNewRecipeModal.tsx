@@ -30,8 +30,8 @@ const SaveAsNewRecipeModal: React.FC = () => {
     selectEditorModalVisibilities,
   );
 
-  const recipeId = useSelector(selectActiveModId);
-  const { data: recipe, isFetching } = useOptionalModDefinition(recipeId);
+  const modId = useSelector(selectActiveModId);
+  const { data: recipe, isFetching } = useOptionalModDefinition(modId);
   const recipeName = recipe?.metadata?.name ?? "this mod";
 
   const dispatch = useDispatch();
