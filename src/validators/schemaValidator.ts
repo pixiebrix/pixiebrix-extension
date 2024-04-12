@@ -204,7 +204,7 @@ const builtInSchemaResolver: ResolverOptions = {
  * Should generally be set to true when using for runtime validation, but false when using for UI entry validation.
  * @see $RefParser.dereference
  */
-export async function dereference(
+export async function dereferenceForYup(
   schema: Schema,
   {
     sanitizeIntegrationDefinitions,
@@ -293,6 +293,37 @@ export async function validateBrickInputOutput(
     // ValidatorSchema type are all optional, and we've already previously
     // "unfrozen" the schema object, so the optional properties can be set on
     // the object at run time successfully.
+    ...(validatorSchema as ValidatorSchema),
+  });
+  validator.addSchema(refs.values() as ValidatorSchema);
+  return validator.validate(instance ?? null);
+}
+
+/**
+ * Asynchronously validate an integration configuration against its schema.
+ *
+ * Dereferences any `$ref`s in the schema.
+ */
+export async function validateIntegrationConfiguration(
+  schema: Schema,
+  instance: unknown,
+): Promise<ValidationResult> {
+  // See validateBrickInputOutput for comments on the schema unfreezing and casting.
+  const validatorSchema = cloneDeep(schema);
+
+  const refs = await $RefParser.resolve(validatorSchema, {
+    resolve: {
+      builtInSchemaResolver,
+      // Disable built-in resolvers: https://apitools.dev/json-schema-ref-parser/docs/options.html
+      http: false,
+      file: false,
+    },
+  });
+
+  const validator = new Validator({
+    // See validateBrickInputOutput for comments on the $id.
+    $id: "https://app.pixiebrix.com/schemas/value",
+    // See validateBrickInputOutput for comments on the casting.
     ...(validatorSchema as ValidatorSchema),
   });
   validator.addSchema(refs.values() as ValidatorSchema);

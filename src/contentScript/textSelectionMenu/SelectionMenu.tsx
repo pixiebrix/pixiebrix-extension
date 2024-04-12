@@ -15,16 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "@/contentScript/textSelectionMenu/SelectionMenu.scss";
 import React from "react";
-// We're rendering in the shadow DOM, so we need to load styles as a URL. loadAsUrl doesn't work with module mangling
-import stylesUrl from "@/contentScript/textSelectionMenu/SelectionMenu.scss?loadAsUrl";
 import Icon from "@/icons/Icon";
 import { splitStartingEmoji } from "@/utils/stringUtils";
 import { truncate } from "lodash";
 import useDocumentSelection from "@/hooks/useDocumentSelection";
 import type { Nullishable } from "@/utils/nullishUtils";
-import { Stylesheets } from "@/components/Stylesheets";
-import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { getSelection } from "@/utils/selectionController";
 import { type RegisteredAction } from "@/contentScript/textSelectionMenu/ActionRegistry";
 import type ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
@@ -95,26 +92,21 @@ const SelectionMenu: React.FC<
 
   // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menu_role
   return (
-    // Prevent page styles from leaking into the menu
-    <EmotionShadowRoot mode="open" style={{ all: "initial" }}>
-      <Stylesheets href={[stylesUrl]}>
-        <div
-          role="menu"
-          aria-orientation="horizontal"
-          aria-label="Text selection menu"
-          className="toolbar"
-        >
-          {[...actions.entries()].map(([id, action]) => (
-            <ToolbarItem
-              key={id}
-              {...action}
-              onHide={onHide}
-              selection={selection}
-            />
-          ))}
-        </div>
-      </Stylesheets>
-    </EmotionShadowRoot>
+    <div
+      role="menu"
+      aria-orientation="horizontal"
+      aria-label="Text selection menu"
+      className="toolbar"
+    >
+      {[...actions.entries()].map(([id, action]) => (
+        <ToolbarItem
+          key={id}
+          {...action}
+          onHide={onHide}
+          selection={selection}
+        />
+      ))}
+    </div>
   );
 };
 

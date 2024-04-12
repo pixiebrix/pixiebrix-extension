@@ -22,18 +22,17 @@ import React, {
   useReducer,
   useRef,
 } from "react";
-import type SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
-import useShortcutSnippetRegistry from "@/contentScript/shortcutSnippetMenu/useShortcutSnippetRegistry";
+import useSnippetShortcutRegistry from "@/contentScript/snippetShortcutMenu/useSnippetShortcutRegistry";
 import { type TextEditorElement } from "@/types/inputTypes";
-import useKeyboardQuery from "@/contentScript/shortcutSnippetMenu/useKeyboardQuery";
+import useKeyboardQuery from "@/contentScript/snippetShortcutMenu/useKeyboardQuery";
 import cx from "classnames";
-import stylesUrl from "./ShortcutSnippetMenu.scss?loadAsUrl";
+import stylesUrl from "./SnippetShortcutMenu.scss?loadAsUrl";
 import {
   initialState,
-  shortcutSnippetMenuSlice,
+  snippetShortcutMenuSlice,
   type MenuState,
-  selectSelectedShortcutSnippet,
-} from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuSlice";
+  selectSelectedSnippetShortcut,
+} from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuSlice";
 import { getElementText } from "@/utils/editorUtils";
 import { isEmpty } from "lodash";
 import reportEvent from "@/telemetry/reportEvent";
@@ -44,14 +43,15 @@ import useIsMounted from "@/hooks/useIsMounted";
 import {
   normalizePreview,
   replaceAtCommandKey,
-} from "@/contentScript/shortcutSnippetMenu/shortcutSnippetUtils";
-import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
+} from "@/contentScript/snippetShortcutMenu/snippetShortcutUtils";
+import type { SnippetShortcut } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
   faCaretUp,
   faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import type SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
 
 type MenuActionCallbacks = {
   onHide: () => void;
@@ -73,7 +73,7 @@ const SnippetTitle: React.FunctionComponent<{
 );
 
 const ResultItem: React.FunctionComponent<{
-  snippet: ShortcutSnippet;
+  snippet: SnippetShortcut;
   isSelected: boolean;
   disabled: boolean;
   onClick: () => void;
@@ -111,18 +111,18 @@ const ResultItem: React.FunctionComponent<{
 };
 
 const StatusBar: React.FunctionComponent<{
-  activeShortcutSnippet?: MenuState["activeShortcutSnippet"];
+  activeSnippetShortcut?: MenuState["activeSnippetShortcut"];
   results: MenuState["results"];
-}> = ({ activeShortcutSnippet, results }) => {
-  if (activeShortcutSnippet?.state.isFetching) {
+}> = ({ activeSnippetShortcut, results }) => {
+  if (activeSnippetShortcut?.state.isFetching) {
     return (
       <div role="status" className="status status--fetching">
-        Running shortcut snippet: {activeShortcutSnippet.shortcutSnippet.title}
+        Running shortcut snippet: {activeSnippetShortcut.snippetShortcut.title}
       </div>
     );
   }
 
-  if (activeShortcutSnippet?.state.isError) {
+  if (activeSnippetShortcut?.state.isError) {
     return (
       <div role="status" className="status status--error">
         Error running last shortcut snippet
@@ -157,7 +157,7 @@ const menuFooter: React.ReactElement = (
   </div>
 );
 
-const ShortcutSnippetMenu: React.FunctionComponent<
+const SnippetShortcutMenu: React.FunctionComponent<
   {
     commandKey: string;
     registry: SnippetRegistry;
@@ -166,37 +166,37 @@ const ShortcutSnippetMenu: React.FunctionComponent<
 > = ({ commandKey, registry, element, onHide }) => {
   const isMounted = useIsMounted();
   const [state, dispatch] = useReducer(
-    shortcutSnippetMenuSlice.reducer,
+    snippetShortcutMenuSlice.reducer,
     initialState,
   );
-  const selectedShortcutSnippet = selectSelectedShortcutSnippet(state);
-  const selectedShortcutSnippetRef = useRef(selectedShortcutSnippet);
-  const shortcutSnippets = useShortcutSnippetRegistry(registry);
+  const selectedSnippetShortcut = selectSelectedSnippetShortcut(state);
+  const selectedSnippetShortcutRef = useRef(selectedSnippetShortcut);
+  const snippetShortcuts = useSnippetShortcutRegistry(registry);
 
   const fillAtCursor = useCallback(
     async ({
-      shortcutSnippet,
+      snippetShortcut,
       query,
     }: {
-      shortcutSnippet: ShortcutSnippet;
+      snippetShortcut: SnippetShortcut;
       query: string;
     }) => {
       // Async thunks don't work with React useReducer so write async logic as a hook
       // https://github.com/reduxjs/redux-toolkit/issues/754
       dispatch(
-        shortcutSnippetMenuSlice.actions.setShortcutSnippetLoading({
-          shortcutSnippet,
+        snippetShortcutMenuSlice.actions.setSnippetShortcutLoading({
+          snippetShortcut,
         }),
       );
       try {
         reportEvent(Events.SHORTCUT_SNIPPET_RUN);
-        const text = await shortcutSnippet.handler(getElementText(element));
+        const text = await snippetShortcut.handler(getElementText(element));
         await replaceAtCommandKey({ commandKey, query, element, text });
         onHide();
         if (isMounted()) {
           // We're setting success state for Storybook. In practice, the menu will be unmounted via onHide()
           dispatch(
-            shortcutSnippetMenuSlice.actions.setShortcutSnippetSuccess({
+            snippetShortcutMenuSlice.actions.setSnippetShortcutSuccess({
               text,
             }),
           );
@@ -204,7 +204,7 @@ const ShortcutSnippetMenu: React.FunctionComponent<
       } catch (error) {
         console.warn("Error filling at cursor", error);
         dispatch(
-          shortcutSnippetMenuSlice.actions.setShortcutSnippetError({ error }),
+          snippetShortcutMenuSlice.actions.setSnippetShortcutError({ error }),
         );
       }
     },
@@ -216,39 +216,39 @@ const ShortcutSnippetMenu: React.FunctionComponent<
     commandKey,
     // OK to pass handlers directly because hook uses useRef
     async onSubmit(query) {
-      if (selectedShortcutSnippetRef.current != null) {
+      if (selectedSnippetShortcutRef.current != null) {
         await fillAtCursor({
-          shortcutSnippet: selectedShortcutSnippetRef.current,
+          snippetShortcut: selectedSnippetShortcutRef.current,
           query,
         });
       }
     },
     onOffset(offset: number) {
       dispatch(
-        shortcutSnippetMenuSlice.actions.offsetSelectedIndex({ offset }),
+        snippetShortcutMenuSlice.actions.offsetSelectedIndex({ offset }),
       );
     },
   });
 
   useEffect(() => {
     // Auto-hide if the user deletes the commandKey
-    if (selectedShortcutSnippetRef.current && query == null) {
+    if (selectedSnippetShortcutRef.current && query == null) {
       onHide();
     }
 
     // Make current value available to onSubmit handler for useKeyboardQuery
-    selectedShortcutSnippetRef.current = selectedShortcutSnippet;
-  }, [selectedShortcutSnippet, query, onHide]);
+    selectedSnippetShortcutRef.current = selectedSnippetShortcut;
+  }, [selectedSnippetShortcut, query, onHide]);
 
   // Search effect
   useEffect(() => {
     dispatch(
-      shortcutSnippetMenuSlice.actions.search({
-        shortcutSnippets,
+      snippetShortcutMenuSlice.actions.search({
+        snippetShortcuts,
         query,
       }),
     );
-  }, [query, shortcutSnippets, dispatch]);
+  }, [query, snippetShortcuts, dispatch]);
 
   return (
     // Prevent page styles from leaking into the menu
@@ -261,20 +261,20 @@ const ShortcutSnippetMenu: React.FunctionComponent<
 
             {state.results.map((snippet) => {
               const isSelected =
-                selectedShortcutSnippet?.shortcut === snippet.shortcut;
+                selectedSnippetShortcut?.shortcut === snippet.shortcut;
               return (
                 <ResultItem
                   key={snippet.shortcut}
                   snippet={snippet}
                   disabled={
-                    state.activeShortcutSnippet?.state.isFetching ?? false
+                    state.activeSnippetShortcut?.state.isFetching ?? false
                   }
                   isSelected={isSelected}
                   commandKey={commandKey}
                   query={state.query ?? ""}
                   onClick={async () => {
                     await fillAtCursor({
-                      shortcutSnippet: snippet,
+                      snippetShortcut: snippet,
                       query: query ?? "",
                     });
                   }}
@@ -289,4 +289,4 @@ const ShortcutSnippetMenu: React.FunctionComponent<
   );
 };
 
-export default ShortcutSnippetMenu;
+export default SnippetShortcutMenu;

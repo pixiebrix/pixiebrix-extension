@@ -21,13 +21,15 @@ import IntegrationConfigEditorModal from "@/components/integrations/IntegrationC
 import { render, screen } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
-// FIXME: this is coming through as a module with default being a JSON object. (yaml-jest-transform is being applied)
-import pipedriveYaml from "@contrib/integrations/pipedrive.yaml?loadAsText";
+// FIXME: Use ?loadAsText when supported by Jest https://github.com/jestjs/jest/pull/6282
+import pipedriveYaml from "@contrib/integrations/pipedrive.yaml";
+import automationAnywhereYaml from "@contrib/integrations/automation-anywhere.yaml";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import { within } from "@testing-library/react";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { convertSchemaToConfigState } from "@/components/integrations/integrationHelpers";
+import userEvent from "@testing-library/user-event";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -66,5 +68,36 @@ describe("IntegrationConfigEditorModal", () => {
         within(dialogRoot).getByLabelText(fieldLabel(property)),
       ).toBeVisible();
     }
+  });
+
+  test("displays user-friendly pattern validation message", async () => {
+    const service = fromJS(automationAnywhereYaml as any);
+
+    render(
+      <IntegrationConfigEditorModal
+        initialValues={{ label: "" } as IntegrationConfig}
+        onDelete={jest.fn()}
+        onSave={jest.fn()}
+        onClose={jest.fn()}
+        integration={service}
+      />,
+    );
+
+    await waitForEffect();
+
+    await userEvent.click(
+      screen.getByRole("textbox", {
+        name: "Control Room URL",
+      }),
+    );
+    await userEvent.type(
+      screen.getByRole("textbox", {
+        name: "Control Room URL",
+      }),
+      "https://invalid.control.room/",
+    );
+    await userEvent.click(screen.getByRole("textbox", { name: "Username" }));
+
+    expect(screen.getByText("String does not match pattern.")).toBeVisible();
   });
 });

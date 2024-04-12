@@ -16,7 +16,8 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { screen } from "shadow-dom-testing-library";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
@@ -26,7 +27,6 @@ import {
   normalizeIncomingFormData,
   normalizeOutgoingFormData,
 } from "./customForm";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 
 import { dataStore } from "@/background/messenger/strict/api";
@@ -37,6 +37,16 @@ import { toExpression } from "@/utils/expressionUtils";
 
 const dataStoreGetMock = jest.mocked(dataStore.get);
 const dataStoreSetSpy = jest.spyOn(dataStore, "set");
+
+// I couldn't get shadow-dom-testing-library working
+jest.mock("react-shadow/emotion", () => ({
+  __esModule: true,
+  default: {
+    div(props: any) {
+      return <div {...props}></div>;
+    },
+  },
+}));
 
 describe("form data normalization", () => {
   const normalizationTestCases = [
@@ -186,7 +196,7 @@ describe("form data normalization", () => {
       />,
     );
 
-    await waitForEffect();
+    await expect(screen.findByRole("button")).resolves.toBeInTheDocument();
 
     // Make sure the form renders the data without errors
     expect(asFragment()).toMatchSnapshot();
@@ -230,7 +240,7 @@ describe("CustomFormRenderer", () => {
     render(<Component {...props} />);
 
     expect(screen.queryByText("Submit")).not.toBeInTheDocument();
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    await expect(screen.findByRole("textbox")).resolves.toBeInTheDocument();
   });
 
   test("Supports postSubmitAction reset", async () => {
@@ -261,7 +271,7 @@ describe("CustomFormRenderer", () => {
 
     render(<Component {...props} />);
 
-    const textBox = screen.getByRole("textbox");
+    const textBox = await screen.findByRole("textbox");
     await userEvent.type(textBox, "Some text");
     expect(textBox).toHaveValue("Some text");
     await userEvent.click(screen.getByRole("button", { name: "Submit" }));
@@ -305,8 +315,10 @@ describe("CustomFormRenderer", () => {
       render(<Component {...props} />);
 
       const value = "Some text";
-      const textBox = screen.getByRole("textbox");
+      const textBox = await screen.findByRole("textbox");
+
       await userEvent.type(textBox, value);
+
       await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
       expect(runPipelineMock).toHaveBeenCalledOnce();

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { type JsonObject } from "type-fest";
 import { dataStore } from "@/background/messenger/strict/api";
 import { validateRegistryId } from "@/types/helpers";
@@ -46,6 +47,8 @@ import { getOutputReference, validateOutputKey } from "@/runtime/runtimeTypes";
 import { type BrickConfig } from "@/bricks/types";
 import { isExpression } from "@/utils/expressionUtils";
 import { getPlatform } from "@/platform/platformContext";
+import IsolatedComponent from "@/components/IsolatedComponent";
+import { type CustomFormComponentProps } from "./CustomFormComponent";
 
 interface DatabaseResult {
   success: boolean;
@@ -297,10 +300,20 @@ export class CustomFormRenderer extends RendererABC {
       normalizedData,
     });
 
-    // Changed webpackChunkName to de-conflict with the manual entry in webpack used to load in the stylesheets
-    const { default: CustomFormComponent } = await import(
-      /* webpackChunkName: "CustomFormRendererComponent" */
-      "./CustomFormComponent"
+    const CustomFormComponent: React.FunctionComponent<
+      CustomFormComponentProps
+    > = (props) => (
+      <IsolatedComponent
+        name="CustomFormComponent"
+        noStyle={disableParentStyles}
+        lazy={async () =>
+          import(
+            /* webpackChunkName: "isolated/CustomFormComponent" */
+            "./CustomFormComponent"
+          )
+        }
+        factory={(CustomFormComponent) => <CustomFormComponent {...props} />}
+      />
     );
 
     return {
@@ -314,7 +327,6 @@ export class CustomFormRenderer extends RendererABC {
         submitCaption,
         className,
         stylesheets,
-        disableParentStyles,
         // Option only applies if a custom onSubmit handler is provided
         resetOnSubmit: onSubmit != null && postSubmitAction === "reset",
         async onSubmit(

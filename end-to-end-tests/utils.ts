@@ -67,6 +67,15 @@ export async function ensureVisibility(
   }).toPass({ timeout: 5000, ...options });
 }
 
+// Run a mod via the Quickbar.
+// NOTE: Page needs to be focused before running this function, e.g. by clicking on the page.
+// TODO: Fix the page-focus precondition by generalizing the page-focusing logic to be page-agnostic
+export async function runModViaQuickBar(page: Page, modName: string) {
+  await page.keyboard.press("Meta+M"); // MacOS
+  await page.keyboard.press("Control+M"); // Windows and Linux
+  await page.getByRole("option", { name: modName }).click();
+}
+
 // Finds the Pixiebrix sidebar page. In MV3, this is a Page contained in the browser sidepanel window.
 // In MV2, this is a Frame as it's contained in an iframe attached to the current page.
 export async function getSidebarPage(page: Page, extensionId: string) {
@@ -81,10 +90,22 @@ export async function getSidebarPage(page: Page, extensionId: string) {
             .url()
             .startsWith(`chrome-extension://${extensionId}/sidebar.html`),
         );
-    await expect(() => {
-      sidebarPage = findSidebarPage(page);
+
+    // In MV3, the sidebar sometimes requires the user to interact with modal to open the sidebar via a user gesture
+    const conditionallyPerformUserGesture = async () => {
+      await expect(page.getByRole("button", { name: "OK" })).toBeVisible();
+      await page.getByRole("button", { name: "OK" }).click();
+      return findSidebarPage(page);
+    };
+
+    await expect(async () => {
+      sidebarPage = await Promise.race([
+        conditionallyPerformUserGesture(),
+        findSidebarPage(page),
+      ]);
       expect(sidebarPage).toBeDefined();
     }).toPass({ timeout: 5000 });
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion  -- checked above
     return sidebarPage!;
   }

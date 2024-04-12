@@ -1,0 +1,23 @@
+// Injected unminified. Don't add too much fluff
+
+:host {
+  // Don't inherit any style
+  all: initial;
+
+  // Set a font baseline style. Bootstrap targets `body` specifically, which isn't available in a shadow DOM
+  font:
+    16px / 1.5 "Ubuntu",
+    "Trebuchet MS",
+    sans-serif;
+
+  // Set a good default for our custom `pixiebrix-widget` element
+  display: block;
+
+  // Avoid black scrollbars on dark websites that set `color-scheme: light dark`
+  color-scheme: light;
+}
+
+// Don't inherit the selection color
+:host::selection {
+  background: initial;
+}

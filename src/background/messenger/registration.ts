@@ -30,9 +30,6 @@ import {
   uninstallContextMenu,
 } from "@/background/contextMenus"; // 300 strictNullCheck errors
 import {
-  focusTab,
-  closeTab,
-  openTab,
   requestRunInAllFrames,
   requestRunInOtherTabs,
   requestRunInOpener,
@@ -77,10 +74,7 @@ declare global {
     PING: typeof pong;
     COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
 
-    FOCUS_TAB: typeof focusTab;
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
-    CLOSE_TAB: typeof closeTab;
-    OPEN_TAB: typeof openTab;
 
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
     REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
@@ -114,10 +108,7 @@ export default function registerMessenger(): void {
     PING: pong,
     COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
 
-    FOCUS_TAB: focusTab,
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
-    CLOSE_TAB: closeTab,
-    OPEN_TAB: openTab,
 
     REQUEST_RUN_IN_OPENER: requestRunInOpener,
     REQUEST_RUN_IN_TARGET: requestRunInTarget,

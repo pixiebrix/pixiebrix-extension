@@ -18,7 +18,7 @@
 import type { UUID } from "@/types/stringTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { remove } from "lodash";
-import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
+import type { SnippetShortcut } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
 
 /**
  * Registry for shortcut snippets
@@ -28,30 +28,30 @@ class SnippetRegistry {
   /**
    * Map from component UUID to registered action
    */
-  public readonly shortcutSnippets: ShortcutSnippet[] = [];
+  public readonly snippetShortcuts: SnippetShortcut[] = [];
 
   /**
    * Event fired when the set of registered shortcut snippets change
    */
-  public readonly onChange = new SimpleEventTarget<ShortcutSnippet[]>();
+  public readonly onChange = new SimpleEventTarget<SnippetShortcut[]>();
 
   /**
    * Register a new text snippet
    */
-  register(newShortcutSnippet: ShortcutSnippet): void {
-    const index = this.shortcutSnippets.findIndex(
-      (shortcutSnippet) =>
-        newShortcutSnippet.shortcut === shortcutSnippet.shortcut,
+  register(newSnippetShortcut: SnippetShortcut): void {
+    const index = this.snippetShortcuts.findIndex(
+      (snippetShortcut) =>
+        newSnippetShortcut.shortcut === snippetShortcut.shortcut,
     );
 
     if (index >= 0) {
       // eslint-disable-next-line security/detect-object-injection -- number from findIndex
-      this.shortcutSnippets[index] = newShortcutSnippet;
+      this.snippetShortcuts[index] = newSnippetShortcut;
     } else {
-      this.shortcutSnippets.push(newShortcutSnippet);
+      this.snippetShortcuts.push(newSnippetShortcut);
     }
 
-    this.onChange.emit(this.shortcutSnippets);
+    this.onChange.emit(this.snippetShortcuts);
   }
 
   /**
@@ -60,18 +60,18 @@ class SnippetRegistry {
    */
   unregister(componentId: UUID): void {
     remove(
-      this.shortcutSnippets,
-      (shortcutSnippet) => shortcutSnippet.componentId === componentId,
+      this.snippetShortcuts,
+      (snippetShortcut) => snippetShortcut.componentId === componentId,
     );
-    this.onChange.emit(this.shortcutSnippets);
+    this.onChange.emit(this.snippetShortcuts);
   }
 
   /**
    * Clear all shortcut snippets.
    */
   clear(): void {
-    this.shortcutSnippets.splice(0);
-    this.onChange.emit(this.shortcutSnippets);
+    this.snippetShortcuts.splice(0);
+    this.onChange.emit(this.snippetShortcuts);
   }
 }
 

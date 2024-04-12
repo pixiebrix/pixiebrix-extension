@@ -123,7 +123,7 @@ const store = configureStore({
     /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
     return getDefaultMiddleware({
       ...defaultMiddlewareConfig,
-      immutableCheck: false,
+      serializableCheck: false,
     })
       .concat(appApi.middleware)
       .concat(modDefinitionsMiddleware)

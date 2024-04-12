@@ -33,10 +33,7 @@ export type DocumentViewProps = {
    * Remote stylesheets (URLs) to include in the document.
    */
   stylesheets?: string[];
-  /**
-   * Whether to disable the base (bootstrap) styles, plus any inherited styles, on the document (and children).
-   */
-  disableParentStyles?: boolean;
+
   options: BrickOptions<BrickArgsContext>;
   meta: {
     runId: UUID;
