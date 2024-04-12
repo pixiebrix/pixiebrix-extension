@@ -126,7 +126,7 @@ const cloneActiveExtension = createAsyncThunk<
   { state: EditorRootState }
 >("editor/cloneActiveExtension", async (arg, thunkAPI) => {
   const state = thunkAPI.getState();
-  const newElement = await produce(
+  const newActiveModComponentFormState = await produce(
     selectActiveModComponentFormState(state),
     async (draft) => {
       draft.uuid = uuidv4();
@@ -140,7 +140,7 @@ const cloneActiveExtension = createAsyncThunk<
     },
   );
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned extension
-  thunkAPI.dispatch(actions.addElement(newElement));
+  thunkAPI.dispatch(actions.addElement(newActiveModComponentFormState));
 });
 
 type AvailableInstalled = {
@@ -255,7 +255,7 @@ const checkAvailableDynamicElements = createAsyncThunk<
   return { availableDynamicIds };
 });
 
-const checkDynamicElementAvailability = createAsyncThunk<
+const checkActiveElementAvailability = createAsyncThunk<
   {
     availableDynamicIds: UUID[];
   },
@@ -886,7 +886,7 @@ export const editorSlice = createSlice({
         reportError(error);
       })
       .addCase(
-        checkDynamicElementAvailability.fulfilled,
+        checkActiveElementAvailability.fulfilled,
         (state, { payload: { availableDynamicIds } }) => ({
           ...state,
           availableDynamicIds,
@@ -901,7 +901,7 @@ export const actions = {
   cloneActiveExtension,
   checkAvailableInstalledExtensions,
   checkAvailableDynamicElements,
-  checkActiveElementAvailability: checkDynamicElementAvailability,
+  checkActiveElementAvailability,
 };
 
 export const persistEditorConfig = {

@@ -39,7 +39,7 @@ const FoundationDataPanel: React.FC = () => {
   );
   const {
     extension: { blockPipeline },
-    extensionPoint,
+    extensionPoint: starterBrick,
   } = activeModComponentFormState;
   const firstBlockInstanceId = blockPipeline[0]?.instanceId;
 
@@ -95,7 +95,7 @@ const FoundationDataPanel: React.FC = () => {
         {showDeveloperTabs && (
           <>
             <StateTab />
-            <ConfigurationTab config={extensionPoint} />
+            <ConfigurationTab config={starterBrick} />
           </>
         )}
         <Tab.Pane

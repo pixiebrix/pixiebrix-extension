@@ -217,11 +217,11 @@ const usePipelineNodes = (): {
   const pasteBlock = usePasteBlock();
   const showPaste = pasteBlock && isApiAtLeastV2;
 
-  const extensionPointType = activeModComponentFormState.type;
+  const starterBrickType = activeModComponentFormState.type;
   const { label: extensionPointLabel, icon: extensionPointIcon } =
-    ADAPTERS.get(extensionPointType);
+    ADAPTERS.get(starterBrickType);
   const rootPipeline = activeModComponentFormState.extension.blockPipeline;
-  const rootPipelineFlavor = getRootPipelineFlavor(extensionPointType);
+  const rootPipelineFlavor = getRootPipelineFlavor(starterBrickType);
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
   const { nodes, extensionHasTraces } = mapPipelineToNodes({
