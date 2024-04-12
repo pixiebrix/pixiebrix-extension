@@ -51,7 +51,7 @@ const CollapsedElement: React.FC<
 const Sidebar: React.VFC = () => {
   const dispatch = useDispatch();
 
-  const expanded = useSelector(selectIsEditorSidebarExpanded);
+  const isExpanded = useSelector(selectIsEditorSidebarExpanded);
 
   const { flagOn } = useFlags();
   const showDeveloperUI =
@@ -61,7 +61,7 @@ const Sidebar: React.VFC = () => {
   const collapseSidebar = () => {
     dispatch(
       actions.setModListExpanded({
-        isExpanded: !expanded,
+        isExpanded: !isExpanded,
       }),
     );
   };
@@ -74,7 +74,7 @@ const Sidebar: React.VFC = () => {
         <HomeButton />
         <CollapsedElement
           dimension="width"
-          in={expanded}
+          in={isExpanded}
           className={styles.horizontalActions}
         >
           <AddStarterBrickButton />
@@ -82,7 +82,7 @@ const Sidebar: React.VFC = () => {
         </CollapsedElement>
         <CollapsedElement
           dimension="width"
-          in={expanded}
+          in={isExpanded}
           className="d-flex flex-grow-1"
         >
           <Button
@@ -98,7 +98,7 @@ const Sidebar: React.VFC = () => {
       </div>
 
       {/* Collapsed sidebar: Actions list */}
-      <CollapsedElement in={!expanded} className={styles.verticalActions}>
+      <CollapsedElement in={!isExpanded} className={styles.verticalActions}>
         <Button
           size="sm"
           type="button"
@@ -114,7 +114,7 @@ const Sidebar: React.VFC = () => {
       {/* Expanded sidebar: Extensions list */}
       <CollapsedElement
         dimension="width"
-        in={expanded}
+        in={isExpanded}
         className="d-flex flex-column flex-grow-1"
       >
         {/*

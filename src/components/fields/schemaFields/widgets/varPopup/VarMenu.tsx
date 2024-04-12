@@ -155,7 +155,9 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   variablePosition,
 }) => {
   const dispatch = useDispatch();
-  const activeElement = useSelector(selectActiveModComponentFormState);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const pipelineMap = useSelector(selectPipelineMap) ?? {};
   const { allBricks } = useAllBricks();
 
@@ -172,7 +174,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
       getPageState(inspectedTab, {
         namespace: "blueprint",
         extensionId: null,
-        blueprintId: activeElement.recipe?.id,
+        blueprintId: activeModComponentFormState.recipe?.id,
       }),
     [],
   );
@@ -192,8 +194,8 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     };
   }, [dispatch]);
 
-  const extensionPointLabel = activeElement?.type
-    ? ADAPTERS.get(activeElement.type).label
+  const extensionPointLabel = activeModComponentFormState?.type
+    ? ADAPTERS.get(activeModComponentFormState.type).label
     : "";
 
   const { allOptions, filteredOptions } = useMemo(() => {

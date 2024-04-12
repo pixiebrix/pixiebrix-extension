@@ -27,7 +27,7 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
   const dispatch = useDispatch();
   const resetExtension = useResetExtension();
-  const elements = useSelector(selectModComponentFormStates);
+  const modComponentFormStates = useSelector(selectModComponentFormStates);
 
   return useCallback(
     async (recipeId: RegistryId) => {
@@ -42,7 +42,7 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
       }
 
       await Promise.all(
-        elements
+        modComponentFormStates
           .filter((element) => element.recipe?.id === recipeId)
           .map(async (element) =>
             resetExtension({
@@ -56,7 +56,7 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
       dispatch(actions.restoreDeletedElementsForRecipe(recipeId));
       dispatch(actions.selectRecipeId(recipeId));
     },
-    [dispatch, elements, resetExtension, showConfirmation],
+    [dispatch, modComponentFormStates, resetExtension, showConfirmation],
   );
 }
 

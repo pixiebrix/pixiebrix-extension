@@ -61,18 +61,20 @@ const AddToRecipeModal: React.FC = () => {
   const { isAddToModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
-  const recipeMetadatas = useSelector(selectInstalledModMetadatas);
-  const activeElement = useSelector(selectActiveModComponentFormState);
+  const activatedModMetadatas = useSelector(selectInstalledModMetadatas);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
 
-  const recipeMetadataById = useMemo(() => {
+  const modMetadataById = useMemo(() => {
     const result: Record<RegistryId, ModComponentBase["_recipe"]> = {};
-    for (const metadata of recipeMetadatas) {
+    for (const metadata of activatedModMetadatas) {
       result[metadata.id] = metadata;
     }
 
     return result;
-  }, [recipeMetadatas]);
+  }, [activatedModMetadatas]);
 
   const dispatch = useDispatch();
 
@@ -92,10 +94,10 @@ const AddToRecipeModal: React.FC = () => {
     }
 
     // eslint-disable-next-line security/detect-object-injection -- recipe id is from select options
-    const recipeMetadata = recipeMetadataById[recipeId];
+    const recipeMetadata = modMetadataById[recipeId];
 
     try {
-      const elementId = activeElement.uuid;
+      const elementId = activeModComponentFormState.uuid;
       dispatch(
         editorActions.addElementToRecipe({
           elementId,
@@ -132,12 +134,12 @@ const AddToRecipeModal: React.FC = () => {
   const selectOptions = useMemo(
     () => [
       { label: "➕ Create new mod...", value: NEW_RECIPE_ID },
-      ...recipeMetadatas.map((metadata) => ({
+      ...activatedModMetadatas.map((metadata) => ({
         label: metadata.name,
         value: metadata.id,
       })),
     ],
-    [recipeMetadatas],
+    [activatedModMetadatas],
   );
 
   const radioItems: RadioItem[] = useMemo(
@@ -199,7 +201,7 @@ const AddToRecipeModal: React.FC = () => {
     <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>
-          Add <em>{activeElement?.label}</em> to a mod
+          Add <em>{activeModComponentFormState?.label}</em> to a mod
         </Modal.Title>
       </Modal.Header>
       <Form

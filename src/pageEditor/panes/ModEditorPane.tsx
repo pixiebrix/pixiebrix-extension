@@ -40,8 +40,8 @@ const ModEditorPane: React.VFC = () => {
 
   const activeModId = useSelector(selectActiveModId);
 
-  const selectionSeq = useSelector(selectEditorUpdateKey);
-  const layoutKey = `${activeModId}-${selectionSeq}`;
+  const editorUpdateKey = useSelector(selectEditorUpdateKey);
+  const layoutKey = `${activeModId}-${editorUpdateKey}`;
 
   useEffect(() => {
     const messageContext: MessageContext = {

@@ -64,7 +64,9 @@ const ModListItem: React.FC<ModListItemProps> = ({
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
   const expandedModId = useSelector(selectExpandedModId);
-  const activeElement = useSelector(selectActiveModComponentFormState);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const { id: modId, name: savedName, version: installedVersion } = modMetadata;
   const isActive = activeModId === modId;
 
@@ -74,7 +76,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
   const latestRecipeVersion = modDefinition?.metadata?.version;
 
   // Set the alternate background if an extension in this recipe is active
-  const hasRecipeBackground = activeElement?.recipe?.id === modId;
+  const hasRecipeBackground = activeModComponentFormState?.recipe?.id === modId;
 
   const dirtyName = useSelector(selectDirtyMetadataForModId(modId))?.name;
   const name = dirtyName ?? savedName ?? "Loading...";

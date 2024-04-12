@@ -48,9 +48,9 @@ const EditorContent: React.FC = () => {
   );
   const sessionId = useSelector(selectSessionId);
   const { isBetaError, editorError } = useSelector(selectErrorState);
-  const activeElementId = useSelector(selectActiveModComponentId);
-  const activeRecipeId = useSelector(selectActiveModId);
-  const { isPendingInstalledExtensions, isPendingDynamicExtensions } =
+  const activeModComponentId = useSelector(selectActiveModComponentId);
+  const activeModId = useSelector(selectActiveModId);
+  const { isPendingInstalledModComponents, isPendingDynamicModComponents } =
     useSelector(selectModComponentAvailability);
 
   const url = useCurrentInspectedUrl();
@@ -58,19 +58,19 @@ const EditorContent: React.FC = () => {
   useEffect(() => {
     console.debug("EditorContent debug effect", {
       url,
-      isPendingInstalledExtensions,
-      isPendingDynamicExtensions,
+      isPendingInstalledExtensions: isPendingInstalledModComponents,
+      isPendingDynamicExtensions: isPendingDynamicModComponents,
       isConnectingToContentScript,
     });
   }, [
     url,
-    isPendingInstalledExtensions,
-    isPendingDynamicExtensions,
+    isPendingInstalledModComponents,
+    isPendingDynamicModComponents,
     isConnectingToContentScript,
   ]);
 
   const isPendingExtensions =
-    isPendingInstalledExtensions || isPendingDynamicExtensions;
+    isPendingInstalledModComponents || isPendingDynamicModComponents;
 
   // Fetch-and-cache marketplace content for rendering in the Brick Selection modal
   useGetMarketplaceListingsQuery();
@@ -113,11 +113,11 @@ const EditorContent: React.FC = () => {
     return <BetaPane />;
   }
 
-  if (activeElementId) {
+  if (activeModComponentId) {
     return <EditorPane />;
   }
 
-  if (activeRecipeId) {
+  if (activeModId) {
     return <ModEditorPane />;
   }
 

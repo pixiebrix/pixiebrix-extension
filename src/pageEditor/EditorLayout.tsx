@@ -33,7 +33,7 @@ import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelec
 import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
 
 const EditorLayout: React.FunctionComponent = () => {
-  const inserting = useSelector(selectIsInsertingNewStarterBrick);
+  const isInserting = useSelector(selectIsInsertingNewStarterBrick);
   const { restrict } = useFlags();
   const isRestricted = restrict("page-editor");
   const isStaleSession = useSelector(selectIsStaleSession);
@@ -56,8 +56,8 @@ const EditorLayout: React.FunctionComponent = () => {
           <RestrictedPane />
         ) : isStaleSession ? (
           <StaleSessionPane />
-        ) : inserting ? (
-          <InsertPane inserting={inserting} />
+        ) : isInserting ? (
+          <InsertPane inserting={isInserting} />
         ) : (
           <>
             <Sidebar />

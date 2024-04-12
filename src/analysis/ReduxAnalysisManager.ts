@@ -95,8 +95,9 @@ class ReduxAnalysisManager {
           return;
         }
 
-        const activeElement = selectActiveModComponentFormState(state);
-        if (activeElement == null) {
+        const activeModComponentFormState =
+          selectActiveModComponentFormState(state);
+        if (activeModComponentFormState == null) {
           return;
         }
 
@@ -105,7 +106,7 @@ class ReduxAnalysisManager {
           return;
         }
 
-        const extensionId = activeElement.uuid;
+        const extensionId = activeModComponentFormState.uuid;
 
         listenerApi.dispatch(
           analysisSlice.actions.startAnalysis({
@@ -115,7 +116,7 @@ class ReduxAnalysisManager {
         );
 
         try {
-          await analysis.run(activeElement);
+          await analysis.run(activeModComponentFormState);
         } catch (error) {
           listenerApi.dispatch(
             analysisSlice.actions.failAnalysis({

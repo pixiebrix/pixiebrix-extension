@@ -418,15 +418,15 @@ export const selectCopiedBlock = ({ editor }: EditorRootState) =>
 export const selectModComponentAvailability = ({
   editor: {
     availableInstalledIds,
-    isPendingInstalledExtensions,
+    isPendingInstalledExtensions: isPendingInstalledModComponents,
     availableDynamicIds,
-    isPendingDynamicExtensions,
+    isPendingDynamicExtensions: isPendingDynamicModComponents,
   },
 }: EditorRootState) => ({
   availableInstalledIds,
-  isPendingInstalledExtensions,
+  isPendingInstalledModComponents,
   availableDynamicIds,
-  isPendingDynamicExtensions,
+  isPendingDynamicModComponents,
 });
 
 export const selectKnownEventNamesForActiveModComponent = createSelector(

@@ -70,12 +70,15 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const activeModId = useSelector(selectActiveModId);
-  const activeElement = useSelector(selectActiveModComponentFormState);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
 
-  const isActive = activeElement?.uuid === modComponentFormState.uuid;
+  const isActive =
+    activeModComponentFormState?.uuid === modComponentFormState.uuid;
   const modId = modComponentFormState.recipe?.id;
-  const isSiblingOfActiveListItem = activeElement?.recipe?.id
-    ? modId === activeElement?.recipe?.id
+  const isSiblingOfActiveListItem = activeModComponentFormState?.recipe?.id
+    ? modId === activeModComponentFormState?.recipe?.id
     : false;
   const isChildOfActiveListItem = modId === activeModId;
   const isRelativeOfActiveListItem =

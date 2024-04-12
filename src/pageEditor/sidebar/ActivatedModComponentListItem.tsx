@@ -68,10 +68,12 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   const [getModDefinition] = appApi.endpoints.getRecipe.useLazyQuery();
 
   const activeModId = useSelector(selectActiveModId);
-  const activeElement = useSelector(selectActiveModComponentFormState);
-  const isActive = activeElement?.uuid === modComponent.id;
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
+  const isActive = activeModComponentFormState?.uuid === modComponent.id;
   // Get the selected mod id, or the mod id of the selected mod component
-  const modId = activeModId ?? activeElement?.recipe?.id;
+  const modId = activeModId ?? activeModComponentFormState?.recipe?.id;
   // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
   const hasActiveModBackground =
     !isActive && modId && modComponent._recipe?.id === modId;

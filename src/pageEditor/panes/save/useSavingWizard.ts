@@ -53,7 +53,7 @@ import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 
-type RecipeConfiguration = {
+type ModConfiguration = {
   id: RegistryId;
   name: string;
   version?: SemVerString;
@@ -62,12 +62,12 @@ type RecipeConfiguration = {
 
 let savingDeferred: DeferredPromise<void>;
 
-export function selectRecipeMetadata(
-  unsavedRecipe: UnsavedModDefinition,
+export function selectModMetadata(
+  unsavedModDefinition: UnsavedModDefinition,
   response: PackageUpsertResponse,
 ): ModComponentBase["_recipe"] {
   return {
-    ...unsavedRecipe.metadata,
+    ...unsavedModDefinition.metadata,
     sharing: pick(response, ["public", "organizations"]),
     ...pick(response, ["updated_at"]),
   };
@@ -79,23 +79,27 @@ const useSavingWizard = () => {
   const reset = useResetExtension();
   const isWizardOpen = useSelector(selectIsWizardOpen);
   const isSaving = useSelector(selectIsSaving);
-  const extensions = useSelector(selectActivatedModComponents);
-  const elements = useSelector(selectModComponentFormStates);
-  const element = useSelector(selectActiveModComponentFormState);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
+  const modComponentFormStates = useSelector(selectModComponentFormStates);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
 
-  const { data: recipes } = useAllModDefinitions();
+  const { data: modDefinitions } = useAllModDefinitions();
   const { data: editablePackages } = useGetEditablePackagesQuery();
-  const [createRecipe] = useCreateRecipeMutation();
-  const [updateRecipe] = useUpdateRecipeMutation();
+  const [createMod] = useCreateRecipeMutation();
+  const [updateMod] = useUpdateRecipeMutation();
 
   const save = async () => {
-    if (element.recipe == null) {
-      void saveNonRecipeElement();
+    if (activeModComponentFormState.recipe == null) {
+      void saveUnpackagedModComponent();
     } else {
-      // The user might lose access to the recipe while they were editing it (the recipe or an extension)
+      // The user might lose access to the mod while they were editing it (the mod or a mod component)
       // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
-      const recipe = recipes.find((x) => x.metadata.id === element.recipe.id);
-      if (!recipe) {
+      const modDefinition = modDefinitions.find(
+        (x) => x.metadata.id === activeModComponentFormState.recipe.id,
+      );
+      if (!modDefinition) {
         notify.error(
           "You no longer have edit permissions for the mod. Please reload the Page Editor.",
         );
@@ -110,12 +114,12 @@ const useSavingWizard = () => {
   };
 
   /**
-   * Saves an extension that is not a part of a Recipe
+   * Saves a mod component that is not a part of a mod
    */
-  async function saveNonRecipeElement() {
+  async function saveUnpackagedModComponent() {
     dispatch(savingExtensionActions.setSavingInProgress());
     const error = await upsertModComponentFormState({
-      element,
+      element: activeModComponentFormState,
       options: {
         pushToCloud: true,
         checkPermissions: true,
@@ -127,22 +131,25 @@ const useSavingWizard = () => {
   }
 
   /**
-   * Creates personal extension from a page editor element. It will not be a part of the Recipe
+   * Creates personal extension from a page editor element. It will not be a part of the mod
    */
   const saveElementAsPersonalExtension = async () => {
     dispatch(savingExtensionActions.setSavingInProgress());
 
-    // Stripping the recipe-related data from the element
-    const { recipe, optionsDefinition, ...rest } = element;
+    // Stripping the mod-related data from the mod component form state
+    const { recipe, optionsDefinition, ...rest } = activeModComponentFormState;
     const personalElement: ModComponentFormState = {
       ...rest,
       uuid: uuidv4(),
-      // Detach from the recipe
+      // Detach from the mod
       recipe: undefined,
     };
 
     dispatch(editorActions.addElement(personalElement));
-    await reset({ extensionId: element.uuid, shouldShowConfirmation: false });
+    await reset({
+      extensionId: activeModComponentFormState.uuid,
+      shouldShowConfirmation: false,
+    });
 
     const error = await upsertModComponentFormState({
       element: personalElement,
@@ -156,62 +163,66 @@ const useSavingWizard = () => {
     });
 
     if (!error) {
-      dispatch(editorActions.removeElement(element.uuid));
-      dispatch(optionsActions.removeExtension({ extensionId: element.uuid }));
+      dispatch(editorActions.removeElement(activeModComponentFormState.uuid));
+      dispatch(
+        optionsActions.removeExtension({
+          extensionId: activeModComponentFormState.uuid,
+        }),
+      );
     }
 
     closeWizard(error);
   };
 
   /**
-   * 1. Creates new recipe,
-   * 2. Updates all extensions of the old recipe to point to the new one, and
-   * 3. Saves the changes of the element.
+   * 1. Creates new mod,
+   * 2. Updates all mod components of the old mod to point to the new one, and
+   * 3. Saves the changes of the form state.
    */
-  const saveElementAndCreateNewRecipe = async (
-    recipeMeta: RecipeConfiguration,
-  ) => {
+  const saveFormStateAndCreateNewMod = async (modMeta: ModConfiguration) => {
     dispatch(savingExtensionActions.setSavingInProgress());
 
-    const elementRecipeMeta = element.recipe;
-    const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
+    const modComponentModMeta = activeModComponentFormState.recipe;
+    const modDefinition = modDefinitions.find(
+      (x) => x.metadata.id === modComponentModMeta.id,
+    );
 
-    if (recipeMeta.id === recipe.metadata.id) {
+    if (modMeta.id === modDefinition.metadata.id) {
       closeWizard("You must provide a new id for the mod");
       return;
     }
 
     const newMeta: Metadata = {
-      ...recipeMeta,
-      id: validateRegistryId(recipeMeta.id),
+      ...modMeta,
+      id: validateRegistryId(modMeta.id),
     };
 
-    const newRecipe: UnsavedModDefinition = replaceModComponent(
-      recipe,
+    const newModDefinition: UnsavedModDefinition = replaceModComponent(
+      modDefinition,
       newMeta,
-      extensions,
-      element,
+      activatedModComponents,
+      activeModComponentFormState,
     );
 
-    const createRecipeResponse = await createRecipe({
-      recipe: newRecipe,
+    const createModResponse = await createMod({
+      recipe: newModDefinition,
       // Don't share with anyone (only the author will have access)
       organizations: [],
       public: false,
     });
 
-    if ("error" in createRecipeResponse) {
+    if ("error" in createModResponse) {
       const errorMessage = "Failed to create new mod";
       notify.error({
         message: errorMessage,
-        error: createRecipeResponse.error,
+        error: createModResponse.error,
       });
       closeWizard(errorMessage);
       return;
     }
 
     const createExtensionError = await upsertModComponentFormState({
-      element,
+      element: activeModComponentFormState,
       options: {
         // `pushToCloud` to false because we don't want to save a copy of the individual extension to the user's account
         // because it will already be available via the blueprint
@@ -220,7 +231,7 @@ const useSavingWizard = () => {
         notifySuccess: true,
         reactivateEveryTab: true,
       },
-      modId: newRecipe.metadata.id,
+      modId: newModDefinition.metadata.id,
     });
 
     if (createExtensionError) {
@@ -228,9 +239,9 @@ const useSavingWizard = () => {
       return;
     }
 
-    updateExtensionRecipeLinks(
-      recipe.metadata.id,
-      selectRecipeMetadata(newRecipe, createRecipeResponse.data),
+    updateComponentModDefinitionLinks(
+      modDefinition.metadata.id,
+      selectModMetadata(newModDefinition, createModResponse.data),
       // Unlink the installed extensions from the deployment
       { _deployment: null as ModComponentBase["_deployment"] },
     );
@@ -239,54 +250,54 @@ const useSavingWizard = () => {
   };
 
   /**
-   * 1. Updates new recipe,
-   * 2. Updates all extensions of the recipe with the new metadata, and
-   * 3. Saves the changes of the element
+   * 1. Updates new mod,
+   * 2. Updates all mod components of the mod with the new metadata, and
+   * 3. Saves the changes of the form state
    */
-  const saveElementAndUpdateRecipe = async (
-    recipeMeta: RecipeConfiguration,
-  ) => {
+  const saveElementAndUpdateRecipe = async (recipeMeta: ModConfiguration) => {
     dispatch(savingExtensionActions.setSavingInProgress());
 
-    const elementRecipeMeta = element.recipe;
-    const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
+    const modComponentMeta = activeModComponentFormState.recipe;
+    const modDefinition = modDefinitions.find(
+      (x) => x.metadata.id === modComponentMeta.id,
+    );
 
-    const newRecipe: UnsavedModDefinition = replaceModComponent(
-      recipe,
+    const newMod: UnsavedModDefinition = replaceModComponent(
+      modDefinition,
       recipeMeta,
-      extensions,
-      element,
+      activatedModComponents,
+      activeModComponentFormState,
     );
 
     const packageId = editablePackages.find(
       // Bricks endpoint uses "name" instead of id
-      (x) => x.name === newRecipe.metadata.id,
+      (x) => x.name === newMod.metadata.id,
     )?.id;
 
-    const updateRecipeResponse = await updateRecipe({
+    const updateModResponse = await updateMod({
       packageId,
-      recipe: newRecipe,
+      recipe: newMod,
     });
 
-    if ("error" in updateRecipeResponse) {
+    if ("error" in updateModResponse) {
       const errorMessage = "Failed to update the mod";
       notify.error({
         message: errorMessage,
-        error: updateRecipeResponse.error,
+        error: updateModResponse.error,
       });
       closeWizard(errorMessage);
       return;
     }
 
     const error = await upsertModComponentFormState({
-      element,
+      element: activeModComponentFormState,
       options: {
         pushToCloud: true,
         checkPermissions: true,
         notifySuccess: true,
         reactivateEveryTab: true,
       },
-      modId: newRecipe.metadata.id,
+      modId: newMod.metadata.id,
     });
 
     if (error) {
@@ -294,28 +305,28 @@ const useSavingWizard = () => {
       return;
     }
 
-    updateExtensionRecipeLinks(
-      recipe.metadata.id,
-      selectRecipeMetadata(newRecipe, updateRecipeResponse.data),
+    updateComponentModDefinitionLinks(
+      modDefinition.metadata.id,
+      selectModMetadata(newMod, updateModResponse.data),
     );
 
     closeWizard(error);
   };
 
-  function updateExtensionRecipeLinks(
-    recipeId: RegistryId,
-    recipeMetadata: ModComponentBase["_recipe"],
+  function updateComponentModDefinitionLinks(
+    modId: RegistryId,
+    modMetadata: ModComponentBase["_recipe"],
     extraUpdate: Partial<ActivatedModComponent> = {},
   ) {
-    // 1) Update the extensions in the Redux optionsSlice
-    const recipeExtensions = extensions.filter(
-      (x) => x._recipe?.id === recipeId,
+    // 1) Update the mod components in the Redux optionsSlice
+    const modComponents = activatedModComponents.filter(
+      (x) => x._recipe?.id === modId,
     );
 
-    for (const recipeExtension of recipeExtensions) {
+    for (const modComponent of modComponents) {
       const update = {
-        id: recipeExtension.id,
-        _recipe: recipeMetadata,
+        id: modComponent.id,
+        _recipe: modMetadata,
         ...extraUpdate,
       };
 
@@ -323,12 +334,14 @@ const useSavingWizard = () => {
     }
 
     // 2) Update the extensions in the Redux editorSlice (the slice for the page editor)
-    const recipeElements = elements.filter((x) => x.recipe?.id === recipeId);
+    const formStatesForMod = modComponentFormStates.filter(
+      (x) => x.recipe?.id === modId,
+    );
 
-    for (const recipeElement of recipeElements) {
+    for (const modComponentFormState of formStatesForMod) {
       const elementUpdate = {
-        uuid: recipeElement.uuid,
-        recipe: recipeMetadata,
+        uuid: modComponentFormState.uuid,
+        recipe: modMetadata,
       };
 
       dispatch(editorActions.updateElement(elementUpdate));
@@ -352,10 +365,10 @@ const useSavingWizard = () => {
   return {
     isWizardOpen,
     isSaving,
-    element,
+    element: activeModComponentFormState,
     save,
     saveElementAsPersonalExtension,
-    saveElementAndCreateNewRecipe,
+    saveElementAndCreateNewRecipe: saveFormStateAndCreateNewMod,
     saveElementAndUpdateRecipe,
     closeWizard,
   };

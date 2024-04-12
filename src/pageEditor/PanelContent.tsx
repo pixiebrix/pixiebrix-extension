@@ -66,16 +66,23 @@ const cleanUpStarterBrickForElement = (
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
-  const activeElement = useSelector(selectActiveModComponentFormState);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
 
   const onNavigation = useCallback(() => {
     dispatch(tabStateActions.connectToContentScript());
 
-    if (activeElement != null && shouldAutoRun(activeElement)) {
-      const dynamicElement = formStateToDynamicElement(activeElement);
+    if (
+      activeModComponentFormState != null &&
+      shouldAutoRun(activeModComponentFormState)
+    ) {
+      const dynamicElement = formStateToDynamicElement(
+        activeModComponentFormState,
+      );
       updateDynamicElement(allFramesInInspectedTab, dynamicElement);
     }
-  }, [dispatch, activeElement]);
+  }, [dispatch, activeModComponentFormState]);
 
   useEffect(() => {
     navigationEvent.add(onNavigation);
@@ -93,12 +100,12 @@ const PanelContent: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!activeElement) {
+    if (!activeModComponentFormState) {
       return;
     }
 
-    cleanUpStarterBrickForElement(activeElement);
-  }, [activeElement]);
+    cleanUpStarterBrickForElement(activeModComponentFormState);
+  }, [activeModComponentFormState]);
 
   const authPersistenceContext: ReduxPersistenceContextType = {
     async flush() {
