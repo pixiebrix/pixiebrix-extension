@@ -19,7 +19,7 @@ import { test, expect } from "../fixtures/extensionBase";
 import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
-import { getSidebarPage } from "../utils";
+import { getSidebarPage, runModViaQuickBar } from "../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 
@@ -83,9 +83,7 @@ test("can activate a mod with built-in integration", async ({
 
   // Run mod via quickbar; ensure the page is focused by clicking on an element before running the keyboard shortcut
   await page.getByText("Index of  /").click();
-  await page.keyboard.press("Meta+M"); // MacOS
-  await page.keyboard.press("Control+M"); // Windows and Linux
-  await page.getByRole("option", { name: "GIPHY Search" }).click();
+  await runModViaQuickBar(page, "GIPHY Search");
 
   // Search for "kitten" keyword
   const giphySearchModal = page.frameLocator('iframe[title="Modal content"]');

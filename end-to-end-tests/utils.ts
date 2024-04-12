@@ -67,6 +67,15 @@ export async function ensureVisibility(
   }).toPass({ timeout: 5000, ...options });
 }
 
+// Run a mod via the Quickbar.
+// NOTE: Page needs to be focused before running this function, e.g. by clicking on the page.
+// TODO: Fix the page-focus precondition by generalizing the page-focusing logic to be page-agnostic
+export async function runModViaQuickBar(page: Page, modName: string) {
+  await page.keyboard.press("Meta+M"); // MacOS
+  await page.keyboard.press("Control+M"); // Windows and Linux
+  await page.getByRole("option", { name: modName }).click();
+}
+
 // Finds the Pixiebrix sidebar page. In MV3, this is a Page contained in the browser sidepanel window.
 // In MV2, this is a Frame as it's contained in an iframe attached to the current page.
 export async function getSidebarPage(page: Page, extensionId: string) {
