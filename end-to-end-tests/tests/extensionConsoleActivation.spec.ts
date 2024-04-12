@@ -81,7 +81,7 @@ test("can activate a mod with built-in integration", async ({
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
   await page.goto("/");
 
-  // Run mod via quickbar; ensure the page is focused by clicking on an element before running the keyboard shortcut
+  // Ensure the page is focused by clicking on an element before running the keyboard shortcut, see runModViaQuickbar
   await page.getByText("Index of  /").click();
   await runModViaQuickBar(page, "GIPHY Search");
 
