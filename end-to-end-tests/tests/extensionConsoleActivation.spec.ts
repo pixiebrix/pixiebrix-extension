@@ -19,6 +19,9 @@ import { test, expect } from "../fixtures/extensionBase";
 import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
+import { getSidebarPage, runModViaQuickBar } from "../utils";
+import path from "node:path";
+import { VALID_UUID_REGEX } from "@/types/stringTypes";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -40,4 +43,56 @@ test("can activate a mod with no config options", async ({
       await expect(element).toHaveText("PixieBrix");
     }),
   );
+});
+
+test("can activate a mod with built-in integration", async ({
+  page,
+  extensionId,
+  context,
+}) => {
+  const modId = "@pixies/giphy/giphy-search";
+
+  // The giphy search request is proxied through the PixieBrix server, which is kicked off in the background/service
+  // worker. Playwright experimentally supports mocking service worker requests, see
+  // https://playwright.dev/docs/service-workers-experimental#routing-service-worker-requests-only
+  await context.route("https://app.pixiebrix.com/api/proxy/", async (route) => {
+    if (route.request().serviceWorker()) {
+      // Ensure the mod was properly activated with the built-in integration configuration
+      expect(route.request().postDataJSON()).toMatchObject({
+        url: "https://api.giphy.com/v1/gifs/search",
+        auth_id: expect.stringMatching(VALID_UUID_REGEX),
+        service_id: "@pixies/giphy/giphy-service",
+      });
+
+      return route.fulfill({
+        path: path.join(__dirname, "../fixtures/responses/giphy-search.json"),
+      });
+    }
+
+    return route.continue();
+  });
+
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.goto();
+
+  await expect(
+    page.locator(".form-group").filter({ hasText: /^GIPHY — ✨ Built-in$/ }),
+  ).toBeVisible();
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+  await page.goto("/");
+
+  // Ensure the page is focused by clicking on an element before running the keyboard shortcut, see runModViaQuickbar
+  await page.getByText("Index of  /").click();
+  await runModViaQuickBar(page, "GIPHY Search");
+
+  // Search for "kitten" keyword
+  const giphySearchModal = page.frameLocator('iframe[title="Modal content"]');
+  await giphySearchModal.getByLabel("Search Query*").fill("kitten");
+  await giphySearchModal.getByRole("button", { name: "Search" }).click();
+
+  // Ensure the sidebar mod is working properly
+  const sidebarPage = await getSidebarPage(page, extensionId);
+  await expect(
+    sidebarPage.getByRole("heading", { name: 'GIPHY Results for "kitten"' }),
+  ).toBeVisible();
 });
