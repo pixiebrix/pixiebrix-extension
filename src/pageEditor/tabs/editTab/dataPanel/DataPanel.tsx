@@ -82,7 +82,9 @@ const DataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const activeElement = useSelector(selectActiveModComponentFormState);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
 
   const {
     blockId: brickId,
@@ -164,7 +166,7 @@ const DataPanel: React.FC = () => {
 
   useEffect(() => {
     reportEvent(Events.DATA_PANEL_TAB_VIEW, {
-      modId: activeElement.recipe?.id,
+      modId: activeModComponentFormState.recipe?.id,
       brickId,
       tabName: activeTabKey,
     });
@@ -183,8 +185,8 @@ const DataPanel: React.FC = () => {
   const isRenderedPanelStale = useMemo(() => {
     // Only show alert for Panel and Side Panel extensions
     if (
-      activeElement.type !== "panel" &&
-      activeElement.type !== "actionPanel"
+      activeModComponentFormState.type !== "panel" &&
+      activeModComponentFormState.type !== "actionPanel"
     ) {
       return false;
     }
@@ -206,7 +208,7 @@ const DataPanel: React.FC = () => {
     }
 
     return true;
-  }, [activeNodeId, activeElement, traces, brickConfig]);
+  }, [activeNodeId, activeModComponentFormState, traces, brickConfig]);
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
@@ -358,7 +360,9 @@ const DataPanel: React.FC = () => {
                 {isRenderedPanelStale && (
                   <Alert variant="info">
                     The rendered{" "}
-                    {activeElement.type === "panel" ? "Panel" : "Sidebar Panel"}{" "}
+                    {activeModComponentFormState.type === "panel"
+                      ? "Panel"
+                      : "Sidebar Panel"}{" "}
                     is out of date with the preview
                   </Alert>
                 )}
@@ -382,7 +386,7 @@ const DataPanel: React.FC = () => {
                 <BrickPreview
                   traceRecord={record}
                   brickConfig={brickConfig}
-                  extensionPoint={activeElement.extensionPoint}
+                  extensionPoint={activeModComponentFormState.extensionPoint}
                 />
               </ErrorBoundary>
             ) : (
@@ -397,7 +401,9 @@ const DataPanel: React.FC = () => {
               {isRenderedPanelStale && (
                 <Alert variant="info">
                   The rendered{" "}
-                  {activeElement.type === "panel" ? "Panel" : "Sidebar Panel"}{" "}
+                  {activeModComponentFormState.type === "panel"
+                    ? "Panel"
+                    : "Sidebar Panel"}{" "}
                   is out of date with the outline
                 </Alert>
               )}
@@ -410,7 +416,7 @@ const DataPanel: React.FC = () => {
           </DataTab>
           <CommentsTab
             brickId={brickConfig.id}
-            modId={activeElement.recipe?.id}
+            modId={activeModComponentFormState.recipe?.id}
             brickCommentsFieldName={brickCommentsFieldName}
           />
         </Tab.Content>

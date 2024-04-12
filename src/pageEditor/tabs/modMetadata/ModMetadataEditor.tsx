@@ -60,8 +60,8 @@ const editModSchema = object({
 const selectFirstModComponent = createSelector(
   selectActivatedModComponents,
   selectActiveModId,
-  (extensions, activeRecipeId) =>
-    extensions.find((x) => x._recipe?.id === activeRecipeId),
+  (modComponents, activeModId) =>
+    modComponents.find((x) => x._recipe?.id === activeModId),
 );
 
 const ModMetadataEditor: React.VoidFunctionComponent = () => {

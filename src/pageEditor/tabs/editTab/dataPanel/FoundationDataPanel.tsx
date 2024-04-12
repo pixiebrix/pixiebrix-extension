@@ -34,11 +34,13 @@ const FoundationDataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const activeElement = useSelector(selectActiveModComponentFormState);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const {
     extension: { blockPipeline },
     extensionPoint,
-  } = activeElement;
+  } = activeModComponentFormState;
   const firstBlockInstanceId = blockPipeline[0]?.instanceId;
 
   const { record: firstBlockTraceRecord } = useSelector(
@@ -132,7 +134,7 @@ const FoundationDataPanel: React.FC = () => {
           mountOnEnter
           unmountOnExit
         >
-          <ExtensionPointPreview element={activeElement} />
+          <ExtensionPointPreview element={activeModComponentFormState} />
         </Tab.Pane>
         <PageStateTab />
       </Tab.Content>

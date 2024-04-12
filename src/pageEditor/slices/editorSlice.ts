@@ -160,11 +160,11 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
   );
   const starterBricks = await getInstalledExtensionPoints(inspectedTab);
   const activatedStarterBricks = new Map(
-    starterBricks.map((extensionPoint) => [extensionPoint.id, extensionPoint]),
+    starterBricks.map((starterBrick) => [starterBrick.id, starterBrick]),
   );
   const resolved = await Promise.all(
-    notDeletedModComponents.map(async (extension) =>
-      resolveExtensionInnerDefinitions(extension),
+    notDeletedModComponents.map(async (modComponent) =>
+      resolveExtensionInnerDefinitions(modComponent),
     ),
   );
   const tabUrl = await getCurrentInspectedURL();
@@ -193,10 +193,10 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
     .map((x) => x.id);
 
   // Note: we can take out this filter if and when we persist the editor
-  // slice and remove installed extensions when they become dynamic elements
+  // slice and remove installed mod components when they become dynamic form states
   const notDynamicInstalled = notDeletedModComponents.filter(
-    (extension) =>
-      !notDeletedFormStates.some((element) => element.uuid === extension.id),
+    (modComponent) =>
+      !notDeletedFormStates.some((element) => element.uuid === modComponent.id),
   );
 
   const availableInstalledIds = notDynamicInstalled
@@ -783,12 +783,12 @@ export const editorSlice = createSlice({
       const notDeletedFormStates = selectNotDeletedModComponentFormStates({
         editor: state,
       });
-      const recipeElements = notDeletedFormStates.filter(
-        (element) => element.recipe?.id === recipeId,
+      const modFormStates = notDeletedFormStates.filter(
+        (formState) => formState.recipe?.id === recipeId,
       );
-      for (const element of recipeElements) {
-        element.optionsArgs = action.payload;
-        state.dirty[element.uuid] = true;
+      for (const formState of modFormStates) {
+        formState.optionsArgs = action.payload;
+        state.dirty[formState.uuid] = true;
       }
     },
     setExpandedFieldSections(

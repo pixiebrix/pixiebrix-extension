@@ -195,14 +195,16 @@ const usePipelineNodes = (): {
   nodes: EditorNodeProps[];
 } => {
   const dispatch = useDispatch();
-  const activeElement = useSelector(selectActiveModComponentFormState);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectActiveElementTraces);
   const maybePipelineMap = useSelector(selectPipelineMap);
   const collapsedNodes = useSelector(selectCollapsedNodes);
 
   const annotations = useSelector(
-    selectExtensionAnnotations(activeElement.uuid),
+    selectExtensionAnnotations(activeModComponentFormState.uuid),
   );
   const activeNodePreviewElementId = useSelector(
     selectNodePreviewActiveElement,
@@ -215,10 +217,10 @@ const usePipelineNodes = (): {
   const pasteBlock = usePasteBlock();
   const showPaste = pasteBlock && isApiAtLeastV2;
 
-  const extensionPointType = activeElement.type;
+  const extensionPointType = activeModComponentFormState.type;
   const { label: extensionPointLabel, icon: extensionPointIcon } =
     ADAPTERS.get(extensionPointType);
-  const rootPipeline = activeElement.extension.blockPipeline;
+  const rootPipeline = activeModComponentFormState.extension.blockPipeline;
   const rootPipelineFlavor = getRootPipelineFlavor(extensionPointType);
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 

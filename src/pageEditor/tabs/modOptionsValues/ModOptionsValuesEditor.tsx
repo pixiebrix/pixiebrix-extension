@@ -55,23 +55,23 @@ const NoModOptions: React.FC = () => (
 
 const ModOptionsValuesContent: React.FC = () => {
   const dispatch = useDispatch();
-  const recipeId = useSelector(selectActiveModId);
+  const activeModId = useSelector(selectActiveModId);
   const {
     data: recipe,
     isFetching: isLoadingRecipe,
     error: recipeError,
-  } = useOptionalModDefinition(recipeId);
+  } = useOptionalModDefinition(activeModId);
   const dirtyRecipeOptions = useSelector(
-    selectDirtyOptionsDefinitionsForModId(recipeId),
+    selectDirtyOptionsDefinitionsForModId(activeModId),
   );
   const modifiedOptionValues = useSelector(
-    selectDirtyOptionValuesForModId(recipeId),
+    selectDirtyOptionValuesForModId(activeModId),
   );
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
   );
   const { cleanModComponents, dirtyModComponentFormStates } =
-    getCleanComponentsAndDirtyFormStatesForMod(recipeId);
+    getCleanComponentsAndDirtyFormStatesForMod(activeModId);
 
   const optionsDefinition = useMemo(() => {
     if (dirtyRecipeOptions) {

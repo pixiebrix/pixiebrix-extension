@@ -61,19 +61,21 @@ const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
 const FoundationNodeConfigPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showVersionField = flagOn("page-editor-developer");
-  const { extensionPoint } = useSelector(selectActiveModComponentFormState);
+  const { extensionPoint: starterBrick } = useSelector(
+    selectActiveModComponentFormState,
+  );
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
-    () => !isInnerDefinitionRegistryId(extensionPoint.metadata.id),
-    [extensionPoint.metadata.id],
+    () => !isInnerDefinitionRegistryId(starterBrick.metadata.id),
+    [starterBrick.metadata.id],
   );
 
-  const { EditorNode } = ADAPTERS.get(extensionPoint.definition.type);
+  const { EditorNode } = ADAPTERS.get(starterBrick.definition.type);
 
   return (
     <>
-      {extensionPoint.definition.type === "quickBar" && (
+      {starterBrick.definition.type === "quickBar" && (
         <UnconfiguredQuickBarAlert />
       )}
       <ConnectedFieldTemplate name="label" label="Name" />
