@@ -69,7 +69,10 @@ async function discardStylesheetsWhilePending(
   }
 }
 
-type Props<T> = {
+type Props<T> = React.DetailedHTMLProps<
+  React.HTMLAttributes<HTMLDivElement>,
+  HTMLDivElement
+> & {
   /**
    * It must match the `import()`ed component's filename
    */
@@ -99,6 +102,8 @@ type Props<T> = {
 
 /**
  * Isolate component loaded via React.lazy() in a shadow DOM, including its styles.
+ *
+ * Additional props will be passed to the Shadow DOM root element.
  *
  * @example
  * render(

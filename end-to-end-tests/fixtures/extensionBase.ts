@@ -26,8 +26,12 @@ import {
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
-// see: https://github.com/microsoft/playwright/issues/26693
+// See https://github.com/microsoft/playwright/issues/26693
 process.env.PW_CHROMIUM_ATTACH_TO_OTHER = "1";
+// This environment variable is used to enable an experimental Playwright feature for mocking requests made by
+// service workers.
+// See https://playwright.dev/docs/service-workers-experimental
+process.env.PW_EXPERIMENTAL_SERVICE_WORKER_NETWORK_EVENTS = "1";
 
 export const test = base.extend<{
   context: BrowserContext;

@@ -68,6 +68,8 @@ let autoShow = false;
  */
 export const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
 
+const MODE = process.env.SHADOW_DOM as "open" | "closed";
+
 function useAutoShow(): void {
   const { query } = useKBar();
 
@@ -138,7 +140,7 @@ const KBarComponent: React.FC = () => {
           <EmotionShadowRoot
             data-testid="quickBar"
             className="cke_editable"
-            mode="closed"
+            mode={MODE}
             contentEditable
             suppressContentEditableWarning
           >

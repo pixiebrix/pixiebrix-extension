@@ -19,11 +19,6 @@ export default class DiscardFilePlugin {
             // If `delete assets[]` causes issues in the future, try replacing the content instead:
             // assets["DocumentView.js"] = new webpack.sources.RawSource('"Dropped"');
           }
-
-          // TODO: Use <IsolatedComponent/> and move these to isolatedComponentList
-          delete assets["DocumentView.js"];
-          delete assets["EphemeralFormContent.js"];
-          delete assets["CustomFormComponent.js"];
         },
       );
     });

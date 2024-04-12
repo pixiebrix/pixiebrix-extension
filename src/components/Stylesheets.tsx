@@ -53,7 +53,7 @@ async function extractFontFaceRulesToMainDocument(
  * Does not support changing the initial href(s)
  */
 export const Stylesheets: React.FC<{
-  href: string | string[];
+  href?: string | string[];
   /**
    * If true, we mount the component after the stylesheets are loaded.
    * Chrome doesn't focus on the hidden elements so we want to make sure that component is rendered after the stylesheets are loaded.
@@ -63,7 +63,7 @@ export const Stylesheets: React.FC<{
   mountOnLoad?: boolean;
 }> = ({ href, children, mountOnLoad = false }) => {
   const [resolved, setResolved] = useState<string[]>([]);
-  if (href.length === 0) {
+  if (!href?.length) {
     // Shortcut if no stylesheets are needed
     return <>{children}</>;
   }

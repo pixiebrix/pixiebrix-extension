@@ -19,9 +19,12 @@
  * Returns true if this function is called within an IFrame
  */
 
-export const isLoadedInIframe = () => {
+export const isLoadedInIframe = (): boolean => {
   // Using a try/catch block because in some cases trying to
   // access window.top from an iframe can result in a SecurityError
+
+  // If updating this method to use the messenger/frameId, remember that frameId === 0 only for the active top-level
+  // frame: see https://developer.chrome.com/blog/extension-instantnav
   try {
     return window.self !== window.top;
   } catch {

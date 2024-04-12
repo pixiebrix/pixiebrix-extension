@@ -55,6 +55,7 @@ import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import axios from "axios";
 import { initDeferredLoginController } from "@/contentScript/integrations/deferredLoginController";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 setPlatform(contentScriptPlatform);
 
@@ -101,8 +102,13 @@ export async function init(): Promise<void> {
   initSidebarFocusEvents();
   void initSidebarActivation();
 
-  // Update `sidePanel`
-  void renderPanelsIfVisible();
+  if (!isLoadedInIframe()) {
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8209
+    // Reset panels in `sidePanel` on content script initialization (which happens on non-SPA reload/navigation).
+    // That's the safe behavior for now to avoid showing stale data/invalid forms.
+    // Re-examine this call when we implement: https://www.notion.so/pixiebrix/0efdedb6c1e44b088e65106202e08c28
+    void renderPanelsIfVisible();
+  }
 
   // Let the partner page know
   initPartnerIntegrations();
