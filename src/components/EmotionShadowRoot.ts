@@ -20,7 +20,7 @@ Also strictNullChecks config mismatch */
  */
 
 // eslint-disable-next-line no-restricted-imports -- All roads lead here
-import EmotionShadowRoot from "react-shadow/emotion";
+import ShadowRoot from "react-shadow/emotion";
 import { type CSSProperties } from "react";
 
 /**
@@ -28,7 +28,7 @@ import { type CSSProperties } from "react";
  * the host website. To support react-select and any future potential emotion
  * components we used the emotion variant of the react-shadow library.
  */
-const ShadowRoot = EmotionShadowRoot.div!;
+const EmotionShadowRoot = ShadowRoot.div!;
 // TODO: Use EmotionShadowRoot["pixiebrix-widget"] to avoid any CSS conflicts. Requires snapshot/test updates
 
 export const styleReset: CSSProperties = {
@@ -36,4 +36,4 @@ export const styleReset: CSSProperties = {
   font: "16px / 1.5 sans-serif",
 };
 
-export default ShadowRoot;
+export default EmotionShadowRoot;

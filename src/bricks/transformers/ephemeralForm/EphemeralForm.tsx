@@ -26,10 +26,10 @@ import { type Target } from "@/types/messengerTypes";
 import { validateUUID } from "@/types/helpers";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import useAsyncState from "@/hooks/useAsyncState";
-import { EphemeralFormContent } from "./EphemeralFormContent";
-import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import useReportError from "@/hooks/useReportError";
+import IsolatedComponent from "@/components/IsolatedComponent";
+import { type EphemeralFormContentProps } from "./EphemeralFormContent";
 
 const ModalLayout: React.FC = ({ children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
@@ -40,6 +40,22 @@ const ModalLayout: React.FC = ({ children }) => (
 
 const PanelLayout: React.FC = ({ children }) => (
   <div className="p-3">{children}</div>
+);
+
+const EphemeralFormContent: React.FunctionComponent<
+  EphemeralFormContentProps
+> = (props) => (
+  <IsolatedComponent
+    name="EphemeralFormContent"
+    noStyle={props.definition.disableParentStyles}
+    lazy={async () =>
+      import(
+        /* webpackChunkName: "isolated/EphemeralFormContent" */
+        "./EphemeralFormContent"
+      )
+    }
+    factory={(EphemeralFormContent) => <EphemeralFormContent {...props} />}
+  />
 );
 
 /**
@@ -101,14 +117,12 @@ const EphemeralForm: React.FC = () => {
   return (
     <FormContainer>
       <ErrorBoundary>
-        <EmotionShadowRoot>
-          <EphemeralFormContent
-            definition={formDefinition}
-            target={target}
-            nonce={nonce}
-            isModal={isModal}
-          />
-        </EmotionShadowRoot>
+        <EphemeralFormContent
+          definition={formDefinition}
+          target={target}
+          nonce={nonce}
+          isModal={isModal}
+        />
       </ErrorBoundary>
     </FormContainer>
   );

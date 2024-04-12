@@ -5,7 +5,10 @@
   all: initial;
 
   // Set a font baseline style. Bootstrap targets `body` specifically, which isn't available in a shadow DOM
-  font: 16px / 1.5 sans-serif;
+  font:
+    16px / 1.5 "Ubuntu",
+    "Trebuchet MS",
+    sans-serif;
 
   // Set a good default for our custom `pixiebrix-widget` element
   display: block;

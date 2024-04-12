@@ -115,11 +115,6 @@ const createConfig = (env, options) =>
       [
         "background/background",
 
-        // TODO: Move to isolatedComponentList.mjs and use <IsolatedComponent/>
-        "bricks/renderers/CustomFormComponent",
-        "bricks/renderers/documentView/DocumentView",
-        "bricks/transformers/ephemeralForm/EphemeralFormContent",
-
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",
@@ -257,7 +252,7 @@ const createConfig = (env, options) =>
         DEV_EVENT_TELEMETRY: false,
         SANDBOX_LOGGING: false,
         IS_BETA: process.env.PUBLIC_NAME === "-beta",
-        SHADOW_DOM: "closed",
+        SHADOW_DOM: "open",
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
