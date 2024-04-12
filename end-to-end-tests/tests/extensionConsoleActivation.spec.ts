@@ -83,8 +83,8 @@ test("can activate a mod with built-in integration", async ({
 
   // Run mod via quickbar; ensure the page is focused by clicking on an element before running the keyboard shortcut
   await page.getByText("Index of  /").click();
-  await page.keyboard.press("Meta+M");
-  await page.keyboard.press("Control+M");
+  await page.keyboard.press("Meta+M"); // MacOS
+  await page.keyboard.press("Control+M"); // Windows and Linux
   await page.getByRole("option", { name: "GIPHY Search" }).click();
 
   // Search for "kitten" keyword
