@@ -1,18 +1,5 @@
 import { defineConfig } from "@playwright/test";
 import { CI } from "./end-to-end-tests/env";
-import fs from "node:fs";
-import path from "node:path";
-
-// Speed up local development by skipping the authentication setup if it's already done.
-// NOTE: You will have to restart the test runner if you need to re-run the auth setup.
-const isAuthSetupDone = () => {
-  if (CI) {
-    return false;
-  }
-
-  const filePath = path.join(__dirname, "./end-to-end-tests/.auth/user.json");
-  return fs.existsSync(filePath);
-};
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -34,6 +21,7 @@ export default defineConfig<{ chromiumChannel: string }>({
     /* Timeout for each assertion. If a particular interaction is timing out, adjust its specific timeout value rather than this global setting */
     timeout: 5000,
   },
+  reportSlowTests: null,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [["html", { outputFolder: "./end-to-end-tests/.report" }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -47,7 +35,17 @@ export default defineConfig<{ chromiumChannel: string }>({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: "setup",
+      name: "chromeSetup",
+      use: {
+        chromiumChannel: "chrome",
+      },
+      testMatch: /.*\.setup\.ts/,
+    },
+    {
+      name: "edgeSetup",
+      use: {
+        chromiumChannel: "msedge",
+      },
       testMatch: /.*\.setup\.ts/,
     },
     {
@@ -55,14 +53,15 @@ export default defineConfig<{ chromiumChannel: string }>({
       use: {
         chromiumChannel: "chrome",
       },
-      dependencies: isAuthSetupDone() ? [] : ["setup"],
+      // For faster local development, you can filter out the setup project in --ui mode to skip rerunning the setup project
+      dependencies: ["chromeSetup"],
     },
     {
       name: "edge",
       use: {
         chromiumChannel: "msedge",
       },
-      dependencies: isAuthSetupDone() ? [] : ["setup"],
+      dependencies: ["edgeSetup"],
     },
   ],
 });

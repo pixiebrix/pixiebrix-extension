@@ -30,8 +30,7 @@ import {
 } from "@floating-ui/dom";
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
 import React from "react";
-import SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
-import ShortcutSnippetMenu from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetMenu";
+import SnippetShortcutMenu from "@/contentScript/snippetShortcutMenu/SnippetShortcutMenu";
 import { onContextInvalidated } from "webext-events";
 import {
   isContentEditableElement,
@@ -45,6 +44,7 @@ import { expectContext } from "@/utils/expectContext";
 import { ReusableAbortController } from "abort-utils";
 import { getSelectionRange, waitAnimationFrame } from "@/utils/domUtils";
 import { prefersReducedMotion } from "@/utils/a11yUtils";
+import SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
 
 const COMMAND_KEY = "\\";
 
@@ -52,7 +52,7 @@ export const snippetRegistry = new SnippetRegistry();
 
 let targetElement: Nullishable<TextEditorElement>;
 
-let shortcutSnippetMenu: Nullishable<HTMLElement>;
+let snippetShortcutMenu: Nullishable<HTMLElement>;
 
 const hideController = new ReusableAbortController();
 
@@ -66,15 +66,15 @@ async function showMenu(element: HTMLElement): Promise<void> {
   await waitAnimationFrame();
 
   targetElement = element;
-  shortcutSnippetMenu ??= createMenu(targetElement);
+  snippetShortcutMenu ??= createMenu(targetElement);
 
   // Check visibility to avoid re-animating the tooltip fade in as selection changes
-  const isShowing = shortcutSnippetMenu.checkVisibility();
+  const isShowing = snippetShortcutMenu.checkVisibility();
   if (!isShowing) {
-    shortcutSnippetMenu.setAttribute("aria-hidden", "false");
-    shortcutSnippetMenu.style.setProperty("display", "block");
+    snippetShortcutMenu.setAttribute("aria-hidden", "false");
+    snippetShortcutMenu.style.setProperty("display", "block");
     if (!prefersReducedMotion()) {
-      shortcutSnippetMenu.animate(
+      snippetShortcutMenu.animate(
         [
           { opacity: 0, margin: "8px 0" },
           { opacity: 1, margin: "0" },
@@ -122,8 +122,8 @@ async function showMenu(element: HTMLElement): Promise<void> {
     "click",
     (event) => {
       if (
-        event.target !== shortcutSnippetMenu &&
-        !shortcutSnippetMenu?.contains(event.target as Node)
+        event.target !== snippetShortcutMenu &&
+        !snippetShortcutMenu?.contains(event.target as Node)
       ) {
         destroyMenu();
       }
@@ -144,34 +144,34 @@ async function showMenu(element: HTMLElement): Promise<void> {
 }
 
 function createMenu(element: TextEditorElement): HTMLElement {
-  if (shortcutSnippetMenu) {
+  if (snippetShortcutMenu) {
     throw new Error("Shortcut Snippet Menu already exists");
   }
 
-  shortcutSnippetMenu = tooltipFactory();
-  shortcutSnippetMenu.dataset.testid = "pixiebrix-shortcut-snippet-menu";
+  snippetShortcutMenu = tooltipFactory();
+  snippetShortcutMenu.dataset.testid = "pixiebrix-shortcut-snippet-menu";
 
   render(
-    <ShortcutSnippetMenu
+    <SnippetShortcutMenu
       registry={snippetRegistry}
       element={element}
       onHide={destroyMenu}
       commandKey={COMMAND_KEY}
     />,
-    shortcutSnippetMenu,
+    snippetShortcutMenu,
   );
 
-  return shortcutSnippetMenu;
+  return snippetShortcutMenu;
 }
 
 function destroyMenu(): void {
-  if (shortcutSnippetMenu) {
+  if (snippetShortcutMenu) {
     // Cleanly unmount React component before removing from the DOM because useKeyboardQuery attaches document event
     // listeners via useEffect: https://react.dev/reference/react-dom/unmountComponentAtNode
-    unmountComponentAtNode(shortcutSnippetMenu);
+    unmountComponentAtNode(snippetShortcutMenu);
 
-    shortcutSnippetMenu.remove();
-    shortcutSnippetMenu = null;
+    snippetShortcutMenu.remove();
+    snippetShortcutMenu = null;
     targetElement = null;
   }
 
@@ -253,7 +253,7 @@ function getCursorPositionReference(): Nullishable<VirtualElement | Element> {
 }
 
 async function updatePosition(): Promise<void> {
-  if (!shortcutSnippetMenu) {
+  if (!snippetShortcutMenu) {
     // Guard against race condition
     return;
   }
@@ -269,16 +269,16 @@ async function updatePosition(): Promise<void> {
   // Keep anchored on scroll/resize: https://floating-ui.com/docs/computeposition#anchoring
   const cleanupAutoPosition = autoUpdate(
     referenceElement,
-    shortcutSnippetMenu,
+    snippetShortcutMenu,
     async () => {
-      if (!shortcutSnippetMenu) {
+      if (!snippetShortcutMenu) {
         // Handle race in async handler
         return;
       }
 
       const { x, y } = await computePosition(
         referenceElement,
-        shortcutSnippetMenu,
+        snippetShortcutMenu,
         {
           // `top-start` is a nice placement because we don't have to worry about font-size or line-height. It also
           // reduces the changes of conflicting with native auto-complete/suggestion dropdowns.
@@ -298,7 +298,7 @@ async function updatePosition(): Promise<void> {
           ],
         },
       );
-      Object.assign(shortcutSnippetMenu.style, {
+      Object.assign(snippetShortcutMenu.style, {
         left: `${x}px`,
         top: `${y}px`,
       });
@@ -353,7 +353,7 @@ function isTextSelected(target: unknown): boolean {
   return false;
 }
 
-export const initShortcutSnippetMenuController = once(() => {
+export const initSnippetShortcutMenuController = once(() => {
   expectContext("contentScript");
 
   document.addEventListener(

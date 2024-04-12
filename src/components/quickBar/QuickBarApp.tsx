@@ -68,6 +68,8 @@ let autoShow = false;
  */
 export const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
 
+const MODE = process.env.SHADOW_DOM as "open" | "closed";
+
 function useAutoShow(): void {
   const { query } = useKBar();
 
@@ -135,16 +137,10 @@ const KBarComponent: React.FC = () => {
         }}
       >
         <KBarAnimator style={animatorStyle}>
-          {/*
-              Wrap the quickbar in a shadow dom. This isolates the quickbar from styles being passed down from
-              whichever website it's rendering on.
-              To support react-select and any future potential emotion components we used the
-              emotion variant of the react-shadow library.
-            */}
           <EmotionShadowRoot
             data-testid="quickBar"
             className="cke_editable"
-            mode="closed"
+            mode={MODE}
             contentEditable
             suppressContentEditableWarning
           >

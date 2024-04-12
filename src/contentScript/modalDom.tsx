@@ -68,6 +68,7 @@ const IframeModal: React.VFC<{
         src={url.href}
         title="Modal content"
         style={{
+          all: "initial",
           border: "0",
           flexGrow: 1, // Fit dialog
           colorScheme: "normal", // Match parent color scheme #1650

@@ -55,16 +55,25 @@ const config = {
   silent: true,
   testEnvironment: "./src/testUtils/FixJsdomEnvironment.js",
   modulePaths: ["/src"],
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
+  moduleFileExtensions: [
+    "ts",
+    "tsx",
+    "js",
+    "jsx",
+    "mjs",
+    "yaml",
+    "yml",
+    "json",
+  ],
   modulePathIgnorePatterns: ["<rootDir>/headers.json", "<rootDir>/dist/"],
   testPathIgnorePatterns: ["/end-to-end-tests"],
   transform: {
-    "^.+\\.[jt]sx?$": "@swc/jest",
-    "^.+\\.mjs$": "@swc/jest",
-    "^.+\\.ya?ml$": "yaml-jest-transform",
-    "^.+\\.ya?ml\\?loadAsText$":
-      "<rootDir>/src/testUtils/rawJestTransformer.mjs",
-    "^.+\\.txt$": "<rootDir>/src/testUtils/rawJestTransformer.mjs",
+    "\\.[jt]sx?$": "@swc/jest",
+    "\\.mjs$": "@swc/jest",
+    "\\.ya?ml$": "yaml-jest-transform",
+    "\\.txt$": "<rootDir>/src/testUtils/rawJestTransformer.mjs",
+    // Note: `?param` URLs aren't supported here: https://github.com/jestjs/jest/pull/6282
+    // You can only use a mock via `moduleNameMapper` for these.
   },
   transformIgnorePatterns: [`node_modules/(?!${esmPackages.join("|")})`],
   setupFiles: [
@@ -89,11 +98,15 @@ const config = {
     "!**/vendor/**",
   ],
   moduleNameMapper: {
+    "^@contrib/([^?]+)": "<rootDir>/contrib/$1",
+    "^@schemas/([^?]+)": "<rootDir>/schemas/$1",
+
     "\\.s?css$": "identity-obj-proxy",
-    "\\.(gif|svg|png)$|\\?loadAsUrl$|\\?loadAsComponent$":
-      "<rootDir>/src/__mocks__/stringMock.js",
-    "^@contrib/(.*?)(\\?loadAsText)?$": "<rootDir>/contrib/$1",
-    "^@schemas/(.*)": "<rootDir>/schemas/$1",
+    "\\.(gif|svg|png)$": "<rootDir>/src/__mocks__/stringMock.js",
+
+    "\\?loadAsUrl$": "<rootDir>/src/__mocks__/stringMock.js",
+    "\\?loadAsText$": "<rootDir>/src/__mocks__/stringMock.js",
+    "\\?loadAsComponent$": "<rootDir>/src/__mocks__/stringMock.js",
 
     // Auto-mocks. See documentation in ./src/__mocks__/readme.md
     "^@/(.*)$": ["<rootDir>/src/__mocks__/@/$1", "<rootDir>/src/$1"],

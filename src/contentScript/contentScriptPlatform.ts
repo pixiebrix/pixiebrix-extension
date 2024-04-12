@@ -21,6 +21,7 @@ import {
   clearExtensionDebugLogs,
   setToolbarBadge,
   traces,
+  openTab,
 } from "@/background/messenger/strict/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -29,7 +30,6 @@ import type { PlatformCapability } from "@/platform/capabilities";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import {
   ensureContextMenu,
-  openTab,
   performConfiguredRequestInBackground,
   uninstallContextMenu,
 } from "@/background/messenger/api";
@@ -46,7 +46,7 @@ import type { JsonObject } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { writeToClipboard } from "@/utils/clipboardUtils";
-import { snippetRegistry } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
+import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import * as sidebarController from "@/contentScript/sidebarController";
 import { validateSemVerString } from "@/types/helpers";
@@ -112,7 +112,7 @@ class ContentScriptPlatform extends PlatformBase {
     "audio",
     "quickBar",
     "textSelectionMenu",
-    "shortcutSnippetMenu",
+    "snippetShortcutMenu",
     "contextMenu",
     "badge",
     "state",
@@ -279,7 +279,7 @@ class ContentScriptPlatform extends PlatformBase {
     return selectionMenuActionRegistry;
   }
 
-  override get shortcutSnippetMenu(): PlatformProtocol["shortcutSnippetMenu"] {
+  override get snippetShortcutMenu(): PlatformProtocol["snippetShortcutMenu"] {
     return snippetRegistry;
   }
 

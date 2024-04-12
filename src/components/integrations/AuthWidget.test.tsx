@@ -37,8 +37,6 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { produce } from "immer";
 import { userEvent } from "@/pageEditor/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { dereference } from "@/validators/schemaValidator";
-import { type Schema } from "@/types/schemaTypes";
 
 const { remoteConfig, integrationDefinition } =
   generateIntegrationAndRemoteConfig();
@@ -166,15 +164,12 @@ describe("AuthWidget", () => {
       },
     );
 
-    const dereferenced = await dereference(
-      integrationWithOptionalField as Schema,
-      {
-        sanitizeIntegrationDefinitions: false,
-      },
-    );
-
-    appApiMock.onGet("/api/services/").reply(200, [dereferenced]);
-    appApiMock.onGet("/api/registry/bricks/").reply(200, [dereferenced]);
+    appApiMock
+      .onGet("/api/services/")
+      .reply(200, [integrationWithOptionalField]);
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(200, [integrationWithOptionalField]);
     await refreshRegistries();
 
     renderContent(authOption1, authOption2);

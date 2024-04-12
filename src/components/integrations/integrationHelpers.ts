@@ -22,16 +22,15 @@ import {
 } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isRequired } from "@/utils/schemaUtils";
-import { dereference } from "@/validators/schemaValidator";
+import {
+  dereferenceForYup,
+  validateIntegrationConfiguration,
+} from "@/validators/schemaValidator";
 import { type FormikValues, type FormikErrors } from "formik";
 import { cloneDeep, set } from "lodash";
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
-import {
-  type OutputUnit,
-  Validator,
-  type Schema as ValidatorSchema,
-} from "@cfworker/json-schema";
+import { type OutputUnit } from "@cfworker/json-schema";
 
 export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   const result: UnknownObject = {};
@@ -110,7 +109,7 @@ export async function createYupValidationSchema(
 
     // Dereference because buildYup doesn't support $ref:
     // https://github.com/kristianmandrup/schema-to-yup?tab=readme-ov-file#refs
-    const dereferencedSchema = await dereference(schema, {
+    const dereferencedSchema = await dereferenceForYup(schema, {
       // Include secrets, so they can be validated
       sanitizeIntegrationDefinitions: false,
     });
@@ -131,17 +130,11 @@ export async function createYupValidationSchema(
   }
 }
 
-export function validateIntegrationConfig(integration: Integration) {
-  return (values: FormikValues): FormikErrors<FormikValues> => {
+export async function validateIntegrationConfig(integration: Integration) {
+  return async (values: FormikValues): Promise<FormikErrors<FormikValues>> => {
     const schema = buildSchema(integration);
 
-    const validator = new Validator(
-      schema as ValidatorSchema,
-      "2019-09",
-      false,
-    );
-
-    const { errors } = validator.validate(values);
+    const { errors } = await validateIntegrationConfiguration(schema, values);
     return convertSchemaErrorsToFormikErrors(errors);
   };
 }

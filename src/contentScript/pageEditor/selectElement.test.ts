@@ -16,10 +16,10 @@
  */
 
 import selectElement from "./selectElement";
-import { showSelectionToolPopover } from "@/components/selectionToolPopover/SelectionToolPopover";
+import showSelectionToolPopover from "@/components/selectionToolPopover/showSelectionToolPopover";
 
 // Mock because the React vs. JSDOM event handling and dom manipulation isn't playing nicely together
-jest.mock("@/components/selectionToolPopover/SelectionToolPopover");
+jest.mock("@/components/selectionToolPopover/showSelectionToolPopover");
 
 const showSelectionToolPopoverMock = jest.mocked(showSelectionToolPopover);
 
@@ -132,7 +132,7 @@ describe("selectElement", () => {
 
     expect(selectionHandlerMock).toHaveBeenCalledTimes(2);
 
-    args.handleDone();
+    args.onDone();
 
     await expect(selectPromise).resolves.toEqual({
       parent: null,
@@ -159,7 +159,7 @@ describe("selectElement", () => {
 
     args.setSelectionHandler(selectionHandlerMock);
 
-    args.handleSimilarChange(true);
+    args.onChangeSimilarSelection(true);
     expect(selectionHandlerMock).toHaveBeenCalledTimes(1);
 
     // React testing userEvent library doesn't seem to work here
@@ -176,7 +176,7 @@ describe("selectElement", () => {
 
     expect(selectionHandlerMock).toHaveBeenCalledTimes(3);
 
-    args.handleDone();
+    args.onDone();
 
     await expect(selectPromise).resolves.toEqual({
       parent: null,

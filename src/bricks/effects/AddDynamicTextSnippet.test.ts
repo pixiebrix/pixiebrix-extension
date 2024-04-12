@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { snippetRegistry } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
+import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import blockRegistry from "@/bricks/registry";
 import {
@@ -66,7 +66,7 @@ describe("AddDynamicTextSnippet", () => {
         logger,
       });
 
-      expect(snippetRegistry.shortcutSnippets).toStrictEqual([
+      expect(snippetRegistry.snippetShortcuts).toStrictEqual([
         {
           // Any leading slash is dropped
           shortcut: "echo",
@@ -79,7 +79,7 @@ describe("AddDynamicTextSnippet", () => {
       ]);
 
       await expect(
-        snippetRegistry.shortcutSnippets[0].handler("current text"),
+        snippetRegistry.snippetShortcuts[0].handler("current text"),
       ).resolves.toBe("current text");
     },
   );
@@ -108,7 +108,7 @@ describe("AddDynamicTextSnippet", () => {
         logger,
       });
 
-      expect(snippetRegistry.shortcutSnippets).toStrictEqual([
+      expect(snippetRegistry.snippetShortcuts).toStrictEqual([
         {
           shortcut: "echo",
           title: "Echo",
@@ -119,7 +119,7 @@ describe("AddDynamicTextSnippet", () => {
       ]);
 
       await expect(
-        snippetRegistry.shortcutSnippets[0].handler("current text"),
+        snippetRegistry.snippetShortcuts[0].handler("current text"),
       ).resolves.toBe("current text");
     },
   );
