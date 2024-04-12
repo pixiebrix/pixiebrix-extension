@@ -19,7 +19,6 @@ import React from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Card } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import { type Schema } from "@/types/schemaTypes";
@@ -41,11 +40,6 @@ type OwnProps = {
    * The error, if there was an error fetching the child schema
    */
   schemaError?: unknown;
-
-  /**
-   * True if the child schema is loading
-   */
-  schemaLoading?: boolean;
 };
 
 registerDefaultWidgets();
@@ -63,24 +57,19 @@ const ChildContainer: React.FC<{ heading: string }> = ({
 const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProps> = ({
   name,
   schema,
-  schemaLoading,
   schemaError,
   heading,
 }) => {
-  if (schemaLoading) {
-    return (
-      <ChildContainer heading={heading}>
-        <Loader />
-      </ChildContainer>
-    );
-  }
-
-  if (schemaError || !schema) {
+  if (schemaError) {
     return (
       <ChildContainer heading={heading}>
         <ObjectWidget name={name} schema={FALLBACK_SCHEMA} />
       </ChildContainer>
     );
+  }
+
+  if (!schema) {
+    return null;
   }
 
   if (isEmpty(schema?.properties)) {
@@ -93,20 +82,19 @@ const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProps> = ({
 
   return (
     <ChildContainer heading={heading}>
-      {schema &&
-        Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
-          if (typeof fieldSchema === "boolean") {
-            throw new TypeError("Expected schema for input property type");
-          }
+      {Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
+        if (typeof fieldSchema === "boolean") {
+          throw new TypeError("Expected schema for input property type");
+        }
 
-          return (
-            <SchemaField
-              key={prop}
-              name={joinName(name, prop)}
-              schema={fieldSchema}
-            />
-          );
-        })}
+        return (
+          <SchemaField
+            key={prop}
+            name={joinName(name, prop)}
+            schema={fieldSchema}
+          />
+        );
+      })}
     </ChildContainer>
   );
 };

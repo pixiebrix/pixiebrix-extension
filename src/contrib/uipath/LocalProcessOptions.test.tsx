@@ -33,6 +33,7 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
+import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 
 TEST_setContext("devToolsPage");
 
@@ -46,17 +47,9 @@ jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/strict/api");
-jest.mock("@/contrib/uipath/uipathHooks", () => {
-  const mock = jest.requireActual("@/contrib/uipath/uipathHooks");
-  return {
-    __esModule: true,
-    ...mock,
-    useSelectedRelease: jest.fn().mockResolvedValue({
-      selectedRelease: null,
-      releasePromise: Promise.resolve([]),
-    }),
-  };
-});
+jest.mock("@/contrib/uipath/uipathHooks");
+const useSelectedReleaseMock = jest.mocked(useSelectedRelease);
+
 jest.mock("@/components/form/widgets/RemoteSelectWidget", () => {
   const mock = jest.requireActual(
     "@/components/form/widgets/RemoteSelectWidget",
@@ -108,6 +101,11 @@ beforeEach(() => {
   useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
     valueToAsyncState(null),
   );
+  useSelectedReleaseMock.mockReturnValue({
+    selectedRelease: null,
+    releasesPromise: Promise.resolve([]),
+    releaseKey: null,
+  });
 });
 
 describe("UiPath LocalProcess Options", () => {
@@ -138,11 +136,9 @@ describe("UiPath LocalProcess Options", () => {
 
     renderOptions();
 
-    await waitForEffect();
-
-    expect(
-      screen.getByText("UiPath Assistant consent code: abc123"),
-    ).toBeInTheDocument();
+    await expect(
+      screen.findByText("UiPath Assistant consent code: abc123"),
+    ).resolves.toBeInTheDocument();
     expect(screen.getByLabelText("Integration")).toBeInTheDocument();
   });
 
@@ -175,20 +171,42 @@ describe("UiPath LocalProcess Options", () => {
       missingComponents: false,
     });
 
+    useSelectedReleaseMock.mockReturnValue({
+      selectedRelease: {
+        release: null,
+        schema: {
+          type: "object",
+          properties: {
+            Arg1: {
+              type: "string",
+              title: "Argument One",
+            },
+            Arg2: {
+              type: "string",
+              title: "Argument Two",
+            },
+          },
+        },
+      },
+      releasesPromise: Promise.resolve([]),
+      releaseKey: null,
+    });
+
     const formState = makeBaseState();
     formState.integrationDependencies[0].configId = configId;
     formState.extension.blockPipeline[0].config.service = "@uipath";
 
     renderOptions();
 
-    await waitForEffect();
-
+    await expect(
+      screen.findByLabelText("Integration"),
+    ).resolves.toBeInTheDocument();
     expect(
       screen.queryByText("UiPath Assistant consent code"),
     ).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Integration")).toBeInTheDocument();
     expect(screen.getByLabelText("Process")).toBeInTheDocument();
     expect(screen.getByText("Input Arguments")).toBeInTheDocument();
-    expect(screen.getByText("Add Property")).toBeInTheDocument();
+    expect(screen.getByText("Argument One")).toBeInTheDocument();
+    expect(screen.getByText("Argument Two")).toBeInTheDocument();
   });
 });
