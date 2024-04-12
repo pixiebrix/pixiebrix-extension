@@ -20,7 +20,6 @@ import { render, screen } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { UIPATH_ID } from "@/contrib/uipath/process";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
@@ -34,6 +33,7 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 
 TEST_setContext("devToolsPage");
 
@@ -48,17 +48,8 @@ jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
 
-jest.mock("@/contrib/uipath/uipathHooks", () => {
-  const mock = jest.requireActual("@/contrib/uipath/uipathHooks");
-  return {
-    __esModule: true,
-    ...mock,
-    useSelectedRelease: jest.fn().mockResolvedValue({
-      selectedRelease: null,
-      releasePromise: Promise.resolve([]),
-    }),
-  };
-});
+jest.mock("@/contrib/uipath/uipathHooks");
+const useSelectedReleaseMock = jest.mocked(useSelectedRelease);
 
 jest.mock("@/components/form/widgets/RemoteSelectWidget", () => {
   const mock = jest.requireActual(
@@ -113,19 +104,21 @@ beforeEach(() => {
   useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
     valueToAsyncState(null),
   );
+  useSelectedReleaseMock.mockReturnValue({
+    selectedRelease: null,
+    releasesPromise: Promise.resolve([]),
+    releaseKey: null,
+  });
 });
 
 describe("UiPath Options", () => {
   test("Render integration selector", async () => {
     const { asFragment } = renderOptions();
-
-    await waitForEffect();
-
-    expect(screen.getByText("Integration")).toBeInTheDocument();
+    await expect(screen.findByText("Integration")).resolves.toBeInTheDocument();
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("Render with selected dependency", async () => {
+  test("Render with selected dependency and inputs", async () => {
     useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
       // Values not needed here, just need to return something non-null
       valueToAsyncState({} as unknown as SanitizedIntegrationConfig),
@@ -137,16 +130,40 @@ describe("UiPath Options", () => {
       "@uipath",
     );
 
-    const { asFragment } = renderOptions(base);
+    useSelectedReleaseMock.mockReturnValue({
+      selectedRelease: {
+        release: null,
+        schema: {
+          type: "object",
+          properties: {
+            Arg1: {
+              type: "string",
+              title: "Argument One",
+            },
+            Arg2: {
+              type: "string",
+              title: "Argument Two",
+            },
+          },
+        },
+      },
+      releasesPromise: Promise.resolve([]),
+      releaseKey: null,
+    });
 
-    await waitForEffect();
+    renderOptions(base);
 
-    expect(screen.getByText("Integration")).toBeInTheDocument();
+    await expect(screen.findByText("Integration")).resolves.toBeInTheDocument();
     expect(screen.getByText("Release")).toBeInTheDocument();
     expect(screen.getByText("Strategy")).toBeInTheDocument();
     expect(screen.getByText("Await Result")).toBeInTheDocument();
-    expect(screen.queryByText("Result Timeout (Milliseconds)")).toBeNull();
-    expect(asFragment()).toMatchSnapshot();
+    // Timeout field doesn't show up until Await Result is toggled on
+    expect(
+      screen.queryByText("Result Timeout (Milliseconds)"),
+    ).not.toBeInTheDocument();
+    // Expect input parameters to be visible
+    expect(screen.getByText("Argument One")).toBeInTheDocument();
+    expect(screen.getByText("Argument Two")).toBeInTheDocument();
   });
 
   test("Render timeout field if await result", async () => {
@@ -164,10 +181,8 @@ describe("UiPath Options", () => {
 
     renderOptions(base);
 
-    await waitForEffect();
-
-    expect(
-      screen.getByText("Result Timeout (Milliseconds)"),
-    ).toBeInTheDocument();
+    await expect(
+      screen.findByText("Result Timeout (Milliseconds)"),
+    ).resolves.toBeInTheDocument();
   });
 });
