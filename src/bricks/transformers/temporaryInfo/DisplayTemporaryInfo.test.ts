@@ -55,16 +55,21 @@ import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";
 import { showModal } from "@/contentScript/modalDom";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 jest.mock("@/contentScript/modalDom");
 jest.mock("@/contentScript/sidebarController");
 jest.mock("@/platform/panels/panelController");
+
+jest.mock("@/utils/iframeUtils");
 
 const displayTemporaryInfoBlock = new DisplayTemporaryInfo();
 const renderer = new DocumentRenderer();
 
 describe("DisplayTemporaryInfo", () => {
   beforeEach(() => {
+    jest.mocked(isLoadedInIframe).mockReturnValue(false);
+
     blockRegistry.clear();
     blockRegistry.register([
       echoBrick,
@@ -195,6 +200,34 @@ describe("DisplayTemporaryInfo", () => {
         payload: expect.toBeObject(),
       }),
     });
+  });
+
+  test("it errors from frame", async () => {
+    jest.mocked(isLoadedInIframe).mockReturnValue(true);
+
+    const config = getExampleBrickConfig(renderer.id);
+    const pipeline = {
+      id: displayTemporaryInfoBlock.id,
+      config: {
+        title: "Test Temp Panel",
+        body: toExpression("pipeline", [{ id: renderer.id, config }]),
+        location: "panel",
+        isRootAware: true,
+      },
+    };
+
+    const extensionId = uuidv4();
+
+    const options = {
+      ...testOptions("v3"),
+      logger: new ConsoleLogger({
+        extensionId,
+      }),
+    };
+
+    await expect(
+      reducePipeline(pipeline, simpleInput({}), options),
+    ).rejects.toThrow("Cannot show sidebar in a frame");
   });
 
   test("requires target for popover", async () => {
