@@ -28,7 +28,7 @@ import { mapValues, zipWith } from "lodash";
 import { type Primitive } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { boolean } from "@/utils/typeUtils";
-import { Nullishable } from "@/utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const COMMUNITY_CONTROL_ROOM_REGEX =
   /^(https:\/\/)?community\d*\.\S+\.automationanywhere\.digital\/?$/;
