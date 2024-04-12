@@ -27,9 +27,9 @@ import { cachedFetchFolder } from "@/contrib/automationanywhere/aaApi";
 const FolderIdConfigAlert: React.FC<{
   controlRoomConfig: SanitizedIntegrationConfig;
 }> = ({ controlRoomConfig }) => {
+  const folderId = controlRoomConfig.config?.folderId;
   // Don't care about pending/error state b/c we just fall back to displaying the folderId
   const { data: folder } = useAsyncState(async () => {
-    const folderId = controlRoomConfig.config?.folderId;
     if (folderId) {
       return cachedFetchFolder(controlRoomConfig, folderId);
     }
@@ -37,17 +37,14 @@ const FolderIdConfigAlert: React.FC<{
     return null;
   }, [controlRoomConfig]);
 
-  if (isEmpty(controlRoomConfig.config.folderId)) {
+  if (isEmpty(folderId)) {
     return null;
   }
 
   return (
     <Alert variant="info">
       <FontAwesomeIcon icon={faInfoCircle} /> Displaying available options from
-      folder{" "}
-      {folder?.name
-        ? `'${folder.name}' (${controlRoomConfig.config.folderId})`
-        : controlRoomConfig.config.folderId}{" "}
+      folder {folder?.name ? `'${folder.name}' (${folderId})` : folderId}{" "}
       configured on the integration. To choose from all bots in the workspace,
       remove the folder from the integration configuration.
     </Alert>

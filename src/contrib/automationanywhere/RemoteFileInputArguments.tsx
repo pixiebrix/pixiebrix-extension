@@ -47,7 +47,6 @@ const RemoteFileInputArguments: React.FC<{
       name={inputDataFieldName}
       schema={remoteSchemaState.data}
       schemaError={remoteSchemaState.error}
-      schemaLoading={remoteSchemaState.isLoading}
       isRequired
     />
   );
