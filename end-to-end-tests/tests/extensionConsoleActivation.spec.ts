@@ -21,7 +21,7 @@ import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 import { test as base } from "@playwright/test";
 import { getSidebarPage } from "../utils";
 import path from "node:path";
-import { VALID_UUID_REGEX } from "@/utils/uuidUtils";
+import { VALID_UUID_REGEX } from "@/types/stringTypes";
 
 test("can activate a mod with no config options", async ({
   page,
