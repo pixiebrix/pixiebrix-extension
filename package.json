@@ -291,7 +291,7 @@
     "typescript-plugin-css-modules": "^5.1.0",
     "webpack": "^5.91.0",
     "webpack-build-notifier": "^2.3.0",
-    "webpack-bundle-analyzer": "^4.10.1",
+    "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.4",
     "webpack-merge": "^5.10.0",
