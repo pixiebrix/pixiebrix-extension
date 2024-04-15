@@ -26,7 +26,10 @@ import {
   getCachedAuthData,
   setCachedAuthData,
 } from "@/background/auth/authStorage";
-import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 /**
  * Refresh an OAuth2 PKCE token. NOOP if a refresh token is not available.
@@ -56,7 +59,12 @@ export default async function refreshPKCEToken(
 
   const cachedAuthData = await getCachedAuthData(integrationConfig.id);
 
-  if (cachedAuthData?.refresh_token) {
+  // The PIXIEBRIX_INTEGRATION_ID check is mostly for backwards compatibility
+  // to avoid dealing with undefined integrationConfig id's.
+  if (
+    integration.id !== PIXIEBRIX_INTEGRATION_ID &&
+    cachedAuthData?.refresh_token
+  ) {
     console.debug("Refreshing PKCE token");
 
     const { config } = await serviceLocator.findIntegrationConfig(
