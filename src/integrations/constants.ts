@@ -19,8 +19,8 @@ import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import type { OutputKey } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 /**
  * The PixieBrix API integration definition registry id.
@@ -29,7 +29,7 @@ export const PIXIEBRIX_INTEGRATION_ID: RegistryId =
   validateRegistryId("@pixiebrix/api");
 // Use a minimal valid UUID for pixiebrix to avoid null id
 export const PIXIEBRIX_INTEGRATION_CONFIG_ID: UUID = uuidSequence(0);
-export const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
+export const PIXIEBRIX_OUTPUT_KEY = validateOutputKey("pixiebrix");
 // We should probably leave this as called "SERVICES_" until if/when the actual url is changed
 // to point to /schemas/integrations/, just as a reminder
 export const SERVICES_BASE_SCHEMA_URL =

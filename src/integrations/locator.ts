@@ -224,7 +224,7 @@ class LazyLocatorFactory {
 
     if (serviceId === PIXIEBRIX_INTEGRATION_ID) {
       // HACK: for now use the separate storage for the extension key
-      return [await pixiebrixConfigurationFactory()];
+      return [pixiebrixConfigurationFactory()];
     }
 
     let service: IntegrationABC;

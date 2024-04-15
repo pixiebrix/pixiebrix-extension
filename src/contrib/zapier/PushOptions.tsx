@@ -45,7 +45,7 @@ function useHooks(): AsyncState<Webhook[]> {
   return useAsyncState(async () => {
     const { data } = await getPlatform().request<{
       new_push_fields: Webhook[];
-    }>(await pixiebrixConfigurationFactory(), {
+    }>(pixiebrixConfigurationFactory(), {
       url: await absoluteApiUrl("/api/webhooks/hooks/"),
       method: "get",
     });

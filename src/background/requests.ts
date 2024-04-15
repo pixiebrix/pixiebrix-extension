@@ -232,7 +232,7 @@ async function proxyRequest<T>(
   }
 
   const authenticatedRequestConfig = await authenticate(
-    await pixiebrixConfigurationFactory(),
+    pixiebrixConfigurationFactory(),
     {
       url: await absoluteApiUrl("/api/proxy/"),
       method: "post" as Method,

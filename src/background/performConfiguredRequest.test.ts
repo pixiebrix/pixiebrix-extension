@@ -38,7 +38,6 @@ import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { deserializeError, serializeError } from "serialize-error";
 import { type NetworkRequestConfig } from "@/types/networkTypes";
-import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
 
 // Disable automatic __mocks__ resolution #6799
 jest.mock("@/data/service/apiClient", () =>
@@ -69,11 +68,6 @@ jest.mock("@/background/auth/getToken", () => ({
 }));
 jest.mock("@/auth/authStorage");
 jest.mock("@/integrations/locator");
-
-// Use real version of pixiebrixConfigurationFactory
-(pixiebrixConfigurationFactory as any) = jest.requireActual(
-  "@/integrations/locator",
-).pixiebrixConfigurationFactory;
 
 enrichAxiosErrors();
 
