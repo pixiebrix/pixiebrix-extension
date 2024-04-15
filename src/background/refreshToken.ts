@@ -56,7 +56,7 @@ export default async function refreshPKCEToken(
 
   const cachedAuthData = await getCachedAuthData(integrationConfig.id);
 
-  if (integrationConfig.id && cachedAuthData?.refresh_token) {
+  if (cachedAuthData?.refresh_token) {
     console.debug("Refreshing PKCE token");
 
     const { config } = await serviceLocator.findIntegrationConfig(

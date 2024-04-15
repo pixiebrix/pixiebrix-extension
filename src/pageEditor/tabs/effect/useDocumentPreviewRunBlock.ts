@@ -34,7 +34,7 @@ import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSel
 import { type UUID } from "@/types/stringTypes";
 import { type BrickArgsContext } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
-import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
 
@@ -140,9 +140,10 @@ export default function useDocumentPreviewRunBlock(
     selectActiveElementTraceForBlock(blockInstanceId),
   );
   const { data: serviceContext, isLoading: isLoadingServiceContext } =
-    useAsyncState(makeServiceContextFromDependencies(integrationDependencies), [
-      integrationDependencies,
-    ]);
+    useAsyncState(
+      makeIntegrationsContextFromDependencies(integrationDependencies),
+      [integrationDependencies],
+    );
   const context = {
     ...traceRecord?.templateContext,
     ...serviceContext,

@@ -49,6 +49,7 @@ import { isExpression } from "@/utils/expressionUtils";
 import { getPlatform } from "@/platform/platformContext";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import { type CustomFormComponentProps } from "./CustomFormComponent";
+import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
 
 interface DatabaseResult {
   success: boolean;
@@ -94,9 +95,7 @@ export const CUSTOM_FORM_SCHEMA = {
               type: "string",
               format: "uuid",
             },
-            service: {
-              $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/api",
-            },
+            service: PIXIEBRIX_INTEGRATION_FIELD_SCHEMA,
           },
           required: ["type", "service", "databaseId"],
         },

@@ -23,10 +23,7 @@ import servicesRegistry, {
 import { validateRegistryId } from "@/types/helpers";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
-import {
-  MissingConfigurationError,
-  NotConfiguredError,
-} from "@/errors/businessErrors";
+import { MissingConfigurationError } from "@/errors/businessErrors";
 import {
   type IntegrationABC,
   type IntegrationConfig,
@@ -41,21 +38,12 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import { getLinkedApiClient } from "@/data/service/apiClient";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type SetRequired } from "type-fest";
+import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
 
 enum Visibility {
   Private = 0,
   Team,
   BuiltIn,
-}
-
-export async function pixiebrixConfigurationFactory(): Promise<SanitizedIntegrationConfig> {
-  return {
-    id: undefined,
-    serviceId: PIXIEBRIX_INTEGRATION_ID,
-    // Don't need to proxy requests to our own service
-    proxy: false,
-    config: {} as SanitizedConfig,
-  } as SanitizedIntegrationConfig;
 }
 
 type Option = {
@@ -268,28 +256,22 @@ class LazyLocatorFactory {
 
   async locate(
     serviceId: RegistryId,
-    // Integration configurations are not guaranteed to have a config id
-    authId?: UUID,
+    authId: UUID,
   ): Promise<SanitizedIntegrationConfig> {
     expectContext(
       "background",
       "The service locator must run in the background worker",
     );
 
+    if (serviceId === PIXIEBRIX_INTEGRATION_ID) {
+      // Since 1.8.13 the locator should not be used to instantiate the pixiebrix integration config
+      throw new Error(
+        "Use `pixiebrixConfigurationFactory` to instantiate the pixiebrix integration config",
+      );
+    }
+
     if (!this.initialized) {
       await this.refresh();
-    }
-
-    if (serviceId === PIXIEBRIX_INTEGRATION_ID) {
-      // HACK: for now use the separate storage for the extension key
-      return pixiebrixConfigurationFactory();
-    }
-
-    if (!authId) {
-      throw new NotConfiguredError(
-        `No configuration selected for ${serviceId}`,
-        serviceId,
-      );
     }
 
     const service = await servicesRegistry.lookup(serviceId);

@@ -25,6 +25,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { castArray, uniq } from "lodash";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 /**
  * Look up integrations in the current formik context, and return the current
@@ -36,31 +37,39 @@ import { castArray, uniq } from "lodash";
  *
  * @param integrationIds The integration ids to look up in the current formik context
  * @returns SanitizedIntegrationConfig for the integration, if the user has selected an integration auth option
- * @throws Error if multiple matching integration dependencies are found
+ * @throws Error if multiple matching integration dependencies are found, or a configuration is not selected
  * @see RequireIntegrationConfig
  */
 function useSanitizedIntegrationConfigFormikAdapter(
   integrationIds: RegistryId | RegistryId[],
 ): FetchableAsyncState<SanitizedIntegrationConfig | null> {
-  const idArray = uniq(castArray(integrationIds));
+  // If applicable, we'll add in the pixiebrix integration config later
+  const idArray = uniq(
+    castArray(integrationIds).filter(
+      (integrationId) => integrationId !== PIXIEBRIX_INTEGRATION_ID,
+    ),
+  );
   const {
     values: { integrationDependencies = [] },
   } = useFormikContext<{ integrationDependencies: IntegrationDependency[] }>();
-  const matchingIntegrationDependencies = integrationDependencies.filter(
-    ({ integrationId }) => idArray.includes(integrationId),
-  );
-  if (matchingIntegrationDependencies.length > 1) {
+  const matchingConfiguredIntegrationDependencies =
+    integrationDependencies.filter(
+      ({ integrationId, configId }) =>
+        idArray.includes(integrationId) && configId != null,
+    );
+  if (matchingConfiguredIntegrationDependencies.length > 1) {
     throw new Error("Multiple matching integrations configured");
   }
 
-  const integrationDependency = matchingIntegrationDependencies[0];
+  const integrationDependency = matchingConfiguredIntegrationDependencies[0];
   return useAsyncState(async () => {
     if (!integrationDependency) {
       return null;
     }
 
     const { integrationId, configId } = integrationDependency;
-    return services.locate(integrationId, configId);
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- unconfigured dependencies are filtered out
+    return services.locate(integrationId, configId!);
   }, [integrationDependency]);
 }
 

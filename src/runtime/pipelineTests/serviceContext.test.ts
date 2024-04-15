@@ -25,32 +25,35 @@ import {
   testOptions,
 } from "./pipelineTestHelpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { services } from "@/background/messenger/strict/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion, type TemplateEngine } from "@/types/runtimeTypes";
 import {
-  type SanitizedIntegrationConfig,
   type IntegrationDependency,
+  type SanitizedConfig,
 } from "@/integrations/integrationTypes";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
-import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import {
+  integrationDependencyFactory,
+  sanitizedIntegrationConfigFactory,
+} from "@/testUtils/factories/integrationFactories";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
-import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import { toExpression } from "@/utils/expressionUtils";
+import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
 
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([echoBrick, contextBrick, identityBrick]);
 });
 
+const locateMock = jest.mocked(services.locate);
+
 describe.each([["v1"], ["v2"], ["v3"]])(
   "apiVersion: %s",
   (apiVersion: ApiVersion) => {
     test("pass services in context with __service", async () => {
-      (services.locate as any) = jest
-        .fn()
-        .mockResolvedValue(pixiebrixConfigurationFactory());
+      locateMock.mockResolvedValue(pixiebrixConfigurationFactory());
 
       const dependencies: IntegrationDependency[] = [
         integrationDependencyFactory({
@@ -67,7 +70,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         {
           ...simpleInput({}),
           serviceContext:
-            await makeServiceContextFromDependencies(dependencies),
+            await makeIntegrationsContextFromDependencies(dependencies),
         },
         testOptions(apiVersion),
       );
@@ -86,9 +89,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 
 describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("pass services for var without __service", async () => {
-    (services.locate as any) = jest
-      .fn()
-      .mockResolvedValue(pixiebrixConfigurationFactory());
+    locateMock.mockResolvedValue(pixiebrixConfigurationFactory());
 
     const dependencies: IntegrationDependency[] = [
       integrationDependencyFactory({
@@ -104,7 +105,8 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext: await makeServiceContextFromDependencies(dependencies),
+        serviceContext:
+          await makeIntegrationsContextFromDependencies(dependencies),
       },
       testOptions(apiVersion),
     );
@@ -117,14 +119,16 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const authId = uuidv4();
     const serviceId = validateRegistryId("test/api");
 
-    (services.locate as any) = jest.fn().mockResolvedValue({
-      id: authId,
-      serviceId,
-      proxy: false,
-      config: {
-        prop: "abc123",
-      },
-    } as unknown as SanitizedIntegrationConfig);
+    locateMock.mockResolvedValue(
+      sanitizedIntegrationConfigFactory({
+        id: authId,
+        serviceId,
+        proxy: false,
+        config: {
+          prop: "abc123",
+        } as unknown as SanitizedConfig,
+      }),
+    );
 
     const dependencies: IntegrationDependency[] = [
       integrationDependencyFactory({
@@ -140,7 +144,8 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext: await makeServiceContextFromDependencies(dependencies),
+        serviceContext:
+          await makeIntegrationsContextFromDependencies(dependencies),
       },
       testOptions(apiVersion),
     );
@@ -152,9 +157,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
 
 describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("pass services for var without __service", async () => {
-    (services.locate as any) = jest
-      .fn()
-      .mockResolvedValue(pixiebrixConfigurationFactory());
+    locateMock.mockResolvedValue(pixiebrixConfigurationFactory());
 
     const dependencies: IntegrationDependency[] = [
       integrationDependencyFactory({
@@ -172,7 +175,8 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext: await makeServiceContextFromDependencies(dependencies),
+        serviceContext:
+          await makeIntegrationsContextFromDependencies(dependencies),
       },
       testOptions(apiVersion),
     );
@@ -185,14 +189,16 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const authId = uuidv4();
     const serviceId = validateRegistryId("test/api");
 
-    (services.locate as any) = jest.fn().mockResolvedValue({
-      id: authId,
-      serviceId,
-      proxy: false,
-      config: {
-        prop: "abc123",
-      },
-    } as unknown as SanitizedIntegrationConfig);
+    locateMock.mockResolvedValue(
+      sanitizedIntegrationConfigFactory({
+        id: authId,
+        serviceId,
+        proxy: false,
+        config: {
+          prop: "abc123",
+        } as unknown as SanitizedConfig,
+      }),
+    );
 
     const dependencies: IntegrationDependency[] = [
       integrationDependencyFactory({
@@ -210,7 +216,8 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext: await makeServiceContextFromDependencies(dependencies),
+        serviceContext:
+          await makeIntegrationsContextFromDependencies(dependencies),
       },
       testOptions(apiVersion),
     );
@@ -229,14 +236,16 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       const authId = uuidv4();
       const serviceId = validateRegistryId("test/api");
 
-      (services.locate as any) = jest.fn().mockResolvedValue({
-        id: authId,
-        serviceId,
-        proxy: false,
-        config: {
-          prop: "abc123",
-        },
-      } as unknown as SanitizedIntegrationConfig);
+      locateMock.mockResolvedValue(
+        sanitizedIntegrationConfigFactory({
+          id: authId,
+          serviceId,
+          proxy: false,
+          config: {
+            prop: "abc123",
+          } as unknown as SanitizedConfig,
+        }),
+      );
 
       const dependencies: IntegrationDependency[] = [
         integrationDependencyFactory({
@@ -255,7 +264,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         {
           ...simpleInput({}),
           serviceContext:
-            await makeServiceContextFromDependencies(dependencies),
+            await makeIntegrationsContextFromDependencies(dependencies),
         },
         testOptions(apiVersion),
       );

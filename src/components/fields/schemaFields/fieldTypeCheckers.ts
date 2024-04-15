@@ -31,13 +31,12 @@ import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { isVarExpression } from "@/utils/expressionUtils";
 import {
   INTEGRATION_DEPENDENCY_FIELD_REFS,
-  PIXIEBRIX_INTEGRATION_ID,
+  PIXIEBRIX_INTEGRATION_REF_URL,
+  SERVICES_BASE_SCHEMA_URL,
 } from "@/integrations/constants";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
-export const isAppServiceField = createTypePredicate(
-  (schema) =>
-    schema.$ref === `${SERVICES_BASE_SCHEMA_URL}${PIXIEBRIX_INTEGRATION_ID}`,
+export const isPixiebrixIntegrationField = createTypePredicate(
+  (schema) => schema.$ref === PIXIEBRIX_INTEGRATION_REF_URL,
 );
 
 export const isServiceField = createTypePredicate(

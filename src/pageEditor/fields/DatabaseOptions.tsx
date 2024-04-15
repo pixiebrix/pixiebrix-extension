@@ -19,9 +19,9 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
 import { partial } from "lodash";
 import React from "react";
-import AppApiIntegrationDependencyField from "@/components/fields/schemaFields/AppApiIntegrationDependencyField";
 import databaseSchema from "@schemas/database.json";
 import { joinName } from "@/utils/formUtils";
+import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
 
 const keySchema: Schema = {
   type: "string",
@@ -102,7 +102,10 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
         />
       )}
 
-      <AppApiIntegrationDependencyField name={configName("service")} />
+      <SchemaField
+        name={configName("service")}
+        schema={PIXIEBRIX_INTEGRATION_FIELD_SCHEMA}
+      />
     </div>
   );
 };

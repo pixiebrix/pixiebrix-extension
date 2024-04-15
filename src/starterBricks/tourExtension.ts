@@ -55,7 +55,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
-import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
@@ -164,7 +164,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     const initialValues: InitialValues = {
       input: ctxt,
       root: document,
-      serviceContext: await makeServiceContextFromDependencies(
+      serviceContext: await makeIntegrationsContextFromDependencies(
         extension.integrationDependencies,
       ),
       optionsArgs: extension.optionsArgs,
