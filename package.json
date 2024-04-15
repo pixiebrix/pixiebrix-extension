@@ -283,7 +283,7 @@
     "shadow-dom-testing-library": "^1.11.2",
     "storybook": "^7.6.17",
     "storybook-addon-swc": "^1.2.0",
-    "style-loader": "^3.3.4",
+    "style-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.3.10",
     "ts-loader": "^9.5.1",
     "type-fest": "^4.15.0",
