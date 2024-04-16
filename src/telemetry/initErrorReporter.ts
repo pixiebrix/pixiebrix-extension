@@ -32,7 +32,6 @@ import {
 
 // eslint-disable-next-line prefer-destructuring -- process.env
 const ENVIRONMENT = process.env.ENVIRONMENT;
-const APPLICATION_ID = process.env.DATADOG_APPLICATION_ID;
 const CLIENT_TOKEN = process.env.DATADOG_CLIENT_TOKEN;
 
 const ALWAYS_IGNORED_ERROR_PATTERNS = [/ResizeObserver loop/];
@@ -57,7 +56,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
     return;
   }
 
-  if (!CLIENT_TOKEN || !APPLICATION_ID) {
+  if (!CLIENT_TOKEN) {
     console.warn(
       "Error telemetry client token missing, errors won't be reported",
     );

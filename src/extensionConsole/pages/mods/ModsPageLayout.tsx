@@ -112,6 +112,8 @@ const ModsPageLayout: React.FunctionComponent<{
   const { modViewItems, isLoading } = useModViewItems(mods);
   const { isAutoDeploying } = useContext(DeploymentsContext);
 
+  throw new Error("test");
+
   const teamFilters = useMemo(
     () =>
       uniq(modViewItems.map((mod) => mod.sharing.source.label)).filter(
