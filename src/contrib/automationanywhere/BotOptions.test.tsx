@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { render, screen } from "@/extensionConsole/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";

@@ -40,10 +40,11 @@ jobs:
       - name: Upload coverage to Codecov
         uses: Wandalen/wretry.action@v3.1.0
         with:
-          action: codecov/codecov-action@v3
+          action: codecov/codecov-action@v4
           with: |
             fail_ci_if_error: true
             verbose: true
+            token: ${{ secrets.CODECOV_TOKEN }}
           # This upload endpoint from CodeCov is very flaky
           # Retry every 15 seconds, for up to 10 minutes
           attempt_delay: 15000

@@ -42,7 +42,6 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         defaultOptions
         value={null}
-        config={null}
       />,
     );
 
@@ -65,7 +64,6 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         defaultOptions
         value={null}
-        config={null}
       />,
     );
 
@@ -92,7 +90,6 @@ describe("AsyncRemoteSelectWidget", () => {
         optionsFactory={optionsFactoryMock}
         onChange={onChangeMock}
         value={null}
-        config={null}
       />,
     );
 
@@ -109,7 +106,7 @@ describe("AsyncRemoteSelectWidget", () => {
     });
     await waitForEffect();
 
-    expect(optionsFactoryMock).toHaveBeenCalledWith(null, {
+    expect(optionsFactoryMock).toHaveBeenCalledWith({
       query: "foo",
       value: null,
     });
@@ -126,7 +123,6 @@ describe("AsyncRemoteSelectWidget", () => {
         optionsFactory={optionsFactoryMock}
         onChange={onChangeMock}
         value={null}
-        config={null}
       />,
     );
 
@@ -157,7 +153,6 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         defaultOptions
         value="test-value"
-        config={null}
       />,
     );
 
@@ -167,7 +162,7 @@ describe("AsyncRemoteSelectWidget", () => {
       await waitForEffect();
     });
 
-    expect(optionsFactoryMock).toHaveBeenCalledWith(null, {
+    expect(optionsFactoryMock).toHaveBeenCalledWith({
       query: "",
       value: "test-value",
     });
@@ -191,7 +186,6 @@ describe("AsyncRemoteSelectWidget", () => {
         optionsFactory={optionsFactoryMock}
         onChange={onChangeMock}
         value={null}
-        config={null}
       />,
     );
 
@@ -225,12 +219,12 @@ describe("AsyncRemoteSelectWidget", () => {
 
     expect(optionsFactoryMock).toHaveBeenCalledTimes(2);
 
-    expect(optionsFactoryMock).toHaveBeenCalledWith(null, {
+    expect(optionsFactoryMock).toHaveBeenCalledWith({
       query: "fo",
       value: null,
     });
 
-    expect(optionsFactoryMock).toHaveBeenCalledWith(null, {
+    expect(optionsFactoryMock).toHaveBeenCalledWith({
       query: "fox",
       value: null,
     });
