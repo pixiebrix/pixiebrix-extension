@@ -19,7 +19,7 @@ import React from "react";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { getPageState } from "@/contentScript/messenger/strict/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
 import { faExternalLinkAlt, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
@@ -36,7 +36,9 @@ const expandTopLevelNodes: ShouldExpandNodeInitially = (keyPath, data, level) =>
   level <= 1;
 
 const PageStateTab: React.VFC = () => {
-  const activeElement = useSelector(selectActiveElement);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
 
   const state = useAsyncState<{
     Private: UnknownObject | string;
@@ -45,13 +47,13 @@ const PageStateTab: React.VFC = () => {
   }>(
     async () => {
       const context = {
-        extensionId: activeElement.uuid,
-        blueprintId: activeElement.recipe?.id,
+        extensionId: activeModComponentFormState.uuid,
+        blueprintId: activeModComponentFormState.recipe?.id,
       };
 
       const [shared, mod, local] = await Promise.all([
         getPageState(inspectedTab, { namespace: "shared", ...context }),
-        activeElement.recipe
+        activeModComponentFormState.recipe
           ? getPageState(inspectedTab, { namespace: "blueprint", ...context })
           : Promise.resolve("Starter Brick is not in a mod"),
         getPageState(inspectedTab, { namespace: "extension", ...context }),

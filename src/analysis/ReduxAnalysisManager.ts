@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
 import {
   type AnyAction,
   type ListenerEffect,
@@ -95,8 +95,9 @@ class ReduxAnalysisManager {
           return;
         }
 
-        const activeElement = selectActiveElement(state);
-        if (activeElement == null) {
+        const activeModComponentFormState =
+          selectActiveModComponentFormState(state);
+        if (activeModComponentFormState == null) {
           return;
         }
 
@@ -105,21 +106,21 @@ class ReduxAnalysisManager {
           return;
         }
 
-        const extensionId = activeElement.uuid;
+        const modComponentId = activeModComponentFormState.uuid;
 
         listenerApi.dispatch(
           analysisSlice.actions.startAnalysis({
-            extensionId,
+            extensionId: modComponentId,
             analysisId: analysis.id,
           }),
         );
 
         try {
-          await analysis.run(activeElement);
+          await analysis.run(activeModComponentFormState);
         } catch (error) {
           listenerApi.dispatch(
             analysisSlice.actions.failAnalysis({
-              extensionId,
+              extensionId: modComponentId,
               analysisId: analysis.id,
               error: serializeError(error),
             }),
@@ -129,14 +130,18 @@ class ReduxAnalysisManager {
 
         listenerApi.dispatch(
           analysisSlice.actions.finishAnalysis({
-            extensionId,
+            extensionId: modComponentId,
             analysisId: analysis.id,
             annotations: analysis.getAnnotations(),
           }),
         );
 
         if (effectConfig?.postAnalysisAction) {
-          effectConfig.postAnalysisAction(analysis, extensionId, listenerApi);
+          effectConfig.postAnalysisAction(
+            analysis,
+            modComponentId,
+            listenerApi,
+          );
         }
       };
 

@@ -19,7 +19,7 @@ import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
-  selectActiveElement,
+  selectActiveModComponentFormState,
   selectEditorModalVisibilities,
 } from "@/pageEditor/slices/editorSelectors";
 import notify from "@/utils/notify";
@@ -52,10 +52,10 @@ const formStateSchema = object({
 });
 
 const MoveFromModModal: React.FC = () => {
-  const { isRemoveFromRecipeModalVisible: show } = useSelector(
+  const { isRemoveFromModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
-  const activeElement = useSelector(selectActiveElement);
+  const activeElement = useSelector(selectActiveModComponentFormState);
 
   const dispatch = useDispatch();
   const hideModal = useCallback(() => {

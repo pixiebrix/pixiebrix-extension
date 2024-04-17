@@ -19,7 +19,7 @@ import { getLatestRunByExtensionId, type TraceRecord } from "@/telemetry/trace";
 import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
-import { selectActiveElementId } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentId } from "@/pageEditor/slices/editorSelectors";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import { isEqual } from "lodash";
 import { useRef } from "react";
@@ -47,7 +47,7 @@ function selectTraceMetadata(record: TraceRecord) {
  */
 function useExtensionTrace() {
   const dispatch = useDispatch();
-  const extensionId = useSelector(selectActiveElementId);
+  const activeModComponentId = useSelector(selectActiveModComponentId);
   const extensionTrace = useSelector(selectActiveElementTraces);
 
   const checkingNewEntriesRef = useRef(false);
@@ -58,7 +58,7 @@ function useExtensionTrace() {
 
     checkingNewEntriesRef.current = true;
     try {
-      const lastRun = await getLatestRunByExtensionId(extensionId);
+      const lastRun = await getLatestRunByExtensionId(activeModComponentId);
       // Keep the Redux log clean. Don't setExtensionTrace unless we have to
       if (
         !isEqual(
@@ -68,9 +68,14 @@ function useExtensionTrace() {
       ) {
         console.debug(
           "Updating extension trace in Redux slice: %s",
-          extensionId,
+          activeModComponentId,
         );
-        dispatch(setExtensionTrace({ extensionId, records: lastRun }));
+        dispatch(
+          setExtensionTrace({
+            extensionId: activeModComponentId,
+            records: lastRun,
+          }),
+        );
       }
     } catch (error) {
       reportError(error);

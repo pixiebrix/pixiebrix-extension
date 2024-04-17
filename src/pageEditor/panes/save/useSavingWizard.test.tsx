@@ -29,7 +29,7 @@ import {
   useUpdateRecipeMutation as useUpdateRecipeMutationMock,
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
 } from "@/data/service/api";
-import { selectElements } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentFormStates } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
 import menuItem from "@/pageEditor/starterBricks/menuItem";
 import pDefer from "p-defer";
@@ -85,19 +85,19 @@ const renderUseSavingWizard = (store: Store) =>
   });
 
 test("maintains wizard open state", () => {
-  const recipe = defaultModDefinitionFactory();
+  const modDefinition = defaultModDefinitionFactory();
   jest.mocked(useAllModDefinitions).mockReturnValue({
-    data: [recipe],
+    data: [modDefinition],
     isLoading: false,
   } as any);
 
-  const recipeMetadata = modMetadataFactory(recipe.metadata);
-  const element = formStateFactory({
-    recipe: recipeMetadata,
+  const modMetadata = modMetadataFactory(modDefinition.metadata);
+  const modComponentFormState = formStateFactory({
+    recipe: modMetadata,
   });
 
   const store = createStore();
-  store.dispatch(editorSlice.actions.addElement(element));
+  store.dispatch(editorSlice.actions.addElement(modComponentFormState));
 
   const { result } = renderUseSavingWizard(store);
   // Modal is closed.
@@ -123,10 +123,10 @@ test("maintains wizard open state", () => {
   expect(anotherResult.current.isWizardOpen).toBe(false);
 });
 
-test("saves non recipe element", async () => {
-  const element = formStateFactory();
+test("saves non packaged mod component form state", async () => {
+  const modComponentFormState = formStateFactory();
   const store = createStore();
-  store.dispatch(editorSlice.actions.addElement(element));
+  store.dispatch(editorSlice.actions.addElement(modComponentFormState));
 
   const createMock = jest.fn();
   jest.mocked(useUpsertFormElementMock).mockReturnValueOnce(createMock);
@@ -138,7 +138,7 @@ test("saves non recipe element", async () => {
   expect(result.current.isSaving).toBe(true);
   expect(createMock).toHaveBeenCalledTimes(1);
   expect(createMock).toHaveBeenCalledWith({
-    element,
+    element: modComponentFormState,
     options: {
       // Single ModComponentBase, so need to push as StandaloneModDefinition an handle all permissions/notifications/reactivation
       pushToCloud: true,
@@ -149,8 +149,8 @@ test("saves non recipe element", async () => {
   });
 });
 
-describe("saving a Recipe Extension", () => {
-  const recipeOptions: ModOptionsDefinition = {
+describe("saving a mod component", () => {
+  const modOptions: ModOptionsDefinition = {
     schema: {
       type: "object",
       properties: {
@@ -163,37 +163,37 @@ describe("saving a Recipe Extension", () => {
     uiSchema: minimalUiSchemaFactory(),
   };
   const setupMocks = () => {
-    const recipe = defaultModDefinitionFactory({
-      options: recipeOptions,
+    const modDefinition = defaultModDefinitionFactory({
+      options: modOptions,
     });
     jest.mocked(useAllModDefinitions).mockReturnValue({
-      data: [recipe],
+      data: [modDefinition],
       isLoading: false,
     } as any);
 
     jest.mocked(useGetEditablePackagesQueryMock).mockReturnValue({
-      data: [{ name: recipe.metadata.id, id: uuidv4() }],
+      data: [{ name: modDefinition.metadata.id, id: uuidv4() }],
       isLoading: false,
     } as any);
 
-    const extensionLabel = recipe.extensionPoints[0].label;
-    const element = menuItemFormStateFactory({
+    const extensionLabel = modDefinition.extensionPoints[0].label;
+    const menuItemFormState = menuItemFormStateFactory({
       label: extensionLabel,
       recipe: {
-        ...recipe.metadata,
-        updated_at: recipe.updated_at,
-        sharing: recipe.sharing,
+        ...modDefinition.metadata,
+        updated_at: modDefinition.updated_at,
+        sharing: modDefinition.sharing,
       },
-      optionsDefinition: recipeOptions,
+      optionsDefinition: modOptions,
     });
-    const extension = menuItem.selectExtension(element);
-    extension._recipe = element.recipe;
+    const extension = menuItem.selectExtension(menuItemFormState);
+    extension._recipe = menuItemFormState.recipe;
     const store = createStore({
       options: {
         extensions: [extension],
       },
     });
-    store.dispatch(editorSlice.actions.addElement(element));
+    store.dispatch(editorSlice.actions.addElement(menuItemFormState));
 
     const createMock = jest.fn();
     jest.mocked(useUpsertFormElementMock).mockReturnValue(createMock);
@@ -201,24 +201,24 @@ describe("saving a Recipe Extension", () => {
     const resetMock = jest.fn();
     jest.mocked(useResetExtensionMock).mockReturnValue(resetMock);
 
-    const createRecipeMock = jest.fn();
+    const createModMock = jest.fn();
     jest
       .mocked(useCreateRecipeMutationMock)
-      .mockReturnValue([createRecipeMock] as any);
+      .mockReturnValue([createModMock] as any);
 
-    const updateRecipeMock = jest.fn();
+    const updateModMock = jest.fn();
     jest
       .mocked(useUpdateRecipeMutationMock)
-      .mockReturnValue([updateRecipeMock] as any);
+      .mockReturnValue([updateModMock] as any);
 
     return {
       store,
-      element,
-      recipe,
+      element: menuItemFormState,
+      recipe: modDefinition,
       createMock,
       resetMock,
-      createRecipeMock,
-      updateRecipeMock,
+      createModMock,
+      updateModMock,
     };
   };
 
@@ -251,22 +251,26 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isWizardOpen).toBe(true);
     expect(result.current.isSaving).toBe(true);
 
-    // Check new element added to redux store
-    const elements = selectElements(store.getState());
-    expect(elements).toHaveLength(2);
-    expect(elements[0].recipe).toStrictEqual({
+    // Check new mod component form state added to redux store
+    const modComponentFormStates = selectModComponentFormStates(
+      store.getState(),
+    );
+    expect(modComponentFormStates).toHaveLength(2);
+    expect(modComponentFormStates[0].recipe).toStrictEqual({
       ...recipe.metadata,
       ...pick(recipe, ["sharing", "updated_at"]),
     });
-    expect(elements[0].optionsDefinition).toStrictEqual(recipeOptions);
+    expect(modComponentFormStates[0].optionsDefinition).toStrictEqual(
+      modOptions,
+    );
 
-    expect(elements[1].recipe).toBeUndefined();
-    expect(elements[1].optionsDefinition).toBeUndefined();
+    expect(modComponentFormStates[1].recipe).toBeUndefined();
+    expect(modComponentFormStates[1].optionsDefinition).toBeUndefined();
 
-    // Check the source element is reset
+    // Check the source mod component form state is reset
     expect(resetMock).toHaveBeenCalledTimes(1);
     expect(resetMock).toHaveBeenCalledWith({
-      extensionId: elements[0].uuid,
+      extensionId: modComponentFormStates[0].uuid,
       shouldShowConfirmation: false,
     });
 
@@ -274,10 +278,10 @@ describe("saving a Recipe Extension", () => {
     resettingElementDeferred.resolve();
     await resettingElementDeferred.promise;
 
-    // Check new element is saved
+    // Check new mod component form state is saved
     expect(createMock).toHaveBeenCalledTimes(1);
     expect(createMock).toHaveBeenCalledWith({
-      element: elements[1],
+      element: modComponentFormStates[1],
       options: {
         // Single ModComponentBase, so need to push as StandaloneModDefinition an handle all permissions/notifications/reactivation
         pushToCloud: true,
@@ -292,8 +296,8 @@ describe("saving a Recipe Extension", () => {
     creatingElementDeferred.resolve();
     await creatingElementDeferred.promise;
 
-    // Check the original recipe element is uninstalled
-    expect(selectElements(store.getState())).toHaveLength(1);
+    // Check the original mod component form state is uninstalled
+    expect(selectModComponentFormStates(store.getState())).toHaveLength(1);
 
     // Waiting for the saveElementAsPersonalExtension to complete entirely
     await savingElementPromise;
@@ -303,9 +307,9 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isSaving).toBe(false);
   });
 
-  test("saves as new recipe", async () => {
-    const { store, element, createMock, createRecipeMock } = setupMocks();
-    createRecipeMock.mockReturnValueOnce({});
+  test("saves as new mod", async () => {
+    const { store, element, createMock, createModMock } = setupMocks();
+    createModMock.mockReturnValueOnce({});
 
     // Render hook
     const { result } = renderUseSavingWizard(store);
@@ -318,10 +322,10 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isWizardOpen).toBe(true);
     expect(result.current.isSaving).toBe(false);
 
-    // Saving with a new Recipe
-    const newRecipeMeta = metadataFactory();
+    // Saving with a new mod
+    const newModMeta = metadataFactory();
     const savingElementPromise = act(async () =>
-      result.current.saveElementAndCreateNewRecipe(newRecipeMeta),
+      result.current.saveElementAndCreateNewRecipe(newModMeta),
     );
 
     // Check wizard state
@@ -330,10 +334,10 @@ describe("saving a Recipe Extension", () => {
 
     await savingElementPromise;
 
-    // Check new recipe created
-    expect(createRecipeMock).toHaveBeenCalledTimes(1);
+    // Check new mod created
+    expect(createModMock).toHaveBeenCalledTimes(1);
 
-    // Check the element is saved
+    // Check the mod component form state is saved
     expect(createMock).toHaveBeenCalledWith({
       element,
       options: {
@@ -344,11 +348,13 @@ describe("saving a Recipe Extension", () => {
         notifySuccess: true,
         reactivateEveryTab: true,
       },
-      modId: newRecipeMeta.id,
+      modId: newModMeta.id,
     });
 
-    const elements = selectElements(store.getState());
-    expect(elements).toHaveLength(1);
+    const modComponentFormStates = selectModComponentFormStates(
+      store.getState(),
+    );
+    expect(modComponentFormStates).toHaveLength(1);
     expect(createMock).toHaveBeenCalledTimes(1);
 
     // Check the wizard is closed
@@ -356,9 +362,9 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isSaving).toBe(false);
   });
 
-  test("doesn't update extensions if recipe creation fails", async () => {
-    const { store, createMock, createRecipeMock } = setupMocks();
-    createRecipeMock.mockReturnValueOnce({
+  test("doesn't update extensions if mod creation fails", async () => {
+    const { store, createMock, createModMock } = setupMocks();
+    createModMock.mockReturnValueOnce({
       error: "Error for test",
     });
 
@@ -371,16 +377,16 @@ describe("saving a Recipe Extension", () => {
       savingPromise = result.current.save();
     });
 
-    // Saving with a new Recipe
-    const newRecipeMeta = metadataFactory();
-    let creatingRecipePromise: Promise<void>;
+    // Saving with a new mod
+    const newModMeta = metadataFactory();
+    let creatingModPromise: Promise<void>;
     act(() => {
-      creatingRecipePromise =
-        result.current.saveElementAndCreateNewRecipe(newRecipeMeta);
+      creatingModPromise =
+        result.current.saveElementAndCreateNewRecipe(newModMeta);
     });
 
     try {
-      await creatingRecipePromise;
+      await creatingModPromise;
       await savingPromise;
     } catch (error) {
       expect(error).toBe("Failed to create new mod");
@@ -390,17 +396,16 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isWizardOpen).toBe(false);
     expect(result.current.isSaving).toBe(false);
 
-    // Check it tried to create a recipe
-    expect(createRecipeMock).toHaveBeenCalledTimes(1);
+    // Check it tried to create a mod
+    expect(createModMock).toHaveBeenCalledTimes(1);
 
-    // Check the element is not saved
+    // Check the mod component form state is not saved
     expect(createMock).not.toHaveBeenCalled();
   });
 
-  test("updates the recipe", async () => {
-    const { store, element, recipe, createMock, updateRecipeMock } =
-      setupMocks();
-    updateRecipeMock.mockReturnValueOnce({});
+  test("updates the mod", async () => {
+    const { store, element, recipe, createMock, updateModMock } = setupMocks();
+    updateModMock.mockReturnValueOnce({});
 
     // Render hook
     const { result } = renderUseSavingWizard(store);
@@ -413,10 +418,10 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isWizardOpen).toBe(true);
     expect(result.current.isSaving).toBe(false);
 
-    // Saving with a new Recipe
-    const newRecipeMeta = metadataFactory({ id: recipe.metadata.id });
+    // Saving with a new mod
+    const newModMeta = metadataFactory({ id: recipe.metadata.id });
     const savingElementPromise = act(async () =>
-      result.current.saveElementAndUpdateRecipe(newRecipeMeta),
+      result.current.saveElementAndUpdateRecipe(newModMeta),
     );
 
     // Check wizard state
@@ -425,10 +430,10 @@ describe("saving a Recipe Extension", () => {
 
     await savingElementPromise;
 
-    // Check new recipe created
-    expect(updateRecipeMock).toHaveBeenCalledTimes(1);
+    // Check new mod created
+    expect(updateModMock).toHaveBeenCalledTimes(1);
 
-    // Check the element is saved
+    // Check the mod component form state is saved
     expect(createMock).toHaveBeenCalledWith({
       element,
       options: {
@@ -438,20 +443,22 @@ describe("saving a Recipe Extension", () => {
         notifySuccess: true,
         reactivateEveryTab: true,
       },
-      modId: newRecipeMeta.id,
+      modId: newModMeta.id,
     });
 
-    const elements = selectElements(store.getState());
-    expect(elements).toHaveLength(1);
+    const modComponentFormStates = selectModComponentFormStates(
+      store.getState(),
+    );
+    expect(modComponentFormStates).toHaveLength(1);
     expect(createMock).toHaveBeenCalledTimes(1);
 
     expect(result.current.isWizardOpen).toBe(false);
     expect(result.current.isSaving).toBe(false);
   });
 
-  test("doesn't update extensions if recipe update fails", async () => {
-    const { store, createMock, updateRecipeMock } = setupMocks();
-    updateRecipeMock.mockReturnValueOnce({
+  test("doesn't update extensions if mod update fails", async () => {
+    const { store, createMock, updateModMock } = setupMocks();
+    updateModMock.mockReturnValueOnce({
       error: "Error for test",
     });
 
@@ -464,16 +471,16 @@ describe("saving a Recipe Extension", () => {
       savingPromise = result.current.save();
     });
 
-    // Saving with a new Recipe
-    const newRecipeMeta = metadataFactory();
-    let updatingRecipePromise: Promise<void>;
+    // Saving with a new mod
+    const newModMeta = metadataFactory();
+    let updatingModPromise: Promise<void>;
     act(() => {
-      updatingRecipePromise =
-        result.current.saveElementAndUpdateRecipe(newRecipeMeta);
+      updatingModPromise =
+        result.current.saveElementAndUpdateRecipe(newModMeta);
     });
 
     try {
-      await updatingRecipePromise;
+      await updatingModPromise;
       await savingPromise;
     } catch (error) {
       expect(error).toBe("Failed to update the mod");
@@ -483,10 +490,10 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isWizardOpen).toBe(false);
     expect(result.current.isSaving).toBe(false);
 
-    // Check it tried to create a recipe
-    expect(updateRecipeMock).toHaveBeenCalledTimes(1);
+    // Check it tried to create a mod
+    expect(updateModMock).toHaveBeenCalledTimes(1);
 
-    // Check the element is not saved
+    // Check the mod component form state is not saved
     expect(createMock).not.toHaveBeenCalled();
   });
 });
