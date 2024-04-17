@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import store, { persistor } from "@/sidebar/store";
 import { Provider } from "react-redux";
 import Loader from "@/components/Loader";
@@ -35,16 +35,25 @@ const authPersistenceContext: ReduxPersistenceContextType = {
   },
 };
 
-const SidebarApp: React.FunctionComponent = () => (
-  <Provider store={store}>
-    <PersistGate loading={<Loader />} persistor={persistor}>
-      <ReduxPersistenceContext.Provider value={authPersistenceContext}>
-        <MemoryRouter>
-          <SidebarBody />
-        </MemoryRouter>
-      </ReduxPersistenceContext.Provider>
-    </PersistGate>
-  </Provider>
-);
+const SidebarApp: React.FunctionComponent = () => {
+  useEffect(() => {
+    console.debug(
+      Date.now().toString(),
+      "sidebar_tracing: sidebar react App mounted",
+    );
+  }, []);
+
+  return (
+    <Provider store={store}>
+      <PersistGate loading={<Loader />} persistor={persistor}>
+        <ReduxPersistenceContext.Provider value={authPersistenceContext}>
+          <MemoryRouter>
+            <SidebarBody />
+          </MemoryRouter>
+        </ReduxPersistenceContext.Provider>
+      </PersistGate>
+    </Provider>
+  );
+};
 
 export default SidebarApp;

@@ -48,13 +48,25 @@ async function openSidePanelMv3(tabId: number): Promise<void> {
   // Simultaneously enable and open the side panel.
   // If we wait too long before calling .open(), we will lose the "user gesture" permission
   // There is no way to know whether the side panel is open yet, so we call it regardless.
+  console.debug(
+    Date.now().toString(),
+    "sidebar_tracing: openSidePanelMv3 setOptions",
+  );
   void chrome.sidePanel.setOptions({
     tabId,
     enabled: true,
   });
 
   try {
+    console.debug(
+      Date.now().toString(),
+      "sidebar_tracing: openSidePanelMv3 chrome.sidePanel.open before",
+    );
     await chrome.sidePanel.open({ tabId });
+    console.debug(
+      Date.now().toString(),
+      "sidebar_tracing: openSidePanelMv3 chrome.sidePanel.open after",
+    );
   } catch (error) {
     // In some cases, `openSidePanel` is called as a precaution and it might work if
     // it's still part of a user gesture.

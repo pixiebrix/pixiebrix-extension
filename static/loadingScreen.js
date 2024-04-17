@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+console.debug(Date.now().toString(), "sidebar_tracing: html loading");
+
 /** @file Plain file to show loading errors on the page. It must be simple and outside the build specifically to show even build errors. */
 
 function showErrors(errorEvent) {

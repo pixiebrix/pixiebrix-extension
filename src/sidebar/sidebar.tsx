@@ -45,21 +45,41 @@ import { isMicrosoftEdge } from "@/utils/browserUtils";
 import openAllLinksInPopups from "@/utils/openAllLinksInPopups";
 
 async function init(): Promise<void> {
+  console.debug(Date.now().toString(), "sidebar_tracing: sidebar init start");
   setPlatform(extensionPagePlatform);
   void initMessengerLogging();
   void initRuntimeLogging();
+  console.debug(
+    Date.now().toString(),
+    "sidebar_tracing: sidebar init - after initRuntimeLogging",
+  );
   try {
     await initPerformanceMonitoring();
   } catch (error) {
     console.error("Failed to initialize performance monitoring", error);
   }
 
+  console.debug(
+    Date.now().toString(),
+    "sidebar_tracing: sidebar init - after initPerformanceMonitoring",
+  );
+
   registerMessenger();
   registerContribBlocks();
   registerBuiltinBricks();
   initToaster();
 
+  console.debug(
+    Date.now().toString(),
+    "sidebar_tracing: sidebar init - after initToaster",
+  );
+
   ReactDOM.render(<App />, document.querySelector("#container"));
+
+  console.debug(
+    Date.now().toString(),
+    "sidebar_tracing: sidebar init - after ReactDOM.render",
+  );
 
   // XXX: Do we really want to delay the `init`? Maybe this should be last or use `getConnectedTarget().then`
   sidebarWasLoaded(await getConnectedTarget());
@@ -69,12 +89,18 @@ async function init(): Promise<void> {
 
   // Handle an embedded AA business copilot frame
   void initCopilotMessenger();
+  console.debug(
+    Date.now().toString(),
+    "sidebar_tracing: sidebar init - after initCopilotMessenger",
+  );
 
   // Edge crashes on plain target=_blank links
   // https://github.com/pixiebrix/pixiebrix-extension/pull/7832
   if (isMicrosoftEdge()) {
     openAllLinksInPopups();
   }
+
+  console.debug(Date.now().toString(), "sidebar_tracing: sidebar init done");
 }
 
 void init();
