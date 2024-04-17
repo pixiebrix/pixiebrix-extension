@@ -28,6 +28,7 @@ import type { LogsEvent } from "@datadog/browser-logs/src/logsEvent.types";
 import {
   cleanDatadogVersionName,
   mapAppUserToTelemetryUser,
+  TelemetryUser,
 } from "@/telemetry/telemetryHelpers";
 
 // eslint-disable-next-line prefer-destructuring -- process.env
@@ -49,6 +50,7 @@ interface ErrorReporter {
  */
 async function initErrorReporter(
   versionName: string,
+  telemetryUser: TelemetryUser,
 ): Promise<Nullishable<ErrorReporter>> {
   // `async` to fetch person information from localStorage
 
@@ -130,7 +132,7 @@ async function initErrorReporter(
     );
 
     // https://docs.datadoghq.com/real_user_monitoring/browser/modifying_data_and_context/?tab=npm#user-session
-    datadogLogs.setUser(await mapAppUserToTelemetryUser(await readAuthData()));
+    datadogLogs.setUser(telemetryUser);
 
     return {
       error({ message, error, messageContext }) {

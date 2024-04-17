@@ -39,6 +39,8 @@ import { deleteDatabase } from "@/utils/idbUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { StorageItem } from "webext-storage";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
+import { readAuthData } from "@/auth/authStorage";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -397,6 +399,7 @@ export async function reportToApplicationErrorTelemetry(
   await setupOffscreenDocument("offscreen.html");
 
   const { version_name: versionName } = chrome.runtime.getManifest();
+  const telemetryUser = await mapAppUserToTelemetryUser(await readAuthData());
 
   await chrome.runtime.sendMessage({
     type: "record-error",
@@ -406,6 +409,7 @@ export async function reportToApplicationErrorTelemetry(
       flatContext,
       errorMessage: message,
       versionName,
+      telemetryUser,
     },
   });
 }

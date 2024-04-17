@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectExtraContext } from "@/data/service/errorService";
+// import { selectExtraContext } from "@/data/service/errorService";
 import type { MessageContext } from "@/types/loggerTypes";
+import { type TelemetryUser } from "@/telemetry/telemetryHelpers";
 
 chrome.runtime.onMessage.addListener(handleMessages);
 
@@ -28,6 +29,7 @@ type RecordErrorMessage = {
     flatContext: MessageContext;
     errorMessage: string;
     versionName: string;
+    telemetryUser: TelemetryUser;
   };
 };
 
@@ -49,7 +51,8 @@ async function handleMessages(message: unknown) {
     return;
   }
 
-  const { error, flatContext, errorMessage, versionName } = message.data;
+  const { error, flatContext, errorMessage, versionName, telemetryUser } =
+    message.data;
 
   // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
   // to determine log level also handle serialized/deserialized errors.
@@ -60,19 +63,24 @@ async function handleMessages(message: unknown) {
     "@/telemetry/initErrorReporter"
   );
 
-  const reporter = await getErrorReporter(versionName);
+  const reporter = await getErrorReporter(versionName, telemetryUser);
 
   if (!reporter) {
     // Error reported not initialized
     return;
   }
 
-  const details = await selectExtraContext(error);
+  // TODO: replace me after figuring out what to do with the getManifest calls within
+  //  selectExtraContext. Options: 1) copy the method, 2) add params to the method to avoid manifest calls,
+  //  3) find a different way to get the version without accessing the manifest
+  // const details = await selectExtraContext(error);
 
   reporter.error({
     message: errorMessage,
     error,
-    messageContext: { ...flatContext, ...details },
+    // TODO: replace details after resolving selectExtraContext
+    // messageContext: { ...flatContext, ...details },
+    messageContext: { ...flatContext },
   });
 
   console.log("*** error report success?");
