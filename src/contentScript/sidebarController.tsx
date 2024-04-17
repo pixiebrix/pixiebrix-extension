@@ -61,17 +61,21 @@ export const isSidePanelOpen = isMV3()
   : sidebarMv2.isSidebarFrameVisible;
 
 // This method is exclusive to the content script, don't export it
-async function isSidePanelOpenMv3(): Promise<boolean> {
-  try {
-    await messenger(
-      "SIDEBAR_PING",
-      { retry: false },
-      await getSidebarTargetForCurrentTab(),
-    );
-    return true;
-  } catch {
-    return false;
-  }
+async function isSidePanelOpenMv3() {
+  return memoizeUntilSettled(
+    throttle(async () => {
+      try {
+        await messenger(
+          "SIDEBAR_PING",
+          { retry: false },
+          await getSidebarTargetForCurrentTab(),
+        );
+        return true;
+      } catch {
+        return false;
+      }
+    }, 1000) as () => Promise<boolean>,
+  );
 }
 
 // - Only start one ping at a time
@@ -85,7 +89,7 @@ const pingSidebar = memoizeUntilSettled(
       // TODO: Use TimeoutError after https://github.com/sindresorhus/p-timeout/issues/41
       throw new Error("The sidebar did not respond in time", { cause: error });
     }
-  }, 1000) as () => Promise<void>,
+  }, 500) as () => Promise<void>,
 );
 
 /**
