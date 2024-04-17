@@ -51,7 +51,7 @@ import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import { ReusableAbortController } from "abort-utils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
@@ -180,7 +180,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       selectExtensionContext(modComponent),
     );
 
-    const serviceContext = await makeServiceContextFromDependencies(
+    const serviceContext = await makeIntegrationsContextFromDependencies(
       modComponent.integrationDependencies,
     );
     const extensionContext = { ...readerContext, ...serviceContext };

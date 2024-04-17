@@ -48,9 +48,6 @@ export async function collectIntegrationOriginPermissions({
   const localConfig = await locateSanitizedIntegrationConfigWithRetry(
     integrationId,
     configId,
-    {
-      retry: true,
-    },
   );
 
   if (localConfig.proxy) {

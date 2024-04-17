@@ -41,7 +41,6 @@ import * as messengerApi from "@/contentScript/messenger/strict/api";
 import ActivateMultipleModsPanel from "@/sidebar/activateMod/ActivateMultipleModsPanel";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integrationFactories";
 import { services, registry } from "@/background/messenger/strict/api";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
@@ -54,6 +53,7 @@ import useActivateRecipe, {
 import brickRegistry from "@/bricks/registry";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 jest.mock("@/sidebar/sidebarSelectors");

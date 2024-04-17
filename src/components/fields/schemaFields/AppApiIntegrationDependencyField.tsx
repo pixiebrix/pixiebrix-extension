@@ -16,21 +16,20 @@
  */
 
 import type React from "react";
-import { useField, useFormikContext } from "formik";
-import { produce } from "immer";
-import { isEqual, set } from "lodash";
-import { type IntegrationsFormSlice } from "./integrations/integrationDependencyFieldUtils";
+import { useField } from "formik";
 import {
   type Expression,
-  type OutputKey,
-  type ServiceVarRef,
+  type IntegrationDependencyVarRef,
 } from "@/types/runtimeTypes";
 import useAsyncEffect from "use-async-effect";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import {
+  PIXIEBRIX_INTEGRATION_ID,
+  PIXIEBRIX_OUTPUT_KEY,
+} from "@/integrations/constants";
 
-import { getVariableExpression } from "@/utils/variableUtils";
-
-const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
+import { makeVariableExpression } from "@/utils/variableUtils";
+import pixiebrixIntegrationDependencyFactory from "@/integrations/util/pixiebrixIntegrationDependencyFactory";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
 /**
  * Schema-based field for the PixieBrix API (@pixiebrix/api).
@@ -41,65 +40,38 @@ const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
 const AppApiIntegrationDependencyField: React.FunctionComponent<{
   name: string;
 }> = ({ name }) => {
-  const { values: root, setValues: setRootValues } =
-    useFormikContext<IntegrationsFormSlice>();
   const [
-    { value: dependencyOutputKey },
+    { value: outputKeyFieldValue },
     ,
-    { setValue: setDependencyOutputKey },
-  ] = useField<Expression<ServiceVarRef>>(name);
+    { setValue: setOutputKeyFieldValue },
+  ] = useField<Expression<IntegrationDependencyVarRef>>(name);
+  // Integration dependencies live at the root of the form values
+  const [
+    { value: integrationDependenciesFieldValue },
+    ,
+    { setValue: setIntegrationDependenciesFieldValue },
+  ] = useField<IntegrationDependency[]>("integrationDependencies");
 
-  // This currently happens when a brick is copy-pasted into a separate extension
-  // that does not yet have root.integrationDependencies configured, but already has the
-  // integration dependency key set up in the (copied) BrickConfig.
-  const isBadValue =
-    dependencyOutputKey &&
-    !root.integrationDependencies.some(({ outputKey }) =>
-      isEqual(getVariableExpression(outputKey), dependencyOutputKey),
-    );
-
-  useAsyncEffect(
-    async () => {
-      if (dependencyOutputKey == null) {
-        const match = root.integrationDependencies.find(
-          ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID,
-        );
-        if (match?.outputKey) {
-          // If the service is already being used, default to the currently configured auth
-          console.debug(
-            "PixieBrix dependency already exists for %s, using output key %s",
-            match.integrationId,
-            match.outputKey,
-            { root, match },
-          );
-          await setDependencyOutputKey(getVariableExpression(match.outputKey));
-        } else {
-          console.debug("Adding PixieBrix API dependency");
-          await setRootValues(
-            produce(root, (draft) => {
-              draft.integrationDependencies.push({
-                integrationId: PIXIEBRIX_INTEGRATION_ID,
-                // XXX: in practice the pixiebrix outputKey won't be used by any other service. However, we might
-                // consider using fresh identifier here to eliminate the possibility of colliding with a different
-                // service that is somehow already using the @pixiebrix key
-                outputKey: PIXIEBRIX_OUTPUT_KEY,
-                // PixieBrix service does not use an ID -- the auth is automatically handled based on the logged-in user
-                // configId: undefined,
-              });
-
-              set(draft, name, getVariableExpression(PIXIEBRIX_OUTPUT_KEY));
-            }),
-          );
-        }
-      } else if (isBadValue) {
-        // Clearing this "bad value" value will enable the preceding if-branch to
-        // execute again, and that will configure root.services properly
-        await setDependencyOutputKey(null);
-      }
-    },
-    // Run on mount, or if we detect a "bad value" (see comment above)
-    [isBadValue],
+  const missingDependency = !integrationDependenciesFieldValue.some(
+    ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID,
   );
+  const outputKeyNotSet = !outputKeyFieldValue;
+
+  useAsyncEffect(async () => {
+    if (missingDependency) {
+      console.debug("Adding PixieBrix API dependency");
+      await setIntegrationDependenciesFieldValue([
+        ...integrationDependenciesFieldValue,
+        pixiebrixIntegrationDependencyFactory(),
+      ]);
+    }
+
+    if (outputKeyNotSet) {
+      await setOutputKeyFieldValue(
+        makeVariableExpression(PIXIEBRIX_OUTPUT_KEY),
+      );
+    }
+  }, [missingDependency, outputKeyNotSet]);
 
   return null;
 };
