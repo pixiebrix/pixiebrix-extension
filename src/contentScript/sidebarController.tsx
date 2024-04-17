@@ -74,7 +74,7 @@ async function isSidePanelOpenMv3() {
       } catch {
         return false;
       }
-    }, 1000) as () => Promise<boolean>,
+    }, 500) as () => Promise<boolean>,
   );
 }
 
@@ -89,7 +89,7 @@ const pingSidebar = memoizeUntilSettled(
       // TODO: Use TimeoutError after https://github.com/sindresorhus/p-timeout/issues/41
       throw new Error("The sidebar did not respond in time", { cause: error });
     }
-  }, 500) as () => Promise<void>,
+  }, 1000) as () => Promise<void>,
 );
 
 /**
