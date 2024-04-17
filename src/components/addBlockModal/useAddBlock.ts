@@ -24,7 +24,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectActiveElement,
+  selectActiveModComponentFormState,
   selectAddBlockLocation,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
@@ -61,7 +61,7 @@ function makeBlockLevelAnalyses(): Analysis[] {
 function useAddBlock(): AddBlock {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
-  const activeExtension = useSelector(selectActiveElement);
+  const activeExtension = useSelector(selectActiveModComponentFormState);
   const pipelineMap = useSelector(selectPipelineMap);
 
   const addBlockLocation = useSelector(selectAddBlockLocation);

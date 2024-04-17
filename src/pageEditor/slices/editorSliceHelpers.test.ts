@@ -34,19 +34,19 @@ import {
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { produce } from "immer";
 import {
-  type ElementUIState,
+  type ModComponentUIState,
   type NodeUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import {
-  selectActiveElementId,
+  selectActiveModComponentId,
   selectActiveNodeId,
-  selectActiveRecipeId,
-  selectDeletedElements,
-  selectDirtyMetadataForRecipeId,
-  selectDirtyOptionDefinitionsForRecipeId,
-  selectElements,
-  selectExpandedRecipeId,
+  selectActiveModId,
+  selectDeletedComponentFormStatesByModId,
+  selectDirtyMetadataForModId,
+  selectDirtyOptionsDefinitionsForModId,
+  selectModComponentFormStates,
+  selectExpandedModId,
 } from "@/pageEditor/slices/editorSelectors";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -89,7 +89,7 @@ describe("ensureNodeUIState", () => {
   test("does not affect existing node state", () => {
     const element = formStateFactory();
     const nodeId = element.extension.blockPipeline[0].instanceId;
-    const uiState: ElementUIState = {
+    const uiState: ModComponentUIState = {
       ...makeInitialElementUIState(),
       pipelineMap: getPipelineMap(element.extension.blockPipeline),
       activeNodeId: nodeId,
@@ -116,7 +116,7 @@ describe("ensureNodeUIState", () => {
     const element = formStateFactory();
     const node1Id = element.extension.blockPipeline[0].instanceId;
     const node2Id = element.extension.blockPipeline[1].instanceId;
-    const uiState: ElementUIState = {
+    const uiState: ModComponentUIState = {
       ...makeInitialElementUIState(),
       pipelineMap: getPipelineMap(element.extension.blockPipeline),
       activeNodeId: node1Id,
@@ -135,7 +135,7 @@ describe("syncElementUIStates", () => {
     const element = formStateFactory();
     const nodeId = element.extension.blockPipeline[0].instanceId;
     const invalidNodeId = uuidv4();
-    const uiState: ElementUIState = {
+    const uiState: ModComponentUIState = {
       ...makeInitialElementUIState(),
       pipelineMap: getPipelineMap(element.extension.blockPipeline),
       activeNodeId: invalidNodeId,
@@ -175,7 +175,7 @@ describe("syncElementUIStates", () => {
   test("adds missing node states", () => {
     const element = formStateFactory();
     const node1Id = element.extension.blockPipeline[0].instanceId;
-    const uiState: ElementUIState = {
+    const uiState: ModComponentUIState = {
       ...makeInitialElementUIState(),
       pipelineMap: getPipelineMap(element.extension.blockPipeline),
       activeNodeId: node1Id,
@@ -209,7 +209,7 @@ describe("setActiveNodeId", () => {
   test("sets active node when node state is missing", () => {
     const element = formStateFactory();
     const nodeId = element.extension.blockPipeline[0].instanceId;
-    const uiState: ElementUIState = {
+    const uiState: ModComponentUIState = {
       ...makeInitialElementUIState(),
       pipelineMap: getPipelineMap(element.extension.blockPipeline),
     };
@@ -231,7 +231,7 @@ describe("setActiveNodeId", () => {
   test("sets active node when node state is already present", () => {
     const element = formStateFactory();
     const nodeId = element.extension.blockPipeline[0].instanceId;
-    const uiState: ElementUIState = {
+    const uiState: ModComponentUIState = {
       ...makeInitialElementUIState(),
       pipelineMap: getPipelineMap(element.extension.blockPipeline),
     };
@@ -290,8 +290,10 @@ describe("removeElement", () => {
     const newState = produce(state, (draft) => {
       removeElement(draft, element.uuid);
     });
-    expect(selectActiveElementId({ editor: newState })).toBeNull();
-    expect(selectElements({ editor: newState })).not.toContain(element);
+    expect(selectActiveModComponentId({ editor: newState })).toBeNull();
+    expect(selectModComponentFormStates({ editor: newState })).not.toContain(
+      element,
+    );
     expect(newState.dirty).not.toContainKey(element.uuid);
     expect(newState.elementUIStates).not.toContainKey(element.uuid);
     expect(newState.showV3UpgradeMessageByElement).not.toContainKey(
@@ -334,10 +336,10 @@ describe("removeElement", () => {
     const newState = produce(state, (draft) => {
       removeElement(draft, unavailableElement.uuid);
     });
-    expect(selectActiveElementId({ editor: newState })).toEqual(
+    expect(selectActiveModComponentId({ editor: newState })).toEqual(
       availableElement.uuid,
     );
-    expect(selectElements({ editor: newState })).not.toContain(
+    expect(selectModComponentFormStates({ editor: newState })).not.toContain(
       unavailableElement,
     );
     expect(newState.dirty).not.toContainKey(unavailableElement.uuid);
@@ -412,16 +414,16 @@ describe("removeRecipeData", () => {
       removeElement(draft, element2.uuid);
       removeRecipeData(draft, recipe.id);
     });
-    expect(selectActiveRecipeId({ editor: newState })).toBeNull();
-    expect(selectExpandedRecipeId({ editor: newState })).toBeNull();
+    expect(selectActiveModId({ editor: newState })).toBeNull();
+    expect(selectExpandedModId({ editor: newState })).toBeNull();
     expect(
-      selectDirtyOptionDefinitionsForRecipeId(recipe.id)({ editor: newState }),
+      selectDirtyOptionsDefinitionsForModId(recipe.id)({ editor: newState }),
     ).toBeUndefined();
     expect(
-      selectDirtyMetadataForRecipeId(recipe.id)({ editor: newState }),
+      selectDirtyMetadataForModId(recipe.id)({ editor: newState }),
     ).toBeUndefined();
     expect(
-      selectDeletedElements({ editor: newState })[recipe.id],
+      selectDeletedComponentFormStatesByModId({ editor: newState })[recipe.id],
     ).toBeUndefined();
   });
 });
@@ -432,8 +434,8 @@ describe("selectRecipeId", () => {
     const newState = produce(initialState, (draft) => {
       selectRecipeId(draft, recipe.id);
     });
-    expect(selectActiveRecipeId({ editor: newState })).toEqual(recipe.id);
-    expect(selectExpandedRecipeId({ editor: newState })).toEqual(recipe.id);
+    expect(selectActiveModId({ editor: newState })).toEqual(recipe.id);
+    expect(selectExpandedModId({ editor: newState })).toEqual(recipe.id);
   });
 
   test("re-select selected recipe", () => {
@@ -446,7 +448,7 @@ describe("selectRecipeId", () => {
     const newState = produce(state, (draft) => {
       selectRecipeId(draft, recipe.id);
     });
-    expect(selectActiveRecipeId({ editor: newState })).toEqual(recipe.id);
-    expect(selectExpandedRecipeId({ editor: newState })).toBeNull();
+    expect(selectActiveModId({ editor: newState })).toEqual(recipe.id);
+    expect(selectExpandedModId({ editor: newState })).toBeNull();
   });
 });

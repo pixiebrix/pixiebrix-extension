@@ -15,23 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectKnownVars } from "@/analysis/analysisSelectors";
-import {
-  selectActiveModComponentId,
-  selectActiveNodeInfo,
-} from "@/pageEditor/slices/editorSelectors";
-import { createSelector } from "@reduxjs/toolkit";
+// This script loads the Ubuntu font from Google Fonts and applies it to the page dynamically.
+// The font is loaded via a script rather than with an inline style link to avoid render-blocking.
+// See: https://pagespeedchecklist.com/asynchronous-google-fonts
+const link = document.createElement("link");
+link.rel = "stylesheet";
+link.href =
+  "https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700";
+link.media = "print";
+link.addEventListener("load", (event) => {
+  if (event.target && event.target instanceof HTMLLinkElement) {
+    event.target.removeAttribute("media");
+  }
+});
 
-export const selectKnownVarsForActiveNode = createSelector(
-  selectActiveModComponentId,
-  selectActiveNodeInfo,
-  selectKnownVars,
-  (activeElementId, activeNodeInfo, knownVars) => {
-    if (activeNodeInfo == null) {
-      return null;
-    }
-
-    // eslint-disable-next-line security/detect-object-injection -- is a UUID
-    return knownVars[activeElementId]?.get(activeNodeInfo.path);
-  },
-);
+link.fetchpriority = "high";
+document.body.append(link);

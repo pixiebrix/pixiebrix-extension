@@ -20,7 +20,7 @@ import Sidebar from "@/pageEditor/sidebar/Sidebar";
 import { useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import Modals from "./Modals";
-import { selectInserting } from "@/pageEditor/slices/editorSelectors";
+import { selectIsInsertingNewStarterBrick } from "@/pageEditor/slices/editorSelectors";
 import EditorContent from "@/pageEditor/EditorContent";
 import styles from "./Editor.module.scss";
 import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
@@ -33,7 +33,7 @@ import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelec
 import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
 
 const EditorLayout: React.FunctionComponent = () => {
-  const inserting = useSelector(selectInserting);
+  const isInserting = useSelector(selectIsInsertingNewStarterBrick);
   const { restrict } = useFlags();
   const isRestricted = restrict("page-editor");
   const isStaleSession = useSelector(selectIsStaleSession);
@@ -56,8 +56,8 @@ const EditorLayout: React.FunctionComponent = () => {
           <RestrictedPane />
         ) : isStaleSession ? (
           <StaleSessionPane />
-        ) : inserting ? (
-          <InsertPane inserting={inserting} />
+        ) : isInserting ? (
+          <InsertPane inserting={isInserting} />
         ) : (
           <>
             <Sidebar />

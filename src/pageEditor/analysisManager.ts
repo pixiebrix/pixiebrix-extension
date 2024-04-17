@@ -36,7 +36,7 @@ import analysisSlice from "@/analysis/analysisSlice";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
 import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
@@ -58,27 +58,29 @@ const pageEditorAnalysisManager = new ReduxAnalysisManager();
 async function selectActiveModFormStates(
   state: RootState,
 ): Promise<ModComponentFormState[]> {
-  const element = selectActiveElement(state);
+  const activeModComponentFormState = selectActiveModComponentFormState(state);
 
-  if (element?.recipe) {
+  if (activeModComponentFormState?.recipe) {
     const dirtyElements = state.editor.elements.filter(
-      (x) => x.recipe?.id === element.recipe.id,
+      (x) => x.recipe?.id === activeModComponentFormState.recipe.id,
     );
     const dirtyIds = new Set(dirtyElements.map((x) => x.uuid));
 
-    const extensions = selectActivatedModComponents(state);
-    const otherExtensions = extensions.filter(
-      (x) => x._recipe?.id === element.recipe.id && !dirtyIds.has(x.id),
+    const activatedModComponents = selectActivatedModComponents(state);
+    const otherModComponents = activatedModComponents.filter(
+      (x) =>
+        x._recipe?.id === activeModComponentFormState.recipe.id &&
+        !dirtyIds.has(x.id),
     );
     const otherElements = await Promise.all(
-      otherExtensions.map(async (x) => modComponentToFormState(x)),
+      otherModComponents.map(async (x) => modComponentToFormState(x)),
     );
 
     return [...dirtyElements, ...otherElements];
   }
 
-  if (element) {
-    return [element];
+  if (activeModComponentFormState) {
+    return [activeModComponentFormState];
   }
 
   return [];
@@ -183,7 +185,7 @@ async function varAnalysisFactory(
   state: RootState,
 ) {
   const trace = selectActiveElementTraces(state);
-  const extension = selectActiveElement(state);
+  const activeModComponentFormState = selectActiveModComponentFormState(state);
 
   // The potential mod known mod variables
   const formStates = await selectActiveModFormStates(state);
@@ -192,8 +194,8 @@ async function varAnalysisFactory(
   // The actual mod variables
   const modState = await getPageState(inspectedTab, {
     namespace: "blueprint",
-    extensionId: extension.uuid,
-    blueprintId: extension.recipe?.id,
+    extensionId: activeModComponentFormState.uuid,
+    blueprintId: activeModComponentFormState.recipe?.id,
   });
 
   return new VarAnalysis({
@@ -226,10 +228,10 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     ),
   },
   {
-    postAnalysisAction(analysis, extensionId, listenerApi) {
+    postAnalysisAction(analysis, modComponentId, listenerApi) {
       listenerApi.dispatch(
         analysisSlice.actions.setKnownEventNames({
-          extensionId,
+          extensionId: modComponentId,
           eventNames: analysis.knownEventNames,
         }),
       );
@@ -251,10 +253,10 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     ),
   },
   {
-    postAnalysisAction(analysis, extensionId, listenerApi) {
+    postAnalysisAction(analysis, modComponentId, listenerApi) {
       listenerApi.dispatch(
         analysisSlice.actions.setKnownVars({
-          extensionId,
+          extensionId: modComponentId,
           vars: analysis.getKnownVars(),
         }),
       );

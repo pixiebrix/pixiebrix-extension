@@ -27,7 +27,7 @@ import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
 import { type Availability } from "@/bricks/types";
 import { checkAvailable as backgroundCheckAvailable } from "@/bricks/available";
-import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
 import { produce } from "immer";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
@@ -103,7 +103,7 @@ describe("checkActiveElementAvailability", () => {
 
     const state1 = store.getState();
 
-    const availability1 = selectExtensionAvailability(state1);
+    const availability1 = selectModComponentAvailability(state1);
 
     // Check both are unavailable
     expect(availability1.availableDynamicIds).toBeEmpty();
@@ -118,7 +118,7 @@ describe("checkActiveElementAvailability", () => {
 
     const state2 = store.getState();
 
-    const availability2 = selectExtensionAvailability(state2);
+    const availability2 = selectModComponentAvailability(state2);
 
     // Check that one is available now
     expect(availability2.availableDynamicIds).toStrictEqual([

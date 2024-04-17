@@ -20,7 +20,7 @@ import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import {
@@ -152,7 +152,7 @@ describe("checkAvailableInstalledExtensions", () => {
 
     const state = store.getState();
 
-    const { availableInstalledIds } = selectExtensionAvailability(state);
+    const { availableInstalledIds } = selectModComponentAvailability(state);
 
     expect(availableInstalledIds).toStrictEqual([
       availableButton.id,
