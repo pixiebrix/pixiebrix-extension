@@ -400,6 +400,12 @@ export async function reportToApplicationErrorTelemetry(
     justification:
       "Error telemetry SDK usage that is incompatible with service workers",
   });
+
+  await chrome.runtime.sendMessage({
+    type: "record-error",
+    target: "offscreen-doc",
+    data: "hello world!",
+  });
 }
 
 /** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */

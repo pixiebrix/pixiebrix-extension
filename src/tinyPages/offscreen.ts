@@ -15,4 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-console.log("*** hello world!");
+chrome.runtime.onMessage.addListener(handleMessages);
+
+async function handleMessages(message) {
+  if (message.target !== "offscreen-doc" || message.type !== "record-error") {
+    return;
+  }
+
+  console.log("*** Received message:", message.data);
+}
