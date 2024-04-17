@@ -42,6 +42,7 @@ import { deleteDatabase } from "@/utils/idbUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { StorageItem } from "webext-storage";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { client, v2 } from "@datadog/datadog-api-client";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -367,29 +368,52 @@ export async function reportToApplicationErrorTelemetry(
     return;
   }
 
-  // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
-  // to determine log level also handle serialized/deserialized errors.
-  // See https://github.com/sindresorhus/serialize-error/issues/48
+  if (process.env.MV === "2") {
+    // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
+    // to determine log level also handle serialized/deserialized errors.
+    // See https://github.com/sindresorhus/serialize-error/issues/48
 
-  const { getErrorReporter } = await import(
-    /* webpackChunkName: "errorReporter" */
-    "@/telemetry/initErrorReporter"
-  );
+    const { getErrorReporter } = await import(
+      /* webpackChunkName: "errorReporter" */
+      "@/telemetry/initErrorReporter"
+    );
+    const reporter = await getErrorReporter();
 
-  const reporter = await getErrorReporter();
+    if (!reporter) {
+      // Error reported not initialized
+      return;
+    }
 
-  if (!reporter) {
-    // Error reported not initialized
+    const details = await selectExtraContext(error);
+
+    reporter.error({
+      message,
+      error,
+      messageContext: { ...flatContext, ...details },
+    });
     return;
   }
 
+  const configuration = client.createConfiguration({
+    authMethods: {
+      apiKeyAuth: process.env.DATADOG_CLIENT_TOKEN,
+    },
+  });
+
+  const apiInstance = new v2.LogsApi(configuration);
   const details = await selectExtraContext(error);
 
-  reporter.error({
-    message,
-    error,
-    messageContext: { ...flatContext, ...details },
-  });
+  const params: v2.LogsApiSubmitLogRequest = {
+    body: [
+      {
+        service: "pixiebrix-browser-extension",
+        ddtags: `env:local,status:error,version:${details.extensionVersion}`,
+        message,
+      },
+    ],
+  };
+
+  await apiInstance.submitLog(params);
 }
 
 /** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */

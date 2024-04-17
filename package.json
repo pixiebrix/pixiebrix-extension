@@ -40,6 +40,7 @@
     "@cfworker/json-schema": "^1.12.8",
     "@datadog/browser-logs": "^5.15.0",
     "@datadog/browser-rum": "^5.15.0",
+    "@datadog/datadog-api-client": "^1.24.0",
     "@floating-ui/dom": "^1.6.3",
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
