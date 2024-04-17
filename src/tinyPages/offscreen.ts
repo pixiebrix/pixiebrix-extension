@@ -15,12 +15,65 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { selectExtraContext } from "@/data/service/errorService";
+import type { MessageContext } from "@/types/loggerTypes";
+
 chrome.runtime.onMessage.addListener(handleMessages);
 
-async function handleMessages(message) {
-  if (message.target !== "offscreen-doc" || message.type !== "record-error") {
+type RecordErrorMessage = {
+  target: "offscreen-doc";
+  type: "record-error";
+  data: {
+    error: Error;
+    flatContext: MessageContext;
+    errorMessage: string;
+    versionName: string;
+  };
+};
+
+function isRecordErrorMessage(message: unknown): message is RecordErrorMessage {
+  if (typeof message !== "object" || message == null) {
+    return false;
+  }
+
+  return (
+    "target" in message &&
+    message.target === "offscreen-doc" &&
+    "type" in message &&
+    message.type === "record-error"
+  );
+}
+
+async function handleMessages(message: unknown) {
+  if (!isRecordErrorMessage(message)) {
     return;
   }
 
-  console.log("*** Received message:", message.data);
+  const { error, flatContext, errorMessage, versionName } = message.data;
+
+  // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
+  // to determine log level also handle serialized/deserialized errors.
+  // See https://github.com/sindresorhus/serialize-error/issues/48
+
+  const { getErrorReporter } = await import(
+    /* webpackChunkName: "errorReporter" */
+    "@/telemetry/initErrorReporter"
+  );
+
+  const reporter = await getErrorReporter(versionName);
+
+  if (!reporter) {
+    // Error reported not initialized
+    return;
+  }
+
+  const details = await selectExtraContext(error);
+
+  reporter.error({
+    message: errorMessage,
+    error,
+    messageContext: { ...flatContext, ...details },
+  });
+
+  console.log("*** error report success?");
 }

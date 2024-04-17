@@ -32,7 +32,6 @@ import {
 
 // eslint-disable-next-line prefer-destructuring -- process.env
 const ENVIRONMENT = process.env.ENVIRONMENT;
-const APPLICATION_ID = process.env.DATADOG_APPLICATION_ID;
 const CLIENT_TOKEN = process.env.DATADOG_CLIENT_TOKEN;
 
 const ALWAYS_IGNORED_ERROR_PATTERNS = [/ResizeObserver loop/];
@@ -48,7 +47,9 @@ interface ErrorReporter {
 /**
  * https://docs.datadoghq.com/real_user_monitoring/browser/collecting_browser_errors/?tab=npm
  */
-async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
+async function initErrorReporter(
+  versionName: string,
+): Promise<Nullishable<ErrorReporter>> {
   // `async` to fetch person information from localStorage
 
   if (isContentScript()) {
@@ -57,7 +58,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
     return;
   }
 
-  if (!CLIENT_TOKEN || !APPLICATION_ID) {
+  if (!CLIENT_TOKEN) {
     console.warn(
       "Error telemetry client token missing, errors won't be reported",
     );
@@ -71,14 +72,14 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
 
     // @since 1.7.40 - We need to hard-filter out the ResizeObserver loop errors because they are flooding Application error telemetry
 
-    const { version_name } = browser.runtime.getManifest();
+    // TODO: remove me, can't use the getManifest method via offscreen doc despite having access to runtime api
+    // const { version_name } = chrome.runtime.getManifest();
 
     datadogLogs.init({
       clientToken: CLIENT_TOKEN,
       service: "pixiebrix-browser-extension",
       env: ENVIRONMENT,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The manifest has it
-      version: cleanDatadogVersionName(version_name!),
+      version: cleanDatadogVersionName(versionName),
       site: "datadoghq.com",
       forwardErrorsToLogs: false,
       // Record all sessions because it's error telemetry

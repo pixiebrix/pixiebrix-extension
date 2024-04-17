@@ -120,7 +120,7 @@ const ModsPageLayout: React.FunctionComponent<{
     [modViewItems],
   );
 
-  //throw new Error("Test error");
+  throw new Error("Test error");
 
   const groupBy = useSelector(selectGroupBy);
   const sortBy = useSelector(selectSortBy);
