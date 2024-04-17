@@ -15,7 +15,7 @@ One-time setup:
     - The test user password `E2E_TEST_USER_PASSWORD_UNAFFILIATED`
     - Uncomment `REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1`
     - Uncomment `SHADOW_DOM=open`
-  - `MV` will determine the manifest version for the both the extension and the tests.
+  - `MV` will determine the manifest version for the both the extension and the tests (defaulted to 3 if not defined.)
 - Install browsers: Execute `npx playwright install chromium chrome msedge`.
 
 1. Install dependencies: Run `npm install`
