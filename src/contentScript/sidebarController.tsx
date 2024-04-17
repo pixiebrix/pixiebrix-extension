@@ -490,6 +490,8 @@ export function getReservedPanelEntries(): {
 
 /**
  * Determines whether the sidebar is open.
+ * Caution, this function is known to be flaky in some cases. Only use when you absolutely must
+ * check the sidebar state synchronously. If asynchronous checks are acceptable, use `isSidePanelOpen` instead.
  * @returns false when it's definitely closed or 'unknown' when it cannot be determined,
  * because the extra padding might be caused by the dev tools being open on the side
  * or due to another sidebar
