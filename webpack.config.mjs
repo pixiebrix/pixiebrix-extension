@@ -137,6 +137,9 @@ const createConfig = (env, options) =>
         // The script that gets injected into the host page
         "pageScript/pageScript",
 
+        // Offscreen document is used as a workaround for using the Datadog SDK
+        "tinyPages/offscreen",
+
         // The isolated components whose CSS will be loaded in a shadow DOM
         ...isolatedComponentList,
       ].map((name) => [path.basename(name), `./src/${name}`]),
