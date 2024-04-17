@@ -28,7 +28,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import {
   selectActiveNodeId,
-  selectDataPanelExpanded,
+  selectIsDataPanelExpanded,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
@@ -59,7 +59,7 @@ const EditTab: React.FC<{
 
   const pipelineMap = useSelector(selectPipelineMap);
 
-  const isDataPanelExpanded = useSelector(selectDataPanelExpanded);
+  const isDataPanelExpanded = useSelector(selectIsDataPanelExpanded);
 
   function copyBlock(instanceId: UUID) {
     // eslint-disable-next-line security/detect-object-injection -- UUID

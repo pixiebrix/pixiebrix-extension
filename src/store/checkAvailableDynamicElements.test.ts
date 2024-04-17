@@ -20,7 +20,7 @@ import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import { checkAvailable as backgroundCheckAvailable } from "@/bricks/available";
 import { type Target } from "@/types/messengerTypes";
@@ -103,7 +103,7 @@ describe("checkAvailableDynamicElements", () => {
 
     const state = store.getState();
 
-    const { availableDynamicIds } = selectExtensionAvailability(state);
+    const { availableDynamicIds } = selectModComponentAvailability(state);
 
     expect(availableDynamicIds).toStrictEqual([availableDynamicExtension.uuid]);
   });

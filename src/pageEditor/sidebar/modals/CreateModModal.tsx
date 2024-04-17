@@ -24,9 +24,9 @@ import {
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectActiveElement,
-  selectActiveRecipeId,
-  selectDirtyMetadataForRecipeId,
+  selectActiveModComponentFormState,
+  selectActiveModId,
+  selectDirtyMetadataForModId,
   selectEditorModalVisibilities,
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
@@ -73,7 +73,7 @@ function useInitialFormState({
 
   const activeModId = activeElement?.recipe?.id ?? activeMod?.metadata?.id;
   const dirtyModMetadata = useSelector(
-    selectDirtyMetadataForRecipeId(activeModId),
+    selectDirtyMetadataForModId(activeModId),
   );
   const modMetadata = dirtyModMetadata ?? activeMod?.metadata;
 
@@ -136,14 +136,14 @@ function useFormSchema() {
 
 const CreateModModalBody: React.FC = () => {
   const dispatch = useDispatch();
-  const activeModComponent = useSelector(selectActiveElement);
+  const activeModComponent = useSelector(selectActiveModComponentFormState);
   const { createModFromMod } = useCreateModFromMod();
   const { createModFromComponent } =
     useCreateModFromModComponent(activeModComponent);
 
   // `selectActiveRecipeId` returns the mod id if a mod is selected. Assumption: if the CreateModal
   // is open, and a mod is active, then we're performing a "Save as New" on that mod.
-  const directlyActiveModId = useSelector(selectActiveRecipeId);
+  const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId = directlyActiveModId ?? activeModComponent?.recipe?.id;
   const { data: activeMod, isFetching: isRecipeFetching } =
     useOptionalModDefinition(activeModId);
@@ -254,7 +254,7 @@ const CreateModModalBody: React.FC = () => {
 };
 
 const CreateModModal: React.FunctionComponent = () => {
-  const { isCreateRecipeModalVisible: show } = useSelector(
+  const { isCreateModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
 

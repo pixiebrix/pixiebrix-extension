@@ -30,8 +30,8 @@ import ElementWizard from "@/pageEditor/ElementWizard";
 import { logActions } from "@/components/logViewer/logSlice";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
-  selectActiveElement,
-  selectSelectionSeq,
+  selectActiveModComponentFormState,
+  selectEditorUpdateKey,
 } from "@/pageEditor/slices/editorSelectors";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 
@@ -76,16 +76,18 @@ const EditorPaneContent: React.VoidFunctionComponent<{
 };
 
 const EditorPane: React.VFC = () => {
-  const activeElement = useSelector(selectActiveElement);
-  const selectionSeq = useSelector(selectSelectionSeq);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
+  const editorUpdateKey = useSelector(selectEditorUpdateKey);
   // Key to force reload of component when user selects a different element from the sidebar
-  const key = `${activeElement.uuid}-${activeElement.installed}-${selectionSeq}`;
+  const key = `${activeModComponentFormState.uuid}-${activeModComponentFormState.installed}-${editorUpdateKey}`;
 
   return (
     <ErrorBoundary key={key}>
       <Formik
         key={key}
-        initialValues={activeElement}
+        initialValues={activeModComponentFormState}
         onSubmit={() => {
           console.error(
             "Formik's submit should not be called to save an extension.",
