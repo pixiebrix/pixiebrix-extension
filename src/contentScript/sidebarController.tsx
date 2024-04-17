@@ -60,33 +60,8 @@ export const isSidePanelOpen = isMV3()
   ? isSidePanelOpenMv3
   : sidebarMv2.isSidebarFrameVisible;
 
-/**
- * Determines whether the sidebar is open.
- * @returns false when it's definitely closed or 'unknown' when it cannot be determined,
- * because the extra padding might be caused by the dev tools being open on the side
- * or due to another sidebar
- */
-// The type cannot be `undefined` due to strictNullChecks
-function isSidePanelOpenSync(): false | "unknown" {
-  if (!isMV3()) {
-    throw new Error("isSidePanelOpenSync is only available in MV3");
-  }
-
-  if (!globalThis.window) {
-    return "unknown";
-  }
-
-  return window.outerWidth - window.innerWidth > MINIMUM_SIDEBAR_WIDTH
-    ? "unknown"
-    : false;
-}
-
 // This method is exclusive to the content script, don't export it
 async function isSidePanelOpenMv3(): Promise<boolean> {
-  if (isSidePanelOpenSync() === false) {
-    return false;
-  }
-
   try {
     await messenger(
       "SIDEBAR_PING",
@@ -511,6 +486,27 @@ export function getReservedPanelEntries(): {
     forms: getFormPanelSidebarEntries(),
     modActivationPanel: modActivationPanelEntry,
   };
+}
+
+/**
+ * Determines whether the sidebar is open.
+ * @returns false when it's definitely closed or 'unknown' when it cannot be determined,
+ * because the extra padding might be caused by the dev tools being open on the side
+ * or due to another sidebar
+ */
+// The type cannot be `undefined` due to strictNullChecks
+function isSidePanelOpenSync(): false | "unknown" {
+  if (!isMV3()) {
+    throw new Error("isSidePanelOpenSync is only available in MV3");
+  }
+
+  if (!globalThis.window) {
+    return "unknown";
+  }
+
+  return window.outerWidth - window.innerWidth > MINIMUM_SIDEBAR_WIDTH
+    ? "unknown"
+    : false;
 }
 
 function sidePanelOnCloseSignal(): AbortSignal {
