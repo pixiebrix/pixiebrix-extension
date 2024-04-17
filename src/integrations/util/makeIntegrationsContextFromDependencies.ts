@@ -81,6 +81,7 @@ export default async function makeIntegrationsContextFromDependencies(
     if (!dependency.configId) {
       if (dependency.isOptional) {
         context[varRef] = null;
+        continue;
       }
 
       throw new NotConfiguredError(
