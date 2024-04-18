@@ -24,7 +24,6 @@ import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSche
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
-import { waitFor } from "@testing-library/react";
 
 beforeAll(() => {
   registerDefaultWidgets();

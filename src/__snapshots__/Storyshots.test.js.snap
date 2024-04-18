@@ -3980,7 +3980,7 @@ exports[`Storyshots Fields/RemoteSchemaObjectField Primitive Value 1`] = `
               className="label form-label"
               htmlFor="childObject.InputValue"
             >
-              Input Value
+              InputValue
             </label>
             <div
               className="formField"
