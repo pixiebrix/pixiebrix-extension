@@ -93,10 +93,14 @@ const ChildObjectWidgetContent: React.FC<
             throw new TypeError("Expected schema for input property type");
           }
 
+          // If no title, use the schema field name directly for the label, no auto-styling/capitalization
+          const label = fieldSchema.title ?? prop;
+
           return (
             <SchemaField
               key={prop}
               name={joinName(name, prop)}
+              label={label}
               schema={fieldSchema}
             />
           );
