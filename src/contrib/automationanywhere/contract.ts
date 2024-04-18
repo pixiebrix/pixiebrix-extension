@@ -24,8 +24,10 @@ export type ListResponse<TData> = {
   list: TData[];
 };
 
-export const BOT_TYPE = "application/vnd.aa.taskbot";
-export const API_TASK_TYPE = "application/vnd.aa.headlessbot";
+export enum FileType {
+  BOT = "application/vnd.aa.taskbot",
+  API_TASK = "application/vnd.aa.headlessbot",
+}
 
 // Bots in the "Private" workspace are also referred to as Local bots
 export type WorkspaceType = "public" | "private";
@@ -58,7 +60,7 @@ export type Folder = {
 };
 
 // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-details.html
-export type Bot = {
+export type File = {
   /**
    * The numeric file id, as a numeric string.
    */
@@ -69,7 +71,7 @@ export type Bot = {
   parentId: string;
   name: string;
   path: string;
-  type: typeof BOT_TYPE;
+  type: FileType;
   workspaceType: "PUBLIC" | "PRIVATE";
 };
 
