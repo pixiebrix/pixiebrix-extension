@@ -20,22 +20,27 @@
 import React from "react";
 import { type Schema } from "@/types/schemaTypes";
 import { render } from "@/pageEditor/testHelpers";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Formik } from "formik";
-import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
+import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { waitFor } from "@testing-library/react";
 
 beforeAll(() => {
   registerDefaultWidgets();
 });
 
-describe("ChildObjectField", () => {
+describe("RemoteSchemaObjectField", () => {
   const renderField = (name: string, schema: Schema, initialValues: any) =>
     render(
-      <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-        <ChildObjectField name="data" schema={schema} heading="Test Field" />
-      </Formik>,
+      <RemoteSchemaObjectField
+        name={name}
+        heading="Test Field"
+        remoteSchemaState={valueToAsyncState(schema)}
+      />,
+      {
+        initialValues,
+      },
     );
 
   const expectToggleMode = (
@@ -53,8 +58,9 @@ describe("ChildObjectField", () => {
   };
 
   test("renders object schema", async () => {
+    const name = "test";
     const { container } = renderField(
-      "test",
+      name,
       {
         type: "object",
         properties: {
@@ -64,12 +70,13 @@ describe("ChildObjectField", () => {
       {},
     );
 
-    // Starts as Exclude because it's not required
-    expectToggleMode(container, "toggle-data.InputValue", "Exclude");
-    await expectToggleOptions("toggle-data.InputValue", [
-      "string",
-      "var",
-      "omit",
-    ]);
+    const toggleTestId = `toggle-${name}.InputValue`;
+
+    await waitFor(() => {
+      // Starts as Exclude because it's not required
+      expectToggleMode(container, toggleTestId, "Exclude");
+    });
+
+    await expectToggleOptions(toggleTestId, ["string", "var", "omit"]);
   });
 });

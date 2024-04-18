@@ -225,13 +225,11 @@ async function searchBots(
   };
 
   if (isNullOrBlank(options.query) && !isNullOrBlank(options.value)) {
-    // If the value is set, but not the query just return the result set for the current value to ensure we can show
-    // the label for the value. Ideally we'd show the value + a page of results to allow easily switching the value
-    // but that would require an extra request unless the sort could somehow put the known value first
+    // Show the selected value + a page of results
     searchPayload = {
       ...SORT_BY_NAME,
       filter: {
-        operator: "and",
+        operator: "or",
         operands: [
           {
             operator: "eq",

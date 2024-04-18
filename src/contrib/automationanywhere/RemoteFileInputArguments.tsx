@@ -20,7 +20,7 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import { useField } from "formik";
 import useAsyncState from "@/hooks/useAsyncState";
 import { cachedFetchSchema } from "@/contrib/automationanywhere/aaApi";
-import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
+import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
 
 const RemoteFileInputArguments: React.FC<{
   fileIdFieldName: string;
@@ -30,6 +30,7 @@ const RemoteFileInputArguments: React.FC<{
   const [{ value: fileId }] = useField<string>(fileIdFieldName);
 
   const remoteSchemaState = useAsyncState(async () => {
+    console.log("fetch schema for file", fileId ?? "NULL");
     if (fileId) {
       return cachedFetchSchema(controlRoomConfig, fileId);
     }
@@ -42,11 +43,10 @@ const RemoteFileInputArguments: React.FC<{
   }
 
   return (
-    <ChildObjectField
+    <RemoteSchemaObjectField
       heading="Input Arguments"
       name={inputDataFieldName}
-      schema={remoteSchemaState.data}
-      schemaError={remoteSchemaState.error}
+      remoteSchemaState={remoteSchemaState}
       isRequired
     />
   );

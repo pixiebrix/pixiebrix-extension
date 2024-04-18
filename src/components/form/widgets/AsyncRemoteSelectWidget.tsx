@@ -49,6 +49,7 @@ export type AsyncRemoteSelectWidgetProps<
 > = CustomFieldWidgetProps<TValue, SelectLike<Option<TValue>>> & {
   optionsFactory: AsyncOptionsFactory<DefaultFactoryArgs & ExtraArgs, TValue>;
   extraFactoryArgs?: ExtraArgs;
+  unknownOptionLabel?: (value: TValue) => string;
 } & Pick<
     AsyncProps<Option<TValue>, false, GroupBase<Option<TValue>>>,
     | "isClearable"
@@ -75,6 +76,7 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   onChange,
   optionsFactory,
   extraFactoryArgs,
+  unknownOptionLabel,
   ...asyncSelectProps
 }) => {
   const [knownOptions, setKnownOptions] = useState<Option[]>([]);
@@ -139,11 +141,20 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   };
 
   // Pass null instead of undefined if options is not defined
-  const selectedOption =
-    knownOptions?.find((option: Option) => value === option.value) ??
-    // Not great UX, if the result is not in the default options, we'll just show the value
-    // instead of the label.
-    (value ? ({ value, label: value } as Option<unknown>) : null);
+  let selectedOption: Option<unknown> | null = null;
+  const knownOption = knownOptions?.find(
+    (option: Option) => value === option.value,
+  );
+  if (knownOption) {
+    selectedOption = knownOption;
+  } else if (value) {
+    selectedOption = {
+      value,
+      label: unknownOptionLabel
+        ? unknownOptionLabel(value)
+        : `Unknown option: ${String(value)}`,
+    };
+  }
 
   return (
     <div className="d-flex">

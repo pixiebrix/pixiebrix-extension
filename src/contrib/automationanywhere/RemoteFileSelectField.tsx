@@ -43,7 +43,11 @@ type RemoteFileSelectFieldProps = {
   optionsFactory: RemoteOptionsFactory;
 } & Pick<
   AsyncRemoteSelectWidgetProps,
-  "placeholder" | "extraFactoryArgs" | "loadingMessage" | "noOptionsMessage"
+  | "placeholder"
+  | "extraFactoryArgs"
+  | "loadingMessage"
+  | "noOptionsMessage"
+  | "unknownOptionLabel"
 >;
 
 const RemoteFileSelectField: React.FC<RemoteFileSelectFieldProps> = ({

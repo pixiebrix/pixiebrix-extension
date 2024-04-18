@@ -16,28 +16,26 @@
  */
 
 import React from "react";
-import { type ComponentStory, type ComponentMeta } from "@storybook/react";
+import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, Formik } from "formik";
-import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Button } from "react-bootstrap";
 import { action } from "@storybook/addon-actions";
-import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
+import RemoteSchemaObjectField, {
+  type RemoteSchemaObjectFieldProps,
+} from "@/components/fields/schemaFields/RemoteSchemaObjectField";
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { type Schema } from "@/types/schemaTypes";
 
 export default {
-  title: "Fields/ChildObjectField",
-  component: ChildObjectField,
-} as ComponentMeta<typeof ChildObjectField>;
+  title: "Fields/RemoteSchemaObjectField",
+  component: RemoteSchemaObjectField,
+} as ComponentMeta<typeof RemoteSchemaObjectField>;
 
 const Template: ComponentStory<
-  React.FunctionComponent<
-    SchemaFieldProps & {
-      defaultValue: unknown;
-      required?: boolean;
-    }
-  >
+  React.FunctionComponent<RemoteSchemaObjectFieldProps>
 > = (args) => (
   <Provider store={settingsStore()}>
     <Formik
@@ -48,7 +46,7 @@ const Template: ComponentStory<
       onSubmit={action("onSubmit")}
     >
       <Form>
-        <ChildObjectField {...args} heading="Child Object" />
+        <RemoteSchemaObjectField {...args} />
         <Button type="submit">Submit</Button>
       </Form>
     </Formik>
@@ -58,7 +56,8 @@ const Template: ComponentStory<
 export const PrimitiveValue = Template.bind({});
 PrimitiveValue.args = {
   name: "childObject",
-  schema: {
+  heading: "Child Object",
+  remoteSchemaState: valueToAsyncState<Schema>({
     type: "object",
     properties: {
       InputValue: {
@@ -66,5 +65,5 @@ PrimitiveValue.args = {
         description: "This is a description for the field",
       },
     },
-  },
+  }),
 };

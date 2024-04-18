@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES as REMOTE_UIPATH_PROPERTIES } from "@/contrib/uipath/process";
-import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
+import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 import RequireIntegrationConfig from "@/integrations/components/RequireIntegrationConfig";
@@ -32,7 +32,11 @@ import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
 import useAsyncState from "@/hooks/useAsyncState";
-import { fallbackValue } from "@/utils/asyncStateUtils";
+import {
+  fallbackValue,
+  loadingAsyncStateFactory,
+  valueToAsyncState,
+} from "@/utils/asyncStateUtils";
 import type { Option } from "@/components/form/widgets/SelectWidget";
 import { inspectedTab } from "@/pageEditor/context/connection";
 
@@ -118,10 +122,14 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
               optionsFactory={processOptionsPromise}
             />
 
-            <ChildObjectField
+            <RemoteSchemaObjectField
               heading={selectedRelease?.release?.Name ?? "Input Arguments"}
-              schema={selectedRelease?.schema}
               name={configName("inputArguments")}
+              remoteSchemaState={
+                selectedRelease?.schema
+                  ? valueToAsyncState(selectedRelease.schema)
+                  : loadingAsyncStateFactory()
+              }
             />
           </>
         )}
