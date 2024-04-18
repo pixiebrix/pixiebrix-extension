@@ -26,12 +26,12 @@ import {
 import ModListItem from "@/pageEditor/sidebar/ModListItem";
 import arrangeSidebarItems from "@/pageEditor/sidebar/arrangeSidebarItems";
 import {
-  selectActiveElementId,
-  selectActiveRecipeId,
-  selectExpandedRecipeId,
-  selectExtensionAvailability,
-  selectNotDeletedElements,
-  selectNotDeletedExtensions,
+  selectActiveModComponentId,
+  selectActiveModId,
+  selectExpandedModId,
+  selectModComponentAvailability,
+  selectNotDeletedModComponentFormStates,
+  selectNotDeletedActivatedModComponents,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
@@ -44,13 +44,17 @@ import filterSidebarItems from "@/pageEditor/sidebar/filterSidebarItems";
 
 const Extensions: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const activeModComponentId = useSelector(selectActiveElementId);
-  const activeModId = useSelector(selectActiveRecipeId);
-  const expandedModId = useSelector(selectExpandedRecipeId);
-  const cleanModComponents = useSelector(selectNotDeletedExtensions);
-  const modComponentFormStates = useSelector(selectNotDeletedElements);
+  const activeModComponentId = useSelector(selectActiveModComponentId);
+  const activeModId = useSelector(selectActiveModId);
+  const expandedModId = useSelector(selectExpandedModId);
+  const cleanModComponents = useSelector(
+    selectNotDeletedActivatedModComponents,
+  );
+  const modComponentFormStates = useSelector(
+    selectNotDeletedModComponentFormStates,
+  );
   const { availableInstalledIds, availableDynamicIds } = useSelector(
-    selectExtensionAvailability,
+    selectModComponentAvailability,
   );
 
   const [filterQuery, setFilterQuery] = useState("");

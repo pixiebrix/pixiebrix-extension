@@ -28,7 +28,7 @@ import {
   makeInitialNodeUIState,
 } from "@/pageEditor/uiState/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
-import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { type ModComponentUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
@@ -47,7 +47,10 @@ export function ensureElementUIState(
   }
 }
 
-export function ensureNodeUIState(state: Draft<ElementUIState>, nodeId: UUID) {
+export function ensureNodeUIState(
+  state: Draft<ModComponentUIState>,
+  nodeId: UUID,
+) {
   state.nodeUIStates[nodeId] ??= makeInitialNodeUIState(nodeId);
 }
 

@@ -19,8 +19,8 @@ import styles from "./ModEditorPane.module.scss";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectActiveRecipeId,
-  selectSelectionSeq,
+  selectActiveModId,
+  selectEditorUpdateKey,
 } from "@/pageEditor/slices/editorSelectors";
 import { Alert } from "react-bootstrap";
 import Centered from "@/components/Centered";
@@ -38,10 +38,10 @@ import ModOptionsValuesEditor from "@/pageEditor/tabs/modOptionsValues/ModOption
 const ModEditorPane: React.VFC = () => {
   const dispatch = useDispatch();
 
-  const activeModId = useSelector(selectActiveRecipeId);
+  const activeModId = useSelector(selectActiveModId);
 
-  const selectionSeq = useSelector(selectSelectionSeq);
-  const layoutKey = `${activeModId}-${selectionSeq}`;
+  const editorUpdateKey = useSelector(selectEditorUpdateKey);
+  const layoutKey = `${activeModId}-${editorUpdateKey}`;
 
   useEffect(() => {
     const messageContext: MessageContext = {

@@ -31,7 +31,6 @@ import {
   type PostSubmitAction,
   type Storage,
 } from "@/bricks/renderers/customForm";
-import AppApiIntegrationDependencyField from "@/components/fields/schemaFields/AppApiIntegrationDependencyField";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import FieldTemplate from "@/components/form/FieldTemplate";
@@ -44,6 +43,7 @@ import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import type { PipelineExpression } from "@/types/runtimeTypes";
 import { Collapse } from "react-bootstrap";
+import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
 
 const recordIdSchema: Schema = {
   type: "string",
@@ -148,8 +148,9 @@ const FormDataBindingOptions: React.FC<{
             isRequired
             schema={databaseIdSchema}
           />
-          <AppApiIntegrationDependencyField
+          <SchemaField
             name={makeName("storage", "service")}
+            schema={PIXIEBRIX_INTEGRATION_FIELD_SCHEMA}
           />
         </>
       )}

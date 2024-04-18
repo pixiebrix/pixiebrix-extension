@@ -33,11 +33,11 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import {
-  selectActiveElement,
-  selectActiveRecipeId,
-  selectDirtyMetadataForRecipeId,
-  selectExpandedRecipeId,
-  selectRecipeIsDirty,
+  selectActiveModComponentFormState,
+  selectActiveModId,
+  selectDirtyMetadataForModId,
+  selectExpandedModId,
+  selectModIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
 import * as semver from "semver";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
@@ -62,9 +62,11 @@ const ModListItem: React.FC<ModListItemProps> = ({
   onClone,
 }) => {
   const dispatch = useDispatch();
-  const activeModId = useSelector(selectActiveRecipeId);
-  const expandedModId = useSelector(selectExpandedRecipeId);
-  const activeElement = useSelector(selectActiveElement);
+  const activeModId = useSelector(selectActiveModId);
+  const expandedModId = useSelector(selectExpandedModId);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const { id: modId, name: savedName, version: installedVersion } = modMetadata;
   const isActive = activeModId === modId;
 
@@ -73,12 +75,12 @@ const ModListItem: React.FC<ModListItemProps> = ({
   const { data: modDefinition } = useGetRecipeQuery({ recipeId: modId });
   const latestRecipeVersion = modDefinition?.metadata?.version;
 
-  // Set the alternate background if an extension in this recipe is active
-  const hasRecipeBackground = activeElement?.recipe?.id === modId;
+  // Set the alternate background if a mod component in this mod is active
+  const hasModBackground = activeModComponentFormState?.recipe?.id === modId;
 
-  const dirtyName = useSelector(selectDirtyMetadataForRecipeId(modId))?.name;
+  const dirtyName = useSelector(selectDirtyMetadataForModId(modId))?.name;
   const name = dirtyName ?? savedName ?? "Loading...";
-  const isDirty = useSelector(selectRecipeIsDirty(modId));
+  const isDirty = useSelector(selectModIsDirty(modId));
 
   const hasUpdate =
     latestRecipeVersion != null &&
@@ -93,7 +95,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
         eventKey={modId}
         as={ListGroup.Item}
         className={cx(styles.root, "list-group-item-action", {
-          [styles.recipeBackground ?? ""]: hasRecipeBackground,
+          [styles.recipeBackground ?? ""]: hasModBackground,
         })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}

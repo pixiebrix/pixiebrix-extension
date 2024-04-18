@@ -78,7 +78,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/jQueryInitialize";
 import { $safeFind } from "@/utils/domUtils";
-import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import { ReusableAbortController, onAbort } from "abort-utils";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
@@ -557,7 +557,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     if (extension.config.if) {
       // Read the latest state at the time of the action
       const input = await ctxtPromise;
-      const serviceContext = await makeServiceContextFromDependencies(
+      const serviceContext = await makeIntegrationsContextFromDependencies(
         extension.integrationDependencies,
       );
 
@@ -597,7 +597,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
-      const serviceContext = await makeServiceContextFromDependencies(
+      const serviceContext = await makeIntegrationsContextFromDependencies(
         extension.integrationDependencies,
       );
 
@@ -654,7 +654,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
                 $buttonElement: $menuItem,
               }),
             ),
-            serviceContext: await makeServiceContextFromDependencies(
+            serviceContext: await makeIntegrationsContextFromDependencies(
               extension.integrationDependencies,
             ),
             optionsArgs: extension.optionsArgs,

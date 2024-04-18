@@ -18,8 +18,8 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectDirtyRecipeMetadata,
-  selectDirtyRecipeOptionDefinitions,
+  selectDirtyModMetadata,
+  selectDirtyModOptionsDefinitions,
   selectGetDeletedComponentIdsForMod,
 } from "@/pageEditor/slices/editorSelectors";
 import {
@@ -29,7 +29,7 @@ import {
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
-import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
+import { selectModMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
@@ -78,8 +78,8 @@ function useSaveMod(): ModSaver {
   const getDeletedComponentIdsForMod = useSelector(
     selectGetDeletedComponentIdsForMod,
   );
-  const allDirtyModOptions = useSelector(selectDirtyRecipeOptionDefinitions);
-  const allDirtyModMetadatas = useSelector(selectDirtyRecipeMetadata);
+  const allDirtyModOptions = useSelector(selectDirtyModOptionsDefinitions);
+  const allDirtyModMetadatas = useSelector(selectDirtyModMetadata);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
   const { buildAndValidateMod } = useBuildAndValidateMod();
@@ -148,7 +148,7 @@ function useSaveMod(): ModSaver {
         recipe: newMod,
       }).unwrap();
 
-      const newModMetadata = selectRecipeMetadata(newMod, upsertResponse);
+      const newModMetadata = selectModMetadata(newMod, upsertResponse);
 
       // Don't push to cloud since we're saving it with the mod
       await Promise.all(

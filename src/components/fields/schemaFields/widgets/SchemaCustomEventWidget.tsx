@@ -16,7 +16,7 @@
  */
 
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
-import { selectExtensionKnownEventNames } from "@/pageEditor/slices/editorSelectors";
+import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/slices/editorSelectors";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -25,7 +25,9 @@ export const SchemaCustomEventWidget: React.FC<SchemaFieldProps> = ({
   schema,
   ...props
 }) => {
-  const knownEventNames = useSelector(selectExtensionKnownEventNames);
+  const knownEventNames = useSelector(
+    selectKnownEventNamesForActiveModComponent,
+  );
 
   return (
     <SchemaSelectWidget

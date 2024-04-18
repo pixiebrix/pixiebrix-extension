@@ -36,7 +36,7 @@ import {
   selectSortBy,
 } from "./modsPageSelectors";
 import { useSelector } from "react-redux";
-import { uniq } from "lodash";
+import { uniq, sortBy as _lodashSortBy } from "lodash";
 import useModViewItems from "@/mods/useModViewItems";
 import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import ModsPageToolbar from "@/extensionConsole/pages/mods/ModsPageToolbar";
@@ -114,8 +114,10 @@ const ModsPageLayout: React.FunctionComponent<{
 
   const teamFilters = useMemo(
     () =>
-      uniq(modViewItems.map((mod) => mod.sharing.source.label)).filter(
-        (label) => label !== "Public" && label !== "Personal",
+      _lodashSortBy(
+        uniq(modViewItems.map((mod) => mod.sharing.source.label)).filter(
+          (label) => label !== "Public" && label !== "Personal",
+        ),
       ),
     [modViewItems],
   );

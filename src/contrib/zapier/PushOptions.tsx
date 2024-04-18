@@ -20,7 +20,6 @@ import { type BlockOptionProps } from "@/components/fields/schemaFields/genericO
 import { useField } from "formik";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Webhook } from "@/contrib/zapier/contract";
-import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
 import AsyncButton from "@/components/AsyncButton";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -40,12 +39,13 @@ import useAsyncState from "@/hooks/useAsyncState";
 import type { AsyncState } from "@/types/sliceTypes";
 import { getPlatform } from "@/platform/platformContext";
 import { absoluteApiUrl } from "@/data/service/apiClient";
+import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
 
 function useHooks(): AsyncState<Webhook[]> {
   return useAsyncState(async () => {
     const { data } = await getPlatform().request<{
       new_push_fields: Webhook[];
-    }>(await pixiebrixConfigurationFactory(), {
+    }>(pixiebrixConfigurationFactory(), {
       url: await absoluteApiUrl("/api/webhooks/hooks/"),
       method: "get",
     });

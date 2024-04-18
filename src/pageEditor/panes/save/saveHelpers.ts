@@ -53,11 +53,11 @@ import {
   type ModDependencyAPIVersion,
 } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 import {
   isModOptionsSchemaEmpty,
   normalizeModOptionsDefinition,
 } from "@/utils/modUtils";
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.

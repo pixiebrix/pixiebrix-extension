@@ -15,17 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file Temporary helpers useful for the MV3 transition */
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import {
+  PIXIEBRIX_INTEGRATION_CONFIG_ID,
+  PIXIEBRIX_INTEGRATION_ID,
+  PIXIEBRIX_OUTPUT_KEY,
+} from "@/integrations/constants";
 
-import { type Tabs } from "webextension-polyfill";
-import { once } from "lodash";
-
-export const isMV3 = once(
-  (): boolean =>
-    // Use optional chaining in case the chrome runtime is not available:
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/8273
-    chrome.runtime?.getManifest().manifest_version === 3,
-);
-export const browserAction =
-  globalThis.chrome?.browserAction ?? globalThis.chrome?.action;
-export type Tab = Tabs.Tab | chrome.tabs.Tab;
+export default function pixiebrixIntegrationDependencyFactory(): IntegrationDependency {
+  return {
+    integrationId: PIXIEBRIX_INTEGRATION_ID,
+    outputKey: PIXIEBRIX_OUTPUT_KEY,
+    isOptional: false,
+    apiVersion: "v2",
+    configId: PIXIEBRIX_INTEGRATION_CONFIG_ID,
+  } as IntegrationDependency;
+}

@@ -50,8 +50,9 @@ import {
 } from "@/utils/expressionUtils";
 import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
-import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import { getOutputReference, isOutputKey } from "@/runtime/runtimeTypes";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -107,25 +108,27 @@ export enum KnownSources {
 
 /**
  * Set availability of variables based on the integrations used by the ModComponentBase
- * @see makeServiceContextFromDependencies
+ * @see makeIntegrationsContextFromDependencies
  */
 async function setIntegrationDependencyVars(
-  extension: ModComponentFormState,
+  { integrationDependencies = [] }: ModComponentFormState,
   contextVars: VarMap,
 ): Promise<void> {
-  // Loop through all the integrations, so we can set the source for each dependency variable properly
+  // We don't want to make the pixiebrix api integration available as a variable
+  const nonPbDependencies = integrationDependencies.filter(
+    (dependency) => dependency.integrationId !== PIXIEBRIX_INTEGRATION_ID,
+  );
+  // Loop through all the dependencies, so we can set the source for each dependency variable properly
   await Promise.all(
-    (extension.integrationDependencies ?? []).map(
-      async (integrationDependency) => {
-        const serviceContext = await makeServiceContextFromDependencies([
-          integrationDependency,
-        ]);
-        contextVars.setExistenceFromValues({
-          source: `${KnownSources.SERVICE}:${integrationDependency.integrationId}`,
-          values: serviceContext,
-        });
-      },
-    ),
+    nonPbDependencies.map(async (integrationDependency) => {
+      const serviceContext = await makeIntegrationsContextFromDependencies([
+        integrationDependency,
+      ]);
+      contextVars.setExistenceFromValues({
+        source: `${KnownSources.SERVICE}:${integrationDependency.integrationId}`,
+        values: serviceContext,
+      });
+    }),
   );
 }
 

@@ -31,7 +31,8 @@ import {
   type SpreadsheetTarget,
 } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
+
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup",

@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file Temporary helpers useful for the MV3 transition */
+import CancelEffect from "@/bricks/effects/CancelEffect";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { CancelError } from "@/errors/businessErrors";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
-import { type Tabs } from "webextension-polyfill";
-import { once } from "lodash";
+const brick = new CancelEffect();
 
-export const isMV3 = once(
-  (): boolean =>
-    // Use optional chaining in case the chrome runtime is not available:
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/8273
-    chrome.runtime?.getManifest().manifest_version === 3,
-);
-export const browserAction =
-  globalThis.chrome?.browserAction ?? globalThis.chrome?.action;
-export type Tab = Tabs.Tab | chrome.tabs.Tab;
+describe("CancelEffect", () => {
+  test("it throws CancelError", async () => {
+    await expect(
+      brick.run(unsafeAssumeValidArg({}), brickOptionsFactory()),
+    ).rejects.toThrow(CancelError);
+  });
+});

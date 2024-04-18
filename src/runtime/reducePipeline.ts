@@ -61,7 +61,7 @@ import {
   type BrickArgsContext,
   type SelectorRoot,
   type RenderedArgs,
-  type ServiceContext,
+  type IntegrationsContext,
   type OptionsArgs,
   type PipelineExpression,
   type RunMetadata,
@@ -139,7 +139,7 @@ export type InitialValues = {
    * Service credentials provided by the user during activation of an extension
    * @see ModComponentBase.services
    */
-  serviceContext: ServiceContext;
+  serviceContext: IntegrationsContext;
   /**
    * The document root for root-aware bricks, including readers
    * @see Brick.isRootAware

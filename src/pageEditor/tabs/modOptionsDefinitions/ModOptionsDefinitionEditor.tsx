@@ -32,8 +32,8 @@ import { stringifyUiType } from "@/components/formBuilder/formBuilderHelpers";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectActiveRecipeId,
-  selectDirtyOptionDefinitionsForRecipeId,
+  selectActiveModId,
+  selectDirtyOptionsDefinitionsForModId,
 } from "@/pageEditor/slices/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/starterBricks/base";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
@@ -110,12 +110,12 @@ const Preview: React.VFC<{
 
 const ModOptionsDefinitionEditor: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
-  const modId = useSelector(selectActiveRecipeId);
+  const modId = useSelector(selectActiveModId);
   const { data: mod, isFetching, error } = useOptionalModDefinition(modId);
 
   const savedOptions = mod?.options;
   const dirtyOptions = useSelector(
-    selectDirtyOptionDefinitionsForRecipeId(modId),
+    selectDirtyOptionsDefinitionsForModId(modId),
   );
 
   const optionsDefinition =

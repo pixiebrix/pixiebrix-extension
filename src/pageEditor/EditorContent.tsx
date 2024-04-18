@@ -27,10 +27,10 @@ import EditorPane from "@/pageEditor/panes/EditorPane";
 import ModEditorPane from "@/pageEditor/panes/ModEditorPane";
 import HomePane from "@/pageEditor/panes/HomePane";
 import {
-  selectActiveElementId,
-  selectActiveRecipeId,
+  selectActiveModComponentId,
+  selectActiveModId,
   selectErrorState,
-  selectExtensionAvailability,
+  selectModComponentAvailability,
 } from "@/pageEditor/slices/editorSelectors";
 import {
   selectTabHasPermissions,
@@ -48,29 +48,29 @@ const EditorContent: React.FC = () => {
   );
   const sessionId = useSelector(selectSessionId);
   const { isBetaError, editorError } = useSelector(selectErrorState);
-  const activeElementId = useSelector(selectActiveElementId);
-  const activeRecipeId = useSelector(selectActiveRecipeId);
-  const { isPendingInstalledExtensions, isPendingDynamicExtensions } =
-    useSelector(selectExtensionAvailability);
+  const activeModComponentId = useSelector(selectActiveModComponentId);
+  const activeModId = useSelector(selectActiveModId);
+  const { isPendingInstalledModComponents, isPendingDynamicModComponents } =
+    useSelector(selectModComponentAvailability);
 
   const url = useCurrentInspectedUrl();
 
   useEffect(() => {
     console.debug("EditorContent debug effect", {
       url,
-      isPendingInstalledExtensions,
-      isPendingDynamicExtensions,
+      isPendingInstalledModComponents,
+      isPendingDynamicModComponents,
       isConnectingToContentScript,
     });
   }, [
     url,
-    isPendingInstalledExtensions,
-    isPendingDynamicExtensions,
+    isPendingInstalledModComponents,
+    isPendingDynamicModComponents,
     isConnectingToContentScript,
   ]);
 
-  const isPendingExtensions =
-    isPendingInstalledExtensions || isPendingDynamicExtensions;
+  const isPendingModComponents =
+    isPendingInstalledModComponents || isPendingDynamicModComponents;
 
   // Fetch-and-cache marketplace content for rendering in the Brick Selection modal
   useGetMarketplaceListingsQuery();
@@ -113,15 +113,15 @@ const EditorContent: React.FC = () => {
     return <BetaPane />;
   }
 
-  if (activeElementId) {
+  if (activeModComponentId) {
     return <EditorPane />;
   }
 
-  if (activeRecipeId) {
+  if (activeModId) {
     return <ModEditorPane />;
   }
 
-  if (isPendingExtensions || isConnectingToContentScript) {
+  if (isPendingModComponents || isConnectingToContentScript) {
     // Avoid flashing the panes below while the state is loading. This condition should probably
     // not be moved below <HomePane>
     // It loads fast enough to not require a <Loader> either.

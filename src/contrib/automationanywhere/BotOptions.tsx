@@ -80,8 +80,9 @@ const BotOptionsContent: React.FunctionComponent<{
         workspaceTypeFieldName={workspaceTypeFieldName}
         controlRoomConfig={controlRoomConfig}
       />
-      s
+
       <FolderIdConfigAlert controlRoomConfig={controlRoomConfig} />
+
       <RemoteFileSelectField
         fileIdFieldName={fileIdFieldName}
         label="Bot"
@@ -94,6 +95,7 @@ const BotOptionsContent: React.FunctionComponent<{
         loadingMessage={BotLoadingMessage}
         noOptionsMessage={BotNoOptionsMessage}
       />
+
       {isCommunityControlRoom(controlRoomConfig.config.controlRoomUrl) ? (
         <ConnectedFieldTemplate
           label="Device"

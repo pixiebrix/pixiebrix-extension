@@ -21,7 +21,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 
-export class CancelEffect extends EffectABC {
+class CancelEffect extends EffectABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/cancel");
 
   constructor() {
@@ -47,3 +47,5 @@ export class CancelEffect extends EffectABC {
     throw new CancelError(message ?? "Action cancelled");
   }
 }
+
+export default CancelEffect;

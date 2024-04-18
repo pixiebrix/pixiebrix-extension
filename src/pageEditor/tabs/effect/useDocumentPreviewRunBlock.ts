@@ -20,8 +20,8 @@ import { usePreviewInfo } from "@/pageEditor/tabs/effect/BrickPreview";
 import { isTriggerExtensionPoint } from "@/pageEditor/starterBricks/formStateTypes";
 import { useSelector } from "react-redux";
 import {
-  selectActiveElement,
-  selectActiveElementNodeInfo,
+  selectActiveModComponentFormState,
+  selectActiveModComponentNodeInfo,
   selectParentBlockInfo,
 } from "@/pageEditor/slices/editorSelectors";
 import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
@@ -34,7 +34,7 @@ import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSel
 import { type UUID } from "@/types/stringTypes";
 import { type BrickArgsContext } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
-import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
 
@@ -104,15 +104,15 @@ export default function useDocumentPreviewRunBlock(
   const [state, dispatch] = useReducer(previewSlice.reducer, initialState);
 
   const {
-    uuid: extensionId,
-    recipe,
+    uuid: modComponentId,
+    recipe: mod,
     apiVersion,
     integrationDependencies,
-    extensionPoint,
-  } = useSelector(selectActiveElement);
+    extensionPoint: starterBrick,
+  } = useSelector(selectActiveModComponentFormState);
 
   const { blockConfig } = useSelector(
-    selectActiveElementNodeInfo(blockInstanceId),
+    selectActiveModComponentNodeInfo(blockInstanceId),
   );
 
   const {
@@ -140,9 +140,10 @@ export default function useDocumentPreviewRunBlock(
     selectActiveElementTraceForBlock(blockInstanceId),
   );
   const { data: serviceContext, isLoading: isLoadingServiceContext } =
-    useAsyncState(makeServiceContextFromDependencies(integrationDependencies), [
-      integrationDependencies,
-    ]);
+    useAsyncState(
+      makeIntegrationsContextFromDependencies(integrationDependencies),
+      [integrationDependencies],
+    );
   const context = {
     ...traceRecord?.templateContext,
     ...serviceContext,
@@ -153,7 +154,7 @@ export default function useDocumentPreviewRunBlock(
   const shouldUseExtensionPointRoot =
     blockInfo?.isRootAware &&
     blockRootMode === "inherit" &&
-    isTriggerExtensionPoint(extensionPoint);
+    isTriggerExtensionPoint(starterBrick);
 
   const parentBlockInfo = useSelector(selectParentBlockInfo(blockInstanceId));
 
@@ -180,8 +181,8 @@ export default function useDocumentPreviewRunBlock(
       // of the brick output (see the code later in the component)
       const rootSelector =
         shouldUseExtensionPointRoot &&
-        extensionPoint.definition.targetMode === "root"
-          ? extensionPoint.definition.rootSelector
+        starterBrick.definition.targetMode === "root"
+          ? starterBrick.definition.rootSelector
           : undefined;
 
       // `panel` was the default before we added the location field
@@ -190,8 +191,8 @@ export default function useDocumentPreviewRunBlock(
 
       try {
         await runRendererBlock(inspectedTab, {
-          extensionId,
-          blueprintId: recipe?.id,
+          extensionId: modComponentId,
+          blueprintId: mod?.id,
           runId: traceRecord.runId,
           title,
           args: {

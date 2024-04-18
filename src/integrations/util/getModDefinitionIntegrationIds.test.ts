@@ -19,7 +19,8 @@ import { validateRegistryId } from "@/types/helpers";
 import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
+
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 describe("getModDefinitionIntegrationIds", () => {
   it("works with record services formats", () => {

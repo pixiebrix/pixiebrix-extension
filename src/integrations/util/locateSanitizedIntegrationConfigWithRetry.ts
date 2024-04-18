@@ -26,12 +26,11 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 async function _locateWithRetry(
   integrationId: RegistryId,
   authId: UUID,
-  { retry = true }: { retry: boolean },
 ): Promise<SanitizedIntegrationConfig> {
   try {
     return await services.locate(integrationId, authId);
   } catch (error) {
-    if (retry && isSpecificError(error, MissingConfigurationError)) {
+    if (isSpecificError(error, MissingConfigurationError)) {
       // Retry
     } else {
       throw error;
