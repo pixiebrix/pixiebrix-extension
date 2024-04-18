@@ -20,8 +20,7 @@ import {
   $safeFindElementsWithRootMode,
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/bricks/rootModeHelpers";
-import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
-import injectStylesheet from "@/utils/injectStylesheet";
+import "autocompleter/autocomplete.css";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import {
@@ -97,8 +96,6 @@ export class AttachAutocomplete extends EffectABC {
     const { default: autocompleter } = await import(
       /* webpackChunkName: "autocompleter" */ "autocompleter"
     );
-    // TODO: adjust style to hard-code font color so it works on dark themes that have a light font color by default
-    await injectStylesheet(autocompleterStyleUrl);
 
     for (const input of inputs) {
       autocompleter({
