@@ -52,7 +52,10 @@ import produce from "immer";
 import { type StarterBrickDefinition } from "@/starterBricks/types";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import {
+  PIXIEBRIX_INTEGRATION_CONFIG_ID,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -397,7 +400,7 @@ describe("debouncedActivateStarterMods", () => {
       ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID,
     );
 
-    // Built-in integration is not assigned a configId
-    expect(dependency.configId).toBeNull();
+    // As of 1.8.13, a sentinel value is used for the configId of the integration to simplify strict null checks
+    expect(dependency.configId).toBe(PIXIEBRIX_INTEGRATION_CONFIG_ID);
   });
 });
