@@ -19,7 +19,7 @@
 
 import React from "react";
 import { type Schema } from "@/types/schemaTypes";
-import { render } from "@/pageEditor/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
@@ -43,23 +43,15 @@ describe("RemoteSchemaObjectField", () => {
       },
     );
 
-  const expectToggleMode = (
-    container: HTMLElement,
-    toggleTestId: string,
-    mode: string,
-  ) => {
-    expect(
-      container.querySelector(`[data-testid="${toggleTestId}"]`),
-    ).not.toBeNull();
-
-    expect(
-      container.querySelector(`[data-testid="${toggleTestId}"]`),
-    ).toHaveAttribute("data-test-selected", mode);
+  const expectToggleMode = async (toggleTestId: string, mode: string) => {
+    const toggle = await screen.findByTestId(toggleTestId);
+    expect(toggle).toBeInTheDocument();
+    expect(toggle).toHaveAttribute("data-test-selected", mode);
   };
 
   test("renders object schema", async () => {
     const name = "test";
-    const { container } = renderField(
+    renderField(
       name,
       {
         type: "object",
@@ -72,11 +64,8 @@ describe("RemoteSchemaObjectField", () => {
 
     const toggleTestId = `toggle-${name}.InputValue`;
 
-    await waitFor(() => {
-      // Starts as Exclude because it's not required
-      expectToggleMode(container, toggleTestId, "Exclude");
-    });
-
+    // Starts as Exclude because it's not required
+    await expectToggleMode(toggleTestId, "Exclude");
     await expectToggleOptions(toggleTestId, ["string", "var", "omit"]);
   });
 });
