@@ -387,13 +387,13 @@ describe("debouncedActivateStarterMods", () => {
 
     expect(activatedModComponents).toBeArrayOfSize(1);
 
-    const activatedModComponent1 = activatedModComponents[0];
-    expect(activatedModComponent1.extensionPointId).toBe(
+    const activatedModComponent = activatedModComponents[0];
+    expect(activatedModComponent.extensionPointId).toBe(
       modDefinition.extensionPoints[0].id,
     );
-    expect(activatedModComponent1.integrationDependencies).toBeArrayOfSize(1);
+    expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(1);
 
-    const dependency = activatedModComponent1.integrationDependencies.find(
+    const dependency = activatedModComponent.integrationDependencies.find(
       ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID,
     );
 
