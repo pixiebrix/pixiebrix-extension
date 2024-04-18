@@ -76,10 +76,7 @@ export async function runModViaQuickBar(page: Page, modName: string) {
   await page.getByRole("option", { name: modName }).click();
 }
 
-export function findSidebarPage(
-  page: Page,
-  extensionId: string,
-): Page | undefined {
+function findSidebarPage(page: Page, extensionId: string): Page | undefined {
   return page
     .context()
     .pages()
@@ -88,10 +85,7 @@ export function findSidebarPage(
     );
 }
 
-export function findSidebarFrame(
-  page: Page,
-  extensionId: string,
-): Frame | undefined {
+function findSidebarFrame(page: Page, extensionId: string): Frame | undefined {
   return page
     .frames()
     .find((frame) =>
@@ -99,8 +93,24 @@ export function findSidebarFrame(
     );
 }
 
-// Finds the Pixiebrix sidebar page. In MV3, this is a Page contained in the browser sidepanel window.
-// In MV2, this is a Frame as it's contained in an iframe attached to the current page.
+/**
+ * Immediately returns whether the sidebar is open. Works on both MV2 and MV3.
+ * @see getSidebarPage
+ */
+export function isSidebarOpen(page: Page, extensionId: string): boolean {
+  const match =
+    MV === "3"
+      ? findSidebarPage(page, extensionId)
+      : findSidebarFrame(page, extensionId);
+
+  return match != null;
+}
+
+/**
+ * Finds the Pixiebrix sidebar page/frame. Throws an error if the sidebar is not available.
+ * - In MV3, this is a Page contained in the browser sidepanel window.
+ * - In MV2, this is a Frame as it's contained in an iframe attached to the current page.
+ */
 export async function getSidebarPage(
   page: Page,
   extensionId: string,

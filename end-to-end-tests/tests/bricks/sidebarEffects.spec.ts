@@ -19,13 +19,7 @@ import { test, expect } from "../../fixtures/extensionBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import {
-  runModViaQuickBar,
-  getSidebarPage,
-  findSidebarPage,
-  findSidebarFrame,
-} from "../../utils";
-import { MV } from "../../env";
+import { runModViaQuickBar, getSidebarPage, isSidebarOpen } from "../../utils";
 
 test.describe("sidebar effect bricks", () => {
   test("toggle sidebar brick", async ({ page, extensionId }) => {
@@ -48,11 +42,7 @@ test.describe("sidebar effect bricks", () => {
     await runModViaQuickBar(page, "Toggle Sidebar");
 
     await expect(() => {
-      const match =
-        MV === "3"
-          ? findSidebarPage(page, extensionId)
-          : findSidebarFrame(page, extensionId);
-      expect(match).toBeUndefined();
+      expect(isSidebarOpen(page, extensionId)).toBe(false);
     }).toPass({ timeout: 5000 });
   });
 });
