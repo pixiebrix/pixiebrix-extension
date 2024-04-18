@@ -21,7 +21,10 @@ import { type Tabs } from "webextension-polyfill";
 import { once } from "lodash";
 
 export const isMV3 = once(
-  (): boolean => chrome.runtime.getManifest().manifest_version === 3,
+  (): boolean =>
+    // Use optional chaining in case the chrome runtime is not available:
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/8273
+    chrome.runtime?.getManifest().manifest_version === 3,
 );
 export const browserAction =
   globalThis.chrome?.browserAction ?? globalThis.chrome?.action;

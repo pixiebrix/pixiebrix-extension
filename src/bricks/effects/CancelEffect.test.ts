@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CancelEffect } from "@/bricks/effects/cancel";
+import CancelEffect from "@/bricks/effects/CancelEffect";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { CancelError } from "@/errors/businessErrors";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
