@@ -52,6 +52,7 @@ import produce from "immer";
 import { type StarterBrickDefinition } from "@/starterBricks/types";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -359,5 +360,44 @@ describe("debouncedActivateStarterMods", () => {
     expect(dependency1.configId).toBe(builtInIntegrationConfigs[0].id);
     // Expect the required dependency to be configured
     expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
+  });
+
+  test("activate starter mods required pixiebrix integration", async () => {
+    isLinkedMock.mockResolvedValue(true);
+
+    const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
+    modDefinition.extensionPoints[0].services = {
+      type: "object",
+      properties: {
+        service: {
+          $ref: `https://app.pixiebrix.com/schemas/services/${PIXIEBRIX_INTEGRATION_ID}`,
+        },
+      },
+      required: ["service"],
+    };
+
+    axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
+
+    axiosMock
+      .onGet("/api/onboarding/starter-blueprints/")
+      .reply(200, [modDefinition]);
+
+    await debouncedActivateStarterMods();
+    const { extensions: activatedModComponents } = await getModComponentState();
+
+    expect(activatedModComponents).toBeArrayOfSize(1);
+
+    const activatedModComponent1 = activatedModComponents[0];
+    expect(activatedModComponent1.extensionPointId).toBe(
+      modDefinition.extensionPoints[0].id,
+    );
+    expect(activatedModComponent1.integrationDependencies).toBeArrayOfSize(1);
+
+    const dependency = activatedModComponent1.integrationDependencies.find(
+      ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID,
+    );
+
+    // Built-in integration is not assigned a configId
+    expect(dependency.configId).toBeNull();
   });
 });
