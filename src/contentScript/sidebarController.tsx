@@ -180,13 +180,43 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
 }
 
 /**
- * Hide the sidebar. Dispatches HIDE_SIDEBAR_EVENT_NAME event even if the sidebar is not currently visible.
+ * Content script handler for hiding the MV2 sidebar in the top-level frame. Regular callers should call
+ * hideSidebar instead, which handles calls from MV3 and iframes.
+ *
+ * Dispatches HIDE_SIDEBAR_EVENT_NAME event even if the sidebar is not currently visible.
  * @see HIDE_SIDEBAR_EVENT_NAME
+ * @see hideSidebar
  */
-export function hideSidebar(): void {
+export function hideMv2SidebarInTopFrame(): void {
+  if (isMV3()) {
+    console.warn("hideMv2SidebarInTopFrame should not be called in MV3");
+  }
+
   reportEvent(Events.SIDEBAR_HIDE);
   sidebarMv2.removeSidebarFrame();
   window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
+}
+
+/**
+ * Hide the sidebar. Works from any frame.
+ */
+export function hideSidebar(): void {
+  if (isMV3() || isLoadedInIframe()) {
+    sidebarInThisTab.close();
+  } else {
+    hideMv2SidebarInTopFrame();
+  }
+}
+
+/**
+ * Toggle the sidebar opened/closed state. Can be called from any frame.
+ */
+export async function toggleSidebar(): Promise<void> {
+  if (await isSidePanelOpen()) {
+    hideSidebar();
+  } else {
+    await showSidebar();
+  }
 }
 
 /**
