@@ -24,7 +24,7 @@ import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTem
 import { type RegistryId } from "@/types/registryTypes";
 import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
 import { ErrorEffect } from "@/bricks/effects/error";
-import { CancelEffect } from "@/bricks/effects/cancel";
+import CancelEffect from "@/bricks/effects/CancelEffect";
 import CommentEffect from "@/bricks/effects/comment";
 import { PipelineFlavor } from "@/bricks/types";
 

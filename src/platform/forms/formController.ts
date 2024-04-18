@@ -131,6 +131,7 @@ export async function resolveForm(
 /**
  * Cancel some forms. Is a NOP if a form is no longer registered.
  */
+// XXX: consider revising signature to accept array of nonces to allow for an options parameter
 export async function cancelForm(...formNonces: UUID[]): Promise<void> {
   for (const formNonce of formNonces) {
     const form = forms.get(formNonce);
@@ -140,8 +141,11 @@ export async function cancelForm(...formNonces: UUID[]): Promise<void> {
 }
 
 /**
- * Test helper to cancel all pending forms.
+ * Cancel all pending forms.
  */
-export async function TEST_cancelAll(): Promise<void> {
-  await cancelForm(...forms.keys());
+export async function cancelAll(): Promise<void> {
+  for (const [formNonce, form] of forms.entries()) {
+    form.registration.reject(new CancelError("Form automatically closed"));
+    unregisterForm(formNonce);
+  }
 }
