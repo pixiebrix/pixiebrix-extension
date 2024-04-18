@@ -44,7 +44,7 @@ import { StorageItem } from "webext-storage";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
 import { readAuthData } from "@/auth/authStorage";
-import { RecordErrorMessage } from "@/tinyPages/offscreen";
+import { type RecordErrorMessage } from "@/tinyPages/offscreen";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -328,18 +328,17 @@ let creating: Promise<void> | null = null;
 async function setupOffscreenDocument(path: string) {
   const offscreenUrl = chrome.runtime.getURL(path);
   const existingContexts = await chrome.runtime.getContexts({
-    // @ts-expect-error -- the type seems to be wrong here?
+    // @ts-expect-error -- TODO the type seems to be wrong here?
     contextTypes: ["OFFSCREEN_DOCUMENT"],
     documentUrls: [offscreenUrl],
   });
 
+  // @ts-expect-error -- TODO type contradicts the chrome api docs?
   if (existingContexts.length > 0) {
     return;
   }
 
-  if (creating) {
-    await creating;
-  } else {
+  if (creating == null) {
     creating = chrome.offscreen.createDocument({
       url: "offscreen.html",
       // Our reason for creating an offscreen document does not fit nicely into options offered by the Chrome API, which
@@ -351,6 +350,8 @@ async function setupOffscreenDocument(path: string) {
     });
     await creating;
     creating = null;
+  } else {
+    await creating;
   }
 }
 
@@ -412,8 +413,10 @@ export async function reportToApplicationErrorTelemetry(
     data: {
       error,
       errorMessage,
-      versionName,
-      telemetryUser,
+      errorReporterInitInfo: {
+        versionName,
+        telemetryUser,
+      },
       messageContext: {
         ...flatContext,
         ...extraContext,

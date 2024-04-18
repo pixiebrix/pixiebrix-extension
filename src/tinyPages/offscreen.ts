@@ -18,6 +18,7 @@
 // import { selectExtraContext } from "@/data/service/errorService";
 import type { MessageContext } from "@/types/loggerTypes";
 import { type TelemetryUser } from "@/telemetry/telemetryHelpers";
+import { type SemVerString } from "@/types/registryTypes";
 
 chrome.runtime.onMessage.addListener(handleMessages);
 
@@ -27,8 +28,10 @@ export type RecordErrorMessage = {
   data: {
     error: Error;
     errorMessage: string;
-    versionName: string;
-    telemetryUser: TelemetryUser;
+    errorReporterInitInfo: {
+      versionName: string;
+      telemetryUser: TelemetryUser;
+    };
     messageContext: MessageContext &
       UnknownObject & { extensionVersion: SemVerString };
   };
@@ -52,7 +55,7 @@ async function handleMessages(message: unknown) {
     return;
   }
 
-  const { error, errorMessage, versionName, telemetryUser, messageContext } =
+  const { error, errorMessage, errorReporterInitInfo, messageContext } =
     message.data;
 
   // TODO: remove this comment?
@@ -65,6 +68,7 @@ async function handleMessages(message: unknown) {
     "@/telemetry/initErrorReporter"
   );
 
+  const { versionName, telemetryUser } = errorReporterInitInfo;
   const reporter = await getErrorReporter(versionName, telemetryUser);
 
   if (!reporter) {

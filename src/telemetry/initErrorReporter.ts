@@ -16,10 +16,7 @@
  */
 
 import { isContentScript } from "webext-detect-page";
-import {
-  addListener as addAuthListener,
-  readAuthData,
-} from "@/auth/authStorage";
+import { addListener as addAuthListener } from "@/auth/authStorage";
 import type { UserData } from "@/auth/authTypes";
 import pMemoize from "p-memoize";
 import { datadogLogs } from "@datadog/browser-logs";
@@ -28,13 +25,14 @@ import type { LogsEvent } from "@datadog/browser-logs/src/logsEvent.types";
 import {
   cleanDatadogVersionName,
   mapAppUserToTelemetryUser,
-  TelemetryUser,
+  type TelemetryUser,
 } from "@/telemetry/telemetryHelpers";
 
 // eslint-disable-next-line prefer-destructuring -- process.env
 const ENVIRONMENT = process.env.ENVIRONMENT;
 const CLIENT_TOKEN = process.env.DATADOG_CLIENT_TOKEN;
 
+// @since 1.7.40 - We need to hard-filter out the ResizeObserver loop errors because they are flooding Application error telemetry
 const ALWAYS_IGNORED_ERROR_PATTERNS = [/ResizeObserver loop/];
 
 interface ErrorReporter {
@@ -71,11 +69,6 @@ async function initErrorReporter(
 
   try {
     addAuthListener(updatePerson);
-
-    // @since 1.7.40 - We need to hard-filter out the ResizeObserver loop errors because they are flooding Application error telemetry
-
-    // TODO: remove me, can't use the getManifest method via offscreen doc despite having access to runtime api
-    // const { version_name } = chrome.runtime.getManifest();
 
     datadogLogs.init({
       clientToken: CLIENT_TOKEN,
