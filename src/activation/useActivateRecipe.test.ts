@@ -37,22 +37,14 @@ import {
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { appApiMock } from "@/testUtils/appApiMock";
+import type MockAdapter from "axios-mock-adapter";
 
 jest.mock("@/contentScript/messenger/api");
 
 const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
 const uninstallRecipeMock = jest.mocked(uninstallRecipe);
 const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
-
-const createDatabaseMock = jest.fn();
-
-jest.mock("@/data/service/api", () => {
-  const actual = jest.requireActual("@/data/service/api");
-  return {
-    ...actual,
-    useCreateDatabaseMutation: jest.fn(() => [createDatabaseMock]),
-  };
-});
 
 function setupInputs(): {
   formValues: WizardValues;
@@ -240,10 +232,9 @@ describe("useActivateRecipe", () => {
     };
     setRecipeHasPermissions(true);
     setUserAcceptedPermissions(true);
+
     const createdDatabase = databaseFactory({ name: databaseName });
-    createDatabaseMock.mockImplementation(async (name) => ({
-      data: createdDatabase,
-    }));
+    appApiMock.onPost("/api/databases/").reply(201, createdDatabase);
 
     const {
       result: { current: activateRecipe },
@@ -265,7 +256,6 @@ describe("useActivateRecipe", () => {
 
     expect(success).toBe(true);
     expect(error).toBeUndefined();
-    expect(createDatabaseMock).toHaveBeenCalledWith({ name: databaseName });
 
     const { dispatch } = getReduxStore();
 
@@ -285,61 +275,59 @@ describe("useActivateRecipe", () => {
   const errorMessage = "Error creating database";
   const testCases = [
     {
-      title: "handles un-caught error in auto-created personal database",
-      async createDatabaseMockImplementation() {
-        throw new Error(errorMessage);
+      title: "handles network error in auto-created personal database",
+      mockResponse(adapter: MockAdapter) {
+        adapter.onPost("/api/databases/").networkError();
       },
     },
     {
       title: "handles error response in auto-created personal database request",
-      async createDatabaseMockImplementation() {
-        return { error: errorMessage };
+      mockResponse(adapter: MockAdapter) {
+        adapter.onPost("/api/databases/").reply(400, { error: errorMessage });
       },
     },
   ];
 
-  test.each(testCases)(
-    "$title",
-    async ({ createDatabaseMockImplementation }) => {
-      const { formValues: inputFormValues, modDefinition: inputModDefinition } =
-        setupInputs();
-      const databaseName = "Auto-created Personal Test Database";
-      const formValues = set(
-        inputFormValues,
-        "optionsArgs.myDatabase",
-        databaseName,
-      );
-      const modDefinition = set(
-        inputModDefinition,
-        "options.schema.properties.myDatabase",
-        {
-          $ref: databaseSchema.$id,
-          format: "preview",
-        },
-      );
-      setRecipeHasPermissions(true);
-      const errorMessage = "Error creating database";
-      createDatabaseMock.mockImplementation(createDatabaseMockImplementation);
+  test.each(testCases)("$title", async ({ mockResponse }) => {
+    mockResponse(appApiMock);
 
-      const {
-        result: { current: activateRecipe },
-        act,
-      } = renderHook(() => useActivateRecipe("marketplace"), {
-        setupRedux(dispatch, { store }) {
-          jest.spyOn(store, "dispatch");
-        },
-      });
+    const { formValues: inputFormValues, modDefinition: inputModDefinition } =
+      setupInputs();
+    const databaseName = "Auto-created Personal Test Database";
+    const formValues = set(
+      inputFormValues,
+      "optionsArgs.myDatabase",
+      databaseName,
+    );
+    const modDefinition = set(
+      inputModDefinition,
+      "options.schema.properties.myDatabase",
+      {
+        $ref: databaseSchema.$id,
+        format: "preview",
+      },
+    );
+    setRecipeHasPermissions(true);
+    const errorMessage = "Error creating database";
 
-      let success: boolean;
-      let error: unknown;
-      await act(async () => {
-        const result = await activateRecipe(formValues, modDefinition);
-        success = result.success;
-        error = result.error;
-      });
+    const {
+      result: { current: activateRecipe },
+      act,
+    } = renderHook(() => useActivateRecipe("marketplace"), {
+      setupRedux(dispatch, { store }) {
+        jest.spyOn(store, "dispatch");
+      },
+    });
 
-      expect(success).toBe(false);
-      expect(error).toBe(errorMessage);
-    },
-  );
+    let success: boolean;
+    let error: unknown;
+    await act(async () => {
+      const result = await activateRecipe(formValues, modDefinition);
+      success = result.success;
+      error = result.error;
+    });
+
+    expect(success).toBe(false);
+    expect(error).toBe(errorMessage);
+  });
 });
