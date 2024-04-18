@@ -36,7 +36,11 @@ test.describe("sidebar effect bricks", () => {
     await runModViaQuickBar(page, "Toggle Sidebar");
 
     // Will error if page/frame not available
-    await getSidebarPage(page, extensionId);
+    const sidebarPage = await getSidebarPage(page, extensionId);
+
+    await expect(
+      sidebarPage.getByRole("tab", { name: "Mods Close" }),
+    ).toBeVisible();
 
     await page.getByText("Index of  /").click();
     await runModViaQuickBar(page, "Toggle Sidebar");
