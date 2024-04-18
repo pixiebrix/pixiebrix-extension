@@ -80,6 +80,7 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   ...asyncSelectProps
 }) => {
   const [knownOptions, setKnownOptions] = useState<Option[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // `react-select` doesn't automatically debounce requests
   // See quirks here: https://github.com/JedWatson/react-select/issues/3075#issuecomment-506647171
@@ -122,6 +123,8 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
               // `isDisabled` is not on the type definition, but it is supported
             } as Option,
           ]);
+        } finally {
+          setIsLoading(false);
         }
       };
 
@@ -148,12 +151,12 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   if (knownOption) {
     selectedOption = knownOption;
   } else if (value) {
-    selectedOption = {
-      value,
-      label: unknownOptionLabel
+    const label = isLoading
+      ? "Loading..."
+      : unknownOptionLabel
         ? unknownOptionLabel(value)
-        : `Unknown option: ${String(value)}`,
-    };
+        : `Unknown option: ${String(value)}`;
+    selectedOption = { value, label };
   }
 
   return (
