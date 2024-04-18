@@ -30,6 +30,7 @@ type RecordErrorMessage = {
     errorMessage: string;
     versionName: string;
     telemetryUser: TelemetryUser;
+    extraContext: UnknownObject & { extensionVersion: SemVerString };
   };
 };
 
@@ -51,8 +52,14 @@ async function handleMessages(message: unknown) {
     return;
   }
 
-  const { error, flatContext, errorMessage, versionName, telemetryUser } =
-    message.data;
+  const {
+    error,
+    flatContext,
+    errorMessage,
+    versionName,
+    telemetryUser,
+    extraContext,
+  } = message.data;
 
   // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
   // to determine log level also handle serialized/deserialized errors.
@@ -66,21 +73,14 @@ async function handleMessages(message: unknown) {
   const reporter = await getErrorReporter(versionName, telemetryUser);
 
   if (!reporter) {
-    // Error reported not initialized
+    // Error reporter not initialized
     return;
   }
-
-  // TODO: replace me after figuring out what to do with the getManifest calls within
-  //  selectExtraContext. Options: 1) copy the method, 2) add params to the method to avoid manifest calls,
-  //  3) find a different way to get the version without accessing the manifest
-  // const details = await selectExtraContext(error);
 
   reporter.error({
     message: errorMessage,
     error,
-    // TODO: replace details after resolving selectExtraContext
-    // messageContext: { ...flatContext, ...details },
-    messageContext: { ...flatContext },
+    messageContext: { ...flatContext, ...extraContext },
   });
 
   console.log("*** error report success?");

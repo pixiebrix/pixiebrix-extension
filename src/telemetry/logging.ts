@@ -27,7 +27,10 @@ import {
   isSpecificError,
 } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
-import { reportToErrorService } from "@/data/service/errorService";
+import {
+  reportToErrorService,
+  selectExtraContext,
+} from "@/data/service/errorService";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
@@ -400,6 +403,7 @@ export async function reportToApplicationErrorTelemetry(
 
   const { version_name: versionName } = chrome.runtime.getManifest();
   const telemetryUser = await mapAppUserToTelemetryUser(await readAuthData());
+  const extraContext = await selectExtraContext(error);
 
   await chrome.runtime.sendMessage({
     type: "record-error",
@@ -410,6 +414,7 @@ export async function reportToApplicationErrorTelemetry(
       errorMessage: message,
       versionName,
       telemetryUser,
+      extraContext,
     },
   });
 }
