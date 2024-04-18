@@ -21,16 +21,16 @@ import { type TelemetryUser } from "@/telemetry/telemetryHelpers";
 
 chrome.runtime.onMessage.addListener(handleMessages);
 
-type RecordErrorMessage = {
+export type RecordErrorMessage = {
   target: "offscreen-doc";
   type: "record-error";
   data: {
     error: Error;
-    flatContext: MessageContext;
     errorMessage: string;
     versionName: string;
     telemetryUser: TelemetryUser;
-    extraContext: UnknownObject & { extensionVersion: SemVerString };
+    messageContext: MessageContext &
+      UnknownObject & { extensionVersion: SemVerString };
   };
 };
 
@@ -52,15 +52,10 @@ async function handleMessages(message: unknown) {
     return;
   }
 
-  const {
-    error,
-    flatContext,
-    errorMessage,
-    versionName,
-    telemetryUser,
-    extraContext,
-  } = message.data;
+  const { error, errorMessage, versionName, telemetryUser, messageContext } =
+    message.data;
 
+  // TODO: remove this comment?
   // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
   // to determine log level also handle serialized/deserialized errors.
   // See https://github.com/sindresorhus/serialize-error/issues/48
@@ -80,7 +75,7 @@ async function handleMessages(message: unknown) {
   reporter.error({
     message: errorMessage,
     error,
-    messageContext: { ...flatContext, ...extraContext },
+    messageContext,
   });
 
   console.log("*** error report success?");

@@ -44,6 +44,7 @@ import { StorageItem } from "webext-storage";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
 import { readAuthData } from "@/auth/authStorage";
+import { RecordErrorMessage } from "@/tinyPages/offscreen";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -362,7 +363,7 @@ export async function reportToApplicationErrorTelemetry(
   // treats it as the error. Note, Rollbar, treats POJO as the custom data.
   error: Error,
   flatContext: MessageContext,
-  message: string,
+  errorMessage: string,
 ): Promise<void> {
   // Business errors are now sent to the PixieBrix error service instead of the Application error service - see reportToErrorService
   if (
@@ -405,18 +406,22 @@ export async function reportToApplicationErrorTelemetry(
   const telemetryUser = await mapAppUserToTelemetryUser(await readAuthData());
   const extraContext = await selectExtraContext(error);
 
-  await chrome.runtime.sendMessage({
+  const recordErrorMessage: RecordErrorMessage = {
     type: "record-error",
     target: "offscreen-doc",
     data: {
       error,
-      flatContext,
-      errorMessage: message,
+      errorMessage,
       versionName,
       telemetryUser,
-      extraContext,
+      messageContext: {
+        ...flatContext,
+        ...extraContext,
+      },
     },
-  });
+  };
+
+  await chrome.runtime.sendMessage(recordErrorMessage);
 }
 
 /** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */
@@ -436,18 +441,18 @@ export async function recordError(
 
   try {
     const error = deserializeError(serializedError);
-    const message = getErrorMessage(error);
+    const errorMessage = getErrorMessage(error);
     const flatContext = flattenContext(error, context);
 
     await Promise.all([
-      reportToApplicationErrorTelemetry(error, flatContext, message),
-      reportToErrorService(error, flatContext, message),
+      reportToApplicationErrorTelemetry(error, flatContext, errorMessage),
+      reportToErrorService(error, flatContext, errorMessage),
       appendEntry({
         uuid: uuidv4(),
         timestamp: Date.now().toString(),
         level: "error",
         context: flatContext,
-        message,
+        message: errorMessage,
         data,
         // Ensure the object is fully serialized. Required because it will be stored in IDB and flow through the Redux state
         error: serializedError,
