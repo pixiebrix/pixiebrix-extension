@@ -69,7 +69,6 @@ const pingSidebar = memoizeUntilSettled(
   }, 1000) as () => Promise<void>,
 );
 
-// This method is exclusive to the content script, don't export it
 async function isSidePanelOpenMv3() {
   try {
     await pingSidebar();
