@@ -36,7 +36,7 @@ class CancelEphemeralElements extends EffectABC {
   constructor() {
     super(
       CancelEphemeralElements.BRICK_ID,
-      "Cancel All Forms/Panels",
+      "[Experimental] Cancel All Forms/Panels",
       "Cancels all temporary forms/panels showing in the frame",
     );
   }
