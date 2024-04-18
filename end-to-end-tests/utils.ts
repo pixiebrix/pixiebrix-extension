@@ -107,9 +107,14 @@ export function isSidebarOpen(page: Page, extensionId: string): boolean {
 }
 
 /**
- * Finds the Pixiebrix sidebar page/frame. Throws an error if the sidebar is not available.
+ * Finds the Pixiebrix sidebar page/frame.
+ *
+ * For MV3, automatically clicks "OK" on the dialog that appears if the sidebar requires a user gesture to open
+ *
  * - In MV3, this is a Page contained in the browser sidepanel window.
  * - In MV2, this is a Frame as it's contained in an iframe attached to the current page.
+ *
+ * @throws {Error} if the sidebar is not available
  */
 export async function getSidebarPage(
   page: Page,
