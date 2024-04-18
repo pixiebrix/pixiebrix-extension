@@ -38,10 +38,8 @@ import type {
 } from "@/types/sidebarTypes";
 import { getTemporaryPanelSidebarEntries } from "@/platform/panels/panelController";
 import { getFormPanelSidebarEntries } from "@/platform/forms/formController";
-import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
-import { messenger } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
@@ -53,51 +51,9 @@ import selectionController from "@/utils/selectionController";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
-/* Approximate sidebar width in pixels. Used to determine whether it's open */
-const MINIMUM_SIDEBAR_WIDTH = 300;
-
 export const isSidePanelOpen = isMV3()
   ? isSidePanelOpenMv3
   : sidebarMv2.isSidebarFrameVisible;
-
-/**
- * Determines whether the sidebar is open.
- * @returns false when it's definitely closed or 'unknown' when it cannot be determined,
- * because the extra padding might be caused by the dev tools being open on the side
- * or due to another sidebar
- */
-// The type cannot be `undefined` due to strictNullChecks
-function isSidePanelOpenSync(): false | "unknown" {
-  if (!isMV3()) {
-    throw new Error("isSidePanelOpenSync is only available in MV3");
-  }
-
-  if (!globalThis.window) {
-    return "unknown";
-  }
-
-  return window.outerWidth - window.innerWidth > MINIMUM_SIDEBAR_WIDTH
-    ? "unknown"
-    : false;
-}
-
-// This method is exclusive to the content script, don't export it
-async function isSidePanelOpenMv3(): Promise<boolean> {
-  if (isSidePanelOpenSync() === false) {
-    return false;
-  }
-
-  try {
-    await messenger(
-      "SIDEBAR_PING",
-      { retry: false },
-      await getSidebarTargetForCurrentTab(),
-    );
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 // - Only start one ping at a time
 // - Limit to one request every second (if the user closes the sidebar that quickly, we likely see those errors anyway)
@@ -112,6 +68,15 @@ const pingSidebar = memoizeUntilSettled(
     }
   }, 1000) as () => Promise<void>,
 );
+
+async function isSidePanelOpenMv3() {
+  try {
+    await pingSidebar();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Event listeners triggered when the sidebar shows and is ready to receive messages.
@@ -549,14 +514,10 @@ function sidePanelOnCloseSignal(): AbortSignal {
   if (isMV3()) {
     window.addEventListener(
       "resize",
-      () => {
-        // TODO: It doesn't work when the dev tools are open on the side.
-        // This is a rare event because we condition users to move the dev tools to
-        // the bottom via https://github.com/pixiebrix/pixiebrix-extension/pull/6952
-        // … but it's still possible for people with very large screens and those
-        // who temporarily moved the dev tools to the side anyway.
+      async () => {
+        // TODO: Replace with official event when available
         // Official event requested in https://github.com/w3c/webextensions/issues/517
-        if (isSidePanelOpenSync() === false) {
+        if (!(await isSidePanelOpenMv3())) {
           controller.abort();
         }
       },
