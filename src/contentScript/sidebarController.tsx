@@ -60,24 +60,6 @@ export const isSidePanelOpen = isMV3()
   ? isSidePanelOpenMv3
   : sidebarMv2.isSidebarFrameVisible;
 
-// This method is exclusive to the content script, don't export it
-async function isSidePanelOpenMv3() {
-  return memoizeUntilSettled(
-    throttle(async () => {
-      try {
-        await messenger(
-          "SIDEBAR_PING",
-          { retry: false },
-          await getSidebarTargetForCurrentTab(),
-        );
-        return true;
-      } catch {
-        return false;
-      }
-    }, 500) as () => Promise<boolean>,
-  );
-}
-
 // - Only start one ping at a time
 // - Limit to one request every second (if the user closes the sidebar that quickly, we likely see those errors anyway)
 // - Throw custom error if the sidebar doesn't respond in time
@@ -91,6 +73,16 @@ const pingSidebar = memoizeUntilSettled(
     }
   }, 1000) as () => Promise<void>,
 );
+
+// This method is exclusive to the content script, don't export it
+async function isSidePanelOpenMv3() {
+  try {
+    await pingSidebar();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Event listeners triggered when the sidebar shows and is ready to receive messages.
@@ -521,14 +513,10 @@ function sidePanelOnCloseSignal(): AbortSignal {
   if (isMV3()) {
     window.addEventListener(
       "resize",
-      () => {
-        // TODO: It doesn't work when the dev tools are open on the side.
-        // This is a rare event because we condition users to move the dev tools to
-        // the bottom via https://github.com/pixiebrix/pixiebrix-extension/pull/6952
-        // … but it's still possible for people with very large screens and those
-        // who temporarily moved the dev tools to the side anyway.
+      async () => {
+        // TODO: Replace with official event when available
         // Official event requested in https://github.com/w3c/webextensions/issues/517
-        if (isSidePanelOpenSync() === false) {
+        if (!(await isSidePanelOpenMv3())) {
           controller.abort();
         }
       },
