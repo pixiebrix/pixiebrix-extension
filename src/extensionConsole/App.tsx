@@ -117,7 +117,7 @@ const AuthenticatedContent: React.VFC = () => {
               )}
 
               {permit("workshop") && (
-                <Rou
+                <Route
                   exact
                   path="/workshop/bricks/:id/"
                   component={BrickEditPage}
