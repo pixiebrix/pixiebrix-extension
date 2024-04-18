@@ -16,7 +16,7 @@
  */
 
 import type AxeBuilder from "@axe-core/playwright";
-import { type Locator, expect, type Page, Frame } from "@playwright/test";
+import { type Locator, expect, type Page, type Frame } from "@playwright/test";
 import { MV } from "./env";
 
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
@@ -76,32 +76,49 @@ export async function runModViaQuickBar(page: Page, modName: string) {
   await page.getByRole("option", { name: modName }).click();
 }
 
+export function findSidebarPage(
+  page: Page,
+  extensionId: string,
+): Page | undefined {
+  return page
+    .context()
+    .pages()
+    .find((value) =>
+      value.url().startsWith(`chrome-extension://${extensionId}/sidebar.html`),
+    );
+}
+
+export function findSidebarFrame(
+  page: Page,
+  extensionId: string,
+): Frame | undefined {
+  return page
+    .frames()
+    .find((frame) =>
+      frame.url().startsWith(`chrome-extension://${extensionId}/sidebar.html`),
+    );
+}
+
 // Finds the Pixiebrix sidebar page. In MV3, this is a Page contained in the browser sidepanel window.
 // In MV2, this is a Frame as it's contained in an iframe attached to the current page.
-export async function getSidebarPage(page: Page, extensionId: string) {
+export async function getSidebarPage(
+  page: Page,
+  extensionId: string,
+): Promise<Page | Frame> {
   if (MV === "3") {
     let sidebarPage: Page | undefined;
-    const findSidebarPage = (page: Page) =>
-      page
-        .context()
-        .pages()
-        .find((value) =>
-          value
-            .url()
-            .startsWith(`chrome-extension://${extensionId}/sidebar.html`),
-        );
 
     // In MV3, the sidebar sometimes requires the user to interact with modal to open the sidebar via a user gesture
     const conditionallyPerformUserGesture = async () => {
       await expect(page.getByRole("button", { name: "OK" })).toBeVisible();
       await page.getByRole("button", { name: "OK" }).click();
-      return findSidebarPage(page);
+      return findSidebarPage(page, extensionId);
     };
 
     await expect(async () => {
       sidebarPage = await Promise.race([
         conditionallyPerformUserGesture(),
-        findSidebarPage(page),
+        findSidebarPage(page, extensionId),
       ]);
       expect(sidebarPage).toBeDefined();
     }).toPass({ timeout: 5000 });
@@ -111,16 +128,8 @@ export async function getSidebarPage(page: Page, extensionId: string) {
   }
 
   let sidebarFrame: Frame | undefined;
-  const findSidebarFrame = (page: Page) =>
-    page
-      .frames()
-      .find((frame) =>
-        frame
-          .url()
-          .startsWith(`chrome-extension://${extensionId}/sidebar.html`),
-      );
   await expect(() => {
-    sidebarFrame = findSidebarFrame(page);
+    sidebarFrame = findSidebarFrame(page, extensionId);
     expect(sidebarFrame).toBeDefined();
   }).toPass({ timeout: 5000 });
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
