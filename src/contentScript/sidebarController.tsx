@@ -38,10 +38,8 @@ import type {
 } from "@/types/sidebarTypes";
 import { getTemporaryPanelSidebarEntries } from "@/platform/panels/panelController";
 import { getFormPanelSidebarEntries } from "@/platform/forms/formController";
-import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
-import { messenger } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
@@ -52,9 +50,6 @@ import focusController from "@/utils/focusController";
 import selectionController from "@/utils/selectionController";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
-
-/* Approximate sidebar width in pixels. Used to determine whether it's open */
-const MINIMUM_SIDEBAR_WIDTH = 300;
 
 export const isSidePanelOpen = isMV3()
   ? isSidePanelOpenMv3
@@ -482,29 +477,6 @@ export function getReservedPanelEntries(): {
     forms: getFormPanelSidebarEntries(),
     modActivationPanel: modActivationPanelEntry,
   };
-}
-
-/**
- * Determines whether the sidebar is open.
- * Caution, this function is known to be flaky in some cases. Only use when you absolutely must
- * check the sidebar state synchronously. If asynchronous checks are acceptable, use `isSidePanelOpen` instead.
- * @returns false when it's definitely closed or 'unknown' when it cannot be determined,
- * because the extra padding might be caused by the dev tools being open on the side
- * or due to another sidebar
- */
-// The type cannot be `undefined` due to strictNullChecks
-function isSidePanelOpenSync(): false | "unknown" {
-  if (!isMV3()) {
-    throw new Error("isSidePanelOpenSync is only available in MV3");
-  }
-
-  if (!globalThis.window) {
-    return "unknown";
-  }
-
-  return window.outerWidth - window.innerWidth > MINIMUM_SIDEBAR_WIDTH
-    ? "unknown"
-    : false;
 }
 
 function sidePanelOnCloseSignal(): AbortSignal {
