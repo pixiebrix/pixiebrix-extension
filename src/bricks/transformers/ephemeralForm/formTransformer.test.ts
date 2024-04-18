@@ -21,7 +21,7 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { TEST_cancelAll } from "@/platform/forms/formController";
+import { cancelAll } from "@/platform/forms/formController";
 import * as messenger from "webext-messenger";
 import { showModal } from "@/contentScript/modalDom";
 
@@ -34,7 +34,7 @@ const showModalMock = jest.mocked(showModal);
 const brick = new FormTransformer();
 
 afterEach(async () => {
-  await TEST_cancelAll();
+  await cancelAll();
   jest.clearAllMocks();
 });
 
@@ -101,7 +101,7 @@ describe("FormTransformer", () => {
       brickOptionsFactory(),
     );
 
-    await TEST_cancelAll();
+    await cancelAll();
 
     await expect(brickPromise).rejects.toThrow(CancelError);
 
@@ -132,7 +132,7 @@ describe("FormTransformer", () => {
       brickOptionsFactory(),
     );
 
-    await TEST_cancelAll();
+    await cancelAll();
 
     await expect(brickPromise).rejects.toThrow(CancelError);
 
@@ -179,7 +179,7 @@ describe("FormTransformer", () => {
 
     await expect(firstPromise).rejects.toThrow(CancelError);
 
-    await TEST_cancelAll();
+    await cancelAll();
 
     await expect(secondPromise).rejects.toThrow(CancelError);
   });
