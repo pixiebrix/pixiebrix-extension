@@ -22,7 +22,7 @@ import {
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import { ClosePanelAction } from "@/bricks/errors";
-import { CancelError } from "@/errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type Except, type SetOptional } from "type-fest";
 import { type Location } from "@/types/starterBrickTypes";
 import { isObject } from "@/utils/objectUtils";
@@ -262,5 +262,18 @@ export async function cancelTemporaryPanelsForExtension(
   extensionId: UUID,
 ): Promise<void> {
   const nonces = extensionNonces.get(extensionId) ?? new Set();
-  await cancelTemporaryPanels([...nonces]);
+  await cancelTemporaryPanels(
+    [...nonces],
+    new CancelError("Panel automatically closed"),
+  );
+}
+
+/**
+ * Cancel all temporary panels.
+ */
+export async function cancelAll(): Promise<void> {
+  await cancelTemporaryPanels(
+    [...panels.keys()],
+    new CancelError("Panel automatically closed"),
+  );
 }
