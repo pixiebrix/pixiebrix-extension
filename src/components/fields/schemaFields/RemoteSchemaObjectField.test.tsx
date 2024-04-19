@@ -46,6 +46,11 @@ describe("RemoteSchemaObjectField", () => {
       type: "object",
       properties: {
         InputValue: { type: "string", description: "A string input value" },
+        OtherInput: {
+          type: "string",
+          title: "Another Input Value",
+          description: "Another input",
+        },
       },
     };
     render(
@@ -58,6 +63,7 @@ describe("RemoteSchemaObjectField", () => {
         initialValues: {
           test: {
             InputValue: "test_input_value",
+            OtherInput: "test_other_input",
           },
         },
       },
@@ -71,6 +77,11 @@ describe("RemoteSchemaObjectField", () => {
     expect(input).toBeInTheDocument();
     expect(input).toHaveValue("test_input_value");
     expect(screen.getByText("A string input value")).toBeInTheDocument();
+
+    const otherInput = screen.getByLabelText("Another Input Value");
+    expect(otherInput).toBeInTheDocument();
+    expect(otherInput).toHaveValue("test_other_input");
+    expect(screen.getByText("Another input")).toBeInTheDocument();
   });
 
   test("renders loader", async () => {
@@ -103,5 +114,25 @@ describe("RemoteSchemaObjectField", () => {
     );
 
     expect(screen.getByText("Test error")).toBeInTheDocument();
+  });
+
+  test("renders empty schema", async () => {
+    const name = "test";
+    const schema: Schema = {
+      type: "object",
+      properties: {},
+    };
+    render(
+      <RemoteSchemaObjectField
+        name={name}
+        heading="Test Field"
+        remoteSchemaState={valueToAsyncState(schema)}
+      />,
+      {
+        initialValues: {},
+      },
+    );
+
+    expect(screen.getByText("No parameters")).toBeInTheDocument();
   });
 });
