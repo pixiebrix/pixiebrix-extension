@@ -2,12 +2,15 @@ import { test, expect } from "../../fixtures/extensionBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
+import { MV } from "../../env";
 
 test("can report application error to telemetry service", async ({
   page,
   context,
   extensionId,
 }) => {
+  const errorServiceEndpoint = "https://browser-intake-datadoghq.com/api/v2/*";
+
   await context.route(
     "https://app.pixiebrix.com/api/registry/bricks/",
     async (route) => {
@@ -19,14 +22,11 @@ test("can report application error to telemetry service", async ({
     },
   );
 
-  await context.route(
-    "https://browser-intake-datadoghq.com/api/v2/*",
-    async (route) => {
-      await route.fulfill({
-        status: 202,
-      });
-    },
-  );
+  await context.route(errorServiceEndpoint, async (route) => {
+    await route.fulfill({
+      status: 202,
+    });
+  });
 
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
   await expect(page.getByText("An error occurred")).toBeVisible();
@@ -46,9 +46,13 @@ test("can report application error to telemetry service", async ({
     expect(offscreenPage.url()).toBeDefined();
   }).toPass({ timeout: 5000 });
 
-  // TODO: due to the way the Datadog SDK is implemented, it will take ~30 seconds for the
+  // TODO: due to Datadog SDK implementation, it will take ~30 seconds for the
   //  request to be sent. We should figure out a way to induce the request being sent sooner.
-  await offscreenPage.waitForRequest(
-    "https://browser-intake-datadoghq.com/api/v2/*",
-  );
+  const request = await offscreenPage.waitForRequest(errorServiceEndpoint);
+
+  expect(request.postDataJSON()).toMatchObject({
+    service: "pixiebrix-browser-extension",
+    manifestVersion: Number(MV),
+    error: expect.anything(),
+  });
 });
