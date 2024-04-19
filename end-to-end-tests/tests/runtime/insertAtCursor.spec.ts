@@ -35,7 +35,6 @@ test.describe("Insert at Cursor", () => {
 
     const modActivationPage = new ActivateModPage(page, extensionId, modId);
     await modActivationPage.goto();
-
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
     await page.goto("/advanced-fields/");

@@ -18,15 +18,8 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
-import {
-  updateSidebar,
-  hideSidebar,
-  showSidebar,
-} from "@/contentScript/sidebarController";
-import sidebarInThisTab from "@/sidebar/messenger/api";
-import { isMV3 } from "@/mv3/api";
+import * as sidebarController from "@/contentScript/sidebarController";
 import { logPromiseDuration } from "@/utils/promiseUtils";
-import { isLoadedInIframe } from "@/utils/iframeUtils";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
@@ -79,11 +72,11 @@ export class ShowSidebar extends EffectABC {
   ): Promise<void> {
     expectContext("contentScript");
 
-    await showSidebar();
+    await sidebarController.showSidebar();
 
     void logPromiseDuration(
       "ShowSidebar:updateSidebar",
-      updateSidebar({
+      sidebarController.updateSidebar({
         force: forcePanel,
         panelHeading,
         blueprintId: logger.context.blueprintId,
@@ -109,11 +102,28 @@ export class HideSidebar extends EffectABC {
 
   async effect(): Promise<void> {
     expectContext("contentScript");
+    sidebarController.hideSidebar();
+  }
+}
 
-    if (isMV3() || isLoadedInIframe()) {
-      sidebarInThisTab.close();
-    } else {
-      hideSidebar();
-    }
+export class ToggleSidebar extends EffectABC {
+  constructor() {
+    super(
+      "@pixiebrix/sidebar/toggle",
+      "Toggle Sidebar",
+      "Toggle the PixieBrix sidebar open/closed",
+    );
+  }
+
+  inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
+
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return CONTENT_SCRIPT_CAPABILITIES;
+  }
+
+  async effect(): Promise<void> {
+    expectContext("contentScript");
+
+    await sidebarController.toggleSidebar();
   }
 }

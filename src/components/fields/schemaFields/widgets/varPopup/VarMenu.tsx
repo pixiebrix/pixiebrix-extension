@@ -21,7 +21,7 @@ import styles from "./VarMenu.module.scss";
 import { selectKnownVarsForActiveNode } from "./varSelectors";
 import VariablesTree from "./VariablesTree";
 import {
-  selectActiveElement,
+  selectActiveModComponentFormState,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
@@ -155,7 +155,9 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   variablePosition,
 }) => {
   const dispatch = useDispatch();
-  const activeElement = useSelector(selectActiveElement);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const pipelineMap = useSelector(selectPipelineMap) ?? {};
   const { allBricks } = useAllBricks();
 
@@ -172,7 +174,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
       getPageState(inspectedTab, {
         namespace: "blueprint",
         extensionId: null,
-        blueprintId: activeElement.recipe?.id,
+        blueprintId: activeModComponentFormState.recipe?.id,
       }),
     [],
   );
@@ -192,8 +194,8 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     };
   }, [dispatch]);
 
-  const extensionPointLabel = activeElement?.type
-    ? ADAPTERS.get(activeElement.type).label
+  const starterBrickLabel = activeModComponentFormState?.type
+    ? ADAPTERS.get(activeModComponentFormState.type).label
     : "";
 
   const { allOptions, filteredOptions } = useMemo(() => {
@@ -249,7 +251,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
               <div className={styles.sourceItem} key={source}>
                 <SourceLabel
                   source={source}
-                  extensionPointLabel={extensionPointLabel}
+                  extensionPointLabel={starterBrickLabel}
                   blocksInfo={blocksInfo}
                   allBlocks={allBricks}
                 />
@@ -267,7 +269,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
           <div className={styles.sourceItem} key={source}>
             <SourceLabel
               source={source}
-              extensionPointLabel={extensionPointLabel}
+              extensionPointLabel={starterBrickLabel}
               blocksInfo={blocksInfo}
               allBlocks={allBricks}
             />

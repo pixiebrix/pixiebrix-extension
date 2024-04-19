@@ -57,7 +57,7 @@ import { type JsonObject } from "type-fest";
 import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { boolean } from "@/utils/typeUtils";
-import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import pluralize from "@/utils/pluralize";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
@@ -308,7 +308,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       this.collapsedExtensions.set(extension.id, true);
     }
 
-    const serviceContext = await makeServiceContextFromDependencies(
+    const serviceContext = await makeIntegrationsContextFromDependencies(
       extension.integrationDependencies,
     );
     const extensionContext = { ...readerOutput, ...serviceContext };

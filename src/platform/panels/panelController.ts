@@ -262,5 +262,18 @@ export async function cancelTemporaryPanelsForExtension(
   extensionId: UUID,
 ): Promise<void> {
   const nonces = extensionNonces.get(extensionId) ?? new Set();
-  await cancelTemporaryPanels([...nonces]);
+  await cancelTemporaryPanels(
+    [...nonces],
+    new CancelError("Panel automatically closed"),
+  );
+}
+
+/**
+ * Cancel all temporary panels.
+ */
+export async function cancelAll(): Promise<void> {
+  await cancelTemporaryPanels(
+    [...panels.keys()],
+    new CancelError("Panel automatically closed"),
+  );
 }

@@ -38,8 +38,8 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import {
-  selectActiveElement,
-  selectActiveRecipeId,
+  selectActiveModComponentFormState,
+  selectActiveModId,
 } from "@/pageEditor/slices/editorSelectors";
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
@@ -67,11 +67,13 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
 
   const [getModDefinition] = appApi.endpoints.getRecipe.useLazyQuery();
 
-  const activeModId = useSelector(selectActiveRecipeId);
-  const activeElement = useSelector(selectActiveElement);
-  const isActive = activeElement?.uuid === modComponent.id;
+  const activeModId = useSelector(selectActiveModId);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
+  const isActive = activeModComponentFormState?.uuid === modComponent.id;
   // Get the selected mod id, or the mod id of the selected mod component
-  const modId = activeModId ?? activeElement?.recipe?.id;
+  const modId = activeModId ?? activeModComponentFormState?.recipe?.id;
   // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
   const hasActiveModBackground =
     !isActive && modId && modComponent._recipe?.id === modId;

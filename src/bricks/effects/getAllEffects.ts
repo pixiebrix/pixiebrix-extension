@@ -28,8 +28,9 @@ import { AlertEffect } from "./alert";
 import { GetPageState, SetPageState } from "./pageState";
 import { HideEffect } from "./hide";
 import { ExportCsv } from "./exportCsv";
-import { HideSidebar, ShowSidebar } from "./sidebar";
-import { CancelEffect } from "./cancel";
+import { HideSidebar, ShowSidebar, ToggleSidebar } from "./sidebarEffects";
+import CancelEffect from "./CancelEffect";
+import CancelEphemeralElements from "@/bricks/effects/CancelEphemeralElements";
 import { ErrorEffect } from "./error";
 import { ShowEffect } from "./show";
 import { TelemetryEffect } from "./telemetry";
@@ -81,7 +82,9 @@ function getAllEffects(): Brick[] {
     new ExportCsv(),
     new HideSidebar(),
     new ShowSidebar(),
+    new ToggleSidebar(),
     new CancelEffect(),
+    new CancelEphemeralElements(),
     new ErrorEffect(),
     new ShowEffect(),
     new TelemetryEffect(),

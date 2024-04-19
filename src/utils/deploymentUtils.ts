@@ -295,6 +295,9 @@ export async function mergeDeploymentIntegrationDependencies(
   }
 
   // Placeholder configuration does not have an explicit configuration.
+  // Since 1.8.13 - The PixieBrix integration config should use the placeholder id instead of undefined,
+  // but we need to keep this integrationDependencies.push() call to after the 'configId == null' check,
+  // just in case there are older values flowing through from persistence, etc.
   if (pixiebrixIntegration) {
     integrationDependencies.push(pixiebrixIntegration);
   }

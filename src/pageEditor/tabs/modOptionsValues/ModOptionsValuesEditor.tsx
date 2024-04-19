@@ -18,9 +18,9 @@
 import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectActiveRecipeId,
-  selectDirtyOptionDefinitionsForRecipeId,
-  selectDirtyOptionValuesForRecipeId,
+  selectActiveModId,
+  selectDirtyOptionsDefinitionsForModId,
+  selectDirtyOptionValuesForModId,
 } from "@/pageEditor/slices/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
@@ -55,23 +55,23 @@ const NoModOptions: React.FC = () => (
 
 const ModOptionsValuesContent: React.FC = () => {
   const dispatch = useDispatch();
-  const recipeId = useSelector(selectActiveRecipeId);
+  const activeModId = useSelector(selectActiveModId);
   const {
     data: recipe,
     isFetching: isLoadingRecipe,
     error: recipeError,
-  } = useOptionalModDefinition(recipeId);
+  } = useOptionalModDefinition(activeModId);
   const dirtyRecipeOptions = useSelector(
-    selectDirtyOptionDefinitionsForRecipeId(recipeId),
+    selectDirtyOptionsDefinitionsForModId(activeModId),
   );
   const modifiedOptionValues = useSelector(
-    selectDirtyOptionValuesForRecipeId(recipeId),
+    selectDirtyOptionValuesForModId(activeModId),
   );
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
   );
   const { cleanModComponents, dirtyModComponentFormStates } =
-    getCleanComponentsAndDirtyFormStatesForMod(recipeId);
+    getCleanComponentsAndDirtyFormStatesForMod(activeModId);
 
   const optionsDefinition = useMemo(() => {
     if (dirtyRecipeOptions) {

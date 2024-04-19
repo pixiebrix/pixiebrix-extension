@@ -45,7 +45,7 @@ import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
-import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
@@ -152,9 +152,9 @@ const BrickPreview: React.FunctionComponent<{
 
   const { values } = useFormikContext<ModComponentFormState>();
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
-  const [{ value: services }] = useField<IntegrationDependency[]>(
-    "integrationDependencies",
-  );
+  const [{ value: integrationDependencies }] = useField<
+    IntegrationDependency[]
+  >("integrationDependencies");
 
   const {
     data: brickInfo,
@@ -179,7 +179,9 @@ const BrickPreview: React.FunctionComponent<{
           },
           context: {
             ...context,
-            ...(await makeServiceContextFromDependencies(services)),
+            ...(await makeIntegrationsContextFromDependencies(
+              integrationDependencies,
+            )),
           },
           rootSelector: undefined,
           blueprintId: values.recipe?.id,

@@ -24,7 +24,7 @@ import {
   isVarExpression,
 } from "@/utils/expressionUtils";
 import { isEmpty } from "lodash";
-import { getVariableExpression } from "@/utils/variableUtils";
+import { makeVariableExpression } from "@/utils/variableUtils";
 
 export type IntegrationsFormSlice = Pick<
   ModComponentFormState,
@@ -92,7 +92,7 @@ export function removeUnusedDependencies(draft: Draft<IntegrationsFormSlice>) {
 
   const used = selectIntegrationDependencyVariables(draft);
   draft.integrationDependencies = draft.integrationDependencies.filter(
-    ({ outputKey }) => used.has(getVariableExpression(outputKey).__value__),
+    ({ outputKey }) => used.has(makeVariableExpression(outputKey).__value__),
   );
 }
 

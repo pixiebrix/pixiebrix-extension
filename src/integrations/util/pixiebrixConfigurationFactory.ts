@@ -15,17 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CancelEffect } from "@/bricks/effects/cancel";
-import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { CancelError } from "@/errors/businessErrors";
-import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import type {
+  SanitizedConfig,
+  SanitizedIntegrationConfig,
+} from "@/integrations/integrationTypes";
+import {
+  PIXIEBRIX_INTEGRATION_CONFIG_ID,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/integrations/constants";
 
-const brick = new CancelEffect();
-
-describe("CancelEffect", () => {
-  test("it throws CancelError", async () => {
-    await expect(
-      brick.run(unsafeAssumeValidArg({}), brickOptionsFactory()),
-    ).rejects.toThrow(CancelError);
-  });
-});
+export function pixiebrixConfigurationFactory(): SanitizedIntegrationConfig {
+  return {
+    id: PIXIEBRIX_INTEGRATION_CONFIG_ID,
+    serviceId: PIXIEBRIX_INTEGRATION_ID,
+    // Don't need to proxy requests to our own service
+    proxy: false,
+    config: {} as SanitizedConfig,
+  } as SanitizedIntegrationConfig;
+}

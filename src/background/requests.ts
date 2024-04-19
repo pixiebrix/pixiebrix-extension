@@ -17,7 +17,6 @@
 
 import axios, { type AxiosError, type AxiosResponse, type Method } from "axios";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
-import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import serviceRegistry from "@/integrations/registry";
 import { getExtensionToken } from "@/auth/authStorage";
 import { locator } from "@/background/locator";
@@ -64,6 +63,7 @@ import {
   PIXIEBRIX_INTEGRATION_ID,
 } from "@/integrations/constants";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)
@@ -232,7 +232,7 @@ async function proxyRequest<T>(
   }
 
   const authenticatedRequestConfig = await authenticate(
-    await pixiebrixConfigurationFactory(),
+    pixiebrixConfigurationFactory(),
     {
       url: await absoluteApiUrl("/api/proxy/"),
       method: "post" as Method,

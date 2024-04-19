@@ -28,17 +28,19 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import DataTabJsonTree from "./DataTabJsonTree";
 import StateTab from "./tabs/StateTab";
 import ConfigurationTab from "./tabs/ConfigurationTab";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
 
 const FoundationDataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const activeElement = useSelector(selectActiveElement);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const {
     extension: { blockPipeline },
-    extensionPoint,
-  } = activeElement;
+    extensionPoint: starterBrick,
+  } = activeModComponentFormState;
   const firstBlockInstanceId = blockPipeline[0]?.instanceId;
 
   const { record: firstBlockTraceRecord } = useSelector(
@@ -93,7 +95,7 @@ const FoundationDataPanel: React.FC = () => {
         {showDeveloperTabs && (
           <>
             <StateTab />
-            <ConfigurationTab config={extensionPoint} />
+            <ConfigurationTab config={starterBrick} />
           </>
         )}
         <Tab.Pane
@@ -132,7 +134,7 @@ const FoundationDataPanel: React.FC = () => {
           mountOnEnter
           unmountOnExit
         >
-          <ExtensionPointPreview element={activeElement} />
+          <ExtensionPointPreview element={activeModComponentFormState} />
         </Tab.Pane>
         <PageStateTab />
       </Tab.Content>

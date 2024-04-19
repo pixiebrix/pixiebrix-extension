@@ -20,7 +20,7 @@ import axios, { type AxiosError } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { performConfiguredRequest } from "./requests";
 import * as token from "@/auth/authStorage";
-import Locator, * as locator from "@/integrations/locator";
+import Locator from "@/integrations/locator";
 import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
 import { ContextError } from "@/errors/genericErrors";
@@ -68,11 +68,6 @@ jest.mock("@/background/auth/getToken", () => ({
 }));
 jest.mock("@/auth/authStorage");
 jest.mock("@/integrations/locator");
-
-// Use real version of pixiebrixConfigurationFactory
-(locator.pixiebrixConfigurationFactory as any) = jest.requireActual(
-  "@/integrations/locator",
-).pixiebrixConfigurationFactory;
 
 enrichAxiosErrors();
 

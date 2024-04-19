@@ -15,17 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file Temporary helpers useful for the MV3 transition */
+// This script loads the Ubuntu font from Google Fonts and applies it to the page dynamically.
+// The font is loaded via a script rather than with an inline style link to avoid render-blocking.
+// See: https://pagespeedchecklist.com/asynchronous-google-fonts
+const link = document.createElement("link");
+link.rel = "stylesheet";
+link.href =
+  "https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700";
+link.media = "print";
+link.addEventListener("load", (event) => {
+  if (event.target && event.target instanceof HTMLLinkElement) {
+    event.target.removeAttribute("media");
+  }
+});
 
-import { type Tabs } from "webextension-polyfill";
-import { once } from "lodash";
-
-export const isMV3 = once(
-  (): boolean =>
-    // Use optional chaining in case the chrome runtime is not available:
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/8273
-    chrome.runtime?.getManifest().manifest_version === 3,
-);
-export const browserAction =
-  globalThis.chrome?.browserAction ?? globalThis.chrome?.action;
-export type Tab = Tabs.Tab | chrome.tabs.Tab;
+link.fetchpriority = "high";
+document.body.append(link);

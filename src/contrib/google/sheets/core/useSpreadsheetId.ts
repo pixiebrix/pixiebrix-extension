@@ -30,6 +30,7 @@ import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { joinName } from "@/utils/formUtils";
 import { useContext, useRef } from "react";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
+import { BusinessError } from "@/errors/businessErrors";
 
 async function findSpreadsheetIdFromFieldValue(
   integrationDependencies: IntegrationDependency[],
@@ -79,15 +80,23 @@ async function findSpreadsheetIdFromFieldValue(
   );
 
   if (!sheetIdIntegrationDependency) {
-    throw new Error(
+    throw new BusinessError(
       "Unable to locate a matching Google Sheets integration configuration on this mod, please use a Mod Inputs variable instead",
     );
   }
 
   const { integrationId, configId } = sheetIdIntegrationDependency;
+
+  if (!configId) {
+    throw new BusinessError(
+      "No configuration selected for the Google Sheets integration",
+    );
+  }
+
   const sanitizedIntegrationConfig = await services.locate(
     integrationId,
-    configId,
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- just checked above
+    configId!,
   );
   const configSpreadsheetId = sanitizedIntegrationConfig.config?.spreadsheetId;
 

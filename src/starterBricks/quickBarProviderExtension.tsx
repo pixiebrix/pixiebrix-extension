@@ -57,7 +57,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
@@ -292,7 +292,9 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
 
       const [reader, serviceContext] = await Promise.all([
         this.getBaseReader(),
-        makeServiceContextFromDependencies(extension.integrationDependencies),
+        makeIntegrationsContextFromDependencies(
+          extension.integrationDependencies,
+        ),
       ]);
 
       const targetElement = guessSelectedElement() ?? document;

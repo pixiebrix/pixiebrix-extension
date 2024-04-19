@@ -10,7 +10,7 @@ import { type UUID } from "@/types/stringTypes";
 import {
   type BrickArgsContext,
   type RunMetadata,
-  type ServiceContext,
+  type IntegrationsContext,
 } from "@/types/runtimeTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type RendererRunPayload } from "@/types/rendererTypes";
@@ -61,7 +61,7 @@ export async function runRendererPipeline({
         // following. However, we actually want to pass through the rest of the context and we don't have an affordance
         // for that in the InitialValues type
         // pickBy(context, (value: unknown) => isPlainObject(value) && ("__service" in (value as UnknownObject))) as ServiceContext
-        serviceContext: context as ServiceContext,
+        serviceContext: context as IntegrationsContext,
       },
       {
         logger: getPlatform().logger.childLogger(messageContext),
@@ -115,7 +115,7 @@ export async function runHeadlessPipeline({
       // following. However, we actually want to pass through the rest of the context and we don't have an affordance
       // for that in the InitialValues type
       // pickBy(context, (value: unknown) => isPlainObject(value) && ("__service" in (value as UnknownObject))) as ServiceContext
-      serviceContext: context as ServiceContext,
+      serviceContext: context as IntegrationsContext,
     },
     {
       ...options,

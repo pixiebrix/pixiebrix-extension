@@ -46,6 +46,10 @@ import { selectModComponentsForMod } from "@/store/extensionsSelectors";
 import { type SidebarState } from "@/types/sidebarTypes";
 import { getEventKeyForPanel } from "@/store/sidebar/eventKeyUtils";
 import { type UUID } from "@/types/stringTypes";
+import {
+  PIXIEBRIX_INTEGRATION_CONFIG_ID,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: extensionsReducer, actions: extensionsActions } =
@@ -150,6 +154,14 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
   const builtInDependencies = unconfiguredIntegrationDependencies.map(
     (unconfiguredDependency) => {
+      if (unconfiguredDependency.integrationId === PIXIEBRIX_INTEGRATION_ID) {
+        // Don't use `pixiebrixIntegrationDependencyFactory` because the output key is not guaranteed to be the same
+        return {
+          ...unconfiguredDependency,
+          configId: PIXIEBRIX_INTEGRATION_CONFIG_ID,
+        };
+      }
+
       const builtInConfig = builtInIntegrationConfigs.find(
         (config) =>
           config.service.config.metadata.id ===

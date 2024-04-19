@@ -17,7 +17,7 @@
 
 import { type UUID } from "@/types/stringTypes";
 import {
-  type ElementUIState,
+  type ModComponentUIState,
   type NodeUIState,
   type TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
@@ -52,7 +52,7 @@ export function makeInitialNodeUIState(nodeId: UUID): NodeUIState {
   return nodeUIState;
 }
 
-export function makeInitialElementUIState(): ElementUIState {
+export function makeInitialElementUIState(): ModComponentUIState {
   return {
     pipelineMap: {},
     activeNodeId: FOUNDATION_NODE_ID,
