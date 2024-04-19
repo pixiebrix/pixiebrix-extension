@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionConsole/pages/mods/ModsPageToolbar.tsx",
     "./components/tabLayout/EditorTabLayout.tsx",
     "./mods/hooks/useDeleteExtensionAction.ts",
     "./extensionConsole/pages/mods/hooks/useViewShareAction.ts",

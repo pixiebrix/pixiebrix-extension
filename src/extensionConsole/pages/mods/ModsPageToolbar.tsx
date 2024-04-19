@@ -104,7 +104,8 @@ const ModsPageToolbar: React.FunctionComponent<{
             placeholder="Group by"
             options={groupByOptions}
             onChange={(option, { action }) => {
-              const value = action === "clear" ? [] : [option.value];
+              const value =
+                action === "clear" || !option?.value ? [] : [option.value];
               setGroupBy(value);
             }}
             value={groupByOptions.find((opt) => opt.value === groupBy[0])}
@@ -123,7 +124,9 @@ const ModsPageToolbar: React.FunctionComponent<{
             options={sortByOptions}
             onChange={(option, { action }) => {
               const value =
-                action === "clear" ? [] : [{ id: option.value, desc: false }];
+                action === "clear" || !option?.value
+                  ? []
+                  : [{ id: option.value, desc: false }];
               setSortBy(value);
             }}
             value={sortByOptions.find((opt) => opt.value === sortBy[0]?.id)}
@@ -140,12 +143,14 @@ const ModsPageToolbar: React.FunctionComponent<{
               variant="link"
               size="sm"
               onClick={() => {
-                const value = [{ id: sortBy[0].id, desc: !sortBy[0].desc }];
+                const value = sortBy[0]
+                  ? [{ id: sortBy[0].id, desc: !sortBy[0].desc }]
+                  : [];
                 setSortBy(value);
               }}
             >
               <FontAwesomeIcon
-                icon={sortBy[0].desc ? faSortAmountUpAlt : faSortAmountDownAlt}
+                icon={sortBy[0]?.desc ? faSortAmountUpAlt : faSortAmountDownAlt}
                 size="lg"
               />
             </Button>
