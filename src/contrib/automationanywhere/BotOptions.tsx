@@ -172,8 +172,8 @@ const BotOptions: React.FC<BlockOptionProps> = ({ name, configKey }) => {
   const configName = partial(joinName, name, configKey);
   return (
     <RequireIntegrationConfig
-      integrationsSchema={COMMON_PROPERTIES.service as Schema}
-      integrationsFieldName={configName("service")}
+      integrationFieldSchema={COMMON_PROPERTIES.service as Schema}
+      integrationFieldName={configName("service")}
     >
       {({ sanitizedConfig }) => (
         <BotOptionsContent
