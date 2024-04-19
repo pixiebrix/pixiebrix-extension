@@ -61,6 +61,9 @@ export function freshIdentifier(
 /**
  * Returns a variable reference expression for the given variable name.
  */
+export function makeVariableExpression<TValue extends string>(
+  variableName: OutputKey,
+): Expression<TValue, "var">;
 export function makeVariableExpression<TValue extends string | null>(
   variableName: OutputKey | null,
 ): Expression<TValue | null, "var"> {
