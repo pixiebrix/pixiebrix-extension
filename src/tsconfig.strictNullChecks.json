@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionConsole/pages/mods/hooks/useViewLogsAction.ts",
     "./contrib/google/sheets/core/useSpreadsheetId.ts",
     "./contrib/google/sheets/bricks/append.ts",
     "./contentScript/integrations/bannerDomController.tsx",
