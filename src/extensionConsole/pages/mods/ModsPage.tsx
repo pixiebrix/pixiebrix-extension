@@ -34,6 +34,12 @@ const ModsPage: React.FunctionComponent = () => {
     reportEvent(Events.MODS_PAGE_VIEW);
   }, []);
 
+  useEffect(() => {
+    if (error) {
+      reportError(error);
+    }
+  }, [error]);
+
   return (
     <div className="h-100">
       {error ? <ErrorDisplay error={error} /> : <ModsPageLayout mods={mods} />}

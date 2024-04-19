@@ -61,6 +61,7 @@ export default function reportError(
   }
 
   try {
+    console.log("*** about to record error");
     _record(serializeError(selectError(errorLike)), {
       ...context,
       // Add on the reporter side of the message. On the receiving side it would always be `background`
