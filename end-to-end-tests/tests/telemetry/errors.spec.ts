@@ -31,6 +31,7 @@ test("can report application error to telemetry service", async ({
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
   await expect(page.getByText("An error occurred")).toBeVisible();
 
+  // Due to limitations with the Datadog SDK, we need to report errors via an offscreen document.
   // The offscreen document is created when the first error is reported,
   // so we need to wait for it to be created before we can interact with it
   let offscreenPage: Page;
