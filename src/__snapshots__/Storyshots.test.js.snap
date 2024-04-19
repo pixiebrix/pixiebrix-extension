@@ -3991,19 +3991,20 @@ exports[`Storyshots Fields/RemoteSchemaObjectField Primitive Value 1`] = `
                 <div
                   className="field"
                 >
-                  <input
+                  <textarea
                     className="form-control"
                     id="childObject.InputValue"
                     name="childObject.InputValue"
                     onBlur={[Function]}
-                    onClick={[Function]}
-                    readOnly={true}
+                    onChange={[Function]}
+                    onKeyDown={[Function]}
+                    rows="1"
                     value=""
                   />
                 </div>
                 <div
                   className="dropdown dropdown"
-                  data-test-selected="Exclude"
+                  data-test-selected="Text"
                   data-testid="toggle-childObject.InputValue"
                 >
                   <button
