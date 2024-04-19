@@ -134,7 +134,7 @@ function useSpreadsheetId(
         fieldValue,
         optionsArgs,
       );
-      setError(null);
+      setError(undefined);
       if (result != null) {
         lastGoodSpreadsheetId.current = result;
       }
