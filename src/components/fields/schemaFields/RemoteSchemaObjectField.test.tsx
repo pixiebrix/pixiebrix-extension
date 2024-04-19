@@ -23,25 +23,17 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
-import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import {
+  errorToAsyncState,
+  loadingAsyncStateFactory,
+  valueToAsyncState,
+} from "@/utils/asyncStateUtils";
 
 beforeAll(() => {
   registerDefaultWidgets();
 });
 
 describe("RemoteSchemaObjectField", () => {
-  const renderField = (name: string, schema: Schema, initialValues: any) =>
-    render(
-      <RemoteSchemaObjectField
-        name={name}
-        heading="Test Field"
-        remoteSchemaState={valueToAsyncState(schema)}
-      />,
-      {
-        initialValues,
-      },
-    );
-
   const expectToggleMode = async (toggleTestId: string, mode: string) => {
     const toggle = await screen.findByTestId(toggleTestId);
     expect(toggle).toBeInTheDocument();
@@ -50,21 +42,66 @@ describe("RemoteSchemaObjectField", () => {
 
   test("renders object schema", async () => {
     const name = "test";
-    renderField(
-      name,
+    const schema: Schema = {
+      type: "object",
+      properties: {
+        InputValue: { type: "string", description: "A string input value" },
+      },
+    };
+    render(
+      <RemoteSchemaObjectField
+        name={name}
+        heading="Test Field"
+        remoteSchemaState={valueToAsyncState(schema)}
+      />,
       {
-        type: "object",
-        properties: {
-          InputValue: { type: "string", description: "A string input value" },
+        initialValues: {
+          test: {
+            InputValue: "test_input_value",
+          },
         },
       },
-      {},
     );
 
     const toggleTestId = `toggle-${name}.InputValue`;
-
-    // Starts as Exclude because it's not required
-    await expectToggleMode(toggleTestId, "Exclude");
+    await expectToggleMode(toggleTestId, "Text");
     await expectToggleOptions(toggleTestId, ["string", "var", "omit"]);
+
+    const input = screen.getByLabelText("InputValue");
+    expect(input).toBeInTheDocument();
+    expect(input).toHaveValue("test_input_value");
+    expect(screen.getByText("A string input value")).toBeInTheDocument();
+  });
+
+  test("renders loader", async () => {
+    const name = "test";
+    render(
+      <RemoteSchemaObjectField
+        name={name}
+        heading="Test Field"
+        remoteSchemaState={loadingAsyncStateFactory()}
+      />,
+      {
+        initialValues: {},
+      },
+    );
+
+    expect(screen.getByTestId("loader")).toBeInTheDocument();
+  });
+
+  test("renders error", async () => {
+    const name = "test";
+    render(
+      <RemoteSchemaObjectField
+        name={name}
+        heading="Test Field"
+        remoteSchemaState={errorToAsyncState(new Error("Test error"))}
+      />,
+      {
+        initialValues: {},
+      },
+    );
+
+    expect(screen.getByText("Test error")).toBeInTheDocument();
   });
 });
