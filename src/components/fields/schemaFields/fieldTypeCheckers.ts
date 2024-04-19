@@ -20,6 +20,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import {
   type LabelledEnumSchema,
   type Schema,
+  type SchemaDefinition,
   type UiSchema,
 } from "@/types/schemaTypes";
 import { get, isEmpty } from "lodash";
@@ -89,6 +90,22 @@ export function isKeyStringField(schema: Schema): boolean {
 
 export function isDatabaseField(schema: Schema): boolean {
   return schema.$ref === databaseSchema.$id;
+}
+
+type DataPreviewFieldSchema = {
+  $ref: typeof databaseSchema.$id;
+  format: "preview";
+};
+
+// Provide generic to support additional properties on the schema (e.g., title)
+export function isDatabasePreviewField<T extends DataPreviewFieldSchema>(
+  schema: SchemaDefinition,
+): schema is T {
+  return (
+    typeof schema !== "boolean" &&
+    isDatabaseField(schema) &&
+    schema.format === "preview"
+  );
 }
 
 export function isIconField(schema: Schema): boolean {

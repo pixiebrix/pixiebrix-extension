@@ -17,7 +17,10 @@
 
 import extensionsSlice from "@/store/extensionsSlice";
 import sidebarSlice from "@/store/sidebar/sidebarSlice";
-import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
+import {
+  getLinkedApiClient,
+  maybeGetLinkedApiClient,
+} from "@/data/service/apiClient";
 import {
   getModComponentState,
   saveModComponentState,
@@ -29,7 +32,7 @@ import { type ModComponentState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";
-import { type RemoteIntegrationConfig } from "@/types/contract";
+import type { Database, RemoteIntegrationConfig } from "@/types/contract";
 import { getSharingType } from "@/hooks/auth";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
@@ -47,9 +50,17 @@ import { type SidebarState } from "@/types/sidebarTypes";
 import { getEventKeyForPanel } from "@/store/sidebar/eventKeyUtils";
 import { type UUID } from "@/types/stringTypes";
 import {
-  PIXIEBRIX_INTEGRATION_CONFIG_ID,
   PIXIEBRIX_INTEGRATION_ID,
+  PIXIEBRIX_INTEGRATION_CONFIG_ID,
 } from "@/integrations/constants";
+import {
+  autoCreateDatabaseOptionsArgsInPlace,
+  makeDatabasePreviewName,
+} from "@/activation/modOptionsHelpers";
+import type { OptionsArgs } from "@/types/runtimeTypes";
+import { isDatabasePreviewField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { isRequired } from "@/utils/schemaUtils";
+import type { Schema } from "@/types/schemaTypes";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: extensionsReducer, actions: extensionsActions } =
@@ -85,13 +96,21 @@ export async function getBuiltInIntegrationConfigs(): Promise<
 
 function activateModInOptionsState(
   state: ModComponentState,
-  modDefinition: ModDefinition,
-  configuredDependencies: IntegrationDependency[],
+  {
+    modDefinition,
+    configuredDependencies,
+    optionsArgs,
+  }: {
+    modDefinition: ModDefinition;
+    configuredDependencies: IntegrationDependency[];
+    optionsArgs: OptionsArgs;
+  },
 ): ModComponentState {
   return extensionsReducer(
     state,
     extensionsActions.activateMod({
       modDefinition,
+      optionsArgs,
       configuredDependencies,
       screen: "starterMod",
       isReactivate: false,
@@ -139,10 +158,24 @@ function closeStarterModTabs({
   return sidebarState;
 }
 
+function initialOptionsArgs(modDefinition: ModDefinition): OptionsArgs {
+  return Object.fromEntries(
+    Object.entries(modDefinition.options?.schema?.properties ?? {})
+      .filter(
+        ([name, fieldSchema]) =>
+          isDatabasePreviewField(fieldSchema) &&
+          isRequired(modDefinition.options.schema, name),
+      )
+      .map(([name, fieldSchema]) => [
+        name,
+        makeDatabasePreviewName(modDefinition, fieldSchema as Schema, name),
+      ]),
+  );
+}
+
 async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
-  let activated = false;
   if (modDefinitions.length === 0) {
-    return activated;
+    return false;
   }
 
   const unconfiguredIntegrationDependencies =
@@ -152,6 +185,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
   const builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
 
+  // XXX: do we want to fail all starter mod activations if one starter mod is invalid?
   const builtInDependencies = unconfiguredIntegrationDependencies.map(
     (unconfiguredDependency) => {
       if (unconfiguredDependency.integrationId === PIXIEBRIX_INTEGRATION_ID) {
@@ -185,25 +219,49 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
     getSidebarState(),
   ]);
 
-  for (const modDefinition of modDefinitions) {
-    const modAlreadyActivated = optionsState.extensions.some(
-      (mod) => mod._recipe?.id === modDefinition.metadata.id,
-    );
+  const newMods = modDefinitions.filter(
+    (modDefinition) =>
+      !optionsState.extensions.some(
+        (mod) => mod._recipe?.id === modDefinition.metadata.id,
+      ),
+  );
 
-    if (!modAlreadyActivated) {
-      optionsState = activateModInOptionsState(
-        optionsState,
+  // XXX: do we want to fail all starter mod activations if a DB fails to get created?
+  const newModConfigs = await Promise.all(
+    newMods.map(async (modDefinition) => {
+      const optionsArgs = initialOptionsArgs(modDefinition);
+
+      await autoCreateDatabaseOptionsArgsInPlace(
         modDefinition,
-        builtInDependencies,
+        optionsArgs,
+        async (args) => {
+          const client = await getLinkedApiClient();
+          const response = await client.post<Database>("/api/databases/", {
+            name: args.name,
+          });
+          return response.data.id;
+        },
       );
-      activated = true;
 
-      sidebarState = closeStarterModTabs({
+      return {
         modDefinition,
-        optionsState,
-        sidebarState,
-      });
-    }
+        optionsArgs,
+      };
+    }),
+  );
+
+  for (const { modDefinition, optionsArgs } of newModConfigs) {
+    optionsState = activateModInOptionsState(optionsState, {
+      modDefinition,
+      configuredDependencies: builtInDependencies,
+      optionsArgs,
+    });
+
+    sidebarState = closeStarterModTabs({
+      modDefinition,
+      optionsState,
+      sidebarState,
+    });
   }
 
   await Promise.all([
@@ -211,7 +269,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
     saveSidebarState(sidebarState),
   ]);
   await forEachTab(queueReactivateTab);
-  return activated;
+  return newModConfigs.length > 0;
 }
 
 async function getStarterMods(): Promise<ModDefinition[]> {
