@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./components/fields/schemaFields/fieldTypeCheckers.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/extensionBase.ts",
@@ -39,6 +38,7 @@
     "./activation/activateLinkClickHandler.ts",
     "./activation/activationLinkUtils.ts",
     "./activation/getActivatedModComponentFromDefinition.ts",
+    "./activation/modOptionsHelpers.ts",
     "./activation/wizardTypes.ts",
     "./analysis/analysisVisitors/varAnalysis/parseTemplateVariables.ts",
     "./analysis/analysisVisitors/varAnalysis/varMap.ts",
@@ -254,6 +254,7 @@
     "./components/fields/fieldUtils.ts",
     "./components/fields/schemaFields/FieldRuntimeContext.ts",
     "./components/fields/schemaFields/WorkshopMessage.tsx",
+    "./components/fields/schemaFields/fieldTypeCheckers.ts",
     "./components/fields/schemaFields/integrations/IntegrationAuthSelectWidget.tsx",
     "./components/fields/schemaFields/optionIcon/OptionIcon.tsx",
     "./components/fields/schemaFields/schemaUtils.ts",
@@ -323,6 +324,7 @@
     "./components/quickBar/useActionGenerators.ts",
     "./components/quickBar/useActions.ts",
     "./components/quickBar/utils.ts",
+    "./components/schemaTree/SchemaTree.tsx",
     "./components/selectionToolPopover/SelectionToolPopover.tsx",
     "./components/selectionToolPopover/showSelectionToolPopover.tsx",
     "./components/walkthroughModal/showWalkthroughModal.ts",
