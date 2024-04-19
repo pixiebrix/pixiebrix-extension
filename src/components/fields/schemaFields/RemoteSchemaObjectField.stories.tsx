@@ -34,9 +34,9 @@ export default {
   component: RemoteSchemaObjectField,
 } as ComponentMeta<typeof RemoteSchemaObjectField>;
 
-const Template: ComponentStory<
-  React.FunctionComponent<RemoteSchemaObjectFieldProps>
-> = (args) => (
+const Template: ComponentStory<React.FC<RemoteSchemaObjectFieldProps>> = (
+  args,
+) => (
   <Provider store={settingsStore()}>
     <Formik
       initialValues={{

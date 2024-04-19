@@ -30,6 +30,7 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { type AsyncState } from "@/types/sliceTypes";
 import Loader from "@/components/Loader";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
+import { type Except } from "type-fest";
 
 const FALLBACK_SCHEMA: Schema = {
   type: "object",
@@ -51,10 +52,6 @@ export type RemoteSchemaObjectFieldProps = {
    * Async state for the remote schema
    */
   remoteSchemaState: AsyncState<Schema>;
-  /**
-   * Field description
-   */
-  description?: string;
   /**
    * Whether the field is required
    */
@@ -111,7 +108,7 @@ const ChildObjectWidgetContent: React.FC<
 };
 
 const ChildObjectWidget: React.FC<
-  Pick<RemoteSchemaObjectFieldProps, "name" | "heading" | "remoteSchemaState">
+  Except<RemoteSchemaObjectFieldProps, "isRequired">
 > = ({ name, heading, remoteSchemaState }) => (
   <Card>
     <Card.Header>{heading}</Card.Header>
@@ -124,8 +121,15 @@ const ChildObjectWidget: React.FC<
   </Card>
 );
 
-const RemoteSchemaObjectField: React.FC<RemoteSchemaObjectFieldProps> = (
-  props,
-) => <ConnectedFieldTemplate as={ChildObjectWidget} {...props} />;
+const RemoteSchemaObjectField: React.FC<RemoteSchemaObjectFieldProps> = ({
+  isRequired,
+  ...props
+}) => (
+  <ConnectedFieldTemplate
+    as={ChildObjectWidget}
+    isRequire={isRequired}
+    {...props}
+  />
+);
 
 export default RemoteSchemaObjectField;
