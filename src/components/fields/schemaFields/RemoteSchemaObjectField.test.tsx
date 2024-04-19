@@ -52,6 +52,7 @@ describe("RemoteSchemaObjectField", () => {
           description: "Another input",
         },
       },
+      required: ["InputValue"],
     };
     render(
       <RemoteSchemaObjectField
@@ -63,7 +64,6 @@ describe("RemoteSchemaObjectField", () => {
         initialValues: {
           test: {
             InputValue: "test_input_value",
-            OtherInput: "test_other_input",
           },
         },
       },
@@ -71,16 +71,19 @@ describe("RemoteSchemaObjectField", () => {
 
     const toggleTestId = `toggle-${name}.InputValue`;
     await expectToggleMode(toggleTestId, "Text");
-    await expectToggleOptions(toggleTestId, ["string", "var", "omit"]);
+    await expectToggleOptions(toggleTestId, ["string", "var"]);
 
     const input = screen.getByLabelText("InputValue");
     expect(input).toBeInTheDocument();
     expect(input).toHaveValue("test_input_value");
     expect(screen.getByText("A string input value")).toBeInTheDocument();
 
+    const otherToggleTestId = `toggle-${name}.OtherInput`;
+    await expectToggleMode(otherToggleTestId, "Exclude");
+    await expectToggleOptions(otherToggleTestId, ["string", "var", "omit"]);
+
     const otherInput = screen.getByLabelText("Another Input Value");
     expect(otherInput).toBeInTheDocument();
-    expect(otherInput).toHaveValue("test_other_input");
     expect(screen.getByText("Another input")).toBeInTheDocument();
   });
 

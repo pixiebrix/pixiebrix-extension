@@ -30,7 +30,6 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { type AsyncState } from "@/types/sliceTypes";
 import Loader from "@/components/Loader";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import { type Except } from "type-fest";
 
 const FALLBACK_SCHEMA: Schema = {
   type: "object",
@@ -52,10 +51,6 @@ export type RemoteSchemaObjectFieldProps = {
    * Async state for the remote schema
    */
   remoteSchemaState: AsyncState<Schema>;
-  /**
-   * Whether the field is required
-   */
-  isRequired?: boolean;
 };
 
 const ChildObjectWidgetContent: React.FC<
@@ -82,6 +77,15 @@ const ChildObjectWidgetContent: React.FC<
     return <span className="text-muted">No parameters</span>;
   }
 
+  const schema = remoteSchemaState.data;
+  function isRequired(prop: string): boolean {
+    if (!schema.required) {
+      return true;
+    }
+
+    return schema.required.includes(prop);
+  }
+
   return (
     <>
       {Object.entries(inputProperties(remoteSchemaState.data)).map(
@@ -99,6 +103,7 @@ const ChildObjectWidgetContent: React.FC<
               name={joinName(name, prop)}
               label={label}
               schema={fieldSchema}
+              isRequired={isRequired(prop)}
             />
           );
         },
@@ -107,9 +112,11 @@ const ChildObjectWidgetContent: React.FC<
   );
 };
 
-const ChildObjectWidget: React.FC<
-  Except<RemoteSchemaObjectFieldProps, "isRequired">
-> = ({ name, heading, remoteSchemaState }) => (
+const ChildObjectWidget: React.FC<RemoteSchemaObjectFieldProps> = ({
+  name,
+  heading,
+  remoteSchemaState,
+}) => (
   <Card>
     <Card.Header>{heading}</Card.Header>
     <Card.Body>
@@ -121,15 +128,8 @@ const ChildObjectWidget: React.FC<
   </Card>
 );
 
-const RemoteSchemaObjectField: React.FC<RemoteSchemaObjectFieldProps> = ({
-  isRequired,
-  ...props
-}) => (
-  <ConnectedFieldTemplate
-    as={ChildObjectWidget}
-    isRequire={isRequired}
-    {...props}
-  />
-);
+const RemoteSchemaObjectField: React.FC<RemoteSchemaObjectFieldProps> = (
+  props,
+) => <ConnectedFieldTemplate as={ChildObjectWidget} {...props} />;
 
 export default RemoteSchemaObjectField;
