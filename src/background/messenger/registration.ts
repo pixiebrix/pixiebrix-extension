@@ -28,7 +28,7 @@ import {
   ensureContextMenu,
   preloadContextMenus,
   uninstallContextMenu,
-} from "@/background/contextMenus"; // 221 strictNullCheck errors
+} from "@/background/contextMenus"; // 220 strictNullCheck errors
 import {
   requestRunInAllFrames,
   requestRunInOtherTabs,
@@ -36,21 +36,21 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor"; // Depends on contentScript/messenger to pass strictNullCheck
-import { performConfiguredRequest } from "@/background/requests"; // 13 strictNullCheck errors
-import { getAvailableVersion } from "@/background/installer"; // 206 strictNullCheck errors
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 221 strictNullCheck errors
-import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 229 strictNullCheck errors
+import { performConfiguredRequest } from "@/background/requests"; // 7 strictNullCheck errors
+import { getAvailableVersion } from "@/background/installer"; // 203 strictNullCheck errors
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 220 strictNullCheck errors
+import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 226 strictNullCheck errors
 import {
   collectPerformanceDiagnostics,
   initTelemetry,
   pong,
   recordEvent,
   sendDeploymentAlert,
-} from "@/background/telemetry"; // 201 strictNullCheck errors
+} from "@/background/telemetry"; // 199 strictNullCheck errors
 import {
   getPartnerPrincipals,
   launchAuthIntegration,
-} from "@/background/partnerIntegrations"; // 30 strictNullCheck errors
+} from "@/background/partnerIntegrations"; // 24 strictNullCheck errors
 import { setCopilotProcessData } from "@/background/partnerHandlers"; // 29 strictNullCheck errors
 
 expectContext("background");
