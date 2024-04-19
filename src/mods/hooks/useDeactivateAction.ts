@@ -30,7 +30,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type ModComponentState } from "@/store/extensionsTypes";
 
-function useDeactivateAction(modViewItem: ModViewItem): () => void | null {
+function useDeactivateAction(modViewItem: ModViewItem): (() => void) | null {
   const dispatch = useDispatch();
   const { restrict } = useFlags();
   const { mod, status, sharing } = modViewItem;
