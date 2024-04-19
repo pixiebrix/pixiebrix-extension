@@ -18,13 +18,21 @@
 import { type OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
+import { type Nullishable } from "@/utils/nullishUtils";
 
-export function optionalFactory(factory: OptionsFactory): OptionsFactory {
-  return async (config: SanitizedIntegrationConfig) => {
+type OptionalOptionsFactory<T = unknown> = (
+  config: Nullishable<SanitizedIntegrationConfig>,
+  factoryArgs?: UnknownObject,
+) => Promise<Array<Option<T>>>;
+
+export function optionalFactory<T = unknown>(
+  factory: OptionsFactory<T>,
+): OptionalOptionsFactory<T> {
+  return async (config, factoryArgs) => {
     if (config) {
-      return factory(config);
+      return factory(config, factoryArgs);
     }
 
-    return [] as Option[];
+    return [];
   };
 }

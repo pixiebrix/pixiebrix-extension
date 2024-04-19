@@ -20,7 +20,7 @@ import { type BlockOptionProps } from "@/components/fields/schemaFields/genericO
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
 import { useField } from "formik";
-import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
+import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type ODataResponseData, type Robot } from "./uipathContract";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
@@ -38,6 +38,10 @@ import { isExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
 import { getPlatform } from "@/platform/platformContext";
+import {
+  loadingAsyncStateFactory,
+  valueToAsyncState,
+} from "@/utils/asyncStateUtils";
 
 async function fetchRobots(
   config: SanitizedIntegrationConfig,
@@ -157,10 +161,14 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
             />
           )}
 
-          <ChildObjectField
+          <RemoteSchemaObjectField
             heading={selectedRelease?.release?.Name ?? "Input Arguments"}
-            schema={selectedRelease?.schema}
             name={configName("inputArguments")}
+            remoteSchemaState={
+              selectedRelease?.schema
+                ? valueToAsyncState(selectedRelease.schema)
+                : loadingAsyncStateFactory()
+            }
           />
         </>
       )}

@@ -2,19 +2,28 @@
 
 exports[`UiPath LocalProcess Options Can render options 1`] = `
 <DocumentFragment>
-  <div>
-    <span
-      class="text-danger"
-    >
-      UiPath Assistant not found. Don't have the UiPath Assistant? 
-      <a
-        href="https://robotjs.uipath.com/download"
-        rel="noopener noreferrer"
-        target="_blank"
+  <form
+    action="#"
+  >
+    <div>
+      <span
+        class="text-danger"
       >
-        Get it now.
-      </a>
-    </span>
-  </div>
+        UiPath Assistant not found. Don't have the UiPath Assistant? 
+        <a
+          href="https://robotjs.uipath.com/download"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Get it now.
+        </a>
+      </span>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
 </DocumentFragment>
 `;

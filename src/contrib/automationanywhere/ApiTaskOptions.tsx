@@ -79,6 +79,7 @@ const ApiTaskOptionsContent: React.FC<{
         extraFactoryArgs={taskSelectFactoryArgs}
         loadingMessage={TasksLoadingMessage}
         noOptionsMessage={TasksNoOptionsMessage}
+        unknownOptionLabel={(value: string) => `Unknown Task ID: ${value}`}
       />
 
       <SchemaField
