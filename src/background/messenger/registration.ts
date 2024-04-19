@@ -28,7 +28,7 @@ import {
   ensureContextMenu,
   preloadContextMenus,
   uninstallContextMenu,
-} from "@/background/contextMenus"; // 300 strictNullCheck errors
+} from "@/background/contextMenus"; // 221 strictNullCheck errors
 import {
   requestRunInAllFrames,
   requestRunInOtherTabs,
@@ -36,23 +36,23 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor"; // Depends on contentScript/messenger to pass strictNullCheck
-import { performConfiguredRequest } from "@/background/requests"; // 24 strictNullCheck errors
-import { getAvailableVersion } from "@/background/installer"; // 300 strictNullCheck errors
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 strictNullCheck errors
-import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 300 strictNullCheck errors
+import { performConfiguredRequest } from "@/background/requests"; // 13 strictNullCheck errors
+import { getAvailableVersion } from "@/background/installer"; // 206 strictNullCheck errors
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 221 strictNullCheck errors
+import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 229 strictNullCheck errors
 import {
   collectPerformanceDiagnostics,
   initTelemetry,
   pong,
   recordEvent,
   sendDeploymentAlert,
-} from "@/background/telemetry"; // 280 strictNullCheck errors
+} from "@/background/telemetry"; // 201 strictNullCheck errors
 import {
   getPartnerPrincipals,
   launchAuthIntegration,
-} from "@/background/partnerIntegrations"; // 39 strictNullCheck errors
+} from "@/background/partnerIntegrations"; // 30 strictNullCheck errors
 import { setCopilotProcessData } from "@/background/partnerHandlers"; // 29 strictNullCheck errors
-import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow"; // 9 strictNullCheck errors
+import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow"; // 6 strictNullCheck errors
 
 expectContext("background");
 

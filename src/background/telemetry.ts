@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JsonObject } from "type-fest";
 import { compact, debounce, throttle, uniq } from "lodash";
 import { getModComponentState } from "@/store/extensionsStorage";
 import {
@@ -64,7 +63,7 @@ interface UserTelemetryEvent {
   /**
    * Event data/payload.
    */
-  data: JsonObject;
+  data: UnknownObject;
 }
 
 interface UserSummary {
@@ -334,7 +333,7 @@ export async function recordEvent({
   data = {},
 }: {
   event: Event;
-  data: JsonObject | undefined;
+  data: UnknownObject | undefined;
 }): Promise<void> {
   if (await allowsTrack()) {
     const {
