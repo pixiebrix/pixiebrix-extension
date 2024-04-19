@@ -46,7 +46,7 @@ const EditorTabLayout: React.FC<{
   defaultTabName?: string;
 }> = ({ tabs, actionButtons = emptyArray, defaultTabName }) => {
   const [activeTabName, setActiveTabName] = useState(
-    defaultTabName ?? tabs[0].name,
+    defaultTabName ?? tabs[0]?.name,
   );
 
   return (
@@ -55,7 +55,11 @@ const EditorTabLayout: React.FC<{
         <Nav
           variant="pills"
           activeKey={activeTabName}
-          onSelect={setActiveTabName}
+          onSelect={(eventKey) => {
+            // Booststrap's onSelect event handler passes the event key as a string or null
+            // activeKey is required to be a string or undefined
+            setActiveTabName(eventKey ?? undefined);
+          }}
           className={styles.nav}
         >
           {tabs.map(({ name, badgeCount, badgeVariant }) => (
