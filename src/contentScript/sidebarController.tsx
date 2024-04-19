@@ -48,6 +48,8 @@ import { showMySidePanel } from "@/background/messenger/strict/api";
 import { getSidebarElement } from "@/contentScript/sidebarDomControllerLite";
 import focusController from "@/utils/focusController";
 import selectionController from "@/utils/selectionController";
+import { messenger } from "webext-messenger";
+import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -71,7 +73,11 @@ const pingSidebar = memoizeUntilSettled(
 
 async function isSidePanelOpenMv3() {
   try {
-    await pingSidebar();
+    await messenger(
+      "SIDEBAR_PING",
+      { retry: false },
+      await getSidebarTargetForCurrentTab(),
+    );
     return true;
   } catch {
     return false;
