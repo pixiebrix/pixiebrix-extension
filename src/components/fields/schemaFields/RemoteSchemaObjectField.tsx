@@ -60,14 +60,16 @@ const ChildObjectWidgetContent: React.FC<
     return <Loader />;
   }
 
+  // If there's an issue loading the schema, show a basic object input so mod developers aren't blocked
   if (remoteSchemaState.error || remoteSchemaState.data == null) {
     return (
       <>
-        <FieldAnnotationAlert
-          message={getErrorMessage(remoteSchemaState.error)}
-          type={AnnotationType.Error}
-        />
-        {/* If there's an issue loading the schema, show a basic object input so mod developers aren't blocked */}
+        {remoteSchemaState.error && (
+          <FieldAnnotationAlert
+            message={getErrorMessage(remoteSchemaState.error)}
+            type={AnnotationType.Error}
+          />
+        )}
         <ObjectWidget name={name} schema={FALLBACK_SCHEMA} />
       </>
     );
