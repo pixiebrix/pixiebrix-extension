@@ -176,7 +176,7 @@ export class GoogleSheetsLookup extends TransformerABC {
       tabName,
     };
     const valueRange = await getAllRows(target);
-    const [headers, ...rows] = valueRange?.values ?? [[], []];
+    const [headers = [], ...rows] = valueRange?.values ?? [[], []];
 
     logger.debug(`Tab ${tabName} has headers`, { headers });
 

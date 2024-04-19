@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./contrib/google/sheets/bricks/lookup.ts",
     "./components/fields/schemaFields/AppApiIntegrationDependencyField.tsx",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
