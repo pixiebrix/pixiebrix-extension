@@ -376,14 +376,14 @@ export class GoogleSheetsAppend extends EffectABC {
     );
 
     const spreadsheet = await sheets.getSpreadsheet(target);
-    const sheet = spreadsheet.sheets.find(
-      (sheet) => sheet.properties.title === tabName,
+    const sheet = spreadsheet.sheets?.find(
+      (sheet) => sheet.properties?.title === tabName,
     );
 
     if (!sheet) {
       logger.info(`Creating tab ${tabName}`);
       await sheets.createTab(target);
-    } else if (requireSheetIsVisible && sheet.properties.hidden) {
+    } else if (requireSheetIsVisible && sheet.properties?.hidden) {
       throw new BusinessError(
         `Sheet ${tabName} is hidden. Please unhide the sheet or disable the "Require Visible Sheet" brick config option.`,
       );
