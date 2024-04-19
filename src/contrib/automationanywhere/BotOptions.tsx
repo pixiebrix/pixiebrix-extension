@@ -94,6 +94,7 @@ const BotOptionsContent: React.FunctionComponent<{
         extraFactoryArgs={botSelectFactoryArgs}
         loadingMessage={BotLoadingMessage}
         noOptionsMessage={BotNoOptionsMessage}
+        unknownOptionLabel={(value: string) => `Unknown Bot ID: ${value}`}
       />
 
       {isCommunityControlRoom(controlRoomConfig.config.controlRoomUrl) ? (

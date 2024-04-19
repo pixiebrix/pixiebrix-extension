@@ -26,6 +26,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { castArray, uniq } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Look up integrations in the current formik context, and return the current
@@ -42,7 +43,7 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
  */
 function useSanitizedIntegrationConfigFormikAdapter(
   integrationIds: RegistryId | RegistryId[],
-): FetchableAsyncState<SanitizedIntegrationConfig | null> {
+): FetchableAsyncState<Nullishable<SanitizedIntegrationConfig>> {
   // If applicable, we'll add in the pixiebrix integration config later
   const idArray = uniq(
     castArray(integrationIds).filter(

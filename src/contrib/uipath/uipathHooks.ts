@@ -30,7 +30,6 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import cachePromise from "@/utils/cachePromise";
 import useAsyncState from "@/hooks/useAsyncState";
 import { getPlatform } from "@/platform/platformContext";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 const optionalFetchReleases = optionalFactory(fetchReleases);
 
@@ -59,11 +58,6 @@ export function useSelectedRelease(releaseKeyFieldName: string) {
 
   const { data: sanitizedConfig } =
     useSanitizedIntegrationConfigFormikAdapter(UIPATH_SERVICE_IDS);
-
-  assertNotNullish(
-    sanitizedConfig,
-    "Sanitized config is required to fetch the release",
-  );
 
   const releasesPromise = useMemo(
     async () =>

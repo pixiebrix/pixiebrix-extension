@@ -42,7 +42,12 @@ const BrickDetail = <T extends Metadata>({
         )}
       </div>
       <div>
-        <Button variant="primary mr-1 text-nowrap" size="lg" onClick={onSelect}>
+        <Button
+          data-testid={`${brick.name} detail button`}
+          variant="primary mr-1 text-nowrap"
+          size="lg"
+          onClick={onSelect}
+        >
           {selectCaption}
         </Button>
       </div>

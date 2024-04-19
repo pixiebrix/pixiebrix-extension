@@ -48,8 +48,27 @@ import { showMySidePanel } from "@/background/messenger/strict/api";
 import { getSidebarElement } from "@/contentScript/sidebarDomControllerLite";
 import focusController from "@/utils/focusController";
 import selectionController from "@/utils/selectionController";
+import { messenger } from "webext-messenger";
+import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
+
+/*
+ * Only one check at a time
+ * Cannot throttle because subsequent checks need to be able to be made immediately
+ */
+const isSidePanelOpenMv3 = memoizeUntilSettled(async () => {
+  try {
+    await messenger(
+      "SIDEBAR_PING",
+      { retry: false },
+      await getSidebarTargetForCurrentTab(),
+    );
+    return true;
+  } catch {
+    return false;
+  }
+});
 
 export const isSidePanelOpen = isMV3()
   ? isSidePanelOpenMv3
@@ -68,15 +87,6 @@ const pingSidebar = memoizeUntilSettled(
     }
   }, 1000) as () => Promise<void>,
 );
-
-async function isSidePanelOpenMv3() {
-  try {
-    await pingSidebar();
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 /**
  * Event listeners triggered when the sidebar shows and is ready to receive messages.

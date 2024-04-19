@@ -3739,123 +3739,6 @@ exports[`Storyshots ExtensionConsole/IDBErrorDisplay Quota Error 1`] = `
 </div>
 `;
 
-exports[`Storyshots Fields/ChildObjectField Primitive Value 1`] = `
-<form
-  action="#"
-  onReset={[Function]}
-  onSubmit={[Function]}
->
-  <div
-    className="formGroup form-group"
-  >
-    <div
-      aria-expanded={null}
-      className="mb-2 w-100 collapse"
-    >
-      <div
-        className="annotationPlaceholder"
-      />
-    </div>
-    <div
-      className="formField"
-    >
-      <div
-        className="card"
-      >
-        <div
-          className="card-header"
-        >
-          Child Object
-        </div>
-        <div
-          className="card-body"
-        >
-          <div
-            className="formGroup form-group"
-          >
-            <div
-              aria-expanded={null}
-              className="mb-2 w-100 collapse"
-            >
-              <div
-                className="annotationPlaceholder"
-              />
-            </div>
-            <label
-              className="label form-label"
-              htmlFor="childObject.InputValue"
-            >
-              Input Value
-            </label>
-            <div
-              className="formField"
-            >
-              <div
-                className="root"
-              >
-                <div
-                  className="field"
-                >
-                  <input
-                    className="form-control"
-                    id="childObject.InputValue"
-                    name="childObject.InputValue"
-                    onBlur={[Function]}
-                    onClick={[Function]}
-                    readOnly={true}
-                    value=""
-                  />
-                </div>
-                <div
-                  className="dropdown dropdown"
-                  data-test-selected="Exclude"
-                  data-testid="toggle-childObject.InputValue"
-                >
-                  <button
-                    aria-expanded={false}
-                    aria-haspopup={true}
-                    className="dropdown-toggle btn btn-link"
-                    disabled={false}
-                    onClick={[Function]}
-                    type="button"
-                  >
-                    <span
-                      className="symbol"
-                    >
-                      <test-file-stub
-                        className="root"
-                      />
-                    </span>
-                  </button>
-                </div>
-              </div>
-              <small
-                className="text-muted form-text"
-              >
-                <span
-                  dangerouslySetInnerHTML={
-                    {
-                      "__html": "This is a description for the field",
-                    }
-                  }
-                />
-              </small>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <button
-    className="btn btn-primary"
-    disabled={false}
-    type="submit"
-  >
-    Submit
-  </button>
-</form>
-`;
-
 exports[`Storyshots Fields/CreatableAutosuggest Creatable 1`] = `
 <div
   style={
@@ -4049,6 +3932,124 @@ exports[`Storyshots Fields/CreatableAutosuggest Not Clearable 1`] = `
     />
   </div>
 </div>
+`;
+
+exports[`Storyshots Fields/RemoteSchemaObjectField Primitive Value 1`] = `
+<form
+  action="#"
+  onReset={[Function]}
+  onSubmit={[Function]}
+>
+  <div
+    className="formGroup form-group"
+  >
+    <div
+      aria-expanded={null}
+      className="mb-2 w-100 collapse"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
+    <div
+      className="formField"
+    >
+      <div
+        className="card"
+      >
+        <div
+          className="card-header"
+        >
+          Child Object
+        </div>
+        <div
+          className="card-body"
+        >
+          <div
+            className="formGroup form-group"
+          >
+            <div
+              aria-expanded={null}
+              className="mb-2 w-100 collapse"
+            >
+              <div
+                className="annotationPlaceholder"
+              />
+            </div>
+            <label
+              className="label form-label"
+              htmlFor="childObject.InputValue"
+            >
+              InputValue
+            </label>
+            <div
+              className="formField"
+            >
+              <div
+                className="root"
+              >
+                <div
+                  className="field"
+                >
+                  <textarea
+                    className="form-control"
+                    id="childObject.InputValue"
+                    name="childObject.InputValue"
+                    onBlur={[Function]}
+                    onChange={[Function]}
+                    onKeyDown={[Function]}
+                    rows="1"
+                    value=""
+                  />
+                </div>
+                <div
+                  className="dropdown dropdown"
+                  data-test-selected="Text"
+                  data-testid="toggle-childObject.InputValue"
+                >
+                  <button
+                    aria-expanded={false}
+                    aria-haspopup={true}
+                    className="dropdown-toggle btn btn-link"
+                    disabled={false}
+                    onClick={[Function]}
+                    type="button"
+                  >
+                    <span
+                      className="symbol"
+                    >
+                      <test-file-stub
+                        className="root"
+                      />
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <small
+                className="text-muted form-text"
+              >
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "This is a description for the field",
+                    }
+                  }
+                />
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button
+    className="btn btn-primary"
+    disabled={false}
+    type="submit"
+  >
+    Submit
+  </button>
+</form>
 `;
 
 exports[`Storyshots Fields/SchemaField Array Items 1`] = `

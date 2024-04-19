@@ -16,11 +16,8 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import * as contentScriptApi from "@/contentScript/messenger/strict/api";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Formik } from "formik";
 import RunLocalProcess from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
@@ -34,6 +31,7 @@ import { integrationDependencyFactory } from "@/testUtils/factories/integrationF
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
+import { render, screen } from "@/pageEditor/testHelpers";
 
 TEST_setContext("devToolsPage");
 
@@ -86,14 +84,10 @@ function makeBaseState() {
   );
 }
 
-function renderOptions(formState: ModComponentFormState = makeBaseState()) {
+function renderOptions(initialValues: ModComponentFormState = makeBaseState()) {
   return render(
-    <Formik onSubmit={jest.fn()} initialValues={formState}>
-      <LocalProcessOptions
-        name="extension.blockPipeline.0"
-        configKey="config"
-      />
-    </Formik>,
+    <LocalProcessOptions name="extension.blockPipeline.0" configKey="config" />,
+    { initialValues },
   );
 }
 
