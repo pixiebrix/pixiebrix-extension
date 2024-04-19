@@ -47,7 +47,6 @@ const RemoteFileInputArguments: React.FC<{
       heading="Input Arguments"
       name={inputDataFieldName}
       remoteSchemaState={remoteSchemaState}
-      isRequired
     />
   );
 };
