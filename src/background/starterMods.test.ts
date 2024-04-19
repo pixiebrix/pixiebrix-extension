@@ -406,62 +406,91 @@ describe("debouncedActivateStarterMods", () => {
     expect(dependency.configId).toBe(PIXIEBRIX_INTEGRATION_CONFIG_ID);
   });
 
-  test("activate starter mod with required pixiebrix database", async () => {
-    isLinkedMock.mockResolvedValue(true);
-
-    const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
-
-    (modDefinition.metadata as any).name = "Test Mod";
-
-    modDefinition.options = {
-      schema: {
-        properties: {
-          database: {
-            $ref: "https://app.pixiebrix.com/schemas/database#",
-            title: "Test Database",
-            format: "preview",
-          },
-        },
-        required: ["database"],
-      },
-    };
-
-    modDefinition.extensionPoints[0].services = {
-      type: "object",
-      properties: {
-        service: {
-          $ref: `https://app.pixiebrix.com/schemas/services/${PIXIEBRIX_INTEGRATION_ID}`,
-        },
-      },
-      required: ["service"],
-    };
-
-    axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
-
-    axiosMock
-      .onGet("/api/onboarding/starter-blueprints/")
-      .reply(200, [modDefinition]);
-
-    const databaseId = autoUUIDSequence();
-
-    axiosMock.onPost("/api/databases/").reply((args) => {
-      const data = JSON.parse(args.data) as UnknownObject;
-      expect(data).toStrictEqual({ name: "Test Mod - Test Database" });
-
-      return [
-        201,
-        databaseFactory({ id: databaseId, name: data.name as string }),
-      ];
+  describe("databases", () => {
+    beforeEach(() => {
+      isLinkedMock.mockResolvedValue(true);
+      axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
     });
 
-    await debouncedActivateStarterMods();
-    const { extensions: activatedModComponents } = await getModComponentState();
+    function modFactory() {
+      const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
 
-    expect(activatedModComponents).toBeArrayOfSize(1);
+      (modDefinition.metadata as any).name = "Test Mod";
 
-    expect(activatedModComponents[0].optionsArgs).toStrictEqual({
-      // Activated with the ID of the database created
-      database: databaseId,
+      modDefinition.options = {
+        schema: {
+          properties: {
+            database: {
+              $ref: "https://app.pixiebrix.com/schemas/database#",
+              title: "Test Database",
+              format: "preview",
+            },
+          },
+          required: ["database"],
+        },
+      };
+
+      modDefinition.extensionPoints[0].services = {
+        type: "object",
+        properties: {
+          service: {
+            $ref: `https://app.pixiebrix.com/schemas/services/${PIXIEBRIX_INTEGRATION_ID}`,
+          },
+        },
+        required: ["service"],
+      };
+
+      return modDefinition;
+    }
+
+    test("activate starter mod with required pixiebrix database", async () => {
+      const modDefinition = modFactory();
+
+      axiosMock
+        .onGet("/api/onboarding/starter-blueprints/")
+        .reply(200, [modDefinition]);
+
+      const databaseId = autoUUIDSequence();
+
+      axiosMock.onPost("/api/databases/").reply((args) => {
+        const data = JSON.parse(args.data) as UnknownObject;
+        expect(data).toStrictEqual({ name: "Test Mod - Test Database" });
+
+        return [
+          201,
+          databaseFactory({ id: databaseId, name: data.name as string }),
+        ];
+      });
+
+      await debouncedActivateStarterMods();
+      const { extensions: activatedModComponents } =
+        await getModComponentState();
+
+      expect(activatedModComponents).toBeArrayOfSize(1);
+
+      expect(activatedModComponents[0].optionsArgs).toStrictEqual({
+        // Activated with the ID of the database created
+        database: databaseId,
+      });
+    });
+
+    test("optional database is not created", async () => {
+      // Mark DB as optional
+      const modDefinition = modFactory();
+      modDefinition.options.schema.required = [];
+
+      axiosMock
+        .onGet("/api/onboarding/starter-blueprints/")
+        .reply(200, [modDefinition]);
+
+      await debouncedActivateStarterMods();
+      const { extensions: activatedModComponents } =
+        await getModComponentState();
+
+      expect(activatedModComponents).toBeArrayOfSize(1);
+
+      // Database should not be created
+      expect(activatedModComponents[0].optionsArgs).toStrictEqual({});
     });
   });
 });
