@@ -41,13 +41,9 @@ export const isPixiebrixIntegrationField = createTypePredicate(
 );
 
 function isServiceSchemaOrIntegrationDependencyRef(ref?: string): boolean {
-  if (ref !== "string") {
-    return false;
-  }
-
   return (
-    ref.startsWith(SERVICES_BASE_SCHEMA_URL) ||
-    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(ref)
+    ref?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
+    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(ref ?? "")
   );
 }
 
