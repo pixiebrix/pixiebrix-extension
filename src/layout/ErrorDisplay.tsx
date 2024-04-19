@@ -15,12 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
-export const ErrorDisplay: React.VFC<{ error: unknown }> = ({ error }) => (
-  <div>
-    <h2 className="text-danger">An error occurred</h2>
-    <p>{getErrorMessage(error)}</p>
-  </div>
-);
+export const ErrorDisplay: React.VFC<{ error: unknown }> = ({ error }) => {
+  useEffect(() => {
+    reportError(error);
+  }, [error]);
+
+  return (
+    <div>
+      <h2 className="text-danger">An error occurred</h2>
+      <p>{getErrorMessage(error)}</p>
+    </div>
+  );
+};

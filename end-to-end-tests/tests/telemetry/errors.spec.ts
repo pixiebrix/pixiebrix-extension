@@ -13,6 +13,7 @@ test("can report application error to telemetry service", async ({
     async (route) => {
       await route.fulfill({
         status: 200,
+        // Returning a bad response to trigger an error
         body: JSON.stringify([{}]),
       });
     },
@@ -30,6 +31,8 @@ test("can report application error to telemetry service", async ({
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
   await expect(page.getByText("An error occurred")).toBeVisible();
 
+  // The offscreen document is created when the first error is reported,
+  // so we need to wait for it to be created before we can interact with it
   let offscreenPage: Page;
   await expect(async () => {
     offscreenPage = context
@@ -43,12 +46,9 @@ test("can report application error to telemetry service", async ({
     expect(offscreenPage.url()).toBeDefined();
   }).toPass({ timeout: 5000 });
 
-  const requestPromise = offscreenPage.waitForRequest(
+  // TODO: due to the way the Datadog SDK is implemented, it will take ~30 seconds for the
+  //  request to be sent. We should figure out a way to induce the request being sent sooner.
+  await offscreenPage.waitForRequest(
     "https://browser-intake-datadoghq.com/api/v2/*",
   );
-
-  await page.goto(getBaseExtensionConsoleUrl(extensionId));
-  await expect(page.getByText("An error occurred")).toBeVisible();
-
-  await requestPromise;
 });
