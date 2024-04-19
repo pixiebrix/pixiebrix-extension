@@ -110,7 +110,8 @@ function setIntegrationAuthSelectionForField(
     // Unlike when defaulting, we don't need to check against the registry ids from the schema because this method
     // will only be called with an allowed option.
     const match = draft.integrationDependencies.find(
-      ({ integrationId }) => integrationId === authOption.serviceId,
+      ({ integrationId, configId }) =>
+        integrationId === authOption.serviceId && configId === authOption.value,
     );
 
     if (match) {
