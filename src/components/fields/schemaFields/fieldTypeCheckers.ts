@@ -42,8 +42,9 @@ export const isPixiebrixIntegrationField = createTypePredicate(
 
 export const isServiceField = createTypePredicate(
   (x) =>
-    x.$ref?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
-    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(x.$ref),
+    typeof x.$ref === "string" &&
+    (x.$ref.startsWith(SERVICES_BASE_SCHEMA_URL) ||
+      INTEGRATION_DEPENDENCY_FIELD_REFS.includes(x.$ref)),
 );
 
 export const isCssClassField = (fieldDefinition: Schema) =>
@@ -126,8 +127,10 @@ export function isSimpleServiceField(schema: Schema): boolean {
   return (
     schema.$ref?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
     schema.$id?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
-    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(schema.$ref) ||
-    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(schema.$id)
+    (typeof schema.$ref === "string" &&
+      INTEGRATION_DEPENDENCY_FIELD_REFS.includes(schema.$ref)) ||
+    (typeof schema.$id === "string" &&
+      INTEGRATION_DEPENDENCY_FIELD_REFS.includes(schema.$id))
   );
 }
 
