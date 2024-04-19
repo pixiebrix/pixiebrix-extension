@@ -30,7 +30,6 @@ const RemoteFileInputArguments: React.FC<{
   const [{ value: fileId }] = useField<string>(fileIdFieldName);
 
   const remoteSchemaState = useAsyncState(async () => {
-    console.log("fetch schema for file", fileId ?? "NULL");
     if (fileId) {
       return cachedFetchSchema(controlRoomConfig, fileId);
     }
