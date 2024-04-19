@@ -57,7 +57,7 @@
     "@xobotyi/scrollbar-width": "^1.9.5",
     "abort-utils": "^1.2.0",
     "ace-builds": "^1.33.0",
-    "autocompleter": "^9.2.0",
+    "autocompleter": "^9.2.1",
     "axios": "^0.27.2",
     "batched-function": "^2.0.1",
     "bootstrap": "^4.6.0",
