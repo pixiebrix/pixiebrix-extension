@@ -53,7 +53,7 @@ global.chrome = {
     ContextType: {
       OFFSCREEN_DOCUMENT:
         "offscreen_document" as typeof global.chrome.runtime.ContextType.OFFSCREEN_DOCUMENT,
-    },
+    } as typeof global.chrome.runtime.ContextType,
   },
   offscreen: {
     ...global.chrome.offscreen,
