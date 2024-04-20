@@ -44,7 +44,10 @@ import { StorageItem } from "webext-storage";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
 import { readAuthData } from "@/auth/authStorage";
-import { type RecordErrorMessage } from "@/tinyPages/offscreen";
+import {
+  type RecordErrorMessage,
+  setupOffscreenDocument,
+} from "@/tinyPages/offscreen";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -323,37 +326,6 @@ const warnAboutDisabledDNT = once(() => {
 const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
 const THROTTLE_RATE_MS = 60_000; // 1 minute
 let lastAxiosServerErrorTimestamp: number | null = null;
-
-let creating: Promise<void> | null = null;
-async function setupOffscreenDocument(path: string) {
-  const offscreenUrl = chrome.runtime.getURL(path);
-  const existingContexts = await chrome.runtime.getContexts({
-    // @ts-expect-error -- TODO the type seems to be wrong here?
-    contextTypes: ["OFFSCREEN_DOCUMENT"],
-    documentUrls: [offscreenUrl],
-  });
-
-  // @ts-expect-error -- TODO type contradicts the chrome api docs?
-  if (existingContexts.length > 0) {
-    return;
-  }
-
-  if (creating == null) {
-    creating = chrome.offscreen.createDocument({
-      url: "offscreen.html",
-      // Our reason for creating an offscreen document does not fit nicely into options offered by the Chrome API, which
-      // is error telemetry. Other possible options: TESTING or WORKERS. We chose BLOBS because it's the closest to
-      // interaction with error objects?
-      reasons: [chrome.offscreen.Reason.BLOBS],
-      justification:
-        "Error telemetry SDK usage that is incompatible with service workers",
-    });
-    await creating;
-    creating = null;
-  } else {
-    await creating;
-  }
-}
 
 /**
  * Do not use this function directly. Use `reportError` instead: `import reportError from "@/telemetry/reportError"`
