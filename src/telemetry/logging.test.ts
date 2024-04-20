@@ -50,6 +50,10 @@ global.chrome = {
     ...global.chrome.runtime,
     getContexts: jest.fn(async () => []),
     getURL: jest.fn((path) => path),
+    ContextType: {
+      OFFSCREEN_DOCUMENT:
+        "offscreen_document" as typeof global.chrome.runtime.ContextType.OFFSCREEN_DOCUMENT,
+    },
   },
   offscreen: {
     ...global.chrome.offscreen,
