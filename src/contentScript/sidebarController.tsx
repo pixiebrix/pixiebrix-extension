@@ -113,9 +113,13 @@ export function sidebarWasLoaded(): void {
  * - Shows focusCaptureDialog if a user gesture is required
  *
  * @see showSidebar
- * @throws Error if the sidebar ping fails, e.g. it does not respond in time
+ * @see pingSidebar
+ * @throws Error if the sidebar ping fails or does not respond in time
  */
-export const showSidebarInTopFrame = memoizeUntilSettled(async () => {
+// Don't memoizeUntilSettled this method. focusCaptureDialog is memoized which prevents this method from showing
+// the focus dialog from multiple times. By allowing multiple concurrent calls to showSidebarInTopFrame,
+// a subsequent call might succeed, which will then automatically close the focusCaptureDialog (via it's abort signal)
+export async function showSidebarInTopFrame() {
   reportEvent(Events.SIDEBAR_SHOW);
 
   if (isLoadedInIframe()) {
@@ -151,20 +155,18 @@ export const showSidebarInTopFrame = memoizeUntilSettled(async () => {
   } catch (error) {
     throw new Error("The sidebar did not respond in time", { cause: error });
   }
-});
+}
 
 /**
  * Attach the sidebar to the page if it's not already attached. Safe to call from any frame. Resolves when the
  * sidebar is initialized.
+ * @see showSidebarInTopFrame
  */
 export async function showSidebar(): Promise<void> {
-  if (isLoadedInIframe()) {
-    const topLevelFrame = await getTopLevelFrame();
-    await contentScriptApi.showSidebar(topLevelFrame);
-  } else {
-    // Call directly for performance
-    await showSidebarInTopFrame();
-  }
+  // Could consider explicitly calling showSidebarInTopFrame directly if we're already in the top frame.
+  // But the messenger will already handle that case automatically.
+  const topLevelFrame = await getTopLevelFrame();
+  await contentScriptApi.showSidebar(topLevelFrame);
 }
 
 /**
