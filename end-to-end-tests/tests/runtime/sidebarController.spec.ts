@@ -20,9 +20,10 @@ import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
 import { getSidebarPage, isSidebarOpen } from "../../utils";
+import { MV } from "../../env";
 
 test.describe("sidebar controller", () => {
-  test("toggle sidebar brick", async ({ page, extensionId }) => {
+  test("show sidebar uses top-level frame", async ({ page, extensionId }) => {
     const modId = "@pixies/test/frame-sidebar-actions";
 
     const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -46,5 +47,23 @@ test.describe("sidebar controller", () => {
     await expect(() => {
       expect(isSidebarOpen(page, extensionId)).toBe(false);
     }).toPass({ timeout: 5000 });
+
+    // Mod waits 5 seconds before running Show Sidebar brick to for user gesture dialog to show
+    await frame.getByRole("link", { name: "Show Sidebar after Wait" }).click();
+    await page.waitForTimeout(5000);
+
+    // Expect the focus dialog to be visible on the top-level frame
+    if (MV === "3") {
+      // FIXME: why aren't we getting a dialog here when running locally?
+      // Should be on the top-level frame
+      await expect(page.getByRole("button", { name: "OK" })).toBeVisible();
+
+      // Should not be on the frame. Check after checking the top-level frame because it's a positive check for
+      // the dialog being shown.
+      await expect(frame.getByRole("button", { name: "OK" })).not.toBeVisible();
+    }
+
+    // Will error if page/frame not available
+    await getSidebarPage(page, extensionId);
   });
 });
