@@ -52,9 +52,9 @@ export function freshIdentifier(
       .map(Number),
   );
 
-  const sanityCheckLimit = 1000;
+  const justInCaseUpperLimit = 1000;
   // Count up from start number until we find an un-used number
-  for (let i = startNumber; i < sanityCheckLimit; i++) {
+  for (let i = startNumber; i < justInCaseUpperLimit; i++) {
     if (!used.has(i)) {
       if (i === startNumber && !includeFirstNumber) {
         return root;
@@ -65,7 +65,7 @@ export function freshIdentifier(
   }
 
   throw new Error(
-    `Failed to generate a fresh identifier after ${sanityCheckLimit} attempts, something went wrong. Please check your mod definition in the workshop.`,
+    `Failed to generate a fresh identifier after ${justInCaseUpperLimit} attempts, something went wrong. Please check your mod definition in the workshop.`,
   );
 }
 

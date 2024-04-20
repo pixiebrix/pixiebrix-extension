@@ -141,7 +141,11 @@ function setIntegrationAuthSelectionForField(
   });
 
   // Update field value before calling produceExcludeUnusedDependencies, otherwise it will see the stale service var
-  nextState = setIn(nextState, fieldName, makeVariableExpression(outputKey));
+  nextState = setIn(
+    nextState,
+    fieldName,
+    makeVariableExpression(outputKey),
+  ) as IntegrationsFormSlice;
 
   // Perform cleanup of the service dependencies
   nextState = produceExcludeUnusedDependencies(nextState);
