@@ -19,6 +19,12 @@
 import type { MessageContext } from "@/types/loggerTypes";
 import { type TelemetryUser } from "@/telemetry/telemetryHelpers";
 import { type SemVerString } from "@/types/registryTypes";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+
+// Note that only one offscreen document can be active at a time, so it's unlikely that you'll want to create an
+// additional html document for that purpose.
+const OFFSCREEN_DOCUMENT_PATH = "offscreen.html";
+let creatingOffscreenDocument: Promise<void> | null = null;
 
 chrome.runtime.onMessage.addListener(handleMessages);
 
@@ -37,9 +43,9 @@ export type RecordErrorMessage = {
   };
 };
 
-let creating: Promise<void> | null = null;
-export async function setupOffscreenDocument(path: string) {
-  const offscreenUrl = chrome.runtime.getURL(path);
+// Creates an offscreen document at a fixed path, if one does not already exist.
+export async function setupOffscreenDocument() {
+  const offscreenUrl = chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH);
   const existingContexts = await chrome.runtime.getContexts({
     // @ts-expect-error -- TODO the type seems to be wrong here?
     contextTypes: ["OFFSCREEN_DOCUMENT"],
@@ -51,8 +57,10 @@ export async function setupOffscreenDocument(path: string) {
     return;
   }
 
-  if (creating == null) {
-    creating = chrome.offscreen.createDocument({
+  memoizeUntilSettled(async () => {});
+
+  if (creatingOffscreenDocument == null) {
+    creatingOffscreenDocument = chrome.offscreen.createDocument({
       url: "offscreen.html",
       // Our reason for creating an offscreen document does not fit nicely into options offered by the Chrome API, which
       // is error telemetry. Other possible options: TESTING or WORKERS. We chose BLOBS because it's the closest to
@@ -61,10 +69,10 @@ export async function setupOffscreenDocument(path: string) {
       justification:
         "Error telemetry SDK usage that is incompatible with service workers",
     });
-    await creating;
-    creating = null;
+    await creatingOffscreenDocument;
+    creatingOffscreenDocument = null;
   } else {
-    await creating;
+    await creatingOffscreenDocument;
   }
 }
 

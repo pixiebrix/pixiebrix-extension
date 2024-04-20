@@ -377,11 +377,13 @@ export async function reportToApplicationErrorTelemetry(
   // we need to send the error from an offscreen document.
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/8268
   // and offscreen.ts
-  await setupOffscreenDocument("offscreen.html");
+  await setupOffscreenDocument();
 
   const { version_name: versionName } = chrome.runtime.getManifest();
-  const telemetryUser = await mapAppUserToTelemetryUser(await readAuthData());
-  const extraContext = await selectExtraContext(error);
+  const [telemetryUser, extraContext] = await Promise.all([
+    mapAppUserToTelemetryUser(await readAuthData()),
+    selectExtraContext(error),
+  ]);
 
   const recordErrorMessage: RecordErrorMessage = {
     type: "record-error",
