@@ -29,9 +29,7 @@ test("can report application error to telemetry service", async ({
   });
 
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
-  await expect(page.getByText("An error occurred")).toBeVisible({
-    timeout: 10_000,
-  });
+  await expect(page.getByText("An error occurred")).toBeVisible();
 
   // Due to service worker limitations with the Datadog SDK, we need to report errors via an offscreen document
   // (see https://github.com/pixiebrix/pixiebrix-extension/issues/8268). The offscreen document is created when
