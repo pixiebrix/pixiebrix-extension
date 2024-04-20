@@ -19,12 +19,11 @@
 import type { MessageContext } from "@/types/loggerTypes";
 import { type TelemetryUser } from "@/telemetry/telemetryHelpers";
 import { type SemVerString } from "@/types/registryTypes";
-import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 // Note that only one offscreen document can be active at a time, so it's unlikely that you'll want to create an
 // additional html document for that purpose.
 const OFFSCREEN_DOCUMENT_PATH = "offscreen.html";
-let creatingOffscreenDocument: Promise<void> | null = null;
+let createOffscreenDocumentPromise: Promise<void> | null = null;
 
 chrome.runtime.onMessage.addListener(handleMessages);
 
@@ -43,36 +42,34 @@ export type RecordErrorMessage = {
   };
 };
 
-// Creates an offscreen document at a fixed path, if one does not already exist.
+// Creates an offscreen document at a fixed url, if one does not already exist. Note that only one offscreen document
+// can be active at a time per extension, so it's unlikely that you'll want to introduce additional html documents for
+// that purpose.
 export async function setupOffscreenDocument() {
-  const offscreenUrl = chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH);
   const existingContexts = await chrome.runtime.getContexts({
-    // @ts-expect-error -- TODO the type seems to be wrong here?
-    contextTypes: ["OFFSCREEN_DOCUMENT"],
-    documentUrls: [offscreenUrl],
+    contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
+    documentUrls: [chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH)],
   });
 
-  // @ts-expect-error -- TODO type contradicts the chrome api docs?
   if (existingContexts.length > 0) {
     return;
   }
 
-  memoizeUntilSettled(async () => {});
-
-  if (creatingOffscreenDocument == null) {
-    creatingOffscreenDocument = chrome.offscreen.createDocument({
+  if (createOffscreenDocumentPromise == null) {
+    createOffscreenDocumentPromise = chrome.offscreen.createDocument({
       url: "offscreen.html",
       // Our reason for creating an offscreen document does not fit nicely into options offered by the Chrome API, which
-      // is error telemetry. Other possible options: TESTING or WORKERS. We chose BLOBS because it's the closest to
-      // interaction with error objects?
+      // is error telemetry as of 1.8.12 (we use this as a workaround for Datadog SDK service worker limitations).
+      // We chose BLOBS because it's the closest to interaction with error objects.
+      // See https://developer.chrome.com/docs/extensions/reference/api/offscreen#reasons
       reasons: [chrome.offscreen.Reason.BLOBS],
       justification:
         "Error telemetry SDK usage that is incompatible with service workers",
     });
-    await creatingOffscreenDocument;
-    creatingOffscreenDocument = null;
+    await createOffscreenDocumentPromise;
+    createOffscreenDocumentPromise = null;
   } else {
-    await creatingOffscreenDocument;
+    await createOffscreenDocumentPromise;
   }
 }
 
