@@ -373,6 +373,10 @@ export async function reportToApplicationErrorTelemetry(
     return;
   }
 
+  // Due to service worker limitations with the Datadog SDK, which we currently use for Application error telemetry,
+  // we need to send the error from an offscreen document.
+  // See https://github.com/pixiebrix/pixiebrix-extension/issues/8268
+  // and offscreen.ts
   await setupOffscreenDocument("offscreen.html");
 
   const { version_name: versionName } = chrome.runtime.getManifest();

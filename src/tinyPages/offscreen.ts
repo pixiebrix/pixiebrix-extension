@@ -89,7 +89,6 @@ async function handleMessages(message: unknown) {
   const { error, errorMessage, errorReporterInitInfo, messageContext } =
     message.data;
 
-  // TODO: remove this comment?
   // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
   // to determine log level also handle serialized/deserialized errors.
   // See https://github.com/sindresorhus/serialize-error/issues/48
@@ -112,6 +111,4 @@ async function handleMessages(message: unknown) {
     error,
     messageContext,
   });
-
-  console.log("*** error report success?");
 }

@@ -31,9 +31,9 @@ test("can report application error to telemetry service", async ({
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
   await expect(page.getByText("An error occurred")).toBeVisible();
 
-  // Due to limitations with the Datadog SDK, we need to report errors via an offscreen document.
-  // The offscreen document is created when the first error is reported,
-  // so we need to wait for it to be created before we can interact with it
+  // Due to service worker limitations with the Datadog SDK, we need to report errors via an offscreen document
+  // (see https://github.com/pixiebrix/pixiebrix-extension/issues/8268). The offscreen document is created when
+  // the first error is reported, so we need to wait for it to be created before we can interact with it.
   let offscreenPage: Page;
   await expect(async () => {
     offscreenPage = context
@@ -48,7 +48,7 @@ test("can report application error to telemetry service", async ({
   }).toPass({ timeout: 5000 });
 
   // TODO: due to Datadog SDK implementation, it will take ~30 seconds for the
-  //  request to be sent. We should figure out a way to induce the request being sent sooner.
+  //  request to be sent. We should figure out a way to induce the request to be sent sooner.
   const request = await offscreenPage.waitForRequest(errorServiceEndpoint);
 
   expect(request.postDataJSON()).toMatchObject({
