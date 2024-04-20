@@ -65,7 +65,7 @@ export function freshIdentifier(
   }
 
   throw new Error(
-    `Failed to generate a fresh identifier after ${justInCaseUpperLimit} attempts, something went wrong. Please check your mod definition in the workshop.`,
+    `Failed to generate a fresh identifier after ${justInCaseUpperLimit} attempts, something went wrong`,
   );
 }
 
