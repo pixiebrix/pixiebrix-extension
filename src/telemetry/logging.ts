@@ -392,7 +392,8 @@ export async function reportToApplicationErrorTelemetry(
       error,
       errorMessage,
       errorReporterInitInfo: {
-        versionName,
+        // It should never happen that versionName is undefined, but handle undefined just in case
+        versionName: versionName ?? "",
         telemetryUser,
       },
       messageContext: {
