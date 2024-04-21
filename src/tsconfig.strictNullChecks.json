@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./components/addBlockModal/TagSearchInput.tsx",
     "./bricks/transformers/temporaryInfo/useTemporaryPanelDefinition.ts",
     "./testUtils/factories/integrationFactories.ts",
     "./extensionConsole/pages/settings/LoggingSettings.tsx",
