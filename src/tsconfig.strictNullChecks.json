@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./background/browserAction.ts",
     "./sidebar/FormBody.tsx",
     "./extensionConsole/pages/InvitationBanner.tsx",
     "./components/floatingActions/FloatingActions.tsx",
