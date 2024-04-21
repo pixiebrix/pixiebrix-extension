@@ -365,6 +365,11 @@ export class GoogleSheetsAppend extends EffectABC {
       typeof spreadsheetIdArg === "string"
         ? spreadsheetIdArg
         : spreadsheetIdArg.config.spreadsheetId;
+
+    if (!spreadsheetId) {
+      throw new BusinessError("Spreadsheet ID is required");
+    }
+
     const target: SpreadsheetTarget = {
       googleAccount,
       spreadsheetId,

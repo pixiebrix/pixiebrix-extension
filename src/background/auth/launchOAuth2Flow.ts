@@ -50,7 +50,7 @@ async function launchOAuth2Flow(
   );
 
   if (!oauth2) {
-    throw new BusinessError("OAuth2 context is required for oauth2");
+    throw new Error("OAuth2 context is required for oauth2");
   }
 
   const {

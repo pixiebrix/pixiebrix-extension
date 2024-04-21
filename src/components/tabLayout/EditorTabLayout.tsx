@@ -45,7 +45,7 @@ const EditorTabLayout: React.FC<{
   actionButtons?: ActionButton[];
   defaultTabName?: string;
 }> = ({ tabs, actionButtons = emptyArray, defaultTabName }) => {
-  const [activeTabName, setActiveTabName] = useState(
+  const [activeTabName, setActiveTabName] = useState<string | undefined>(
     defaultTabName ?? tabs[0]?.name,
   );
 
