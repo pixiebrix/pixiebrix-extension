@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/transformers/temporaryInfo/useTemporaryPanelDefinition.ts",
     "./testUtils/factories/integrationFactories.ts",
     "./extensionConsole/pages/settings/LoggingSettings.tsx",
     "./extensionConsole/pages/settings/GeneralSettings.tsx",
