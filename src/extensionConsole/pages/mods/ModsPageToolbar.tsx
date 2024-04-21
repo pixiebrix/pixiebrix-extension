@@ -104,8 +104,7 @@ const ModsPageToolbar: React.FunctionComponent<{
             placeholder="Group by"
             options={groupByOptions}
             onChange={(option, { action }) => {
-              const value =
-                action === "clear" || !option?.value ? [] : [option.value];
+              const value = option ? [option.value] : [];
               setGroupBy(value);
             }}
             value={groupByOptions.find((opt) => opt.value === groupBy[0])}
