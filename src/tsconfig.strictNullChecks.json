@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionConsole/pages/InvitationBanner.tsx",
     "./components/floatingActions/FloatingActions.tsx",
     "./components/addBlockModal/useBlockSearch.ts",
     "./components/addBlockModal/TagSearchInput.tsx",
