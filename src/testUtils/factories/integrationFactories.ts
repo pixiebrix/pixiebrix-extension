@@ -38,8 +38,11 @@ export const sanitizedIntegrationConfigFactory =
     id: uuidSequence,
     proxy: false,
     serviceId: (n: number) => validateRegistryId(`test/integration-${n}`),
-    config: () => ({ _sanitizedConfigBrand: null }) as SanitizedConfig,
-  } as unknown as SanitizedIntegrationConfig);
+    config: () =>
+      ({ _sanitizedConfigBrand: undefined as never }) as SanitizedConfig,
+    label: "",
+    _sanitizedIntegrationConfigBrand: undefined as never,
+  });
 
 export const secretsConfigFactory = define<SecretsConfig>({} as SecretsConfig);
 
@@ -49,7 +52,7 @@ export const integrationConfigFactory = define<IntegrationConfig>({
   label: (n: number) => `Integration ${n}`,
   config: secretsConfigFactory,
   // Nominal brand without casting
-  _rawIntegrationConfigBrand: undefined,
+  _rawIntegrationConfigBrand: undefined as never,
 });
 
 export const remoteIntegrationServiceFactory = define<
@@ -70,7 +73,7 @@ export const remoteIntegrationServiceFactory = define<
 export const remoteIntegrationConfigurationFactory =
   define<RemoteIntegrationConfig>({
     id: uuidSequence,
-    organization: null,
+    organization: null as unknown as RemoteIntegrationConfig["organization"],
     label: (n: number) => `Configuration ${n}`,
     config: () =>
       ({

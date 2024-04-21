@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./testUtils/factories/integrationFactories.ts",
     "./extensionConsole/pages/settings/LoggingSettings.tsx",
     "./extensionConsole/pages/settings/GeneralSettings.tsx",
     "./extensionConsole/pages/settings/ExperimentalSettings.tsx",

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Config, define } from "cooky-cutter";
+import { define } from "cooky-cutter";
 import { type Sharing } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type EditablePackageMetadata } from "@/types/contract";
@@ -38,6 +38,5 @@ export const editablePackageMetadataFactory = define<EditablePackageMetadata>({
   kind: "Blueprint",
   updated_at: timestampFactory(),
   sharing: sharingDefinitionFactory,
-  _editableBrickBrand: undefined,
-  // Cast as unknown to avoid type error for _editableBrickBrand
-} as unknown as Config<EditablePackageMetadata>);
+  _editableBrickBrand: undefined as never,
+});
