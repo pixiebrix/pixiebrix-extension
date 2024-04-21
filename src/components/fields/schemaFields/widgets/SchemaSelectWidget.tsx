@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import Select, { type Options } from "react-select";
+import Select, { type SelectInstance, type Options } from "react-select";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty, uniq } from "lodash";
 import { useField } from "formik";
@@ -38,14 +38,14 @@ export type StringOptionsType = Options<StringOption>;
 const SchemaSelectWidget: React.VFC<
   SchemaFieldProps & { placeholder?: string }
 > = ({ name, schema, isRequired, focusInput, placeholder, uiSchema }) => {
-  const [created, setCreated] = useState([]);
+  const [created, setCreated] = useState<string[]>([]);
   const [{ value: fieldValue }, , { setValue }] = useField(name);
 
   // Defaulting to true for these options
   const { isSearchable = true, isClearable = true } =
     uiSchema?.options?.props ?? {};
 
-  const elementRef = useRef();
+  const elementRef = useRef<SelectInstance>(null);
   useAutoFocusConfiguration({ elementRef, focus: focusInput });
 
   // Need to handle expressions because this field could be toggled to "var"

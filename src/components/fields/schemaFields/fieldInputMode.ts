@@ -37,7 +37,8 @@ export type FieldInputMode =
   | "array"
   | "object"
   | "select"
-  | "omit"; // An input option to remove a property
+  | "omit" // An input option to remove a property
+  | undefined;
 
 const DEFAULT_OPTIONS = {
   safeDefault: true,
@@ -90,7 +91,7 @@ export function inferInputMode(
           }),
         ),
     );
-    if (!isEmpty(inputModes)) {
+    if (inputModes[0] != null) {
       return inputModes[0];
     }
   }

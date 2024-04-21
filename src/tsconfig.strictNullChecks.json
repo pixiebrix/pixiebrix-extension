@@ -4,6 +4,8 @@
     "strictNullChecks": true
   },
   "files": [
+    "./components/fields/schemaFields/selectFieldUtils.ts",
+    "./components/fields/schemaFields/widgets/SchemaSelectWidget.tsx",
     "./extensionConsole/pages/mods/ModsPageToolbar.tsx",
     "./components/tabLayout/EditorTabLayout.tsx",
     "./mods/hooks/useDeleteExtensionAction.ts",
