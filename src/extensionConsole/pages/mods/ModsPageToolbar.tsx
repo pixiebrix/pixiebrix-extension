@@ -123,9 +123,7 @@ const ModsPageToolbar: React.FunctionComponent<{
             options={sortByOptions}
             onChange={(option, { action }) => {
               const value =
-                action === "clear" || !option?.value
-                  ? []
-                  : [{ id: option.value, desc: false }];
+                option ? [{ id: option.value, desc: false }] : [];
               setSortBy(value);
             }}
             value={sortByOptions.find((opt) => opt.value === sortBy[0]?.id)}
