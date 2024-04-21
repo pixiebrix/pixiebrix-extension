@@ -30,7 +30,7 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 221 strictNullCheck errors
+} from "@/contentScript/lifecycle"; // 219 strictNullCheck errors
 import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 255 strictNullCheck errors
 import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 261 strictNullCheck errors
 import {
