@@ -122,8 +122,7 @@ const ModsPageToolbar: React.FunctionComponent<{
             placeholder="Sort by"
             options={sortByOptions}
             onChange={(option, { action }) => {
-              const value =
-                option ? [{ id: option.value, desc: false }] : [];
+              const value = option ? [{ id: option.value, desc: false }] : [];
               setSortBy(value);
             }}
             value={sortByOptions.find((opt) => opt.value === sortBy[0]?.id)}
@@ -141,7 +140,7 @@ const ModsPageToolbar: React.FunctionComponent<{
               size="sm"
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- this button doesn't appear unless isSorted is true, which means sortBy is non-empty
-                const { id, desc } = sortBy[0]!
+                const { id, desc } = sortBy[0]!;
                 setSortBy([{ id, desc: !desc }]);
               }}
             >
