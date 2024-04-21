@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/effects/AddQuickBarAction.tsx",
     "./background/browserAction.ts",
     "./sidebar/FormBody.tsx",
     "./extensionConsole/pages/InvitationBanner.tsx",

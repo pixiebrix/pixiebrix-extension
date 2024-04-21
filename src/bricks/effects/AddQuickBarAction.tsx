@@ -142,7 +142,7 @@ class AddQuickBarAction extends EffectABC {
     const { quickBar } = platform;
 
     // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the Quick Bar
-    if (abortSignal.aborted) {
+    if (abortSignal?.aborted) {
       return;
     }
 
