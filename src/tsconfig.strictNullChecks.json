@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/transformers/controlFlow/Retry.ts",
     "./bricks/effects/AddQuickBarAction.tsx",
     "./background/browserAction.ts",
     "./sidebar/FormBody.tsx",
