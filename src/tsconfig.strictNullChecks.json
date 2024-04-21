@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./components/floatingActions/FloatingActions.tsx",
     "./components/addBlockModal/useBlockSearch.ts",
     "./components/addBlockModal/TagSearchInput.tsx",
     "./bricks/transformers/temporaryInfo/useTemporaryPanelDefinition.ts",
