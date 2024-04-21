@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionConsole/pages/settings/LoggingSettings.tsx",
     "./extensionConsole/pages/settings/GeneralSettings.tsx",
     "./extensionConsole/pages/settings/ExperimentalSettings.tsx",
     "./extensionConsole/pages/brickEditor/useLogContext.ts",
