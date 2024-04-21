@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/tabs/logs/useLogsBadgeState.ts",
     "./pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent.tsx",
     "./hooks/useInterval.ts",
     "./components/fields/schemaFields/selectFieldUtils.ts",
