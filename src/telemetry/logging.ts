@@ -374,7 +374,8 @@ export async function reportToApplicationErrorTelemetry(
     return;
   }
 
-  const { version_name: versionName } = chrome.runtime.getManifest();
+  const { version_name: versionName, manifest_version: manifestVersion } =
+    chrome.runtime.getManifest();
   const [telemetryUser, extraContext] = await Promise.all([
     mapAppUserToTelemetryUser(await readAuthData()),
     selectExtraContext(error),
@@ -392,8 +393,6 @@ export async function reportToApplicationErrorTelemetry(
       ...extraContext,
     },
   };
-
-  const { manifest_version: manifestVersion } = chrome.runtime.getManifest();
 
   if (manifestVersion === 3) {
     // Due to service worker limitations with the Datadog SDK, which we currently use for Application error telemetry,
