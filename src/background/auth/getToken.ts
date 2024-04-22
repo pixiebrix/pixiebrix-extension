@@ -45,8 +45,13 @@ async function _getToken(
     throw new Error(`Service ${service.id} does not use token authentication`);
   }
 
-  const { url, data: tokenData } = service.getTokenContext(auth.config);
+  const context = service.getTokenContext(auth.config);
 
+  if (context == null) {
+    throw new Error("Service did not return a token context");
+  }
+
+  const { url, data: tokenData } = context;
   const {
     status,
     statusText,

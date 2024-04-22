@@ -4,6 +4,8 @@
     "strictNullChecks": true
   },
   "files": [
+    "./background/refreshToken.ts",
+    "./background/auth/getToken.ts",
     "./bricks/transformers/controlFlow/Retry.ts",
     "./bricks/effects/AddQuickBarAction.tsx",
     "./background/browserAction.ts",
