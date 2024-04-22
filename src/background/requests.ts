@@ -76,13 +76,7 @@ type SanitizedResponse<T = unknown> = Pick<
 
 const UNAUTHORIZED_STATUS_CODES = new Set([401, 403]);
 
-function sanitizeResponse<T>(
-  response: AxiosResponse<T> | null,
-): SanitizedResponse<T> | null {
-  if (response == null) {
-    return null;
-  }
-
+function sanitizeResponse<T>(response: AxiosResponse<T>): SanitizedResponse<T> {
   const { data, status, statusText } = response;
   return ensureJsonObject({ data, status, statusText }) as SanitizedResponse<T>;
 }
@@ -124,9 +118,7 @@ async function serializableAxiosRequest<T>(
   // Axios does not perform validation, so call before axios
   assertProtocolUrl(config.url, ["https:", "http:"]);
 
-  const response = await axios(config);
-
-  return sanitizeResponse(response);
+  return sanitizeResponse(await axios(config));
 }
 
 /**

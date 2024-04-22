@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./background/requests.ts",
     "./background/refreshToken.ts",
     "./background/auth/getToken.ts",
     "./bricks/transformers/controlFlow/Retry.ts",
