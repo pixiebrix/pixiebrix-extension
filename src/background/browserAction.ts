@@ -29,7 +29,7 @@ import { messenger } from "webext-messenger";
  * other pages.
  * @param tabUrl the url of the tab, or undefined if not accessible
  */
-function getPopoverUrl(tabUrl: string | undefined): string | null {
+function getPopoverUrl(tabUrl: string | undefined): string | undefined {
   const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
   const reason = getReasonByUrl(tabUrl ?? "");
 
@@ -39,7 +39,7 @@ function getPopoverUrl(tabUrl: string | undefined): string | null {
 
   // The popup is disabled, and the extension will receive browserAction.onClicked events.
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
-  return null;
+  return undefined;
 }
 
 export default async function initBrowserAction(): Promise<void> {
@@ -71,12 +71,14 @@ export default async function initBrowserAction(): Promise<void> {
     - https://github.com/pixiebrix/pixiebrix-extension/pull/7429
     - https://github.com/w3c/webextensions/issues/521
     */
-    await openSidePanel(tab.id);
-    await messenger(
-      "SIDEBAR_CLOSE",
-      { isNotification: true, retry: false },
-      getSidebarTarget(tab.id),
-    );
+    if (tab.id) {
+      await openSidePanel(tab.id);
+      await messenger(
+        "SIDEBAR_CLOSE",
+        { isNotification: true, retry: false },
+        getSidebarTarget(tab.id),
+      );
+    }
   });
 }
 
@@ -113,7 +115,7 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
   // The URL might not be available in certain circumstances. This silences these
   // cases and just treats them as "not allowed on this page"
   const url = String(tab.url);
-  await toggleSidebar(tab.id, url);
+  if (tab.id) await toggleSidebar(tab.id, url);
 }
 
 function initBrowserActionMv2(): void {

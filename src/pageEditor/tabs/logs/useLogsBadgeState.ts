@@ -36,7 +36,7 @@ function useLogsBadgeState(): [number, Variant] | [undefined, undefined] {
   for (const [level, variant] of [
     ["error", "danger"],
     ["warning", "warning"],
-  ]) {
+  ] as [[string, string], [string, string]]) {
     // eslint-disable-next-line security/detect-object-injection -- constant levels above
     const unreadCount: number = unreadByLevels[level]?.length ?? 0;
     if (unreadCount > 0) {

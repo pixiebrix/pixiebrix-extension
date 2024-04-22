@@ -80,7 +80,7 @@ const LoggingSettings: React.FunctionComponent = () => {
           <SettingToggle
             controlId="messenger-logging"
             label="Display messaging in browser console"
-            isEnabled={logMessenger}
+            isEnabled={logMessenger ?? false}
             onChange={setLogMessenger}
           />
         </Form>
