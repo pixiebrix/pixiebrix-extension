@@ -23,8 +23,8 @@ import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSaniti
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
 
 type ConfigProps = {
-  integrationsSchema: Schema;
-  integrationsFieldName: string;
+  integrationFieldSchema: Schema;
+  integrationFieldName: string;
   children: (childProps: {
     sanitizedConfig: SanitizedIntegrationConfig;
   }) => React.ReactElement;
@@ -34,25 +34,29 @@ type ConfigProps = {
  * Gate component that presents an integration dependency field, and then gates the child components
  * on the user selecting an authentication option for the integration, in the formik context.
  *
- * @param integrationsSchema The schema for the integration dependency field
- * @param integrationsFieldName The formik field path of the integration dependency field
+ * @param integrationFieldSchema The schema for the integration dependency field
+ * @param integrationFieldName The formik field path of the integration dependency field
  * @param children A function that takes the sanitized integration config and returns the child components
  */
 const RequireIntegrationConfig: React.FC<ConfigProps> = ({
-  integrationsSchema,
-  integrationsFieldName,
+  integrationFieldSchema,
+  integrationFieldName,
   children,
 }) => {
-  const integrationIds = extractIntegrationIdsFromSchema(integrationsSchema);
-  const { data: sanitizedConfig } =
-    useSanitizedIntegrationConfigFormikAdapter(integrationIds);
+  const integrationIds = extractIntegrationIdsFromSchema(
+    integrationFieldSchema,
+  );
+  const { data: sanitizedConfig } = useSanitizedIntegrationConfigFormikAdapter(
+    integrationIds,
+    integrationFieldName,
+  );
 
   return (
     <>
       <IntegrationDependencyField
         label="Integration"
-        name={integrationsFieldName}
-        schema={integrationsSchema}
+        name={integrationFieldName}
+        schema={integrationFieldSchema}
       />
       {sanitizedConfig && children({ sanitizedConfig })}
     </>

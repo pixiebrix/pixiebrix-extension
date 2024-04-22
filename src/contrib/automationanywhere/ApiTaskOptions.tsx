@@ -124,10 +124,10 @@ const ApiTaskOptions: React.FC<BlockOptionProps> = ({ name, configKey }) => {
   const configName = partial(joinName, name, configKey);
   return (
     <RequireIntegrationConfig
-      integrationsSchema={
+      integrationFieldSchema={
         RUN_API_TASK_INPUT_SCHEMA.properties.integrationConfig as Schema
       }
-      integrationsFieldName={configName("integrationConfig")}
+      integrationFieldName={configName("integrationConfig")}
     >
       {({ sanitizedConfig }) => (
         <ApiTaskOptionsContent

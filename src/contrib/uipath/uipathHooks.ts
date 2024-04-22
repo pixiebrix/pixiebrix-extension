@@ -53,11 +53,16 @@ async function fetchReleases(
   }));
 }
 
-export function useSelectedRelease(releaseKeyFieldName: string) {
+export function useSelectedRelease(
+  releaseKeyFieldName: string,
+  integrationFieldName: string,
+) {
   const [{ value: releaseKey }] = useField<string>(releaseKeyFieldName);
 
-  const { data: sanitizedConfig } =
-    useSanitizedIntegrationConfigFormikAdapter(UIPATH_SERVICE_IDS);
+  const { data: sanitizedConfig } = useSanitizedIntegrationConfigFormikAdapter(
+    UIPATH_SERVICE_IDS,
+    integrationFieldName,
+  );
 
   const releasesPromise = useMemo(
     async () =>
