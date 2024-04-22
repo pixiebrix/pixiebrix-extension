@@ -85,13 +85,10 @@ function isRecordErrorMessage(message: unknown): message is RecordErrorMessage {
   );
 }
 
-async function handleMessages(message: unknown) {
-  if (!isRecordErrorMessage(message)) {
-    return;
-  }
-
-  const { error, errorMessage, errorReporterInitInfo, messageContext } =
-    message.data;
+export const sendErrorViaErrorReporter = async (
+  data: RecordErrorMessage["data"],
+) => {
+  const { error, errorMessage, errorReporterInitInfo, messageContext } = data;
 
   // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
   // to determine log level also handle serialized/deserialized errors.
@@ -115,4 +112,12 @@ async function handleMessages(message: unknown) {
     error,
     messageContext,
   });
+};
+
+async function handleMessages(message: unknown) {
+  if (!isRecordErrorMessage(message)) {
+    return;
+  }
+
+  await sendErrorViaErrorReporter(message.data);
 }

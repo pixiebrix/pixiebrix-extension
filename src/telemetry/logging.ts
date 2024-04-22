@@ -46,6 +46,7 @@ import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
 import { readAuthData } from "@/auth/authStorage";
 import {
   type RecordErrorMessage,
+  sendErrorViaErrorReporter,
   setupOffscreenDocument,
 } from "@/tinyPages/offscreen";
 
@@ -373,37 +374,45 @@ export async function reportToApplicationErrorTelemetry(
     return;
   }
 
-  // Due to service worker limitations with the Datadog SDK, which we currently use for Application error telemetry,
-  // we need to send the error from an offscreen document.
-  // See https://github.com/pixiebrix/pixiebrix-extension/issues/8268
-  // and offscreen.ts
-  await setupOffscreenDocument();
-
   const { version_name: versionName } = chrome.runtime.getManifest();
   const [telemetryUser, extraContext] = await Promise.all([
     mapAppUserToTelemetryUser(await readAuthData()),
     selectExtraContext(error),
   ]);
-
-  const recordErrorMessage: RecordErrorMessage = {
-    type: "record-error",
-    target: "offscreen-doc",
-    data: {
-      error,
-      errorMessage,
-      errorReporterInitInfo: {
-        // It should never happen that versionName is undefined, but handle undefined just in case
-        versionName: versionName ?? "",
-        telemetryUser,
-      },
-      messageContext: {
-        ...flatContext,
-        ...extraContext,
-      },
+  const errorData: RecordErrorMessage["data"] = {
+    error,
+    errorMessage,
+    errorReporterInitInfo: {
+      // It should never happen that versionName is undefined, but handle undefined just in case
+      versionName: versionName ?? "",
+      telemetryUser,
+    },
+    messageContext: {
+      ...flatContext,
+      ...extraContext,
     },
   };
 
-  await chrome.runtime.sendMessage(recordErrorMessage);
+  const { manifest_version: manifestVersion } = chrome.runtime.getManifest();
+
+  if (manifestVersion === 3) {
+    // Due to service worker limitations with the Datadog SDK, which we currently use for Application error telemetry,
+    // we need to send the error from an offscreen document.
+    // See https://github.com/pixiebrix/pixiebrix-extension/issues/8268
+    // and offscreen.ts
+    await setupOffscreenDocument();
+
+    const recordErrorMessage: RecordErrorMessage = {
+      type: "record-error",
+      target: "offscreen-doc",
+      data: errorData,
+    };
+
+    await chrome.runtime.sendMessage(recordErrorMessage);
+    return;
+  }
+
+  await sendErrorViaErrorReporter(errorData);
 }
 
 /** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */
