@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./contentScript/pageEditor/elementPicker.ts",
     "./background/requests.ts",
     "./background/refreshToken.ts",
     "./background/auth/getToken.ts",
