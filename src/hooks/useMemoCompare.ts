@@ -50,9 +50,7 @@ function useMemoCompare<T>(
   let isDependenciesEqual: boolean;
   if (dependencies === undefined && previousDependencies === undefined) {
     isDependenciesEqual = true;
-  }
-
-  if (dependencies === undefined || previousDependencies === undefined) {
+  } else if (dependencies === undefined || previousDependencies === undefined) {
     isDependenciesEqual = false;
   } else {
     isDependenciesEqual = deepEquals(previousDependencies, dependencies);
