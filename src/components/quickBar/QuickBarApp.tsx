@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { KeyboardEventHandler, useEffect } from "react";
+import React, { type KeyboardEventHandler, useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
   KBarAnimator,
