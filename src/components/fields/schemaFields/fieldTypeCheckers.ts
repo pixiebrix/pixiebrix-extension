@@ -40,10 +40,19 @@ export const isPixiebrixIntegrationField = createTypePredicate(
   (schema) => schema.$ref === PIXIEBRIX_INTEGRATION_REF_URL,
 );
 
-export const isServiceField = createTypePredicate(
-  (x) =>
-    x.$ref?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
-    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(x.$ref),
+function isIntegrationRef(ref?: string): boolean {
+  if (!ref) {
+    return false;
+  }
+
+  return (
+    ref.startsWith(SERVICES_BASE_SCHEMA_URL) ||
+    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(ref)
+  );
+}
+
+export const isIntegrationDependencyField = createTypePredicate((x) =>
+  isIntegrationRef(x.$ref),
 );
 
 export const isCssClassField = (fieldDefinition: Schema) =>
@@ -123,12 +132,7 @@ export function isGoogleSheetIdField(schema: Schema): boolean {
  * Check if a schema matches a service field without checking anyOf/oneOf/allOf
  */
 export function isSimpleServiceField(schema: Schema): boolean {
-  return (
-    schema.$ref?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
-    schema.$id?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
-    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(schema.$ref) ||
-    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(schema.$id)
-  );
+  return isIntegrationRef(schema.$ref) || isIntegrationRef(schema.$id);
 }
 
 export function isIntegrationDependencyValueFormat(

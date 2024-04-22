@@ -21,7 +21,7 @@ import { getLabel, isModDefinition } from "@/utils/modUtils";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 
-function useViewLogsAction(modViewItem: ModViewItem): () => void | null {
+function useViewLogsAction(modViewItem: ModViewItem): (() => void) | null {
   const dispatch = useDispatch();
   const { mod, status } = modViewItem;
 

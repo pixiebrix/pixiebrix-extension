@@ -104,7 +104,7 @@ const ModsPageToolbar: React.FunctionComponent<{
             placeholder="Group by"
             options={groupByOptions}
             onChange={(option, { action }) => {
-              const value = action === "clear" ? [] : [option.value];
+              const value = option ? [option.value] : [];
               setGroupBy(value);
             }}
             value={groupByOptions.find((opt) => opt.value === groupBy[0])}
@@ -122,8 +122,7 @@ const ModsPageToolbar: React.FunctionComponent<{
             placeholder="Sort by"
             options={sortByOptions}
             onChange={(option, { action }) => {
-              const value =
-                action === "clear" ? [] : [{ id: option.value, desc: false }];
+              const value = option ? [{ id: option.value, desc: false }] : [];
               setSortBy(value);
             }}
             value={sortByOptions.find((opt) => opt.value === sortBy[0]?.id)}
@@ -140,12 +139,13 @@ const ModsPageToolbar: React.FunctionComponent<{
               variant="link"
               size="sm"
               onClick={() => {
-                const value = [{ id: sortBy[0].id, desc: !sortBy[0].desc }];
-                setSortBy(value);
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- this button doesn't appear unless isSorted is true, which means sortBy is non-empty
+                const { id, desc } = sortBy[0]!;
+                setSortBy([{ id, desc: !desc }]);
               }}
             >
               <FontAwesomeIcon
-                icon={sortBy[0].desc ? faSortAmountUpAlt : faSortAmountDownAlt}
+                icon={sortBy[0]?.desc ? faSortAmountUpAlt : faSortAmountDownAlt}
                 size="lg"
               />
             </Button>

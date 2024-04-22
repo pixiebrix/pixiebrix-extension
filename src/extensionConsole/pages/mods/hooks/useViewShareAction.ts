@@ -23,7 +23,7 @@ import {
   type ShareContext,
 } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 
-function useViewShareAction(modViewItem: ModViewItem): () => void | null {
+function useViewShareAction(modViewItem: ModViewItem): (() => void) | null {
   const { mod, unavailable, sharing } = modViewItem;
   const dispatch = useDispatch();
   const isDeployment = sharing.source.type === "Deployment";

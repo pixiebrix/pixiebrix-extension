@@ -365,6 +365,16 @@ export class GoogleSheetsAppend extends EffectABC {
       typeof spreadsheetIdArg === "string"
         ? spreadsheetIdArg
         : spreadsheetIdArg.config.spreadsheetId;
+
+    if (spreadsheetId == null) {
+      throw new PropError(
+        "A Spreadsheet ID is required.",
+        GOOGLE_SHEETS_APPEND_ID,
+        "spreadsheetId",
+        spreadsheetId,
+      );
+    }
+
     const target: SpreadsheetTarget = {
       googleAccount,
       spreadsheetId,
@@ -376,14 +386,14 @@ export class GoogleSheetsAppend extends EffectABC {
     );
 
     const spreadsheet = await sheets.getSpreadsheet(target);
-    const sheet = spreadsheet.sheets.find(
-      (sheet) => sheet.properties.title === tabName,
+    const sheet = spreadsheet.sheets?.find(
+      (sheet) => sheet.properties?.title === tabName,
     );
 
     if (!sheet) {
       logger.info(`Creating tab ${tabName}`);
       await sheets.createTab(target);
-    } else if (requireSheetIsVisible && sheet.properties.hidden) {
+    } else if (requireSheetIsVisible && sheet.properties?.hidden) {
       throw new BusinessError(
         `Sheet ${tabName} is hidden. Please unhide the sheet or disable the "Require Visible Sheet" brick config option.`,
       );

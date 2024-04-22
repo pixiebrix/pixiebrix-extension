@@ -28,7 +28,7 @@ import {
   ensureContextMenu,
   preloadContextMenus,
   uninstallContextMenu,
-} from "@/background/contextMenus"; // 300 strictNullCheck errors
+} from "@/background/contextMenus"; // 220 strictNullCheck errors
 import {
   requestRunInAllFrames,
   requestRunInOtherTabs,
@@ -36,23 +36,22 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor"; // Depends on contentScript/messenger to pass strictNullCheck
-import { performConfiguredRequest } from "@/background/requests"; // 24 strictNullCheck errors
-import { getAvailableVersion } from "@/background/installer"; // 300 strictNullCheck errors
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 strictNullCheck errors
-import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 300 strictNullCheck errors
+import { performConfiguredRequest } from "@/background/requests"; // 7 strictNullCheck errors
+import { getAvailableVersion } from "@/background/installer"; // 203 strictNullCheck errors
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 220 strictNullCheck errors
+import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 226 strictNullCheck errors
 import {
   collectPerformanceDiagnostics,
   initTelemetry,
   pong,
   recordEvent,
   sendDeploymentAlert,
-} from "@/background/telemetry"; // 280 strictNullCheck errors
+} from "@/background/telemetry"; // 199 strictNullCheck errors
 import {
   getPartnerPrincipals,
   launchAuthIntegration,
-} from "@/background/partnerIntegrations"; // 39 strictNullCheck errors
+} from "@/background/partnerIntegrations"; // 24 strictNullCheck errors
 import { setCopilotProcessData } from "@/background/partnerHandlers"; // 29 strictNullCheck errors
-import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow"; // 9 strictNullCheck errors
 
 expectContext("background");
 
@@ -62,8 +61,6 @@ declare global {
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
-
-    LAUNCH_INTERACTIVE_OAUTH_FLOW: typeof launchInteractiveOAuth2Flow;
 
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
     LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
@@ -102,8 +99,6 @@ export default function registerMessenger(): void {
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
     ENSURE_CONTEXT_MENU: ensureContextMenu,
-
-    LAUNCH_INTERACTIVE_OAUTH_FLOW: launchInteractiveOAuth2Flow,
 
     PING: pong,
     COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,

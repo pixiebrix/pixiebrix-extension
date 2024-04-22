@@ -32,7 +32,6 @@
  * This file is only for methods that are common but not yet fully ready to be strictNullChecked.
  */
 
-import { type JsonObject } from "type-fest";
 import { type Event } from "@/telemetry/events";
 
 declare global {
@@ -41,7 +40,7 @@ declare global {
     // NOTE: Changes to those functions must be reflected here.
     RECORD_EVENT: (event: {
       event: Event;
-      data: JsonObject | undefined;
+      data: UnknownObject | undefined;
     }) => Promise<void>;
   }
 }

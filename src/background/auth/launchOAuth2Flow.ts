@@ -49,6 +49,10 @@ async function launchOAuth2Flow(
     options,
   );
 
+  if (!oauth2) {
+    throw new Error("OAuth2 context is required for oauth2");
+  }
+
   const {
     host,
     authorizeUrl: rawAuthorizeUrl,

@@ -30,32 +30,32 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 275 strictNullCheck errors
-import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 300 strictNullCheck errors
-import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 300 strictNullCheck errors
+} from "@/contentScript/lifecycle"; // 221 strictNullCheck errors
+import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 255 strictNullCheck errors
+import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 261 strictNullCheck errors
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/contentScript/pageEditor/dynamic"; // 300 strictNullCheck errors
+} from "@/contentScript/pageEditor/dynamic"; // 228 strictNullCheck errors
 import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
-} from "@/contentScript/pageEditor"; // 300 strictNullCheck errors
-import { runBrick } from "@/contentScript/executor"; // 290 strictNullCheck errors
-import { cancelSelect } from "@/contentScript/pageEditor/elementPicker"; // 290 strictNullCheck errors
-import selectElement from "@/contentScript/pageEditor/selectElement"; // 290 strictNullCheck errors
+} from "@/contentScript/pageEditor"; // 258 strictNullCheck errors
+import { runBrick } from "@/contentScript/executor"; // 134 strictNullCheck errors
+import { cancelSelect } from "@/contentScript/pageEditor/elementPicker"; // 32 strictNullCheck errors
+import selectElement from "@/contentScript/pageEditor/selectElement"; // 235 strictNullCheck errors
 import {
   runHeadlessPipeline,
   runMapArgs,
   runRendererPipeline,
 } from "@/contentScript/pipelineProtocol"; // Depends on background/messenger to pass strictNullCheck
-import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore"; // 248 strictNullCheck errors
-import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation"; // 246 strictNullCheck errors
-import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore"; // 194 strictNullCheck errors
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation"; // 192 strictNullCheck errors
+import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect"; // 19 strictNullCheck errors
 import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Depends on background/messenger to pass strictNullCheck
 
 expectContext("contentScript");
