@@ -52,7 +52,8 @@
     "webNavigation",
     "contextMenus",
     "<all_urls>",
-    "alarms"
+    "alarms",
+    "offscreen"
   ],
   "devtools_page": "devtools.html",
   "externally_connectable": {

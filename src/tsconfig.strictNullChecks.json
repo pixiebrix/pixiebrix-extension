@@ -805,6 +805,7 @@
     "./tinyPages/restrictedUrlPopup.tsx",
     "./tinyPages/restrictedUrlPopupConstants.ts",
     "./tinyPages/restrictedUrlPopupUtils.ts",
+    "./tinyPages/offscreen.ts",
     "./tours/tourRunDatabase.ts",
     "./types/annotationTypes.ts",
     "./types/brickTypes.ts",

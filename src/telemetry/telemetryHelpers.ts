@@ -24,7 +24,7 @@ import { StorageItem } from "webext-storage";
 /**
  * The Person model for application error telemetry.
  */
-type TelemetryUser = {
+export type TelemetryUser = {
   /**
    * User id or browser distinct id, if the user is anonymous.
    */
