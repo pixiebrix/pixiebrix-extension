@@ -83,7 +83,7 @@ export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
       if (canParseUrl(auth.config.controlRoomUrl)) {
         return {
           hostname: new URL(auth.config.controlRoomUrl).hostname,
-          principalId: auth.config.username,
+          principalId: auth.config.username ?? null,
         } as PartnerPrincipal;
       }
 
