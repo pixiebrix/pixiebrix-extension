@@ -16,15 +16,18 @@
  */
 
 import { useEffect, useRef } from "react";
+import deepEquals from "fast-deep-equal";
 
 /**
  * Utility hook to return a referentially stable value if the next value is equal to the previous value.
  * @param next the next value
  * @param compare comparison function to determine whether to return the previous value
+ * @param dependencies extra memoization dependencies outside the returned value
  */
 function useMemoCompare<T>(
   next: T,
   compare: (previous: T | undefined, next: T) => boolean,
+  dependencies?: unknown[],
 ): T {
   // https://usehooks.com/useMemoCompare/
   // Ref for storing previous value
@@ -40,9 +43,30 @@ function useMemoCompare<T>(
     }
   });
 
-  // Finally, if equal then return the previous value
+  const previousDependenciesRef = useRef<unknown[] | undefined>();
+  const previousDependencies: unknown[] | undefined =
+    previousDependenciesRef.current;
+
+  let isDependenciesEqual: boolean;
+  if (dependencies === undefined && previousDependencies === undefined) {
+    isDependenciesEqual = true;
+  }
+
+  if (dependencies === undefined || previousDependencies === undefined) {
+    isDependenciesEqual = false;
+  } else {
+    isDependenciesEqual = deepEquals(previousDependencies, dependencies);
+  }
+
+  useEffect(() => {
+    if (!isDependenciesEqual) {
+      previousDependenciesRef.current = dependencies;
+    }
+  });
+
+  // Finally, if equal, and dependencies have not changed, then return the previous value
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Can't be undefined if it's equal to T
-  return isEqual ? previous! : next;
+  return isEqual && isDependenciesEqual ? previous! : next;
 }
 
 export default useMemoCompare;

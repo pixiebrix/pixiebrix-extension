@@ -4,6 +4,10 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionConsole/pages/mods/modals/shareModals/ModOwnerLabel.tsx",
+    "./modDefinitions/modDefinitionHooks.ts",
+    "./extensionConsole/pages/mods/modals/shareModals/useHasEditPermissions.ts",
+    "./components/form/widgets/RegistryIdWidget.tsx",
     "./background/partnerIntegrations.ts",
     "./contentScript/pageEditor/elementPicker.ts",
     "./background/requests.ts",

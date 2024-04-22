@@ -17,7 +17,6 @@
 
 import { selectAuth } from "@/auth/authSelectors";
 import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
-import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { type RegistryId } from "@/types/registryTypes";
 import { getScopeAndId } from "@/utils/registryUtils";
 import { faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
@@ -25,18 +24,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useSelector } from "react-redux";
 
-const OwnerLabel: React.FunctionComponent<{ blueprintId: RegistryId }> = ({
-  blueprintId,
+const ModOwnerLabel: React.FunctionComponent<{ modId: RegistryId }> = ({
+  modId,
 }) => {
   const { scope: userScope } = useSelector(selectAuth);
-
-  const { data: recipe } = useOptionalModDefinition(blueprintId);
-
+  const { scope: modIdScope } = getScopeAndId(modId);
   const sortedOrganizations = useSortOrganizations();
 
-  const [recipeScope] = getScopeAndId(recipe?.metadata.id);
-
-  if (recipeScope === userScope) {
+  if (modIdScope === userScope) {
     return (
       <span>
         <FontAwesomeIcon icon={faUser} /> You
@@ -45,7 +40,7 @@ const OwnerLabel: React.FunctionComponent<{ blueprintId: RegistryId }> = ({
   }
 
   const ownerOrganization = sortedOrganizations.find(
-    (x) => x.scope === recipeScope,
+    (x) => x.scope === modIdScope,
   );
 
   if (!ownerOrganization) {
@@ -63,4 +58,4 @@ const OwnerLabel: React.FunctionComponent<{ blueprintId: RegistryId }> = ({
   );
 };
 
-export default OwnerLabel;
+export default ModOwnerLabel;

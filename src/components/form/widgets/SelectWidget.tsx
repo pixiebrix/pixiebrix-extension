@@ -66,12 +66,6 @@ export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
     creatable?: boolean;
   };
 
-export const makeStringOptions = (...items: string[]): Option[] =>
-  items.map((item) => ({
-    label: item,
-    value: item,
-  }));
-
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
   id,
   options,
