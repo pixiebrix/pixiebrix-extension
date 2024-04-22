@@ -16,7 +16,7 @@
  */
 
 import { locator as serviceLocator } from "@/background/locator";
-import { flatten, isEmpty } from "lodash";
+import { compact, flatten } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import { type RegistryId } from "@/types/registryTypes";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
@@ -34,6 +34,7 @@ import {
 } from "@/integrations/constants";
 import { stringToBase64 } from "uint8array-extras";
 import { canParseUrl } from "@/utils/urlUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const TEN_HOURS = 1000 * 60 * 60 * 10;
 
@@ -77,12 +78,18 @@ export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
     ),
   );
 
-  return auths
-    .filter((auth) => canParseUrl(auth.config.controlRoomUrl))
-    .map((auth) => ({
-      hostname: new URL(auth.config.controlRoomUrl).hostname,
-      principalId: auth.config.username,
-    }));
+  return compact(
+    auths.map((auth) => {
+      if (canParseUrl(auth.config.controlRoomUrl)) {
+        return {
+          hostname: new URL(auth.config.controlRoomUrl).hostname,
+          principalId: null,
+        } as PartnerPrincipal;
+      }
+
+      return null;
+    }),
+  );
 }
 
 /**
@@ -112,17 +119,31 @@ export async function launchAuthIntegration({
     console.warn("Multiple local configurations found for: %s", service.id);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- just checked array length
+  const authId = localAuths[0]!.id;
+
   // `launchOAuth2Flow` expects the raw auth. In the case of CONTROL_ROOM_OAUTH_SERVICE_ID, they'll be the same
   // because it doesn't have any secrets.
-  const config = await serviceLocator.findIntegrationConfig(localAuths[0].id);
-  const data = await launchOAuth2Flow(service, config, { interactive: true });
+  const integrationConfig = await serviceLocator.findIntegrationConfig(authId);
+  assertNotNullish(
+    integrationConfig,
+    `Integration config not found for authId: ${authId}`,
+  );
+
+  const data = await launchOAuth2Flow(service, integrationConfig, {
+    interactive: true,
+  });
 
   if (integrationId === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
     // Hard-coding headers for now. In the future, will want to add support for defining in the service definition.
 
-    if (isEmpty(config.config.controlRoomUrl)) {
+    const { controlRoomUrl } = integrationConfig.config;
+    if (!canParseUrl(controlRoomUrl)) {
       // Fine to dump to console for debugging because CONTROL_ROOM_OAUTH_SERVICE_ID doesn't have any secret props.
-      console.warn("controlRoomUrl is missing on configuration", config);
+      console.warn(
+        "controlRoomUrl is missing on configuration",
+        integrationConfig,
+      );
       throw new Error("controlRoomUrl is missing on configuration");
     }
 
@@ -137,11 +158,15 @@ export async function launchAuthIntegration({
         baseURL,
         headers: {
           Authorization: `Bearer ${data.access_token as string}`,
-          "X-Control-Room": config.config.controlRoomUrl,
+          "X-Control-Room": controlRoomUrl,
         },
       });
     } catch (error) {
-      if (isAxiosError(error) && [401, 403].includes(error.response?.status)) {
+      if (
+        isAxiosError(error) &&
+        error.response &&
+        [401, 403].includes(error.response.status)
+      ) {
         // Clear the token to allow the user re-login with the SAML/SSO provider
         // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
         await chromeP.identity.clearAllCachedAuthTokens();
@@ -155,18 +180,15 @@ export async function launchAuthIntegration({
       throw error;
     }
 
-    console.info(
-      "Setting partner auth for Control Room %s",
-      config.config.controlRoomUrl,
-    );
+    console.info("Setting partner auth for Control Room %s", controlRoomUrl);
 
     await setPartnerAuth({
-      authId: config.id,
+      authId: integrationConfig.id,
       token: data.access_token as string,
       // `refresh_token` only returned if offline_access scope is requested
       refreshToken: data.refresh_token as string,
       extraHeaders: {
-        "X-Control-Room": config.config.controlRoomUrl,
+        "X-Control-Room": controlRoomUrl,
       },
     });
   } else {
@@ -190,21 +212,37 @@ export async function _refreshPartnerToken(): Promise<void> {
     const service = await serviceRegistry.lookup(
       CONTROL_ROOM_OAUTH_INTEGRATION_ID,
     );
-    const config = await serviceLocator.findIntegrationConfig(authData.authId);
-    const context = service.getOAuth2Context(config.config);
+    const integrationConfig = await serviceLocator.findIntegrationConfig(
+      authData.authId,
+    );
+    assertNotNullish(
+      integrationConfig,
+      `Integration config not found for authId: ${authData.authId}`,
+    );
 
-    if (isEmpty(config.config.controlRoomUrl)) {
+    const { controlRoomUrl } = integrationConfig.config;
+    if (!canParseUrl(controlRoomUrl)) {
       // Fine to dump to console for debugging because CONTROL_ROOM_OAUTH_SERVICE_ID doesn't have any secret props.
-      console.warn("controlRoomUrl is missing on configuration", config);
+      console.warn(
+        "controlRoomUrl is missing on configuration",
+        integrationConfig,
+      );
       throw new Error("controlRoomUrl is missing on configuration");
     }
+
+    const context = service.getOAuth2Context(integrationConfig.config);
+    assertNotNullish(context, "Service did not return an OAuth2 context");
+    assertNotNullish(
+      context.tokenUrl,
+      `OAuth2 context for service ${integrationConfig.integrationId} does not include a token URL`,
+    );
 
     // https://axios-http.com/docs/urlencoded
     const params = new URLSearchParams();
     params.append("grant_type", "refresh_token");
     params.append("client_id", context.client_id);
     params.append("refresh_token", authData.refreshToken);
-    params.append("hosturl", config.config.controlRoomUrl);
+    params.append("hosturl", controlRoomUrl);
 
     // On 401, throw the error. In the future, we might consider clearing the partnerAuth. However, currently that
     // would trigger a re-login, which may not be desirable at arbitrary times.
@@ -213,16 +251,16 @@ export async function _refreshPartnerToken(): Promise<void> {
     });
 
     // Store for use direct calls to the partner API
-    await setCachedAuthData(config.id, data);
+    await setCachedAuthData(integrationConfig.id, data);
 
     // Store for use with the PixieBrix API
     await setPartnerAuth({
-      authId: config.id,
+      authId: integrationConfig.id,
       token: data.access_token,
       // `refresh_token` only returned if offline_access scope is requested
       refreshToken: data.refresh_token,
       extraHeaders: {
-        "X-Control-Room": config.config.controlRoomUrl,
+        "X-Control-Room": controlRoomUrl,
       },
     });
 

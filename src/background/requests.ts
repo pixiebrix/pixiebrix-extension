@@ -26,9 +26,9 @@ import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/data/service/apiClient";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
-  selectRemoteResponseErrorMessage,
   isProxiedErrorResponse,
   proxyResponseToAxiosResponse,
+  selectRemoteResponseErrorMessage,
 } from "@/background/proxyUtils";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import {
@@ -151,10 +151,6 @@ async function authenticate(
 ): Promise<NetworkRequestConfig> {
   expectContext("background");
 
-  if (config == null) {
-    throw new Error("Integration configuration is required to authenticate");
-  }
-
   if (config.proxy) {
     throw new Error(
       `Integration configuration for service ${config.serviceId} is not a local configuration: ${config.id}`,
@@ -219,10 +215,6 @@ async function proxyRequest<T>(
   integrationConfig: SanitizedIntegrationConfig,
   requestConfig: NetworkRequestConfig,
 ): Promise<RemoteResponse<T>> {
-  if (integrationConfig == null) {
-    throw new Error("Integration configuration is required for proxyRequest");
-  }
-
   const authenticatedRequestConfig = await authenticate(
     pixiebrixConfigurationFactory(),
     {

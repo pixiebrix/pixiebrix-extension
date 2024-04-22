@@ -24,6 +24,7 @@ import { expectContext } from "@/utils/expectContext";
 import axios from "axios";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Exchange credentials for a token, and cache the token response.
@@ -46,10 +47,7 @@ async function _getToken(
   }
 
   const context = service.getTokenContext(auth.config);
-
-  if (context == null) {
-    throw new Error("Service did not return a token context");
-  }
+  assertNotNullish(context, "Service did not return a token context");
 
   const { url, data: tokenData } = context;
   const {
