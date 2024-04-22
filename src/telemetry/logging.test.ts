@@ -31,6 +31,7 @@ import { array } from "cooky-cutter";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { flagOn } from "@/auth/featureFlagStorage";
 import Reason = chrome.offscreen.Reason;
+import ManifestV3 = chrome.runtime.ManifestV3;
 
 // Disable automatic __mocks__ resolution
 jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
@@ -49,6 +50,7 @@ global.chrome = {
   runtime: {
     ...global.chrome.runtime,
     getContexts: jest.fn(async () => []),
+    getManifest: jest.fn(() => ({ manifest_version: 3 }) as ManifestV3),
     getURL: jest.fn((path) => path),
     ContextType: {
       OFFSCREEN_DOCUMENT:
