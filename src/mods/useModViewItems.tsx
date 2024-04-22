@@ -37,78 +37,105 @@ import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
+import { compact } from "lodash";
+import { RegistryId } from "@/types/registryTypes";
+import { ActivatedModComponent } from "@/types/modComponentTypes";
 
 function useModViewItems(mods: Mod[]): {
   modViewItems: readonly ModViewItem[];
   isLoading: boolean;
 } {
   const scope = useSelector(selectScope);
-  const installedExtensions = useSelector(selectActivatedModComponents);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
   const organizations = useSelector(selectOrganizations);
 
   // Don't merge async states. Allow hook to render without listings
-  const listingsQuery = useGetMarketplaceListingsQuery();
-  const { data: recipes, isLoading: isRecipesLoading } = useAllModDefinitions();
+  const { data: listings } = useGetMarketplaceListingsQuery();
+  const { data: modDefinitions, isLoading: isRecipesLoading } =
+    useAllModDefinitions();
 
-  const { installedExtensionIds, installedRecipeIds } = useMemo(
+  const { activatedModComponentIds, activatedModIds } = useMemo(
     () => ({
-      installedExtensionIds: new Set<UUID>(
-        installedExtensions.map((extension) => extension.id),
+      activatedModComponentIds: new Set<UUID>(
+        activatedModComponents.map((extension) => extension.id),
       ),
-      installedRecipeIds: new Set(
-        installedExtensions.map((extension) => extension._recipe?.id),
+      activatedModIds: new Set(
+        compact(
+          activatedModComponents.map((extension) => extension._recipe?.id),
+        ),
       ),
     }),
-    [installedExtensions],
+    [activatedModComponents],
   );
 
   const isActive = useCallback(
     (mod: Mod) => {
       if (isResolvedModComponent(mod)) {
-        return installedExtensionIds.has(mod.id);
+        return activatedModComponentIds.has(mod.id);
       }
 
-      return installedRecipeIds.has(mod.metadata.id);
+      return activatedModIds.has(mod.metadata.id);
     },
-    [installedExtensionIds, installedRecipeIds],
+    [activatedModComponentIds, activatedModIds],
   );
 
   const getStatus = useCallback(
     (mod: Mod): ModStatus => {
-      if (isDeployment(mod, installedExtensions)) {
+      if (isDeployment(mod, activatedModComponents)) {
         if (isResolvedModComponent(mod)) {
           return isDeploymentActive(mod) ? "Active" : "Paused";
         }
 
-        const deploymentExtension = installedExtensions.find(
-          (installedExtension) =>
-            installedExtension._recipe?.id === getPackageId(mod) &&
-            installedExtension._deployment,
+        const componentFromDeployment = activatedModComponents.find(
+          (activatedModComponent) =>
+            activatedModComponent._recipe?.id === getPackageId(mod) &&
+            activatedModComponent._deployment,
         );
+        if (!componentFromDeployment) {
+          return "Inactive";
+        }
 
-        return isDeploymentActive(deploymentExtension) ? "Active" : "Paused";
+        return isDeploymentActive(componentFromDeployment)
+          ? "Active"
+          : "Paused";
       }
 
       return isActive(mod) ? "Active" : "Inactive";
     },
-    [installedExtensions, isActive],
+    [activatedModComponents, isActive],
   );
 
   const modViewItems = useMemo(() => {
-    // Load to map for fast lookup if you have a lot of recipes. Could put in its own memo
-    const recipeMap = new Map(
-      (recipes ?? []).map((recipe) => [recipe.metadata.id, recipe]),
+    // Load to map for fast lookup if you have a lot of modDefinitions. Could put in its own memo
+    const modDefinitionMap = new Map(
+      (modDefinitions ?? []).map((modDefinition) => [
+        modDefinition.metadata.id,
+        modDefinition,
+      ]),
     );
 
-    // Pick any ModComponentBase from the blueprint to check for updates. All of their versions should be the same.
-    const extensionsMap = new Map(
-      installedExtensions
-        .filter((x) => x._recipe?.id)
-        .map((extension) => [extension._recipe.id, extension]),
-    );
+    const modComponentEntries: Array<[RegistryId, ActivatedModComponent]> =
+      compact(
+        activatedModComponents.map((modComponent) => {
+          if (modComponent._recipe) {
+            return [modComponent._recipe.id, modComponent];
+          }
+
+          return null;
+        }),
+      );
+
+    // Pick any ModComponentBase from the mod to check for updates. All of their versions should be the same.
+    const extensionsMap = new Map(modComponentEntries);
 
     return mods.map((mod) => {
       const packageId = getPackageId(mod);
+
+      let listingId: UUID | null = null;
+      if (packageId && listings) {
+        // eslint-disable-next-line security/detect-object-injection -- packageId is a registry id
+        listingId = listings[packageId]?.id ?? null;
+      }
 
       return {
         name: getLabel(mod),
@@ -119,16 +146,15 @@ function useModViewItems(mods: Mod[]): {
             mod,
             organizations,
             scope,
-            installedExtensions,
+            installedExtensions: activatedModComponents,
           }),
-          // eslint-disable-next-line security/detect-object-injection -- packageId is a registry id
-          listingId: listingsQuery.data?.[packageId]?.id,
+          listingId,
         },
         updatedAt: getUpdatedAt(mod),
         status: getStatus(mod),
-        hasUpdate: updateAvailable(recipeMap, extensionsMap, mod),
+        hasUpdate: updateAvailable(modDefinitionMap, extensionsMap, mod),
         installedVersionNumber: getInstalledVersionNumber(
-          installedExtensions,
+          activatedModComponents,
           mod,
         ),
         unavailable: isUnavailableMod(mod),
@@ -136,13 +162,13 @@ function useModViewItems(mods: Mod[]): {
       } satisfies ModViewItem;
     });
   }, [
-    getStatus,
+    modDefinitions,
+    activatedModComponents,
     mods,
-    installedExtensions,
-    listingsQuery,
+    listings,
     organizations,
-    recipes,
     scope,
+    getStatus,
   ]);
 
   return {
