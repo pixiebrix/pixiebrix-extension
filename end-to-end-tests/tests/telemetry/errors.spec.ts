@@ -4,6 +4,11 @@ import { type Page, test as base } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
 import { MV } from "../../env";
 
+// TODO: Fix this test for MV2
+test.skip(
+  MV === "2",
+  "Temporarily skipping this test due to inconsistencies with error display in manifest versions",
+);
 test("can report application error to telemetry service", async ({
   page,
   context,

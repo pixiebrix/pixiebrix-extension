@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// import { selectExtraContext } from "@/data/service/errorService";
 import type { MessageContext } from "@/types/loggerTypes";
 import { type TelemetryUser } from "@/telemetry/telemetryHelpers";
 import { type SemVerString } from "@/types/registryTypes";
@@ -59,7 +58,7 @@ export async function setupOffscreenDocument() {
     createOffscreenDocumentPromise = chrome.offscreen.createDocument({
       url: "offscreen.html",
       // Our reason for creating an offscreen document does not fit nicely into options offered by the Chrome API, which
-      // is error telemetry as of 1.8.12 (we use this as a workaround for Datadog SDK service worker limitations).
+      // is error telemetry as of 1.8.13 (we use this as a workaround for Datadog SDK service worker limitations).
       // We chose BLOBS because it's the closest to interaction with error objects.
       // See https://developer.chrome.com/docs/extensions/reference/api/offscreen#reasons
       reasons: [chrome.offscreen.Reason.BLOBS],
