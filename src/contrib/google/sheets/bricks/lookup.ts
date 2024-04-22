@@ -171,8 +171,13 @@ export class GoogleSheetsLookup extends TransformerABC {
         ? spreadsheetIdArg
         : spreadsheetIdArg.config.spreadsheetId;
 
-    if (!spreadsheetId) {
-      throw new BusinessError("Spreadsheet ID is required");
+    if (spreadsheetId == null) {
+      throw new PropError(
+        "A Spreadsheet ID is required.",
+        GOOGLE_SHEETS_LOOKUP_ID,
+        "spreadsheetId",
+        spreadsheetId,
+      );
     }
 
     const target: SpreadsheetTarget = {

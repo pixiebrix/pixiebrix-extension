@@ -366,8 +366,13 @@ export class GoogleSheetsAppend extends EffectABC {
         ? spreadsheetIdArg
         : spreadsheetIdArg.config.spreadsheetId;
 
-    if (!spreadsheetId) {
-      throw new BusinessError("Spreadsheet ID is required");
+    if (spreadsheetId == null) {
+      throw new PropError(
+        "A Spreadsheet ID is required.",
+        GOOGLE_SHEETS_APPEND_ID,
+        "spreadsheetId",
+        spreadsheetId,
+      );
     }
 
     const target: SpreadsheetTarget = {
