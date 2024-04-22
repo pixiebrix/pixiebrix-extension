@@ -51,10 +51,13 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   );
 
   const configName = partial(joinName, name, configKey);
+  const integrationFieldName = configName("service");
+  const releaseKeyFieldName = configName("releaseKey");
 
   // Fetch the release from the server, because inputSchema is not available locally via the robot SDK
   const { releaseKey, selectedRelease } = useSelectedRelease(
-    configName("releaseKey"),
+    releaseKeyFieldName,
+    integrationFieldName,
   );
 
   const robotState = useAsyncState(async () => {
@@ -108,15 +111,15 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       <RequireIntegrationConfig
         // FIXME: this integration use is options-only. As-is this will create an integration entry in the background.
         //  We  need to support 1) making RemoteServiceConfig optional, and 2) not storing the state in Formik
-        integrationsSchema={REMOTE_UIPATH_PROPERTIES.uipath as Schema}
-        integrationsFieldName={configName("service")}
+        integrationFieldSchema={REMOTE_UIPATH_PROPERTIES.uipath as Schema}
+        integrationFieldName={integrationFieldName}
       >
         {() => (
           <>
             <ConnectedFieldTemplate
               label="Process"
               description="Select a local process"
-              name={configName("releaseKey")}
+              name={releaseKeyFieldName}
               as={RemoteSelectWidget}
               blankValue={null}
               optionsFactory={processOptionsPromise}
