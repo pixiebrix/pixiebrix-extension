@@ -37,8 +37,7 @@ export type FieldInputMode =
   | "array"
   | "object"
   | "select"
-  | "omit" // An input option to remove a property
-  | undefined;
+  | "omit"; // An input option to remove a property
 
 const DEFAULT_OPTIONS = {
   safeDefault: true,
@@ -60,7 +59,7 @@ export function inferInputMode(
     safeDefault?: boolean;
     isRequired?: boolean;
   } = DEFAULT_OPTIONS,
-): FieldInputMode {
+): FieldInputMode | undefined {
   const { safeDefault = true, isRequired } = options;
 
   // eslint-disable-next-line security/detect-object-injection -- config field names

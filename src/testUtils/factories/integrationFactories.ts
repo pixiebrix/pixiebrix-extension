@@ -38,8 +38,8 @@ export const sanitizedIntegrationConfigFactory =
     id: uuidSequence,
     proxy: false,
     serviceId: (n: number) => validateRegistryId(`test/integration-${n}`),
-    config: () =>
-      ({ _sanitizedConfigBrand: undefined as never }) as SanitizedConfig,
+    // The typing of _sanitizedConfigBrand is actually null, not never
+    config: () => ({ _sanitizedConfigBrand: null }) as SanitizedConfig,
     label: "",
     _sanitizedIntegrationConfigBrand: undefined as never,
   });
