@@ -68,7 +68,7 @@ function useTreeRow({
       if (isActive) {
         $row.addClass("active");
 
-        $row.get(0)?.scrollIntoViewIfNeeded();
+        $row.get(0)?.scrollIntoViewIfNeeded?.();
       } else {
         $row.removeClass("active");
       }
