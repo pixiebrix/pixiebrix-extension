@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./background/restrictUnauthenticatedUrlAccess.ts",
     "./background/backgroundPlatform.ts",
     "./pageEditor/fields/creatableAutosuggest/CreatableAutosuggest.tsx",
     "./mods/useModViewItems.tsx",
