@@ -18,7 +18,11 @@
 import styles from "./BrickHistory.module.scss";
 
 import React, { Suspense, useEffect, useMemo, useState } from "react";
-import Select, { components, type OptionProps } from "react-select";
+import Select, {
+  components,
+  type OptionProps,
+  type SingleValueProps,
+} from "react-select";
 import DiffEditor from "@/components/DiffEditor";
 import objectHash from "object-hash";
 import { type UUID } from "@/types/stringTypes";
@@ -45,7 +49,7 @@ const Content: React.FunctionComponent<{
 );
 
 const CustomSingleValue: React.FunctionComponent<
-  OptionProps<PackageVersionOption>
+  SingleValueProps<PackageVersionOption, false>
 > = (props) => (
   <SingleValue {...props}>
     <Content data={props.data} />
@@ -53,7 +57,7 @@ const CustomSingleValue: React.FunctionComponent<
 );
 
 const CustomSingleOption: React.FunctionComponent<
-  OptionProps<PackageVersionOption>
+  OptionProps<PackageVersionOption, false>
 > = (props) => (
   <Option {...props}>
     <Content data={props.data} />
@@ -68,19 +72,27 @@ const BrickHistory: React.FunctionComponent<{
     id: brickId,
   });
 
-  const versionOptions = useMemo(
+  const versionOptions = useMemo<PackageVersionOption[]>(
     () =>
       (packageVersions ?? []).map((packageVersion) => {
+        const label = `${packageVersion.version}${
+          packageVersion.version === brick?.version ? " (current)" : ""
+        }`;
+        const baseOption: PackageVersionOption = {
+          value: packageVersion.version ?? "",
+          label,
+          updated_at: "",
+        };
+        if (packageVersion.updated_at == null) {
+          return baseOption;
+        }
+
         const date = new Date(packageVersion.updated_at);
         const formatted_date = `${
           date.getMonth() + 1
         }/${date.getDate()}/${date.getFullYear()}`;
         return {
-          value: packageVersion.version,
-          label:
-            packageVersion.version === brick?.version
-              ? `${packageVersion.version} (current)`
-              : `${packageVersion.version}`,
+          ...baseOption,
           updated_at: formatted_date,
         };
       }),
@@ -92,8 +104,8 @@ const BrickHistory: React.FunctionComponent<{
     [versionOptions],
   );
 
-  const [versionA, setVersionA] = useState<PackageVersionOption>(null);
-  const [versionB, setVersionB] = useState<PackageVersionOption>(null);
+  const [versionA, setVersionA] = useState<PackageVersionOption | undefined>();
+  const [versionB, setVersionB] = useState<PackageVersionOption | undefined>();
 
   useEffect(() => {
     setVersionA(currentVersion);

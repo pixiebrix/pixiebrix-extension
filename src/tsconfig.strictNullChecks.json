@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionConsole/pages/brickEditor/BrickHistory.tsx",
     "./components/walkthroughModal/WalkthroughModalApp.tsx",
     "./components/fields/schemaFields/widgets/varPopup/useTreeRow.ts",
     "./bricks/transformers/splitText.ts",

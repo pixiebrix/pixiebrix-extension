@@ -141,7 +141,7 @@ export class SetPageState extends TransformerABC {
     }>,
     { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
-    const { blueprintId = null, extensionId } = logger.context;
+    const { blueprintId, extensionId } = logger.context;
 
     return platform.state.setState({
       namespace,

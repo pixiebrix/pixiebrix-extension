@@ -33,7 +33,6 @@ import { PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
@@ -176,11 +175,7 @@ export class WithAsyncModVariable extends TransformerABC {
     { logger, runPipeline }: BrickOptions,
   ) {
     const requestId = uuidv4();
-    const { blueprintId = null, extensionId } = logger.context;
-    assertNotNullish(
-      extensionId,
-      "Logger extensionId is null, something went wrong",
-    );
+    const { blueprintId, extensionId } = logger.context;
 
     if (isNullOrBlank(stateKey)) {
       throw new PropError(
