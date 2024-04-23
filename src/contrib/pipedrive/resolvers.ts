@@ -87,8 +87,7 @@ export class ResolvePerson extends TransformerABC {
           term: name,
         },
       });
-      organization_id =
-        data.items.length > 0 ? data.items[0].item.id : undefined;
+      organization_id = data.items[0]?.item.id;
     }
 
     const {
@@ -103,10 +102,11 @@ export class ResolvePerson extends TransformerABC {
       },
     });
 
-    if (data.items.length === 0) {
+    const item = data.items[0]?.item;
+    if (item == null) {
       throw new BusinessError(`Could not find person matching ${name}`);
     }
 
-    return data.items[0].item;
+    return item;
   }
 }

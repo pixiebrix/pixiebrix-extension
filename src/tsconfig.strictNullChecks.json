@@ -4,6 +4,16 @@
     "strictNullChecks": true
   },
   "files": [
+    "./starterBricks/starterBrickTestUtils.ts",
+    "./sidebar/hooks/useConnectedTargetUrl.tsx",
+    "./pageScript/frameworks/contrib/react.ts",
+    "./pageScript/frameworks/contrib/ember.ts",
+    "./pageEditor/tabs/logs/NavItemBadge.tsx",
+    "./extensionConsole/pages/brickEditor/validate.ts",
+    "./extensionConsole/pages/brickEditor/SharingTable.tsx",
+    "./contrib/pipedrive/resolvers.ts",
+    "./contrib/google/sheets/core/useCurrentOrigin.ts",
+    "./contrib/google/geocode.ts",
     "./components/fields/schemaFields/fieldTestUtils.ts",
     "./bricks/transformers/parseUrl.ts",
     "./bricks/transformers/ParseJson.ts",

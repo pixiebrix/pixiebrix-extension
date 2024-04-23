@@ -24,6 +24,7 @@ import React from "react";
 import { useField } from "formik";
 import { useGetOrganizationsQuery } from "@/data/service/api";
 import { type Organization } from "@/types/contract";
+import { UUID } from "@/types/stringTypes";
 
 const SharingTable: React.FunctionComponent = () => {
   const { data: organizations = [] } = useGetOrganizationsQuery();
@@ -69,7 +70,7 @@ const SharingTable: React.FunctionComponent = () => {
                   const next = checked
                     ? uniq([...organizationsField.value, organization.id])
                     : organizationsField.value.filter(
-                        (x: string) => x !== organization.id,
+                        (x: UUID) => x !== organization.id,
                       );
                   await setOrganizations(next);
                 }}
