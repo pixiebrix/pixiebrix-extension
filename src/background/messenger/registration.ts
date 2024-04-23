@@ -36,7 +36,6 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor"; // Depends on contentScript/messenger to pass strictNullCheck
-import { performConfiguredRequest } from "@/background/requests"; // 7 strictNullCheck errors
 import { getAvailableVersion } from "@/background/installer"; // 201 strictNullCheck errors
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 218 strictNullCheck errors
 import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 224 strictNullCheck errors
@@ -79,7 +78,6 @@ declare global {
     REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInOtherTabs;
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
 
-    CONFIGURED_REQUEST: typeof performConfiguredRequest;
     RECORD_EVENT: typeof recordEvent;
     INIT_TELEMETRY: typeof initTelemetry;
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
@@ -111,7 +109,6 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
 
-    CONFIGURED_REQUEST: performConfiguredRequest,
     RECORD_EVENT: recordEvent,
     INIT_TELEMETRY: initTelemetry,
     SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,

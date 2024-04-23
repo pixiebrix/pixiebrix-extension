@@ -21,6 +21,9 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
+import type { RemoteResponse } from "@/types/contract";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL", bg);
 export const waitForContentScript = getMethod("WAIT_FOR_CONTENT_SCRIPT", bg);
@@ -92,3 +95,13 @@ export const launchInteractiveOAuthFlow = getMethod(
   "LAUNCH_INTERACTIVE_OAUTH_FLOW",
   bg,
 );
+
+// `getMethod` currently strips generics, so we must copy the function signature here
+export const performConfiguredRequestInBackground = getMethod(
+  "CONFIGURED_REQUEST",
+  bg,
+) as <TData>(
+  integrationConfig: SanitizedIntegrationConfig | null,
+  requestConfig: NetworkRequestConfig,
+  options: { interactiveLogin: boolean },
+) => Promise<RemoteResponse<TData>>;

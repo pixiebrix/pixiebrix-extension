@@ -21,9 +21,6 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
-import type { NetworkRequestConfig } from "@/types/networkTypes";
-import type { RemoteResponse } from "@/types/contract";
-import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
@@ -57,16 +54,6 @@ export const requestRun = {
 export const contextMenus = {
   preload: getMethod("PRELOAD_CONTEXT_MENUS", bg),
 };
-
-// `getMethod` currently strips generics, so we must copy the function signature here
-export const performConfiguredRequestInBackground = getMethod(
-  "CONFIGURED_REQUEST",
-  bg,
-) as <TData>(
-  integrationConfig: SanitizedIntegrationConfig | null,
-  requestConfig: NetworkRequestConfig,
-  options: { interactiveLogin: boolean },
-) => Promise<RemoteResponse<TData>>;
 
 // Use this instead: `import reportError from "@/telemetry/reportError"`
 // export const recordError = getNotifier("RECORD_ERROR", bg);
