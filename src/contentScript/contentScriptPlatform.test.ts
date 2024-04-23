@@ -18,17 +18,17 @@
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import { setPlatform } from "@/platform/platformContext";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
 import pDefer from "p-defer";
+import { performConfiguredRequestInBackground } from "@/background/messenger/strict/api";
 
 jest.mock("@/contentScript/integrations/deferredLoginController");
 
-jest.mock("@/background/messenger/api", () => ({
+jest.mock("@/background/messenger/strict/api", () => ({
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({}),
 }));
 
