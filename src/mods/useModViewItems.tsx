@@ -38,8 +38,8 @@ import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { compact } from "lodash";
-import { RegistryId } from "@/types/registryTypes";
-import { ActivatedModComponent } from "@/types/modComponentTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 
 function useModViewItems(mods: Mod[]): {
   modViewItems: readonly ModViewItem[];
