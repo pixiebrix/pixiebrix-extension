@@ -96,7 +96,8 @@ export const activatedModComponentFactory = extend<
   createTimestamp: timestampFactory,
   updateTimestamp: timestampFactory,
   active: true,
-} as unknown as ActivatedModComponent);
+  _unresolvedModComponentBrand: undefined,
+});
 
 // StandaloneModDefinition is a type in contract.ts. But it's really defined based on the ModComponentBase type not the backend API.
 export const standaloneModDefinitionFactory = (
