@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./contrib/automationanywhere/SetCopilotDataEffect",
     "./tinyPages/walkthroughModal.tsx",
     "./testUtils/userMock.ts",
     "./testUtils/userEventHelpers.ts",
