@@ -141,6 +141,7 @@ export default function IsolatedComponent<T>({
     <EmotionShadowRoot mode={MODE} pb-name={name} {...props}>
       <style>{cssText}</style>
       <Stylesheets href={stylesheetUrl ?? []}>
+        {/* Must call the factory on each render to pick up changes to the component props */}
         <Suspense fallback={null}>{factory(LazyComponent)}</Suspense>
       </Stylesheets>
     </EmotionShadowRoot>
