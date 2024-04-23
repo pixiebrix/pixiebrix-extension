@@ -19,7 +19,7 @@
 // shadow DOM and synchronously set the :host element style.
 import cssText from "./IsolatedComponent.scss?loadAsText";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useMemo } from "react";
 import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import isolatedComponentList from "./isolatedComponentList";
@@ -131,7 +131,8 @@ export default function IsolatedComponent<T>({
   // `discard` must be called before `React.lazy`.
   // `discardStylesheetsWhilePending` is needed until this is resolved https://github.com/webpack-contrib/mini-css-extract-plugin/issues/1092#issuecomment-2037540032
   void discardStylesheetsWhilePending(lazy);
-  const LazyComponent = React.lazy(lazy);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- both factory and lazy are functions that should always return the same value, but are not guaranteed to be referentially equal
+  const LazyComponent = useMemo(() => factory(React.lazy(lazy)), []);
 
   const stylesheetUrl = noStyle ? null : chrome.runtime.getURL(`${name}.css`);
 
@@ -140,7 +141,7 @@ export default function IsolatedComponent<T>({
     <EmotionShadowRoot mode={MODE} pb-name={name} {...props}>
       <style>{cssText}</style>
       <Stylesheets href={stylesheetUrl ?? []}>
-        <Suspense fallback={null}>{factory(LazyComponent)}</Suspense>
+        <Suspense fallback={null}>{LazyComponent}</Suspense>
       </Stylesheets>
     </EmotionShadowRoot>
   );

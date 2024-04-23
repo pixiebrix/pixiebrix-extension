@@ -84,6 +84,27 @@ export const DOCUMENT_SCHEMA: Schema = {
   },
 };
 
+const IsolatedDocumentView: React.FC<
+  DocumentViewProps & { disableParentStyles: boolean }
+> = ({ disableParentStyles, ...props }) => (
+  <IsolatedComponent
+    name="DocumentView"
+    noStyle={disableParentStyles}
+    lazy={async () =>
+      import(
+        /* webpackChunkName: "isolated/DocumentView" */
+        "./documentView/DocumentView"
+      )
+    }
+    factory={(DocumentView) => <DocumentView {...props} />}
+    // It must fill the frame even if `noStyle` is set, so set it as a style prop
+    // TODO: The parent node should instead make sure that the children fill
+    // the sidebar vertically (via a simple `.d-flex`), but this this requires
+    // verifying that other components aren't broken by this.
+    style={{ height: "100%" }}
+  />
+);
+
 export class DocumentRenderer extends RendererABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/document");
   constructor() {
@@ -100,7 +121,7 @@ export class DocumentRenderer extends RendererABC {
     {
       body,
       stylesheets = [],
-      disableParentStyles,
+      disableParentStyles = false,
     }: BrickArgs<{
       body: DocumentElement[];
       // Stylesheets array is validated to contain URIs in the brick input schema
@@ -109,31 +130,13 @@ export class DocumentRenderer extends RendererABC {
     }>,
     options: BrickOptions,
   ): Promise<ComponentRef> {
-    const DocumentView: React.FC<DocumentViewProps> = (props) => (
-      <IsolatedComponent
-        name="DocumentView"
-        noStyle={disableParentStyles}
-        lazy={async () =>
-          import(
-            /* webpackChunkName: "isolated/DocumentView" */
-            "./documentView/DocumentView"
-          )
-        }
-        factory={(DocumentView) => <DocumentView {...props} />}
-        // It must fill the frame even if `noStyle` is set, so set it as a style prop
-        // TODO: The parent node should instead make sure that the children fill
-        // the sidebar vertically (via a simple `.d-flex`), but this this requires
-        // verifying that other components aren't broken by this.
-        style={{ height: "100%" }}
-      />
-    );
-
     return {
-      Component: DocumentView,
+      Component: IsolatedDocumentView,
       props: {
         body,
         stylesheets,
         options,
+        disableParentStyles,
       },
     };
   }
