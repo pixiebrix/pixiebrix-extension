@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./components/fields/schemaFields/widgets/varPopup/useTreeRow.ts",
     "./bricks/transformers/splitText.ts",
     "./bricks/transformers/RunMetadataTransformer.ts",
     "./bricks/transformers/controlFlow/WithAsyncModVariable.ts",
