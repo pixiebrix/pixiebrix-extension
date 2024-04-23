@@ -63,7 +63,7 @@ const QuickBarConfiguration: React.FC<{
           <span>
             URL match patterns to show the menu item on. See{" "}
             <a
-              href="https://developer.chrome.com/docs/extensions/mv3/match_patterns/"
+              href="https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns"
               target="_blank"
               rel="noreferrer"
             >

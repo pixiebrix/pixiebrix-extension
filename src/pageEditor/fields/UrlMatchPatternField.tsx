@@ -35,7 +35,7 @@ const defaultDescription = (
     PixieBrix does not already have access to a site, your browser will prompt
     you to grant access. See{" "}
     <a
-      href="https://developer.chrome.com/docs/extensions/mv3/match_patterns/"
+      href="https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns"
       target="_blank"
       rel="noreferrer"
     >
