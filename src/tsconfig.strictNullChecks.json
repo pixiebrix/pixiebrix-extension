@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/effects/scrollIntoView.ts",
     "./bricks/effects/runSubTour.ts",
     "./bricks/effects/insertHtml.ts",
     "./background/restrictUnauthenticatedUrlAccess.ts",
