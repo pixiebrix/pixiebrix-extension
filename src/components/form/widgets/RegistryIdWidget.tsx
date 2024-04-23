@@ -20,10 +20,10 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
 import SelectWidget, {
-  makeStringOptions,
+  type Option,
   type SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import { isEmpty } from "lodash";
+import { compact } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
@@ -33,6 +33,7 @@ import { UserRole } from "@/types/contract";
 
 import { getScopeAndId } from "@/utils/registryUtils";
 import useAsyncEffect from "use-async-effect";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const editorRoles = new Set<number>([
   UserRole.admin,
@@ -48,16 +49,27 @@ const RegistryIdWidget: React.VFC<{
 }> = ({ name, selectStyles = emptyObject }) => {
   const [{ value }, , { setValue }] = useField<RegistryId>(name);
   const { scope: userScope, organizations } = useSelector(selectAuth);
-  const organizationScopes = organizations
-    .filter(
-      (organization) =>
-        !isEmpty(organization.scope) && editorRoles.has(organization.role),
-    )
-    .map((organization) => organization.scope);
+  // XXX: We should eventually refactor RequireScope to pass the required (non-null) user scope down to children, or set a context value
+  assertNotNullish(
+    userScope,
+    "This widget should only be used inside RequireScope, userScope should be defined",
+  );
+  const organizationScopes: string[] = compact(
+    organizations.map(({ scope, role }) => {
+      if (scope && editorRoles.has(role)) {
+        return scope;
+      }
 
-  const options = makeStringOptions(userScope, ...organizationScopes);
+      return null;
+    }),
+  );
+  const scopes: string[] = [userScope, ...organizationScopes];
+  const options: Option[] = scopes.map((scope) => ({
+    label: scope,
+    value: scope,
+  }));
 
-  const [scopeValue = userScope, idValue] = getScopeAndId(value);
+  const { scope: scopeValue = userScope, id: idValue } = getScopeAndId(value);
 
   useAsyncEffect(async () => {
     // Don't validate here with validateRegistryId(), that should be done through form validation

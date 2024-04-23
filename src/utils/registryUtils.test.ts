@@ -45,25 +45,25 @@ describe("generatePackageId", () => {
 describe("getScopeAndId", () => {
   test("normal id", () => {
     const id = "@foo/bar" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual(["@foo", "bar"]);
+    expect(getScopeAndId(id)).toStrictEqual({ scope: "@foo", id: "bar" });
   });
   test("id with slash", () => {
     const id = "@foo/bar/baz" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual(["@foo", "bar/baz"]);
+    expect(getScopeAndId(id)).toStrictEqual({ scope: "@foo", id: "bar/baz" });
   });
   test("id without scope", () => {
     const id = "foobar" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual([undefined, "foobar"]);
+    expect(getScopeAndId(id)).toStrictEqual({ scope: undefined, id: "foobar" });
   });
   test("id without scope with slash", () => {
     const id = "foo/bar/baz" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual([undefined, "foo/bar/baz"]);
+    expect(getScopeAndId(id)).toStrictEqual({
+      scope: undefined,
+      id: "foo/bar/baz",
+    });
   });
   test("scope without id", () => {
     const id = "@foo" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual(["@foo", undefined]);
-  });
-  test("id is nullish", () => {
-    expect(getScopeAndId(null)).toStrictEqual([undefined, undefined]);
+    expect(getScopeAndId(id)).toStrictEqual({ scope: "@foo", id: undefined });
   });
 });
