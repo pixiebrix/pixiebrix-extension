@@ -49,17 +49,17 @@ test("can report application error to telemetry service", async ({
           .startsWith(`chrome-extension://${extensionId}/offscreen.html`),
       );
 
-    expect(offscreenPage.url()).toBeDefined();
+    expect(offscreenPage?.url()).toBeDefined();
   }).toPass({ timeout: 5000 });
 
   // TODO: due to Datadog SDK implementation, it will take ~30 seconds for the
   //  request to be sent. We should figure out a way to induce the request to be sent sooner.
-  const request = await offscreenPage.waitForRequest(errorServiceEndpoint);
+  const request = await offscreenPage?.waitForRequest(errorServiceEndpoint);
 
   expect(
     request
-      .postData()
-      .split("\n")
+      ?.postData()
+      ?.split("\n")
       .map((log) => JSON.parse(log)),
   ).toContainEqual(
     expect.objectContaining({
