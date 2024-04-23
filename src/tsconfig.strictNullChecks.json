@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageScript/elementInfo.ts",
     "./extensionConsole/pages/mods/utils/exportBlueprint.ts",
     "./extensionConsole/pages/brickEditor/BrickHistory.tsx",
     "./components/walkthroughModal/WalkthroughModalApp.tsx",
