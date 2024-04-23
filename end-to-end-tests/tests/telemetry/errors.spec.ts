@@ -17,7 +17,7 @@ test("can report application error to telemetry service", async ({
   const errorServiceEndpoint = "https://browser-intake-datadoghq.com/api/v2/*";
 
   await context.route(
-    "https://app.pixiebrix.com/api/registry/bricks/",
+    "https://app.pixiebrix.com/api/extensions/",
     async (route) => {
       await route.fulfill({
         status: 200,
@@ -34,12 +34,12 @@ test("can report application error to telemetry service", async ({
   });
 
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
-  await expect(page.getByText("An error occurred")).toBeVisible();
+  await expect(page.getByText("Something went wrong.")).toBeVisible();
 
   // Due to service worker limitations with the Datadog SDK, we need to report errors via an offscreen document
   // (see https://github.com/pixiebrix/pixiebrix-extension/issues/8268). The offscreen document is created when
   // the first error is reported, so we need to wait for it to be created before we can interact with it.
-  let offscreenPage: Page;
+  let offscreenPage: Page | undefined;
   await expect(async () => {
     offscreenPage = context
       .pages()
@@ -56,9 +56,16 @@ test("can report application error to telemetry service", async ({
   //  request to be sent. We should figure out a way to induce the request to be sent sooner.
   const request = await offscreenPage.waitForRequest(errorServiceEndpoint);
 
-  expect(request.postDataJSON()).toMatchObject({
-    service: "pixiebrix-browser-extension",
-    manifestVersion: Number(MV),
-    error: expect.anything(),
-  });
+  expect(
+    request
+      .postData()
+      .split("\n")
+      .map((log) => JSON.parse(log)),
+  ).toContainEqual(
+    expect.objectContaining({
+      service: "pixiebrix-browser-extension",
+      manifestVersion: Number(MV),
+      error: expect.anything(),
+    }),
+  );
 });
