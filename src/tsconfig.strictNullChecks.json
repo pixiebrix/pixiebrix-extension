@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./components/fields/schemaFields/fieldTestUtils.ts",
     "./bricks/transformers/parseUrl.ts",
     "./bricks/transformers/ParseJson.ts",
     "./bricks/transformers/parseCsv.ts",
