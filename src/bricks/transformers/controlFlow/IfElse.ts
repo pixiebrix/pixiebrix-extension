@@ -93,6 +93,8 @@ class IfElse extends TransformerABC {
         counter: 0,
       });
     }
+
+    return null;
   }
 }
 
