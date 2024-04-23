@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/effects/insertHtml.ts",
     "./background/restrictUnauthenticatedUrlAccess.ts",
     "./background/backgroundPlatform.ts",
     "./pageEditor/fields/creatableAutosuggest/CreatableAutosuggest.tsx",

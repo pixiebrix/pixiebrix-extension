@@ -94,6 +94,10 @@ class InsertHtml extends EffectABC {
     const sanitizedHTML = sanitize(html);
     const sanitizedElement = $(sanitizedHTML).get(0);
 
+    if (sanitizedElement == null) {
+      throw new BusinessError("Invalid HTML element");
+    }
+
     const escapedId = escape(replacementId);
     if (replacementId) {
       // Use PIXIEBRIX_DATA_ATTR instead of id to support semantics of multiple elements on the page
@@ -106,7 +110,8 @@ class InsertHtml extends EffectABC {
     for (const anchorElement of anchorElements.get()) {
       try {
         anchorElement.insertAdjacentHTML(
-          POSITION_MAP.get(position),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- map is exhaustive
+          POSITION_MAP.get(position)!,
           sanitizedElement.outerHTML,
         );
       } catch (error) {
