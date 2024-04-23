@@ -4,6 +4,11 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/transformers/parseUrl.ts",
+    "./bricks/transformers/ParseJson.ts",
+    "./bricks/transformers/parseCsv.ts",
+    "./bricks/transformers/jq.ts",
+    "./bricks/transformers/controlFlow/IfElse.ts",
     "./bricks/effects/attachAutocomplete.ts",
     "./testUtils/factories/authFactories.ts",
     "./sidebar/LoginPanel.tsx",

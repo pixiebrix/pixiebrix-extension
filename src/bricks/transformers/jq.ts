@@ -136,15 +136,17 @@ export class JQTransformer extends TransformerABC {
           throw new BusinessError("Error opening stream, reload the page");
         }
 
-        // Prefer the full error message from the stack trace, if available, because jq/emscripten may truncate the
-        // message in the thrown error: https://github.com/pixiebrix/pixiebrix-extension/issues/3216
-        const stackMatch = jqStacktraceRegexp.exec(error.stack);
-        if (stackMatch?.groups?.message) {
-          throw new BusinessError(stackMatch.groups.message.trim());
+        if (error.stack) {
+          // Prefer the full error message from the stack trace, if available, because jq/emscripten may truncate the
+          // message in the thrown error: https://github.com/pixiebrix/pixiebrix-extension/issues/3216
+          const stackMatch = jqStacktraceRegexp.exec(error.stack);
+          if (stackMatch?.groups?.message) {
+            throw new BusinessError(stackMatch.groups.message.trim());
+          }
         }
 
         if (error.message.includes("compile error")) {
-          const message = error.stack.includes("unexpected $end")
+          const message = error.stack?.includes("unexpected $end")
             ? "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?"
             : "Invalid jq filter, see error log for details";
 
@@ -159,7 +161,7 @@ export class JQTransformer extends TransformerABC {
                 keyword: "format",
                 keywordLocation: "#/properties/filter/format",
                 instanceLocation: "#/filter",
-                error: error.stack,
+                error: error.stack ?? "",
               },
             ],
           );
