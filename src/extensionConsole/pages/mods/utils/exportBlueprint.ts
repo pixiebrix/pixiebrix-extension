@@ -20,6 +20,7 @@ import { type Metadata } from "@/types/registryTypes";
 import GenerateSchema from "generate-schema";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import {
+  ModComponentDefinition,
   type ModOptionsDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
@@ -31,15 +32,17 @@ import { isNullOrBlank } from "@/utils/stringUtils";
 /**
  * Infer optionsSchema from the options provided to the extension.
  */
-function inferOptionsSchema(optionsArgs: OptionsArgs): ModOptionsDefinition {
+function inferOptionsSchema(
+  optionsArgs: OptionsArgs | undefined,
+): ModOptionsDefinition | undefined {
   if (isEmpty(optionsArgs)) {
     return undefined;
   }
 
   return {
-    // The install flow supports passing in an object of properties, or a full schema where the top-level has
-    // `type: object` and a `properties` field. The following will output the full schema instead of the short-hand.
-    // This avoids a corner-case where we're using the short-hand version but one of the property names is "properties"
+    // The activation flow supports passing in an object of properties, or a full schema where the top-level has
+    // `type: object` and a `properties` field. The following will output the full schema instead of the shorthand.
+    // This avoids a corner-case where we're using the shorthand version but one of the property names is "properties"
     schema: GenerateSchema.json("Mod Options", optionsArgs) as Schema,
   };
 }
@@ -65,25 +68,33 @@ export function makeBlueprint(
     throw new Error("Expected UnresolvedExtension");
   }
 
-  return {
+  const extensionPoint: ModComponentDefinition = {
+    id: extensionPointId,
+    label,
+    templateEngine,
+    permissions,
+    config,
+  };
+  if (integrationDependencies) {
+    extensionPoint.services = Object.fromEntries(
+      integrationDependencies
+        .filter(({ outputKey }) => !isNullOrBlank(outputKey))
+        .map(({ outputKey, integrationId }) => [outputKey, integrationId]),
+    );
+  }
+
+  const modDefinition: UnsavedModDefinition = {
     apiVersion,
     kind: "recipe",
     metadata,
     definitions,
-    options: inferOptionsSchema(optionsArgs),
-    extensionPoints: [
-      {
-        id: extensionPointId,
-        label,
-        services: Object.fromEntries(
-          integrationDependencies
-            .filter(({ outputKey }) => !isNullOrBlank(outputKey))
-            .map(({ outputKey, integrationId }) => [outputKey, integrationId]),
-        ),
-        templateEngine,
-        permissions,
-        config,
-      },
-    ],
+    extensionPoints: [extensionPoint],
   };
+
+  const options = inferOptionsSchema(optionsArgs);
+  if (options) {
+    modDefinition.options = options;
+  }
+
+  return modDefinition;
 }
