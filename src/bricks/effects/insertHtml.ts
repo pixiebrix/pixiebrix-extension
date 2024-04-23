@@ -99,7 +99,7 @@ class InsertHtml extends EffectABC {
 
     if (sanitizedElement == null) {
       throw new PropError(
-        "Invalid HTML element, or not found on page",
+        "Invalid HTML element",
         InsertHtml.BRICK_ID,
         "html",
         html,
