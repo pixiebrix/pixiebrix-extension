@@ -1,4 +1,5 @@
 import { test, expect } from "../../fixtures/extensionBase";
+import { type Request } from "playwright-core";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
@@ -15,6 +16,20 @@ test("can report application error to telemetry service", async ({
   extensionId,
 }) => {
   const errorServiceEndpoint = "https://browser-intake-datadoghq.com/api/v2/*";
+  const expectRequestBody = (request: Request) => {
+    expect(
+      request
+        ?.postData()
+        ?.split("\n")
+        .map((log) => JSON.parse(log)),
+    ).toContainEqual(
+      expect.objectContaining({
+        service: "pixiebrix-browser-extension",
+        manifestVersion: Number(MV),
+        error: expect.anything(),
+      }),
+    );
+  };
 
   await context.route(
     "https://app.pixiebrix.com/api/extensions/",
@@ -28,7 +43,11 @@ test("can report application error to telemetry service", async ({
   );
 
   await context.route(errorServiceEndpoint, async (route) => {
-    await route.fulfill({
+    if (route.request().serviceWorker()) {
+      expectRequestBody(route.request());
+    }
+
+    return route.fulfill({
       status: 202,
     });
   });
@@ -56,16 +75,5 @@ test("can report application error to telemetry service", async ({
   //  request to be sent. We should figure out a way to induce the request to be sent sooner.
   const request = await offscreenPage?.waitForRequest(errorServiceEndpoint);
 
-  expect(
-    request
-      ?.postData()
-      ?.split("\n")
-      .map((log) => JSON.parse(log)),
-  ).toContainEqual(
-    expect.objectContaining({
-      service: "pixiebrix-browser-extension",
-      manifestVersion: Number(MV),
-      error: expect.anything(),
-    }),
-  );
+  expectRequestBody(request);
 });
