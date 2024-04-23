@@ -29,14 +29,36 @@ import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/knownErrorMessages";
 /**
  * Base class for Errors arising from business logic in the brick, not the PixieBrix application/extension itself.
  *
- * Used for blame analysis for reporting and alerting.
+ * Where possible, use a more specific subclass of BusinessError. Some subclasses have an enriched error view in
+ * the mod log viewer.
+ *
+ * "Business" Errors vs. "Application" Errors:
+ * - Application errors indicate a bug in PixieBrix itself, which must be addressed by the PixieBrix team
+ * - Business errors indicate a problem with user-defined content or 3rd party services. They should be addressed
+ *   by the customer.
+ * - Business errors are not reported to Datadog, but are reported to the PixieBrix error telemetry service
+ *
+ * Throw a BusinessError (or a BusinessError subclass) to indicate:
+ * - A logic error in a package definition
+ * - A logic error in a brick configuration (i.e., a mod definition, or custom brick definition)
+ * - A runtime error due to user-provided values (e.g., bad configuration options)
+ * - A failed 3rd-party API call
+ *
+ * Use an Application error (i.e., Error subclass) to indicate:
+ * - A bug in PixieBrix itself
+ * - A failed API call to a PixieBrix service (e.g., fetching packages)
+ *
+ * Other guidelines:
+ * - Throw an application error for assertions that should never fail, e.g., that the function caller should have
+ *   checked the precondition before calling a function. This guideline applies even if the condition is due to
+ *   package configuration/user input, because it represents a bug in our code.
  */
 export class BusinessError extends Error {
   override name = "BusinessError";
 }
 
 /**
- * Error that a registry definition is invalid
+ * Error that a registry package definition is invalid.
  */
 export class InvalidDefinitionError extends BusinessError {
   override name = "InvalidDefinitionError";
@@ -120,8 +142,11 @@ export class InvalidSelectorError extends BusinessError {
 }
 
 /**
- * An error indicating an invalid input was provided to a brick. Used for checks that cannot be performed as part
- * of JSONSchema input validation
+ * An error indicating an invalid input was provided to a brick. Used for runtime checks that cannot be performed as
+ * part of JSONSchema input validation.
+ *
+ * Throwing PropError instead of BusinessError allows the Page Editor so show the error on the associated field
+ * in the brick configuration UI.
  *
  * @see InputValidationError
  */
