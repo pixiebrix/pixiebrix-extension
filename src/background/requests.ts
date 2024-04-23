@@ -26,9 +26,9 @@ import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/data/service/apiClient";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
-  selectRemoteResponseErrorMessage,
   isProxiedErrorResponse,
   proxyResponseToAxiosResponse,
+  selectRemoteResponseErrorMessage,
 } from "@/background/proxyUtils";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import {
@@ -76,13 +76,7 @@ type SanitizedResponse<T = unknown> = Pick<
 
 const UNAUTHORIZED_STATUS_CODES = new Set([401, 403]);
 
-function sanitizeResponse<T>(
-  response: AxiosResponse<T> | null,
-): SanitizedResponse<T> | null {
-  if (response == null) {
-    return null;
-  }
-
+function sanitizeResponse<T>(response: AxiosResponse<T>): SanitizedResponse<T> {
   const { data, status, statusText } = response;
   return ensureJsonObject({ data, status, statusText }) as SanitizedResponse<T>;
 }
@@ -124,9 +118,7 @@ async function serializableAxiosRequest<T>(
   // Axios does not perform validation, so call before axios
   assertProtocolUrl(config.url, ["https:", "http:"]);
 
-  const response = await axios(config);
-
-  return sanitizeResponse(response);
+  return sanitizeResponse(await axios(config));
 }
 
 /**
@@ -158,10 +150,6 @@ async function authenticate(
   options: { interactive: boolean },
 ): Promise<NetworkRequestConfig> {
   expectContext("background");
-
-  if (config == null) {
-    throw new Error("Integration configuration is required to authenticate");
-  }
 
   if (config.proxy) {
     throw new Error(
@@ -227,10 +215,6 @@ async function proxyRequest<T>(
   integrationConfig: SanitizedIntegrationConfig,
   requestConfig: NetworkRequestConfig,
 ): Promise<RemoteResponse<T>> {
-  if (integrationConfig == null) {
-    throw new Error("Integration configuration is required for proxyRequest");
-  }
-
   const authenticatedRequestConfig = await authenticate(
     pixiebrixConfigurationFactory(),
     {

@@ -22,6 +22,7 @@ import {
   setToolbarBadge,
   traces,
   openTab,
+  performConfiguredRequestInBackground,
 } from "@/background/messenger/strict/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -30,7 +31,6 @@ import type { PlatformCapability } from "@/platform/capabilities";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import {
   ensureContextMenu,
-  performConfiguredRequestInBackground,
   uninstallContextMenu,
 } from "@/background/messenger/api";
 import { ephemeralForm } from "@/contentScript/ephemeralForm";
