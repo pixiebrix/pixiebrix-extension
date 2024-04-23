@@ -21,10 +21,10 @@ import InsertMenuItemPane from "@/pageEditor/panes/insert/InsertMenuItemPane";
 import InsertPanelPane from "@/pageEditor/panes/insert/InsertPanelPane";
 import { useDispatch } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { cancelSelect } from "@/contentScript/messenger/api";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
 import useAutoInsert from "@/pageEditor/panes/insert/useAutoInsert";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import { cancelSelect } from "@/contentScript/messenger/strict/api";
 
 const InsertPane: React.FC<{ inserting: StarterBrickType }> = ({
   inserting,
