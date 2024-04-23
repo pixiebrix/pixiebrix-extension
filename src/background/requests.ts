@@ -64,6 +64,7 @@ import {
 } from "@/integrations/constants";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
+import { Nullishable } from "@/utils/nullishUtils";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)
@@ -386,7 +387,7 @@ async function getIntegrationMessageContext(
 export async function performConfiguredRequest<TData>(
   // Note: This signature is ignored by `webext-messenger` due to the generic,
   // so it must be copied into `background/messenger/api.ts`
-  integrationConfig: SanitizedIntegrationConfig | null,
+  integrationConfig: Nullishable<SanitizedIntegrationConfig>,
   requestConfig: NetworkRequestConfig,
   options: { interactiveLogin: boolean },
 ): Promise<RemoteResponse<TData>> {
