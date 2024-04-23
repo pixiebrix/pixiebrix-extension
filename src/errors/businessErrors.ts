@@ -52,7 +52,7 @@ import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/knownErrorMessages";
  * Other guidelines:
  * - Throw an application error for assertions that should never fail, e.g., that the function caller should have
  *   checked the precondition before calling a function. This guideline applies even if the condition is due to
- *   package configuration/user input, because it represents a bug in our code.
+ *   package definition/user input, because it represents a bug in our code.
  */
 export class BusinessError extends Error {
   override name = "BusinessError";
