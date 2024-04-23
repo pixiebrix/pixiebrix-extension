@@ -64,7 +64,7 @@ import {
 } from "@/integrations/constants";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
-import { Nullishable } from "@/utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)
