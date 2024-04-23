@@ -49,7 +49,7 @@ test("can report application error to telemetry service", async ({
           .startsWith(`chrome-extension://${extensionId}/offscreen.html`),
       );
 
-    expect(offscreenPage.url()).toBeDefined();
+    expect(offscreenPage?.url()).toBeDefined();
   }).toPass({ timeout: 5000 });
 
   // TODO: due to Datadog SDK implementation, it will take ~30 seconds for the
