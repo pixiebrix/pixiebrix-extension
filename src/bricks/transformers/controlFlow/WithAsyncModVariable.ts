@@ -176,11 +176,7 @@ export class WithAsyncModVariable extends TransformerABC {
     { logger, runPipeline }: BrickOptions,
   ) {
     const requestId = uuidv4();
-    const { blueprintId, extensionId } = logger.context;
-    assertNotNullish(
-      blueprintId,
-      "This brick must be inside a Mod to use a mod variable",
-    );
+    const { blueprintId = null, extensionId } = logger.context;
     assertNotNullish(
       extensionId,
       "Logger extensionId is null, something went wrong",

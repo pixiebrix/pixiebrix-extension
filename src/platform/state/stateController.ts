@@ -21,6 +21,7 @@ import { cloneDeep, isEqual, merge } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
 import { assertPlatformCapability } from "@/platform/platformContext";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 type MergeStrategy = "shallow" | "replace" | "deep";
 
@@ -71,8 +72,8 @@ function dispatchStageChangeEventOnChange({
   previous: unknown;
   next: unknown;
   namespace: string;
-  extensionId: UUID;
-  blueprintId: RegistryId | null;
+  extensionId: Nullishable<UUID>;
+  blueprintId: Nullishable<RegistryId>;
 }) {
   if (!isEqual(previous, next)) {
     // For now, leave off the event data because we're using a public channel
@@ -94,19 +95,16 @@ export function setState({
   data,
   mergeStrategy,
   extensionId,
-  blueprintId,
+  // Normalize undefined to null for lookup
+  blueprintId = null,
 }: {
   namespace: StateNamespace;
   data: JsonObject;
   mergeStrategy: MergeStrategy;
-  extensionId: UUID | null;
-  blueprintId: RegistryId | null;
+  extensionId: Nullishable<UUID>;
+  blueprintId: Nullishable<RegistryId>;
 }) {
   assertPlatformCapability("state");
-
-  if (extensionId == null) {
-    throw new Error("extensionId is required");
-  }
 
   const notifyOnChange = (previous: JsonObject, next: JsonObject) => {
     dispatchStageChangeEventOnChange({
@@ -130,12 +128,14 @@ export function setState({
     case "blueprint": {
       const previous = modState.get(blueprintId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
+      console.log("setting blueprint state", blueprintId, next);
       modState.set(blueprintId, next);
       notifyOnChange(previous, next);
       return next;
     }
 
     case "extension": {
+      assertNotNullish(extensionId, "Invalid context: extensionId not found");
       const previous = privateState.get(extensionId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
       privateState.set(extensionId, next);
@@ -153,11 +153,12 @@ export function setState({
 export function getState({
   namespace,
   extensionId,
-  blueprintId,
+  // Normalize undefined to null for lookup
+  blueprintId = null,
 }: {
   namespace: StateNamespace;
-  extensionId: UUID;
-  blueprintId: RegistryId | null;
+  extensionId: Nullishable<UUID>;
+  blueprintId: Nullishable<RegistryId>;
 }): JsonObject {
   assertPlatformCapability("state");
 
@@ -167,14 +168,16 @@ export function getState({
     }
 
     case "blueprint": {
+      console.log(
+        "getting blueprint state",
+        blueprintId,
+        modState.get(blueprintId),
+      );
       return modState.get(blueprintId) ?? {};
     }
 
     case "extension": {
-      if (extensionId == null) {
-        throw new Error("Invalid context: extensionId not found");
-      }
-
+      assertNotNullish(extensionId, "Invalid context: extensionId not found");
       return privateState.get(extensionId) ?? {};
     }
 
