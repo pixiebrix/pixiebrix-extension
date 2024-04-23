@@ -20,6 +20,19 @@ import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { type UUID } from "@/types/stringTypes";
+
+type ModMetadata = {
+  id: string;
+  version?: string;
+};
+
+type RunMetadata = {
+  modComponentId: UUID | null;
+  runId: UUID | null;
+  mod: ModMetadata | null;
+  deploymentId: UUID | null;
+};
 
 /**
  * Returns metadata for the current run.
@@ -89,9 +102,9 @@ class RunMetadataTransformer extends TransformerABC {
   );
 
   async transform(
-    _args: BrickArgs<unknown>,
+    _args: BrickArgs<UnknownObject>,
     { logger, meta }: BrickOptions,
-  ): Promise<unknown> {
+  ): Promise<RunMetadata> {
     const { context } = logger;
 
     return {
@@ -103,7 +116,7 @@ class RunMetadataTransformer extends TransformerABC {
               version: context.blueprintVersion,
             },
       deploymentId: context.deploymentId ?? null,
-      modComponentId: context.extensionId,
+      modComponentId: context.extensionId ?? null,
       runId: meta.runId,
     };
   }

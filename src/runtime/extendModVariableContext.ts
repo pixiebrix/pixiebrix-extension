@@ -22,8 +22,8 @@ import apiVersionOptions, {
 } from "@/runtime/apiVersionOptions";
 import { pickBy } from "lodash";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { validateUUID } from "@/types/helpers";
 import { assertPlatformCapability } from "@/platform/platformContext";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Variable for accessing the mod Page State.
@@ -95,7 +95,7 @@ export function contextAsPlainObject<T extends UnknownObject = UnknownObject>(
  * Returns an extended state with a `@mod` variable provided.
  * @since 1.7.34
  * @param originalContext The original context
- * @param blueprintId The mod ID, or null if not in a mod
+ * @param blueprintId The mod ID, if there is one
  * @param update If true, the mod variable will be updated with the latest state
  * @param options The runtime version API options
  */
@@ -106,7 +106,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
     update = false,
     options,
   }: {
-    blueprintId: RegistryId | null;
+    blueprintId: Nullishable<RegistryId>;
     update?: boolean;
     options: Pick<ApiVersionOptions, "extendModVariable">;
   },
@@ -139,7 +139,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
     namespace: "blueprint",
     blueprintId,
     // `extensionId` is not used because namespace is `blueprint`
-    extensionId: validateUUID(null),
+    extensionId: null,
   });
 
   return {

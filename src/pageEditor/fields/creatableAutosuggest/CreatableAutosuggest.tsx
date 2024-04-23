@@ -42,9 +42,13 @@ interface CreateNew extends SuggestionTypeBase {
 }
 
 function isNew<T extends SuggestionTypeBase>(
-  suggestion: T | CreateNew,
+  suggestion: T | CreateNew | null,
 ): suggestion is CreateNew {
-  return suggestion && "isNew" in suggestion;
+  if (suggestion == null) {
+    return false;
+  }
+
+  return "isNew" in suggestion;
 }
 
 export interface Props<SuggestionType extends SuggestionTypeBase> {
@@ -157,7 +161,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
     (suggestion: SuggestionType | CreateNew) =>
       isNew(suggestion)
         ? // TODO: Fix or drop https://github.com/pixiebrix/pixiebrix-extension/issues/6686
-          renderCreateNew(`Create "${suggestion.value}"`)
+          renderCreateNew?.(`Create "${suggestion.value}"`)
         : renderSuggestion(suggestion),
     [renderCreateNew, renderSuggestion],
   );
@@ -187,7 +191,11 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
     SuggestionType | CreateNew
   > = (event, data) => {
     if (isNew(data.suggestion)) {
-      const newSuggestion = onCreateNew(data.suggestionValue);
+      const newSuggestion = onCreateNew?.(data.suggestionValue);
+      if (newSuggestion == null) {
+        return;
+      }
+
       setCreatedSuggestions((existing) => [...existing, newSuggestion]);
       onSuggestionSelected(newSuggestion);
     } else {

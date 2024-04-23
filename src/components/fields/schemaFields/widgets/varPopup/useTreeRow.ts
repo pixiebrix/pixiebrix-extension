@@ -16,6 +16,7 @@
  */
 
 import { type MutableRefObject, useEffect } from "react";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * A hack to make JSON Tree rows clickable/highlightable.
@@ -36,6 +37,7 @@ function useTreeRow({
     if (buttonRef.current) {
       // Find the containing row in the JSONTree
       const row = buttonRef.current.closest("li");
+      assertNotNullish(row, "Could not find row element");
 
       const controller = new AbortController();
       row.addEventListener(
@@ -66,7 +68,7 @@ function useTreeRow({
       if (isActive) {
         $row.addClass("active");
 
-        $row.get(0).scrollIntoViewIfNeeded?.();
+        $row.get(0)?.scrollIntoViewIfNeeded?.();
       } else {
         $row.removeClass("active");
       }

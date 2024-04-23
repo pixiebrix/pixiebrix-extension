@@ -21,9 +21,10 @@ import { type Schema } from "@/types/schemaTypes";
 import sanitize from "@/utils/sanitize";
 import { PIXIEBRIX_DATA_ATTR } from "@/domConstants";
 import { escape } from "lodash";
-import { BusinessError } from "@/errors/businessErrors";
+import { BusinessError, PropError } from "@/errors/businessErrors";
 import { $safeFind } from "@/utils/domUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { validateRegistryId } from "@/types/helpers";
 
 type Position = "before" | "prepend" | "append" | "after";
 
@@ -37,9 +38,11 @@ const POSITION_MAP = new Map<Position, InsertPosition>([
 ]);
 
 class InsertHtml extends EffectABC {
+  static BRICK_ID = validateRegistryId("@pixiebrix/html/insert");
+
   constructor() {
     super(
-      "@pixiebrix/html/insert",
+      InsertHtml.BRICK_ID,
       "Insert HTML Element",
       "Insert HTML Element relative to another element on the page",
     );
@@ -94,6 +97,15 @@ class InsertHtml extends EffectABC {
     const sanitizedHTML = sanitize(html);
     const sanitizedElement = $(sanitizedHTML).get(0);
 
+    if (sanitizedElement == null) {
+      throw new PropError(
+        "Invalid HTML element",
+        InsertHtml.BRICK_ID,
+        "html",
+        html,
+      );
+    }
+
     const escapedId = escape(replacementId);
     if (replacementId) {
       // Use PIXIEBRIX_DATA_ATTR instead of id to support semantics of multiple elements on the page
@@ -106,7 +118,8 @@ class InsertHtml extends EffectABC {
     for (const anchorElement of anchorElements.get()) {
       try {
         anchorElement.insertAdjacentHTML(
-          POSITION_MAP.get(position),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- map is exhaustive
+          POSITION_MAP.get(position)!,
           sanitizedElement.outerHTML,
         );
       } catch (error) {
