@@ -128,7 +128,6 @@ export function setState({
     case "blueprint": {
       const previous = modState.get(blueprintId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      console.log("setting blueprint state", blueprintId, next);
       modState.set(blueprintId, next);
       notifyOnChange(previous, next);
       return next;
@@ -168,11 +167,6 @@ export function getState({
     }
 
     case "blueprint": {
-      console.log(
-        "getting blueprint state",
-        blueprintId,
-        modState.get(blueprintId),
-      );
       return modState.get(blueprintId) ?? {};
     }
 
