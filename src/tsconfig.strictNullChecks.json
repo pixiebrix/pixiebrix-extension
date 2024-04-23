@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/fields/creatableAutosuggest/CreatableAutosuggest.tsx",
     "./mods/useModViewItems.tsx",
     "./extensionConsole/pages/mods/GetStartedView.tsx",
     "../end-to-end-tests/auth.setup.ts",
