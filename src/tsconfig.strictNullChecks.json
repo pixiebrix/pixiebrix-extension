@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./testUtils/factories/authFactories.ts",
     "./sidebar/LoginPanel.tsx",
     "./pageScript/elementInfo.ts",
     "./extensionConsole/pages/mods/utils/exportBlueprint.ts",
