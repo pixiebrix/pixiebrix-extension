@@ -105,3 +105,6 @@ export const performConfiguredRequestInBackground = getMethod(
   requestConfig: NetworkRequestConfig,
   options: { interactiveLogin: boolean },
 ) => Promise<RemoteResponse<TData>>;
+
+export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
+export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);

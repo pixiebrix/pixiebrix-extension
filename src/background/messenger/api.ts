@@ -23,8 +23,6 @@ import {
 } from "webext-messenger";
 
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
-export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
-export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
 export const setPartnerCopilotData = getNotifier(
   "SET_PARTNER_COPILOT_DATA",
   bg,

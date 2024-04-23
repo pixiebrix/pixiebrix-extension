@@ -46,10 +46,7 @@ import {
   recordEvent,
   sendDeploymentAlert,
 } from "@/background/telemetry"; // 197 strictNullCheck errors
-import {
-  getPartnerPrincipals,
-  launchAuthIntegration,
-} from "@/background/partnerIntegrations"; // 24 strictNullCheck errors
+
 import { setCopilotProcessData } from "@/background/partnerHandlers"; // 29 strictNullCheck errors
 
 expectContext("background");
@@ -61,8 +58,6 @@ declare global {
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
 
-    GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
-    LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
     SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
 
     INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
@@ -86,8 +81,6 @@ declare global {
 
 export default function registerMessenger(): void {
   registerMethods({
-    GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
-    LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
     SET_PARTNER_COPILOT_DATA: setCopilotProcessData,
 
     INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
