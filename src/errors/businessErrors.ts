@@ -27,15 +27,16 @@ import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/knownErrorMessages";
  */
 
 /**
- * Base class for Errors arising from business logic in the brick, not the PixieBrix application/extension itself.
+ * Base class for Errors arising from user-defined logic/inputs, not PixieBrix itself.
  *
  * Where possible, use a more specific subclass of BusinessError. Some subclasses have an enriched error view in
  * the mod log viewer.
  *
  * "Business" Errors vs. "Application" Errors:
- * - Application errors indicate a bug in PixieBrix itself, which must be addressed by the PixieBrix team
- * - Business errors indicate a problem with user-defined content or 3rd party services. They should be addressed
- *   by the customer.
+ * - Application errors (subclasses of Error) indicate a bug or failure in PixieBrix itself, which must be addressed
+ *   by the PixieBrix team
+ * - Business errors indicate a problem with user-defined content or 3rd party services. They must be addressed
+ *   by the customer
  * - Business errors are not reported to Datadog, but are reported to the PixieBrix error telemetry service
  *
  * Throw a BusinessError (or a BusinessError subclass) to indicate:
