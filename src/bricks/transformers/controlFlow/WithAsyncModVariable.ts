@@ -33,6 +33,7 @@ import { PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
@@ -104,7 +105,7 @@ export class WithAsyncModVariable extends TransformerABC {
   ): Promise<Schema | undefined> {
     const { stateKey } = _config.config;
 
-    let name = "";
+    let name: string | null = null;
     try {
       name = castTextLiteralOrThrow(stateKey);
     } catch {
@@ -176,6 +177,14 @@ export class WithAsyncModVariable extends TransformerABC {
   ) {
     const requestId = uuidv4();
     const { blueprintId, extensionId } = logger.context;
+    assertNotNullish(
+      blueprintId,
+      "This brick must be inside a Mod to use a mod variable",
+    );
+    assertNotNullish(
+      extensionId,
+      "Logger extensionId is null, something went wrong",
+    );
 
     if (isNullOrBlank(stateKey)) {
       throw new PropError(
@@ -280,7 +289,7 @@ export class WithAsyncModVariable extends TransformerABC {
             currentData: null,
             data: null,
             requestId,
-            error: serializeError(error),
+            error: serializeError(error) as JsonObject,
           },
           "put",
         );

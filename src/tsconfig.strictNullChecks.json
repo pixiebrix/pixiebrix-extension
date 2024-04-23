@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/transformers/controlFlow/WithAsyncModVariable.ts",
     "./bricks/effects/scrollIntoView.ts",
     "./bricks/effects/runSubTour.ts",
     "./bricks/effects/insertHtml.ts",

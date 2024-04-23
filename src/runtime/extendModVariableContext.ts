@@ -135,12 +135,14 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
   // Eagerly grab the state. It's fast/synchronous since it's in memory in the same JS context.
   // Previously, we had considered using a proxy to lazily load the state. However, eagerly reading is simpler.
   // Additionally, in the future to pass the context to the sandbox we'd have to always load the state anyway.
-  const modState = getState({
-    namespace: "blueprint",
-    blueprintId,
-    // `extensionId` is not used because namespace is `blueprint`
-    extensionId: validateUUID(null),
-  });
+  const modState = blueprintId
+    ? getState({
+        namespace: "blueprint",
+        blueprintId,
+        // `extensionId` is not used because namespace is `blueprint`
+        extensionId: validateUUID(null),
+      })
+    : {};
 
   return {
     ...originalContext,

@@ -24,6 +24,8 @@ import { assertPlatformCapability } from "@/platform/platformContext";
 
 type MergeStrategy = "shallow" | "replace" | "deep";
 
+type StateNamespace = "blueprint" | "extension" | "shared";
+
 const privateState = new Map<UUID, JsonObject>();
 
 /**
@@ -92,10 +94,9 @@ export function setState({
   data,
   mergeStrategy,
   extensionId,
-  // Normalize undefined to null for lookup
-  blueprintId = null,
+  blueprintId,
 }: {
-  namespace: string;
+  namespace: StateNamespace;
   data: JsonObject;
   mergeStrategy: MergeStrategy;
   extensionId: UUID | null;
@@ -143,7 +144,8 @@ export function setState({
     }
 
     default: {
-      throw new BusinessError(`Invalid namespace: ${namespace}`);
+      const exhaustiveCheck: never = namespace;
+      throw new BusinessError(`Invalid namespace: ${exhaustiveCheck}`);
     }
   }
 }
@@ -151,10 +153,9 @@ export function setState({
 export function getState({
   namespace,
   extensionId,
-  // Normalize undefined to null for lookup
-  blueprintId = null,
+  blueprintId,
 }: {
-  namespace: string;
+  namespace: StateNamespace;
   extensionId: UUID;
   blueprintId: RegistryId | null;
 }): JsonObject {
@@ -178,7 +179,8 @@ export function getState({
     }
 
     default: {
-      throw new BusinessError(`Invalid namespace: ${namespace}`);
+      const exhaustiveCheck: never = namespace;
+      throw new BusinessError(`Invalid namespace: ${exhaustiveCheck}`);
     }
   }
 }
