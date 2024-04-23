@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/effects/attachAutocomplete.ts",
     "./testUtils/factories/authFactories.ts",
     "./sidebar/LoginPanel.tsx",
     "./pageScript/elementInfo.ts",
