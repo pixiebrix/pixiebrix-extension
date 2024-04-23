@@ -97,6 +97,19 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
   ];
 }
 
+const IsolatedPropertyTree: React.FC<{ value: TreeNode[] }> = ({ value }) => (
+  <IsolatedComponent
+    name="PropertyTree"
+    lazy={async () =>
+      import(
+        /* webpackChunkName: "isolated/PropertyTree" */
+        "./PropertyTree"
+      )
+    }
+    factory={(PropertyTree) => <PropertyTree value={value} />}
+  />
+);
+
 export class PropertyTableRenderer extends RendererABC {
   constructor() {
     super(
@@ -117,21 +130,8 @@ export class PropertyTableRenderer extends RendererABC {
   );
 
   async render({ data }: BrickArgs, { ctxt }: BrickOptions) {
-    const PropertyTree: React.FC<{ value: TreeNode[] }> = ({ value }) => (
-      <IsolatedComponent
-        name="PropertyTree"
-        lazy={async () =>
-          import(
-            /* webpackChunkName: "isolated/PropertyTree" */
-            "./PropertyTree"
-          )
-        }
-        factory={(PropertyTree) => <PropertyTree value={value} />}
-      />
-    );
-
     return {
-      Component: PropertyTree,
+      Component: IsolatedPropertyTree,
       props: {
         value: shapeData(data ?? ctxt),
       },

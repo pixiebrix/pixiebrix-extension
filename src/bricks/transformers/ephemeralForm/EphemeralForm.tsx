@@ -42,7 +42,7 @@ const PanelLayout: React.FC = ({ children }) => (
   <div className="p-3">{children}</div>
 );
 
-const EphemeralFormContent: React.FunctionComponent<
+const IsolatedEphemeralFormContent: React.FunctionComponent<
   EphemeralFormContentProps
 > = (props) => (
   <IsolatedComponent
@@ -117,7 +117,7 @@ const EphemeralForm: React.FC = () => {
   return (
     <FormContainer>
       <ErrorBoundary>
-        <EphemeralFormContent
+        <IsolatedEphemeralFormContent
           definition={formDefinition}
           target={target}
           nonce={nonce}
