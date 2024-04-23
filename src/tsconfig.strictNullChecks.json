@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/transformers/splitText.ts",
     "./bricks/transformers/RunMetadataTransformer.ts",
     "./bricks/transformers/controlFlow/WithAsyncModVariable.ts",
     "./bricks/effects/scrollIntoView.ts",
