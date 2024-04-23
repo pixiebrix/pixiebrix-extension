@@ -26,9 +26,15 @@ import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
-import integrationsSlice from "@/integrations/store/integrationsSlice";
+import integrationsSlice, {
+  IntegrationsState,
+} from "@/integrations/store/integrationsSlice";
 
-function configureCommonStoreForTests(initialState?: unknown) {
+function configureCommonStoreForTests(initialState?: {
+  auth?: unknown;
+  settings?: unknown;
+  integrations?: IntegrationsState;
+}) {
   return configureStore({
     reducer: {
       auth: persistReducer(persistAuthConfig, authSlice.reducer),

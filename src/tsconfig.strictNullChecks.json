@@ -4,6 +4,12 @@
     "strictNullChecks": true
   },
   "files": [
+    "./tinyPages/walkthroughModal.tsx",
+    "./testUtils/userMock.ts",
+    "./testUtils/userEventHelpers.ts",
+    "./testUtils/renderWithCommonStore.ts",
+    "./testUtils/factories/modComponentFactories.ts",
+    "./testUtils/factories/marketplaceFactories.ts",
     "./starterBricks/starterBrickTestUtils.ts",
     "./sidebar/hooks/useConnectedTargetUrl.tsx",
     "./pageScript/frameworks/contrib/react.ts",

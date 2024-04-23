@@ -45,7 +45,8 @@ import {
  * @see ModComponentBase._recipe
  */
 // Don't export -- the use is clearer if it's always written as ModComponentBase[_recipe] property
-type ModMetadata = Metadata & {
+// XXX: Usage may be clearer, but the ergonomics of (ModMetadata | undefined) are terrible to handle with strict null checks
+export type ModMetadata = Metadata & {
   /**
    * `undefined` for recipes that were activated prior to the field being added
    */
