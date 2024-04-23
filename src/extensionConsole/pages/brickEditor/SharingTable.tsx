@@ -24,7 +24,7 @@ import React from "react";
 import { useField } from "formik";
 import { useGetOrganizationsQuery } from "@/data/service/api";
 import { type Organization } from "@/types/contract";
-import { UUID } from "@/types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 
 const SharingTable: React.FunctionComponent = () => {
   const { data: organizations = [] } = useGetOrganizationsQuery();

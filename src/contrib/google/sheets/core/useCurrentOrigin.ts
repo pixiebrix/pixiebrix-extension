@@ -20,7 +20,7 @@ import { useEffect } from "react";
 import notify from "@/utils/notify";
 import useAsyncState from "@/hooks/useAsyncState";
 import { isPageEditor } from "@/utils/expectContext";
-import { Nullishable } from "@/utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Get the current origin for where code is running. Used to set the origin on the

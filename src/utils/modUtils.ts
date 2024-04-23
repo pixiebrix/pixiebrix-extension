@@ -37,7 +37,7 @@ import {
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { InvalidTypeError } from "@/errors/genericErrors";
-import { assertNotNullish, Nullishable } from "./nullishUtils";
+import { assertNotNullish, type Nullishable } from "./nullishUtils";
 import {
   minimalSchemaFactory,
   minimalUiSchemaFactory,

@@ -27,7 +27,7 @@ import {
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
 import integrationsSlice, {
-  IntegrationsState,
+  type IntegrationsState,
 } from "@/integrations/store/integrationsSlice";
 
 function configureCommonStoreForTests(initialState?: {

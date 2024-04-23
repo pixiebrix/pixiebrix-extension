@@ -19,7 +19,7 @@ import { type Config, define, extend } from "cooky-cutter";
 import {
   type ActivatedModComponent,
   type ModComponentBase,
-  ModMetadata,
+  type ModMetadata,
 } from "@/types/modComponentTypes";
 import {
   timestampFactory,
