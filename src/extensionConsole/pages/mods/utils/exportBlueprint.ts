@@ -20,7 +20,7 @@ import { type Metadata } from "@/types/registryTypes";
 import GenerateSchema from "generate-schema";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import {
-  ModComponentDefinition,
+  type ModComponentDefinition,
   type ModOptionsDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
