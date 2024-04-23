@@ -46,8 +46,6 @@ test.describe("forms flickering due to components unexpectedly unmounting/remoun
 
     const sideBarPage = await getSidebarPage(page, extensionId);
 
-    await page.pause();
-
     const input = sideBarPage.getByPlaceholder("Search snippets");
     await input.click();
     // Add delay to give time for the the input to lose focus
