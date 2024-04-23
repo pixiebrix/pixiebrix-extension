@@ -37,7 +37,7 @@ import {
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { InvalidTypeError } from "@/errors/genericErrors";
-import { assertNotNullish } from "./nullishUtils";
+import { assertNotNullish, type Nullishable } from "./nullishUtils";
 import {
   minimalSchemaFactory,
   minimalUiSchemaFactory,
@@ -160,7 +160,7 @@ function hasRegistryScope(
  * @param mod the mod
  * @param userScope the user's scope, or null if it's not set
  */
-function isPersonal(mod: Mod, userScope: string | null): boolean {
+function isPersonal(mod: Mod, userScope: Nullishable<string>): boolean {
   if (isResolvedModComponent(mod)) {
     return (
       isPersonalModComponent(mod) ||
@@ -209,7 +209,7 @@ export function getSharingSource({
 }: {
   mod: Mod;
   organizations: Organization[];
-  scope: string;
+  scope: Nullishable<string>;
   installedExtensions: UnresolvedModComponent[];
 }): SharingSource {
   let sharingType: SharingType | null = null;

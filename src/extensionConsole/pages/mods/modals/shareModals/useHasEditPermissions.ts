@@ -17,7 +17,6 @@
 
 import { selectAuth } from "@/auth/authSelectors";
 import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
-import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { UserRole } from "@/types/contract";
 import { type RegistryId } from "@/types/registryTypes";
 import { getScopeAndId } from "@/utils/registryUtils";
@@ -25,21 +24,18 @@ import { useSelector } from "react-redux";
 
 const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
 
-export default function useHasEditPermissions(blueprintId: RegistryId) {
+export default function useHasEditPermissions(modId: RegistryId) {
   const { scope: userScope } = useSelector(selectAuth);
-
-  const { data: recipe } = useOptionalModDefinition(blueprintId);
-
+  const { scope: modIdScope } = getScopeAndId(modId);
   const sortedOrganizations = useSortOrganizations();
-  const [recipeScope] = getScopeAndId(recipe?.metadata.id);
 
   let hasEditPermissions = false;
 
-  if (recipeScope === userScope) {
+  if (modIdScope === userScope) {
     hasEditPermissions = true;
   } else {
     const ownerOrganization = sortedOrganizations.find(
-      (x) => x.scope === recipeScope,
+      (x) => x.scope === modIdScope,
     );
 
     if (ownerOrganization) {
