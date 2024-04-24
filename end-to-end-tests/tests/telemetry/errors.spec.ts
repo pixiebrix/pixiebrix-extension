@@ -3,6 +3,7 @@ import { test, expect } from "../../fixtures/extensionBase";
 import { type Page, test as base } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
 import { MV } from "../../env";
+import { ensureVisibility } from "../../utils";
 
 // TODO: Fix this test for MV2
 test.skip(
@@ -34,7 +35,7 @@ test("can report application error to telemetry service", async ({
   });
 
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
-  await expect(page.getByText("An error occurred")).toBeVisible();
+  await ensureVisibility(page.getByText("An error occurred"));
 
   // Due to service worker limitations with the Datadog SDK, we need to report errors via an offscreen document
   // (see https://github.com/pixiebrix/pixiebrix-extension/issues/8268). The offscreen document is created when
