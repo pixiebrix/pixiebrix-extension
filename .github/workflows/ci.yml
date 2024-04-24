@@ -9,6 +9,7 @@ env:
   SERVICE_URL: https://app-stg.pixiebrix.com/
   E2E_TEST_USER_EMAIL_UNAFFILIATED: ${{ secrets.E2E_TEST_USER_EMAIL_UNAFFILIATED }}
   E2E_TEST_USER_PASSWORD_UNAFFILIATED: ${{ secrets.E2E_TEST_USER_PASSWORD_UNAFFILIATED }}
+  DEV_EVENT_TELEMETRY: false
 
 jobs:
   test:
@@ -205,6 +206,7 @@ jobs:
       DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
       DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
       REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST: 1
+      DEV_EVENT_TELEMETRY: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
