@@ -75,22 +75,22 @@ interface UserSummary {
   /**
    * The version_name from the manifest.
    */
-  versionName: string;
+  versionName?: string;
 
   /**
    * The number of active mod components.
    */
-  numActiveExtensions: number;
+  numActiveExtensions: number | null;
 
   /**
    * The number of active mods.
    */
-  numActiveBlueprints: number;
+  numActiveBlueprints: number | null;
 
   /**
    * The number of active starer bricks.
    */
-  numActiveExtensionPoints: number;
+  numActiveExtensionPoints: number | null;
 
   /**
    * The detected operating system.
@@ -105,7 +105,7 @@ interface UserSummary {
   /**
    * The detected browser version.
    */
-  $browser_version: number;
+  $browser_version: number | null;
 }
 
 /**
@@ -278,9 +278,9 @@ async function collectUserSummary(): Promise<UserSummary> {
   // Not supported on Chromium, and may require additional permissions
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/getBrowserInfo
   // const {name: browserName} = await browser.runtime.getBrowserInfo();
-  let numActiveExtensions: number = null;
-  let numActiveExtensionPoints: number = null;
-  let numActiveBlueprints: number = null;
+  let numActiveExtensions: number | null = null;
+  let numActiveExtensionPoints: number | null = null;
+  let numActiveBlueprints: number | null = null;
 
   try {
     const { extensions } = await getModComponentState();

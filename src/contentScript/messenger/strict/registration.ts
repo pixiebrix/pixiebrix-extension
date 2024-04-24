@@ -46,6 +46,8 @@ import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughM
 import { registerMethods } from "webext-messenger";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { cancelSelect } from "@/contentScript/pageEditor/elementPicker";
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 
 declare global {
   interface MessengerMethods {
@@ -75,6 +77,8 @@ declare global {
     WALKTHROUGH_MODAL_SHOW: typeof showWalkthroughModal;
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
+    RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
+    GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
   }
 }
 export default function registerMessenger(): void {
@@ -105,5 +109,7 @@ export default function registerMessenger(): void {
     WALKTHROUGH_MODAL_SHOW: showWalkthroughModal,
     TOGGLE_QUICK_BAR: toggleQuickBar,
     CANCEL_SELECT_ELEMENT: cancelSelect,
+    RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
+    GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
   });
 }

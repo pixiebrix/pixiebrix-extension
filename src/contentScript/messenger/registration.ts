@@ -30,30 +30,28 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 214 strictNullCheck errors
-import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 216 strictNullCheck errors
-import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 222 strictNullCheck errors
+} from "@/contentScript/lifecycle"; // 205 strictNullCheck errors
+import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 31 strictNullCheck errors
+import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 37 strictNullCheck errors
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/contentScript/pageEditor/dynamic"; // 217 strictNullCheck errors
+} from "@/contentScript/pageEditor/dynamic"; // 208 strictNullCheck errors
 import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
-} from "@/contentScript/pageEditor"; // 219 strictNullCheck errors
+} from "@/contentScript/pageEditor"; // 210 strictNullCheck errors
 import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
-import selectElement from "@/contentScript/pageEditor/selectElement"; // 196 strictNullCheck errors
+import selectElement from "@/contentScript/pageEditor/selectElement"; // 11 strictNullCheck errors
 import {
   runHeadlessPipeline,
   runMapArgs,
   runRendererPipeline,
 } from "@/contentScript/pipelineProtocol"; // Depends on background/messenger to pass strictNullCheck
-import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore"; // 187 strictNullCheck errors
-import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation"; // 185 strictNullCheck errors
 import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect"; // Depends on background/messenger to pass strictNullCheck
 import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Depends on background/messenger to pass strictNullCheck
 
@@ -69,7 +67,6 @@ declare global {
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
 
-    GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
     RUN_SINGLE_BLOCK: typeof runBlockPreview;
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
 
@@ -91,8 +88,6 @@ declare global {
     GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
 
     SHOW_LOGIN_BANNER: typeof showBannerFromConfig;
-
-    RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
   }
 }
 
@@ -106,7 +101,6 @@ export default function registerMessenger(): void {
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,
 
-    GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
     RUN_SINGLE_BLOCK: runBlockPreview,
     RUN_RENDERER_BLOCK: runRendererBlock,
 
@@ -128,7 +122,5 @@ export default function registerMessenger(): void {
     GET_COPILOT_HOST_DATA: getCopilotHostData,
 
     SHOW_LOGIN_BANNER: showBannerFromConfig,
-
-    RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
   });
 }

@@ -69,8 +69,8 @@ async function isLikelyEndUserInstall(): Promise<boolean> {
   // The CWS install URL differs based on the extension listing slug. So instead, only match on the runtime id.
   return likelyOnboardingTabs.some(
     (tab) =>
-      tab.url.includes(DEFAULT_SERVICE_URL) ||
-      tab.url.includes(browser.runtime.id),
+      tab.url?.includes(DEFAULT_SERVICE_URL) ||
+      tab.url?.includes(browser.runtime.id),
   );
 }
 
@@ -102,7 +102,7 @@ export async function openInstallPage() {
   // Case 3: there's no Admin Console onboarding tab open
 
   if (appOnboardingTab) {
-    const appOnboardingTabUrl = new URL(appOnboardingTab.url);
+    const appOnboardingTabUrl = new URL(appOnboardingTab.url ?? "");
 
     if (appOnboardingTabUrl.pathname === "/start") {
       // Case 1a/1b: Admin Console is showing a partner onboarding flow
@@ -309,10 +309,13 @@ export function getAvailableVersion(): typeof _availableVersion {
  */
 export function isUpdateAvailable(): boolean {
   const available = getAvailableVersion();
+
+  if (!available) {
+    return false;
+  }
+
   const installed = browser.runtime.getManifest().version;
-  return (
-    Boolean(available) && installed !== available && gt(available, installed)
-  );
+  return installed !== available && gt(available, installed);
 }
 
 async function setUninstallURL(): Promise<void> {
