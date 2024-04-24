@@ -38,13 +38,6 @@ import {
 } from "@/background/executor"; // Depends on contentScript/messenger to pass strictNullCheck
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 207 strictNullCheck errors
 import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 211 strictNullCheck errors
-import {
-  collectPerformanceDiagnostics,
-  initTelemetry,
-  pong,
-  recordEvent,
-  sendDeploymentAlert,
-} from "@/background/telemetry"; // Depends on contentScript/messenger to pass strictNullCheck
 
 import { setCopilotProcessData } from "@/background/partnerHandlers"; // Depends on contentScript/messenger to pass strictNullCheck
 
@@ -60,9 +53,6 @@ declare global {
 
     INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
 
-    PING: typeof pong;
-    COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
-
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
 
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
@@ -70,10 +60,6 @@ declare global {
     REQUEST_RUN_IN_TOP: typeof requestRunInTop;
     REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInOtherTabs;
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
-
-    RECORD_EVENT: typeof recordEvent;
-    INIT_TELEMETRY: typeof initTelemetry;
-    SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
   }
 }
 
@@ -87,9 +73,6 @@ export default function registerMessenger(): void {
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
     ENSURE_CONTEXT_MENU: ensureContextMenu,
 
-    PING: pong,
-    COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
-
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
 
     REQUEST_RUN_IN_OPENER: requestRunInOpener,
@@ -97,9 +80,5 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_TOP: requestRunInTop,
     REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
-
-    RECORD_EVENT: recordEvent,
-    INIT_TELEMETRY: initTelemetry,
-    SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
   });
 }
