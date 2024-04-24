@@ -20,7 +20,10 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type BrickOptions } from "@/types/runtimeTypes";
-import { cancelAllTours, markTourStart } from "@/starterBricks/tourController";
+import {
+  cancelAllTours,
+  markTourStart,
+} from "@/starterBricks/tour/tourController";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { MultipleElementsFoundError } from "@/errors/businessErrors";
 import { showPopover } from "@/contentScript/popoverDom";

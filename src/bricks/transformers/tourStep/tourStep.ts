@@ -31,7 +31,10 @@ import { validateRegistryId } from "@/types/helpers";
 import { isEmpty, noop } from "lodash";
 import { awaitElement } from "@/bricks/effects/wait";
 import { type PanelButton } from "@/types/sidebarTypes";
-import { getCurrentTour, markTourStep } from "@/starterBricks/tourController";
+import {
+  getCurrentTour,
+  markTourStep,
+} from "@/starterBricks/tour/tourController";
 import { addOverlay } from "@/bricks/transformers/tourStep/overlay";
 import * as UNSAFE_panelController from "@/platform/panels/panelController";
 import { AbortPanelAction } from "@/bricks/errors";

@@ -97,7 +97,7 @@ class ExtensionPagePlatform extends PlatformBase {
     requestConfig: NetworkRequestConfig,
   ): Promise<RemoteResponse<TData>> {
     const integration = await integrationRegistry.lookup(
-      integrationConfig.serviceId,
+      integrationConfig?.serviceId,
     );
 
     // Use the background messenger to perform 3rd party API calls that may require refreshing credentials so that

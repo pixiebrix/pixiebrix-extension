@@ -29,7 +29,7 @@ import {
   activateExtensionPanel,
   showSidebar,
 } from "@/contentScript/sidebarController";
-import { type TourDefinition } from "@/starterBricks/tourExtension";
+import { type TourDefinition } from "@/starterBricks/tour/types";
 import { type JsonObject } from "type-fest";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";

@@ -25,11 +25,7 @@ import {
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
 import { type BrickPipeline } from "@/bricks/types";
-import {
-  fromJS,
-  type SidebarConfig,
-  type SidebarDefinition,
-} from "@/starterBricks/sidebarExtension";
+import { fromJS } from "@/starterBricks/sidebar/sidebarExtension";
 import { RunReason } from "@/types/runtimeTypes";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import {
@@ -42,6 +38,10 @@ import { PANEL_FRAME_ID } from "@/domConstants";
 import brickRegistry from "@/bricks/registry";
 import { sleep } from "@/utils/timeUtils";
 import { getPlatform } from "@/platform/platformContext";
+import {
+  type SidebarDefinition,
+  type SidebarConfig,
+} from "@/starterBricks/sidebar/types";
 
 const rootReader = new RootReader();
 

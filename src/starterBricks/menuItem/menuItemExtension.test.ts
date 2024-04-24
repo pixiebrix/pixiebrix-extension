@@ -15,11 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  fromJS,
-  type MenuDefinition,
-  type MenuItemStarterBrickConfig,
-} from "@/starterBricks/menuItemExtension";
+import { fromJS } from "@/starterBricks/menuItem/menuItemExtension";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
@@ -38,6 +34,10 @@ import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { getPlatform } from "@/platform/platformContext";
+import {
+  type MenuItemDefinition,
+  type MenuItemStarterBrickConfig,
+} from "@/starterBricks/menuItem/types";
 
 jest.mock("@/runtime/reducePipeline");
 
@@ -56,7 +56,7 @@ globalThis.requestAnimationFrame = jest.fn((callback) => {
 const rootReaderId = validateRegistryId("test/root-reader");
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<StarterBrickConfig<MenuDefinition>>({
+  define<StarterBrickConfig<MenuItemDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>
@@ -64,7 +64,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
         id: validateRegistryId(`test/starter-brick-${n}`),
         name: "Test Starter Brick",
       }) as Metadata,
-    definition: define<MenuDefinition>({
+    definition: define<MenuItemDefinition>({
       type: "menuItem",
       template: "<button>{{caption}}</button>",
       containerSelector: "div",
