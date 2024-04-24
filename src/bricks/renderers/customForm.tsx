@@ -200,6 +200,22 @@ export const CUSTOM_FORM_SCHEMA = {
   required: ["schema"],
 };
 
+const IsolatedCustomFormComponent: React.FunctionComponent<
+  CustomFormComponentProps & { disableParentStyles: boolean }
+> = ({ disableParentStyles, ...props }) => (
+  <IsolatedComponent
+    name="CustomFormComponent"
+    noStyle={disableParentStyles}
+    lazy={async () =>
+      import(
+        /* webpackChunkName: "isolated/CustomFormComponent" */
+        "./CustomFormComponent"
+      )
+    }
+    factory={(CustomFormComponent) => <CustomFormComponent {...props} />}
+  />
+);
+
 export class CustomFormRenderer extends RendererABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/form");
 
@@ -299,24 +315,8 @@ export class CustomFormRenderer extends RendererABC {
       normalizedData,
     });
 
-    const CustomFormComponent: React.FunctionComponent<
-      CustomFormComponentProps
-    > = (props) => (
-      <IsolatedComponent
-        name="CustomFormComponent"
-        noStyle={disableParentStyles}
-        lazy={async () =>
-          import(
-            /* webpackChunkName: "isolated/CustomFormComponent" */
-            "./CustomFormComponent"
-          )
-        }
-        factory={(CustomFormComponent) => <CustomFormComponent {...props} />}
-      />
-    );
-
     return {
-      Component: CustomFormComponent,
+      Component: IsolatedCustomFormComponent,
       props: {
         recordId,
         formData: normalizedData,
@@ -328,6 +328,7 @@ export class CustomFormRenderer extends RendererABC {
         stylesheets,
         // Option only applies if a custom onSubmit handler is provided
         resetOnSubmit: onSubmit != null && postSubmitAction === "reset",
+        disableParentStyles,
         async onSubmit(
           values: JsonObject,
           { submissionCount }: { submissionCount: number },

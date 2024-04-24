@@ -63,7 +63,7 @@ export async function ensureVisibility(
   options?: { timeout: number },
 ) {
   await expect(async () => {
-    await expect(locator).toBeVisible();
+    await expect(locator).toBeVisible({ timeout: 0 }); // Retry handling is done by the outer expect
   }).toPass({ timeout: 5000, ...options });
 }
 

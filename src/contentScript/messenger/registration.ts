@@ -46,7 +46,6 @@ import {
   runRendererBlock,
 } from "@/contentScript/pageEditor"; // 258 strictNullCheck errors
 import { runBrick } from "@/contentScript/executor"; // 134 strictNullCheck errors
-import { cancelSelect } from "@/contentScript/pageEditor/elementPicker"; // 32 strictNullCheck errors
 import selectElement from "@/contentScript/pageEditor/selectElement"; // 235 strictNullCheck errors
 import {
   runHeadlessPipeline,
@@ -83,7 +82,6 @@ declare global {
     ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
 
     RUN_BRICK: typeof runBrick;
-    CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
@@ -121,7 +119,6 @@ export default function registerMessenger(): void {
     ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
 
     RUN_BRICK: runBrick,
-    CANCEL_SELECT_ELEMENT: cancelSelect,
     SELECT_ELEMENT: selectElement,
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,

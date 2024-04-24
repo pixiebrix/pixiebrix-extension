@@ -59,14 +59,14 @@ export type ModViewItem = {
   name: string;
   description: string;
   sharing: {
-    packageId: RegistryId;
+    packageId: RegistryId | undefined;
     source: SharingSource;
     listingId: string | null;
   };
-  updatedAt: string;
+  updatedAt: string | null;
   status: ModStatus;
   hasUpdate: boolean;
-  installedVersionNumber: string;
+  installedVersionNumber: string | undefined;
   // Used to get Mod actions from useModActions
   mod: Mod;
   /**

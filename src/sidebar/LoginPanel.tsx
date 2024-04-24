@@ -57,7 +57,7 @@ const LoginPanel: React.FunctionComponent = () => {
 
   const showPartnerAuth =
     (hasPartner && !hasConfiguredIntegration) ||
-    ["partner-oauth2", "partner-token"].includes(authMethod);
+    (authMethod && ["partner-oauth2", "partner-token"].includes(authMethod));
 
   return (
     <Container>

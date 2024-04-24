@@ -20,6 +20,7 @@ import { useEffect } from "react";
 import notify from "@/utils/notify";
 import useAsyncState from "@/hooks/useAsyncState";
 import { isPageEditor } from "@/utils/expectContext";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Get the current origin for where code is running. Used to set the origin on the
@@ -30,12 +31,12 @@ import { isPageEditor } from "@/utils/expectContext";
  *
  * @returns The current origin, or undefined on initial load/error.
  */
-function useCurrentOrigin(): string | null {
+function useCurrentOrigin(): Nullishable<string> {
   const {
     data: origin,
     isFetching,
     error,
-  } = useAsyncState(async () => {
+  } = useAsyncState<string | null>(async () => {
     // Checks location.pathname against the 'options_ui' value in manifest.json
     if (isOptionsPage()) {
       return browser.runtime.getURL("");
@@ -56,7 +57,12 @@ function useCurrentOrigin(): string | null {
       active: true,
       lastFocusedWindow: true,
     });
-    return new URL(tabs[0].url).origin;
+    const tab = tabs[0];
+    if (tab?.url == null) {
+      return null;
+    }
+
+    return new URL(tab.url).origin;
   }, []);
 
   useEffect(() => {

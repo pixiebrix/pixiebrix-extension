@@ -55,7 +55,7 @@ export async function validateSchema(
     };
   }
 
-  if (!Object.hasOwn(KIND_SCHEMAS, json.kind)) {
+  if (json.kind == null || !Object.hasOwn(KIND_SCHEMAS, json.kind)) {
     return {
       config: [
         `Expected a value for "kind": ${Object.keys(KIND_SCHEMAS).join(", ")}`,

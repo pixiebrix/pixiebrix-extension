@@ -87,10 +87,14 @@ class IfElse extends TransformerABC {
       });
     }
 
-    return options.runPipeline(elsePipeline, {
-      key: "else",
-      counter: 0,
-    });
+    if (elsePipeline) {
+      return options.runPipeline(elsePipeline, {
+        key: "else",
+        counter: 0,
+      });
+    }
+
+    return null;
   }
 }
 

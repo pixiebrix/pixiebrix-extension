@@ -36,7 +36,6 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor"; // Depends on contentScript/messenger to pass strictNullCheck
-import { performConfiguredRequest } from "@/background/requests"; // 7 strictNullCheck errors
 import { getAvailableVersion } from "@/background/installer"; // 201 strictNullCheck errors
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 218 strictNullCheck errors
 import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 224 strictNullCheck errors
@@ -47,10 +46,7 @@ import {
   recordEvent,
   sendDeploymentAlert,
 } from "@/background/telemetry"; // 197 strictNullCheck errors
-import {
-  getPartnerPrincipals,
-  launchAuthIntegration,
-} from "@/background/partnerIntegrations"; // 24 strictNullCheck errors
+
 import { setCopilotProcessData } from "@/background/partnerHandlers"; // 29 strictNullCheck errors
 
 expectContext("background");
@@ -62,8 +58,6 @@ declare global {
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
 
-    GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
-    LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
     SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
 
     INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
@@ -79,7 +73,6 @@ declare global {
     REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInOtherTabs;
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
 
-    CONFIGURED_REQUEST: typeof performConfiguredRequest;
     RECORD_EVENT: typeof recordEvent;
     INIT_TELEMETRY: typeof initTelemetry;
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
@@ -88,8 +81,6 @@ declare global {
 
 export default function registerMessenger(): void {
   registerMethods({
-    GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
-    LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
     SET_PARTNER_COPILOT_DATA: setCopilotProcessData,
 
     INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
@@ -111,7 +102,6 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
 
-    CONFIGURED_REQUEST: performConfiguredRequest,
     RECORD_EVENT: recordEvent,
     INIT_TELEMETRY: initTelemetry,
     SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,

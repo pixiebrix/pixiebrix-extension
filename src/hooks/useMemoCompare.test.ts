@@ -53,4 +53,52 @@ describe("useMemoCompare", () => {
 
     expect(result.current).not.toBe(initial);
   });
+
+  it("returns same reference when dependencies don't change", async () => {
+    const initial = {
+      values: { foo: 42 },
+      dependencies: [42, "foo"],
+    };
+
+    const { result, rerender } = renderHook(
+      ({ values, dependencies }) =>
+        useMemoCompare(values, deepEquals, dependencies),
+      {
+        initialProps: initial,
+      },
+    );
+
+    expect(result.current).toBe(initial.values);
+
+    rerender({
+      values: { foo: 42 },
+      dependencies: [42, "foo"],
+    });
+
+    expect(result.current).toBe(initial.values);
+  });
+
+  it("returns different reference when dependencies change", async () => {
+    const initial = {
+      values: { foo: 42 },
+      dependencies: [42, "foo"],
+    };
+
+    const { result, rerender } = renderHook(
+      ({ values, dependencies }) =>
+        useMemoCompare(values, deepEquals, dependencies),
+      {
+        initialProps: initial,
+      },
+    );
+
+    expect(result.current).toBe(initial.values);
+
+    rerender({
+      values: { foo: 42 },
+      dependencies: [42, "bar"],
+    });
+
+    expect(result.current).not.toBe(initial.values);
+  });
 });
