@@ -37,13 +37,13 @@ import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TourFormState } from "./formStateTypes";
-import {
-  type TourConfig,
-  type TourDefinition,
-  TourStarterBrickABC,
-} from "@/starterBricks/tour/tourExtension";
+import { TourStarterBrickABC } from "@/starterBricks/tour/tourExtension";
 import TourConfiguration from "@/pageEditor/tabs/tour/TourConfiguration";
 import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type TourDefinition,
+  type TourConfig,
+} from "@/starterBricks/tour/types";
 
 function fromNativeElement(
   url: string,

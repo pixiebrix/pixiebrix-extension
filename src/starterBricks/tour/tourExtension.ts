@@ -18,7 +18,6 @@
 import {
   StarterBrickABC,
   type StarterBrickConfig,
-  type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
 import {
@@ -31,7 +30,6 @@ import {
   partition,
 } from "lodash";
 import { checkAvailable } from "@/bricks/available";
-import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { collectAllBricks } from "@/bricks/util"; // Part of cycle
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import "@/vendors/hoverintent";
@@ -62,32 +60,10 @@ import {
 } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-
-export type TourConfig = {
-  /**
-   * The tour pipeline to run
-   * @since 1.7.19
-   */
-  tour: BrickPipeline | BrickConfig;
-};
-
-type TourDefinitionOptions = UnknownObject;
-
-export interface TourDefinition extends StarterBrickDefinition {
-  defaultOptions?: TourDefinitionOptions;
-
-  /**
-   * Automatically run the tour on matching pages.
-   * @since 1.7.19
-   */
-  autoRunSchedule?: "never" | "once" | "always";
-
-  /**
-   * Allow the user to manually run the tour. Causes the tour to be available in the Quick Bar.
-   * @since 1.7.19
-   */
-  allowUserRun?: boolean;
-}
+import {
+  type TourConfig,
+  type TourDefinition,
+} from "@/starterBricks/tour/types";
 
 export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
   public get kind(): "tour" {

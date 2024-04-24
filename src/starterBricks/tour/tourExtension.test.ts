@@ -20,11 +20,7 @@ import { type StarterBrickConfig } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
-import {
-  type TourConfig,
-  type TourDefinition,
-  fromJS,
-} from "@/starterBricks/tour/tourExtension";
+import { fromJS } from "@/starterBricks/tour/tourExtension";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import { isTourInProgress } from "@/starterBricks/tour/tourController";
@@ -38,6 +34,10 @@ import { RunReason } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 import { getPlatform } from "@/platform/platformContext";
+import {
+  type TourDefinition,
+  type TourConfig,
+} from "@/starterBricks/tour/types";
 
 const rootReader = new RootReader();
 
