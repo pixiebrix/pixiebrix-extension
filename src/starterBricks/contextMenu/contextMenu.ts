@@ -38,7 +38,6 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
-import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util"; // Part of cycle
@@ -65,10 +64,14 @@ import { getPlatform } from "@/platform/platformContext";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { Except } from "type-fest";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
-import { type MessageConfig } from "@/utils/notify";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { initSelectionMenu } from "@/contentScript/textSelectionMenu/selectionMenuController";
+import {
+  type ContextMenuTargetMode,
+  type ContextMenuConfig,
+  type MenuDefaultOptions,
+} from "@/starterBricks/contextMenu/types";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
@@ -91,28 +94,6 @@ const groupRegistrationErrorNotification = (platform: PlatformProtocol) =>
       delay: 100,
     },
   );
-
-export type ContextMenuTargetMode =
-  // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
-  "legacy" | "document" | "eventTarget";
-
-export type ContextMenuConfig = {
-  /**
-   * The title of the context menu item.
-   */
-  title: string;
-
-  /**
-   * Action to perform on click.
-   */
-  action: BrickConfig | BrickPipeline;
-
-  /**
-   * (Experimental) message to show on success when running the extension
-   * @since 1.7.27
-   */
-  onSuccess?: MessageConfig | boolean;
-};
 
 /**
  * The element the user right-clicked on to trigger the context menu
@@ -427,11 +408,6 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       },
     });
   }
-}
-
-export interface MenuDefaultOptions {
-  title?: string;
-  [key: string]: string | string[];
 }
 
 export interface MenuDefinition extends StarterBrickDefinition {

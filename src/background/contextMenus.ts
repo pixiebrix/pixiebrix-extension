@@ -22,10 +22,7 @@ import { handleMenuAction, notify } from "@/contentScript/messenger/strict/api";
 import { waitForContentScript } from "@/background/contentScript";
 import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/starterBricks/registry";
-import {
-  type ContextMenuConfig,
-  ContextMenuStarterBrickABC,
-} from "@/starterBricks/contextMenu/contextMenu";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
 import { getModComponentState } from "@/store/extensionsStorage";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type UUID } from "@/types/stringTypes";
@@ -37,6 +34,7 @@ import { allSettled, memoizeUntilSettled } from "@/utils/promiseUtils";
 import { ContextError } from "@/errors/genericErrors";
 import { selectEventData } from "@/telemetry/deployments";
 import type { SelectionMenuOptions } from "@/platform/platformTypes/contextMenuProtocol";
+import { type ContextMenuConfig } from "@/starterBricks/contextMenu/types";
 
 const MENU_PREFIX = "pixiebrix-";
 

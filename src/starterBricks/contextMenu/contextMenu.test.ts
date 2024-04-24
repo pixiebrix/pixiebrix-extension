@@ -23,7 +23,6 @@ import { type BrickPipeline } from "@/bricks/types";
 import { RootReader } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import {
-  type ContextMenuConfig,
   fromJS,
   type MenuDefinition,
 } from "@/starterBricks/contextMenu/contextMenu";
@@ -35,6 +34,7 @@ import {
   ensureContextMenu,
 } from "@/background/messenger/api";
 import { getPlatform } from "@/platform/platformContext";
+import { type ContextMenuConfig } from "@/starterBricks/contextMenu/types";
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
 const ensureContextMenuMock = jest.mocked(ensureContextMenu);

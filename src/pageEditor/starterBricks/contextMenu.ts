@@ -32,7 +32,6 @@ import {
 } from "@/pageEditor/starterBricks/base";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import {
-  type ContextMenuConfig,
   ContextMenuStarterBrickABC,
   type MenuDefinition,
 } from "@/starterBricks/contextMenu/contextMenu";
@@ -43,6 +42,7 @@ import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
+import { type ContextMenuConfig } from "@/starterBricks/contextMenu/types";
 
 function fromNativeElement(
   url: string,

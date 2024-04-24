@@ -21,7 +21,6 @@ import {
 } from "@/background/contextMenus";
 import extensionPointRegistry from "@/starterBricks/registry";
 import {
-  type ContextMenuConfig,
   fromJS,
   type MenuDefinition,
 } from "@/starterBricks/contextMenu/contextMenu";
@@ -33,6 +32,7 @@ import { TEST_setContext } from "webext-detect-page";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { getPlatform } from "@/platform/platformContext";
+import { type ContextMenuConfig } from "@/starterBricks/contextMenu/types";
 
 TEST_setContext("background");
 

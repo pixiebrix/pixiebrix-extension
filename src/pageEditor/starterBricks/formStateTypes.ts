@@ -21,7 +21,7 @@ import {
   type ContextMenuConfig,
   type ContextMenuTargetMode,
   type MenuDefaultOptions as ContextMenuDefaultOptions,
-} from "@/starterBricks/contextMenu/contextMenu"; // Part of cycle
+} from "@/starterBricks/contextMenu/types";
 import {
   type MenuItemStarterBrickConfig,
   type MenuPosition,
