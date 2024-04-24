@@ -15,11 +15,14 @@ One-time setup:
     - The test user password `E2E_TEST_USER_PASSWORD_UNAFFILIATED`
     - Uncomment `REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1`
     - Uncomment `SHADOW_DOM=open`
+    - Uncomment `DATADOG_CLIENT_TOKEN` (used for telemetry tests, can be set to a fake token, e.g. `secret123`)
+    - Uncomment `DEV_EVENT_TELEMETRY` (used for telemetry tests, actual telemetry requests should be mocked during testing)
   - `MV` will determine the manifest version for the both the extension and the tests (defaulted to 3 if not defined.)
 - Install browsers: Execute `npx playwright install chromium chrome msedge`.
 
 1. Install dependencies: Run `npm install`
-2. Build the extension: Run: `npm run build:webpack` (or `npm run watch`)
+2. Build the extension: Run: `npm run build:webpack` (or `npm run watch`) - Note that if you do use `npm run build`, you will need to export your `.env.development` variables to an `.env`
+   file at the same level in order for the extension to be built with the correct environment variables.
 3. Run the tests: Use the command `npm run test:e2e`.
 
 - To run tests in interactive UI mode, use `npm run test:e2e -- --ui`. This view shows you the entire test suite and
