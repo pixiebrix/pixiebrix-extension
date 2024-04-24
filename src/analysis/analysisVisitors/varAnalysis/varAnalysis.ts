@@ -115,12 +115,12 @@ async function setIntegrationDependencyVars(
   contextVars: VarMap,
 ): Promise<void> {
   // We don't want to make the pixiebrix api integration available as a variable
-  const nonPbDependencies = integrationDependencies.filter(
-    (dependency) => dependency.integrationId !== PIXIEBRIX_INTEGRATION_ID,
-  );
+  // const nonPbDependencies = integrationDependencies.filter(
+  //   (dependency) => dependency.integrationId !== PIXIEBRIX_INTEGRATION_ID,
+  // );
   // Loop through all the dependencies, so we can set the source for each dependency variable properly
   await Promise.all(
-    nonPbDependencies.map(async (integrationDependency) => {
+    integrationDependencies.map(async (integrationDependency) => {
       const serviceContext = await makeIntegrationsContextFromDependencies([
         integrationDependency,
       ]);
