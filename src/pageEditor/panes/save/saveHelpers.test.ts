@@ -32,7 +32,7 @@ import {
 import { produce } from "immer";
 import { makeInternalId } from "@/registry/internal";
 import { cloneDeep, range, uniq } from "lodash";
-import { type MenuDefinition } from "@/starterBricks/menuItem/menuItemExtension";
+import { type MenuItemDefinition } from "@/starterBricks/menuItem/types";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
   type StarterBrickConfig,
@@ -269,7 +269,7 @@ describe("replaceModComponent round trip", () => {
           modDefinition.definitions.extensionPoint,
         );
         (
-          draft.definitions.extensionPoint2.definition as MenuDefinition
+          draft.definitions.extensionPoint2.definition as MenuItemDefinition
         ).template = newTemplate;
         draft.extensionPoints[0].id = "extensionPoint2" as InnerDefinitionRef;
         draft.extensionPoints[0].label = "New Label";

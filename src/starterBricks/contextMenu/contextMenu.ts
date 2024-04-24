@@ -69,7 +69,7 @@ import { initSelectionMenu } from "@/contentScript/textSelectionMenu/selectionMe
 import {
   type ContextMenuTargetMode,
   type ContextMenuConfig,
-  type MenuDefinition,
+  type ContextMenuDefinition,
 } from "@/starterBricks/contextMenu/types";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
@@ -410,7 +410,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 }
 
 class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
-  private readonly _definition: MenuDefinition;
+  private readonly _definition: ContextMenuDefinition;
 
   public readonly permissions: Permissions.Permissions;
 
@@ -418,11 +418,11 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
 
   public readonly contexts: Menus.ContextType[];
 
-  public readonly rawConfig: StarterBrickConfig<MenuDefinition>;
+  public readonly rawConfig: StarterBrickConfig<ContextMenuDefinition>;
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickConfig<MenuDefinition>,
+    config: StarterBrickConfig<ContextMenuDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -475,7 +475,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickConfig<MenuDefinition>,
+  config: StarterBrickConfig<ContextMenuDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "contextMenu") {

@@ -20,7 +20,7 @@ import { renderHook } from "@/pageEditor/testHelpers";
 import useActivateRecipe from "./useActivateRecipe";
 import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickConfig } from "@/starterBricks/types";
-import { type MenuDefinition } from "@/starterBricks/contextMenu/types";
+import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/types";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -74,7 +74,7 @@ function setupInputs(): {
       },
       reader: [validateRegistryId("@pixiebrix/document-metadata")],
     },
-  }) as StarterBrickConfig<MenuDefinition>;
+  }) as StarterBrickConfig<ContextMenuDefinition>;
   starterBrickConfig.definition.targetMode = "eventTarget";
   starterBrickConfig.definition.contexts = ["all"];
   starterBrickConfig.definition.documentUrlPatterns = ["*://*/*"];

@@ -33,7 +33,6 @@ import {
 import {
   StarterBrickABC,
   type StarterBrickConfig,
-  type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import { type Permissions } from "webextension-polyfill";
@@ -85,23 +84,11 @@ import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import {
-  type MenuPosition,
   type MenuItemStarterBrickConfig,
+  type AttachMode,
+  type MenuItemDefinition,
+  type MenuTargetMode,
 } from "@/starterBricks/menuItem/types";
-
-interface ShadowDOM {
-  mode?: "open" | "closed";
-  tag?: string;
-}
-
-/**
- * @since 1.7.8
- */
-export type AttachMode =
-  // Add menu items once. If a menu item is removed, PixieBrix will still attempt to re-add it.
-  | "once"
-  // Watch for new menus on the screen and add menu items to them
-  | "watch";
 
 const DATA_ATTR = "data-pb-uuid";
 
@@ -124,8 +111,6 @@ async function cancelOnNavigation<T>(promise: Promise<T>): Promise<T> {
   const isNavigationCancelled = () => getNavigationId() !== startNavigationId;
   return rejectOnCancelled(promise, isNavigationCancelled);
 }
-
-type MenuTargetMode = "document" | "eventTarget";
 
 export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemStarterBrickConfig> {
   /**
@@ -770,63 +755,12 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 }
 
-interface MenuDefaultOptions {
-  caption?: string;
-  [key: string]: string;
-}
-
-/**
- * @since 1.7.16
- */
-
-export interface MenuDefinition extends StarterBrickDefinition {
-  type: "menuItem";
-  /**
-   * The HTML template to render the button/menu item.
-   */
-  template: string;
-  /**
-   * Position in the menu to insert the item.
-   */
-  position?: MenuPosition;
-  /**
-   * Selector targeting the menu location
-   */
-  containerSelector: string;
-  /**
-   * Selector passed to `.parents()` to determine the reader context. Must match exactly one element.
-   * See https://api.jquery.com/parents/
-   * @deprecated use targetMode and the Traverse Elements brick instead
-   */
-  readerSelector?: string;
-  /**
-   * The element to pass as the root to the readers and extension (default="document")
-   * @since 1.7.16
-   * @see readerSelector
-   */
-  targetMode?: MenuTargetMode;
-  /**
-   * Wrap menu item in a shadow DOM
-   * @deprecated do we still want to support this? Is it used anywhere?
-   */
-  shadowDOM?: ShadowDOM;
-  /**
-   * Default options for ModComponentBases attached to the extension point
-   */
-  defaultOptions?: MenuDefaultOptions;
-  /**
-   * Mode for attaching the menu to the page. Defaults to "once"
-   * @since 1.7.28
-   */
-  attachMode?: AttachMode;
-}
-
 export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
-  private readonly _definition: MenuDefinition;
+  private readonly _definition: MenuItemDefinition;
 
   public readonly permissions: Permissions.Permissions;
 
-  public readonly rawConfig: StarterBrickConfig<MenuDefinition>;
+  public readonly rawConfig: StarterBrickConfig<MenuItemDefinition>;
 
   public override get defaultOptions(): {
     caption: string;
@@ -841,7 +775,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickConfig<MenuDefinition>,
+    config: StarterBrickConfig<MenuItemDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -1000,7 +934,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickConfig<MenuDefinition>,
+  config: StarterBrickConfig<MenuItemDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "menuItem") {

@@ -30,7 +30,7 @@ import { modComponentFactory } from "@/testUtils/factories/modComponentFactories
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { getPlatform } from "@/platform/platformContext";
 import {
-  type MenuDefinition,
+  type ContextMenuDefinition,
   type ContextMenuConfig,
 } from "@/starterBricks/contextMenu/types";
 
@@ -71,7 +71,7 @@ describe("contextMenus", () => {
 
   it("preload context menu", async () => {
     const extensionPoint =
-      starterBrickConfigFactory() as unknown as StarterBrickConfig<MenuDefinition>;
+      starterBrickConfigFactory() as unknown as StarterBrickConfig<ContextMenuDefinition>;
     extensionPoint.definition.type = "contextMenu";
     extensionPoint.definition.contexts = ["all"];
 

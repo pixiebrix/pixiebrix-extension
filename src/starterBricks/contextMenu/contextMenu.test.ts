@@ -32,7 +32,7 @@ import {
 } from "@/background/messenger/api";
 import { getPlatform } from "@/platform/platformContext";
 import {
-  type MenuDefinition,
+  type ContextMenuDefinition,
   type ContextMenuConfig,
 } from "@/starterBricks/contextMenu/types";
 
@@ -42,7 +42,7 @@ const ensureContextMenuMock = jest.mocked(ensureContextMenu);
 const rootReader = new RootReader();
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<StarterBrickConfig<MenuDefinition>>({
+  define<StarterBrickConfig<ContextMenuDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>
@@ -50,7 +50,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
         id: validateRegistryId(`test/starter-brick-${n}`),
         name: "Test Starter Brick",
       }) as Metadata,
-    definition: define<MenuDefinition>({
+    definition: define<ContextMenuDefinition>({
       type: "contextMenu",
       contexts: () => ["page"] as any,
       targetMode: "document",

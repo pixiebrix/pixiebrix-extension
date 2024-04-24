@@ -47,7 +47,7 @@ export interface MenuDefaultOptions {
   [key: string]: string | string[];
 }
 
-export interface MenuDefinition extends StarterBrickDefinition {
+export interface ContextMenuDefinition extends StarterBrickDefinition {
   documentUrlPatterns?: Manifest.MatchPattern[];
   contexts: Menus.ContextType[];
   targetMode: ContextMenuTargetMode;

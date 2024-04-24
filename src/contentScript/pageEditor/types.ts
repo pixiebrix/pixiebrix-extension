@@ -25,11 +25,13 @@ import {
   type PanelConfig,
   type PanelDefinition,
 } from "@/starterBricks/panel/types";
-import { type MenuDefinition } from "@/starterBricks/menuItem/menuItemExtension";
+import {
+  type MenuItemDefinition,
+  type MenuItemStarterBrickConfig,
+} from "@/starterBricks/menuItem/types";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type MenuItemStarterBrickConfig } from "@/starterBricks/menuItem/types";
 
 export interface DynamicDefinition<
   TExtensionPoint extends StarterBrickDefinition = StarterBrickDefinition,
@@ -51,12 +53,12 @@ export type PanelSelectionResult = {
   containerInfo: ElementInfo;
 };
 export type ButtonDefinition = DynamicDefinition<
-  MenuDefinition,
+  MenuItemDefinition,
   MenuItemStarterBrickConfig
 >;
 export type ButtonSelectionResult = {
   uuid: UUID;
-  menu: Except<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
+  menu: Except<MenuItemDefinition, "defaultOptions" | "isAvailable" | "reader">;
   item: Pick<MenuItemStarterBrickConfig, "caption">;
   containerInfo: ElementInfo;
 };

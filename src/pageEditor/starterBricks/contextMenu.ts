@@ -40,7 +40,7 @@ import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
 import {
-  type MenuDefinition,
+  type ContextMenuDefinition,
   type ContextMenuConfig,
 } from "@/starterBricks/contextMenu/types";
 
@@ -81,7 +81,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: ContextMenuFormState,
-): StarterBrickConfig<MenuDefinition> {
+): StarterBrickConfig<ContextMenuDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {
@@ -127,7 +127,7 @@ async function fromExtension(
   config: ModComponentBase<ContextMenuConfig>,
 ): Promise<ContextMenuFormState> {
   const extensionPoint = await lookupExtensionPoint<
-    MenuDefinition,
+    ContextMenuDefinition,
     ContextMenuConfig,
     "contextMenu"
   >(config, "contextMenu");
