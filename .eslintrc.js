@@ -154,6 +154,10 @@ module.exports = {
             allowConditional: true,
           },
         ],
+        "no-commented-out-tests": "error",
+        "no-duplicate-hooks": "error",
+        "no-get-by-title": "error",
+
         "no-restricted-syntax": [
           "error",
           {
