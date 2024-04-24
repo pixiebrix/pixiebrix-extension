@@ -33,5 +33,6 @@ export async function toggleBootstrapSwitch(fieldLabel: string): Promise<void> {
 
   expect(switchElement).not.toBeNull();
 
-  await userEvent.click(switchElement);
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Just checked for null
+  await userEvent.click(switchElement!);
 }

@@ -85,7 +85,8 @@ async function geocodeAddress(
   }
 
   const findComponent = (type: AddressComponentType) =>
-    results[0].address_components.find((x: AddressComponent) =>
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- Just checked length
+    results[0]!.address_components.find((x: AddressComponent) =>
       x.types.includes(type),
     )?.long_name;
 
