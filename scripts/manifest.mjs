@@ -20,9 +20,14 @@ import { normalizeManifestPermissions } from "webext-permissions";
 import { excludeDuplicatePatterns } from "webext-patterns";
 
 function getVersion(env, isBetaListing) {
+  const stageMap = {
+    alpha: 1000,
+    beta: 2000,
+  };
+
   // `manifest.json` only supports numbers in the version, so use the semver
   const match =
-    /^(?<version>\d+\.\d+\.\d+)(?:-(?<stage>\w+)(?:\.(?<stageNumber>\d))?)?/.exec(
+    /^(?<version>\d+\.\d+\.\d+)(?:-(?<stage>\w+)(?:\.(?<stageNumber>\d+))?)?/.exec(
       env.npm_package_version,
     );
   const { version, stage, stageNumber } = match.groups;
@@ -30,12 +35,13 @@ function getVersion(env, isBetaListing) {
   // Add 4th digit for alpha/beta release builds. Used to update the extension BETA listing in the Chrome Web Store.
   if (isBetaListing) {
     if (stage && stageNumber) {
-      // Ex: 1.8.13-alpha.1 -> 1.8.13.11
-      return `${version}.${stage === "alpha" ? "1" : "2"}${stageNumber}`;
+      // Ex: 1.8.13-alpha.1 -> 1.8.13.1001
+      // Ex: 1.8.13-beta.55 -> 1.8.13.2055
+      return `${version}.${stageMap[stage] + Number(stageNumber)}`;
     }
 
-    // Ex: 1.8.13.30 -- Ensures that the release build version number is greater than the alpha/beta build version numbers
-    return `${version}.30`;
+    // Ex: 1.8.13.3000 -- Ensures that the release build version number is greater than the alpha/beta build version numbers
+    return `${version}.3000`;
   }
 
   return version;
