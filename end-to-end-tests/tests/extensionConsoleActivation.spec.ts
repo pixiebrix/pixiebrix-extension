@@ -23,6 +23,7 @@ import { getSidebarPage, runModViaQuickBar } from "../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
+import { MV } from "../env";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -51,6 +52,8 @@ test("can activate a mod with built-in integration", async ({
   extensionId,
   context,
 }) => {
+  test.skip(MV === "2", "Service worker request mocking only available in MV3");
+
   const modId = "@pixies/giphy/giphy-search";
 
   let giphyRequestPostData: Serializable;
