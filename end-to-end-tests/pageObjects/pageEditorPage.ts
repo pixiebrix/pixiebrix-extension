@@ -16,11 +16,12 @@
  */
 
 import { getBasePageEditorUrl } from "./constants";
-import { type BrowserContext } from "@playwright/test";
+import { type BrowserContext, type Page } from "@playwright/test";
 import { expect } from "../fixtures/extensionBase";
 
 export class PageEditorPage {
   private readonly pageEditorUrl: string;
+  private page: Page;
 
   constructor(
     private readonly context: BrowserContext,
@@ -40,5 +41,10 @@ export class PageEditorPage {
       name: "Welcome to the Page Editor!",
     });
     await expect(heading).toBeVisible();
+    this.page = pageEditorPage;
+  }
+
+  getTemplateGalleryButton() {
+    return this.page.getByRole("button", { name: "Launch Template Gallery" });
   }
 }
