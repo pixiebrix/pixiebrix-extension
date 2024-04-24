@@ -101,7 +101,7 @@ export class AttachAutocomplete extends EffectABC {
       autocompleter({
         input: input as HTMLInputElement,
         onSelect(item) {
-          $elements.val(item.label);
+          $elements.val(item.label ?? "");
         },
         fetch(text: string, update: (items: AutocompleteItem[]) => void) {
           const normalized = text.toLowerCase();

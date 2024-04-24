@@ -112,12 +112,12 @@ export class UrlParser extends TransformerABC {
       throw new BusinessError(getErrorMessage(error));
     }
 
-    let publicSuffix: string;
+    let publicSuffix: string | null = null;
 
     if (!isNullOrBlank(parsed.host)) {
       // `host` includes the port
       const [domain] = parsed.host.split(":");
-      if (isValid(domain)) {
+      if (domain && isValid(domain)) {
         const result = parse(domain);
         if (!("error" in result)) {
           publicSuffix = (result as ParsedDomain).domain;
