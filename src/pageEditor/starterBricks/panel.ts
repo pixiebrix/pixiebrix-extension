@@ -32,11 +32,7 @@ import {
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickConfig } from "@/starterBricks/types";
-import {
-  type PanelConfig,
-  type PanelDefinition,
-  PanelStarterBrickABC,
-} from "@/starterBricks/panelExtension";
+import { PanelStarterBrickABC } from "@/starterBricks/panel/panelExtension";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
@@ -47,6 +43,10 @@ import {
   type PanelSelectionResult,
 } from "@/contentScript/pageEditor/types";
 import { type PanelFormState, type PanelTraits } from "./formStateTypes";
+import {
+  type PanelDefinition,
+  type PanelConfig,
+} from "@/starterBricks/panel/types";
 
 const DEFAULT_TRAITS: PanelTraits = {
   style: {

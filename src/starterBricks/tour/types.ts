@@ -15,25 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getPartnerPrincipals } from "@/background/messenger/strict/api";
+import { type BrickPipeline, type BrickConfig } from "@/bricks/types";
+import { type StarterBrickDefinition } from "@/starterBricks/types";
 
-const INTEGRATION_ATTR = "data-pb-integration-userid";
+export type TourConfig = {
+  /**
+   * The tour pipeline to run
+   * @since 1.7.19
+   */
+  tour: BrickPipeline | BrickConfig;
+};
 
-async function markPartnerIntegrations() {
-  const principals = await getPartnerPrincipals();
+export interface TourDefinition extends StarterBrickDefinition {
+  defaultOptions?: UnknownObject;
 
-  const principal = principals.find(
-    (principal) => principal.hostname === location.hostname,
-  );
+  /**
+   * Automatically run the tour on matching pages.
+   * @since 1.7.19
+   */
+  autoRunSchedule?: "never" | "once" | "always";
 
-  if (principal?.principalId) {
-    document.documentElement.setAttribute(
-      INTEGRATION_ATTR,
-      principal.principalId,
-    );
-  }
-}
-
-export function initPartnerIntegrations() {
-  void markPartnerIntegrations();
+  /**
+   * Allow the user to manually run the tour. Causes the tour to be available in the Quick Bar.
+   * @since 1.7.19
+   */
+  allowUserRun?: boolean;
 }

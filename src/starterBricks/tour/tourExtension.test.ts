@@ -15,49 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "@/types/helpers";
 import { define } from "cooky-cutter";
 import { type StarterBrickConfig } from "@/starterBricks/types";
+import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
-import {
-  getDocument,
-  RootReader,
-  tick,
-} from "@/starterBricks/starterBrickTestUtils";
+import { fromJS } from "@/starterBricks/tour/tourExtension";
+import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
-import {
-  fromJS,
-  type QuickBarConfig,
-  type QuickBarDefinition,
-} from "@/starterBricks/quickBarExtension";
-import { type Menus } from "webextension-polyfill";
-import userEvent from "@testing-library/user-event";
+import { isTourInProgress } from "@/starterBricks/tour/tourController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
-import {
-  initQuickBarApp,
-  toggleQuickBar,
-} from "@/components/quickBar/QuickBarApp";
-import { mockAnimationsApi } from "jsdom-testing-mocks";
+import defaultActions, {
+  pageEditorAction,
+} from "@/components/quickBar/defaultActions";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import defaultActions, {
-  pageEditorAction,
-} from "@/components/quickBar/defaultActions";
+import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 import { getPlatform } from "@/platform/platformContext";
+import {
+  type TourDefinition,
+  type TourConfig,
+} from "@/starterBricks/tour/types";
 
-const rootReaderId = validateRegistryId("test/root-reader");
-
-mockAnimationsApi();
+const rootReader = new RootReader();
 
 jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockReturnValue(false),
 }));
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<StarterBrickConfig<QuickBarDefinition>>({
+  define<StarterBrickConfig<TourDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>
@@ -65,19 +54,17 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
         id: validateRegistryId(`test/starter-brick-${n}`),
         name: "Test Starter Brick",
       }) as Metadata,
-    definition: define<QuickBarDefinition>({
-      type: "quickBar",
+    definition: define<TourDefinition>({
+      type: "tour",
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
       }),
-      contexts: () => ["all"] as Menus.ContextType[],
-      targetMode: "eventTarget",
-      reader: () => [rootReaderId],
+      reader: () => [rootReader.id],
       ...definitionOverrides,
     }),
   });
 
-const extensionFactory = define<ResolvedModComponent<QuickBarConfig>>({
+const extensionFactory = define<ResolvedModComponent<TourConfig>>({
   apiVersion: "v3",
   _resolvedModComponentBrand: undefined,
   id: uuidSequence,
@@ -85,13 +72,10 @@ const extensionFactory = define<ResolvedModComponent<QuickBarConfig>>({
     validateRegistryId(`test/starter-brick-${n}`),
   _recipe: null,
   label: "Test Extension",
-  config: define<QuickBarConfig>({
-    title: "Test Action",
-    action: () => [] as BrickPipeline,
+  config: define<TourConfig>({
+    tour: () => [] as BrickPipeline,
   }),
 });
-
-const rootReader = new RootReader();
 
 beforeEach(() => {
   window.document.body.innerHTML = "";
@@ -105,15 +89,8 @@ beforeEach(() => {
 const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
   .length;
 
-describe("quickBarExtension", () => {
-  it("quick bar smoke test", async () => {
-    const user = userEvent.setup();
-
-    document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
-
-    // Ensure default actions are registered
-    await initQuickBarApp();
-
+describe("tourExtension", () => {
+  test("install tour via Page Editor", async () => {
     const starterBrick = fromJS(getPlatform(), starterBrickFactory()());
 
     starterBrick.registerModComponent(
@@ -122,32 +99,46 @@ describe("quickBarExtension", () => {
       }),
     );
 
-    expect(quickBarRegistry.currentActions).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS,
-    );
     await starterBrick.install();
-    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.PAGE_EDITOR });
+
+    await tick();
+
+    expect(isTourInProgress()).toBe(false);
+    expect(rootReader.readCount).toBe(1);
+
+    starterBrick.uninstall();
+  });
+
+  test("register tour with quick bar", async () => {
+    await initQuickBarApp();
+
+    const extensionPoint = fromJS(
+      getPlatform(),
+      starterBrickFactory({ allowUserRun: true, autoRunSchedule: "never" })(),
+    );
+
+    extensionPoint.registerModComponent(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      }),
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.runModComponents({ reason: RunReason.INITIAL_LOAD });
+
+    await tick();
+
+    // Shouldn't be run because autoRunSchedule: never
+    expect(isTourInProgress()).toBe(false);
+    expect(rootReader.readCount).toBe(0);
 
     expect(quickBarRegistry.currentActions).toHaveLength(
       NUM_DEFAULT_QUICKBAR_ACTIONS + 1,
     );
-
-    expect(rootReader.readCount).toBe(0);
-
-    // QuickBar adds another div to the body
-    expect(document.body.innerHTML).toBe(
-      '<div class="pixiebrix-quickbar-container"></div><div></div>',
+    extensionPoint.uninstall();
+    expect(quickBarRegistry.currentActions).toHaveLength(
+      NUM_DEFAULT_QUICKBAR_ACTIONS,
     );
-
-    // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
-    await user.keyboard("[Ctrl] k");
-    await toggleQuickBar();
-
-    await tick();
-
-    // Should be showing the QuickBar portal. The innerHTML doesn't contain the QuickBar actions at this point
-    expect(document.body.innerHTML).not.toBe("<div></div><div></div>");
-
-    starterBrick.uninstall();
   });
 });

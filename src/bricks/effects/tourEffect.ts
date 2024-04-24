@@ -28,7 +28,7 @@ import {
   markTourEnd,
   markTourStart,
   markTourStep,
-} from "@/starterBricks/tourController";
+} from "@/starterBricks/tour/tourController";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
 import { $safeFind } from "@/utils/domUtils";

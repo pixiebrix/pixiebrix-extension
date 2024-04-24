@@ -22,7 +22,7 @@ import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldPro
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import { partial } from "lodash";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
-import { type Trigger } from "@/starterBricks/sidebarExtension";
+import { type Trigger } from "@/starterBricks/sidebar/types";
 import { useField, useFormikContext } from "formik";
 import { type TriggerFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type DebounceOptions } from "@/starterBricks/types";

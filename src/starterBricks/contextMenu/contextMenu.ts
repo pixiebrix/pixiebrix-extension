@@ -28,7 +28,6 @@ import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import {
   StarterBrickABC,
   type StarterBrickConfig,
-  type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
 import { checkAvailable } from "@/bricks/available";
@@ -38,7 +37,6 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
-import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
@@ -47,7 +45,7 @@ import { guessSelectedElement } from "@/utils/selectionController";
 import {
   ContextMenuReader,
   contextMenuReaderShim,
-} from "@/starterBricks/contextMenuReader";
+} from "@/starterBricks/contextMenu/contextMenuReader";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -65,10 +63,14 @@ import { getPlatform } from "@/platform/platformContext";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { Except } from "type-fest";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
-import { type MessageConfig } from "@/utils/notify";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { initSelectionMenu } from "@/contentScript/textSelectionMenu/selectionMenuController";
+import {
+  type ContextMenuTargetMode,
+  type ContextMenuConfig,
+  type ContextMenuDefinition,
+} from "@/starterBricks/contextMenu/types";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
@@ -91,28 +93,6 @@ const groupRegistrationErrorNotification = (platform: PlatformProtocol) =>
       delay: 100,
     },
   );
-
-export type ContextMenuTargetMode =
-  // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
-  "legacy" | "document" | "eventTarget";
-
-export type ContextMenuConfig = {
-  /**
-   * The title of the context menu item.
-   */
-  title: string;
-
-  /**
-   * Action to perform on click.
-   */
-  action: BrickConfig | BrickPipeline;
-
-  /**
-   * (Experimental) message to show on success when running the extension
-   * @since 1.7.27
-   */
-  onSuccess?: MessageConfig | boolean;
-};
 
 /**
  * The element the user right-clicked on to trigger the context menu
@@ -429,20 +409,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   }
 }
 
-export interface MenuDefaultOptions {
-  title?: string;
-  [key: string]: string | string[];
-}
-
-export interface MenuDefinition extends StarterBrickDefinition {
-  documentUrlPatterns?: Manifest.MatchPattern[];
-  contexts: Menus.ContextType[];
-  targetMode: ContextMenuTargetMode;
-  defaultOptions?: MenuDefaultOptions;
-}
-
 class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
-  private readonly _definition: MenuDefinition;
+  private readonly _definition: ContextMenuDefinition;
 
   public readonly permissions: Permissions.Permissions;
 
@@ -450,11 +418,11 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
 
   public readonly contexts: Menus.ContextType[];
 
-  public readonly rawConfig: StarterBrickConfig<MenuDefinition>;
+  public readonly rawConfig: StarterBrickConfig<ContextMenuDefinition>;
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickConfig<MenuDefinition>,
+    config: StarterBrickConfig<ContextMenuDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -507,7 +475,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickConfig<MenuDefinition>,
+  config: StarterBrickConfig<ContextMenuDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "contextMenu") {

@@ -24,11 +24,11 @@ import { type Except } from "type-fest";
 import {
   type PanelConfig,
   type PanelDefinition,
-} from "@/starterBricks/panelExtension";
+} from "@/starterBricks/panel/types";
 import {
-  type MenuDefinition,
+  type MenuItemDefinition,
   type MenuItemStarterBrickConfig,
-} from "@/starterBricks/menuItemExtension";
+} from "@/starterBricks/menuItem/types";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -53,12 +53,12 @@ export type PanelSelectionResult = {
   containerInfo: ElementInfo;
 };
 export type ButtonDefinition = DynamicDefinition<
-  MenuDefinition,
+  MenuItemDefinition,
   MenuItemStarterBrickConfig
 >;
 export type ButtonSelectionResult = {
   uuid: UUID;
-  menu: Except<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
+  menu: Except<MenuItemDefinition, "defaultOptions" | "isAvailable" | "reader">;
   item: Pick<MenuItemStarterBrickConfig, "caption">;
   containerInfo: ElementInfo;
 };

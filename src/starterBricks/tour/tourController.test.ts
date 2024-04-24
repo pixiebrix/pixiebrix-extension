@@ -23,7 +23,7 @@ import {
   markTourStart,
   registerTour,
   runSubTour,
-} from "@/starterBricks/tourController";
+} from "@/starterBricks/tour/tourController";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";

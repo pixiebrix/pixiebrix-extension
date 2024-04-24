@@ -18,7 +18,7 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { runSubTour } from "@/starterBricks/tourController";
+import { runSubTour } from "@/starterBricks/tour/tourController";
 import { BusinessError } from "@/errors/businessErrors";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 

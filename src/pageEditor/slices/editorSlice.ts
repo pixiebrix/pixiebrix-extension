@@ -67,7 +67,7 @@ import {
   getInstalledExtensionPoints,
 } from "@/contentScript/messenger/api";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
 import { testMatchPatterns } from "@/bricks/available";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
