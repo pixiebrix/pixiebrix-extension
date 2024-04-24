@@ -23,7 +23,7 @@ import IconWidget from "@/components/fields/IconWidget";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField, useFormikContext } from "formik";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { type QuickBarProviderConfig } from "@/starterBricks/quickBarProvider/quickBarProviderExtension";
+import { type QuickBarProviderConfig } from "@/starterBricks/quickBarProvider/types";
 import { type QuickBarProviderFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import SwitchButtonWidget, {
   type CheckBoxLike,

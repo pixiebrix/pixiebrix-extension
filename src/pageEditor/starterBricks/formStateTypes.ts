@@ -52,7 +52,7 @@ import { type Menus } from "webextension-polyfill";
 import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefaultOptions,
-} from "@/starterBricks/quickBarProvider/quickBarProviderExtension"; // Part of cycle
+} from "@/starterBricks/quickBarProvider/types";
 import { type TourDefinition } from "@/starterBricks/tour/tourExtension"; // Part of cycle
 import {
   type BaseExtensionPointState,

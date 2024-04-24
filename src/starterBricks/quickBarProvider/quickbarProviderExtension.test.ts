@@ -18,11 +18,7 @@
 import { validateRegistryId } from "@/types/helpers";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
 import { define } from "cooky-cutter";
-import {
-  fromJS,
-  type QuickBarProviderConfig,
-  type QuickBarProviderDefinition,
-} from "@/starterBricks/quickBarProvider/quickBarProviderExtension";
+import { fromJS } from "@/starterBricks/quickBarProvider/quickBarProviderExtension";
 import { type BrickPipeline } from "@/bricks/types";
 import {
   getDocument,
@@ -47,6 +43,10 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { starterBrickConfigFactory as genericExtensionPointFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { act } from "@testing-library/react";
 import { getPlatform } from "@/platform/platformContext";
+import {
+  type QuickBarProviderDefinition,
+  type QuickBarProviderConfig,
+} from "@/starterBricks/quickBarProvider/types";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
