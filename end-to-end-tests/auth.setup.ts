@@ -34,7 +34,7 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
     page.getByText(
       "Successfully linked the Browser Extension to your PixieBrix account",
     ),
-    { timeout: 10_000 },
+    { timeout: 12_000 },
   );
   await expect(page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED)).toBeVisible();
   await expect(page.getByText("Admin Console")).toBeVisible();

@@ -20,11 +20,11 @@ import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import {
+  conditionallyHoverOverMV2Sidebar,
   ensureVisibility,
   getSidebarPage,
   waitForSelectionMenuReadiness,
 } from "../../utils";
-import { MV } from "../../env";
 
 test.describe("Insert at Cursor", () => {
   test("8157: can insert at cursor from side bar", async ({
@@ -82,12 +82,8 @@ test.describe("Insert at Cursor", () => {
 
     await editor.click();
 
-    if (MV === "2") {
-      // Need to simulate the mouse entering the sidebar to track focus on MV2
-      // https://github.com/pixiebrix/pixiebrix-extension/blob/1794863937f343fbc8e3a4434eace74191f8dfbd/src/contentScript/sidebarController.tsx#L563-L563
-      const sidebarFrame = page.locator("#pixiebrix-extension");
-      await sidebarFrame.dispatchEvent("mouseenter");
-    }
+    // Need to simulate the mouse entering the sidebar to track focus on MV2
+    await conditionallyHoverOverMV2Sidebar(page);
 
     await sideBarPage.getByRole("button", { name: "Insert at Cursor" }).click();
 
