@@ -27,7 +27,8 @@ test("sidebar is persistent during navigation", async ({
   extensionId,
 }) => {
   test.skip(MV === "2", "Navigation is not supported for MV2 sidebar");
-  // This mod shows a simple form in the sidebar, and is enabled for the pbx.vercel.app domain and app domain.
+  // This mod shows two panels in the sidebar with a simple form. One is enabled for the pbx.vercel.app domain and app
+  // domain, and the other is enabled just for the pbx.vercel.app domain.
   const modId = "@e2e-testing/test-sidebar-navigation";
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -59,7 +60,7 @@ test("sidebar is persistent during navigation", async ({
   ).toBeVisible();
 
   const notesField = sideBarPage.getByLabel("Example Notes Field");
-  // The notes field defaults its value to the current url.
+  // The notes field in this mod defaults its value to the current url.
   await expect(notesField).toContainText("https://pbx.vercel.app/");
   await notesField.fill("Something else");
 
