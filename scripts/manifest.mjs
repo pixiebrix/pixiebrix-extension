@@ -21,8 +21,17 @@ import { excludeDuplicatePatterns } from "webext-patterns";
 
 function getVersion(env) {
   // `manifest.json` only supports numbers in the version, so use the semver
-  const match = /^(?<version>\d+\.\d+\.\d+)/.exec(env.npm_package_version);
-  return match.groups.version;
+  const match =
+    /^(?<version>\d+\.\d+\.\d+)(?:-(?<stage>\w+)(?:\.(?<stageNumber>\d+))?)?/.exec(
+      env.npm_package_version,
+    );
+  const { version, stage, stageNumber } = match.groups;
+
+  if (stage && stageNumber) {
+    return `${version}.${stage === "alpha" ? "1" : "2"}${stageNumber}`;
+  }
+
+  return version;
 }
 
 function getVersionName(env, isProduction) {
@@ -40,7 +49,7 @@ function getVersionName(env, isProduction) {
 }
 
 /**
- * @param {chrome.runtime.ManifestV2} manifestV2
+ * @param manifestV2
  * @returns chrome.runtime.ManifestV3
  */
 function updateManifestToV3(manifestV2) {
@@ -99,8 +108,8 @@ function updateManifestToV3(manifestV2) {
  * Add internal URLs to the content scripts targeting the Admin Console so the Extension can talk to
  * a locally running Admin Console during development.
  *
- * @param {chrome.runtime.Manifest} manifest
- * @param {string[]} internal
+ * @param manifest
+ * @param internal
  */
 function addInternalUrlsToContentScripts(manifest, internal) {
   const ADMIN_CONSOLE_MATCH_PATTERN = "https://*.pixiebrix.com/*";
@@ -118,7 +127,7 @@ function addInternalUrlsToContentScripts(manifest, internal) {
 }
 
 /**
- * @param {chrome.runtime.ManifestV2} manifestV2
+ * @param manifestV2
  * @returns chrome.runtime.Manifest
  */
 function customizeManifest(manifestV2, options = {}) {
