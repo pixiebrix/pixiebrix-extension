@@ -27,7 +27,8 @@ function getVersion(env) {
     );
   const { version, stage, stageNumber } = match.groups;
 
-  if (stage && stageNumber) {
+  // Add 4th digit for alpha/beta release builds. Used to update the extension BETA listing in the Chrome Web Store.
+  if (stage && stageNumber && env.ENVIRONMENT !== "staging") {
     return `${version}.${stage === "alpha" ? "1" : "2"}${stageNumber}`;
   }
 
