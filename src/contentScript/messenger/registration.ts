@@ -45,7 +45,7 @@ import {
   resetTab,
   runRendererBlock,
 } from "@/contentScript/pageEditor"; // 219 strictNullCheck errors
-import { runBrick } from "@/contentScript/executor"; // 95 strictNullCheck errors
+import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
 import selectElement from "@/contentScript/pageEditor/selectElement"; // 196 strictNullCheck errors
 import {
   runHeadlessPipeline,

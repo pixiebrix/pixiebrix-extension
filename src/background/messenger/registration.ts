@@ -45,7 +45,7 @@ import {
   pong,
   recordEvent,
   sendDeploymentAlert,
-} from "@/background/telemetry"; // 192 strictNullCheck errors
+} from "@/background/telemetry"; // Depends on contentScript/messenger to pass strictNullCheck
 
 import { setCopilotProcessData } from "@/background/partnerHandlers"; // Depends on contentScript/messenger to pass strictNullCheck
 
