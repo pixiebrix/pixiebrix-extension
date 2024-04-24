@@ -166,7 +166,7 @@ class UserDefinedIntegration<
       "baseURL" in this._definition.authentication &&
       this._definition.authentication.baseURL;
     if (baseUrlTemplate) {
-      // Convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
+      // Convert into a real match pattern: https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns
       const baseUrl = renderMustache(baseUrlTemplate, integrationConfig);
       if (canParseUrl(baseUrl)) {
         patterns.push(baseUrl + (baseUrl.endsWith("/") ? "*" : "/*"));

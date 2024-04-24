@@ -24,7 +24,7 @@ import { get, isEmpty } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";
 import { joinPathParts } from "@/utils/formUtils";
 
-// See URL patterns at https://developer.chrome.com/docs/extensions/mv3/match_patterns/
+// See URL patterns at https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns
 const urlRegexp = /^(?<scheme>.*):\/\/(?<host>[^/]*)?(?<path>.*)?$/;
 const schemeRegexp = /^\*|https?$/;
 const hostRegexp = /^(\*|(^(\*\.)?[^*/]+))$/;
