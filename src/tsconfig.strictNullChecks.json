@@ -4,9 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./contentScript/pageEditor/insertButton",
-    "./contentScript/pageEditor/insertPanel",
-    "./contentScript/pageEditor/selectElement.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/extensionBase.ts",
@@ -391,6 +388,9 @@
     "./contentScript/pageEditor/beautify.ts",
     "./contentScript/pageEditor/elementInformation.ts",
     "./contentScript/pageEditor/elementPicker.ts",
+    "./contentScript/pageEditor/insertButton",
+    "./contentScript/pageEditor/insertPanel",
+    "./contentScript/pageEditor/selectElement.ts",
     "./contentScript/pageEditor/types.ts",
     "./contentScript/partnerIntegrations.ts",
     "./contentScript/popoverDom.ts",
@@ -536,6 +536,7 @@
     "./extensionConsole/pages/mods/modals/shareModals/useSortOrganizations.ts",
     "./extensionConsole/pages/mods/modsPageSelectors.ts",
     "./extensionConsole/pages/mods/modsPageSlice.ts",
+    "./extensionConsole/pages/mods/modsPageTypes.ts",
     "./extensionConsole/pages/mods/utils/exportBlueprint.ts",
     "./extensionConsole/pages/onboarding/DefaultSetupCard.tsx",
     "./extensionConsole/pages/onboarding/partner/partnerOnboardingUtils.ts",
