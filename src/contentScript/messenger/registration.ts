@@ -30,7 +30,7 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 205 strictNullCheck errors
+} from "@/contentScript/lifecycle"; // 203 strictNullCheck errors
 import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 31 strictNullCheck errors
 import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 37 strictNullCheck errors
 import {
@@ -39,14 +39,13 @@ import {
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/contentScript/pageEditor/dynamic"; // 208 strictNullCheck errors
+} from "@/contentScript/pageEditor/dynamic"; // 206 strictNullCheck errors
 import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
-} from "@/contentScript/pageEditor"; // 210 strictNullCheck errors
+} from "@/contentScript/pageEditor"; // 208 strictNullCheck errors
 import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
-import selectElement from "@/contentScript/pageEditor/selectElement"; // 11 strictNullCheck errors
 import {
   runHeadlessPipeline,
   runMapArgs,
@@ -79,7 +78,6 @@ declare global {
     ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
 
     RUN_BRICK: typeof runBrick;
-    SELECT_ELEMENT: typeof selectElement;
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
@@ -113,7 +111,6 @@ export default function registerMessenger(): void {
     ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
 
     RUN_BRICK: runBrick,
-    SELECT_ELEMENT: selectElement,
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,
     RUN_HEADLESS_PIPELINE: runHeadlessPipeline,

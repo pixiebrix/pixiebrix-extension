@@ -48,6 +48,7 @@ import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { cancelSelect } from "@/contentScript/pageEditor/elementPicker";
 import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
+import selectElement from "@/contentScript/pageEditor/selectElement";
 
 declare global {
   interface MessengerMethods {
@@ -79,6 +80,7 @@ declare global {
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
     GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
+    SELECT_ELEMENT: typeof selectElement;
   }
 }
 export default function registerMessenger(): void {
@@ -111,5 +113,6 @@ export default function registerMessenger(): void {
     CANCEL_SELECT_ELEMENT: cancelSelect,
     RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
     GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
+    SELECT_ELEMENT: selectElement,
   });
 }

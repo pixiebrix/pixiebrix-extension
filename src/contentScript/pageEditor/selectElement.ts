@@ -31,14 +31,14 @@ export default async function selectElement({
   mode = "element",
   root,
   isMulti: initialIsMulti = false,
-  excludeRandomClasses,
+  excludeRandomClasses = false,
 }: {
   mode: SelectMode;
   isMulti?: boolean;
   root?: string;
   excludeRandomClasses?: boolean;
 }): Promise<ElementInfo> {
-  const rootElements = $safeFind(root).get();
+  const rootElements = $safeFind(root ?? "").get();
 
   if (root && rootElements.length === 0) {
     throw new NoElementsFoundError(root);
@@ -59,10 +59,10 @@ export default async function selectElement({
 
       const { selectors } = findContainer(elements);
 
-      findSingleElement(selectors[0]);
+      findSingleElement(selectors[0] ?? "");
 
       return pageScript.getElementInfo({
-        selector: selectors[0],
+        selector: selectors[0] ?? "",
       });
     }
 
@@ -71,9 +71,10 @@ export default async function selectElement({
 
       if (isMulti) {
         // If there are rootElements, the elements must all be contained within the same root
-        activeRoot = rootElements?.find((rootElement) =>
-          elements.every((element) => rootElement.contains(element)),
-        );
+        activeRoot =
+          rootElements?.find((rootElement) =>
+            elements.every((element) => rootElement.contains(element)),
+          ) ?? null;
 
         return inferMultiElementSelector({
           elements,
@@ -89,11 +90,11 @@ export default async function selectElement({
         );
       }
 
-      const element = elements[0];
-      // At least one much match, otherwise userSelectElement would have thrown
-      activeRoot = rootElements?.find((rootElement) =>
-        rootElement.contains(element),
-      );
+      const element = elements[0]!;
+      // At least one must match, otherwise userSelectElement would have thrown
+      activeRoot =
+        rootElements?.find((rootElement) => rootElement.contains(element)) ??
+        null;
 
       return inferSingleElementSelector({
         root: activeRoot,

@@ -60,3 +60,4 @@ export const reloadMarketplaceEnhancements = getMethod(
   "RELOAD_MARKETPLACE_ENHANCEMENTS",
 );
 export const getAttributeExamples = getMethod("GET_ATTRIBUTE_EXAMPLES");
+export const selectElement = getMethod("SELECT_ELEMENT");
