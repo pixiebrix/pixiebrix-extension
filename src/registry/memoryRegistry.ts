@@ -134,7 +134,7 @@ class MemoryRegistry<
    * @throws DoesNotExistError if the item does not exist
    * @see exists
    */
-  async lookup(registryId: Id): Promise<Item> {
+  async lookup(registryId?: Id): Promise<Item> {
     if (!registryId) {
       throw new Error("id is required");
     }

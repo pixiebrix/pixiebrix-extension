@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionPages/extensionPagePlatform.ts",
     "./tinyPages/walkthroughModal.tsx",
     "./testUtils/userMock.ts",
     "./testUtils/userEventHelpers.ts",

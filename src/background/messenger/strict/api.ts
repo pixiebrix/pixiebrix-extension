@@ -24,6 +24,7 @@ import {
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL", bg);
 export const waitForContentScript = getMethod("WAIT_FOR_CONTENT_SCRIPT", bg);
@@ -101,7 +102,7 @@ export const performConfiguredRequestInBackground = getMethod(
   "CONFIGURED_REQUEST",
   bg,
 ) as <TData>(
-  integrationConfig: SanitizedIntegrationConfig | null,
+  integrationConfig: Nullishable<SanitizedIntegrationConfig>,
   requestConfig: NetworkRequestConfig,
   options: { interactiveLogin: boolean },
 ) => Promise<RemoteResponse<TData>>;
