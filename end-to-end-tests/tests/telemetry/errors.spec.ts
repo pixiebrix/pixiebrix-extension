@@ -32,7 +32,7 @@ test("can report application error to telemetry service", async ({
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
   await expect(page.getByText("Something went wrong.")).toBeVisible();
 
-  let waitForRequest: Promise<Request | undefined>;
+  let waitForRequest: Promise<Request> | undefined;
   if (MV === "3") {
     // Due to service worker limitations with the Datadog SDK, we need to report errors via an offscreen document
     // (see https://github.com/pixiebrix/pixiebrix-extension/issues/8268). The offscreen document is created when
