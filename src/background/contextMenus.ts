@@ -25,7 +25,7 @@ import extensionPointRegistry from "@/starterBricks/registry";
 import {
   type ContextMenuConfig,
   ContextMenuStarterBrickABC,
-} from "@/starterBricks/contextMenu";
+} from "@/starterBricks/contextMenu/contextMenu";
 import { getModComponentState } from "@/store/extensionsStorage";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type UUID } from "@/types/stringTypes";

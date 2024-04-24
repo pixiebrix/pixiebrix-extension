@@ -26,13 +26,13 @@ import { validateRegistryId } from "@/types/helpers";
 import {
   type MenuDefinition,
   RemoteMenuItemExtensionPoint,
-} from "@/starterBricks/menuItemExtension";
+} from "@/starterBricks/menuItem/menuItemExtension";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import {
   type QuickBarDefinition,
   RemoteQuickBarExtensionPoint,
-} from "@/starterBricks/quickBarExtension";
+} from "@/starterBricks/quickBar/quickBarExtension";
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";

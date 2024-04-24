@@ -38,7 +38,7 @@ import {
   type QuickBarConfig,
   type QuickBarDefinition,
   QuickBarStarterBrickABC,
-} from "@/starterBricks/quickBarExtension";
+} from "@/starterBricks/quickBar/quickBarExtension";
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type QuickBarFormState } from "./formStateTypes";

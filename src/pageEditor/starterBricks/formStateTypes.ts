@@ -21,21 +21,21 @@ import {
   type ContextMenuConfig,
   type ContextMenuTargetMode,
   type MenuDefaultOptions as ContextMenuDefaultOptions,
-} from "@/starterBricks/contextMenu"; // Part of cycle
+} from "@/starterBricks/contextMenu/contextMenu"; // Part of cycle
 import {
   type MenuItemStarterBrickConfig,
   type MenuPosition,
-} from "@/starterBricks/menuItemExtension"; // Part of cycle
-import { type PanelConfig } from "@/starterBricks/panelExtension"; // Part of cycle
+} from "@/starterBricks/menuItem/menuItemExtension"; // Part of cycle
+import { type PanelConfig } from "@/starterBricks/panel/panelExtension"; // Part of cycle
 import {
   type QuickBarConfig,
   type QuickBarDefaultOptions,
   type QuickBarTargetMode,
-} from "@/starterBricks/quickBarExtension"; // Part of cycle
+} from "@/starterBricks/quickBar/quickBarExtension"; // Part of cycle
 import {
   type SidebarConfig,
   type Trigger as SidebarTrigger,
-} from "@/starterBricks/sidebarExtension"; // Part of cycle
+} from "@/starterBricks/sidebar/sidebarExtension"; // Part of cycle
 import {
   type AttachMode,
   type ReportMode,
@@ -52,8 +52,8 @@ import { type Menus } from "webextension-polyfill";
 import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefaultOptions,
-} from "@/starterBricks/quickBarProviderExtension"; // Part of cycle
-import { type TourDefinition } from "@/starterBricks/tourExtension"; // Part of cycle
+} from "@/starterBricks/quickBarProvider/quickBarProviderExtension"; // Part of cycle
+import { type TourDefinition } from "@/starterBricks/tour/tourExtension"; // Part of cycle
 import {
   type BaseExtensionPointState,
   type BaseExtensionState,

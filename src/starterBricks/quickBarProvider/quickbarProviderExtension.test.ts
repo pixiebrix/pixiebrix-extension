@@ -22,7 +22,7 @@ import {
   fromJS,
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
-} from "@/starterBricks/quickBarProviderExtension";
+} from "@/starterBricks/quickBarProvider/quickBarProviderExtension";
 import { type BrickPipeline } from "@/bricks/types";
 import {
   getDocument,

@@ -35,7 +35,7 @@ import {
   type ContextMenuConfig,
   ContextMenuStarterBrickABC,
   type MenuDefinition,
-} from "@/starterBricks/contextMenu";
+} from "@/starterBricks/contextMenu/contextMenu";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";

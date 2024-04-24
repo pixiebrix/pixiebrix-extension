@@ -35,7 +35,7 @@ import {
   type MenuDefinition,
   type MenuItemStarterBrickConfig,
   MenuItemStarterBrickABC,
-} from "@/starterBricks/menuItemExtension";
+} from "@/starterBricks/menuItem/menuItemExtension";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";

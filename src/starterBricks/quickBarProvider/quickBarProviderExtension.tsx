@@ -48,7 +48,7 @@ import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import {
   QuickbarQueryReader,
   quickbarQueryReaderShim,
-} from "@/starterBricks/quickbarQueryReader";
+} from "@/starterBricks/quickBarProvider/quickbarQueryReader";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";

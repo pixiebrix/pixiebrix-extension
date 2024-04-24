@@ -47,7 +47,7 @@ import { guessSelectedElement } from "@/utils/selectionController";
 import {
   ContextMenuReader,
   contextMenuReaderShim,
-} from "@/starterBricks/contextMenuReader";
+} from "@/starterBricks/contextMenu/contextMenuReader";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";

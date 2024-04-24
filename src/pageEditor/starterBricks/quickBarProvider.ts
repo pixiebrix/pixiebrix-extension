@@ -40,7 +40,7 @@ import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
   QuickBarProviderStarterBrickABC,
-} from "@/starterBricks/quickBarProviderExtension";
+} from "@/starterBricks/quickBarProvider/quickBarProviderExtension";
 import QuickBarProviderConfiguration from "@/pageEditor/tabs/quickBarProvider/QuickBarProviderConfiguration";
 import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
 

@@ -24,10 +24,10 @@ import {
   type TourConfig,
   type TourDefinition,
   fromJS,
-} from "@/starterBricks/tourExtension";
+} from "@/starterBricks/tour/tourExtension";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
-import { isTourInProgress } from "@/starterBricks/tourController";
+import { isTourInProgress } from "@/starterBricks/tour/tourController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import defaultActions, {
   pageEditorAction,

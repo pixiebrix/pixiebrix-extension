@@ -29,7 +29,7 @@ import {
   fromJS,
   type SidebarConfig,
   type SidebarDefinition,
-} from "@/starterBricks/sidebarExtension";
+} from "@/starterBricks/sidebar/sidebarExtension";
 import { RunReason } from "@/types/runtimeTypes";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import {

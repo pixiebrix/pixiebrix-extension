@@ -26,7 +26,7 @@ import {
   type ContextMenuConfig,
   fromJS,
   type MenuDefinition,
-} from "@/starterBricks/contextMenu";
+} from "@/starterBricks/contextMenu/contextMenu";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { RunReason } from "@/types/runtimeTypes";

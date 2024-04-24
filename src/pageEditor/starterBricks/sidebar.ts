@@ -36,7 +36,7 @@ import {
   type SidebarDefinition,
   type SidebarConfig,
   SidebarStarterBrickABC,
-} from "@/starterBricks/sidebarExtension";
+} from "@/starterBricks/sidebar/sidebarExtension";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";

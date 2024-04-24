@@ -24,11 +24,11 @@ import { type Except } from "type-fest";
 import {
   type PanelConfig,
   type PanelDefinition,
-} from "@/starterBricks/panelExtension";
+} from "@/starterBricks/panel/panelExtension";
 import {
   type MenuDefinition,
   type MenuItemStarterBrickConfig,
-} from "@/starterBricks/menuItemExtension";
+} from "@/starterBricks/menuItem/menuItemExtension";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";

@@ -41,7 +41,7 @@ import {
   type TourConfig,
   type TourDefinition,
   TourStarterBrickABC,
-} from "@/starterBricks/tourExtension";
+} from "@/starterBricks/tour/tourExtension";
 import TourConfiguration from "@/pageEditor/tabs/tour/TourConfiguration";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 

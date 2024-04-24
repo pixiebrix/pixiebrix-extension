@@ -19,7 +19,7 @@ import {
   fromJS,
   type MenuDefinition,
   type MenuItemStarterBrickConfig,
-} from "@/starterBricks/menuItemExtension";
+} from "@/starterBricks/menuItem/menuItemExtension";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { define } from "cooky-cutter";

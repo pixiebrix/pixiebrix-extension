@@ -36,7 +36,7 @@ import {
   type PanelConfig,
   type PanelDefinition,
   PanelStarterBrickABC,
-} from "@/starterBricks/panelExtension";
+} from "@/starterBricks/panel/panelExtension";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";

@@ -24,7 +24,7 @@ import {
   type ContextMenuConfig,
   fromJS,
   type MenuDefinition,
-} from "@/starterBricks/contextMenu";
+} from "@/starterBricks/contextMenu/contextMenu";
 import * as backgroundApi from "@/background/messenger/api";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";

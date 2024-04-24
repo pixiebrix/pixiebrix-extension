@@ -30,7 +30,7 @@ import {
   fromJS,
   type QuickBarConfig,
   type QuickBarDefinition,
-} from "@/starterBricks/quickBarExtension";
+} from "@/starterBricks/quickBar/quickBarExtension";
 import { type Menus } from "webextension-polyfill";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";

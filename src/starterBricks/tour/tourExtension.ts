@@ -47,7 +47,7 @@ import {
   type RegisteredTour,
   registerTour,
   unregisterTours,
-} from "@/starterBricks/tourController";
+} from "@/starterBricks/tour/tourController";
 import { getAll } from "@/tours/tourRunDatabase";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
