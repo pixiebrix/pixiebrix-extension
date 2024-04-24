@@ -19,17 +19,23 @@ import Policy from "csp-parse";
 import { normalizeManifestPermissions } from "webext-permissions";
 import { excludeDuplicatePatterns } from "webext-patterns";
 
-function getVersion(env) {
+function getVersion(env, isBetaListing) {
   // `manifest.json` only supports numbers in the version, so use the semver
   const match =
-    /^(?<version>\d+\.\d+\.\d+)(?:-(?<stage>\w+)(?:\.(?<stageNumber>\d+))?)?/.exec(
+    /^(?<version>\d+\.\d+\.\d+)(?:-(?<stage>\w+)(?:\.(?<stageNumber>\d))?)?/.exec(
       env.npm_package_version,
     );
   const { version, stage, stageNumber } = match.groups;
 
   // Add 4th digit for alpha/beta release builds. Used to update the extension BETA listing in the Chrome Web Store.
-  if (stage && stageNumber && env.ENVIRONMENT !== "staging") {
-    return `${version}.${stage === "alpha" ? "1" : "2"}${stageNumber}`;
+  if (isBetaListing) {
+    if (stage && stageNumber) {
+      // Ex: 1.8.13-alpha.1 -> 1.8.13.11
+      return `${version}.${stage === "alpha" ? "1" : "2"}${stageNumber}`;
+    }
+
+    // Ex: 1.8.13.30 -- Ensures that the release build version number is greater than the alpha/beta build version numbers
+    return `${version}.30`;
   }
 
   return version;
@@ -134,7 +140,7 @@ function addInternalUrlsToContentScripts(manifest, internal) {
 function customizeManifest(manifestV2, options = {}) {
   const { isProduction, manifestVersion, env = {}, isBeta } = options;
   const manifest = structuredClone(manifestV2);
-  manifest.version = getVersion(env);
+  manifest.version = getVersion(env, isBeta);
   manifest.version_name = getVersionName(env, isProduction);
 
   if (!isProduction) {
