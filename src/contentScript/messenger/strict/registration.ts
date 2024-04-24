@@ -49,6 +49,7 @@ import { cancelSelect } from "@/contentScript/pageEditor/elementPicker";
 import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 import selectElement from "@/contentScript/pageEditor/selectElement";
+import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
 
 declare global {
   interface MessengerMethods {
@@ -81,6 +82,7 @@ declare global {
     RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
     GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
     SELECT_ELEMENT: typeof selectElement;
+    INSERT_PANEL: typeof insertPanel;
   }
 }
 export default function registerMessenger(): void {
@@ -114,5 +116,6 @@ export default function registerMessenger(): void {
     RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
     GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
     SELECT_ELEMENT: selectElement,
+    INSERT_PANEL: insertPanel,
   });
 }

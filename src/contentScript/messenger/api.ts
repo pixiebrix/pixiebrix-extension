@@ -42,7 +42,6 @@ export const removeInstalledExtension = getNotifier(
 export const resetTab = getNotifier("RESET_TAB");
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 
-export const insertPanel = getMethod("INSERT_PANEL");
 export const insertButton = getMethod("INSERT_BUTTON");
 
 export const runBlock = getMethod("RUN_SINGLE_BLOCK");

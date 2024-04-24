@@ -19,6 +19,7 @@ import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { type StarterBrickDefinition } from "@/starterBricks/types";
 import { type IconConfig } from "@/types/iconTypes";
 import { type MessageConfig } from "@/utils/notify";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * @since 1.7.8
@@ -129,7 +130,7 @@ export interface MenuItemDefinition extends StarterBrickDefinition {
    * Wrap menu item in a shadow DOM
    * @deprecated do we still want to support this? Is it used anywhere?
    */
-  shadowDOM?: ShadowDOM;
+  shadowDOM: Nullishable<ShadowDOM>;
   /**
    * Default options for ModComponentBases attached to the extension point
    */
