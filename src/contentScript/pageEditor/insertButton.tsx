@@ -81,7 +81,6 @@ export async function insertButton(
         wrap_line_length: 80,
         wrap_attributes: "force",
       }),
-      shadowDOM: null,
       position: "append",
     },
     containerInfo: await pageScript.getElementInfo({

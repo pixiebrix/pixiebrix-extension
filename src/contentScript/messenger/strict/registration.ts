@@ -50,6 +50,7 @@ import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnha
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 import selectElement from "@/contentScript/pageEditor/selectElement";
 import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
+import { insertButton } from "@/contentScript/pageEditor/insertButton";
 
 declare global {
   interface MessengerMethods {
@@ -83,6 +84,7 @@ declare global {
     GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
     SELECT_ELEMENT: typeof selectElement;
     INSERT_PANEL: typeof insertPanel;
+    INSERT_BUTTON: typeof insertButton;
   }
 }
 export default function registerMessenger(): void {
@@ -117,5 +119,6 @@ export default function registerMessenger(): void {
     GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
     SELECT_ELEMENT: selectElement,
     INSERT_PANEL: insertPanel,
+    INSERT_BUTTON: insertButton,
   });
 }

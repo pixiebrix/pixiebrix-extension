@@ -31,7 +31,6 @@ import {
   reactivateTab,
   removePersistedExtension,
 } from "@/contentScript/lifecycle"; // 203 strictNullCheck errors
-import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 37 strictNullCheck errors
 import {
   clearDynamicElements,
   disableOverlay,
@@ -62,8 +61,6 @@ declare global {
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
     RESET_TAB: typeof resetTab;
 
-    INSERT_BUTTON: typeof insertButton;
-
     RUN_SINGLE_BLOCK: typeof runBlockPreview;
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
 
@@ -93,8 +90,6 @@ export default function registerMessenger(): void {
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
     RESET_TAB: resetTab,
-
-    INSERT_BUTTON: insertButton,
 
     RUN_SINGLE_BLOCK: runBlockPreview,
     RUN_RENDERER_BLOCK: runRendererBlock,
