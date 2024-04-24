@@ -22,10 +22,7 @@ import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { RootReader } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
-import {
-  fromJS,
-  type MenuDefinition,
-} from "@/starterBricks/contextMenu/contextMenu";
+import { fromJS } from "@/starterBricks/contextMenu/contextMenu";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { RunReason } from "@/types/runtimeTypes";
@@ -34,7 +31,10 @@ import {
   ensureContextMenu,
 } from "@/background/messenger/api";
 import { getPlatform } from "@/platform/platformContext";
-import { type ContextMenuConfig } from "@/starterBricks/contextMenu/types";
+import {
+  type MenuDefinition,
+  type ContextMenuConfig,
+} from "@/starterBricks/contextMenu/types";
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
 const ensureContextMenuMock = jest.mocked(ensureContextMenu);

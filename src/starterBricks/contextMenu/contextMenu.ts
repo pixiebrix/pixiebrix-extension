@@ -28,7 +28,6 @@ import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import {
   StarterBrickABC,
   type StarterBrickConfig,
-  type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
 import { checkAvailable } from "@/bricks/available";
@@ -70,7 +69,7 @@ import { initSelectionMenu } from "@/contentScript/textSelectionMenu/selectionMe
 import {
   type ContextMenuTargetMode,
   type ContextMenuConfig,
-  type MenuDefaultOptions,
+  type MenuDefinition,
 } from "@/starterBricks/contextMenu/types";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
@@ -408,13 +407,6 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       },
     });
   }
-}
-
-export interface MenuDefinition extends StarterBrickDefinition {
-  documentUrlPatterns?: Manifest.MatchPattern[];
-  contexts: Menus.ContextType[];
-  targetMode: ContextMenuTargetMode;
-  defaultOptions?: MenuDefaultOptions;
 }
 
 class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {

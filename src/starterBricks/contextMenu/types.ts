@@ -16,7 +16,9 @@
  */
 
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
+import { type StarterBrickDefinition } from "@/starterBricks/types";
 import { type MessageConfig } from "@/utils/notify";
+import { type Manifest, type Menus } from "webextension-polyfill";
 
 export type ContextMenuConfig = {
   /**
@@ -43,4 +45,11 @@ export type ContextMenuTargetMode =
 export interface MenuDefaultOptions {
   title?: string;
   [key: string]: string | string[];
+}
+
+export interface MenuDefinition extends StarterBrickDefinition {
+  documentUrlPatterns?: Manifest.MatchPattern[];
+  contexts: Menus.ContextType[];
+  targetMode: ContextMenuTargetMode;
+  defaultOptions?: MenuDefaultOptions;
 }

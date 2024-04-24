@@ -26,7 +26,7 @@ import {
   type MenuItemStarterBrickConfig,
   type MenuPosition,
 } from "@/starterBricks/menuItem/types";
-import { type PanelConfig } from "@/starterBricks/panel/panelExtension"; // Part of cycle
+import { type PanelConfig } from "@/starterBricks/panel/types";
 import {
   type QuickBarConfig,
   type QuickBarDefaultOptions,

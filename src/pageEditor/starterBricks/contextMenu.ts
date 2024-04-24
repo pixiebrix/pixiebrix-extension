@@ -31,10 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { type StarterBrickConfig } from "@/starterBricks/types";
-import {
-  ContextMenuStarterBrickABC,
-  type MenuDefinition,
-} from "@/starterBricks/contextMenu/contextMenu";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
@@ -42,7 +39,10 @@ import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
-import { type ContextMenuConfig } from "@/starterBricks/contextMenu/types";
+import {
+  type MenuDefinition,
+  type ContextMenuConfig,
+} from "@/starterBricks/contextMenu/types";
 
 function fromNativeElement(
   url: string,

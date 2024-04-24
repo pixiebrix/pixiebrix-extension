@@ -24,7 +24,7 @@ import { type Except } from "type-fest";
 import {
   type PanelConfig,
   type PanelDefinition,
-} from "@/starterBricks/panel/panelExtension";
+} from "@/starterBricks/panel/types";
 import { type MenuDefinition } from "@/starterBricks/menuItem/menuItemExtension";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";

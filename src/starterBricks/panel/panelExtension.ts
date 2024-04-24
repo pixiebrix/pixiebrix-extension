@@ -34,20 +34,17 @@ import { type Metadata } from "@/types/registryTypes";
 import {
   StarterBrickABC,
   type StarterBrickConfig,
-  type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { render } from "@/starterBricks/dom";
 import { type Permissions } from "webextension-polyfill";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import getSvgIcon from "@/icons/getSvgIcon";
-import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util"; // Part of cycle
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/domConstants";
-import { type IconConfig } from "@/types/iconTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
@@ -66,14 +63,10 @@ import {
 import { ReusableAbortController } from "abort-utils";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-
-export type PanelConfig = {
-  heading?: string;
-  body: BrickConfig | BrickPipeline;
-  icon?: IconConfig;
-  collapsible?: boolean;
-  shadowDOM?: boolean;
-};
+import {
+  type PanelDefinition,
+  type PanelConfig,
+} from "@/starterBricks/panel/types";
 
 const RENDER_LOOP_THRESHOLD = 25;
 const RENDER_LOOP_WINDOW_MS = 500;
@@ -484,26 +477,6 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       });
     }
   }
-}
-
-interface PanelDefaultOptions {
-  heading?: string;
-  [key: string]: string | boolean | number;
-}
-
-type PanelPosition =
-  | "append"
-  | "prepend"
-  | {
-      // Element to insert the panel item before, selector is relative to the container
-      sibling: string | null;
-    };
-
-export interface PanelDefinition extends StarterBrickDefinition {
-  template: string;
-  position?: PanelPosition;
-  containerSelector: string;
-  defaultOptions?: PanelDefaultOptions;
 }
 
 class RemotePanelExtensionPoint extends PanelStarterBrickABC {
