@@ -33,7 +33,6 @@ import {
 import { omitEditorMetadata } from "./pipelineMapping";
 import {
   type MenuDefinition,
-  type MenuItemStarterBrickConfig,
   MenuItemStarterBrickABC,
 } from "@/starterBricks/menuItem/menuItemExtension";
 import { type StarterBrickConfig } from "@/starterBricks/types";
@@ -48,6 +47,7 @@ import {
   type ButtonSelectionResult,
 } from "@/contentScript/pageEditor/types";
 import { type ActionFormState } from "./formStateTypes";
+import { type MenuItemStarterBrickConfig } from "@/starterBricks/menuItem/types";
 
 function fromNativeElement(
   url: string,

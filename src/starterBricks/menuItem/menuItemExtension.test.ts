@@ -18,7 +18,6 @@
 import {
   fromJS,
   type MenuDefinition,
-  type MenuItemStarterBrickConfig,
 } from "@/starterBricks/menuItem/menuItemExtension";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
@@ -38,6 +37,7 @@ import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { getPlatform } from "@/platform/platformContext";
+import { type MenuItemStarterBrickConfig } from "@/starterBricks/menuItem/types";
 
 jest.mock("@/runtime/reducePipeline");
 

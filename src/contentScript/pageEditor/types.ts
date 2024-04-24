@@ -25,13 +25,11 @@ import {
   type PanelConfig,
   type PanelDefinition,
 } from "@/starterBricks/panel/panelExtension";
-import {
-  type MenuDefinition,
-  type MenuItemStarterBrickConfig,
-} from "@/starterBricks/menuItem/menuItemExtension";
+import { type MenuDefinition } from "@/starterBricks/menuItem/menuItemExtension";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
+import { type MenuItemStarterBrickConfig } from "@/starterBricks/menuItem/types";
 
 export interface DynamicDefinition<
   TExtensionPoint extends StarterBrickDefinition = StarterBrickDefinition,

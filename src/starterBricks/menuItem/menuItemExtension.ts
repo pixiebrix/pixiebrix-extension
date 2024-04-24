@@ -39,11 +39,9 @@ import { type Metadata } from "@/types/registryTypes";
 import { type Permissions } from "webextension-polyfill";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { type MessageConfig } from "@/utils/notify";
 import { getNavigationId } from "@/contentScript/context";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
-import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions, {
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "@/runtime/apiVersionOptions";
@@ -63,7 +61,6 @@ import {
 } from "@/errors/businessErrors";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
-import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -87,6 +84,10 @@ import {
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import {
+  type MenuPosition,
+  type MenuItemStarterBrickConfig,
+} from "@/starterBricks/menuItem/types";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -106,54 +107,6 @@ const DATA_ATTR = "data-pb-uuid";
 
 const MENU_INSTALL_ERROR_DEBOUNCE_MS = 1000;
 
-export type MenuItemStarterBrickConfig = {
-  /**
-   * The button caption to supply to the `caption` in the extension point template.
-   * If `dynamicCaption` is true, can include template expressions.
-   */
-  caption: string;
-
-  /**
-   * (Optional) the icon to supply to the icon in the extension point template
-   */
-  icon?: IconConfig;
-
-  /**
-   * The action to perform when the button is clicked
-   */
-  action: BrickConfig | BrickPipeline;
-
-  /**
-   * (Experimental) condition to determine whether to show the menu item
-   * @see if
-   */
-  if?: BrickConfig | BrickPipeline;
-
-  /**
-   * True if caption is determined dynamically (using the reader and templating)
-   */
-  dynamicCaption?: boolean;
-
-  /**
-   * True to prevent button to be clicked again while action is in progress
-   */
-  synchronous: boolean;
-
-  /**
-   * (Experimental) message to show on error running the extension
-   */
-  onError?: MessageConfig;
-  /**
-   * (Experimental) message to show if the user cancelled the action (e.g., cancelled a form, or the Cancel brick ran)
-   */
-  onCancel?: MessageConfig;
-  /**
-   * (Experimental) message to show on success when running the extension
-   */
-  onSuccess?: MessageConfig | boolean;
-};
-
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const actionSchema: Schema = {
   oneOf: [
     { $ref: "https://app.pixiebrix.com/schemas/effect#" },
@@ -821,14 +774,6 @@ interface MenuDefaultOptions {
   caption?: string;
   [key: string]: string;
 }
-
-export type MenuPosition =
-  | "append"
-  | "prepend"
-  | {
-      // Element to insert the menu item before, selector is relative to the container
-      sibling: string | null;
-    };
 
 /**
  * @since 1.7.16
