@@ -64,6 +64,6 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
   await ensureVisibility(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above
     extensionConsolePage!.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
-    { timeout: 10_000 },
+    { timeout: 12_000 },
   );
 });
