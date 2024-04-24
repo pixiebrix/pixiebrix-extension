@@ -37,7 +37,8 @@ import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/knownErrorMessages";
  *   by the PixieBrix team
  * - Business errors indicate a problem with user-defined content or 3rd party services. They must be addressed
  *   by the customer
- * - Business errors are not reported to Datadog, but are reported to the PixieBrix error telemetry service
+ * - Business errors are not reported to Datadog, but are reported to the PixieBrix error telemetry service. See
+ *   recordError and reportToErrorService.
  *
  * Throw a BusinessError (or a BusinessError subclass) to indicate:
  * - A logic error in a package definition
@@ -146,7 +147,7 @@ export class InvalidSelectorError extends BusinessError {
  * An error indicating an invalid input was provided to a brick. Used for runtime checks that cannot be performed as
  * part of JSONSchema input validation.
  *
- * Throwing PropError instead of BusinessError allows the Page Editor so show the error on the associated field
+ * Throwing PropError instead of BusinessError allows the Page Editor to show the error on the associated field
  * in the brick configuration UI.
  *
  * @see InputValidationError
