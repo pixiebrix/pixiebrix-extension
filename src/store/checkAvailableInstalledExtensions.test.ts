@@ -26,16 +26,14 @@ import { validateRegistryId } from "@/types/helpers";
 import { RemoteMenuItemExtensionPoint } from "@/starterBricks/menuItem/menuItemExtension";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
-import {
-  type QuickBarDefinition,
-  RemoteQuickBarExtensionPoint,
-} from "@/starterBricks/quickBar/quickBarExtension";
+import { RemoteQuickBarExtensionPoint } from "@/starterBricks/quickBar/quickBarExtension";
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { getPlatform } from "@/platform/platformContext";
 import { type MenuItemDefinition } from "@/starterBricks/menuItem/types";
+import { type QuickBarDefinition } from "@/starterBricks/quickBar/types";
 
 jest.mock("@/contentScript/messenger/api");
 

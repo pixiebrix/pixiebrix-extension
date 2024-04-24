@@ -28,7 +28,6 @@ import {
 import {
   StarterBrickABC,
   type StarterBrickConfig,
-  type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/bricks/available";
@@ -38,7 +37,6 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
-import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util"; // Part of cycle
 import { mergeReaders } from "@/bricks/readers/readerUtils";
@@ -46,7 +44,6 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
 import { guessSelectedElement } from "@/utils/selectionController";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { type IconConfig } from "@/types/iconTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -61,22 +58,11 @@ import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-
-export type QuickBarTargetMode = "document" | "eventTarget";
-
-export type QuickBarConfig = {
-  /**
-   * The title to show in the Quick Bar
-   */
-  title: string;
-
-  /**
-   * (Optional) the icon to show in the Quick Bar
-   */
-  icon?: IconConfig;
-
-  action: BrickConfig | BrickPipeline;
-};
+import {
+  type QuickBarDefinition,
+  type QuickBarConfig,
+  type QuickBarTargetMode,
+} from "@/starterBricks/quickBar/types";
 
 export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarConfig> {
   static isQuickBarExtensionPoint(
@@ -295,18 +281,6 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
 
     await this.syncActionsForUrl();
   }
-}
-
-export type QuickBarDefaultOptions = {
-  title?: string;
-  [key: string]: string | string[];
-};
-
-export interface QuickBarDefinition extends StarterBrickDefinition {
-  documentUrlPatterns?: Manifest.MatchPattern[];
-  contexts: Menus.ContextType[];
-  targetMode: QuickBarTargetMode;
-  defaultOptions?: QuickBarDefaultOptions;
 }
 
 export class RemoteQuickBarExtensionPoint extends QuickBarStarterBrickABC {

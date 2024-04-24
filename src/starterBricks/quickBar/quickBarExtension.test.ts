@@ -26,11 +26,7 @@ import {
   tick,
 } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
-import {
-  fromJS,
-  type QuickBarConfig,
-  type QuickBarDefinition,
-} from "@/starterBricks/quickBar/quickBarExtension";
+import { fromJS } from "@/starterBricks/quickBar/quickBarExtension";
 import { type Menus } from "webextension-polyfill";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -47,6 +43,10 @@ import defaultActions, {
   pageEditorAction,
 } from "@/components/quickBar/defaultActions";
 import { getPlatform } from "@/platform/platformContext";
+import {
+  type QuickBarDefinition,
+  type QuickBarConfig,
+} from "@/starterBricks/quickBar/types";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 

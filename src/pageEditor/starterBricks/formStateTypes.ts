@@ -31,7 +31,7 @@ import {
   type QuickBarConfig,
   type QuickBarDefaultOptions,
   type QuickBarTargetMode,
-} from "@/starterBricks/quickBar/quickBarExtension"; // Part of cycle
+} from "@/starterBricks/quickBar/types";
 import {
   type SidebarConfig,
   type Trigger as SidebarTrigger,
