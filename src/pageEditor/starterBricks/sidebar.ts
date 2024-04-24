@@ -32,17 +32,17 @@ import {
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickConfig } from "@/starterBricks/types";
-import {
-  type SidebarDefinition,
-  type SidebarConfig,
-  SidebarStarterBrickABC,
-} from "@/starterBricks/sidebar/sidebarExtension";
+import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type SidebarFormState } from "./formStateTypes";
+import {
+  type SidebarConfig,
+  type SidebarDefinition,
+} from "@/starterBricks/sidebar/types";
 
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const base = makeInitialBaseState();

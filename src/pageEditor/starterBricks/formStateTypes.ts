@@ -35,7 +35,7 @@ import {
 import {
   type SidebarConfig,
   type Trigger as SidebarTrigger,
-} from "@/starterBricks/sidebar/sidebarExtension"; // Part of cycle
+} from "@/starterBricks/sidebar/types";
 import {
   type AttachMode,
   type ReportMode,

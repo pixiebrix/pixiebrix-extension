@@ -24,7 +24,6 @@ import {
   type DebounceOptions,
   StarterBrickABC,
   type StarterBrickConfig,
-  type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/bricks/available";
@@ -36,7 +35,6 @@ import {
   shouldModComponentRunForStateChange,
 } from "@/starterBricks/helpers";
 import { cloneDeep, debounce, remove } from "lodash";
-import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util"; // Part of cycle
 import { mergeReaders } from "@/bricks/readers/readerUtils";
@@ -56,23 +54,11 @@ import { ReusableAbortController } from "abort-utils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-
-export type SidebarConfig = {
-  heading: string;
-  body: BrickConfig | BrickPipeline;
-};
-
-export type Trigger =
-  // `load` is page load/navigation (default for backward compatability)
-  | "load"
-  // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
-  | "selectionchange"
-  // A change in the shared page state
-  | "statechange"
-  // Manually, e.g., via the Page Editor or Show Sidebar brick
-  | "manual"
-  // A custom event configured by the user
-  | "custom";
+import {
+  type SidebarDefinition,
+  type SidebarConfig,
+  type Trigger,
+} from "@/starterBricks/sidebar/types";
 
 export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConfig> {
   abstract get trigger(): Trigger;
@@ -443,29 +429,6 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
     return available;
   }
-}
-
-export interface SidebarDefinition extends StarterBrickDefinition {
-  /**
-   * The trigger to refresh the panel
-   *
-   * @since 1.6.5
-   */
-  trigger?: Trigger;
-
-  /**
-   * For `custom` trigger, the custom event trigger options.
-   *
-   * @since 1.6.5
-   */
-  customEvent?: CustomEventOptions;
-
-  /**
-   * Options for debouncing the overall refresh of the panel
-   *
-   * @since 1.6.5
-   */
-  debounce?: DebounceOptions;
 }
 
 class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
