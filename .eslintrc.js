@@ -154,10 +154,20 @@ module.exports = {
             allowConditional: true,
           },
         ],
-        "no-commented-out-tests": "error",
-        "no-duplicate-hooks": "error",
-        "no-get-by-title": "error",
-
+        "playwright/no-commented-out-tests": "error",
+        "playwright/no-hooks": "error", // Use fixtures instead to share common setup / teardown code
+        "playwright/no-get-by-title": "error",
+        // Disabled because raw locators are sometimes necessary for specific test scenarios, and we don't want noisy warnings in the IDE
+        // However, our README encourages writing tests using the recommended built-in locators where possible
+        // "playwright/no-raw-locators": "warn",
+        "playwright/prefer-comparison-matcher": "error",
+        "playwright/prefer-equality-matcher": "error",
+        "playwright/prefer-strict-equal": "error",
+        "playwright/prefer-to-be": "error",
+        "playwright/prefer-to-contain": "error",
+        "playwright/prefer-to-have-count": "error",
+        "playwright/prefer-to-have-length": "error",
+        "playwright/require-to-throw-message": "error",
         "no-restricted-syntax": [
           "error",
           {

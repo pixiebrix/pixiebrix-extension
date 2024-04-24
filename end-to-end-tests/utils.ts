@@ -53,7 +53,7 @@ export function checkForCriticalViolations(
   }
 
   // Expectation only fails if there are any criticalViolations that aren't explicitly allowed
-  expect(unallowedViolations).toEqual([]);
+  expect(unallowedViolations).toStrictEqual([]);
 }
 
 // This function is a workaround for the fact that `expect(locator).toBeVisible()` will immediately fail if the element is hidden or unmounted.
