@@ -4,6 +4,10 @@
     "strictNullChecks": true
   },
   "files": [
+    "./starterBricks/quickBar/types.ts",
+    "./starterBricks/contextMenu/types.ts",
+    "./starterBricks/panel/types.ts",
+    "./starterBricks/menuItem/types.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/extensionBase.ts",

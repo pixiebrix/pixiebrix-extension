@@ -37,7 +37,7 @@ type PanelPosition =
 
 interface PanelDefaultOptions {
   heading?: string;
-  [key: string]: string | boolean | number;
+  [key: string]: string | boolean | number | undefined;
 }
 
 export interface PanelDefinition extends StarterBrickDefinition {

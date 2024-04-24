@@ -93,7 +93,7 @@ interface ShadowDOM {
 
 interface MenuDefaultOptions {
   caption?: string;
-  [key: string]: string;
+  [key: string]: string | undefined;
 }
 
 /**

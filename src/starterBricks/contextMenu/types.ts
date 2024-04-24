@@ -44,7 +44,7 @@ export type ContextMenuTargetMode =
 
 export interface MenuDefaultOptions {
   title?: string;
-  [key: string]: string | string[];
+  [key: string]: string | string[] | undefined;
 }
 
 export interface ContextMenuDefinition extends StarterBrickDefinition {

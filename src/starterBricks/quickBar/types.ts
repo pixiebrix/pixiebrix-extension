@@ -38,7 +38,7 @@ export type QuickBarConfig = {
 
 export type QuickBarDefaultOptions = {
   title?: string;
-  [key: string]: string | string[];
+  [key: string]: string | string[] | undefined;
 };
 
 export interface QuickBarDefinition extends StarterBrickDefinition {
