@@ -17,7 +17,7 @@
 
 import PipelineVisitor, {
   type VisitBlockExtra,
-} from "@/bricks/PipelineVisitor";
+} from "@/bricks/PipelineVisitor"; // Part of cycle
 import { type RegistryId } from "@/types/registryTypes";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { castArray } from "lodash";
