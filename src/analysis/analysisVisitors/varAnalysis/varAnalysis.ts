@@ -52,7 +52,6 @@ import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import { getOutputReference, isOutputKey } from "@/runtime/runtimeTypes";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
