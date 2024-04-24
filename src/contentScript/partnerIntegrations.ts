@@ -25,7 +25,8 @@ async function markPartnerIntegrations() {
   const principal = principals.find(
     (principal) => principal.hostname === location.hostname,
   );
-  if (principal) {
+
+  if (principal?.principalId) {
     document.documentElement.setAttribute(
       INTEGRATION_ATTR,
       principal.principalId,
