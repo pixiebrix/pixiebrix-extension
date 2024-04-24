@@ -21,10 +21,11 @@ import {
   PIXIEBRIX_DATA_ATTR,
 } from "@/domConstants";
 import { BUTTON_TAGS, UNIQUE_ATTRIBUTES } from "./selectorInference";
-import { intersection, unary, uniq } from "lodash";
+import { compact, intersection, unary, uniq } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { isNullOrBlank, matchesAnyPattern } from "@/utils/stringUtils";
 import { mostCommonElement } from "@/utils/arrayUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
 const ICON_TAGS = ["svg", "img"];
@@ -111,7 +112,8 @@ function commonAttribute(items: Element[], attribute: string) {
     const classNames = attributeValues.map((x) => (x ? x.split(" ") : []));
     unfiltered = intersection(...classNames);
   } else if (uniq(attributeValues).length === 1) {
-    unfiltered = attributeValues[0].split(" ");
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+    unfiltered = attributeValues[0]!.split(" ");
   } else {
     // Single attribute doesn't match
     return null;
@@ -127,7 +129,8 @@ function commonAttribute(items: Element[], attribute: string) {
 }
 
 function setCommonAttributes(common: Element, items: Element[]) {
-  const { attributes } = items[0];
+  const { attributes } = items[0] ?? {};
+  assertNotNullish(attributes, "No attributes found");
 
   // Find the common attributes between the elements
   for (const { name } of attributes) {
@@ -155,7 +158,7 @@ function setCommonAttributes(common: Element, items: Element[]) {
 function ignoreDivChildNode(node: Node): boolean {
   return (
     NON_RENDERED_NODES.includes(node.nodeType) ||
-    (node.nodeType === Node.TEXT_NODE && node.textContent.trim() === "")
+    (node.nodeType === Node.TEXT_NODE && node.textContent?.trim() === "")
   );
 }
 
@@ -175,7 +178,8 @@ function removeUnstyledLayout(node: Node): Node | null {
       isNullOrBlank(element.className) &&
       nonEmptyChildren.length === 1
     ) {
-      return removeUnstyledLayout(nonEmptyChildren[0]);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+      return removeUnstyledLayout(nonEmptyChildren[0]!);
     }
 
     const clone = node.cloneNode(false) as Element;
@@ -205,6 +209,7 @@ function commonButtonStructure(
   let currentCaptioned = captioned;
 
   const proto = items[0];
+  assertNotNullish(proto, "No elements provided");
 
   if (ICON_TAGS.includes(proto.tagName.toLowerCase())) {
     // TODO: need to provide a way of adding additional classes to the button. E.g. some classes
@@ -244,10 +249,11 @@ function commonButtonStructure(
     } else if (
       protoChild.nodeType === Node.ELEMENT_NODE &&
       items.every((x) => elementIndex < x.children.length) &&
-      uniq(items.map((x) => x.children.item(elementIndex).tagName)).length === 1
+      uniq(items.map((x) => x.children.item(elementIndex)?.tagName)).length ===
+        1
     ) {
-      const children = items.map((element) =>
-        element.children.item(elementIndex),
+      const children = compact(
+        items.map((element) => element.children.item(elementIndex)),
       );
 
       const [child, childCaptioned] = commonButtonStructure(
@@ -297,6 +303,8 @@ function commonPanelStructure(
   }: PanelStructureState = {} as PanelStructureState,
 ): [Element | string, PanelStructureState] {
   const proto = $items.get(0);
+  assertNotNullish(proto, "No elements provided");
+
   inHeader ||= HEADER_TAGS.includes(proto.tagName.toLowerCase());
 
   const common = newElement(proto.tagName);
@@ -304,16 +312,16 @@ function commonPanelStructure(
   setCommonAttributes(common, $items.get());
 
   // Heuristic that assumes tag matches from the beginning
-  for (let i = 0; i < proto.children.length; i++) {
+  for (let i = 0; i < (proto.children.length ?? 0); i++) {
     const protoChild = proto.children.item(i) as HTMLElement;
     const $protoChild = $(protoChild);
 
     if (
       $items.toArray().every((x) => i < x.children.length) &&
-      uniq($items.toArray().map((x) => x.children.item(i).tagName)).length ===
+      uniq($items.toArray().map((x) => x.children.item(i)?.tagName)).length ===
         1 &&
       (!headingInserted ||
-        LAYOUT_TAGS.includes(proto.children.item(i).tagName.toLowerCase()))
+        LAYOUT_TAGS.includes(protoChild.tagName.toLowerCase()))
     ) {
       const $children = $items.map(function () {
         return this.children.item(i) as HTMLElement;
@@ -336,14 +344,14 @@ function commonPanelStructure(
     } else if (
       !inHeader &&
       !bodyInserted &&
-      !LAYOUT_TAGS.includes(proto.children.item(i).tagName.toLowerCase())
+      !LAYOUT_TAGS.includes(protoChild.tagName.toLowerCase())
     ) {
       common.append("{{{ body }}}");
       bodyInserted = true;
     }
   }
 
-  if (inHeader && !headingInserted && hasTextNodeChild(proto)) {
+  if (inHeader && !headingInserted && proto && hasTextNodeChild(proto)) {
     common.append("{{{ heading }}}");
     headingInserted = true;
   }
@@ -438,7 +446,9 @@ function commonButtonHTML(tag: string, items: Element[]): string {
 
   const elements = items
     .map(unary(removeUnstyledLayout))
-    .filter((x): x is Element => x && x.nodeType === Node.ELEMENT_NODE);
+    .filter(
+      (x): x is Element => Boolean(x) && x?.nodeType === Node.ELEMENT_NODE,
+    );
 
   const [common] = commonButtonStructure(elements);
 
@@ -470,6 +480,9 @@ function inferSinglePanelHTML(
 ): string {
   const $container = $(container);
   const child = containerChildren($container, [selected])[0];
+
+  assertNotNullish(child, "Unable to find direct children of the container");
+
   const [$panel] = buildSinglePanelElement(child);
   return outerHTML($panel);
 }
@@ -478,14 +491,20 @@ export function inferPanelHTML(
   container: HTMLElement,
   selected: HTMLElement[],
 ): string {
+  if (selected.length === 0) {
+    throw new Error("No selected element");
+  }
+
   const $container = $(container);
 
   if (selected.length > 1) {
     const children = containerChildren($container, selected);
-    return commonPanelHTML(selected[0].tagName, $(children));
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+    return commonPanelHTML(selected[0]!.tagName, $(children));
   }
 
-  return inferSinglePanelHTML(container, selected[0]);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+  return inferSinglePanelHTML(container, selected[0]!);
 }
 
 export function inferButtonHTML(
@@ -507,7 +526,8 @@ export function inferButtonHTML(
     return commonButtonHTML(tag, children);
   }
 
-  const element = selected[0];
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+  const element = selected[0]!;
   for (const buttonTag of [...BUTTON_SELECTORS, ...BUTTON_TAGS]) {
     const $items = $container.children(buttonTag);
     if (
@@ -540,21 +560,23 @@ function containerChildren(
   $container: JQuery,
   selected: HTMLElement[],
 ): HTMLElement[] {
-  return selected.map((element) => {
-    const exactMatch = $container.children().filter(function () {
-      return this === element;
-    });
+  return compact(
+    selected.map((element) => {
+      const exactMatch = $container.children().filter(function () {
+        return this === element;
+      });
 
-    if (exactMatch.length > 0) {
-      return exactMatch.get(0);
-    }
+      if (exactMatch.length > 0) {
+        return exactMatch.get(0);
+      }
 
-    const match = $container.children().has(element);
+      const match = $container.children().has(element);
 
-    if (match.length === 0) {
-      throw new Error("element not found in container");
-    }
+      if (match.length === 0) {
+        throw new Error("element not found in container");
+      }
 
-    return match.get(0);
-  });
+      return match.get(0);
+    }),
+  );
 }
