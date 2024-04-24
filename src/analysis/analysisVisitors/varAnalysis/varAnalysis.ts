@@ -113,10 +113,6 @@ async function setIntegrationDependencyVars(
   { integrationDependencies = [] }: ModComponentFormState,
   contextVars: VarMap,
 ): Promise<void> {
-  // We don't want to make the pixiebrix api integration available as a variable
-  // const nonPbDependencies = integrationDependencies.filter(
-  //   (dependency) => dependency.integrationId !== PIXIEBRIX_INTEGRATION_ID,
-  // );
   // Loop through all the dependencies, so we can set the source for each dependency variable properly
   await Promise.all(
     integrationDependencies.map(async (integrationDependency) => {
