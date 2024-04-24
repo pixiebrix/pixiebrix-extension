@@ -44,7 +44,7 @@ import getSvgIcon from "@/icons/getSvgIcon";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { collectAllBricks } from "@/bricks/util";
+import { collectAllBricks } from "@/bricks/util"; // Part of cycle
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/domConstants";
 import { type IconConfig } from "@/types/iconTypes";

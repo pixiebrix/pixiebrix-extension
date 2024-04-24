@@ -32,7 +32,7 @@ import {
 } from "lodash";
 import { checkAvailable } from "@/bricks/available";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import { collectAllBricks } from "@/bricks/util";
+import { collectAllBricks } from "@/bricks/util"; // Part of cycle
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import "@/vendors/hoverintent";
 import { selectExtensionContext } from "@/starterBricks/helpers";

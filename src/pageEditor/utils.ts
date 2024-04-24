@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { isModComponentBase } from "@/pageEditor/sidebar/common";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes"; // Part of cycle
+import { isModComponentBase } from "@/pageEditor/sidebar/common"; // Part of cycle
 import { type BrickConfig } from "@/bricks/types";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
@@ -28,7 +28,7 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pick, pickBy } from "lodash";
-import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
+import { type AnalysisAnnotation } from "@/analysis/analysisTypes"; // Part of cycle
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
 import { type ModComponentBase } from "@/types/modComponentTypes";
