@@ -21,8 +21,7 @@ One-time setup:
 - Install browsers: Execute `npx playwright install chromium chrome msedge`.
 
 1. Install dependencies: Run `npm install`
-2. Build the extension: Run: `npm run build:webpack` (or `npm run watch`) - Note that if you do use `npm run build`, you will need to copy your `.env.development` variables to an `.env`
-   file at the same level in order for the extension to be built with the correct environment variables.
+2. Build the extension: Run: `npm run watch`
 3. Run the tests: Use the command `npm run test:e2e`.
 
 - To run tests in interactive UI mode, use `npm run test:e2e -- --ui`. This view shows you the entire test suite and
