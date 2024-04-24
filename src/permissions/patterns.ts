@@ -19,7 +19,7 @@ import psl from "psl";
 
 export const HTTPS_PATTERN = "https://*/*";
 
-// https://developer.chrome.com/docs/extensions/mv3/match_patterns/
+// https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns
 // If the scheme is *, then it matches either http or https, and not file, ftp, or urn
 export const SITES_PATTERN = "*://*/*";
 
