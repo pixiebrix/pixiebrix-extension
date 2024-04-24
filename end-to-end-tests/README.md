@@ -42,9 +42,8 @@ Adhere to these principles, based on the [Playwright Best Practices](https://pla
 
 - Utilize `test` from `extensionBase.ts` for test environment setup and extension interaction.
 - Employ page objects from `./end-to-end-tests/pageObjects` for web page interactions.
-- Ensure tests are self-contained, handling their own setup and cleanup.
-  Leverage [Playwright fixtures](https://playwright.dev/docs/test-fixtures) for shared code.
-- Rely on Playwright's auto-waiting feature for actions like clicking or typing.
+- Ensure tests are self-contained, leveraging [Playwright fixtures](https://playwright.dev/docs/test-fixtures) for shared setup/teardown.
+- Use the [recommended built-in locator methods](https://playwright.dev/docs/locators#quick-guide) that have auto-waiting and retry features.
 
 When testing mod functionality, use our testing playground website, https://pbx.vercel.app, for a consistent
 environment. It is configured

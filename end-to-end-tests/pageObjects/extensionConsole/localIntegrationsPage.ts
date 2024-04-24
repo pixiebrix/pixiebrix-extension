@@ -40,7 +40,7 @@ export class LocalIntegrationsPage {
       this.page.getByRole("heading", { name: "Local Integrations" }),
     ).toBeVisible();
 
-    await expect(this.page.getByTestId("loader")).not.toBeVisible();
+    await expect(this.page.getByTestId("loader")).toBeHidden();
   }
 
   async createNewIntegration(integrationName: string) {

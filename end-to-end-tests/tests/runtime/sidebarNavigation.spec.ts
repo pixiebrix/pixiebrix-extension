@@ -18,7 +18,7 @@
 import { test, expect } from "../../fixtures/extensionBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { Page, test as base } from "@playwright/test";
+import { type Page, test as base } from "@playwright/test";
 import { getSidebarPage, runModViaQuickBar } from "../../utils";
 import { MV, SERVICE_URL } from "../../env";
 
@@ -88,7 +88,7 @@ test("sidebar is persistent during navigation", async ({
   // Sidebar 1 tab is hidden since it is not enabled in this page.
   await expect(
     sideBarPage.getByRole("tab", { name: "Test sidebar 1" }),
-  ).not.toBeVisible();
+  ).toBeHidden();
   await expect(
     sideBarPage.getByRole("tab", { name: "Test sidebar 2" }),
   ).toBeVisible();
