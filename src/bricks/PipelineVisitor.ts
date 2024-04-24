@@ -23,7 +23,7 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { type TypedBrickPair } from "@/bricks/registry";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { getDocumentPipelinePaths } from "@/pageEditor/utils"; // Part of cycle
+import { getDocumentPipelinePaths } from "@/pageEditor/utils";
 import { get } from "lodash";
 import {
   getRootPipelineFlavor,

@@ -38,7 +38,7 @@ import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { collectAllBricks } from "@/bricks/util"; // Part of cycle
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";

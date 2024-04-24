@@ -16,7 +16,7 @@
  */
 
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes"; // Part of cycle
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import type { Metadata } from "@/types/registryTypes";
 import type { UUID } from "@/types/stringTypes";
 
