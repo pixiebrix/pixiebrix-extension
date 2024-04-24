@@ -53,7 +53,7 @@ import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefaultOptions,
 } from "@/starterBricks/quickBarProvider/types";
-import { type TourDefinition } from "@/starterBricks/tour/types"; // Part of cycle
+import { type TourDefinition } from "@/starterBricks/tour/types";
 import {
   type BaseExtensionPointState,
   type BaseExtensionState,
