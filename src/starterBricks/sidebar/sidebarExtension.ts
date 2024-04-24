@@ -36,7 +36,7 @@ import {
 } from "@/starterBricks/helpers";
 import { cloneDeep, debounce, remove } from "lodash";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { collectAllBricks } from "@/bricks/util"; // Part of cycle
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";

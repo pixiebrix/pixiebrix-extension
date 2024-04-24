@@ -30,7 +30,7 @@ import {
   partition,
 } from "lodash";
 import { checkAvailable } from "@/bricks/available";
-import { collectAllBricks } from "@/bricks/util"; // Part of cycle
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import "@/vendors/hoverintent";
 import { selectExtensionContext } from "@/starterBricks/helpers";
