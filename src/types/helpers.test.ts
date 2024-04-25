@@ -53,6 +53,42 @@ describe("types/helpers.ts", () => {
         coerce: true,
         expected: true,
       },
+      {
+        value: "lorem ipsum",
+        allowLeadingV: false,
+        coerce: false,
+        expected: false,
+      },
+      {
+        value: "lorem ipsum",
+        allowLeadingV: false,
+        coerce: true,
+        expected: false,
+      },
+      {
+        value: "",
+        allowLeadingV: false,
+        coerce: false,
+        expected: false,
+      },
+      {
+        value: "",
+        allowLeadingV: false,
+        coerce: true,
+        expected: false,
+      },
+      {
+        value: "vacant",
+        allowLeadingV: true,
+        coerce: false,
+        expected: false,
+      },
+      {
+        value: "vacant",
+        allowLeadingV: true,
+        coerce: true,
+        expected: false,
+      },
     ])(
       "$value with allowLeadingV: $allowLeadingV and coerce: $coerce returns $expected",
       ({ value, allowLeadingV, coerce, expected }) => {
@@ -118,6 +154,36 @@ describe("types/helpers.ts", () => {
         value: "v1.2.3.4000",
         allowLeadingV: true,
         coerce: false,
+      },
+      {
+        value: "lorem ipsum",
+        allowLeadingV: false,
+        coerce: false,
+      },
+      {
+        value: "lorem ipsum",
+        allowLeadingV: false,
+        coerce: true,
+      },
+      {
+        value: "",
+        allowLeadingV: false,
+        coerce: false,
+      },
+      {
+        value: "",
+        allowLeadingV: false,
+        coerce: true,
+      },
+      {
+        value: "vacant",
+        allowLeadingV: true,
+        coerce: false,
+      },
+      {
+        value: "vacant",
+        allowLeadingV: true,
+        coerce: true,
       },
     ])(
       "$value with allowLeadingV: $allowLeadingV and coerce: $coerce throws an error",
