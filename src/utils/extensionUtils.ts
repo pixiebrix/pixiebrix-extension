@@ -20,6 +20,8 @@ import { foreverPendingPromise } from "@/utils/promiseUtils";
 import { type Promisable } from "type-fest";
 import { isScriptableUrl } from "webext-content-scripts";
 import { type Runtime } from "webextension-polyfill";
+import { validateSemVerString } from "@/types/helpers";
+import { type SemVerString } from "@/types/registryTypes";
 
 export const SHORTCUTS_URL = "chrome://extensions/shortcuts";
 type Command = "toggle-quick-bar";
@@ -65,8 +67,11 @@ export function getExtensionConsoleUrl(page?: string): string {
   return url.href;
 }
 
-export function getExtensionVersion(): string {
-  return browser.runtime.getManifest().version;
+// TODO: Add linting rule to prefer getExtensionVersion over browser.runtime.getManifest().version
+export function getExtensionVersion(): SemVerString {
+  return validateSemVerString(browser.runtime.getManifest().version, {
+    coerce: true,
+  });
 }
 
 /** If no update is available and downloaded yet, it will return a string explaining why */

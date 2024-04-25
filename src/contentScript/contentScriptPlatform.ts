@@ -49,7 +49,6 @@ import { writeToClipboard } from "@/utils/clipboardUtils";
 import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import * as sidebarController from "@/contentScript/sidebarController";
-import { validateSemVerString } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
 import { PlatformBase } from "@/platform/platformBase";
 import type { Nullishable } from "@/utils/nullishUtils";
@@ -61,6 +60,7 @@ import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { selectionMenuActionRegistry } from "@/contentScript/textSelectionMenu/selectionMenuController";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -91,12 +91,7 @@ class ContentScriptPlatform extends PlatformBase {
   });
 
   constructor() {
-    super(
-      "contentScript",
-      validateSemVerString(browser.runtime.getManifest().version, {
-        coerce: true,
-      }),
-    );
+    super("contentScript", getExtensionVersion());
   }
 
   override capabilities: PlatformCapability[] = [

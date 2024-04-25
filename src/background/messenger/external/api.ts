@@ -25,6 +25,7 @@ import * as local from "@/background/messenger/external/_implementation";
 import { readPartnerAuthData } from "@/auth/authStorage";
 
 export const connectPage = liftExternal("CONNECT_PAGE", async () =>
+  // TODO: Validate that this works with the 4-digit version number
   browser.runtime.getManifest(),
 );
 

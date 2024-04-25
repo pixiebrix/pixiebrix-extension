@@ -42,6 +42,7 @@ import {
   PIXIEBRIX_INTEGRATION_ID,
 } from "@/integrations/constants";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(
@@ -152,9 +153,7 @@ describe("checkExtensionUpdateRequired", () => {
   test("update not required", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     (modDefinition.metadata.extensionVersion as any) =
-      `>=${validateSemVerString(browser.runtime.getManifest().version, {
-        coerce: true,
-      })}`;
+      `>=${getExtensionVersion()}`;
 
     expect(
       checkExtensionUpdateRequired([{ deployment, modDefinition }]),

@@ -23,8 +23,8 @@ import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import { performConfiguredRequest } from "@/background/requests";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { validateSemVerString } from "@/types/helpers";
 import { PlatformBase } from "@/platform/platformBase";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 /**
  * Background platform implementation. Currently, just makes API requests.
@@ -40,12 +40,7 @@ class BackgroundPlatform extends PlatformBase {
   });
 
   constructor() {
-    super(
-      "background",
-      validateSemVerString(browser.runtime.getManifest().version, {
-        coerce: true,
-      }),
-    );
+    super("background", getExtensionVersion());
   }
 
   override get logger(): PlatformProtocol["logger"] {
