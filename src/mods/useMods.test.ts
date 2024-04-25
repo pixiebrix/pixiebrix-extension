@@ -53,7 +53,7 @@ describe("useMods", () => {
 
     expect(wrapper.result.current).toEqual({
       mods: [],
-      error: false,
+      error: undefined,
     });
   });
 
@@ -82,7 +82,7 @@ describe("useMods", () => {
           isStub: true,
         }),
       ],
-      error: false,
+      error: undefined,
     });
   });
 
@@ -115,7 +115,7 @@ describe("useMods", () => {
           isStub: true,
         }),
       ],
-      error: false,
+      error: undefined,
     });
   });
 
@@ -151,7 +151,7 @@ describe("useMods", () => {
           kind: "recipe",
         }),
       ],
-      error: false,
+      error: undefined,
     });
 
     expect(wrapper.result.current.mods[0]).not.toHaveProperty("isStub");
@@ -173,7 +173,7 @@ describe("useMods", () => {
           extensionPointId: expect.toBeString(),
         }),
       ],
-      error: false,
+      error: undefined,
     });
   });
 
@@ -203,7 +203,7 @@ describe("useMods", () => {
           extensionPointId: expect.toBeString(),
         }),
       ],
-      error: false,
+      error: undefined,
     });
   });
 });

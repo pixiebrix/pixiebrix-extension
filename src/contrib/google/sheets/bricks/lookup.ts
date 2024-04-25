@@ -170,13 +170,23 @@ export class GoogleSheetsLookup extends TransformerABC {
       typeof spreadsheetIdArg === "string"
         ? spreadsheetIdArg
         : spreadsheetIdArg.config.spreadsheetId;
+
+    if (spreadsheetId == null) {
+      throw new PropError(
+        "A Spreadsheet ID is required.",
+        GOOGLE_SHEETS_LOOKUP_ID,
+        "spreadsheetId",
+        spreadsheetId,
+      );
+    }
+
     const target: SpreadsheetTarget = {
       googleAccount,
       spreadsheetId,
       tabName,
     };
     const valueRange = await getAllRows(target);
-    const [headers, ...rows] = valueRange?.values ?? [[], []];
+    const [headers = [], ...rows] = valueRange?.values ?? [];
 
     logger.debug(`Tab ${tabName} has headers`, { headers });
 

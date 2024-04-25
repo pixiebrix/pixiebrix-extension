@@ -23,7 +23,7 @@ import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTy
 import { MAX_Z_INDEX } from "@/domConstants";
 
 let bannerContainer: HTMLDivElement | null = null;
-let dismissLogin: (configId: UUID) => void = null;
+let dismissLogin: ((configId: UUID) => void) | null = null;
 
 /**
  * Mapping from integration configuration id to deferred login.
@@ -38,7 +38,7 @@ const deferredLogins = new Map<UUID, DeferredLogin>();
 const dismissedLoginBanners = new Set<UUID>();
 
 function renderOrUnmountBanners(): void {
-  if (!bannerContainer) {
+  if (!bannerContainer || !dismissLogin) {
     return;
   }
 

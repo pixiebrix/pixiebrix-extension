@@ -53,3 +53,5 @@ export const notify = {
   error: getNotifier("NOTIFY_ERROR"),
   success: getNotifier("NOTIFY_SUCCESS"),
 };
+
+export const cancelSelect = getMethod("CANCEL_SELECT_ELEMENT");

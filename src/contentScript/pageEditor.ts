@@ -57,8 +57,9 @@ export type RunBlockArgs = {
    */
   blockConfig: BrickConfig;
   /**
-   * Context to render the BlockArg, should include @input, @options, and service context
-   * @see makeServiceContext
+   * Context to render the BlockArg, should include @input, @options, and integrations context
+   * @see IntegrationsContext
+   * @see makeIntegrationsContextFromDependencies
    */
   context: BrickArgsContext;
   /**

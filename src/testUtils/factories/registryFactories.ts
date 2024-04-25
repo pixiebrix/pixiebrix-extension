@@ -38,5 +38,5 @@ export const editablePackageMetadataFactory = define<EditablePackageMetadata>({
   kind: "Blueprint",
   updated_at: timestampFactory(),
   sharing: sharingDefinitionFactory,
-  _editableBrickBrand: undefined,
+  _editableBrickBrand: undefined as never,
 });

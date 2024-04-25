@@ -23,7 +23,6 @@ import {
   sweepLogs,
   reportToApplicationErrorTelemetry,
 } from "@/telemetry/logging";
-import { getErrorReporter } from "@/telemetry/initErrorReporter";
 import {
   logEntryFactory,
   messageContextFactory,
@@ -31,6 +30,8 @@ import {
 import { array } from "cooky-cutter";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { flagOn } from "@/auth/featureFlagStorage";
+import Reason = chrome.offscreen.Reason;
+import ManifestV3 = chrome.runtime.ManifestV3;
 
 // Disable automatic __mocks__ resolution
 jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
@@ -39,19 +40,40 @@ jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 
+jest.mock("@/telemetry/telemetryHelpers", () => ({
+  ...jest.requireActual("@/telemetry/telemetryHelpers"),
+  mapAppUserToTelemetryUser: jest.fn().mockResolvedValue({}),
+}));
+
+global.chrome = {
+  ...global.chrome,
+  runtime: {
+    ...global.chrome.runtime,
+    getContexts: jest.fn(async () => []),
+    getManifest: jest.fn(() => ({ manifest_version: 3 }) as ManifestV3),
+    getURL: jest.fn((path) => path),
+    ContextType: {
+      OFFSCREEN_DOCUMENT:
+        "offscreen_document" as typeof global.chrome.runtime.ContextType.OFFSCREEN_DOCUMENT,
+    } as typeof global.chrome.runtime.ContextType,
+  },
+  offscreen: {
+    ...global.chrome.offscreen,
+    Reason: {
+      BLOBS: "blobs" as typeof global.chrome.offscreen.Reason.BLOBS,
+    } as typeof Reason,
+    createDocument: jest.fn(),
+  },
+};
+
 const flagOnMock = jest.mocked(flagOn);
 
-jest.mock("@/telemetry/initErrorReporter");
-
-const reportErrorMock = jest.fn();
-jest.mocked(getErrorReporter).mockResolvedValue({
-  error: reportErrorMock,
-});
+const sendMessageSpy = jest.spyOn(global.chrome.runtime, "sendMessage");
 
 afterEach(async () => {
   await clearLog();
   flagOnMock.mockReset();
-  reportErrorMock.mockReset();
+  sendMessageSpy.mockReset();
 });
 
 describe("logging", () => {
@@ -128,18 +150,23 @@ describe("logging", () => {
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
       "application-error-telemetry-disable-report",
     );
-    expect(reportErrorMock).toHaveBeenCalledOnce();
-    expect(reportErrorMock).toHaveBeenCalledWith({
-      error: reportedError,
-      message: "error message",
-      messageContext: expect.objectContaining({
-        cause: nestedError,
-        code: undefined,
-        extensionVersion: "1.5.2",
-        name: "Error",
-        stack: expect.any(String),
+    expect(sendMessageSpy).toHaveBeenCalledOnce();
+    expect(sendMessageSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: "offscreen-doc",
+        data: expect.objectContaining({
+          error: reportedError,
+          errorMessage: "error message",
+          messageContext: expect.objectContaining({
+            cause: nestedError,
+            code: undefined,
+            extensionVersion: "1.5.2",
+            name: "Error",
+            stack: expect.any(String),
+          }),
+        }),
       }),
-    });
+    );
   });
 
   test("disable Application error telemetry reporting", async () => {
@@ -150,6 +177,6 @@ describe("logging", () => {
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
       "application-error-telemetry-disable-report",
     );
-    expect(reportErrorMock).not.toHaveBeenCalled();
+    expect(sendMessageSpy).not.toHaveBeenCalled();
   });
 });

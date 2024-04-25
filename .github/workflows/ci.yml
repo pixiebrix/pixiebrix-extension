@@ -38,7 +38,7 @@ jobs:
         with:
           name: extension-test-coverage
       - name: Upload coverage to Codecov
-        uses: Wandalen/wretry.action@v3.3.0
+        uses: Wandalen/wretry.action@v3.4.0
         with:
           action: codecov/codecov-action@v4
           with: |
@@ -214,7 +214,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install playwright browsers
-        run: npx playwright install chromium chrome msedge
+        uses: Wandalen/wretry.action@v3.4.0
+        with:
+          command: npx playwright install chrome msedge
+          with: |
+            fail_ci_if_error: true
+            verbose: true
+            token: ${{ secrets.CODECOV_TOKEN }}
+          # Installing msedge is flaky due to failed checksums from the Microsoft CDN. Unclear why this happens.
+          # Retry every 15 seconds, for up to 10 minutes
+          attempt_delay: 15000
+          attempt_limit: 40
       - name: Build the extension
         run: npm run build:webpack
       - name: Run end to end tests

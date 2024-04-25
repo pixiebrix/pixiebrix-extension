@@ -98,7 +98,8 @@ export const authStateFactory = define<AuthState>({
     ];
   },
   organization: derive<AuthState, OrganizationAuthState>(
-    ({ organizations }) => organizations[0],
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Entries defined above, this is non-null, non-empty
+    ({ organizations }) => organizations![0]!,
     "organizations",
   ),
   groups() {
@@ -119,8 +120,8 @@ export const meOrganizationApiResponseFactory =
     scope(n: number): string {
       return `@organization-${n}`;
     },
-    control_room: null,
-    theme: null,
+    control_room: undefined,
+    theme: undefined,
   });
 
 export const meApiResponseFactory = define<components["schemas"]["Me"]>({
@@ -129,8 +130,8 @@ export const meApiResponseFactory = define<components["schemas"]["Me"]>({
   scope: (n: number) => `@user${n}`,
   flags: (): components["schemas"]["Me"]["flags"] => [],
   is_onboarded: true,
-  organization: null,
-  telemetry_organization: null,
+  organization: undefined,
+  telemetry_organization: undefined,
   organization_memberships:
     (): components["schemas"]["Me"]["organization_memberships"] => [],
   group_memberships: (): components["schemas"]["Me"]["group_memberships"] => [],

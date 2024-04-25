@@ -16,10 +16,7 @@
  */
 
 import { isContentScript } from "webext-detect-page";
-import {
-  addListener as addAuthListener,
-  readAuthData,
-} from "@/auth/authStorage";
+import { addListener as addAuthListener } from "@/auth/authStorage";
 import type { UserData } from "@/auth/authTypes";
 import pMemoize from "p-memoize";
 import { datadogLogs } from "@datadog/browser-logs";
@@ -28,13 +25,14 @@ import type { LogsEvent } from "@datadog/browser-logs/src/logsEvent.types";
 import {
   cleanDatadogVersionName,
   mapAppUserToTelemetryUser,
+  type TelemetryUser,
 } from "@/telemetry/telemetryHelpers";
 
 // eslint-disable-next-line prefer-destructuring -- process.env
 const ENVIRONMENT = process.env.ENVIRONMENT;
-const APPLICATION_ID = process.env.DATADOG_APPLICATION_ID;
 const CLIENT_TOKEN = process.env.DATADOG_CLIENT_TOKEN;
 
+// @since 1.7.40 - We need to hard-filter out the ResizeObserver loop errors because they are flooding Application error telemetry
 const ALWAYS_IGNORED_ERROR_PATTERNS = [/ResizeObserver loop/];
 
 interface ErrorReporter {
@@ -48,7 +46,10 @@ interface ErrorReporter {
 /**
  * https://docs.datadoghq.com/real_user_monitoring/browser/collecting_browser_errors/?tab=npm
  */
-async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
+async function initErrorReporter(
+  versionName: string,
+  telemetryUser: TelemetryUser,
+): Promise<Nullishable<ErrorReporter>> {
   // `async` to fetch person information from localStorage
 
   if (isContentScript()) {
@@ -57,7 +58,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
     return;
   }
 
-  if (!CLIENT_TOKEN || !APPLICATION_ID) {
+  if (!CLIENT_TOKEN) {
     console.warn(
       "Error telemetry client token missing, errors won't be reported",
     );
@@ -69,16 +70,11 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
   try {
     addAuthListener(updatePerson);
 
-    // @since 1.7.40 - We need to hard-filter out the ResizeObserver loop errors because they are flooding Application error telemetry
-
-    const { version_name } = browser.runtime.getManifest();
-
     datadogLogs.init({
       clientToken: CLIENT_TOKEN,
       service: "pixiebrix-browser-extension",
       env: ENVIRONMENT,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The manifest has it
-      version: cleanDatadogVersionName(version_name!),
+      version: cleanDatadogVersionName(versionName),
       site: "datadoghq.com",
       forwardErrorsToLogs: false,
       // Record all sessions because it's error telemetry
@@ -129,7 +125,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
     );
 
     // https://docs.datadoghq.com/real_user_monitoring/browser/modifying_data_and_context/?tab=npm#user-session
-    datadogLogs.setUser(await mapAppUserToTelemetryUser(await readAuthData()));
+    datadogLogs.setUser(telemetryUser);
 
     return {
       error({ message, error, messageContext }) {

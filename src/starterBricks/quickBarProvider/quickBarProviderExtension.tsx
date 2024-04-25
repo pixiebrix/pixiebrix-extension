@@ -24,13 +24,11 @@ import {
 import {
   StarterBrickABC,
   type StarterBrickConfig,
-  type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
 import { selectExtensionContext } from "@/starterBricks/helpers";
-import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -48,8 +46,7 @@ import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import {
   QuickbarQueryReader,
   quickbarQueryReaderShim,
-} from "@/starterBricks/quickbarQueryReader";
-import { type IconConfig } from "@/types/iconTypes";
+} from "@/starterBricks/quickBarProvider/quickbarQueryReader";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -64,33 +61,11 @@ import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { selectEventData } from "@/telemetry/deployments";
-
-export type QuickBarProviderConfig = {
-  /**
-   * A root action. If provided, produced actions will be nested under this action.
-   */
-  rootAction?: {
-    /**
-     * The title of the parent action to show in the Quick Bar
-     */
-    title: string;
-
-    /**
-     * (Optional) the icon to show in the Quick Bar
-     */
-    icon?: IconConfig;
-
-    /**
-     * (Optional) only generate actions if the root element is selected/active.
-     */
-    requireActiveRoot?: boolean;
-  };
-
-  /**
-   * Action generator pipeline.
-   */
-  generator: BrickConfig | BrickPipeline;
-};
+import {
+  type QuickBarProviderDefaultOptions,
+  type QuickBarProviderConfig,
+  type QuickBarProviderDefinition,
+} from "@/starterBricks/quickBarProvider/types";
 
 export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<QuickBarProviderConfig> {
   static isQuickBarProviderExtensionPoint(
@@ -334,13 +309,6 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     this.generators.set(extension.id, actionGenerator);
     quickBarRegistry.addGenerator(actionGenerator, rootActionId);
   }
-}
-
-export type QuickBarProviderDefaultOptions = Record<string, string | string[]>;
-
-export interface QuickBarProviderDefinition extends StarterBrickDefinition {
-  documentUrlPatterns?: Manifest.MatchPattern[];
-  defaultOptions?: QuickBarProviderDefaultOptions;
 }
 
 class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderStarterBrickABC {

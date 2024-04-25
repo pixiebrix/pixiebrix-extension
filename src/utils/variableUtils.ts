@@ -41,26 +41,40 @@ export function freshIdentifier(
   // eslint-disable-next-line security/detect-non-literal-regexp -- guarding with SafeString
   const regexp = new RegExp(`^${root}(?<number>\\d+)$`);
 
-  const used = identifiers
-    .map((identifier) =>
-      identifier === root
-        ? startNumber
-        : regexp.exec(identifier)?.groups?.number,
-    )
-    .filter((x) => x != null)
-    .map(Number);
-  const next = Math.max(startNumber - 1, ...used) + 1;
+  const used = new Set(
+    identifiers
+      .map((identifier) =>
+        identifier === root
+          ? startNumber
+          : regexp.exec(identifier)?.groups?.number,
+      )
+      .filter((x) => x != null)
+      .map(Number),
+  );
 
-  if (next === startNumber && !includeFirstNumber) {
-    return root;
+  const justInCaseUpperLimit = 1000;
+  // Count up from start number until we find an un-used number
+  for (let i = startNumber; i < justInCaseUpperLimit; i++) {
+    if (!used.has(i)) {
+      if (i === startNumber && !includeFirstNumber) {
+        return root;
+      }
+
+      return `${root}${i}`;
+    }
   }
 
-  return `${root}${next}`;
+  throw new Error(
+    `Failed to generate a fresh identifier after ${justInCaseUpperLimit} attempts, something went wrong`,
+  );
 }
 
 /**
  * Returns a variable reference expression for the given variable name.
  */
+export function makeVariableExpression<TValue extends string>(
+  variableName: OutputKey,
+): Expression<TValue, "var">;
 export function makeVariableExpression<TValue extends string | null>(
   variableName: OutputKey | null,
 ): Expression<TValue | null, "var"> {

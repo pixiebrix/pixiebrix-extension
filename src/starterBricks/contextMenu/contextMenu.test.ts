@@ -22,11 +22,7 @@ import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { RootReader } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
-import {
-  type ContextMenuConfig,
-  fromJS,
-  type MenuDefinition,
-} from "@/starterBricks/contextMenu";
+import { fromJS } from "@/starterBricks/contextMenu/contextMenu";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { RunReason } from "@/types/runtimeTypes";
@@ -35,6 +31,10 @@ import {
   ensureContextMenu,
 } from "@/background/messenger/api";
 import { getPlatform } from "@/platform/platformContext";
+import {
+  type ContextMenuDefinition,
+  type ContextMenuConfig,
+} from "@/starterBricks/contextMenu/types";
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
 const ensureContextMenuMock = jest.mocked(ensureContextMenu);
@@ -42,7 +42,7 @@ const ensureContextMenuMock = jest.mocked(ensureContextMenu);
 const rootReader = new RootReader();
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<StarterBrickConfig<MenuDefinition>>({
+  define<StarterBrickConfig<ContextMenuDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>
@@ -50,7 +50,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
         id: validateRegistryId(`test/starter-brick-${n}`),
         name: "Test Starter Brick",
       }) as Metadata,
-    definition: define<MenuDefinition>({
+    definition: define<ContextMenuDefinition>({
       type: "contextMenu",
       contexts: () => ["page"] as any,
       targetMode: "document",

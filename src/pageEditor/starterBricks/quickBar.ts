@@ -34,15 +34,15 @@ import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { faThLarge } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
-import {
-  type QuickBarConfig,
-  type QuickBarDefinition,
-  QuickBarStarterBrickABC,
-} from "@/starterBricks/quickBarExtension";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type QuickBarFormState } from "./formStateTypes";
 import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
+import {
+  type QuickBarDefinition,
+  type QuickBarConfig,
+} from "@/starterBricks/quickBar/types";
 
 function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   const base = makeInitialBaseState();

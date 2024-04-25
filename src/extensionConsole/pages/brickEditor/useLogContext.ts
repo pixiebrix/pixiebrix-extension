@@ -38,6 +38,10 @@ function useLogContext(config: string | null) {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (!debouncedConfig) {
+      return;
+    }
+
     let json: Definition;
     try {
       json = loadBrickYaml(debouncedConfig) as Definition;

@@ -27,6 +27,7 @@ import {
 } from "@/bricks/transformers/temporaryInfo/receiverProtocol";
 import { validateUUID } from "@/types/helpers";
 import useAsyncState from "@/hooks/useAsyncState";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 type PanelDefinition = {
   /**
@@ -37,7 +38,7 @@ type PanelDefinition = {
   /**
    * The current panel entry.
    */
-  entry: TemporaryPanelEntry;
+  entry: Nullishable<TemporaryPanelEntry>;
   /**
    * True if the panel definition is being retrieved for the first time.
    */

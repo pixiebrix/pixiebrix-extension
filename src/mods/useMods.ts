@@ -102,7 +102,7 @@ function useMods(): ModsState {
     unresolvedExtensions,
   ]);
 
-  const { data: resolvedExtensions, isError: resolveError } = useAsyncState(
+  const { data: resolvedExtensions, error: resolveError } = useAsyncState(
     async () =>
       Promise.all(
         allExtensions.map(async (extension) =>

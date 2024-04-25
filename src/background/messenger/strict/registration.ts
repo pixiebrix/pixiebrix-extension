@@ -50,6 +50,12 @@ import {
 import { fetchFeatureFlags } from "@/auth/featureFlagStorage";
 import { locator, refreshServices } from "@/background/locator";
 import { closeTab, focusTab, openTab } from "@/background/tabs";
+import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow";
+import { performConfiguredRequest } from "@/background/requests";
+import {
+  getPartnerPrincipals,
+  launchAuthIntegration,
+} from "@/background/partnerIntegrations";
 
 expectContext("background");
 
@@ -94,6 +100,13 @@ declare global {
     OPEN_TAB: typeof openTab;
     CLOSE_TAB: typeof closeTab;
     FOCUS_TAB: typeof focusTab;
+
+    LAUNCH_INTERACTIVE_OAUTH_FLOW: typeof launchInteractiveOAuth2Flow;
+
+    CONFIGURED_REQUEST: typeof performConfiguredRequest;
+
+    GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
+    LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
   }
 }
 
@@ -138,5 +151,12 @@ export default function registerMessenger(): void {
     OPEN_TAB: openTab,
     CLOSE_TAB: closeTab,
     FOCUS_TAB: focusTab,
+
+    LAUNCH_INTERACTIVE_OAUTH_FLOW: launchInteractiveOAuth2Flow,
+
+    CONFIGURED_REQUEST: performConfiguredRequest,
+
+    GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
+    LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
   });
 }

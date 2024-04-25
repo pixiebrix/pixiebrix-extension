@@ -33,7 +33,6 @@ import {
   disableOverlay,
   enableOverlay,
   selectElement,
-  cancelSelect,
 } from "@/contentScript/messenger/api";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
 import { useSelector } from "react-redux";
@@ -49,6 +48,7 @@ import {
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import { cancelSelect } from "@/contentScript/messenger/strict/api";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;

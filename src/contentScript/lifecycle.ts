@@ -34,7 +34,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
-import { type SidebarStarterBrickABC } from "@/starterBricks/sidebarExtension";
+import { type SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
 import {
   getReloadOnNextNavigate,
   setReloadOnNextNavigate,
@@ -46,8 +46,10 @@ import {
 } from "@/utils/promiseUtils";
 import { $safeFind } from "@/utils/domUtils";
 import { onContextInvalidated } from "webext-events";
-import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
 import { ReusableAbortController } from "abort-utils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { renderPanelsIfVisible } from "@/contentScript/sidebarController";
 
 /**
  * True if handling the initial page load.
@@ -599,6 +601,14 @@ export async function handleNavigate({
         }),
       ),
     );
+
+    // This ensures that in the case there are mods with sidebar starter bricks whose panels are not active for the current page,
+    // the sidebar will still be updated to reflect the new page state (since otherwise, the sidebar panels would not be updated).
+    // NEXT: in slice 3 (https://github.com/pixiebrix/pixiebrix-extension/issues/8294) we will instead show
+    // stale panels with a special UX, and this bit of code will be removed.
+    if (!isLoadedInIframe()) {
+      void renderPanelsIfVisible();
+    }
   }
 }
 

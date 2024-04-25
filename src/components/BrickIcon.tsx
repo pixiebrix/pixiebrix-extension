@@ -30,10 +30,10 @@ import {
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import { TriggerStarterBrickABC } from "@/starterBricks/triggerExtension";
-import { MenuItemStarterBrickABC } from "@/starterBricks/menuItemExtension";
-import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu";
-import { PanelStarterBrickABC } from "@/starterBricks/panelExtension";
-import { SidebarStarterBrickABC } from "@/starterBricks/sidebarExtension";
+import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemExtension";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
+import { PanelStarterBrickABC } from "@/starterBricks/panel/panelExtension";
+import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import { type Metadata } from "@/types/registryTypes";

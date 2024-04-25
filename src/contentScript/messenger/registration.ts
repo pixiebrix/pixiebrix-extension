@@ -30,32 +30,31 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 275 strictNullCheck errors
-import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 300 strictNullCheck errors
-import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 300 strictNullCheck errors
+} from "@/contentScript/lifecycle"; // 214 strictNullCheck errors
+import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 216 strictNullCheck errors
+import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 222 strictNullCheck errors
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/contentScript/pageEditor/dynamic"; // 300 strictNullCheck errors
+} from "@/contentScript/pageEditor/dynamic"; // 217 strictNullCheck errors
 import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
-} from "@/contentScript/pageEditor"; // 300 strictNullCheck errors
-import { runBrick } from "@/contentScript/executor"; // 290 strictNullCheck errors
-import { cancelSelect } from "@/contentScript/pageEditor/elementPicker"; // 290 strictNullCheck errors
-import selectElement from "@/contentScript/pageEditor/selectElement"; // 290 strictNullCheck errors
+} from "@/contentScript/pageEditor"; // 219 strictNullCheck errors
+import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
+import selectElement from "@/contentScript/pageEditor/selectElement"; // 196 strictNullCheck errors
 import {
   runHeadlessPipeline,
   runMapArgs,
   runRendererPipeline,
 } from "@/contentScript/pipelineProtocol"; // Depends on background/messenger to pass strictNullCheck
-import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore"; // 248 strictNullCheck errors
-import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation"; // 246 strictNullCheck errors
-import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore"; // 187 strictNullCheck errors
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation"; // 185 strictNullCheck errors
+import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect"; // Depends on background/messenger to pass strictNullCheck
 import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Depends on background/messenger to pass strictNullCheck
 
 expectContext("contentScript");
@@ -83,7 +82,6 @@ declare global {
     ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
 
     RUN_BRICK: typeof runBrick;
-    CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
@@ -121,7 +119,6 @@ export default function registerMessenger(): void {
     ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
 
     RUN_BRICK: runBrick,
-    CANCEL_SELECT_ELEMENT: cancelSelect,
     SELECT_ELEMENT: selectElement,
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,

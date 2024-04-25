@@ -47,26 +47,24 @@ function reportReposition() {
 function FloatingActions() {
   const { isFloatingActionButtonEnabled } = useSelector(selectSettings);
 
-  return (
-    isFloatingActionButtonEnabled && (
-      <Draggable handle=".drag-handle" onStart={reportReposition} bounds="body">
-        <div className="root">
-          <div className="drag-container">
-            <img
-              src={dragIcon}
-              className="drag-handle"
-              alt="drag to move quick bar button"
-              // Setting draggable=false prevents browser default drag events on images
-              draggable={false}
-            />
-            <div className="content-container">
-              <QuickbarButton />
-            </div>
+  return isFloatingActionButtonEnabled ? (
+    <Draggable handle=".drag-handle" onStart={reportReposition} bounds="body">
+      <div className="root">
+        <div className="drag-container">
+          <img
+            src={dragIcon}
+            className="drag-handle"
+            alt="drag to move quick bar button"
+            // Setting draggable=false prevents browser default drag events on images
+            draggable={false}
+          />
+          <div className="content-container">
+            <QuickbarButton />
           </div>
         </div>
-      </Draggable>
-    )
-  );
+      </div>
+    </Draggable>
+  ) : null;
 }
 
 function FloatingActionsContainer() {

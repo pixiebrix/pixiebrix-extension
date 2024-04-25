@@ -25,7 +25,7 @@ import {
   getConnectedTargetUrl,
 } from "@/sidebar/connectedTarget";
 
-let lastKnownUrl: string;
+let lastKnownUrl: string | undefined;
 const urlChanges = new SimpleEventTarget<string>();
 
 async function onUpdated(
@@ -55,7 +55,7 @@ const startWatching = once(async () => {
   urlChanges.emit(lastKnownUrl);
 });
 
-export default function useConnectedTargetUrl(): string {
+export default function useConnectedTargetUrl(): string | undefined {
   expectContext("sidebar");
 
   const [url, setUrl] = useState(lastKnownUrl);

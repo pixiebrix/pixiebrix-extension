@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { type KeyboardEventHandler, useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
   KBarAnimator,
@@ -94,9 +94,17 @@ const KBarComponent: React.FC = () => {
   useActions();
   useActionGenerators();
 
-  const { showing } = useKBar((state) => ({
+  const { query, showing } = useKBar((state) => ({
     showing: state.visualState !== VisualState.hidden,
   }));
+
+  const closeQuickBarOnEscape: KeyboardEventHandler<HTMLInputElement> = (
+    event,
+  ) => {
+    if (event.key === "Escape") {
+      query.toggle();
+    }
+  };
 
   useScrollLock(showing);
 
@@ -147,7 +155,10 @@ const KBarComponent: React.FC = () => {
             <Stylesheets href={faStyleSheet} mountOnLoad>
               <StopPropagation onKeyPress onKeyDown onKeyUp onInput>
                 {/* eslint-disable-next-line react/jsx-max-depth -- Not worth simplifying */}
-                <KBarSearch style={searchStyle} />
+                <KBarSearch
+                  onKeyDown={closeQuickBarOnEscape}
+                  style={searchStyle}
+                />
               </StopPropagation>
               <QuickBarResults />
             </Stylesheets>

@@ -59,7 +59,7 @@ class ScrollIntoViewEffect extends EffectABC {
         description: "Defines horizontal alignment",
       },
     },
-    [],
+    ["selector"],
   );
 
   override async isRootAware(): Promise<boolean> {
@@ -73,7 +73,7 @@ class ScrollIntoViewEffect extends EffectABC {
       block = "start",
       inline = "nearest",
     }: BrickArgs<{
-      selector?: string;
+      selector: string;
       behavior?: "auto" | "smooth";
       block?: "start" | "center" | "end" | "nearest";
       inline?: "start" | "center" | "end" | "nearest";

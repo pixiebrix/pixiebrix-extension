@@ -110,7 +110,8 @@ function setIntegrationAuthSelectionForField(
     // Unlike when defaulting, we don't need to check against the registry ids from the schema because this method
     // will only be called with an allowed option.
     const match = draft.integrationDependencies.find(
-      ({ integrationId }) => integrationId === authOption.serviceId,
+      ({ integrationId, configId }) =>
+        integrationId === authOption.serviceId && configId === authOption.value,
     );
 
     if (match) {
@@ -140,7 +141,11 @@ function setIntegrationAuthSelectionForField(
   });
 
   // Update field value before calling produceExcludeUnusedDependencies, otherwise it will see the stale service var
-  nextState = setIn(nextState, fieldName, makeVariableExpression(outputKey));
+  nextState = setIn(
+    nextState,
+    fieldName,
+    makeVariableExpression(outputKey),
+  ) as IntegrationsFormSlice;
 
   // Perform cleanup of the service dependencies
   nextState = produceExcludeUnusedDependencies(nextState);
