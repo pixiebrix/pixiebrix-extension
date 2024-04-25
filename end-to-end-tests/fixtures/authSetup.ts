@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test as base, type BrowserContext, type Page } from "@playwright/test";
+import {
+  test as base,
+  mergeTests,
+  type BrowserContext,
+  type Page,
+} from "@playwright/test";
 import { REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST } from "../env";
 import {
   getAuthProfilePathFile,
@@ -24,6 +29,7 @@ import {
 import fs from "node:fs/promises";
 import path from "node:path";
 import * as os from "node:os";
+import { test as environmentSetup } from "./envSetup";
 
 // Create a local auth directory to store the profile paths
 const createAuthProfilePathDirectory = async () => {
@@ -39,47 +45,48 @@ const createAuthProfilePathDirectory = async () => {
   }
 };
 
-export const test = base.extend<{
-  contextAndPage: { context: BrowserContext; page: Page };
-  chromiumChannel: "chrome" | "msedge";
-}>({
-  chromiumChannel: ["chrome", { option: true }],
-  // Provides the context and the initial page together in the same fixture
-  async contextAndPage({ chromiumChannel }, use, testInfo) {
-    if (!REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST) {
-      throw new Error(
-        "This test requires optional permissions to be required in the manifest. Please set REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1 in your `.env.development` and rerun the extension build.",
+export const test = mergeTests(
+  environmentSetup,
+  base.extend<{
+    contextAndPage: { context: BrowserContext; page: Page };
+    chromiumChannel: "chrome" | "msedge";
+    additionalRequiredEnvVariables: string[];
+  }>({
+    chromiumChannel: ["chrome", { option: true }],
+    additionalRequiredEnvVariables: [
+      "REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST",
+    ],
+    // Provides the context and the initial page together in the same fixture
+    async contextAndPage({ chromiumChannel }, use, testInfo) {
+      // Create a temp directory to store the test profile
+      const authSetupProfileDirectory = await fs.mkdtemp(
+        path.join(os.tmpdir(), "authSetup-"),
       );
-    }
 
-    // Create a temp directory to store the test profile
-    const authSetupProfileDirectory = await fs.mkdtemp(
-      path.join(os.tmpdir(), "authSetup-"),
-    );
+      // Create a local auth directory to store the profile paths
+      await createAuthProfilePathDirectory();
 
-    // Create a local auth directory to store the profile paths
-    await createAuthProfilePathDirectory();
-
-    const context = await launchPersistentContextWithExtension(
-      chromiumChannel,
-      authSetupProfileDirectory,
-    );
-
-    // The admin console automatically opens a new tab to log in and link the newly installed extension to the user's account.
-    const page = await context.waitForEvent("page", { timeout: 10_000 });
-
-    await use({ context, page });
-
-    // Store the profile path for future use if the auth setup test passes
-    if (testInfo.status === "passed") {
-      const authProfilePathFile = getAuthProfilePathFile(chromiumChannel);
-      await fs.writeFile(
-        authProfilePathFile,
+      const context = await launchPersistentContextWithExtension(
+        chromiumChannel,
         authSetupProfileDirectory,
-        "utf8",
       );
-    }
 
-    await context.close();
-  },
-});
+      // The admin console automatically opens a new tab to log in and link the newly installed extension to the user's account.
+      const page = await context.waitForEvent("page", { timeout: 10_000 });
+
+      await use({ context, page });
+
+      // Store the profile path for future use if the auth setup test passes
+      if (testInfo.status === "passed") {
+        const authProfilePathFile = getAuthProfilePathFile(chromiumChannel);
+        await fs.writeFile(
+          authProfilePathFile,
+          authSetupProfileDirectory,
+          "utf8",
+        );
+      }
+
+      await context.close();
+    },
+  }),
+);
