@@ -30,19 +30,19 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 203 strictNullCheck errors
+} from "@/contentScript/lifecycle"; // 202 strictNullCheck errors
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/contentScript/pageEditor/dynamic"; // 206 strictNullCheck errors
+} from "@/contentScript/pageEditor/dynamic"; // 205 strictNullCheck errors
 import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
-} from "@/contentScript/pageEditor"; // 208 strictNullCheck errors
+} from "@/contentScript/pageEditor"; // 207 strictNullCheck errors
 import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
 import {
   runHeadlessPipeline,

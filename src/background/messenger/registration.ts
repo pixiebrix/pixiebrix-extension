@@ -28,7 +28,7 @@ import {
   ensureContextMenu,
   preloadContextMenus,
   uninstallContextMenu,
-} from "@/background/contextMenus"; // 205 strictNullCheck errors
+} from "@/background/contextMenus"; // 201 strictNullCheck errors
 import {
   requestRunInAllFrames,
   requestRunInOtherTabs,
@@ -36,8 +36,8 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor"; // Depends on contentScript/messenger to pass strictNullCheck
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 207 strictNullCheck errors
-import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 211 strictNullCheck errors
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 203 strictNullCheck errors
+import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 209 strictNullCheck errors
 
 import { setCopilotProcessData } from "@/background/partnerHandlers"; // Depends on contentScript/messenger to pass strictNullCheck
 
