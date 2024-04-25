@@ -205,6 +205,7 @@ jobs:
       REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST: 1
       E2E_TEST_USER_EMAIL_UNAFFILIATED: ${{ secrets.E2E_TEST_USER_EMAIL_UNAFFILIATED }}
       E2E_TEST_USER_PASSWORD_UNAFFILIATED: ${{ secrets.E2E_TEST_USER_PASSWORD_UNAFFILIATED }}
+      DEV_EVENT_TELEMETRY: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
