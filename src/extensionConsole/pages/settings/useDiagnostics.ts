@@ -21,7 +21,7 @@ import useExtensionPermissions, {
   type DetailedPermissions,
 } from "@/permissions/useExtensionPermissions";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
-import { compact, pick, uniqBy } from "lodash";
+import { compact, uniqBy } from "lodash";
 import { type StorageEstimate } from "@/types/browserTypes";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
@@ -30,6 +30,7 @@ import { count as eventsSize } from "@/background/telemetry";
 import useUserAction from "@/hooks/useUserAction";
 import download from "downloadjs";
 import filenamify from "filenamify";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 async function collectDiagnostics({
   extensions,
@@ -38,10 +39,11 @@ async function collectDiagnostics({
   extensions: UnresolvedModComponent[];
   permissions: DetailedPermissions;
 }) {
-  const manifest = browser.runtime.getManifest();
+  const { version_name } = browser.runtime.getManifest();
+  const version = getExtensionVersion();
   return {
     userAgent: window.navigator.userAgent,
-    manifest: pick(manifest, ["version", "version_name"]),
+    manifest: { version, version_name },
     permissions,
     storage: {
       storageEstimate: (await navigator.storage.estimate()) as StorageEstimate,

@@ -608,7 +608,7 @@ async function activateDeploymentsInBackground({
   );
 
   // Version to report to the server.
-  const { version: extensionVersionString } = browser.runtime.getManifest();
+  const extensionVersionString = getExtensionVersion();
   const extensionVersion = parseSemVer(extensionVersionString);
 
   const deploymentsByActivationMethod = await Promise.all(

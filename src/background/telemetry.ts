@@ -29,7 +29,7 @@ import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
 import { getUUID } from "@/telemetry/telemetryHelpers";
-import { getTabsWithAccess } from "@/utils/extensionUtils";
+import { getExtensionVersion, getTabsWithAccess } from "@/utils/extensionUtils";
 import { type Event } from "@/telemetry/events";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
@@ -274,7 +274,8 @@ export async function TEST_flushAll(): Promise<void> {
 
 async function collectUserSummary(): Promise<UserSummary> {
   const { os } = await browser.runtime.getPlatformInfo();
-  const { version, version_name: versionName } = browser.runtime.getManifest();
+  const { version_name: versionName } = browser.runtime.getManifest();
+  const version = getExtensionVersion();
   // Not supported on Chromium, and may require additional permissions
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/getBrowserInfo
   // const {name: browserName} = await browser.runtime.getBrowserInfo();
@@ -336,11 +337,9 @@ export async function recordEvent({
   data: UnknownObject | undefined;
 }): Promise<void> {
   if (await allowsTrack()) {
-    const {
-      version,
-      version_name: versionName,
-      manifest_version: manifestVersion,
-    } = browser.runtime.getManifest();
+    const { version_name: versionName, manifest_version: manifestVersion } =
+      browser.runtime.getManifest();
+    const version = getExtensionVersion();
     const telemetryEvent = {
       uid: await getUUID(),
       event,

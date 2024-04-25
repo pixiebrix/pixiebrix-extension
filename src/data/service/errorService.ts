@@ -22,7 +22,7 @@ import {
   selectSpecificError,
 } from "@/errors/errorHelpers";
 import { allowsTrack } from "@/telemetry/dnt";
-import { uuidv4, validateSemVerString } from "@/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { getUserData } from "@/auth/authStorage";
 import {
   isAppRequestError,
@@ -42,6 +42,7 @@ import { isObject } from "@/utils/objectUtils";
 import type { Timestamp } from "@/types/stringTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { selectAbsoluteUrl } from "@/utils/urlUtils";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -75,9 +76,8 @@ async function flush(): Promise<void> {
 export async function selectExtraContext(
   error: Error | SerializedError,
 ): Promise<UnknownObject & { extensionVersion: SemVerString }> {
-  const { version, manifest_version: manifestVersion } =
-    browser.runtime.getManifest();
-  const extensionVersion = validateSemVerString(version);
+  const { manifest_version: manifestVersion } = browser.runtime.getManifest();
+  const extensionVersion = getExtensionVersion();
   const extraContext: UnknownObject & { extensionVersion: SemVerString } = {
     extensionVersion,
     manifestVersion,

@@ -19,7 +19,6 @@ import { type PlatformProtocol } from "@/platform/platformProtocol";
 import { hideNotification, showNotification } from "@/utils/notify";
 import type { PlatformCapability } from "@/platform/capabilities";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { validateSemVerString } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
 import {
   traces,
@@ -33,6 +32,7 @@ import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import integrationRegistry from "@/integrations/registry";
 import { performConfiguredRequest } from "@/background/requests";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 /**
  * The extension page platform.
@@ -56,10 +56,7 @@ class ExtensionPagePlatform extends PlatformBase {
   });
 
   constructor() {
-    super(
-      "extension",
-      validateSemVerString(browser.runtime.getManifest().version),
-    );
+    super("extension", getExtensionVersion());
   }
 
   override alert = window.alert;

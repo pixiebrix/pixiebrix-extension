@@ -21,7 +21,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import type { Logger } from "@/types/loggerTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { RunArgs } from "@/types/runtimeTypes";
-import { validateSemVerString } from "@/types/helpers";
+import { normalizeSemVerString } from "@/types/helpers";
 import type { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
 
 /**
@@ -29,7 +29,7 @@ import type { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
  */
 export const platformMock: PlatformProtocol = {
   platformName: "mock",
-  version: validateSemVerString("0.0.0"),
+  version: normalizeSemVerString("0.0.0"),
   capabilities: platformCapabilities,
   open: jest.fn(),
   alert: jest.fn(),
