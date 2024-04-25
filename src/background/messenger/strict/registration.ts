@@ -56,6 +56,7 @@ import {
   getPartnerPrincipals,
   launchAuthIntegration,
 } from "@/background/partnerIntegrations";
+import { getAvailableVersion } from "@/background/installer";
 
 expectContext("background");
 
@@ -107,6 +108,8 @@ declare global {
 
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
     LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
+
+    GET_AVAILABLE_VERSION: typeof getAvailableVersion;
   }
 }
 
@@ -158,5 +161,7 @@ export default function registerMessenger(): void {
 
     GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
     LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
+
+    GET_AVAILABLE_VERSION: getAvailableVersion,
   });
 }

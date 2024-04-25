@@ -23,7 +23,7 @@ import {
   registryIdSequence,
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
-import { validateSemVerString } from "@/types/helpers";
+import { normalizeSemVerString } from "@/types/helpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { minimalSchemaFactory } from "@/utils/schemaUtils";
 import type { BrickDefinition } from "@/bricks/transformers/brickFactory";
@@ -35,7 +35,7 @@ import type { ModDefinition } from "@/types/modDefinitionTypes";
 export const brickFactory = define<Brick>({
   id: registryIdSequence,
   name: derive<Brick, string>((x: Brick) => `Brick ${x.id}`, "id"),
-  version: validateSemVerString("1.0.0"),
+  version: normalizeSemVerString("1.0.0"),
   inputSchema: minimalSchemaFactory,
   permissions: emptyPermissionsFactory,
   run: jest.fn(),

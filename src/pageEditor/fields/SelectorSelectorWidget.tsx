@@ -29,11 +29,7 @@ import CreatableAutosuggest, {
 import SelectorListItem from "@/pageEditor/fields/selectorListItem/SelectorListItem";
 import { type Framework } from "@/pageScript/messenger/constants";
 import { useField } from "formik";
-import {
-  disableOverlay,
-  enableOverlay,
-  selectElement,
-} from "@/contentScript/messenger/api";
+import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
 import { useSelector } from "react-redux";
 import { type SettingsState } from "@/store/settings/settingsTypes";
@@ -48,7 +44,10 @@ import {
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { inspectedTab } from "@/pageEditor/context/connection";
-import { cancelSelect } from "@/contentScript/messenger/strict/api";
+import {
+  cancelSelect,
+  selectElement,
+} from "@/contentScript/messenger/strict/api";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;

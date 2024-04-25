@@ -19,7 +19,7 @@
 
 import {
   hideMv2SidebarInTopFrame,
-  showSidebar,
+  showSidebarInTopFrame,
   sidebarWasLoaded,
   updateSidebar,
   removeExtensions as removeSidebars,
@@ -46,6 +46,9 @@ import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughM
 import { registerMethods } from "webext-messenger";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { cancelSelect } from "@/contentScript/pageEditor/elementPicker";
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
+import selectElement from "@/contentScript/pageEditor/selectElement";
 
 declare global {
   interface MessengerMethods {
@@ -54,7 +57,7 @@ declare global {
     FORM_CANCEL: typeof cancelForm;
     UPDATE_SIDEBAR: typeof updateSidebar;
     SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
-    SHOW_SIDEBAR: typeof showSidebar;
+    SHOW_SIDEBAR: typeof showSidebarInTopFrame;
     HIDE_SIDEBAR: typeof hideMv2SidebarInTopFrame;
     REMOVE_SIDEBARS: typeof removeSidebars;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
@@ -75,6 +78,9 @@ declare global {
     WALKTHROUGH_MODAL_SHOW: typeof showWalkthroughModal;
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
+    RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
+    GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
+    SELECT_ELEMENT: typeof selectElement;
   }
 }
 export default function registerMessenger(): void {
@@ -84,7 +90,7 @@ export default function registerMessenger(): void {
     FORM_CANCEL: cancelForm,
     UPDATE_SIDEBAR: updateSidebar,
     SIDEBAR_WAS_LOADED: sidebarWasLoaded,
-    SHOW_SIDEBAR: showSidebar,
+    SHOW_SIDEBAR: showSidebarInTopFrame,
     HIDE_SIDEBAR: hideMv2SidebarInTopFrame,
     REMOVE_SIDEBARS: removeSidebars,
     HANDLE_MENU_ACTION: handleMenuAction,
@@ -105,5 +111,8 @@ export default function registerMessenger(): void {
     WALKTHROUGH_MODAL_SHOW: showWalkthroughModal,
     TOGGLE_QUICK_BAR: toggleQuickBar,
     CANCEL_SELECT_ELEMENT: cancelSelect,
+    RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
+    GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
+    SELECT_ELEMENT: selectElement,
   });
 }

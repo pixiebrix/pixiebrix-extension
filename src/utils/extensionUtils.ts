@@ -20,6 +20,8 @@ import { foreverPendingPromise } from "@/utils/promiseUtils";
 import { type Promisable } from "type-fest";
 import { isScriptableUrl } from "webext-content-scripts";
 import { type Runtime } from "webextension-polyfill";
+import { normalizeSemVerString } from "@/types/helpers";
+import { type SemVerString } from "@/types/registryTypes";
 
 export const SHORTCUTS_URL = "chrome://extensions/shortcuts";
 type Command = "toggle-quick-bar";
@@ -65,8 +67,23 @@ export function getExtensionConsoleUrl(page?: string): string {
   return url.href;
 }
 
-export function getExtensionVersion(): string {
-  return browser.runtime.getManifest().version;
+/**
+ * Gets the Extension version from the manifest and normalizes it to a valid semver string.
+ * @since 1.8.13, the Extension version is a four part format x.x.x.x
+ * This allows us to publish pre-release versions to the CWS, especially the BETA listing
+ * Each version published in CWS must have a unique version number
+ *
+ * @see manifest.mjs:getVersion()
+ *
+ * TODO: Add linting rule to prefer getExtensionVersion over browser.runtime.getManifest().version
+ *  @see https://github.com/pixiebrix/pixiebrix-extension/issues/8349
+ *
+ * @returns the version of the Extension in valid semver format (x.x.x)
+ */
+export function getExtensionVersion(): SemVerString {
+  return normalizeSemVerString(browser.runtime.getManifest().version, {
+    coerce: true,
+  });
 }
 
 /** If no update is available and downloaded yet, it will return a string explaining why */
