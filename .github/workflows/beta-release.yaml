@@ -16,6 +16,10 @@ env:
   # Creates and uploads sourcemaps to Application error telemetry, and save the built extension as an artifact
   PUBLIC_RELEASE: true
   CHROME_MANIFEST_KEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs9/BXaFQsYPDxqbVvi11xhWdxfygfrF5YCLiboJooQyTkqIGpGxtI3JF/hkAXDcoqI+N5ATsGPYW34CdOc7uBCU91Ig+gHFiicnkzJaoOBjIwqx452l2/mp7cqNdavtCq40YENkF13ouj5loPwMMYY0L/sSvab+6eO20i1+Ulbsn9onS/fDd16clOaIbUVJ1PhyYvrU0HGVUqW5wUIDLyRezr3aTQLtDIQp/7DTBQ60S2G5KPpAW1UEphnXRLwl6cR5MiYw20OStfTZaA2qpWQvLAQtBoPNjP0Ld6rzI/e3uaC5qUMMCusitKeCA5HOFQDz2IJ0kS8Cn5fxzhXFi6QIDAQAB
+  MV: 3
+  PUBLIC_NAME: -beta
+  DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
+  DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
 
 jobs:
   build:
@@ -40,11 +44,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-        env:
-          MV: 3
-          PUBLIC_NAME: -beta
-          DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
-          DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
       - run: bash scripts/upload-sourcemaps.sh
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
@@ -78,10 +77,6 @@ jobs:
     env:
       SHADOW_DOM: open
       SERVICE_URL: https://app.pixiebrix.com
-      MV: 3
-      CHROME_MANIFEST_KEY: ${{ env.CHROME_MANIFEST_KEY }}
-      DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
-      DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
       REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST: 1
     steps:
       - uses: actions/checkout@v4
@@ -112,7 +107,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: end-to-end-tests-report${{ matrix.PUBLIC_NAME }}
+          name: end-to-end-tests-report
           path: end-to-end-tests/.report
           retention-days: 5
 
