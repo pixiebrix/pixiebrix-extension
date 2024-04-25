@@ -68,8 +68,8 @@ jest.mock("@/store/settings/settingsStorage");
 jest.mock("@/hooks/useRefreshRegistries");
 
 jest.mock("@/utils/extensionUtils", () => ({
+  ...jest.requireActual("@/utils/extensionUtils"),
   forEachTab: jest.fn(),
-  getExtensionVersion: () => browser.runtime.getManifest().version,
 }));
 
 // Override manual mock to support `expect` assertions
