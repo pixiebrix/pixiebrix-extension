@@ -21,7 +21,6 @@ import {
   type BrowserContext,
   type Page,
 } from "@playwright/test";
-import { REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST } from "../env";
 import {
   getAuthProfilePathFile,
   launchPersistentContextWithExtension,
@@ -29,7 +28,7 @@ import {
 import fs from "node:fs/promises";
 import path from "node:path";
 import * as os from "node:os";
-import { test as environmentSetup } from "./envSetup";
+import { test as envSetup } from "./envSetup";
 
 // Create a local auth directory to store the profile paths
 const createAuthProfilePathDirectory = async () => {
@@ -46,7 +45,7 @@ const createAuthProfilePathDirectory = async () => {
 };
 
 export const test = mergeTests(
-  environmentSetup,
+  envSetup,
   base.extend<{
     contextAndPage: { context: BrowserContext; page: Page };
     chromiumChannel: "chrome" | "msedge";

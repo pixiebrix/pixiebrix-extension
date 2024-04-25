@@ -24,6 +24,7 @@ const requiredEnvVariables = [
   "SERVICE_URL",
   "E2E_TEST_USER_EMAIL_UNAFFILIATED",
   "E2E_TEST_USER_PASSWORD_UNAFFILIATED",
+  "SHADOW_DOM",
 ] as const;
 
 // It's not strictly required for the test run itself, but the extension manifest.json must have been built with

@@ -28,7 +28,7 @@ import {
   launchPersistentContextWithExtension,
 } from "./utils";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
-import { test as environmentSetup } from "./envSetup";
+import { test as envSetup } from "./envSetup";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // See https://github.com/microsoft/playwright/issues/26693
@@ -39,7 +39,7 @@ process.env.PW_CHROMIUM_ATTACH_TO_OTHER = "1";
 process.env.PW_EXPERIMENTAL_SERVICE_WORKER_NETWORK_EVENTS = "1";
 
 export const test = mergeTests(
-  environmentSetup,
+  envSetup,
   base.extend<
     {
       context: BrowserContext;
