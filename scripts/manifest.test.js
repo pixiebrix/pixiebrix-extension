@@ -15,9 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable @shopify/jest/no-snapshots -- We want to specifically commit the entire customized manifest as a snapshot */
-/* eslint-disable no-restricted-imports -- Aliases don't work outside built files */
-
 import { omit } from "lodash";
 import manifest from "../src/manifest.json";
 import { loadEnv } from "./env.mjs";
@@ -25,35 +22,65 @@ import customizeManifest from "./manifest.mjs";
 
 loadEnv();
 
-const cleanCustomize = (...args) =>
-  omit(customizeManifest(...args), ["version", "version_name", "key"]);
+const cleanCustomize = (...args) => omit(customizeManifest(...args), ["key"]);
 
 describe("customizeManifest", () => {
-  test("mv2", () => {
-    expect(
-      cleanCustomize(manifest, {
-        env: process.env,
-        isProduction: true,
-      }),
-    ).toMatchSnapshot();
+  describe("release builds", () => {
+    test("mv2", () => {
+      expect(
+        cleanCustomize(manifest, {
+          // eslint-disable-next-line camelcase -- auto-inserted
+          env: { ...process.env, npm_package_version: "1.8.13" },
+          isProduction: true,
+        }),
+      ).toMatchSnapshot();
+    });
+
+    test("mv3", () => {
+      expect(
+        cleanCustomize(manifest, {
+          // eslint-disable-next-line camelcase -- auto-inserted
+          env: { ...process.env, npm_package_version: "1.8.13" },
+          isProduction: true,
+          manifestVersion: 3,
+        }),
+      ).toMatchSnapshot();
+    });
+
+    test("beta", () => {
+      expect(
+        cleanCustomize(manifest, {
+          // eslint-disable-next-line camelcase -- auto-inserted
+          env: { ...process.env, npm_package_version: "1.8.13" },
+          isProduction: true,
+          manifestVersion: 3,
+          isBeta: true,
+        }),
+      ).toMatchSnapshot();
+    });
   });
-  test("mv3", () => {
-    expect(
-      cleanCustomize(manifest, {
-        env: process.env,
-        isProduction: true,
-        manifestVersion: 3,
-      }),
-    ).toMatchSnapshot();
-  });
-  test("beta", () => {
-    expect(
-      cleanCustomize(manifest, {
-        env: process.env,
-        isProduction: true,
-        manifestVersion: 3,
-        isBeta: true,
-      }),
-    ).toMatchSnapshot();
+
+  describe("alpha/beta versioning", () => {
+    test("alpha version", () => {
+      expect(
+        cleanCustomize(manifest, {
+          // eslint-disable-next-line camelcase -- auto-inserted
+          env: { ...process.env, npm_package_version: "1.8.13-alpha.123" },
+          isProduction: true,
+          manifestVersion: 3,
+        }),
+      ).toContainEntry(["version", "1.8.13.1123"]);
+    });
+
+    test("beta version", () => {
+      expect(
+        cleanCustomize(manifest, {
+          // eslint-disable-next-line camelcase -- auto-inserted
+          env: { ...process.env, npm_package_version: "1.8.13-beta.123" },
+          isProduction: true,
+          manifestVersion: 3,
+        }),
+      ).toContainEntry(["version", "1.8.13.2123"]);
+    });
   });
 });
