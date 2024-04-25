@@ -25,7 +25,7 @@ import {
 import {
   uuidv4,
   validateRegistryId,
-  validateSemVerString,
+  normalizeSemVerString,
   validateTimestamp,
 } from "@/types/helpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
@@ -42,6 +42,7 @@ import {
   PIXIEBRIX_INTEGRATION_ID,
 } from "@/integrations/constants";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(
@@ -122,7 +123,7 @@ describe("makeUpdatedFilter", () => {
         _recipe: {
           ...modDefinition.metadata,
           // The factory produces version "1.0.1"
-          version: validateSemVerString("1.0.1"),
+          version: normalizeSemVerString("1.0.1"),
           updated_at: validateTimestamp(deployment.updated_at),
           // `sharing` doesn't impact the predicate. Pass an arbitrary value
           sharing: undefined,
@@ -151,9 +152,8 @@ describe("checkExtensionUpdateRequired", () => {
 
   test("update not required", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
-    (modDefinition.metadata.extensionVersion as any) = `>=${
-      browser.runtime.getManifest().version
-    }`;
+    (modDefinition.metadata.extensionVersion as any) =
+      `>=${getExtensionVersion()}`;
 
     expect(
       checkExtensionUpdateRequired([{ deployment, modDefinition }]),

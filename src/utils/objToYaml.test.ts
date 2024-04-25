@@ -16,7 +16,7 @@
  */
 
 import { brickToYaml } from "./objToYaml";
-import { validateSemVerString } from "@/types/helpers";
+import { normalizeSemVerString } from "@/types/helpers";
 
 describe("brickToYaml", () => {
   test("serializes arbitrary object", () => {
@@ -40,7 +40,7 @@ lorem: ipsum
       metadata: {
         id: "google/api",
         name: "Google API",
-        version: validateSemVerString("1.0.0"),
+        version: normalizeSemVerString("1.0.0"),
         description: "Generic Google API authentication via API key",
       },
       apiVersion: "v1",
@@ -104,7 +104,7 @@ outputSchema:
       metadata: {
         id: "google/api",
         name: "Google API",
-        version: validateSemVerString("1.0.0"),
+        version: normalizeSemVerString("1.0.0"),
         description: "Generic Google API authentication via API key",
       },
       apiVersion: "v1",

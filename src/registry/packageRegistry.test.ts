@@ -26,7 +26,7 @@ import { produce } from "immer";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import pDefer from "p-defer";
-import { validateSemVerString } from "@/types/helpers";
+import { normalizeSemVerString } from "@/types/helpers";
 
 describe("localRegistry", () => {
   beforeEach(() => {
@@ -65,7 +65,7 @@ describe("localRegistry", () => {
   it("should return latest version", async () => {
     const definition = defaultModDefinitionFactory();
     const updated = produce(definition, (draft) => {
-      draft.metadata.version = validateSemVerString("9.9.9");
+      draft.metadata.version = normalizeSemVerString("9.9.9");
     });
 
     appApiMock.onGet("/api/registry/bricks/").reply(200, [updated, definition]);

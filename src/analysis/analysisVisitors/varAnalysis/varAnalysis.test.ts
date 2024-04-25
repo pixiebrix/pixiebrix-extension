@@ -56,6 +56,7 @@ import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { toExpression } from "@/utils/expressionUtils";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
+import pixiebrixIntegrationDependencyFactory from "@/integrations/util/pixiebrixIntegrationDependencyFactory";
 
 jest.mocked(services.locate).mockResolvedValue(
   sanitizedIntegrationConfigFactory({
@@ -134,13 +135,14 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(
         {
-          // Let this extension have an integration dependency
+          // Test both the PixieBrix api integration and a sample third-party service
           integrationDependencies: [
             integrationDependencyFactory({
               integrationId: validateRegistryId("@test/service"),
-              outputKey: validateOutputKey("pixiebrix"),
+              outputKey: validateOutputKey("testService"),
               configId: uuidSequence,
             }),
+            pixiebrixIntegrationDependencyFactory(),
           ],
           optionsArgs: {
             foo: "bar",
@@ -164,6 +166,11 @@ describe("Collecting available vars", () => {
 
       expect(foundationKnownVars.isVariableDefined("@options.foo")).toBeTrue();
 
+      expect(
+        foundationKnownVars.isVariableDefined(
+          "@testService.__service.serviceId",
+        ),
+      ).toBeTrue();
       expect(
         foundationKnownVars.isVariableDefined("@pixiebrix.__service.serviceId"),
       ).toBeTrue();

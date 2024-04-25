@@ -19,7 +19,7 @@
 
 import {
   hideMv2SidebarInTopFrame,
-  showSidebar,
+  showSidebarInTopFrame,
   sidebarWasLoaded,
   updateSidebar,
   removeExtensions as removeSidebars,
@@ -57,7 +57,7 @@ declare global {
     FORM_CANCEL: typeof cancelForm;
     UPDATE_SIDEBAR: typeof updateSidebar;
     SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
-    SHOW_SIDEBAR: typeof showSidebar;
+    SHOW_SIDEBAR: typeof showSidebarInTopFrame;
     HIDE_SIDEBAR: typeof hideMv2SidebarInTopFrame;
     REMOVE_SIDEBARS: typeof removeSidebars;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
@@ -90,7 +90,7 @@ export default function registerMessenger(): void {
     FORM_CANCEL: cancelForm,
     UPDATE_SIDEBAR: updateSidebar,
     SIDEBAR_WAS_LOADED: sidebarWasLoaded,
-    SHOW_SIDEBAR: showSidebar,
+    SHOW_SIDEBAR: showSidebarInTopFrame,
     HIDE_SIDEBAR: hideMv2SidebarInTopFrame,
     REMOVE_SIDEBARS: removeSidebars,
     HANDLE_MENU_ACTION: handleMenuAction,
