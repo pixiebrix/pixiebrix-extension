@@ -44,7 +44,6 @@ export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 
 export const insertPanel = getMethod("INSERT_PANEL");
 export const insertButton = getMethod("INSERT_BUTTON");
-export const getAttributeExamples = getMethod("GET_ATTRIBUTE_EXAMPLES");
 
 export const runBlock = getMethod("RUN_SINGLE_BLOCK");
 export const runRendererBlock = getMethod("RUN_RENDERER_BLOCK");
@@ -59,16 +58,11 @@ export const getInstalledExtensionPoints = getMethod(
 );
 export const checkAvailable = getMethod("CHECK_AVAILABLE");
 export const runBrick = getMethod("RUN_BRICK");
-export const selectElement = getMethod("SELECT_ELEMENT");
 
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
 export const runHeadlessPipeline = getMethod("RUN_HEADLESS_PIPELINE");
 export const runMapArgs = getMethod("RUN_MAP_ARGS");
 
 export const getCopilotHostData = getMethod("GET_COPILOT_HOST_DATA");
-
-export const reloadMarketplaceEnhancements = getMethod(
-  "RELOAD_MARKETPLACE_ENHANCEMENTS",
-);
 
 export const showLoginBanner = getMethod("SHOW_LOGIN_BANNER");

@@ -22,7 +22,6 @@ import {
   getNotifier,
 } from "webext-messenger";
 
-export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const setPartnerCopilotData = getNotifier(
   "SET_PARTNER_COPILOT_DATA",
   bg,

@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./contentScript/pageEditor/selectElement.ts",
     "./types/helpers.test.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
@@ -76,6 +77,7 @@
     "./background/dataStore.ts",
     "./background/externalProtocol.ts",
     "./background/initTheme.ts",
+    "./background/installer",
     "./background/locator.ts",
     "./background/messenger/strict/api.ts",
     "./background/messenger/strict/registration.ts",
@@ -379,6 +381,8 @@
     "./contentScript/integrations/LoginBanners.tsx",
     "./contentScript/integrations/bannerDomController.tsx",
     "./contentScript/integrations/deferredLoginTypes.ts",
+    "./contentScript/loadActivationEnhancements.ts",
+    "./contentScript/loadActivationEnhancementsCore.ts",
     "./contentScript/messenger/runBrickTypes.ts",
     "./contentScript/messenger/strict/api.ts",
     "./contentScript/messenger/strict/registration.ts",
@@ -499,6 +503,7 @@
     "./extensionConsole/SidebarLink.tsx",
     "./extensionConsole/components/ServiceFieldError.tsx",
     "./extensionConsole/pages/InvitationBanner.tsx",
+    "./extensionConsole/pages/UpdateBanner.tsx",
     "./extensionConsole/pages/activateExtension/activateTypes.ts",
     "./extensionConsole/pages/activateMod/IntegrationDescriptor.tsx",
     "./extensionConsole/pages/activateMod/UrlPermissionsList.tsx",
