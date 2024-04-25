@@ -116,6 +116,7 @@ jobs:
     needs:
       - build
       - end-to-end-tests
+    # https://stackoverflow.com/a/69354134
     if: |
       always() &&
       needs.build.result == 'success' &&
