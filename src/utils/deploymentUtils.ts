@@ -25,7 +25,7 @@ import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
 } from "@/integrations/integrationTypes";
-import { validateUUID } from "@/types/helpers";
+import { validateSemVerString, validateUUID } from "@/types/helpers";
 import { type Except } from "type-fest";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
@@ -124,7 +124,8 @@ export function checkExtensionUpdateRequired(
   activatableDeployments: ActivatableDeployment[] = [],
 ): boolean {
   // Check that the user's extension can run the deployment
-  const { version: extensionVersion } = browser.runtime.getManifest();
+  const { version } = browser.runtime.getManifest();
+  const extensionVersion = validateSemVerString(version, { coerce: true });
   const versionRanges = compact(
     activatableDeployments.map(
       ({ modDefinition }) => modDefinition.metadata.extensionVersion,

@@ -151,9 +151,10 @@ describe("checkExtensionUpdateRequired", () => {
 
   test("update not required", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
-    (modDefinition.metadata.extensionVersion as any) = `>=${
-      browser.runtime.getManifest().version
-    }`;
+    (modDefinition.metadata.extensionVersion as any) =
+      `>=${validateSemVerString(browser.runtime.getManifest().version, {
+        coerce: true,
+      })}`;
 
     expect(
       checkExtensionUpdateRequired([{ deployment, modDefinition }]),
