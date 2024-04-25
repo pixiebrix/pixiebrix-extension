@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { testIsSemVerString, validateSemVerString } from "@/types/helpers";
+import { testIsSemVerString, normalizeSemVerString } from "@/types/helpers";
 
 describe("types/helpers.ts", () => {
   describe("testIsSemVerString", () => {
@@ -63,7 +63,7 @@ describe("types/helpers.ts", () => {
     );
   });
 
-  describe("validateSemVerString", () => {
+  describe("normalizeSemVerString", () => {
     it.each([
       {
         value: "1.2.3",
@@ -92,7 +92,7 @@ describe("types/helpers.ts", () => {
     ])(
       "$value with allowLeadingV: $allowLeadingV and coerce: $coerce returns $expected",
       ({ value, allowLeadingV, coerce, expected }) => {
-        expect(validateSemVerString(value, { allowLeadingV, coerce })).toBe(
+        expect(normalizeSemVerString(value, { allowLeadingV, coerce })).toBe(
           expected,
         );
       },
@@ -123,7 +123,7 @@ describe("types/helpers.ts", () => {
       "$value with allowLeadingV: $allowLeadingV and coerce: $coerce throws an error",
       ({ value, allowLeadingV, coerce }) => {
         expect(() =>
-          validateSemVerString(value, { allowLeadingV, coerce }),
+          normalizeSemVerString(value, { allowLeadingV, coerce }),
         ).toThrow();
       },
     );

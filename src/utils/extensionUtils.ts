@@ -20,7 +20,7 @@ import { foreverPendingPromise } from "@/utils/promiseUtils";
 import { type Promisable } from "type-fest";
 import { isScriptableUrl } from "webext-content-scripts";
 import { type Runtime } from "webextension-polyfill";
-import { validateSemVerString } from "@/types/helpers";
+import { normalizeSemVerString } from "@/types/helpers";
 import { type SemVerString } from "@/types/registryTypes";
 
 export const SHORTCUTS_URL = "chrome://extensions/shortcuts";
@@ -69,7 +69,7 @@ export function getExtensionConsoleUrl(page?: string): string {
 
 // TODO: Add linting rule to prefer getExtensionVersion over browser.runtime.getManifest().version
 export function getExtensionVersion(): SemVerString {
-  return validateSemVerString(browser.runtime.getManifest().version, {
+  return normalizeSemVerString(browser.runtime.getManifest().version, {
     coerce: true,
   });
 }

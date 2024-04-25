@@ -151,7 +151,7 @@ export function validateTimestamp(value: string): Timestamp {
   throw new TypeError("Invalid timestamp");
 }
 
-export function validateSemVerString(
+export function normalizeSemVerString(
   value: string,
   // Default to `false` to be stricter.
   {

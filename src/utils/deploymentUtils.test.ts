@@ -25,7 +25,7 @@ import {
 import {
   uuidv4,
   validateRegistryId,
-  validateSemVerString,
+  normalizeSemVerString,
   validateTimestamp,
 } from "@/types/helpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
@@ -123,7 +123,7 @@ describe("makeUpdatedFilter", () => {
         _recipe: {
           ...modDefinition.metadata,
           // The factory produces version "1.0.1"
-          version: validateSemVerString("1.0.1"),
+          version: normalizeSemVerString("1.0.1"),
           updated_at: validateTimestamp(deployment.updated_at),
           // `sharing` doesn't impact the predicate. Pass an arbitrary value
           sharing: undefined,
