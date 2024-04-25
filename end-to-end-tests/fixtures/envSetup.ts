@@ -34,7 +34,10 @@ export const test = base.extend<{
           );
         }
       }
-      await use(undefined);
+
+      // A call to `use` is required to continue the test, but the resolved value isn't used for anything in our case.
+      // Typescript requires that we have it match the type of expectRequiredEnvVariables.
+      await use(() => {});
     },
     { auto: true },
   ],
