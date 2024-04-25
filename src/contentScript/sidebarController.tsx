@@ -19,10 +19,12 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
+import * as contentScriptApi from "@/contentScript/messenger/strict/api";
 import { isEmpty, throttle } from "lodash";
 import { signalFromEvent } from "abort-utils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import * as sidebarMv2 from "@/contentScript/sidebarDomControllerLite";
+import { getSidebarElement } from "@/contentScript/sidebarDomControllerLite";
 import { type Except } from "type-fest";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -30,8 +32,8 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type ModComponentRef } from "@/types/modComponentTypes";
 import type {
   ActivatePanelOptions,
-  ModActivationPanelEntry,
   FormPanelEntry,
+  ModActivationPanelEntry,
   PanelEntry,
   PanelPayload,
   TemporaryPanelEntry,
@@ -41,17 +43,28 @@ import { getFormPanelSidebarEntries } from "@/platform/forms/formController";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
 import { isMV3 } from "@/mv3/api";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { showMySidePanel } from "@/background/messenger/strict/api";
-import { getSidebarElement } from "@/contentScript/sidebarDomControllerLite";
 import focusController from "@/utils/focusController";
 import selectionController from "@/utils/selectionController";
-import { messenger } from "webext-messenger";
-import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
+import { getTopLevelFrame, messenger } from "webext-messenger";
+import {
+  getSidebarTargetForCurrentTab,
+  isUserGestureRequiredError,
+} from "@/utils/sidePanelUtils";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
+
+/**
+ * Event listeners triggered when the sidebar shows and is ready to receive messages.
+ */
+export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
+
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
+const panels: PanelEntry[] = [];
+
+let modActivationPanelEntry: ModActivationPanelEntry | null = null;
 
 /*
  * Only one check at a time
@@ -88,30 +101,37 @@ const pingSidebar = memoizeUntilSettled(
   }, 1000) as () => Promise<void>,
 );
 
-/**
- * Event listeners triggered when the sidebar shows and is ready to receive messages.
- */
-export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
-
 export function sidebarWasLoaded(): void {
   sidebarShowEvents.emit({ reason: RunReason.MANUAL });
 }
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
-const panels: PanelEntry[] = [];
-
-let modActivationPanelEntry: ModActivationPanelEntry | null = null;
-
 /**
- * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
+ * Content script handler for showing the sidebar in the top-level frame. Regular callers should call
+ * showSidebar instead, which handles calls from iframes.
+ *
+ * - Resolves when the sidebar is initialized (responds to a ping)
+ * - Shows focusCaptureDialog if a user gesture is required
+ *
+ * @see showSidebar
+ * @see pingSidebar
+ * @throws Error if the sidebar ping fails or does not respond in time
  */
-export async function showSidebar(): Promise<void> {
+// Don't memoizeUntilSettled this method. focusCaptureDialog is memoized which prevents this method from showing
+// the focus dialog from multiple times. By allowing multiple concurrent calls to showSidebarInTopFrame,
+// a subsequent call might succeed, which will then automatically close the focusCaptureDialog (via it's abort signal)
+export async function showSidebarInTopFrame() {
   reportEvent(Events.SIDEBAR_SHOW);
+
+  if (isLoadedInIframe()) {
+    console.warn("showSidebarInTopFrame should not be called in an iframe");
+  }
+
+  // Defensively handle accidental calls from iframes
   if (isMV3() || isLoadedInIframe()) {
     try {
       await showMySidePanel();
     } catch (error) {
-      if (!getErrorMessage(error).includes("user gesture")) {
+      if (!isUserGestureRequiredError(error)) {
         throw error;
       }
 
@@ -135,6 +155,18 @@ export async function showSidebar(): Promise<void> {
   } catch (error) {
     throw new Error("The sidebar did not respond in time", { cause: error });
   }
+}
+
+/**
+ * Attach the sidebar to the page if it's not already attached. Safe to call from any frame. Resolves when the
+ * sidebar is initialized.
+ * @see showSidebarInTopFrame
+ */
+export async function showSidebar(): Promise<void> {
+  // Could consider explicitly calling showSidebarInTopFrame directly if we're already in the top frame.
+  // But the messenger will already handle that case automatically.
+  const topLevelFrame = await getTopLevelFrame();
+  await contentScriptApi.showSidebar(topLevelFrame);
 }
 
 /**
