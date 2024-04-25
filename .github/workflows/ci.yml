@@ -205,7 +205,6 @@ jobs:
       CHROME_MANIFEST_KEY: ${{ matrix.CHROME_MANIFEST_KEY }}
       DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
       REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST: 1
-      DEV_EVENT_TELEMETRY: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
