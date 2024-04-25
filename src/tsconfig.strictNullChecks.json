@@ -9,6 +9,7 @@
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/extensionBase.ts",
+    "../end-to-end-tests/fixtures/envSetup.ts",
     "../end-to-end-tests/pageObjects/constants.ts",
     "../end-to-end-tests/pageObjects/extensionConsole/localIntegrationsPage.ts",
     "../end-to-end-tests/pageObjects/extensionConsole/modsPage.ts",
