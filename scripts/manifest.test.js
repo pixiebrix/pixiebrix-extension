@@ -60,7 +60,7 @@ describe("customizeManifest", () => {
     });
   });
 
-  describe("alpha/beta versioning", () => {
+  describe("four digit versioning", () => {
     test("alpha version", () => {
       expect(
         cleanCustomize(manifest, {
@@ -81,6 +81,17 @@ describe("customizeManifest", () => {
           manifestVersion: 3,
         }),
       ).toContainEntry(["version", "1.8.13.2123"]);
+    });
+
+    test("release version", () => {
+      expect(
+        cleanCustomize(manifest, {
+          // eslint-disable-next-line camelcase -- auto-inserted
+          env: { ...process.env, npm_package_version: "1.8.13" },
+          isProduction: true,
+          manifestVersion: 3,
+        }),
+      ).toContainEntry(["version", "1.8.13.3000"]);
     });
   });
 });
