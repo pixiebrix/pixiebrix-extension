@@ -8,7 +8,7 @@ on:
         description: "Branch to publish. Should be a release/* branch"
         required: true
       skip_tests:
-        description: "Skips the end-to-end tests"
+        description: "Skip the end-to-end tests"
         required: true
         default: false
 
