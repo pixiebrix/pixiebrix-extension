@@ -55,3 +55,9 @@ export const notify = {
 };
 
 export const cancelSelect = getMethod("CANCEL_SELECT_ELEMENT");
+
+export const reloadMarketplaceEnhancements = getMethod(
+  "RELOAD_MARKETPLACE_ENHANCEMENTS",
+);
+export const getAttributeExamples = getMethod("GET_ATTRIBUTE_EXAMPLES");
+export const selectElement = getMethod("SELECT_ELEMENT");

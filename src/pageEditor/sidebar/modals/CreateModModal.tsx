@@ -20,7 +20,7 @@ import {
   PACKAGE_REGEX,
   testIsSemVerString,
   validateRegistryId,
-  validateSemVerString,
+  normalizeSemVerString,
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -88,7 +88,7 @@ function useInitialFormState({
     return {
       id: newModId,
       name: `${modMetadata.name} (Copy)`,
-      version: validateSemVerString("1.0.0"),
+      version: normalizeSemVerString("1.0.0"),
       description: modMetadata.description,
     };
   }
@@ -98,7 +98,7 @@ function useInitialFormState({
     return {
       id: generatePackageId(scope, activeElement.label),
       name: activeElement.label,
-      version: validateSemVerString("1.0.0"),
+      version: normalizeSemVerString("1.0.0"),
       description: "Created with the PixieBrix Page Editor",
     };
   }

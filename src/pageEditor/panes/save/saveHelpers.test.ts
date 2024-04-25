@@ -22,7 +22,7 @@ import {
   replaceModComponent,
   selectExtensionPointIntegrations,
 } from "@/pageEditor/panes/save/saveHelpers";
-import { validateRegistryId, validateSemVerString } from "@/types/helpers";
+import { validateRegistryId, normalizeSemVerString } from "@/types/helpers";
 import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
 import {
   internalStarterBrickMetaFactory,
@@ -190,7 +190,7 @@ describe("replaceModComponent round trip", () => {
       metadata: {
         id: makeInternalId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
-        version: validateSemVerString("1.0.0"),
+        version: normalizeSemVerString("1.0.0"),
       },
     } as any);
 
@@ -240,7 +240,7 @@ describe("replaceModComponent round trip", () => {
       metadata: {
         id: makeInternalId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
-        version: validateSemVerString("1.0.0"),
+        version: normalizeSemVerString("1.0.0"),
       },
     } as any);
 
@@ -300,7 +300,7 @@ describe("replaceModComponent round trip", () => {
       metadata: {
         id: makeInternalId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
-        version: validateSemVerString("1.0.0"),
+        version: normalizeSemVerString("1.0.0"),
       },
     } as any);
 

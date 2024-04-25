@@ -18,7 +18,7 @@
 import { type MigrationManifest, type PersistedState } from "redux-persist";
 import { type Except } from "type-fest";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
-import { isEmpty, mapValues, omit } from "lodash";
+import { mapValues, omit } from "lodash";
 import {
   type BaseFormStateV1,
   type BaseFormStateV2,
@@ -55,9 +55,9 @@ export const migrations: MigrationManifest = {
 };
 
 export function migrateIntegrationDependenciesV1toV2(
-  services: IntegrationDependencyV1[],
+  services?: IntegrationDependencyV1[],
 ): IntegrationDependencyV2[] {
-  if (isEmpty(services)) {
+  if (!services) {
     return [];
   }
 

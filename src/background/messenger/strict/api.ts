@@ -26,6 +26,8 @@ import type { RemoteResponse } from "@/types/contract";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 
+export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
+
 export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL", bg);
 export const waitForContentScript = getMethod("WAIT_FOR_CONTENT_SCRIPT", bg);
 
