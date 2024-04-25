@@ -60,15 +60,13 @@ test.describe("sidebar controller", () => {
 
     const frame = page.frameLocator("iframe");
 
-    // Mod waits 5 seconds before running Show Sidebar brick to ensure the user gesture dialog is shown
+    // Mod waits 7.5 seconds before running Show Sidebar brick to ensure the user gesture dialog is shown
     await frame.getByRole("link", { name: "Show Sidebar after Wait" }).click();
     // eslint-disable-next-line playwright/no-wait-for-timeout -- match wait in the mod
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(8000);
 
-    // FIXME: https://github.com/pixiebrix/pixiebrix-extension/pull/8299/files#r1574832956. In Playwright, the
-    //  the focus dialog is not shown at all, despite the timeout in the mod.
     // Focus dialog should be visible in the top-level frame
-    // await expect(page.getByRole("button", { name: "OK" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "OK" })).toBeVisible();
 
     // The focus dialog should not be shown in the iframe. Check after checking the top-level frame
     // because it's a positive check for the dialog being shown.
