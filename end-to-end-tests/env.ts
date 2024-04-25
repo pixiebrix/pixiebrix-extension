@@ -76,5 +76,4 @@ export const {
   MV = "3",
   SLOWMO,
   PWDEBUG,
-  REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST,
 } = process.env as OptionalEnvVariables;
