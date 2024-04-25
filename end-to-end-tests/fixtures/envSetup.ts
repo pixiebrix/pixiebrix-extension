@@ -20,7 +20,7 @@ import { assertRequiredEnvVariables } from "../env";
 
 export const test = base.extend<{
   additionalRequiredEnvVariables: string[];
-  expectRequiredEnvVariables: () => void;
+  expectRequiredEnvVariables: void;
 }>({
   additionalRequiredEnvVariables: [],
   expectRequiredEnvVariables: [
@@ -35,9 +35,7 @@ export const test = base.extend<{
         }
       }
 
-      // A call to `use` is required to continue the test, but the resolved value isn't used for anything in our case.
-      // Typescript requires that we have it match the type of expectRequiredEnvVariables.
-      await use(() => {});
+      await use();
     },
     { auto: true },
   ],
