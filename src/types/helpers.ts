@@ -151,6 +151,12 @@ export function validateTimestamp(value: string): Timestamp {
   throw new TypeError("Invalid timestamp");
 }
 
+/**
+ * @param value The string to normalize
+ * @param allowLeadingV If `true`, a leading `v` is allowed. This results in a semver string that is not actually valid
+ * @param coerce If `true`, the string will be coerced to a valid semver string. See https://www.npmjs.com/package/semver#coercion
+ * @returns A normalized semver string
+ */
 export function normalizeSemVerString(
   value: string,
   // Default to `false` to be stricter.
