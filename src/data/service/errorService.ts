@@ -77,7 +77,7 @@ export async function selectExtraContext(
 ): Promise<UnknownObject & { extensionVersion: SemVerString }> {
   const { version, manifest_version: manifestVersion } =
     browser.runtime.getManifest();
-  const extensionVersion = validateSemVerString(version);
+  const extensionVersion = validateSemVerString(version, { coerce: true });
   const extraContext: UnknownObject & { extensionVersion: SemVerString } = {
     extensionVersion,
     manifestVersion,

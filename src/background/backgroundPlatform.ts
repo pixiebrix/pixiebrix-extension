@@ -42,7 +42,9 @@ class BackgroundPlatform extends PlatformBase {
   constructor() {
     super(
       "background",
-      validateSemVerString(browser.runtime.getManifest().version),
+      validateSemVerString(browser.runtime.getManifest().version, {
+        coerce: true,
+      }),
     );
   }
 

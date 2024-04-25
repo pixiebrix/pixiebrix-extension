@@ -58,7 +58,9 @@ class ExtensionPagePlatform extends PlatformBase {
   constructor() {
     super(
       "extension",
-      validateSemVerString(browser.runtime.getManifest().version),
+      validateSemVerString(browser.runtime.getManifest().version, {
+        coerce: true,
+      }),
     );
   }
 

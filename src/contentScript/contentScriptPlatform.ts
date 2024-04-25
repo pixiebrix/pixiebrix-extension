@@ -93,7 +93,9 @@ class ContentScriptPlatform extends PlatformBase {
   constructor() {
     super(
       "contentScript",
-      validateSemVerString(browser.runtime.getManifest().version),
+      validateSemVerString(browser.runtime.getManifest().version, {
+        coerce: true,
+      }),
     );
   }
 

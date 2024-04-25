@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { valid as semVerValid } from "semver";
+import { valid as semVerValid, coerce as semVerCoerce } from "semver";
 import { startsWith } from "lodash";
 
 import {
@@ -154,7 +154,10 @@ export function validateTimestamp(value: string): Timestamp {
 export function validateSemVerString(
   value: string,
   // Default to `false` to be stricter.
-  { allowLeadingV = false }: { allowLeadingV?: boolean } = {},
+  {
+    allowLeadingV = false,
+    coerce = false,
+  }: { allowLeadingV?: boolean; coerce?: boolean } = {},
 ): SemVerString {
   if (value == null) {
     // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
@@ -162,7 +165,16 @@ export function validateSemVerString(
     return value as SemVerString;
   }
 
-  if (testIsSemVerString(value, { allowLeadingV })) {
+  if (testIsSemVerString(value, { allowLeadingV, coerce })) {
+    if (coerce) {
+      const coerced = semVerValid(semVerCoerce(value));
+      if (value.startsWith("v")) {
+        return `v${coerced}` as SemVerString;
+      }
+
+      return coerced as SemVerString;
+    }
+
     return value;
   }
 
@@ -175,9 +187,14 @@ export function testIsSemVerString(
   value: string,
   // FIXME: the SemVerString type wasn't intended to support a leading `v`. See documentation
   // Default to `false` to be stricter.
-  { allowLeadingV = false }: { allowLeadingV?: boolean } = {},
+  {
+    allowLeadingV = false,
+    coerce = false,
+  }: { allowLeadingV?: boolean; coerce?: boolean } = {},
 ): value is SemVerString {
-  if (semVerValid(value) != null) {
+  const _value = coerce ? semVerCoerce(value) : value;
+
+  if (semVerValid(_value) != null) {
     return allowLeadingV || !startsWith(value, "v");
   }
 

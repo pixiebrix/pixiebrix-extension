@@ -35,7 +35,8 @@ browser.runtime.onMessage.addListener = jest.fn();
 
 browser.runtime.id = "mpjjildTESTIDkfjnepo";
 browser.runtime.getManifest = jest.fn().mockReturnValue({
-  version: "1.5.2",
+  // Validate that 4-digit version numbers are supported
+  version: "1.5.2.3000",
 });
 
 browser.runtime.getURL = (path) => `chrome-extension://abcxyz/${path}`;
