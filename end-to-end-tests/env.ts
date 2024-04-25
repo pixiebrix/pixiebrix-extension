@@ -46,7 +46,7 @@ type OptionalEnvVariables = Record<
   string | undefined
 >;
 
-export const ensureRequiredEnvVariables = () => {
+export const assertRequiredEnvVariables = () => {
   for (const key of requiredEnvVariables) {
     // eslint-disable-next-line security/detect-object-injection -- key is a constant
     if (process.env[key] === undefined) {

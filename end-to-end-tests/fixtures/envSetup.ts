@@ -16,7 +16,7 @@
  */
 
 import { test as base } from "@playwright/test";
-import { ensureRequiredEnvVariables } from "../env";
+import { assertRequiredEnvVariables } from "../env";
 
 export const test = base.extend<{
   additionalRequiredEnvVariables: string[];
@@ -25,7 +25,7 @@ export const test = base.extend<{
   additionalRequiredEnvVariables: [],
   expectRequiredEnvVariables: [
     async ({ additionalRequiredEnvVariables }, use) => {
-      ensureRequiredEnvVariables();
+      assertRequiredEnvVariables();
 
       for (const key of additionalRequiredEnvVariables) {
         if (process.env[key] === undefined) {
