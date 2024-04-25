@@ -105,9 +105,11 @@ export async function openInstallPage() {
   // Case 3: there's no Admin Console onboarding tab open
 
   if (appOnboardingTab) {
-    const appOnboardingTabUrl = new URL(appOnboardingTab.url ?? "");
+    const appOnboardingTabUrl = appOnboardingTab?.url
+      ? new URL(appOnboardingTab.url)
+      : null;
 
-    if (appOnboardingTabUrl.pathname === "/start") {
+    if (appOnboardingTabUrl?.pathname === "/start") {
       // Case 1a/1b: Admin Console is showing a partner onboarding flow
 
       const controlRoomHostname =

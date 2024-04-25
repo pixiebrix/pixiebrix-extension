@@ -38,7 +38,7 @@ export default async function selectElement({
   root?: string;
   excludeRandomClasses?: boolean;
 }): Promise<ElementInfo> {
-  const rootElements = $safeFind(root ?? "").get();
+  const rootElements = root ? $safeFind(root).get() : [];
 
   if (root && rootElements.length === 0) {
     throw new NoElementsFoundError(root);
