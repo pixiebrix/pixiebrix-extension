@@ -217,6 +217,15 @@ const sidebarSlice = createSlice({
 
       fixActiveTabOnRemove(state, entry);
     },
+    markTemporaryPanelsAsUnavailable(state) {
+      for (const form of state.forms) {
+        form.isUnavailable = true;
+      }
+
+      for (const temporaryPanel of state.temporaryPanels) {
+        temporaryPanel.isUnavailable = true;
+      }
+    },
     updateTemporaryPanel(
       state,
       action: PayloadAction<{ panel: TemporaryPanelEntry }>,

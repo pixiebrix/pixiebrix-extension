@@ -111,6 +111,12 @@ type BasePanelEntry = {
    * The panel type.
    */
   type: EntryType;
+
+  /**
+   * Determines if the panel cannot be displayed for the current tab. Used
+   * to show an overlay over the panel to indicate it is unavailable.
+   */
+  isUnavailable?: boolean;
 };
 
 /**

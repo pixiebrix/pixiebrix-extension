@@ -63,6 +63,7 @@ import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
+import UnavailableOverlay from "@/sidebar/UnavailableOverlay";
 
 const ActivateModPanel = lazy(
   async () =>
@@ -350,6 +351,7 @@ const Tabs: React.FC = () => {
                   });
                 }}
               >
+                {form.isUnavailable && <UnavailableOverlay />}
                 <FormBody form={form} />
               </ErrorBoundary>
             </Tab.Pane>

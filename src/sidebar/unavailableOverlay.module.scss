@@ -1,0 +1,57 @@
+/*!
+ * Copyright (C) 2024 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.unavailable-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  backdrop-filter: blur(2.5px);
+  pointer-events: all;
+}
+
+.modal-dialog {
+  margin: 23px;
+  padding: 16px;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid #cfcbd6;
+  > div {
+    border: 0;
+  }
+}
+
+.modal-header {
+  display: block;
+  padding-bottom: 0;
+  background: white;
+  border: 0;
+}
+
+.modal-body {
+  background: white;
+  border: 0;
+}
+
+.modal-button {
+  border-radius: 4px;
+}
