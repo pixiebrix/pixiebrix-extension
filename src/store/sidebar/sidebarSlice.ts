@@ -45,6 +45,7 @@ import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel";
 import { initialSidebarState } from "@/store/sidebar/initialState";
+import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
 
 function eventKeyExists(
   state: SidebarState,
@@ -343,6 +344,14 @@ const sidebarSlice = createSlice({
 
           state.forms = castDraft(forms);
           state.activeKey = eventKeyForEntry(newForm);
+        }
+      })
+      .addCase(removeFormPanel.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { removedEntry, forms } = action.payload;
+
+          state.forms = castDraft(forms);
+          fixActiveTabOnRemove(state, removedEntry);
         }
       })
       .addCase(addTemporaryPanel.fulfilled, (state, action) => {

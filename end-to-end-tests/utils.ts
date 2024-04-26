@@ -68,11 +68,13 @@ export async function ensureVisibility(
 }
 
 // Run a mod via the Quickbar.
-// NOTE: Page needs to be focused before running this function, e.g. by clicking on the page.
-// TODO: Fix the page-focus precondition by generalizing the page-focusing logic to be page-agnostic
 export async function runModViaQuickBar(page: Page, modName: string) {
+  await waitForQuickBarReadiness(page);
+  await page.locator("html").focus(); // Ensure the page is focused before running the keyboard shortcut
   await page.keyboard.press("Meta+M"); // MacOS
   await page.keyboard.press("Control+M"); // Windows and Linux
+  // Short delay to allow the quickbar to finish loading - TODO: Find a better way to detect when the quickbar is done loading opening
+  await page.waitForTimeout(500);
   await page.getByRole("option", { name: modName }).click();
 }
 
@@ -158,6 +160,16 @@ export async function waitForSelectionMenuReadiness(page: Page) {
     const pbReady = await page
       .locator("html")
       .getAttribute("data-pb-selection-menu-ready");
+    expect(pbReady).toBeTruthy();
+  }).toPass({ timeout: 5000 });
+}
+
+// Waits for the quick bar to be ready to use
+export async function waitForQuickBarReadiness(page: Page) {
+  await expect(async () => {
+    const pbReady = await page
+      .locator("html")
+      .getAttribute("data-pb-quick-bar-ready");
     expect(pbReady).toBeTruthy();
   }).toPass({ timeout: 5000 });
 }

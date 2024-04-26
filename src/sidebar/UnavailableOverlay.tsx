@@ -20,23 +20,22 @@ import styles from "./unavailableOverlay.module.scss";
 import cx from "classnames";
 import { Button, Modal } from "react-bootstrap";
 
-const UnavailableOverlay = () => (
-  <div className={styles["unavailable-overlay"]}>
-    <div
-      className={cx("modal show position-static w-auto h-auto")}
-      style={{ display: "block", marginTop: "10vh" }}
-    >
-      <Modal.Dialog
-        size={"sm"}
-        className={cx(styles["modal-dialog"], "shadow text-center")}
-      >
-        <Modal.Header className={styles["modal-header"]}>
-          <strong>Panel not available on this page</strong>
+const UnavailableOverlay = ({ onClose }: { onClose: () => void }) => (
+  <div className={styles.unavailableOverlay}>
+    <div className="modal">
+      <Modal.Dialog size={"sm"} className={cx(styles.modalDialog, "shadow")}>
+        <Modal.Header className={styles.modalHeader}>
+          <strong>Panel no longer available</strong>
         </Modal.Header>
 
-        <Modal.Body className={styles["modal-body"]}>
+        <Modal.Body className={styles.modalBody}>
           <p>The browser navigated away from the page</p>
-          <Button variant="primary" className={styles["modal-button"]}>
+          <Button
+            onClick={onClose}
+            variant="primary"
+            size="sm"
+            aria-label="Close the unavailable panel"
+          >
             Close
           </Button>
         </Modal.Body>

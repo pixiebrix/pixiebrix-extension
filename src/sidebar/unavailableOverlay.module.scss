@@ -15,21 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.unavailable-overlay {
+.unavailableOverlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.5);
-  display: flex;
   justify-content: center;
   align-items: flex-start;
   backdrop-filter: blur(2.5px);
   pointer-events: all;
+  z-index: 1; // ensure overlay is on top of the sidebar panel content
+  > div {
+    display: block;
+    margin-top: 10vh;
+  }
 }
 
-.modal-dialog {
+.modalDialog {
+  text-align: center;
   margin: 23px;
   padding: 16px;
   border-radius: 12px;
@@ -40,18 +45,14 @@
   }
 }
 
-.modal-header {
+.modalHeader {
   display: block;
   padding-bottom: 0;
   background: white;
   border: 0;
 }
 
-.modal-body {
+.modalBody {
   background: white;
   border: 0;
-}
-
-.modal-button {
-  border-radius: 4px;
 }

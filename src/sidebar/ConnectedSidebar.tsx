@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   addListener,
   removeListener,
@@ -104,19 +104,28 @@ const ConnectedSidebar: React.VFC = () => {
   const listener = useConnectedListener();
   const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
 
-  const navigationListener = useCallback(
-    (details: OnBeforeNavigateDetailsType) => {
+  // Listen for navigation events to mark temporary panels as unavailable.
+  // Not used in MV2 because the sidebar closes automatically on navigation.
+  useEffect(() => {
+    const navigationListenerMV3 = (details: OnBeforeNavigateDetailsType) => {
       const { frameId, tabId } = details;
-      if (isMV3()) {
-        const connectedTabId = getConnectedTabIdMv3();
-        if (tabId === connectedTabId && frameId === 0) {
-          console.log("navigationListener:connectedTabId", connectedTabId);
-          dispatch(sidebarSlice.actions.markTemporaryPanelsAsUnavailable());
-        }
+      const connectedTabId = getConnectedTabIdMv3();
+      if (tabId === connectedTabId && frameId === 0) {
+        console.log("navigationListener:connectedTabId", connectedTabId);
+        dispatch(sidebarSlice.actions.markTemporaryPanelsAsUnavailable());
       }
-    },
-    [dispatch],
-  );
+    };
+
+    if (isMV3()) {
+      browser.webNavigation.onBeforeNavigate.addListener(navigationListenerMV3);
+    }
+
+    return () => {
+      browser.webNavigation.onBeforeNavigate.removeListener(
+        navigationListenerMV3,
+      );
+    };
+  }, [dispatch]);
 
   // `useAsyncEffect` will run once on component mount since listeners and formsRef don't change on renders.
   // We could instead consider moving the initial panel logic to SidebarApp.tsx and pass the entries as the
@@ -152,13 +161,10 @@ const ConnectedSidebar: React.VFC = () => {
     // To avoid races with panel registration, listen after reserving the initial panels.
     addListener(listener);
 
-    browser.webNavigation.onBeforeNavigate.addListener(navigationListener);
-
     return () => {
       // NOTE: we don't need to cancel any outstanding forms on unmount because the FormTransformer is set up to watch
       // for PANEL_HIDING_EVENT. (and the only time this SidebarApp would unmount is if the sidebar was closing)
       removeListener(listener);
-      browser.webNavigation.onBeforeNavigate.removeListener(navigationListener);
     };
     // Excluding showModLauncher from deps. The flags detect shouldn't change after initial mount. And if they somehow do,
     // we don't want to attempt to change mod launcher panel visibility after initial mount.

@@ -18,11 +18,11 @@
 import { test, expect } from "../../fixtures/extensionBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { Page, test as base } from "@playwright/test";
+import { type Page, test as base } from "@playwright/test";
 import { getSidebarPage, runModViaQuickBar } from "../../utils";
 import { MV, SERVICE_URL } from "../../env";
 
-test("sidebar is persistent during navigation", async ({
+test("sidebar mod panels are persistent during navigation", async ({
   page,
   extensionId,
 }) => {
@@ -38,8 +38,6 @@ test("sidebar is persistent during navigation", async ({
 
   await page.goto("/");
 
-  // Ensure the page is focused by clicking on an element before running the keyboard shortcut, see runModViaQuickbar
-  await page.getByText("Index of  /").click();
   await runModViaQuickBar(page, "Open Sidebar");
 
   const sideBarPage = (await getSidebarPage(page, extensionId)) as Page; // MV3 sidebar is a separate page
@@ -107,4 +105,133 @@ test("sidebar is persistent during navigation", async ({
   await expect(() => {
     expect(sideBarPageClosed).toBe(true);
   }).toPass({ timeout: 5000 });
+});
+
+const navigationMethods: Array<{
+  name: string;
+  navigationMethod: (page: Page) => Promise<void>;
+}> = [
+  {
+    name: "refresh",
+    async navigationMethod(page: Page) {
+      await page.reload();
+    },
+  },
+  {
+    name: "back button",
+    async navigationMethod(page: Page) {
+      await page.goBack();
+      await page.goBack();
+    },
+  },
+  {
+    name: "goto new page",
+    async navigationMethod(page: Page) {
+      await page.goto(SERVICE_URL);
+    },
+  },
+];
+
+async function checkUnavailibilityForNavigationMethod(
+  page: Page,
+  extensionId: string,
+  navigationMethod: (page: Page) => Promise<void>,
+) {
+  await page.goto("/advanced-fields");
+  await runModViaQuickBar(page, "Open form");
+
+  const sideBarPage = (await getSidebarPage(page, extensionId)) as Page; // MV3 sidebar is a separate page
+  // Set up close listener for sidebar page
+  let sideBarPageClosed = false;
+  sideBarPage.on("close", () => {
+    sideBarPageClosed = true;
+  });
+
+  await expect(
+    sideBarPage
+      .frameLocator("iframe")
+      .getByRole("heading", { name: "Example Form" }),
+  ).toBeVisible();
+  await expect(
+    sideBarPage.getByRole("tab", { name: "Example form" }),
+  ).toBeVisible();
+
+  await runModViaQuickBar(page, "Open temp panel");
+  await expect(
+    sideBarPage.getByRole("heading", { name: "Example document" }),
+  ).toBeVisible();
+  await expect(
+    sideBarPage.getByRole("tab", { name: "Example info" }),
+  ).toBeVisible();
+
+  // Click on "contentEditable" header, which updates the url to .../#contenteditable
+  await page.getByRole("link", { name: "contentEditable" }).click();
+  expect(page.url()).toEqual(
+    "https://pbx.vercel.app/advanced-fields/#contenteditable",
+  );
+  // Should not cause the temporary panel to become unavailable
+  await expect(
+    sideBarPage
+      .getByLabel("Example Info")
+      .getByText("Panel no longer available"),
+  ).toBeHidden();
+
+  await navigationMethod(page);
+
+  await expect(
+    sideBarPage
+      .getByLabel("Example Info")
+      .getByText("Panel no longer available"),
+  ).toBeVisible();
+  await sideBarPage
+    .getByLabel("Example Info")
+    .getByLabel("Close the unavailable panel")
+    .click();
+  await expect(
+    sideBarPage.getByRole("tab", { name: "Example info" }),
+  ).toBeHidden();
+
+  // The unavailable overlay is still displayed for the form panel
+  await expect(
+    sideBarPage
+      .getByLabel("Example form")
+      .getByText("Panel no longer available"),
+  ).toBeVisible();
+  await sideBarPage
+    .getByLabel("Example form")
+    .getByLabel("Close the unavailable panel")
+    .click();
+
+  // Closing the last panel should close the sidebar
+  await expect(() => {
+    expect(sideBarPageClosed).toBe(true);
+  }).toPass({ timeout: 5000 });
+}
+
+test("sidebar form and temporary panels are unavailable after navigation", async ({
+  page,
+  extensionId,
+}) => {
+  test.skip(MV === "2", "Navigation is not supported for MV2 sidebar");
+  // This mod has two quickbar actions for opening a temporary panel and a form panel in the sidebar.
+  const modId = "@e2e-testing/temp-panel-unavailable-on-navigation";
+
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.goto();
+
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
+  // Prime the browser history with an initial navigation
+  await page.goto(SERVICE_URL);
+
+  for (const { navigationMethod, name } of navigationMethods) {
+    // eslint-disable-next-line no-await-in-loop -- check each navigation method sequentially
+    await test.step(`Checking navigation method: ${name}`, async () => {
+      await checkUnavailibilityForNavigationMethod(
+        page,
+        extensionId,
+        navigationMethod,
+      );
+    });
+  }
 });

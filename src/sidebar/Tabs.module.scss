@@ -24,6 +24,7 @@
 
 .tabContainer {
   flex-wrap: nowrap;
+  // Position relative is needed so that the blur overlay only covers the panel content area, and does not cover the whole sidebar (including the tabs and logo).
   position: relative;
 }
 
