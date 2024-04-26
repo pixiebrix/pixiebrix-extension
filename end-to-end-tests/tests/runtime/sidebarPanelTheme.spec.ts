@@ -17,6 +17,7 @@
 
 import { test } from "../../fixtures/extensionBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
+import { runModViaQuickBar } from "../../utils";
 
 test("custom sidebar theme css file is applied to all levels of sidebar document", async ({
   page,
@@ -28,4 +29,12 @@ test("custom sidebar theme css file is applied to all levels of sidebar document
   await modActivationPage.goto();
 
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
+  await page.goto("/");
+
+  // Ensure the page is focused by clicking on an element before running the keyboard shortcut, see runModViaQuickbar
+  await page.getByText("Index of  /").click();
+  await runModViaQuickBar(page, "Show Sidebar");
+
+  await page.pause();
 });
