@@ -16,7 +16,7 @@
  */
 
 import { expect, type Page } from "@playwright/test";
-import { test } from "./fixtures/authSetupFixture";
+import { test } from "./fixtures/authSetup";
 import {
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,

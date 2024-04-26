@@ -499,7 +499,7 @@ export type InferSelectorArgs = {
   /**
    * The root to generate the selector with respect to.
    */
-  root: HTMLElement;
+  root: HTMLElement | null;
   /**
    * True to exclude class names that appear to be randomly generated.
    */

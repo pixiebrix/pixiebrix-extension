@@ -36,7 +36,7 @@ import SelectWidget, {
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
 import useAsyncState from "@/hooks/useAsyncState";
-import { getAttributeExamples } from "@/contentScript/messenger/api";
+import { getAttributeExamples } from "@/contentScript/messenger/strict/api";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type AttributeExample } from "@/contentScript/pageEditor/types";
 import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";

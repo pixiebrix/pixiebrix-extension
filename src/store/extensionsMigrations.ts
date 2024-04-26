@@ -117,4 +117,6 @@ export function inferModComponentStateVersion(
   if (isModComponentStateV0(state)) {
     return 0;
   }
+
+  throw new Error("Unknown ModComponentState version", { cause: state });
 }
