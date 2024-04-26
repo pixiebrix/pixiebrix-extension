@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`customizeManifest beta 1`] = `
+exports[`customizeManifest release builds beta 1`] = `
 {
   "action": {
     "default_icon": {
@@ -124,6 +124,8 @@ exports[`customizeManifest beta 1`] = `
   "storage": {
     "managed_schema": "managedStorageSchema.json",
   },
+  "version": "1.8.13.3000",
+  "version_name": "1.8.13",
   "web_accessible_resources": [
     {
       "matches": [
@@ -149,7 +151,7 @@ exports[`customizeManifest beta 1`] = `
 }
 `;
 
-exports[`customizeManifest mv2 1`] = `
+exports[`customizeManifest release builds mv2 1`] = `
 {
   "author": "PixieBrix, Inc.",
   "background": {
@@ -264,6 +266,8 @@ exports[`customizeManifest mv2 1`] = `
   "storage": {
     "managed_schema": "managedStorageSchema.json",
   },
+  "version": "1.8.13.3000",
+  "version_name": "1.8.13",
   "web_accessible_resources": [
     "css/*",
     "bundles/*",
@@ -282,7 +286,7 @@ exports[`customizeManifest mv2 1`] = `
 }
 `;
 
-exports[`customizeManifest mv3 1`] = `
+exports[`customizeManifest release builds mv3 1`] = `
 {
   "action": {
     "default_icon": {
@@ -406,6 +410,8 @@ exports[`customizeManifest mv3 1`] = `
   "storage": {
     "managed_schema": "managedStorageSchema.json",
   },
+  "version": "1.8.13.3000",
+  "version_name": "1.8.13",
   "web_accessible_resources": [
     {
       "matches": [

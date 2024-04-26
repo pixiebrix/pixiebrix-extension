@@ -15,21 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../../fixtures/extensionBase";
-// @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
-import { PageEditorPage } from "../../pageObjects/pageEditorPage";
+import { assertRequiredEnvVariables } from "../env";
 
-test.describe("page editor smoke test", () => {
-  test("can open the page editor and connect to an open tab", async ({
-    context,
-    page,
-    extensionId,
-  }) => {
-    await page.goto("/bootstrap-5");
+export const test = base.extend<{
+  additionalRequiredEnvVariables: string[];
+  expectRequiredEnvVariables: void;
+}>({
+  additionalRequiredEnvVariables: [],
+  expectRequiredEnvVariables: [
+    async ({ additionalRequiredEnvVariables }, use) => {
+      assertRequiredEnvVariables();
 
-    const pageEditorPage = new PageEditorPage(context, page.url(), extensionId);
-    await pageEditorPage.goto();
-    await expect(pageEditorPage.getTemplateGalleryButton()).toBeVisible();
-  });
+      for (const key of additionalRequiredEnvVariables) {
+        if (process.env[key] === undefined) {
+          throw new Error(
+            `This test requires additional environment variable ${key} to be configured. Configure it in your .env.development file and re-build the extension.`,
+          );
+        }
+      }
+
+      await use();
+    },
+    { auto: true },
+  ],
 });

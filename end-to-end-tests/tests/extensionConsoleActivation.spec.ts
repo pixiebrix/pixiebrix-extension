@@ -22,6 +22,8 @@ import { test as base } from "@playwright/test";
 import { getSidebarPage, runModViaQuickBar } from "../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
+import { type Serializable } from "playwright-core/types/structs";
+import { MV } from "../env";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -50,19 +52,19 @@ test("can activate a mod with built-in integration", async ({
   extensionId,
   context,
 }) => {
+  test.skip(MV === "2", "Service worker request mocking only available in MV3");
+
   const modId = "@pixies/giphy/giphy-search";
 
+  let giphyRequestPostData: Serializable;
   // The giphy search request is proxied through the PixieBrix server, which is kicked off in the background/service
   // worker. Playwright experimentally supports mocking service worker requests, see
   // https://playwright.dev/docs/service-workers-experimental#routing-service-worker-requests-only
   await context.route("https://app.pixiebrix.com/api/proxy/", async (route) => {
     if (route.request().serviceWorker()) {
       // Ensure the mod was properly activated with the built-in integration configuration
-      expect(route.request().postDataJSON()).toMatchObject({
-        url: "https://api.giphy.com/v1/gifs/search",
-        auth_id: expect.stringMatching(VALID_UUID_REGEX),
-        service_id: "@pixies/giphy/giphy-service",
-      });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Serializable is any
+      giphyRequestPostData = route.request().postDataJSON();
 
       return route.fulfill({
         path: path.join(__dirname, "../fixtures/responses/giphy-search.json"),
@@ -98,4 +100,9 @@ test("can activate a mod with built-in integration", async ({
   await expect(
     sidebarPage.getByRole("heading", { name: 'GIPHY Results for "kitten"' }),
   ).toBeVisible();
+  expect(giphyRequestPostData).toMatchObject({
+    url: "https://api.giphy.com/v1/gifs/search",
+    auth_id: expect.stringMatching(VALID_UUID_REGEX),
+    service_id: "@pixies/giphy/giphy-service",
+  });
 });

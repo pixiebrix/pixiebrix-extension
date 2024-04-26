@@ -86,7 +86,7 @@ test("sidebar mod panels are persistent during navigation", async ({
   // Sidebar 1 tab is hidden since it is not enabled in this page.
   await expect(
     sideBarPage.getByRole("tab", { name: "Test sidebar 1" }),
-  ).not.toBeVisible();
+  ).toBeHidden();
   await expect(
     sideBarPage.getByRole("tab", { name: "Test sidebar 2" }),
   ).toBeVisible();

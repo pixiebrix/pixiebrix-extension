@@ -28,7 +28,7 @@ import {
   ensureContextMenu,
   preloadContextMenus,
   uninstallContextMenu,
-} from "@/background/contextMenus"; // 213 strictNullCheck errors
+} from "@/background/contextMenus"; // 205 strictNullCheck errors
 import {
   requestRunInAllFrames,
   requestRunInOtherTabs,
@@ -36,9 +36,8 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor"; // Depends on contentScript/messenger to pass strictNullCheck
-import { getAvailableVersion } from "@/background/installer"; // 196 strictNullCheck errors
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 213 strictNullCheck errors
-import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 219 strictNullCheck errors
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 207 strictNullCheck errors
+import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 211 strictNullCheck errors
 import {
   collectPerformanceDiagnostics,
   initTelemetry,
@@ -53,7 +52,6 @@ expectContext("background");
 
 declare global {
   interface MessengerMethods {
-    GET_AVAILABLE_VERSION: typeof getAvailableVersion;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
@@ -84,8 +82,6 @@ export default function registerMessenger(): void {
     SET_PARTNER_COPILOT_DATA: setCopilotProcessData,
 
     INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
-
-    GET_AVAILABLE_VERSION: getAvailableVersion,
 
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,

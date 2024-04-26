@@ -26,7 +26,7 @@ import * as Yup from "yup";
 import {
   PACKAGE_REGEX,
   testIsSemVerString,
-  validateSemVerString,
+  normalizeSemVerString,
 } from "@/types/helpers";
 import { pick } from "lodash";
 import Form from "@/components/form/Form";
@@ -136,7 +136,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
     () => ({
       blueprintId: generatePackageId(scope, extension.label),
       name: extension.label,
-      version: validateSemVerString("1.0.0"),
+      version: normalizeSemVerString("1.0.0"),
       description: "Created with the PixieBrix Page Editor",
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- initial values for the form, we calculate them once

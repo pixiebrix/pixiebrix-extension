@@ -15,11 +15,13 @@ One-time setup:
     - The test user password `E2E_TEST_USER_PASSWORD_UNAFFILIATED`
     - Uncomment `REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1`
     - Uncomment `SHADOW_DOM=open`
+    - Uncomment `DATADOG_CLIENT_TOKEN` (used for telemetry tests, can be set to a fake token, e.g. `secret123`)
+    - Uncomment `DEV_EVENT_TELEMETRY` (used for telemetry tests, actual telemetry requests should be mocked during testing)
   - `MV` will determine the manifest version for the both the extension and the tests (defaulted to 3 if not defined.)
 - Install browsers: Execute `npx playwright install chromium chrome msedge`.
 
 1. Install dependencies: Run `npm install`
-2. Build the extension: Run: `npm run build:webpack` (or `npm run watch`)
+2. Build the extension: Run: `npm run watch`
 3. Run the tests: Use the command `npm run test:e2e`.
 
 - To run tests in interactive UI mode, use `npm run test:e2e -- --ui`. This view shows you the entire test suite and
@@ -42,9 +44,8 @@ Adhere to these principles, based on the [Playwright Best Practices](https://pla
 
 - Utilize `test` from `extensionBase.ts` for test environment setup and extension interaction.
 - Employ page objects from `./end-to-end-tests/pageObjects` for web page interactions.
-- Ensure tests are self-contained, handling their own setup and cleanup.
-  Leverage [Playwright fixtures](https://playwright.dev/docs/test-fixtures) for shared code.
-- Rely on Playwright's auto-waiting feature for actions like clicking or typing.
+- Ensure tests are self-contained, leveraging [Playwright fixtures](https://playwright.dev/docs/test-fixtures) for shared setup/teardown.
+- Use the [recommended built-in locator methods](https://playwright.dev/docs/locators#quick-guide) that have auto-waiting and retry features.
 
 When testing mod functionality, use our testing playground website, https://pbx.vercel.app, for a consistent
 environment. It is configured
