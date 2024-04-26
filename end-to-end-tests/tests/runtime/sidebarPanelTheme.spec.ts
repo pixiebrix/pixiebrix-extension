@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test } from "../../fixtures/extensionBase";
+import { test, expect } from "../../fixtures/extensionBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
-import { runModViaQuickBar } from "../../utils";
+import { getSidebarPage, runModViaQuickBar } from "../../utils";
+import type { Page } from "@playwright/test";
 
 test("custom sidebar theme css file is applied to all levels of sidebar document", async ({
   page,
@@ -36,5 +37,15 @@ test("custom sidebar theme css file is applied to all levels of sidebar document
   await page.getByText("Index of  /").click();
   await runModViaQuickBar(page, "Show Sidebar");
 
-  await page.pause();
+  const sidebarPage = (await getSidebarPage(page, extensionId)) as Page;
+  await expect(
+    sidebarPage.getByText("#8347: Theme Inheritance", { exact: true }),
+  ).toBeVisible();
+
+  const green = "rgb(0, 128, 0)";
+  (await sidebarPage.getByText("This should be green").all()).map(
+    async (element) => {
+      await expect(element).toHaveCSS("color", green);
+    },
+  );
 });
