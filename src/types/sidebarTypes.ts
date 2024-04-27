@@ -114,7 +114,10 @@ type BasePanelEntry = {
 
   /**
    * Determines if the panel cannot be displayed for the current tab. Used
-   * to show an overlay over the panel to indicate it is unavailable.
+   * to show an overlay over the panel to indicate it is unavailable. Added this
+   * field to account for MV3 side panel that persists across page navigation
+   *
+   * @since 1.8.14
    */
   isUnavailable?: boolean;
 };

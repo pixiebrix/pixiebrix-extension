@@ -45,7 +45,11 @@ const removeFormPanel = createAsyncThunk<
     return;
   }
 
-  await closeForms([nonce]);
+  // Trigger form close for the mod only if it's not already unavailable,
+  // since forms won't exist on the form controller after the page navigation
+  if (!removedEntry.isUnavailable) {
+    await closeForms([nonce]);
+  }
 
   return {
     removedEntry,
