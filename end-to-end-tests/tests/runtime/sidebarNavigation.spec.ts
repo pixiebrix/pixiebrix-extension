@@ -166,7 +166,7 @@ async function checkUnavailibilityForNavigationMethod(
 
   // Click on "contentEditable" header, which updates the url to .../#contenteditable
   await page.getByRole("link", { name: "contentEditable" }).click();
-  expect(page.url()).toEqual(
+  expect(page.url()).toBe(
     "https://pbx.vercel.app/advanced-fields/#contenteditable",
   );
   // Should not cause the temporary panel to become unavailable

@@ -154,6 +154,14 @@ module.exports = {
             allowConditional: true,
           },
         ],
+        "playwright/no-wait-for-timeout": "error",
+        "playwright/no-useless-not": "error",
+        "playwright/expect-expect": [
+          "error",
+          { assertFunctionNames: ["checkUnavailibilityForNavigationMethod"] },
+        ],
+        "playwright/no-conditional-in-test": "error",
+        "playwright/no-conditional-expect": "error",
         "playwright/no-commented-out-tests": "error",
         "playwright/no-hooks": "error", // Use fixtures instead to share common setup / teardown code
         "playwright/no-get-by-title": "error",
