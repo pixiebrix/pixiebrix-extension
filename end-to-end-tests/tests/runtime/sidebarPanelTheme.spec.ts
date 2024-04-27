@@ -43,9 +43,12 @@ test("custom sidebar theme css file is applied to all levels of sidebar document
   ).toBeVisible();
 
   const green = "rgb(0, 128, 0)";
-  (await sidebarPage.getByText("This should be green").all()).map(
-    async (element) => {
-      await expect(element).toHaveCSS("color", green);
-    },
+  const elementsThatShouldBeGreen = await sidebarPage
+    .getByText("This should be green")
+    .all();
+  await Promise.all(
+    elementsThatShouldBeGreen.map(async (element) =>
+      expect(element).toHaveCSS("color", green),
+    ),
   );
 });
