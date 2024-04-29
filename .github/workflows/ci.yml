@@ -240,5 +240,6 @@ jobs:
           retention-days: 5
       - uses: daun/playwright-report-summary@v3
         with:
+          comment-title: "Playwright test results - MV${{matrix.MV}}"
           report-file: end-to-end-tests/.report/report.json
           report-tag: manifest-version-${{ matrix.MV }}
