@@ -105,12 +105,12 @@ describe("SidebarApp", () => {
       },
     );
 
-    await waitForEffect();
-
     // The navigation listener should not be added for MV2
     expect(
       browser.webNavigation.onBeforeNavigate.addListener,
     ).not.toHaveBeenCalled();
+
+    await waitForEffect();
 
     expect(asFragment()).toMatchSnapshot();
   });
@@ -132,8 +132,6 @@ describe("SidebarApp", () => {
           },
         },
       );
-
-      await waitForEffect();
 
       // The navigation listener should be added for MV3
       expect(

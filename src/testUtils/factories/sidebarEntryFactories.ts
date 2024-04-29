@@ -38,13 +38,11 @@ const activateModPanelEntryFactory = define<ModActivationPanelEntry>({
     },
   ],
   heading: (n: number) => `Activate Mods Test ${n}`,
-  isUnavailable: false,
 });
 const staticPanelEntryFactory = define<StaticPanelEntry>({
   type: "staticPanel",
   heading: (n: number) => `Static Panel ${n}`,
   key: (n: number) => `static-panel-${n}`,
-  isUnavailable: false,
 });
 const formDefinitionFactory = define<FormDefinition>({
   schema: () => ({
@@ -62,7 +60,6 @@ export const formEntryFactory = define<FormPanelEntry>({
     validateRegistryId(`@test/form-panel-recipe-test-${n}`),
   nonce: uuidSequence,
   form: formDefinitionFactory,
-  isUnavailable: false,
 });
 const temporaryPanelEntryFactory = define<TemporaryPanelEntry>({
   type: "temporaryPanel",
@@ -71,7 +68,6 @@ const temporaryPanelEntryFactory = define<TemporaryPanelEntry>({
   heading: (n: number) => `Temporary Panel Test ${n}`,
   payload: null,
   nonce: uuidSequence,
-  isUnavailable: false,
 });
 const panelEntryFactory = define<PanelEntry>({
   type: "panel",
@@ -82,7 +78,6 @@ const panelEntryFactory = define<PanelEntry>({
   payload: null,
   extensionPointId: (n: number) =>
     validateRegistryId(`@test/panel-extension-point-test-${n}`),
-  isUnavailable: false,
 });
 
 export function sidebarEntryFactory<T = PanelEntry>(

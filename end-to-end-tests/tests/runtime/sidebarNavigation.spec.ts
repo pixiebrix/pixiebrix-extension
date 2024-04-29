@@ -132,6 +132,7 @@ const navigationMethods: Array<{
   },
 ];
 
+// Helper method for checking that the sidebar panels are unavailable after a navigation method
 async function checkUnavailibilityForNavigationMethod(
   page: Page,
   extensionId: string,
