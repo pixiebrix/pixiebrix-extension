@@ -41,7 +41,6 @@ test.describe("forms flickering due to components unexpectedly unmounting/remoun
 
     await page.goto("/bootstrap-5");
 
-    await page.getByRole("heading", { name: "PixieBrix" }).click();
     await runModViaQuickBar(page, "Open Sidebar");
 
     const sideBarPage = await getSidebarPage(page, extensionId);

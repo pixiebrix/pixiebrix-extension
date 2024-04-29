@@ -32,7 +32,6 @@ test.describe("sidebar effect bricks", () => {
     await page.goto("/");
 
     // Ensure the page is focused by clicking on an element before running the keyboard shortcut, see runModViaQuickbar
-    await page.getByText("Index of  /").click();
     await runModViaQuickBar(page, "Toggle Sidebar");
 
     // Will error if page/frame not available

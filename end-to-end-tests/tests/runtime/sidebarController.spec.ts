@@ -70,7 +70,7 @@ test.describe("sidebar controller", () => {
 
     // The focus dialog should not be shown in the iframe. Check after checking the top-level frame
     // because it's a positive check for the dialog being shown.
-    await expect(frame.getByRole("button", { name: "OK" })).not.toBeVisible();
+    await expect(frame.getByRole("button", { name: "OK" })).toBeHidden();
 
     // Will error if page/frame not available
     await getSidebarPage(page, extensionId);

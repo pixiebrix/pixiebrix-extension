@@ -17,9 +17,9 @@
 
 import { define, type FactoryConfig } from "cooky-cutter";
 import {
-  type ModActivationPanelEntry,
   type EntryType,
   type FormPanelEntry,
+  type ModActivationPanelEntry,
   type PanelEntry,
   type SidebarEntry,
   type StaticPanelEntry,
