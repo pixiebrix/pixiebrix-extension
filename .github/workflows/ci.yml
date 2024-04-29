@@ -240,7 +240,7 @@ jobs:
           retention-days: 5
       - uses: daun/playwright-report-summary@v3
         with:
-          report-file: end-to-end-tests/.report/results.json
+          report-file: end-to-end-tests/.report/report.json
   # Analyzer for checking for inclusive terminology in code. For more information, see
   # https://github.com/microsoft/InclusivenessAnalyzer
   Inclusiveness-Analyser-scan:
