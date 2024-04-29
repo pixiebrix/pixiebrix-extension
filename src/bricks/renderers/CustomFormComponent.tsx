@@ -34,6 +34,7 @@ import DescriptionField from "@/components/formBuilder/DescriptionField";
 import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { cloneDeep } from "lodash";
+import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
 
 const FIELDS = {
   DescriptionField,
@@ -65,6 +66,7 @@ export type CustomFormComponentProps = {
   resetOnSubmit?: boolean;
   className?: string;
   stylesheets?: string[];
+  disableParentStyles?: boolean;
 };
 
 const CustomFormComponent: React.FunctionComponent<
@@ -78,7 +80,8 @@ const CustomFormComponent: React.FunctionComponent<
   className,
   onSubmit,
   resetOnSubmit = false,
-  stylesheets,
+  disableParentStyles = false,
+  stylesheets: newStylesheets,
 }) => {
   // Use useRef instead of useState because we don't need/want a re-render when count changes
   // This ref is used to track the onSubmit run number for runtime tracing
@@ -98,6 +101,11 @@ const CustomFormComponent: React.FunctionComponent<
     valuesRef.current = formData;
     setKey((prev) => prev + 1);
   };
+
+  const { stylesheets } = useStylesheetsContextWithFormDefault({
+    newStylesheets,
+    disableParentStyles,
+  });
 
   const submitData = async (data: UnknownObject): Promise<void> => {
     submissionCountRef.current += 1;

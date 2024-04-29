@@ -32,6 +32,7 @@ import DescriptionField from "@/components/formBuilder/DescriptionField";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import { Stylesheets } from "@/components/Stylesheets";
+import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
 
 export const fields = {
   DescriptionField,
@@ -55,8 +56,21 @@ const EphemeralFormContent: React.FC<EphemeralFormContentProps> = ({
   nonce,
   isModal,
 }) => {
-  const { schema, uiSchema, cancelable, submitCaption, stylesheets } =
-    definition;
+  const {
+    schema,
+    uiSchema,
+    cancelable,
+    submitCaption,
+    stylesheets: newStylesheets,
+    disableParentStyles,
+  } = definition;
+
+  // Ephemeral form can never be nested, but we use this to pull in
+  // the (boostrap) base themes
+  const { stylesheets } = useStylesheetsContextWithFormDefault({
+    newStylesheets,
+    disableParentStyles: disableParentStyles ?? false,
+  });
 
   return (
     <Stylesheets href={stylesheets}>
