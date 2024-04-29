@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import ListView from "@/extensionConsole/pages/mods/listView/ListView"; // Cycle
-import GridView from "@/extensionConsole/pages/mods/gridView/GridView"; // Cycle
+import ListView from "@/extensionConsole/pages/mods/listView/ListView";
+import GridView from "@/extensionConsole/pages/mods/gridView/GridView";
 import { useSelector } from "react-redux";
 import {
   selectActiveTab,
