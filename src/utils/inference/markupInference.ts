@@ -158,7 +158,8 @@ function setCommonAttributes(common: Element, items: Element[]) {
 function ignoreDivChildNode(node: Node): boolean {
   return (
     NON_RENDERED_NODES.includes(node.nodeType) ||
-    (node.nodeType === Node.TEXT_NODE && node.textContent?.trim() === "")
+    (node.nodeType === Node.TEXT_NODE &&
+      (node.textContent == null || node.textContent.trim() === ""))
   );
 }
 
@@ -351,7 +352,7 @@ function commonPanelStructure(
     }
   }
 
-  if (inHeader && !headingInserted && proto && hasTextNodeChild(proto)) {
+  if (inHeader && !headingInserted && hasTextNodeChild(proto)) {
     common.append("{{{ heading }}}");
     headingInserted = true;
   }
