@@ -243,3 +243,4 @@ jobs:
           comment-title: "Playwright test results - MV${{matrix.MV}}"
           report-file: end-to-end-tests/.report/report.json
           report-tag: manifest-version-${{ matrix.MV }}
+        if: github.event_name == 'pull_request'
