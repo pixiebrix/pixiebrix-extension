@@ -69,7 +69,7 @@ const EphemeralFormContent: React.FC<EphemeralFormContentProps> = ({
   // the (boostrap) base themes
   const { stylesheets } = useStylesheetsContextWithFormDefault({
     newStylesheets,
-    disableParentStyles,
+    disableParentStyles: disableParentStyles ?? false,
   });
 
   return (
