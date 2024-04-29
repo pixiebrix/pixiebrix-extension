@@ -5,6 +5,13 @@ import { type Page, test as base } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
 import { MV } from "../../env";
 
+test.use({
+  additionalRequiredEnvVariables: [
+    "DATADOG_CLIENT_TOKEN",
+    "DEV_EVENT_TELEMETRY",
+  ],
+});
+
 test("can report application error to telemetry service", async ({
   page,
   context,

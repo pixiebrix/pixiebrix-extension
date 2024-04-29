@@ -34,7 +34,7 @@ import {
   isInnerDefinitionRegistryId,
   uuidv4,
   validateRegistryId,
-  validateSemVerString,
+  normalizeSemVerString,
 } from "@/types/helpers";
 import {
   type BrickPipeline,
@@ -316,7 +316,7 @@ export function baseSelectExtensionPoint(
       id: metadata.id,
       // The server requires the version to save the brick, even though it's not marked as required
       // in the front-end schemas
-      version: metadata.version ?? validateSemVerString("1.0.0"),
+      version: metadata.version ?? normalizeSemVerString("1.0.0"),
       name: metadata.name,
       // The server requires the description to save the brick, even though it's not marked as required
       // in the front-end schemas

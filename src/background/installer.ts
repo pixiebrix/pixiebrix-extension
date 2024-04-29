@@ -36,7 +36,10 @@ import {
 import { Events } from "@/telemetry/events";
 import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
-import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import {
+  getExtensionConsoleUrl,
+  getExtensionVersion,
+} from "@/utils/extensionUtils";
 import { oncePerSession } from "@/mv3/SessionStorage";
 import { resetFeatureFlagsCache } from "@/auth/featureFlagStorage";
 
@@ -102,9 +105,11 @@ export async function openInstallPage() {
   // Case 3: there's no Admin Console onboarding tab open
 
   if (appOnboardingTab) {
-    const appOnboardingTabUrl = new URL(appOnboardingTab.url ?? "");
+    const appOnboardingTabUrl = appOnboardingTab?.url
+      ? new URL(appOnboardingTab.url)
+      : null;
 
-    if (appOnboardingTabUrl.pathname === "/start") {
+    if (appOnboardingTabUrl?.pathname === "/start") {
       // Case 1a/1b: Admin Console is showing a partner onboarding flow
 
       const controlRoomHostname =
@@ -223,7 +228,7 @@ export async function showInstallPage({
   // https://developer.chrome.com/docs/extensions/reference/runtime/#event-onInstalled
   // https://developer.chrome.com/docs/extensions/reference/runtime/#type-OnInstalledReason
   console.debug("onInstalled", { reason, previousVersion });
-  const { version } = browser.runtime.getManifest();
+  const version = getExtensionVersion();
 
   if (reason === "install") {
     void recordEvent({
@@ -314,7 +319,7 @@ export function isUpdateAvailable(): boolean {
     return false;
   }
 
-  const installed = browser.runtime.getManifest().version;
+  const installed = getExtensionVersion();
   return installed !== available && gt(available, installed);
 }
 

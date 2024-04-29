@@ -26,7 +26,7 @@ import {
 } from "./pipelineTestHelpers";
 
 import { fromJS } from "@/bricks/transformers/brickFactory";
-import { validateSemVerString } from "@/types/helpers";
+import { normalizeSemVerString } from "@/types/helpers";
 import { TEST_setContext } from "webext-detect-page";
 import { toExpression } from "@/utils/expressionUtils";
 
@@ -43,7 +43,7 @@ const componentBlock = fromJS(blockRegistry, {
   metadata: {
     id: "test/component",
     name: "Component Brick",
-    version: validateSemVerString("1.0.0"),
+    version: normalizeSemVerString("1.0.0"),
     description: "Component block using v1 runtime",
   },
   inputSchema: {

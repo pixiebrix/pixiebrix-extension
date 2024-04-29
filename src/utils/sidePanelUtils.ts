@@ -24,6 +24,13 @@ import { type PageTarget, messenger, getThisFrame } from "webext-messenger";
 import { isContentScript } from "webext-detect-page";
 import { showSidebar } from "@/contentScript/messenger/strict/api";
 
+/**
+ * Returns true if an error showing sidebar is due to a missing user gesture.
+ */
+export function isUserGestureRequiredError(error: unknown): boolean {
+  return getErrorMessage(error).includes("user gesture");
+}
+
 export async function openSidePanel(tabId: number): Promise<void> {
   if (isBrowserSidebar()) {
     console.warn(
@@ -60,10 +67,7 @@ async function openSidePanelMv3(tabId: number): Promise<void> {
     // it's still part of a user gesture.
     // If it's not, it will throw an error *even if the side panel is already open*.
     // The following code silences that error iff the side panel is already open.
-    if (
-      getErrorMessage(error).includes("user gesture") &&
-      (await isSidePanelOpen(tabId))
-    ) {
+    if (isUserGestureRequiredError(error) && (await isSidePanelOpen(tabId))) {
       // The `openSidePanel` call was not required in the first place, the error can be silenced
       // TODO: After switching to MV3, verify whether we drop that `openSidePanel` call
       return;

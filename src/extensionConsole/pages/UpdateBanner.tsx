@@ -22,13 +22,14 @@ import reportError from "@/telemetry/reportError";
 import Banner from "@/components/banner/Banner";
 import { gt } from "semver";
 import useAsyncState from "@/hooks/useAsyncState";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 // XXX: move this kind of async state to the Redux state.
 export function useUpdateAvailable(): boolean {
   const { data: updateAvailable } = useAsyncState(async () => {
     try {
       const available = await getAvailableVersion();
-      const installed = browser.runtime.getManifest().version;
+      const installed = getExtensionVersion();
       return available && installed !== available && gt(available, installed);
     } catch (error) {
       reportError(error);

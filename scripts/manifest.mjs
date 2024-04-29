@@ -19,10 +19,11 @@ import Policy from "csp-parse";
 import { normalizeManifestPermissions } from "webext-permissions";
 import { excludeDuplicatePatterns } from "webext-patterns";
 
-function getVersion(env, isBetaListing) {
+function getVersion(env) {
   const stageMap = {
     alpha: 1000,
     beta: 2000,
+    release: 3000,
   };
 
   // `manifest.json` only supports numbers in the version, so use the semver
@@ -32,19 +33,16 @@ function getVersion(env, isBetaListing) {
     );
   const { version, stage, stageNumber } = match.groups;
 
-  // Add 4th digit for alpha/beta release builds. Used to update the extension BETA listing in the Chrome Web Store.
-  if (isBetaListing) {
-    if (stage && stageNumber) {
-      // Ex: 1.8.13-alpha.1 -> 1.8.13.1001
-      // Ex: 1.8.13-beta.55 -> 1.8.13.2055
-      return `${version}.${stageMap[stage] + Number(stageNumber)}`;
-    }
-
-    // Ex: 1.8.13.3000 -- Ensures that the release build version number is greater than the alpha/beta build version numbers
-    return `${version}.3000`;
+  // Add 4th digit for differentiating alpha/beta/stable release builds.
+  // Used primarily to update the extension BETA listing in the Chrome Web Store.
+  if (stage && stageNumber) {
+    // Ex: 1.8.13-alpha.1 -> 1.8.13.1001
+    // Ex: 1.8.13-beta.55 -> 1.8.13.2055
+    return `${version}.${stageMap[stage] + Number(stageNumber)}`;
   }
 
-  return version;
+  // Ex: 1.8.13.3000 -- Ensures that the release build version number is greater than the alpha/beta build version numbers
+  return `${version}.${stageMap.release}`;
 }
 
 function getVersionName(env, isProduction) {
@@ -146,7 +144,7 @@ function addInternalUrlsToContentScripts(manifest, internal) {
 function customizeManifest(manifestV2, options = {}) {
   const { isProduction, manifestVersion, env = {}, isBeta } = options;
   const manifest = structuredClone(manifestV2);
-  manifest.version = getVersion(env, isBeta);
+  manifest.version = getVersion(env);
   manifest.version_name = getVersionName(env, isProduction);
 
   if (!isProduction) {

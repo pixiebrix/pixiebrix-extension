@@ -4,9 +4,12 @@
     "strictNullChecks": true
   },
   "files": [
+    "./contentScript/pageEditor/selectElement.ts",
+    "./types/helpers.test.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/extensionBase.ts",
+    "../end-to-end-tests/fixtures/envSetup.ts",
     "../end-to-end-tests/pageObjects/constants.ts",
     "../end-to-end-tests/pageObjects/extensionConsole/localIntegrationsPage.ts",
     "../end-to-end-tests/pageObjects/extensionConsole/modsPage.ts",
@@ -75,7 +78,6 @@
     "./background/dataStore.ts",
     "./background/externalProtocol.ts",
     "./background/initTheme.ts",
-    "./background/installer",
     "./background/installer.ts",
     "./background/locator.ts",
     "./background/messenger/strict/api.ts",

@@ -38,7 +38,7 @@ export default async function selectElement({
   root?: string;
   excludeRandomClasses?: boolean;
 }): Promise<ElementInfo> {
-  const rootElements = $safeFind(root ?? "").get();
+  const rootElements = root ? $safeFind(root).get() : [];
 
   if (root && rootElements.length === 0) {
     throw new NoElementsFoundError(root);
@@ -90,6 +90,7 @@ export default async function selectElement({
         );
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- at least one element must be present
       const element = elements[0]!;
       // At least one must match, otherwise userSelectElement would have thrown
       activeRoot =
