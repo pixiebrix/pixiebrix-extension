@@ -38,12 +38,6 @@ export async function handleGoogleRequestRejection(
   error: unknown,
   googleAccount: Nullishable<SanitizedIntegrationConfig>,
 ): Promise<Error> {
-  // Request errors from proxyRequest are wrapped in ContextError which includes metadata about the integration
-  // configuration. Therefore, get root cause for determining if this is an Axios error
-  const rootCause = selectAxiosError(error);
-
-  console.log({ rootCause: JSON.stringify(rootCause, null, 2) });
-
   console.debug("Error making Google request", {
     error,
   });
@@ -55,12 +49,16 @@ export async function handleGoogleRequestRejection(
     });
   }
 
-  if (!isAxiosError(rootCause) || rootCause.response == null) {
+  // Request errors from proxyRequest are wrapped in ContextError which includes metadata about the integration
+  // configuration. Therefore, get axios error if it exists.
+  const axiosError = selectAxiosError(error);
+
+  if (axiosError.response == null) {
     // It should always be an error-like object at this point, but be defensive.
     return selectError(error);
   }
 
-  const { status } = rootCause.response;
+  const { status } = axiosError.response;
 
   if ([403, 404].includes(status)) {
     const message =
