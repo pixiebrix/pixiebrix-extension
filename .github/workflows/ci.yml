@@ -241,4 +241,5 @@ jobs:
           comment-title: "Playwright test results - MV${{matrix.MV}}"
           report-file: end-to-end-tests/.report/report.json
           report-tag: manifest-version-${{ matrix.MV }}
+          report-url: https://github.com/pixiebrix/pixiebrix-extension/actions/runs/${{ github.run_id }}
         if: (success() || failure()) && github.event_name == 'pull_request'
