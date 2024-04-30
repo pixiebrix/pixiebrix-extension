@@ -32,7 +32,7 @@ import ListGroupHeader from "@/extensionConsole/pages/mods/listView/ListGroupHea
 import { uuidv4 } from "@/types/helpers";
 import { getUniqueId } from "@/utils/modUtils";
 import GridCardErrorBoundary from "@/extensionConsole/pages/mods/gridView/GridCardErrorBoundary";
-import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/ModsPageContent";
+import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/modsPageTypes";
 
 /**
  *  Expands `react-table` rows recursively in chunks of

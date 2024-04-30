@@ -36,6 +36,7 @@ jest.mock("@/auth/authStorage", () => ({
 }));
 
 jest.mock("@/utils/extensionUtils", () => ({
+  ...jest.requireActual("@/utils/extensionUtils"),
   forEachTab: jest.fn(),
 }));
 

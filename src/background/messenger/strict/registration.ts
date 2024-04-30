@@ -56,6 +56,14 @@ import {
   getPartnerPrincipals,
   launchAuthIntegration,
 } from "@/background/partnerIntegrations";
+import { getAvailableVersion } from "@/background/installer";
+import {
+  collectPerformanceDiagnostics,
+  initTelemetry,
+  pong,
+  recordEvent,
+  sendDeploymentAlert,
+} from "@/background/telemetry";
 
 expectContext("background");
 
@@ -107,6 +115,14 @@ declare global {
 
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
     LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
+
+    GET_AVAILABLE_VERSION: typeof getAvailableVersion;
+
+    PING: typeof pong;
+    COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
+    RECORD_EVENT: typeof recordEvent;
+    INIT_TELEMETRY: typeof initTelemetry;
+    SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
   }
 }
 
@@ -158,5 +174,13 @@ export default function registerMessenger(): void {
 
     GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
     LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
+
+    GET_AVAILABLE_VERSION: getAvailableVersion,
+
+    PING: pong,
+    COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
+    RECORD_EVENT: recordEvent,
+    INIT_TELEMETRY: initTelemetry,
+    SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
   });
 }

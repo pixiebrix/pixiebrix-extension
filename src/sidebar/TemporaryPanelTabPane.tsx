@@ -29,6 +29,8 @@ import { useDispatch } from "react-redux";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
+import UnavailableOverlay from "@/sidebar/UnavailableOverlay";
+import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 
 // Need to memoize this to make sure it doesn't rerender unless its entry actually changes
 // This was part of the fix for issue: https://github.com/pixiebrix/pixiebrix-extension/issues/5646
@@ -64,6 +66,11 @@ export const TemporaryPanelTabPane: React.FC<{
           });
         }}
       >
+        {panel.isUnavailable && (
+          <UnavailableOverlay
+            onClose={async () => dispatch(removeTemporaryPanel(panel.nonce))}
+          />
+        )}
         <PanelBody
           isRootPanel={false}
           payload={payload}

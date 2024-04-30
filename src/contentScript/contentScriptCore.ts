@@ -28,7 +28,7 @@ import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import brickRegistry from "@/bricks/registry";
 import { initNavigation } from "@/contentScript/lifecycle";
-import { initTelemetry } from "@/background/messenger/api";
+import { initTelemetry } from "@/background/messenger/strict/api";
 import { initToaster } from "@/utils/notify";
 import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
 import {

@@ -22,7 +22,7 @@ import { once } from "lodash";
 import { type TopLevelFrame, getTopLevelFrame } from "webext-messenger";
 import { getTabUrl } from "webext-tools";
 
-function getConnectedTabIdMv3(): number {
+export function getConnectedTabIdMv3(): number {
   expectContext("sidebar");
   const tabId = new URLSearchParams(window.location.search).get("tabId");
   assertNotNullish(

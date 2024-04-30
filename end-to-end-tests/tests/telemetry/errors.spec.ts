@@ -1,9 +1,43 @@
 import { test, expect } from "../../fixtures/extensionBase";
-import { type Request } from "playwright-core";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { type Page, test as base } from "@playwright/test";
+import { type BrowserContext, type Page, test as base } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
 import { MV } from "../../env";
+
+async function waitForBackgroundPageRequest(
+  context: BrowserContext,
+  extensionId: string,
+  errorServiceEndpoint: string,
+) {
+  if (MV === "3") {
+    // Due to service worker limitations with the Datadog SDK, we need to report errors via an offscreen document
+    // (see https://github.com/pixiebrix/pixiebrix-extension/issues/8268). The offscreen document is created when
+    // the first error is reported, so we need to wait for it to be created before we can interact with it.
+    let offscreenPage: Page | undefined;
+    await expect(async () => {
+      offscreenPage = context
+        .pages()
+        .find((value) =>
+          value
+            .url()
+            .startsWith(`chrome-extension://${extensionId}/offscreen.html`),
+        );
+
+      expect(offscreenPage?.url()).toBeDefined();
+    }).toPass({ timeout: 5000 });
+    return offscreenPage?.waitForRequest(errorServiceEndpoint);
+  }
+
+  const backgroundPage = context.backgroundPages()[0];
+  return backgroundPage?.waitForRequest(errorServiceEndpoint);
+}
+
+test.use({
+  additionalRequiredEnvVariables: [
+    "DATADOG_CLIENT_TOKEN",
+    "DEV_EVENT_TELEMETRY",
+  ],
+});
 
 test("can report application error to telemetry service", async ({
   page,
@@ -32,32 +66,14 @@ test("can report application error to telemetry service", async ({
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
   await expect(page.getByText("Something went wrong.")).toBeVisible();
 
-  let waitForRequest: Promise<Request> | undefined;
-  if (MV === "3") {
-    // Due to service worker limitations with the Datadog SDK, we need to report errors via an offscreen document
-    // (see https://github.com/pixiebrix/pixiebrix-extension/issues/8268). The offscreen document is created when
-    // the first error is reported, so we need to wait for it to be created before we can interact with it.
-    let offscreenPage: Page | undefined;
-    await expect(async () => {
-      offscreenPage = context
-        .pages()
-        .find((value) =>
-          value
-            .url()
-            .startsWith(`chrome-extension://${extensionId}/offscreen.html`),
-        );
-
-      expect(offscreenPage?.url()).toBeDefined();
-    }).toPass({ timeout: 5000 });
-    waitForRequest = offscreenPage?.waitForRequest(errorServiceEndpoint);
-  } else {
-    const backgroundPage = context.backgroundPages()[0];
-    waitForRequest = backgroundPage?.waitForRequest(errorServiceEndpoint);
-  }
-
   // TODO: due to Datadog SDK implementation, it will take ~30 seconds for the
   //  request to be sent. We should figure out a way to induce the request to be sent sooner.
-  const request = await waitForRequest;
+  const request = await waitForBackgroundPageRequest(
+    context,
+    extensionId,
+    errorServiceEndpoint,
+  );
+
   const errorLogsJson = request
     ?.postData()
     ?.split("\n")

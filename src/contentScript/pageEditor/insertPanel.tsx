@@ -36,6 +36,10 @@ export async function insertPanel(): Promise<PanelSelectionResult> {
   const { elements: selected } = await userSelectElement();
   const { container, selectors } = findContainer(selected);
 
+  if (!selectors[0]) {
+    throw new Error("No selector found for the panel");
+  }
+
   return {
     uuid: uuidv4(),
     panel: {

@@ -53,7 +53,7 @@ export function checkForCriticalViolations(
   }
 
   // Expectation only fails if there are any criticalViolations that aren't explicitly allowed
-  expect(unallowedViolations).toEqual([]);
+  expect(unallowedViolations).toStrictEqual([]);
 }
 
 // This function is a workaround for the fact that `expect(locator).toBeVisible()` will immediately fail if the element is hidden or unmounted.
@@ -68,11 +68,14 @@ export async function ensureVisibility(
 }
 
 // Run a mod via the Quickbar.
-// NOTE: Page needs to be focused before running this function, e.g. by clicking on the page.
-// TODO: Fix the page-focus precondition by generalizing the page-focusing logic to be page-agnostic
 export async function runModViaQuickBar(page: Page, modName: string) {
+  await waitForQuickBarReadiness(page);
+  await page.locator("html").focus(); // Ensure the page is focused before running the keyboard shortcut
   await page.keyboard.press("Meta+M"); // MacOS
   await page.keyboard.press("Control+M"); // Windows and Linux
+  // Short delay to allow the quickbar to finish opening
+  // eslint-disable-next-line playwright/no-wait-for-timeout -- TODO: Find a better way to detect when the quickbar is done loading opening
+  await page.waitForTimeout(500);
   await page.getByRole("option", { name: modName }).click();
 }
 
@@ -155,9 +158,26 @@ export async function getSidebarPage(
 // see: https://github.com/pixiebrix/pixiebrix-extension/blob/5693a4db1c4f3411910ef9cf6a60f5a20c132761/src/contentScript/textSelectionMenu/selectionMenuController.tsx#L336
 export async function waitForSelectionMenuReadiness(page: Page) {
   await expect(async () => {
-    const pbReady = await page
-      .locator("html")
-      .getAttribute("data-pb-selection-menu-ready");
-    expect(pbReady).toBeTruthy();
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-pb-selection-menu-ready",
+    );
   }).toPass({ timeout: 5000 });
+}
+
+// Waits for the quick bar to be ready to use
+async function waitForQuickBarReadiness(page: Page) {
+  await expect(async () => {
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-pb-quick-bar-ready",
+    );
+  }).toPass({ timeout: 5000 });
+}
+
+// Simulates mouse entering the sidebar to track focus on MV2
+// https://github.com/pixiebrix/pixiebrix-extension/blob/1794863937f343fbc8e3a4434eace74191f8dfbd/src/contentScript/sidebarController.tsx#L563-L563
+export async function conditionallyHoverOverMV2Sidebar(page: Page) {
+  if (MV === "2") {
+    const sidebarFrame = page.locator("#pixiebrix-extension");
+    await sidebarFrame.dispatchEvent("mouseenter");
+  }
 }

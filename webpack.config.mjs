@@ -203,7 +203,7 @@ const createConfig = (env, options) =>
         }),
 
       // Only notifies when watching. `zsh-notify` is suggested for the `build` script
-      options.watch &&
+      !isProd(options) &&
         process.env.DEV_NOTIFY !== "false" &&
         new WebpackBuildNotifierPlugin({
           title: "PB Extension",

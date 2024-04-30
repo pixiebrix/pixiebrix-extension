@@ -41,17 +41,25 @@ test.describe("forms flickering due to components unexpectedly unmounting/remoun
 
     await page.goto("/bootstrap-5");
 
-    await page.getByRole("heading", { name: "PixieBrix" }).click();
     await runModViaQuickBar(page, "Open Sidebar");
 
     const sideBarPage = await getSidebarPage(page, extensionId);
 
+    await expect(sideBarPage.getByTestId("container").nth(1)).toContainText(
+      "Welcome to the Snippet Manager!",
+    );
+
     const input = sideBarPage.getByPlaceholder("Search snippets");
     await input.click();
     // Add delay to give time for the the input to lose focus
-    await input.pressSequentially("abc", { delay: 100 });
+    await input.pressSequentially("lor", { delay: 100 });
 
     // Validate that the input value was set correctly
-    await expect(input).toHaveValue("abc");
+    await expect(input).toHaveValue("lor");
+
+    // Verify that the input value filtered the list
+    await expect(sideBarPage.getByTestId("container").nth(1)).toContainText(
+      "Lorem ipsum dolor sit amet, ",
+    );
   });
 });

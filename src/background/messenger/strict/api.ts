@@ -26,6 +26,8 @@ import type { RemoteResponse } from "@/types/contract";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 
+export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
+
 export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL", bg);
 export const waitForContentScript = getMethod("WAIT_FOR_CONTENT_SCRIPT", bg);
 
@@ -109,3 +111,15 @@ export const performConfiguredRequestInBackground = getMethod(
 
 export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
 export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
+
+export const ping = getMethod("PING", bg);
+export const collectPerformanceDiagnostics = getMethod(
+  "COLLECT_PERFORMANCE_DIAGNOSTICS",
+  bg,
+);
+
+// Use this instead: `import reportError from "@/telemetry/reportError"`
+// export const recordError = getNotifier("RECORD_ERROR", bg);
+
+export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
+export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);

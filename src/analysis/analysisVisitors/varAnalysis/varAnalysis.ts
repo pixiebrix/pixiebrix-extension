@@ -52,7 +52,6 @@ import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import { getOutputReference, isOutputKey } from "@/runtime/runtimeTypes";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -114,13 +113,9 @@ async function setIntegrationDependencyVars(
   { integrationDependencies = [] }: ModComponentFormState,
   contextVars: VarMap,
 ): Promise<void> {
-  // We don't want to make the pixiebrix api integration available as a variable
-  const nonPbDependencies = integrationDependencies.filter(
-    (dependency) => dependency.integrationId !== PIXIEBRIX_INTEGRATION_ID,
-  );
   // Loop through all the dependencies, so we can set the source for each dependency variable properly
   await Promise.all(
-    nonPbDependencies.map(async (integrationDependency) => {
+    integrationDependencies.map(async (integrationDependency) => {
       const serviceContext = await makeIntegrationsContextFromDependencies([
         integrationDependency,
       ]);

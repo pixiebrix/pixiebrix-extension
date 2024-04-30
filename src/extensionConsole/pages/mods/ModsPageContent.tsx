@@ -27,14 +27,8 @@ import OnboardingView from "@/extensionConsole/pages/mods/onboardingView/Onboard
 import EmptyView from "@/extensionConsole/pages/mods/emptyView/EmptyView";
 import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
 import useOnboarding from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
-import { type TableInstance } from "react-table";
-import { type ModViewItem } from "@/types/modTypes";
+import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/modsPageTypes";
 
-export type ModsPageContentProps = {
-  tableInstance: TableInstance<ModViewItem>;
-  width: number;
-  height: number;
-};
 const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
   tableInstance,
   width,

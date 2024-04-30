@@ -36,7 +36,7 @@ export async function insertButton(
     "./beautify"
   );
 
-  let selected;
+  let selected: HTMLElement[];
   if (useNewFilter) {
     const { elements } = await userSelectElement({
       filter: `:is(a, button):not(${PRIVATE_ATTRIBUTES_SELECTOR})`,
@@ -52,13 +52,19 @@ export async function insertButton(
     // if the parent is BUTTON, the user probably just selected the wrong thing
     if (
       selected.length === 1 &&
-      ["A", "BUTTON"].includes(selected[0].parentElement?.tagName)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check
+      ["A", "BUTTON"].includes(selected[0]!.parentElement?.tagName ?? "")
     ) {
-      selected = [selected[0].parentElement];
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- verified above
+      selected = [selected[0]!.parentElement!];
     }
   }
 
   const { container, selectors: containerSelectors } = findContainer(selected);
+
+  if (!containerSelectors[0]) {
+    throw new Error("No selector found for the button");
+  }
 
   console.debug("insertButton", { container, selected });
 
@@ -75,7 +81,6 @@ export async function insertButton(
         wrap_line_length: 80,
         wrap_attributes: "force",
       }),
-      shadowDOM: null,
       position: "append",
     },
     containerInfo: await pageScript.getElementInfo({

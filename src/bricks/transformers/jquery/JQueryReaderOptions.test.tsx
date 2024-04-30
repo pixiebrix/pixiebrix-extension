@@ -28,7 +28,7 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { getAttributeExamples } from "@/contentScript/messenger/api";
+import { getAttributeExamples } from "@/contentScript/messenger/strict/api";
 import { screen } from "@testing-library/react";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";

@@ -28,7 +28,7 @@ import {
   ensureContextMenu,
   preloadContextMenus,
   uninstallContextMenu,
-} from "@/background/contextMenus"; // 213 strictNullCheck errors
+} from "@/background/contextMenus"; // 201 strictNullCheck errors
 import {
   requestRunInAllFrames,
   requestRunInOtherTabs,
@@ -36,16 +36,8 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor"; // Depends on contentScript/messenger to pass strictNullCheck
-import { getAvailableVersion } from "@/background/installer"; // 196 strictNullCheck errors
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 213 strictNullCheck errors
-import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 219 strictNullCheck errors
-import {
-  collectPerformanceDiagnostics,
-  initTelemetry,
-  pong,
-  recordEvent,
-  sendDeploymentAlert,
-} from "@/background/telemetry"; // Depends on contentScript/messenger to pass strictNullCheck
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 203 strictNullCheck errors
+import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 209 strictNullCheck errors
 
 import { setCopilotProcessData } from "@/background/partnerHandlers"; // Depends on contentScript/messenger to pass strictNullCheck
 
@@ -53,7 +45,6 @@ expectContext("background");
 
 declare global {
   interface MessengerMethods {
-    GET_AVAILABLE_VERSION: typeof getAvailableVersion;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
@@ -62,9 +53,6 @@ declare global {
 
     INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
 
-    PING: typeof pong;
-    COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
-
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
 
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
@@ -72,10 +60,6 @@ declare global {
     REQUEST_RUN_IN_TOP: typeof requestRunInTop;
     REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInOtherTabs;
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
-
-    RECORD_EVENT: typeof recordEvent;
-    INIT_TELEMETRY: typeof initTelemetry;
-    SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
   }
 }
 
@@ -85,14 +69,9 @@ export default function registerMessenger(): void {
 
     INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
 
-    GET_AVAILABLE_VERSION: getAvailableVersion,
-
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
     ENSURE_CONTEXT_MENU: ensureContextMenu,
-
-    PING: pong,
-    COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
 
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
 
@@ -101,9 +80,5 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_TOP: requestRunInTop,
     REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
-
-    RECORD_EVENT: recordEvent,
-    INIT_TELEMETRY: initTelemetry,
-    SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
   });
 }
