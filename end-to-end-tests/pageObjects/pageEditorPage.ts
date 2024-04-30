@@ -47,4 +47,19 @@ export class PageEditorPage {
   getTemplateGalleryButton() {
     return this.page.getByRole("button", { name: "Launch Template Gallery" });
   }
+
+  async addStarterBrick(
+    starterBrickType: "Context Menu" | "Trigger" | "Button",
+  ) {
+    await this.page.getByText("Add").click();
+    await this.page
+      .locator("[role=button].dropdown-item", {
+        hasText: starterBrickType,
+      })
+      .click();
+  }
+
+  async fillInBrickField(fieldLabel: string, value: string) {
+    await this.page.getByLabel(fieldLabel).fill(value);
+  }
 }
