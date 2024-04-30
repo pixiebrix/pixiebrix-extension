@@ -15,13 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { connect, type FormikContextType, getIn, setIn } from "formik";
 import FieldTemplate, {
   type FieldProps,
 } from "@/components/form/FieldTemplate";
 import { useSelector } from "react-redux";
-import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 import type {
   FieldAnnotation,
   FieldAnnotationAction,
@@ -34,6 +33,7 @@ import {
 import { produce } from "immer";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { AnnotationType } from "@/types/annotationTypes";
+import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 
 type ConnectedFieldProps<Values> = FieldProps & {
   formik: FormikContextType<Values>;
@@ -77,8 +77,11 @@ function FormikFieldTemplate<Values>({
   const touched = Boolean(getIn(formik.touched, fieldProps.name));
   const error: unknown = getIn(formik.errors, fieldProps.name);
 
+  const { analysisAnnotationsSelectorForPath } = useContext(
+    AnalysisAnnotationsContext,
+  );
   const analysisAnnotations = useSelector(
-    selectAnnotationsForPath(fieldProps.name),
+    analysisAnnotationsSelectorForPath(fieldProps.name),
   );
 
   const annotations = useMemo<FieldAnnotation[]>(() => {

@@ -18,7 +18,7 @@
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import {
   selectActiveNodeInfo,
-  selectAnnotationsForPath,
+  selectActiveModComponentAnalysisAnnotationsForPath,
 } from "@/pageEditor/slices/editorSelectors";
 import React from "react";
 
@@ -28,7 +28,9 @@ const AnalysisResult: React.FunctionComponent<{ className?: string }> = ({
   className,
 }) => {
   const { path } = useSelector(selectActiveNodeInfo);
-  const annotations = useSelector(selectAnnotationsForPath(path));
+  const annotations = useSelector(
+    selectActiveModComponentAnalysisAnnotationsForPath(path),
+  );
   if (annotations.length === 0) {
     return null;
   }

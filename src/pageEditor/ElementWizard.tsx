@@ -35,6 +35,8 @@ import cx from "classnames";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
+import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -106,37 +108,44 @@ const ElementWizard: React.FunctionComponent<{
 
   return (
     <Tab.Container activeKey={step} key={element.uuid}>
-      <BootstrapForm
-        autoComplete="off"
-        noValidate
-        onReset={handleReset}
-        className={cx(styles.form, "full-height")}
+      <AnalysisAnnotationsContext.Provider
+        value={{
+          analysisAnnotationsSelectorForPath:
+            selectActiveModComponentAnalysisAnnotationsForPath,
+        }}
       >
-        <Nav
-          variant="pills"
-          activeKey={step}
-          onSelect={selectTabHandler}
-          className={styles.nav}
+        <BootstrapForm
+          autoComplete="off"
+          noValidate
+          onReset={handleReset}
+          className={cx(styles.form, "full-height")}
         >
-          {wizardSteps.map((step) => (
-            <WizardNavItem key={step.step} step={step} />
-          ))}
+          <Nav
+            variant="pills"
+            activeKey={step}
+            onSelect={selectTabHandler}
+            className={styles.nav}
+          >
+            {wizardSteps.map((step) => (
+              <WizardNavItem key={step.step} step={step} />
+            ))}
 
-          {/* spacer */}
-          <div className="flex-grow-1" />
+            {/* spacer */}
+            <div className="flex-grow-1" />
 
-          <PermissionsToolbar element={element} disabled={!isValid} />
+            <PermissionsToolbar element={element} disabled={!isValid} />
 
-          <ReloadToolbar element={element} />
-        </Nav>
+            <ReloadToolbar element={element} />
+          </Nav>
 
-        {status && <div className="text-danger">{status}</div>}
-        <Tab.Content className={styles.content}>
-          {wizardSteps.map(({ Component, step }) => (
-            <Component key={step} eventKey={step} />
-          ))}
-        </Tab.Content>
-      </BootstrapForm>
+          {status && <div className="text-danger">{status}</div>}
+          <Tab.Content className={styles.content}>
+            {wizardSteps.map(({ Component, step }) => (
+              <Component key={step} eventKey={step} />
+            ))}
+          </Tab.Content>
+        </BootstrapForm>
+      </AnalysisAnnotationsContext.Provider>
     </Tab.Container>
   );
 };
