@@ -107,9 +107,9 @@ exports[`customizeManifest release builds beta 1`] = `
     "webNavigation",
     "contextMenus",
     "alarms",
-    "offscreen",
     "devtools",
     "scripting",
+    "offscreen",
     "sidePanel",
   ],
   "sandbox": {
@@ -255,7 +255,6 @@ exports[`customizeManifest release builds mv2 1`] = `
     "contextMenus",
     "<all_urls>",
     "alarms",
-    "offscreen",
   ],
   "sandbox": {
     "pages": [
@@ -393,9 +392,9 @@ exports[`customizeManifest release builds mv3 1`] = `
     "webNavigation",
     "contextMenus",
     "alarms",
-    "offscreen",
     "devtools",
     "scripting",
+    "offscreen",
     "sidePanel",
   ],
   "sandbox": {
