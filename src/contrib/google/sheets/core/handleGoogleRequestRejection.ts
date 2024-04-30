@@ -57,7 +57,8 @@ export async function handleGoogleRequestRejection(
     return selectError(error);
   }
 
-  const { status } = axiosError.response;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- null check above
+  const { status } = axiosError.response!;
 
   if ([403, 404].includes(status)) {
     const message =
