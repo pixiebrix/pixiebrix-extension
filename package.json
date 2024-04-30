@@ -160,7 +160,7 @@
     "urlpattern-polyfill": "^5.0.3",
     "use-async-effect": "^2.2.7",
     "use-debounce": "^10.0.0",
-    "use-sync-external-store": "^1.2.0",
+    "use-sync-external-store": "^1.2.2",
     "uuid": "^9.0.1",
     "webext-content-scripts": "^2.6.1",
     "webext-detect-page": "^5.0.0",
