@@ -41,6 +41,8 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { useSelector } from "react-redux";
 import { makeFieldAnnotationsForValue } from "@/components/form/makeFieldAnnotationsForValue";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { AnnotationType } from "@/types/annotationTypes";
 
 /*
  *  This is a hack to fix the issue where the formik state is not updated correctly when the form is first rendered.
@@ -156,10 +158,11 @@ const BasicSchemaField: SchemaFieldComponent = ({
 
   const validate = getFieldValidator(validationSchema);
 
-  const [{ value, onBlur: formikOnBlur }] = useField<unknown>({
-    name,
-    validate,
-  });
+  const [{ value, onBlur: formikOnBlur }, { touched, error }] =
+    useField<unknown>({
+      name,
+      validate,
+    });
 
   useSetInitialValueForField({ name, isRequired, inputModeOptions });
 
@@ -196,6 +199,13 @@ const BasicSchemaField: SchemaFieldComponent = ({
     () => makeFieldAnnotationsForValue(analysisAnnotations, value, formik),
     [analysisAnnotations, formik, value],
   );
+  // Add formik error if present
+  if (touched && typeof error === "string" && !isNullOrBlank(error)) {
+    fieldAnnotations.push({
+      message: error,
+      type: AnnotationType.Error,
+    });
+  }
 
   if (isEmpty(inputModeOptions)) {
     return (

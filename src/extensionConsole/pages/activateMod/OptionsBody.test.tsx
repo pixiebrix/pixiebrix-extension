@@ -25,8 +25,6 @@ beforeAll(() => {
 });
 
 describe("Marketplace Activate Wizard OptionsBody", () => {
-  it("renders a text field", async () => {});
-
   test("renders text field", async () => {
     const { asFragment } = render(
       <OptionsBody
