@@ -29,6 +29,8 @@ import {
 } from "./utils";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 import { test as envSetup } from "./envSetup";
+import v8toIstanbul from "v8-to-istanbul";
+import { v4 } from "uuid";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // See https://github.com/microsoft/playwright/issues/26693
@@ -37,6 +39,16 @@ process.env.PW_CHROMIUM_ATTACH_TO_OTHER = "1";
 // service workers.
 // See https://playwright.dev/docs/service-workers-experimental
 process.env.PW_EXPERIMENTAL_SERVICE_WORKER_NETWORK_EVENTS = "1";
+
+const coverageDirectory = path.join(__dirname, "../.output/coverage");
+
+const collectCoverage = async (coverageJSON: string) => {
+  if (coverageJSON)
+    await fs.writeFile(
+      `${coverageDirectory}/playwright_coverage_${v4()}.json`,
+      coverageJSON,
+    );
+};
 
 export const test = mergeTests(
   envSetup,
@@ -83,6 +95,10 @@ export const test = mergeTests(
         recursive: true,
       });
 
+      await fs.mkdir(coverageDirectory, {
+        recursive: true,
+      });
+
       const context = await launchPersistentContextWithExtension(
         chromiumChannel,
         temporaryProfileDirectory,
@@ -94,12 +110,20 @@ export const test = mergeTests(
     async page({ context, extensionId }, use) {
       // Re-use the initial context page if it exists
       const page = context.pages()[0] || (await context.newPage());
+      await page.coverage.startJSCoverage();
 
       // Start off test from the extension console, and ensure it is done loading
       const modsPage = new ModsPage(page, extensionId);
       await modsPage.goto();
 
       await use(page);
+      const coverage = await page.coverage.stopJSCoverage();
+      for (const entry of coverage) {
+        const converter = v8toIstanbul("", 0, { source: entry.source });
+        await converter.load();
+        converter.applyCoverage(entry.functions);
+        await collectCoverage(JSON.stringify(converter.toIstanbul()));
+      }
       // The page is closed by the context fixture `.close` cleanup step
     },
     async extensionId({ context }, use) {
