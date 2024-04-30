@@ -25,6 +25,7 @@ import pDefer, { type DeferredPromise } from "p-defer";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { sleep } from "@/utils/timeUtils";
 import { render, screen } from "@/pageEditor/testHelpers";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 const id = "widget";
 const name = "widget";
@@ -122,16 +123,15 @@ describe("AsyncRemoteSelectWidget", () => {
   });
 
   test("handles error state", async () => {
-    const onChangeMock = jest.fn();
     const optionsFactoryMock = jest.fn().mockRejectedValue(new Error("Oh No!"));
 
     render(
-      <AsyncRemoteSelectWidget
-        id={id}
+      <ConnectedFieldTemplate
         name={name}
+        label="Test Field"
+        description="This is a test field for AsyncRemoteSelectWidget"
+        as={AsyncRemoteSelectWidget}
         optionsFactory={optionsFactoryMock}
-        onChange={onChangeMock}
-        value={null}
       />,
       {
         initialValues: { [name]: null },

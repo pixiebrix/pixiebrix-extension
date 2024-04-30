@@ -90,7 +90,7 @@ const BotOptionsContent: React.FunctionComponent<{
         workspaceTypeFieldValue={workspaceTypeFieldValue}
         controlRoomConfig={controlRoomConfig}
         optionsFactory={cachedSearchBots}
-        placeholder={"Type to search Bots..."}
+        placeholder="Type to search Bots..."
         extraFactoryArgs={botSelectFactoryArgs}
         loadingMessage={BotLoadingMessage}
         noOptionsMessage={BotNoOptionsMessage}
