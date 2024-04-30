@@ -46,7 +46,6 @@ export type FieldProps<
     widerLabel?: boolean;
     description?: ReactNode;
     annotations?: FieldAnnotation[];
-    touched?: boolean;
     onChange?:
       | React.ChangeEventHandler<T>
       | ((args: React.FormEvent<T>) => void)
@@ -89,7 +88,6 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   widerLabel,
   description,
   annotations,
-  touched,
   value,
   children,
   blankValue = "",

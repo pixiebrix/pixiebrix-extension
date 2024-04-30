@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render, screen } from "@testing-library/react";
 import selectEvent from "react-select-event";
 import React from "react";
 import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
@@ -25,6 +24,7 @@ import { act } from "react-dom/test-utils";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { sleep } from "@/utils/timeUtils";
+import { render, screen } from "@/pageEditor/testHelpers";
 
 const id = "widget";
 const name = "widget";
@@ -43,6 +43,9 @@ describe("AsyncRemoteSelectWidget", () => {
         defaultOptions
         value={null}
       />,
+      {
+        initialValues: { [name]: null },
+      },
     );
 
     await waitForEffect();
@@ -65,6 +68,9 @@ describe("AsyncRemoteSelectWidget", () => {
         defaultOptions
         value={null}
       />,
+      {
+        initialValues: { [name]: null },
+      },
     );
 
     await waitForEffect();
@@ -91,6 +97,9 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         value={null}
       />,
+      {
+        initialValues: { [name]: null },
+      },
     );
 
     await waitForEffect();
@@ -124,6 +133,9 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         value={null}
       />,
+      {
+        initialValues: { [name]: null },
+      },
     );
 
     await waitForEffect();
@@ -154,6 +166,9 @@ describe("AsyncRemoteSelectWidget", () => {
         defaultOptions
         value="test-value"
       />,
+      {
+        initialValues: { [name]: null },
+      },
     );
 
     await act(async () => {
@@ -187,6 +202,9 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         value={null}
       />,
+      {
+        initialValues: { [name]: null },
+      },
     );
 
     await waitForEffect();

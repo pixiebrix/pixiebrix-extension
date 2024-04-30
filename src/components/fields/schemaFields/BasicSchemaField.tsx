@@ -28,17 +28,16 @@ import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schema
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { useField } from "formik";
 import { isEmpty } from "lodash";
-import FieldTemplate from "@/components/form/FieldTemplate";
 import cx from "classnames";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { getToggleOptions } from "./getToggleOptions";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import useToggleFormField from "@/hooks/useToggleFormField";
 import { getFieldValidator } from "@/components/fields/fieldUtils";
-import useFieldAnnotations from "@/components/form/useFieldAnnotations";
 import { isExpression } from "@/utils/expressionUtils";
 import useAsyncEffect from "use-async-effect";
 import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
+import FieldTemplate from "@/components/form/FieldTemplate";
 
 /*
  *  This is a hack to fix the issue where the formik state is not updated correctly when the form is first rendered.
@@ -55,7 +54,7 @@ function useSetInitialValueForField({
   inputModeOptions: InputModeOption[];
 }) {
   const renderRef = useRef(false);
-  const [{ value }, , { setValue }] = useField(name);
+  const [{ value }, , { setValue }] = useField<unknown>(name);
 
   useEffect(() => {
     renderRef.current = true;
@@ -71,9 +70,10 @@ function useSetInitialValueForField({
     ) {
       await setValue(inputModeOptions[0].interpretValue(value));
     }
-    // We include setValue in the dependencies becuase sometimes the formik
+    // We include setValue in the dependencies because sometimes the formik
     // helpers reference (setValue) changes, so we need to account for that in the dependencies
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/2269
+    // XXX: Not sure if the above still applies in newer formik versions...
   }, [setValue, renderRef.current]);
 }
 
@@ -153,12 +153,10 @@ const BasicSchemaField: SchemaFieldComponent = ({
 
   const validate = getFieldValidator(validationSchema);
 
-  const [{ value, onBlur: formikOnBlur }, { touched }] = useField({
+  const [{ value, onBlur: formikOnBlur }] = useField<unknown>({
     name,
     validate,
   });
-
-  const annotations = useFieldAnnotations(name);
 
   useSetInitialValueForField({ name, isRequired, inputModeOptions });
 
@@ -168,47 +166,52 @@ const BasicSchemaField: SchemaFieldComponent = ({
     isRequired,
   );
 
+  const onBlur = useCallback(
+    (event: React.FocusEvent) => {
+      formikOnBlur(event);
+
+      if (
+        omitIfEmpty &&
+        (isEmpty(value) || (isExpression(value) && isEmpty(value.__value__)))
+      ) {
+        onOmitField();
+      }
+
+      onBlurProp?.(event);
+    },
+    [value, formikOnBlur, omitIfEmpty, onOmitField, onBlurProp],
+  );
+
   if (isEmpty(inputModeOptions)) {
     return (
       <FieldTemplate
         name={name}
         label={fieldLabel}
         description={fieldDescription}
-        annotations={annotations}
-        touched={touched}
         as={widgetsRegistry.UnsupportedWidget}
       />
     );
   }
 
-  const onBlur = (event: React.FocusEvent) => {
-    formikOnBlur(event);
-
-    if (
-      omitIfEmpty &&
-      (isEmpty(value) || (isExpression(value) && isEmpty(value.__value__)))
-    ) {
-      onOmitField();
-    }
-
-    onBlurProp?.(event);
-  };
+  // Extract overridden props so they don't conflict
+  const {
+    schema: unusedPropSchema,
+    description: unusedPropDescription,
+    label: unusedPropLabel,
+    ...restFieldTemplateProps
+  } = restProps;
 
   return (
     <FieldTemplate
-      name={name}
-      label={fieldLabel}
-      description={fieldDescription}
-      annotations={annotations}
-      touched={touched}
       className={cx({ "mb-0": hideLabel })} // Remove bottom margin if we're already hiding the label
       as={widgetsRegistry.TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
       setFieldDescription={updateFieldDescription}
       onBlur={onBlur}
-      {...restProps}
-      // Pass in schema after spreading props to override the non-normalized schema in props
       schema={normalizedSchema}
+      description={fieldDescription}
+      label={fieldLabel}
+      {...restFieldTemplateProps}
     />
   );
 };

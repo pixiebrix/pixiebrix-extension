@@ -27,7 +27,7 @@ import { type WizardStep } from "@/pageEditor/starterBricks/base";
 import PermissionsToolbar from "@/pageEditor/toolbar/PermissionsToolbar";
 import LogsTab, { LOGS_EVENT_KEY } from "@/pageEditor/tabs/logs/LogsTab";
 import EditTab from "@/pageEditor/tabs/editTab/EditTab";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { produce } from "immer";
 import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/pageEditor/starterBricks/upgrade";
@@ -35,8 +35,6 @@ import cx from "classnames";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { FormErrorContext } from "@/components/form/FormErrorContext";
-import { selectVariablePopoverVisible } from "@/pageEditor/slices/editorSelectors";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -66,8 +64,6 @@ const ElementWizard: React.FunctionComponent<{
   element: ModComponentFormState;
 }> = ({ element }) => {
   const [step, setStep] = useState(wizard[0].step);
-
-  const isVariablePopoverVisible = useSelector(selectVariablePopoverVisible);
 
   const { isValid, status, handleReset } =
     useFormikContext<ModComponentFormState>();
@@ -110,49 +106,37 @@ const ElementWizard: React.FunctionComponent<{
 
   return (
     <Tab.Container activeKey={step} key={element.uuid}>
-      <FormErrorContext.Provider
-        value={{
-          shouldUseAnalysis: true,
-          showUntouchedErrors: false,
-          showFieldActions: true,
-          // Hide variable/template annotations while the popover is open because the user is editing the field
-          ignoreAnalysisIds: isVariablePopoverVisible
-            ? ["var", "template"]
-            : [],
-        }}
+      <BootstrapForm
+        autoComplete="off"
+        noValidate
+        onReset={handleReset}
+        className={cx(styles.form, "full-height")}
       >
-        <BootstrapForm
-          autoComplete="off"
-          noValidate
-          onReset={handleReset}
-          className={cx(styles.form, "full-height")}
+        <Nav
+          variant="pills"
+          activeKey={step}
+          onSelect={selectTabHandler}
+          className={styles.nav}
         >
-          <Nav
-            variant="pills"
-            activeKey={step}
-            onSelect={selectTabHandler}
-            className={styles.nav}
-          >
-            {wizardSteps.map((step) => (
-              <WizardNavItem key={step.step} step={step} />
-            ))}
+          {wizardSteps.map((step) => (
+            <WizardNavItem key={step.step} step={step} />
+          ))}
 
-            {/* spacer */}
-            <div className="flex-grow-1" />
+          {/* spacer */}
+          <div className="flex-grow-1" />
 
-            <PermissionsToolbar element={element} disabled={!isValid} />
+          <PermissionsToolbar element={element} disabled={!isValid} />
 
-            <ReloadToolbar element={element} />
-          </Nav>
+          <ReloadToolbar element={element} />
+        </Nav>
 
-          {status && <div className="text-danger">{status}</div>}
-          <Tab.Content className={styles.content}>
-            {wizardSteps.map(({ Component, step }) => (
-              <Component key={step} eventKey={step} />
-            ))}
-          </Tab.Content>
-        </BootstrapForm>
-      </FormErrorContext.Provider>
+        {status && <div className="text-danger">{status}</div>}
+        <Tab.Content className={styles.content}>
+          {wizardSteps.map(({ Component, step }) => (
+            <Component key={step} eventKey={step} />
+          ))}
+        </Tab.Content>
+      </BootstrapForm>
     </Tab.Container>
   );
 };

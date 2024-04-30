@@ -373,18 +373,26 @@ export function selectNodePreviewActiveElement(state: EditorRootState): string {
 export const selectAddBlockLocation = ({ editor }: EditorRootState) =>
   editor.addBlockLocation;
 
+export const selectVariablePopoverVisible = ({ editor }: EditorRootState) =>
+  editor.isVariablePopoverVisible;
+
 const annotationsForPathSelector = createSelector(
   selectActiveModComponentId,
   // Null-safe access here so this doesn't break with the options redux store
   (state: RootState) => state.analysis?.extensionAnnotations,
   (state: RootState, path: string) => path,
-  (activeElementId, annotations, path) => {
+  selectVariablePopoverVisible,
+  (activeElementId, annotations, path, isVariablePopoverVisible) => {
     // eslint-disable-next-line security/detect-object-injection -- UUID
     const elementAnnotations = annotations?.[activeElementId] ?? [];
-    const pathAnnotations = elementAnnotations.filter(
-      (x) => x.position.path === path,
+    const filteredAnnotations = elementAnnotations.filter(
+      (x) =>
+        x.position.path === path &&
+        // Hide variable/template annotations while the popover is open because the user is editing the field
+        (!isVariablePopoverVisible ||
+          !["var", "template"].includes(x.analysisId)),
     );
-    return sortBy(pathAnnotations, (annotation) => {
+    return sortBy(filteredAnnotations, (annotation) => {
       switch (annotation.type) {
         case AnnotationType.Error: {
           return 2;
@@ -408,9 +416,6 @@ const annotationsForPathSelector = createSelector(
  */
 export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
   annotationsForPathSelector(state, path);
-
-export const selectVariablePopoverVisible = ({ editor }: EditorRootState) =>
-  editor.isVariablePopoverVisible;
 
 export const selectCopiedBlock = ({ editor }: EditorRootState) =>
   editor.copiedBlock;

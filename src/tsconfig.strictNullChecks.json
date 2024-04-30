@@ -306,7 +306,6 @@
     "./components/form/FieldAnnotation.ts",
     "./components/form/FieldTemplate.tsx",
     "./components/form/Form.tsx",
-    "./components/form/FormErrorContext.ts",
     "./components/form/lockedLabel/LockedExtensionPointLabel.tsx",
     "./components/form/popoverInfoLabel/PopoverInfoLabel.tsx",
     "./components/form/widgets/AsyncRemoteSelectWidget.tsx",

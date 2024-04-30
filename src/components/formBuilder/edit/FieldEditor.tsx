@@ -358,7 +358,6 @@ const FieldEditor: React.FC<{
         value={internalPropertyName}
         onChange={onPropertyNameChange}
         onBlur={updatePropertyName}
-        touched
         annotations={propertyNameAnnotations}
         description="Enter a name to refer to this value in the output later"
       />
