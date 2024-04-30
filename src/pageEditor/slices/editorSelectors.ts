@@ -41,7 +41,7 @@ import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { selectKnownEventNames } from "@/analysis/analysisSelectors";
 import { normalizeModOptionsDefinition } from "@/utils/modUtils";
-import { AnalysisRootState } from "@/analysis/analysisTypes";
+import { type AnalysisRootState } from "@/analysis/analysisTypes";
 
 export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
   if (editor == null) {
