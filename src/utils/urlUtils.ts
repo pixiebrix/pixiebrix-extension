@@ -46,7 +46,7 @@ export function selectAbsoluteUrl({
 }: {
   url?: string;
   baseURL?: string;
-}): string {
+} = {}): string {
   assertNotNullish(url, "selectAbsoluteUrl: The URL was not provided");
   if (canParseUrl(url)) {
     return url;
