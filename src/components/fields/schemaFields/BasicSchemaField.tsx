@@ -26,7 +26,7 @@ import React, {
 import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { isEmpty } from "lodash";
 import cx from "classnames";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
@@ -38,6 +38,9 @@ import { isExpression } from "@/utils/expressionUtils";
 import useAsyncEffect from "use-async-effect";
 import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 import FieldTemplate from "@/components/form/FieldTemplate";
+import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
+import { useSelector } from "react-redux";
+import { makeFieldAnnotationsForValue } from "@/components/form/makeFieldAnnotationsForValue";
 
 /*
  *  This is a hack to fix the issue where the formik state is not updated correctly when the form is first rendered.
@@ -182,12 +185,25 @@ const BasicSchemaField: SchemaFieldComponent = ({
     [value, formikOnBlur, omitIfEmpty, onOmitField, onBlurProp],
   );
 
+  const formik = useFormikContext();
+  const { analysisAnnotationsSelectorForPath } = useContext(
+    AnalysisAnnotationsContext,
+  );
+  const analysisAnnotations = useSelector(
+    analysisAnnotationsSelectorForPath(name),
+  );
+  const fieldAnnotations = useMemo(
+    () => makeFieldAnnotationsForValue(analysisAnnotations, value, formik),
+    [analysisAnnotations, formik, value],
+  );
+
   if (isEmpty(inputModeOptions)) {
     return (
       <FieldTemplate
         name={name}
         label={fieldLabel}
         description={fieldDescription}
+        annotations={fieldAnnotations}
         as={widgetsRegistry.UnsupportedWidget}
       />
     );
@@ -211,6 +227,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
       schema={normalizedSchema}
       description={fieldDescription}
       label={fieldLabel}
+      annotations={fieldAnnotations}
       {...restFieldTemplateProps}
     />
   );

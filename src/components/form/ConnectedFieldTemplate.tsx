@@ -16,57 +16,21 @@
  */
 
 import React, { useContext, useMemo } from "react";
-import { connect, type FormikContextType, getIn, setIn } from "formik";
+import { connect, type FormikContextType, getIn } from "formik";
 import FieldTemplate, {
   type FieldProps,
 } from "@/components/form/FieldTemplate";
 import { useSelector } from "react-redux";
-import type {
-  FieldAnnotation,
-  FieldAnnotationAction,
-} from "@/components/form/FieldAnnotation";
-import { isEmpty, isEqual } from "lodash";
-import {
-  type AnalysisAnnotationAction,
-  AnalysisAnnotationActionType,
-} from "@/analysis/analysisTypes";
-import { produce } from "immer";
+import type { FieldAnnotation } from "@/components/form/FieldAnnotation";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { AnnotationType } from "@/types/annotationTypes";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
+import { makeFieldAnnotationsForValue } from "@/components/form/makeFieldAnnotationsForValue";
 
 type ConnectedFieldProps<Values> = FieldProps & {
   formik: FormikContextType<Values>;
   showUntouchedErrors?: boolean;
 };
-
-function makeFieldActionForAnnotationAction<Values>(
-  action: AnalysisAnnotationAction,
-  formik: FormikContextType<Values>,
-): FieldAnnotationAction {
-  return {
-    caption: action.caption,
-    async action() {
-      const newValues = produce(formik.values, (draft) => {
-        if (action.type === AnalysisAnnotationActionType.AddValueToArray) {
-          const array = getIn(draft, action.path) as unknown[];
-          array.push(action.value);
-          setIn(draft, action.path, array);
-        }
-      });
-
-      await action.extraCallback?.();
-
-      // Order here matters at the moment. The first implemented action needs
-      // to request browser permissions in the callback before setting form
-      // state, so that after the Effect handler syncs formik with redux, the
-      // browser permissions are present when the app re-renders
-      // (analysis runs again, permissions toolbar updates, etc.).
-      // TBD if this is the correct long-term approach or not.
-      await formik.setValues(newValues, true);
-    },
-  };
-}
 
 function FormikFieldTemplate<Values>({
   formik,
@@ -83,60 +47,28 @@ function FormikFieldTemplate<Values>({
   const analysisAnnotations = useSelector(
     analysisAnnotationsSelectorForPath(fieldProps.name),
   );
+  const fieldAnnotations = useMemo(
+    () => makeFieldAnnotationsForValue(analysisAnnotations, value, formik),
+    [analysisAnnotations, formik, value],
+  );
 
-  const annotations = useMemo<FieldAnnotation[]>(() => {
-    const results = analysisAnnotations
-      // Annotations from redux can get out of sync with the current state of the field
-      // Check that the value from redux matches the current formik value before showing
-      // See: https://github.com/pixiebrix/pixiebrix-extension/pull/6846
-      .filter((annotation) => {
-        if (!annotation.detail) {
-          return true;
-        }
+  const showFormikError =
+    (showUntouchedErrors || touched) &&
+    typeof error === "string" &&
+    !isNullOrBlank(error);
 
-        // Also need to handle { expression: ... } detail format
-        const detailValue =
-          typeof annotation.detail === "object" &&
-          "expression" in annotation.detail
-            ? annotation.detail.expression
-            : annotation.detail;
-
-        return isEqual(detailValue, value);
-      })
-      .map(({ message, type, actions }) => {
-        const fieldAnnotation: FieldAnnotation = {
-          message,
-          type,
-        };
-        if (!isEmpty(actions)) {
-          fieldAnnotation.actions = actions.map((action) =>
-            makeFieldActionForAnnotationAction(action, formik),
-          );
-        }
-
-        return fieldAnnotation;
-      });
-
-    const showFormikError =
-      (showUntouchedErrors || touched) &&
-      typeof error === "string" &&
-      !isNullOrBlank(error);
-
-    const annotation: FieldAnnotation = {
-      message: error as string,
-      type: AnnotationType.Error,
-    };
-    if (showFormikError) {
-      results.push(annotation);
-    }
-
-    return results;
-  }, [analysisAnnotations, error, formik, showUntouchedErrors, touched, value]);
+  const annotation: FieldAnnotation = {
+    message: error as string,
+    type: AnnotationType.Error,
+  };
+  if (showFormikError) {
+    fieldAnnotations.push(annotation);
+  }
 
   return (
     <FieldTemplate
       value={value}
-      annotations={annotations}
+      annotations={fieldAnnotations}
       onChange={formik.handleChange}
       onBlur={formik.handleBlur}
       {...fieldProps}
