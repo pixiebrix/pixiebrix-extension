@@ -16,15 +16,12 @@
  */
 
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import {
-  getErrorMessage,
-  getRootCause,
-  selectError,
-} from "@/errors/errorHelpers";
+import { getErrorMessage, selectError } from "@/errors/errorHelpers";
 import { isObject } from "@/utils/objectUtils";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { deleteCachedAuthData } from "@/background/messenger/strict/api";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { selectAxiosError } from "@/data/service/requestErrorUtils";
 
 class PermissionsError extends Error {
   override name = "PermissionsError";
@@ -43,9 +40,13 @@ export async function handleGoogleRequestRejection(
 ): Promise<Error> {
   // Request errors from proxyRequest are wrapped in ContextError which includes metadata about the integration
   // configuration. Therefore, get root cause for determining if this is an Axios error
-  const rootCause = getRootCause(error);
+  const rootCause = selectAxiosError(error);
 
-  console.debug("Error making Google request", { error });
+  console.log({ rootCause: JSON.stringify(rootCause, null, 2) });
+
+  console.debug("Error making Google request", {
+    error,
+  });
 
   if (!isObject(error)) {
     // Shouldn't happen in practice, but be defensive
