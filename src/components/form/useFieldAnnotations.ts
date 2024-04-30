@@ -30,7 +30,7 @@ import {
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type FormikContextType } from "formik";
 import { produce } from "immer";
-import { get, isEmpty, set } from "lodash";
+import { get, isEmpty, isEqual, set } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { type Expression } from "@/types/runtimeTypes";
@@ -98,14 +98,12 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
             return true;
           }
 
-          if (
+          const detailValue =
             typeof annotation.detail === "object" &&
             "expression" in annotation.detail
-          ) {
-            return annotation.detail.expression === value;
-          }
-
-          return annotation.detail === value;
+              ? annotation.detail.expression
+              : annotation.detail;
+          return isEqual(detailValue, value);
         })
         .map(({ message, type, actions }) => {
           const fieldAnnotation: FieldAnnotation = {
