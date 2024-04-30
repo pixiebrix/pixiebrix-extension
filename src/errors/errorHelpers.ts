@@ -144,7 +144,6 @@ export function selectSpecificError<
  */
 export function getRootCause(error: unknown): unknown {
   while (isErrorObject(error) && error.cause) {
-    console.log("get root cause", error);
     error = error.cause;
   }
 
