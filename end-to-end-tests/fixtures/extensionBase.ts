@@ -30,6 +30,10 @@ import {
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 import { test as envSetup } from "./envSetup";
 import { uuidv4 } from "@/types/helpers";
+import {
+  type PageEditorPage,
+  type StarterBrickName,
+} from "../pageObjects/pageEditorPage";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // See https://github.com/microsoft/playwright/issues/26693
@@ -46,7 +50,10 @@ export const test = mergeTests(
       context: BrowserContext;
       extensionId: string;
       chromiumChannel: "chrome" | "msedge";
-      testModId: string;
+      addStarterBrick: (
+        pageEditorPage: PageEditorPage,
+        starterBrickType: string,
+      ) => Promise<string>;
     },
     {
       checkRequiredEnvironmentVariables: () => void;
@@ -104,19 +111,34 @@ export const test = mergeTests(
       await use(page);
       // The page is closed by the context fixture `.close` cleanup step
     },
-    // TODO: better name for this fixture
-    async testModId({ page, extensionId }, use) {
-      const testModId = uuidv4();
-      await use(testModId);
-      // Go to the mods page and clean up all mods with testModId in the name
+    /**
+     * Adds a new starter brick in the Page Editor. Cleans up the saved mod component after the test, if applicable.
+     */
+    async addStarterBrick({ page, extensionId }, use) {
+      const modName = `Test Mod ${uuidv4()}`;
+
+      await use(
+        async (
+          pageEditorPage: PageEditorPage,
+          starterBrickName: StarterBrickName,
+        ) => {
+          await pageEditorPage.addStarterBrick(starterBrickName, modName);
+          return modName;
+        },
+      );
+      // Go to the mods page and clean up all mods with modName after the test
       const modsPage = new ModsPage(page, extensionId);
       await modsPage.goto();
-      await modsPage.searchModsInput().fill(testModId);
+      await modsPage.searchModsInput().fill(modName);
+      await page.waitForTimeout(1000);
       for (const mod of await modsPage.modTableItems().all()) {
-        if ((await mod.textContent()) === testModId) {
+        console.log("*** mod", mod);
+        if (mod.getByText(modName, { exact: true })) {
           await mod.locator(".dropdown").click();
-          await mod.getByText("Delete").click();
+          await mod.getByText("Deactivate").click();
+          await mod.locator(".dropdown").click();
           await page.getByText("Delete").click();
+          await page.getByRole("button", { name: "Delete" }).click();
         }
       }
     },

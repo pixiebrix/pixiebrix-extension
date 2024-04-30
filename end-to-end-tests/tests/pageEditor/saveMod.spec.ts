@@ -24,12 +24,12 @@ test("can save a standalone trigger mod", async ({
   page,
   context,
   extensionId,
-  testModId,
+  addStarterBrick,
 }) => {
   await page.goto("/");
   const pageEditorPage = new PageEditorPage(context, page.url(), extensionId);
   await pageEditorPage.goto();
-  await pageEditorPage.addStarterBrick("Trigger");
-  await pageEditorPage.fillInBrickField("Name", `Test Trigger ${testModId}`);
+  const modName = await addStarterBrick(pageEditorPage, "Trigger");
+  await pageEditorPage.saveMod(modName);
   await page.pause();
 });

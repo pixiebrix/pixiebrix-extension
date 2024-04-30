@@ -19,6 +19,8 @@ import { getBasePageEditorUrl } from "./constants";
 import { type BrowserContext, type Page } from "@playwright/test";
 import { expect } from "../fixtures/extensionBase";
 
+export type StarterBrickName = "Context Menu" | "Trigger" | "Button";
+
 export class PageEditorPage {
   private readonly pageEditorUrl: string;
   private page: Page;
@@ -48,18 +50,30 @@ export class PageEditorPage {
     return this.page.getByRole("button", { name: "Launch Template Gallery" });
   }
 
-  async addStarterBrick(
-    starterBrickType: "Context Menu" | "Trigger" | "Button",
-  ) {
+  /**
+   * Adds a starter brick in the Page Editor. Prefer the `addStarterBrick` fixture in
+   * extensionBase.ts if saving the mod for test cleanup.
+   */
+  async addStarterBrick(starterBrickName: StarterBrickName, modName: string) {
     await this.page.getByText("Add").click();
     await this.page
       .locator("[role=button].dropdown-item", {
-        hasText: starterBrickType,
+        hasText: starterBrickName,
       })
       .click();
+    await this.fillInBrickField("Name", modName);
   }
 
   async fillInBrickField(fieldLabel: string, value: string) {
     await this.page.getByLabel(fieldLabel).fill(value);
+  }
+
+  async saveMod(modName: string) {
+    const modListItem = this.page.locator(".list-group-item", {
+      hasText: modName,
+    });
+    await modListItem.click();
+    await modListItem.locator("[data-icon=save]").click();
+    await expect(this.page.getByText("Saved Mod")).toBeVisible();
   }
 }
