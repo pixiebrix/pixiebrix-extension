@@ -30,21 +30,19 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 203 strictNullCheck errors
-import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 31 strictNullCheck errors
-import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 37 strictNullCheck errors
+} from "@/contentScript/lifecycle"; // 202 strictNullCheck errors
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/contentScript/pageEditor/dynamic"; // 206 strictNullCheck errors
+} from "@/contentScript/pageEditor/dynamic"; // 205 strictNullCheck errors
 import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
-} from "@/contentScript/pageEditor"; // 208 strictNullCheck errors
+} from "@/contentScript/pageEditor"; // 207 strictNullCheck errors
 import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
 import {
   runHeadlessPipeline,
@@ -62,9 +60,6 @@ declare global {
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
     RESET_TAB: typeof resetTab;
-
-    INSERT_PANEL: typeof insertPanel;
-    INSERT_BUTTON: typeof insertButton;
 
     RUN_SINGLE_BLOCK: typeof runBlockPreview;
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
@@ -95,9 +90,6 @@ export default function registerMessenger(): void {
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
     RESET_TAB: resetTab,
-
-    INSERT_PANEL: insertPanel,
-    INSERT_BUTTON: insertButton,
 
     RUN_SINGLE_BLOCK: runBlockPreview,
     RUN_RENDERER_BLOCK: runRendererBlock,

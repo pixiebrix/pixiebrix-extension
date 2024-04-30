@@ -52,22 +52,9 @@ export const contextMenus = {
   preload: getMethod("PRELOAD_CONTEXT_MENUS", bg),
 };
 
-// Use this instead: `import reportError from "@/telemetry/reportError"`
-// export const recordError = getNotifier("RECORD_ERROR", bg);
-
-export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
-export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
-
 export const getUserData = getMethod("GET_USER_DATA", bg);
 
 export const installStarterBlueprints = getMethod(
   "INSTALL_STARTER_BLUEPRINTS",
-  bg,
-);
-
-export const ping = getMethod("PING", bg);
-
-export const collectPerformanceDiagnostics = getMethod(
-  "COLLECT_PERFORMANCE_DIAGNOSTICS",
   bg,
 );
