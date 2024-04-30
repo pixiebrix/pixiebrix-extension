@@ -29,6 +29,7 @@ import {
 } from "./utils";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 import { test as envSetup } from "./envSetup";
+import { uuidv4 } from "@/types/helpers";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // See https://github.com/microsoft/playwright/issues/26693
@@ -45,6 +46,7 @@ export const test = mergeTests(
       context: BrowserContext;
       extensionId: string;
       chromiumChannel: "chrome" | "msedge";
+      testModId: string;
     },
     {
       checkRequiredEnvironmentVariables: () => void;
@@ -101,6 +103,22 @@ export const test = mergeTests(
 
       await use(page);
       // The page is closed by the context fixture `.close` cleanup step
+    },
+    // TODO: better name for this fixture
+    async testModId({ page, extensionId }, use) {
+      const testModId = uuidv4();
+      await use(testModId);
+      // Go to the mods page and clean up all mods with testModId in the name
+      const modsPage = new ModsPage(page, extensionId);
+      await modsPage.goto();
+      await modsPage.searchModsInput().fill(testModId);
+      for (const mod of await modsPage.modTableItems().all()) {
+        if ((await mod.textContent()) === testModId) {
+          await mod.locator(".dropdown").click();
+          await mod.getByText("Delete").click();
+          await page.getByText("Delete").click();
+        }
+      }
     },
     async extensionId({ context }, use) {
       const extensionId = await getExtensionId(context);
