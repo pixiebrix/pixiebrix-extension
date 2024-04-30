@@ -32,11 +32,7 @@ beforeEach(async () => {
 describe("readManagedStorage", () => {
   it("reads immediately if managed storage is already initialized", async () => {
     await initializationTimestamp.set(new Date().toISOString() as Timestamp);
-    await expect(readManagedStorage()).resolves.toStrictEqual({
-      // `jest-webextension-mock`'s storage is shared across sources, the call ends up with the managed storage
-      // and the local storage mixed together. See https://github.com/clarkbw/jest-webextension-mock/issues/183
-      managedStorageInitTimestamp: expect.any(String),
-    });
+    await expect(readManagedStorage()).resolves.toStrictEqual({});
 
     // Should only be called once vs. polling
     expect(browser.storage.managed.get).toHaveBeenCalledOnce();
@@ -49,9 +45,6 @@ describe("readManagedStorage", () => {
   it("reads managed storage", async () => {
     await browser.storage.managed.set({ partnerId: "taco-bell" });
     await expect(readManagedStorage()).resolves.toStrictEqual({
-      // `jest-webextension-mock`'s storage is shared across sources, the call ends up with the managed storage
-      // and the local storage mixed together. See https://github.com/clarkbw/jest-webextension-mock/issues/183
-      managedStorageInitTimestamp: expect.any(String),
       partnerId: "taco-bell",
     });
   });
