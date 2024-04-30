@@ -47,23 +47,30 @@ function FormikFieldTemplate<Values>({
   const analysisAnnotations = useSelector(
     analysisAnnotationsSelectorForPath(fieldProps.name),
   );
-  const fieldAnnotations = useMemo(
-    () => makeFieldAnnotationsForValue(analysisAnnotations, value, formik),
-    [analysisAnnotations, formik, value],
-  );
+  const fieldAnnotations = useMemo(() => {
+    const annotations = makeFieldAnnotationsForValue(
+      analysisAnnotations,
+      value,
+      formik,
+    );
 
-  const showFormikError =
-    (showUntouchedErrors || touched) &&
-    typeof error === "string" &&
-    !isNullOrBlank(error);
+    const showFormikError =
+      (showUntouchedErrors || touched) &&
+      typeof error === "string" &&
+      !isNullOrBlank(error);
 
-  const annotation: FieldAnnotation = {
-    message: error as string,
-    type: AnnotationType.Error,
-  };
-  if (showFormikError) {
-    fieldAnnotations.push(annotation);
-  }
+    const annotation: FieldAnnotation = {
+      message: error as string,
+      type: AnnotationType.Error,
+    };
+    if (showFormikError) {
+      annotations.push(annotation);
+    }
+
+    return annotations;
+  }, [analysisAnnotations, error, formik, showUntouchedErrors, touched, value]);
+
+  console.log({ analysisAnnotations, fieldAnnotations });
 
   return (
     <FieldTemplate
