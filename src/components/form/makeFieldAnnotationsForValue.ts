@@ -17,7 +17,7 @@
 
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
-import { isEmpty, isEqual } from "lodash";
+import { isEqual } from "lodash";
 import { makeFieldActionForAnnotationAction } from "@/components/form/makeFieldActionForAnnotationAction";
 import { type FormikContextType } from "formik";
 
@@ -50,7 +50,7 @@ export function makeFieldAnnotationsForValue(
           message,
           type,
         };
-        if (!isEmpty(actions)) {
+        if (actions && actions.length > 0) {
           fieldAnnotation.actions = actions.map((action) =>
             makeFieldActionForAnnotationAction(action, formik),
           );
