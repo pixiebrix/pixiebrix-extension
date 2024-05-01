@@ -26,19 +26,23 @@ import React, {
 import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { isEmpty } from "lodash";
-import FieldTemplate from "@/components/form/FieldTemplate";
 import cx from "classnames";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { getToggleOptions } from "./getToggleOptions";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import useToggleFormField from "@/hooks/useToggleFormField";
 import { getFieldValidator } from "@/components/fields/fieldUtils";
-import useFieldAnnotations from "@/components/form/useFieldAnnotations";
 import { isExpression } from "@/utils/expressionUtils";
 import useAsyncEffect from "use-async-effect";
 import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
+import { useSelector } from "react-redux";
+import { makeFieldAnnotationsForValue } from "@/components/form/makeFieldAnnotationsForValue";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { AnnotationType } from "@/types/annotationTypes";
 
 /*
  *  This is a hack to fix the issue where the formik state is not updated correctly when the form is first rendered.
@@ -55,7 +59,7 @@ function useSetInitialValueForField({
   inputModeOptions: InputModeOption[];
 }) {
   const renderRef = useRef(false);
-  const [{ value }, , { setValue }] = useField(name);
+  const [{ value }, , { setValue }] = useField<unknown>(name);
 
   useEffect(() => {
     renderRef.current = true;
@@ -71,9 +75,10 @@ function useSetInitialValueForField({
     ) {
       await setValue(inputModeOptions[0].interpretValue(value));
     }
-    // We include setValue in the dependencies becuase sometimes the formik
+    // We include setValue in the dependencies because sometimes the formik
     // helpers reference (setValue) changes, so we need to account for that in the dependencies
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/2269
+    // XXX: Not sure if the above still applies in newer formik versions...
   }, [setValue, renderRef.current]);
 }
 
@@ -153,12 +158,11 @@ const BasicSchemaField: SchemaFieldComponent = ({
 
   const validate = getFieldValidator(validationSchema);
 
-  const [{ value, onBlur: formikOnBlur }, { touched }] = useField({
-    name,
-    validate,
-  });
-
-  const annotations = useFieldAnnotations(name);
+  const [{ value, onBlur: formikOnBlur }, { touched, error }] =
+    useField<unknown>({
+      name,
+      validate,
+    });
 
   useSetInitialValueForField({ name, isRequired, inputModeOptions });
 
@@ -168,47 +172,73 @@ const BasicSchemaField: SchemaFieldComponent = ({
     isRequired,
   );
 
+  const onBlur = useCallback(
+    (event: React.FocusEvent) => {
+      formikOnBlur(event);
+
+      if (
+        omitIfEmpty &&
+        (isEmpty(value) || (isExpression(value) && isEmpty(value.__value__)))
+      ) {
+        onOmitField();
+      }
+
+      onBlurProp?.(event);
+    },
+    [value, formikOnBlur, omitIfEmpty, onOmitField, onBlurProp],
+  );
+
+  const formik = useFormikContext();
+  const { analysisAnnotationsSelectorForPath } = useContext(
+    AnalysisAnnotationsContext,
+  );
+  const analysisAnnotations = useSelector(
+    analysisAnnotationsSelectorForPath(name),
+  );
+  const fieldAnnotations = useMemo(
+    () => makeFieldAnnotationsForValue(analysisAnnotations, value, formik),
+    [analysisAnnotations, formik, value],
+  );
+  // Add formik error if present
+  if (touched && typeof error === "string" && !isNullOrBlank(error)) {
+    fieldAnnotations.push({
+      message: error,
+      type: AnnotationType.Error,
+    });
+  }
+
   if (isEmpty(inputModeOptions)) {
     return (
       <FieldTemplate
         name={name}
         label={fieldLabel}
         description={fieldDescription}
-        annotations={annotations}
-        touched={touched}
+        annotations={fieldAnnotations}
         as={widgetsRegistry.UnsupportedWidget}
       />
     );
   }
 
-  const onBlur = (event: React.FocusEvent) => {
-    formikOnBlur(event);
-
-    if (
-      omitIfEmpty &&
-      (isEmpty(value) || (isExpression(value) && isEmpty(value.__value__)))
-    ) {
-      onOmitField();
-    }
-
-    onBlurProp?.(event);
-  };
+  // Extract overridden props so they don't conflict
+  const {
+    schema: unusedPropSchema,
+    description: unusedPropDescription,
+    label: unusedPropLabel,
+    ...restFieldTemplateProps
+  } = restProps;
 
   return (
     <FieldTemplate
-      name={name}
-      label={fieldLabel}
-      description={fieldDescription}
-      annotations={annotations}
-      touched={touched}
       className={cx({ "mb-0": hideLabel })} // Remove bottom margin if we're already hiding the label
       as={widgetsRegistry.TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
       setFieldDescription={updateFieldDescription}
       onBlur={onBlur}
-      {...restProps}
-      // Pass in schema after spreading props to override the non-normalized schema in props
       schema={normalizedSchema}
+      description={fieldDescription}
+      label={fieldLabel}
+      annotations={fieldAnnotations}
+      {...restFieldTemplateProps}
     />
   );
 };

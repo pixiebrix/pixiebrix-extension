@@ -24,7 +24,10 @@ import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { useSelector } from "react-redux";
-import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveModComponentAnalysisAnnotationsForPath,
+  selectActiveModComponentFormState,
+} from "@/pageEditor/slices/editorSelectors";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -33,6 +36,7 @@ import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
+import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
   const { isConfigured } = useQuickbarShortcut();
@@ -82,7 +86,14 @@ const FoundationNodeConfigPanel: React.FC = () => {
       {showVersionField && <ApiVersionField />}
       <UpgradedToApiV3 />
       <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
-        <EditorNode isLocked={isLocked} />
+        <AnalysisAnnotationsContext.Provider
+          value={{
+            analysisAnnotationsSelectorForPath:
+              selectActiveModComponentAnalysisAnnotationsForPath,
+          }}
+        >
+          <EditorNode isLocked={isLocked} />
+        </AnalysisAnnotationsContext.Provider>
       </SchemaFieldContext.Provider>
     </>
   );

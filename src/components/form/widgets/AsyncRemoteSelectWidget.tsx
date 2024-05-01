@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ChangeEvent, useState } from "react";
+import React, { type ChangeEvent, useCallback, useState } from "react";
 import {
   type Option,
   type SelectLike,
@@ -77,10 +77,20 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   optionsFactory,
   extraFactoryArgs,
   unknownOptionLabel,
-  ...asyncSelectProps
+  setLocalError,
+  isInvalid,
+  ...asyncSelectPropsIn
 }) => {
   const [knownOptions, setKnownOptions] = useState<Option[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const setOptions = useCallback(
+    (options: Option[], reactSelectCallback: (options: Option[]) => void) => {
+      setKnownOptions((prev) => uniqBy([...prev, ...options], (x) => x.value));
+      reactSelectCallback(options);
+    },
+    [],
+  );
 
   // `react-select` doesn't automatically debounce requests
   // See quirks here: https://github.com/JedWatson/react-select/issues/3075#issuecomment-506647171
@@ -94,35 +104,11 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
             query,
             value,
           })) as Option[];
-
-          if (Array.isArray(rawOptions)) {
-            setKnownOptions((prev) =>
-              uniqBy([...prev, ...rawOptions], (x) => x.value),
-            );
-          } else {
-            // Throw locally, to translate into error for AsyncSelect
-            console.error(
-              `Expected array of options, got ${typeof rawOptions}`,
-              rawOptions,
-            );
-            throw new TypeError(
-              `Expected array of options, got ${typeof rawOptions}`,
-            );
-          }
-
-          callback(rawOptions);
+          setOptions(rawOptions, callback);
+          setLocalError?.(null);
         } catch (error) {
-          // Return options to AsyncSelect, but do not cache in local knownOptions
-          // `react-select` doesn't have native support for error in AsyncSelect :shrug:
-          // https://github.com/JedWatson/react-select/issues/1528
-          callback([
-            {
-              value: "error",
-              label: getErrorMessage(error, "Error loading options"),
-              isDisabled: true,
-              // `isDisabled` is not on the type definition, but it is supported
-            } as Option,
-          ]);
+          setOptions([], callback);
+          setLocalError?.(getErrorMessage(error, "Error loading options"));
         } finally {
           setIsLoading(false);
         }
@@ -159,6 +145,8 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
     selectedOption = { value, label };
   }
 
+  const { placeholder, ...asyncSelectProps } = asyncSelectPropsIn;
+
   return (
     <div className="d-flex">
       <div className="flex-grow-1">
@@ -167,6 +155,8 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
           loadOptions={loadOptions}
           onChange={patchedOnChange}
           value={selectedOption}
+          isDisabled={isInvalid}
+          placeholder={isInvalid ? "" : placeholder}
           {...asyncSelectProps}
         />
       </div>

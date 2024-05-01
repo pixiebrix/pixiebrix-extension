@@ -15,31 +15,65 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { connect, getIn } from "formik";
+import React, { useContext, useMemo } from "react";
+import { connect, type FormikContextType, getIn } from "formik";
 import FieldTemplate, {
   type FieldProps,
 } from "@/components/form/FieldTemplate";
-import { type FormikContextType } from "formik";
-import useFieldAnnotations from "@/components/form/useFieldAnnotations";
+import { useSelector } from "react-redux";
+import type { FieldAnnotation } from "@/components/form/FieldAnnotation";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { AnnotationType } from "@/types/annotationTypes";
+import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
+import { makeFieldAnnotationsForValue } from "@/components/form/makeFieldAnnotationsForValue";
 
 type ConnectedFieldProps<Values> = FieldProps & {
   formik: FormikContextType<Values>;
+  showUntouchedErrors?: boolean;
 };
 
 function FormikFieldTemplate<Values>({
   formik,
+  showUntouchedErrors,
   ...fieldProps
 }: ConnectedFieldProps<Values>) {
-  const annotations = useFieldAnnotations(fieldProps.name);
-  const touched = getIn(formik.touched, fieldProps.name);
-  const value = getIn(formik.values, fieldProps.name);
+  const value: unknown = getIn(formik.values, fieldProps.name);
+  const touched = Boolean(getIn(formik.touched, fieldProps.name));
+  const error: unknown = getIn(formik.errors, fieldProps.name);
+
+  const { analysisAnnotationsSelectorForPath } = useContext(
+    AnalysisAnnotationsContext,
+  );
+  const analysisAnnotations = useSelector(
+    analysisAnnotationsSelectorForPath(fieldProps.name),
+  );
+  const fieldAnnotations = useMemo(() => {
+    const annotations = makeFieldAnnotationsForValue(
+      analysisAnnotations,
+      value,
+      formik,
+    );
+
+    const showFormikError =
+      (showUntouchedErrors || touched) &&
+      typeof error === "string" &&
+      !isNullOrBlank(error);
+
+    const annotation: FieldAnnotation = {
+      message: error as string,
+      type: AnnotationType.Error,
+    };
+    if (showFormikError) {
+      annotations.push(annotation);
+    }
+
+    return annotations;
+  }, [analysisAnnotations, error, formik, showUntouchedErrors, touched, value]);
 
   return (
     <FieldTemplate
       value={value}
-      annotations={annotations}
-      touched={touched}
+      annotations={fieldAnnotations}
       onChange={formik.handleChange}
       onBlur={formik.handleBlur}
       {...fieldProps}

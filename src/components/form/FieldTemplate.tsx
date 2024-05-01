@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ReactNode } from "react";
+import React, { type ReactNode, useMemo, useState } from "react";
 import {
-  type FormControlProps,
   Collapse,
   FormControl,
+  type FormControlProps,
   FormGroup,
-  FormText,
   FormLabel,
+  FormText,
 } from "react-bootstrap";
 import styles from "./FieldTemplate.module.scss";
 import cx from "classnames";
@@ -46,7 +46,6 @@ export type FieldProps<
     widerLabel?: boolean;
     description?: ReactNode;
     annotations?: FieldAnnotation[];
-    touched?: boolean;
     onChange?:
       | React.ChangeEventHandler<T>
       | ((args: React.FormEvent<T>) => void)
@@ -70,6 +69,8 @@ export type CustomFieldWidgetProps<
   disabled?: boolean;
   value: TValue;
   onChange: React.ChangeEventHandler<TInputElement>;
+  setLocalError?: (error: string | null) => void;
+  isInvalid?: boolean;
 };
 export type CustomFieldWidget<
   TValue = string | string[] | number,
@@ -80,6 +81,8 @@ export type CustomFieldWidget<
   > = CustomFieldWidgetProps<TValue, TInputElement>,
 > = React.ComponentType<TFieldWidgetProps>;
 
+const EMPTY_ANNOTATIONS: FieldAnnotation[] = [] as const;
+
 const FieldTemplate: <As extends React.ElementType, T = Element>(
   p: FieldProps<As, T>,
 ) => React.ReactElement<FieldProps<As, T>> = ({
@@ -88,8 +91,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   fitLabelWidth,
   widerLabel,
   description,
-  annotations,
-  touched,
+  annotations = EMPTY_ANNOTATIONS,
   value,
   children,
   blankValue = "",
@@ -97,8 +99,28 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   className,
   ...restFieldProps
 }) => {
+  const [localError, setLocalError] = useState<string | null>(null);
+  const localErrorAnnotation = useMemo<FieldAnnotation | null>(() => {
+    if (localError == null) {
+      return null;
+    }
+
+    return {
+      message: localError,
+      type: AnnotationType.Error,
+    };
+  }, [localError]);
+
+  const fieldAnnotations = useMemo<FieldAnnotation[]>(
+    () => [
+      ...annotations,
+      ...(localErrorAnnotation ? [localErrorAnnotation] : []),
+    ],
+    [annotations, localErrorAnnotation],
+  );
+
   const isInvalid = !isEmpty(
-    annotations?.filter(
+    fieldAnnotations.filter(
       (annotation) => annotation.type === AnnotationType.Error,
     ),
   );
@@ -147,6 +169,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
       name={name}
       isInvalid={isInvalid}
       value={nonUndefinedValue}
+      setLocalError={setLocalError}
       {...restFieldProps}
     >
       {children}
@@ -155,12 +178,12 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
 
   return (
     <FormGroup className={cx(styles.formGroup, className)}>
-      <Collapse in={!isEmpty(annotations)}>
+      <Collapse in={fieldAnnotations.length > 0}>
         <div className="mb-2 w-100">
-          {isEmpty(annotations) ? (
+          {fieldAnnotations.length === 0 ? (
             <div className={styles.annotationPlaceholder} />
           ) : (
-            annotations?.map(({ message, type, actions }, index) => (
+            fieldAnnotations.map(({ message, type, actions }, index) => (
               <FieldAnnotationAlert
                 // eslint-disable-next-line react/no-array-index-key -- Requires a refactor of the `FieldAnnotation` component to require specifying a key
                 key={index}
