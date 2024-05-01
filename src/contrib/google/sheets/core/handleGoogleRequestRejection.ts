@@ -52,13 +52,12 @@ export async function handleGoogleRequestRejection(
   // configuration. Therefore, get axios error if it exists.
   const axiosError = selectAxiosError(error);
 
-  if (axiosError.response == null) {
+  if (axiosError?.response == null) {
     // It should always be an error-like object at this point, but be defensive.
     return selectError(error);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- null check above
-  const { status } = axiosError.response!;
+  const { status } = axiosError.response;
 
   if ([403, 404].includes(status)) {
     const message =
