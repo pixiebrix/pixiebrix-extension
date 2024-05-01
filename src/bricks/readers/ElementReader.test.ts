@@ -17,10 +17,19 @@
 
 import { ElementReader } from "@/bricks/readers/ElementReader";
 import { validateUUID } from "@/types/helpers";
+import { rectFactory } from "@/testUtils/factories/domFactories";
 
 const reader = new ElementReader();
 
 describe("ElementReader", () => {
+  beforeEach(() => {
+    // `jsdom` does not implement full layout engine
+    // https://github.com/jsdom/jsdom#unimplemented-parts-of-the-web-platform
+    (Element.prototype.getBoundingClientRect as any) = jest.fn(() =>
+      rectFactory(),
+    );
+  });
+
   test("it produces valid element reference", async () => {
     const div = document.createElement("div");
     const { ref } = await reader.read(div);
@@ -43,5 +52,30 @@ describe("ElementReader", () => {
 
     const { isVisible } = await reader.read(div);
     expect(isVisible).toBe(true);
+  });
+
+  test("isInViewport: true for element in document", async () => {
+    const div = document.createElement("div");
+    div.innerHTML = "<p>Some text</p>";
+    document.body.append(div);
+
+    const { isInViewport } = await reader.read(div);
+    expect(isInViewport).toBe(true);
+  });
+
+  test("isInViewport: false for element partially outside of document", async () => {
+    (Element.prototype.getBoundingClientRect as any) = jest.fn(() =>
+      rectFactory({
+        width: window.innerWidth + 1,
+        right: window.innerWidth + 1,
+      }),
+    );
+
+    const div = document.createElement("div");
+    div.innerHTML = "<p>Some text</p>";
+    document.body.append(div);
+
+    const { isInViewport } = await reader.read(div);
+    expect(isInViewport).toBe(false);
   });
 });
