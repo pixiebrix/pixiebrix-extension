@@ -17,7 +17,6 @@
 
 import pTimeout from "p-timeout";
 import { type Menus, type Tabs } from "webextension-polyfill";
-import chromeP from "webext-polyfill-kinda";
 import { handleMenuAction, notify } from "@/contentScript/messenger/strict/api";
 import { waitForContentScript } from "@/background/contentScript";
 import { expectContext } from "@/utils/expectContext";
@@ -30,24 +29,15 @@ import {
   type ModComponentBase,
   type ResolvedModComponent,
 } from "@/types/modComponentTypes";
-import { allSettled, memoizeUntilSettled } from "@/utils/promiseUtils";
+import { allSettled } from "@/utils/promiseUtils";
 import { ContextError } from "@/errors/genericErrors";
 import { selectEventData } from "@/telemetry/deployments";
-import type { SelectionMenuOptions } from "@/platform/platformTypes/contextMenuProtocol";
 import { type ContextMenuConfig } from "@/starterBricks/contextMenu/types";
-
-const MENU_PREFIX = "pixiebrix-";
+import { MENU_PREFIX, makeMenuId } from "@/background/contextMenus/makeMenuId";
 
 // This constant must be high enough to give Chrome time to inject the content script. waitForContentScript can take
 // >= 1 seconds because it also waits for the content script to be ready
 const CONTEXT_SCRIPT_INSTALL_MS = 5000;
-
-/**
- * Return a unique context menu item id for the given extension id.
- */
-function makeMenuId(extensionId: UUID): string {
-  return `${MENU_PREFIX}${extensionId}`;
-}
 
 /**
  * Dispatch a Chrome context menu event to the corresponding content script.
@@ -122,50 +112,6 @@ export async function uninstallContextMenu({
       error,
     });
     return false;
-  }
-}
-
-/**
- * Register a context menu item on all tabs.
- */
-export const ensureContextMenu = memoizeUntilSettled(_ensureContextMenu, {
-  cacheKey: ([{ extensionId }]) => extensionId,
-});
-
-async function _ensureContextMenu({
-  extensionId,
-  contexts,
-  title,
-  documentUrlPatterns,
-}: SelectionMenuOptions): Promise<void> {
-  expectContext("background");
-
-  if (!extensionId) {
-    throw new Error("extensionId is required");
-  }
-
-  const updateProperties = {
-    type: "normal",
-    title,
-    // At least one context type must be specified
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/7100
-    contexts: contexts?.length ? contexts : ["all"],
-    documentUrlPatterns,
-  } satisfies Menus.UpdateUpdatePropertiesType;
-
-  const expectedMenuId = makeMenuId(extensionId);
-  try {
-    // Try updating it first. It will fail if missing, so we attempt to create it instead
-    await browser.contextMenus.update(expectedMenuId, updateProperties);
-  } catch {
-    // WARNING: Do not remove `chromeP`
-    // The standard `contextMenus.create` does not return a Promise in any browser
-    // https://github.com/w3c/webextensions/issues/188#issuecomment-1112436359
-    // eslint-disable-next-line @typescript-eslint/await-thenable -- The types don't really match `chromeP`
-    await chromeP.contextMenus.create({
-      ...updateProperties,
-      id: expectedMenuId,
-    } as chrome.contextMenus.CreateProperties);
   }
 }
 
