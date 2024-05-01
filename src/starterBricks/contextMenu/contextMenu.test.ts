@@ -26,15 +26,13 @@ import { fromJS } from "@/starterBricks/contextMenu/contextMenu";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { RunReason } from "@/types/runtimeTypes";
-import {
-  uninstallContextMenu,
-  ensureContextMenu,
-} from "@/background/messenger/api";
+import { uninstallContextMenu } from "@/background/messenger/api";
 import { getPlatform } from "@/platform/platformContext";
 import {
   type ContextMenuDefinition,
   type ContextMenuConfig,
 } from "@/starterBricks/contextMenu/types";
+import { ensureContextMenu } from "@/background/messenger/strict/api";
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
 const ensureContextMenuMock = jest.mocked(ensureContextMenu);
