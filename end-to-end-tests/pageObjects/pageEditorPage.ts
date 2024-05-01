@@ -19,6 +19,8 @@ import { getBasePageEditorUrl } from "./constants";
 import { type BrowserContext, type Page } from "@playwright/test";
 import { expect } from "../fixtures/extensionBase";
 
+// TODO: add the rest of the starter brick names (as they appear in the UI) or
+//  reuse a type from the codebase if it exists
 export type StarterBrickName = "Context Menu" | "Trigger" | "Button";
 
 export class PageEditorPage {
