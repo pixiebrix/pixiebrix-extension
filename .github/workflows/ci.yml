@@ -1,6 +1,11 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches-ignore:
+      - master
 
 env:
   # Creates and uploads sourcemaps to Application error telemetry, and save the built extension as an artifact
