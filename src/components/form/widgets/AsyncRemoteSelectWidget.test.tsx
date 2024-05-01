@@ -126,116 +126,6 @@ describe("AsyncRemoteSelectWidget", () => {
     });
   });
 
-  it("handles error state without defaultOptions", async () => {
-    const optionsFactoryMock = jest.fn().mockRejectedValue(new Error("Oh No!"));
-
-    render(
-      <ConnectedFieldTemplate
-        name={name}
-        label="Test Field"
-        description="This is a test field for AsyncRemoteSelectWidget"
-        as={AsyncRemoteSelectWidget}
-        optionsFactory={optionsFactoryMock}
-      />,
-      {
-        initialValues: { [name]: null },
-      },
-    );
-
-    await waitForEffect();
-    expect(optionsFactoryMock).not.toHaveBeenCalled();
-
-    await userEvent.click(screen.getByRole("combobox"));
-
-    await userEvent.type(screen.getByRole("combobox"), "foo");
-
-    await expect(screen.findByText("Oh No!")).resolves.toBeInTheDocument();
-  });
-
-  it("handles error state with defaultOptions", async () => {
-    const optionsFactoryMock = jest.fn().mockRejectedValue(new Error("Oh No!"));
-
-    render(
-      <ConnectedFieldTemplate
-        name={name}
-        label="Test Field"
-        description="This is a test field for AsyncRemoteSelectWidget"
-        as={AsyncRemoteSelectWidget}
-        optionsFactory={optionsFactoryMock}
-        defaultOptions
-      />,
-      {
-        initialValues: { [name]: null },
-      },
-    );
-
-    await expect(screen.findByText("Oh No!")).resolves.toBeInTheDocument();
-    expect(optionsFactoryMock).toHaveBeenCalled();
-  });
-
-  it("clears error state properly", async () => {
-    const optionsFactoryMock = jest.fn().mockRejectedValue(new Error("Oh No!"));
-
-    const { rerender } = render(
-      <ConnectedFieldTemplate
-        name={name}
-        label={"Test Field"}
-        description="This is a test field for AsyncRemoteSelectWidget"
-        as={AsyncRemoteSelectWidget}
-        optionsFactory={optionsFactoryMock}
-      />,
-      {
-        initialValues: { [name]: null },
-      },
-    );
-
-    await waitForEffect();
-    expect(optionsFactoryMock).not.toHaveBeenCalled();
-    expect(screen.queryByText("Oh No!")).not.toBeInTheDocument();
-
-    await userEvent.type(screen.getByRole("combobox"), "fo");
-
-    await expect(screen.findByText("Oh No!")).resolves.toBeInTheDocument();
-
-    const options = [
-      {
-        value: "foo",
-        label: "Foo Option",
-      },
-      {
-        value: "bar",
-        label: "Bar Option",
-      },
-    ];
-
-    optionsFactoryMock.mockImplementation(
-      async ({ query }: { query: string }) =>
-        options.filter((option) =>
-          option.label.toLowerCase().includes(query.toLowerCase()),
-        ),
-    );
-
-    // We need to force a re-mount of the component for the error to clear
-    rerender(null);
-    rerender(
-      <ConnectedFieldTemplate
-        name={name}
-        label="Test Field"
-        description="This is a test field for AsyncRemoteSelectWidget"
-        as={AsyncRemoteSelectWidget}
-        optionsFactory={optionsFactoryMock}
-      />,
-    );
-
-    await waitForEffect();
-
-    await userEvent.type(screen.getByRole("combobox"), "foo");
-
-    expect(screen.queryByText("Oh No!")).not.toBeInTheDocument();
-    expect(screen.getByText("Foo Option")).toBeInTheDocument();
-    expect(screen.queryByText("Bar Option")).not.toBeInTheDocument();
-  });
-
   test("it passes the current value to the factory", async () => {
     const onChangeMock = jest.fn();
     const optionsFactoryMock = jest.fn().mockResolvedValue([]);
@@ -264,6 +154,125 @@ describe("AsyncRemoteSelectWidget", () => {
     expect(optionsFactoryMock).toHaveBeenCalledWith({
       query: "",
       value: "test-value",
+    });
+  });
+
+  // These tests nest the widget in a ConnectedFieldTemplate in order to test the error field-annotation logic
+  describe("error states with ConnectedFieldTemplate", () => {
+    it("handles error state without defaultOptions", async () => {
+      const optionsFactoryMock = jest
+        .fn()
+        .mockRejectedValue(new Error("Oh No!"));
+
+      render(
+        <ConnectedFieldTemplate
+          name={name}
+          label="Test Field"
+          description="This is a test field for AsyncRemoteSelectWidget"
+          as={AsyncRemoteSelectWidget}
+          optionsFactory={optionsFactoryMock}
+        />,
+        {
+          initialValues: { [name]: null },
+        },
+      );
+
+      await waitForEffect();
+      expect(optionsFactoryMock).not.toHaveBeenCalled();
+
+      await userEvent.click(screen.getByRole("combobox"));
+
+      await userEvent.type(screen.getByRole("combobox"), "foo");
+
+      await expect(screen.findByText("Oh No!")).resolves.toBeInTheDocument();
+    });
+
+    it("handles error state with defaultOptions", async () => {
+      const optionsFactoryMock = jest
+        .fn()
+        .mockRejectedValue(new Error("Oh No!"));
+
+      render(
+        <ConnectedFieldTemplate
+          name={name}
+          label="Test Field"
+          description="This is a test field for AsyncRemoteSelectWidget"
+          as={AsyncRemoteSelectWidget}
+          optionsFactory={optionsFactoryMock}
+          defaultOptions
+        />,
+        {
+          initialValues: { [name]: null },
+        },
+      );
+
+      await expect(screen.findByText("Oh No!")).resolves.toBeInTheDocument();
+      expect(optionsFactoryMock).toHaveBeenCalled();
+    });
+
+    it("clears error state properly", async () => {
+      const optionsFactoryMock = jest
+        .fn()
+        .mockRejectedValue(new Error("Oh No!"));
+
+      const { rerender } = render(
+        <ConnectedFieldTemplate
+          name={name}
+          label={"Test Field"}
+          description="This is a test field for AsyncRemoteSelectWidget"
+          as={AsyncRemoteSelectWidget}
+          optionsFactory={optionsFactoryMock}
+        />,
+        {
+          initialValues: { [name]: null },
+        },
+      );
+
+      await waitForEffect();
+      expect(optionsFactoryMock).not.toHaveBeenCalled();
+      expect(screen.queryByText("Oh No!")).not.toBeInTheDocument();
+
+      await userEvent.type(screen.getByRole("combobox"), "fo");
+
+      await expect(screen.findByText("Oh No!")).resolves.toBeInTheDocument();
+
+      const options = [
+        {
+          value: "foo",
+          label: "Foo Option",
+        },
+        {
+          value: "bar",
+          label: "Bar Option",
+        },
+      ];
+
+      optionsFactoryMock.mockImplementation(
+        async ({ query }: { query: string }) =>
+          options.filter((option) =>
+            option.label.toLowerCase().includes(query.toLowerCase()),
+          ),
+      );
+
+      // We need to force a re-mount of the component for the error to clear
+      rerender(null);
+      rerender(
+        <ConnectedFieldTemplate
+          name={name}
+          label="Test Field"
+          description="This is a test field for AsyncRemoteSelectWidget"
+          as={AsyncRemoteSelectWidget}
+          optionsFactory={optionsFactoryMock}
+        />,
+      );
+
+      await waitForEffect();
+
+      await userEvent.type(screen.getByRole("combobox"), "foo");
+
+      expect(screen.queryByText("Oh No!")).not.toBeInTheDocument();
+      expect(screen.getByText("Foo Option")).toBeInTheDocument();
+      expect(screen.queryByText("Bar Option")).not.toBeInTheDocument();
     });
   });
 });
