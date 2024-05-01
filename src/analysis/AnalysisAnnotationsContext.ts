@@ -18,6 +18,9 @@
 import { createContext } from "react";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 
+const defaultSelector: () => AnalysisAnnotation[] = () => [];
+const defaultContextValue = () => defaultSelector;
+
 export type AnalysisAnnotationsContextType = {
   analysisAnnotationsSelectorForPath: (
     path: string,
@@ -26,9 +29,7 @@ export type AnalysisAnnotationsContextType = {
 
 const AnalysisAnnotationsContext =
   createContext<AnalysisAnnotationsContextType>({
-    analysisAnnotationsSelectorForPath() {
-      return () => [];
-    },
+    analysisAnnotationsSelectorForPath: defaultContextValue,
   });
 
 export default AnalysisAnnotationsContext;
