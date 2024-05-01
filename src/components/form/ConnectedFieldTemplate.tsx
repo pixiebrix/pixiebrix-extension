@@ -70,8 +70,6 @@ function FormikFieldTemplate<Values>({
     return annotations;
   }, [analysisAnnotations, error, formik, showUntouchedErrors, touched, value]);
 
-  console.log({ analysisAnnotations, fieldAnnotations });
-
   return (
     <FieldTemplate
       value={value}
