@@ -69,7 +69,7 @@ function updateManifestToV3(manifestV2) {
 
   // Extract host permissions
   const { permissions, origins } = normalizeManifestPermissions(manifest);
-  manifest.permissions = [...permissions, "scripting"];
+  manifest.permissions = [...permissions, "scripting", "offscreen"];
   manifest.host_permissions = origins;
   // Sidebar Panel open() is only available in Chrome 116+
   // https://developer.chrome.com/docs/extensions/reference/api/sidePanel#method-open
