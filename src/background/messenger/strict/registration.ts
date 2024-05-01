@@ -64,6 +64,7 @@ import {
   recordEvent,
   sendDeploymentAlert,
 } from "@/background/telemetry";
+import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
 
 expectContext("background");
 
@@ -123,6 +124,8 @@ declare global {
     RECORD_EVENT: typeof recordEvent;
     INIT_TELEMETRY: typeof initTelemetry;
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
+
+    ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
   }
 }
 
@@ -182,5 +185,7 @@ export default function registerMessenger(): void {
     RECORD_EVENT: recordEvent,
     INIT_TELEMETRY: initTelemetry,
     SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
+
+    ENSURE_CONTEXT_MENU: ensureContextMenu,
   });
 }
