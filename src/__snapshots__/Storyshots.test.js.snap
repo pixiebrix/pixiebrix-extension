@@ -35,7 +35,6 @@ exports[`Storyshots ActivateWizard/OptionsBody Text Field 1`] = `
           onChange={[Function]}
           onKeyDown={[Function]}
           rows="1"
-          setLocalError={[Function]}
           value=""
         />
       </div>
@@ -4000,7 +3999,6 @@ exports[`Storyshots Fields/RemoteSchemaObjectField Primitive Value 1`] = `
                     onChange={[Function]}
                     onKeyDown={[Function]}
                     rows="1"
-                    setLocalError={[Function]}
                     value=""
                   />
                 </div>
@@ -4447,7 +4445,6 @@ exports[`Storyshots Fields/SchemaField Integer 1`] = `
             id="topObj.parentObj.testField"
             onBlur={[Function]}
             onChange={[Function]}
-            setLocalError={[Function]}
             step="1"
             type="number"
             value="0"
@@ -4626,7 +4623,6 @@ exports[`Storyshots Fields/SchemaField Normal Text 1`] = `
             onChange={[Function]}
             onKeyDown={[Function]}
             rows="1"
-            setLocalError={[Function]}
             value=""
           />
         </div>
@@ -4706,7 +4702,6 @@ exports[`Storyshots Fields/SchemaField Not Required Text 1`] = `
             onChange={[Function]}
             onKeyDown={[Function]}
             rows="1"
-            setLocalError={[Function]}
             value=""
           />
         </div>
@@ -4783,7 +4778,6 @@ exports[`Storyshots Fields/SchemaField Number 1`] = `
             id="topObj.parentObj.testField"
             onBlur={[Function]}
             onChange={[Function]}
-            setLocalError={[Function]}
             step=""
             type="number"
             value="0"
@@ -4915,7 +4909,6 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                               onChange={[Function]}
                               onClick={[Function]}
                               readOnly={true}
-                              setLocalError={[Function]}
                               value=""
                             />
                           </div>
@@ -4986,7 +4979,6 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                               onChange={[Function]}
                               onClick={[Function]}
                               readOnly={true}
-                              setLocalError={[Function]}
                               value=""
                             />
                           </div>
@@ -5057,7 +5049,6 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                               onChange={[Function]}
                               onClick={[Function]}
                               readOnly={true}
-                              setLocalError={[Function]}
                               value=""
                             />
                           </div>
@@ -5128,7 +5119,6 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                               onChange={[Function]}
                               onClick={[Function]}
                               readOnly={true}
-                              setLocalError={[Function]}
                               value=""
                             />
                           </div>
@@ -5239,7 +5229,6 @@ exports[`Storyshots Fields/SchemaField Password 1`] = `
               id="topObj.parentObj.testField"
               onBlur={[Function]}
               onChange={[Function]}
-              setLocalError={[Function]}
               type="password"
               value=""
             />
@@ -5543,7 +5532,6 @@ exports[`Storyshots Fields/SchemaField Text Area 1`] = `
             onChange={[Function]}
             onKeyDown={[Function]}
             rows="1"
-            setLocalError={[Function]}
             value=""
           />
         </div>
@@ -5835,7 +5823,6 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 onChange={[Function]}
                 onKeyDown={[Function]}
                 rows="1"
-                setLocalError={[Function]}
                 value="A form"
               />
             </div>
@@ -5909,7 +5896,6 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 onChange={[Function]}
                 onKeyDown={[Function]}
                 rows="1"
-                setLocalError={[Function]}
                 value="A form example with _(you can use markdown)_"
               />
             </div>
@@ -6088,7 +6074,6 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   onChange={[Function]}
                   onKeyDown={[Function]}
                   rows="1"
-                  setLocalError={[Function]}
                   value="First name"
                 />
               </div>
@@ -6162,7 +6147,6 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   onChange={[Function]}
                   onKeyDown={[Function]}
                   rows="1"
-                  setLocalError={[Function]}
                   value="Your first name"
                 />
               </div>
@@ -6380,7 +6364,6 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   onChange={[Function]}
                   onKeyDown={[Function]}
                   rows="1"
-                  setLocalError={[Function]}
                   value="Chuck"
                 />
               </div>
@@ -6442,7 +6425,6 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   onBlur={[Function]}
                   onClick={[Function]}
                   readOnly={true}
-                  setLocalError={[Function]}
                   value=""
                 />
               </div>
@@ -6867,7 +6849,6 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
                 onBlur={[Function]}
                 onClick={[Function]}
                 readOnly={true}
-                setLocalError={[Function]}
                 value=""
               />
             </div>
@@ -6940,7 +6921,6 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
                 onBlur={[Function]}
                 onClick={[Function]}
                 readOnly={true}
-                setLocalError={[Function]}
                 value=""
               />
             </div>
@@ -7496,7 +7476,6 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
           name="bsCustomFormControl"
           onBlur={[Function]}
           onChange={[Function]}
-          setLocalError={[Function]}
           type="password"
           value=""
         />
