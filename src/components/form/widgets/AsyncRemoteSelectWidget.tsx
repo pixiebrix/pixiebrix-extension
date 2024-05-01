@@ -26,6 +26,7 @@ import { uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useDebouncedCallback } from "use-debounce";
 import { type GroupBase } from "react-select";
+import { useField } from "formik";
 
 type DefaultFactoryArgs = {
   /**
@@ -77,11 +78,11 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   optionsFactory,
   extraFactoryArgs,
   unknownOptionLabel,
-  setLocalError,
   ...asyncSelectProps
 }) => {
   const [knownOptions, setKnownOptions] = useState<Option[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { setError, setTouched } = useField(name)[2];
 
   const setOptions = useCallback(
     (options: Option[], reactSelectCallback: (options: Option[]) => void) => {
@@ -97,6 +98,7 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   const loadOptions = useDebouncedCallback(
     (query: string, callback: (options: Option[]) => void) => {
       const generate = async () => {
+        console.log("** generate()", { query, value, extraFactoryArgs });
         try {
           const rawOptions = (await optionsFactory({
             ...extraFactoryArgs,
@@ -104,10 +106,11 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
             value,
           })) as Option[];
           setOptions(rawOptions, callback);
-          setLocalError(null);
+          setError(null);
         } catch (error) {
           setOptions([], callback);
-          setLocalError(getErrorMessage(error, "Error loading options"));
+          setError(getErrorMessage(error, "Error loading options"));
+          void setTouched(true);
         } finally {
           setIsLoading(false);
         }
