@@ -38,7 +38,7 @@ import type {
 } from "@/types/modComponentTypes";
 import { collectModOptions } from "@/store/extensionsUtils";
 import type { ModComponentState } from "@/store/extensionsTypes";
-import { uninstallContextMenu } from "@/background/contextMenus";
+import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import { flagOn } from "@/auth/featureFlagStorage";
 

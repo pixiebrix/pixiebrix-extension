@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { preloadContextMenus } from "@/background/contextMenus";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { fromJS } from "@/starterBricks/contextMenu/contextMenu";
 import * as backgroundApi from "@/background/messenger/strict/api";
@@ -31,6 +30,7 @@ import {
   type ContextMenuConfig,
 } from "@/starterBricks/contextMenu/types";
 import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
+import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
 
 TEST_setContext("background");
 
