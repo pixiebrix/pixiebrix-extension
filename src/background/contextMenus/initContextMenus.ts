@@ -20,20 +20,12 @@ import { type Menus, type Tabs } from "webextension-polyfill";
 import { handleMenuAction, notify } from "@/contentScript/messenger/strict/api";
 import { waitForContentScript } from "@/background/contentScript";
 import { expectContext } from "@/utils/expectContext";
-import extensionPointRegistry from "@/starterBricks/registry";
-import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
 import { getModComponentState } from "@/store/extensionsStorage";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type UUID } from "@/types/stringTypes";
-import {
-  type ModComponentBase,
-  type ResolvedModComponent,
-} from "@/types/modComponentTypes";
 import { allSettled } from "@/utils/promiseUtils";
-import { ContextError } from "@/errors/genericErrors";
-import { selectEventData } from "@/telemetry/deployments";
-import { type ContextMenuConfig } from "@/starterBricks/contextMenu/types";
-import { MENU_PREFIX, makeMenuId } from "@/background/contextMenus/makeMenuId";
+import { MENU_PREFIX } from "@/background/contextMenus/makeMenuId";
+import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
 
 // This constant must be high enough to give Chrome time to inject the content script. waitForContentScript can take
 // >= 1 seconds because it also waits for the content script to be ready
@@ -87,64 +79,6 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
   } else {
     console.debug(`Ignoring menu item: ${info.menuItemId}`);
   }
-}
-
-/**
- * Uninstall the contextMenu UI for `extensionId` from browser context menu on all tabs.
- *
- * Safe to call on non-context menu extension ids.
- *
- * @returns true if the contextMenu was removed, or false if the contextMenu was not found.
- */
-export async function uninstallContextMenu({
-  extensionId,
-}: {
-  extensionId: UUID;
-}): Promise<boolean> {
-  try {
-    await browser.contextMenus.remove(makeMenuId(extensionId));
-    console.debug(`Uninstalled context menu ${extensionId}`);
-    return true;
-  } catch (error) {
-    // Will throw if extensionId doesn't refer to a context menu. The callers don't have an easy way to check the type
-    // without having to resolve the extensionPointId. So instead we'll just expect some of the calls to fail.
-    console.debug("Could not uninstall context menu %s", extensionId, {
-      error,
-    });
-    return false;
-  }
-}
-
-/**
- * Add context menu items to the Chrome context menu on all tabs, in anticipation that on Page Load, the content
- * script will register a handler for the item.
- * @param extensions the ModComponent to preload.
- */
-export async function preloadContextMenus(
-  extensions: ModComponentBase[],
-): Promise<void> {
-  expectContext("background");
-  const promises = extensions.map(async (definition) => {
-    const resolved = await resolveExtensionInnerDefinitions(definition);
-
-    const extensionPoint = await extensionPointRegistry.lookup(
-      resolved.extensionPointId,
-    );
-    if (extensionPoint instanceof ContextMenuStarterBrickABC) {
-      await extensionPoint.registerMenuItem(
-        definition as unknown as ResolvedModComponent<ContextMenuConfig>,
-        () => {
-          throw new ContextError(
-            "Context menu was preloaded, but no handler was registered",
-            {
-              context: selectEventData(resolved),
-            },
-          );
-        },
-      );
-    }
-  });
-  await allSettled(promises, { catch: "ignore" });
 }
 
 async function preloadAllContextMenus(): Promise<void> {

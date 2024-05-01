@@ -65,6 +65,7 @@ import {
   sendDeploymentAlert,
 } from "@/background/telemetry";
 import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
+import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
 
 expectContext("background");
 
@@ -126,6 +127,7 @@ declare global {
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
 
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
+    UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
   }
 }
 
@@ -187,5 +189,6 @@ export default function registerMessenger(): void {
     SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
 
     ENSURE_CONTEXT_MENU: ensureContextMenu,
+    UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
   });
 }
