@@ -18,9 +18,6 @@
 import React from "react";
 import { render, screen } from "@/extensionConsole/testHelpers";
 import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
-import { MemoryRouter } from "react-router";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Formik } from "formik";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 beforeAll(() => {
@@ -30,28 +27,28 @@ beforeAll(() => {
 describe("Marketplace Activate Wizard OptionsBody", () => {
   test("renders text field", async () => {
     const { asFragment } = render(
-      <MemoryRouter>
-        <Formik initialValues={{ optionsArgs: {} }} onSubmit={jest.fn()}>
-          <OptionsBody
-            mod={{
-              options: {
-                schema: {
-                  properties: {
-                    textField: {
-                      title: "Text Field",
-                      type: "string",
-                    },
-                  },
+      <OptionsBody
+        mod={{
+          options: {
+            schema: {
+              properties: {
+                textField: {
+                  title: "Text Field",
+                  type: "string",
                 },
               },
-            }}
-          />
-        </Formik>
-      </MemoryRouter>,
+            },
+          },
+        }}
+      />,
+      {
+        initialValues: {
+          optionsArgs: {},
+        },
+      },
     );
 
-    expect(screen.getByText("Text Field")).not.toBeNull();
-
+    await expect(screen.findByText("Text Field")).resolves.toBeInTheDocument();
     expect(asFragment()).toMatchSnapshot();
   });
 });

@@ -196,6 +196,7 @@ const CreateModModalBody: React.FC = () => {
         label="Mod ID"
         description={FieldDescriptions.MOD_ID}
         widerLabel
+        showUntouchedErrors
         as={RegistryIdWidget}
       />
       <ConnectedFieldTemplate
@@ -203,18 +204,21 @@ const CreateModModalBody: React.FC = () => {
         label="Name"
         widerLabel
         description={FieldDescriptions.MOD_NAME}
+        showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="version"
         label="Version"
         widerLabel
         description={FieldDescriptions.MOD_VERSION}
+        showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="description"
         label="Description"
         widerLabel
         description={FieldDescriptions.MOD_DESCRIPTION}
+        showUntouchedErrors
       />
     </Modal.Body>
   );
@@ -241,7 +245,6 @@ const CreateModModalBody: React.FC = () => {
       ) : (
         <Form
           validationSchema={formSchema}
-          showUntouchedErrors
           validateOnMount
           initialValues={initialModMetadataFormState}
           onSubmit={onSubmit}

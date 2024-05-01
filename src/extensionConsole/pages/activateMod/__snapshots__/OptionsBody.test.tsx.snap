@@ -2,61 +2,70 @@
 
 exports[`Marketplace Activate Wizard OptionsBody renders text field 1`] = `
 <DocumentFragment>
-  <div
-    class="formGroup form-group"
+  <form
+    action="#"
   >
     <div
-      class="mb-2 w-100 collapse"
+      class="formGroup form-group"
     >
       <div
-        class="annotationPlaceholder"
-      />
-    </div>
-    <label
-      class="label form-label"
-      for="optionsArgs.textField"
-    >
-      Text Field
-    </label>
-    <div
-      class="formField"
-    >
-      <div
-        class="root"
+        class="mb-2 w-100 collapse"
       >
         <div
-          class="field"
-        >
-          <input
-            class="form-control"
-            id="optionsArgs.textField"
-            name="optionsArgs.textField"
-            readonly=""
-            value=""
-          />
-        </div>
+          class="annotationPlaceholder"
+        />
+      </div>
+      <label
+        class="label form-label"
+        for="optionsArgs.textField"
+      >
+        Text Field
+      </label>
+      <div
+        class="formField"
+      >
         <div
-          class="dropdown dropdown"
-          data-test-selected="Exclude"
-          data-testid="toggle-optionsArgs.textField"
+          class="root"
         >
-          <button
-            aria-expanded="false"
-            aria-haspopup="true"
-            class="dropdown-toggle btn btn-link"
-            type="button"
+          <div
+            class="field"
           >
-            <span
-              class="symbol"
+            <input
+              class="form-control"
+              id="optionsArgs.textField"
+              name="optionsArgs.textField"
+              readonly=""
+              value=""
+            />
+          </div>
+          <div
+            class="dropdown dropdown"
+            data-test-selected="Exclude"
+            data-testid="toggle-optionsArgs.textField"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-link"
+              type="button"
             >
-              <test-file-stub
-                classname="root"
-              />
-            </span>
-          </button>
+              <span
+                class="symbol"
+              >
+                <test-file-stub
+                  classname="root"
+                />
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
 </DocumentFragment>
 `;
