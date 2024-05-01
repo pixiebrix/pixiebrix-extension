@@ -66,7 +66,7 @@ export const TemporaryPanelTabPane: React.FC<{
           });
         }}
       >
-        {panel.isUnavailable && (
+        {panel.unavailable && (
           <UnavailableOverlay
             onClose={async () => dispatch(removeTemporaryPanel(panel.nonce))}
           />

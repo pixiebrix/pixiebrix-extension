@@ -28,6 +28,7 @@ import {
   showForm,
   showTemporaryPanel,
   updateTemporaryPanel,
+  navigationComplete,
 } from "@/sidebar/protocol";
 import { expectContext } from "@/utils/expectContext";
 import { noop } from "lodash";
@@ -48,6 +49,7 @@ declare global {
     SIDEBAR_HIDE_TEMPORARY_PANEL: typeof hideTemporaryPanel;
     SIDEBAR_SHOW_ACTIVATE_RECIPE: typeof showActivateMods;
     SIDEBAR_HIDE_ACTIVATE_RECIPE: typeof hideActivateMods;
+    SIDEBAR_NAVIGATION_COMPLETE: typeof navigationComplete;
   }
 }
 
@@ -65,5 +67,6 @@ export default function registerMessenger(): void {
     SIDEBAR_HIDE_TEMPORARY_PANEL: hideTemporaryPanel,
     SIDEBAR_SHOW_ACTIVATE_RECIPE: showActivateMods,
     SIDEBAR_HIDE_ACTIVATE_RECIPE: hideActivateMods,
+    SIDEBAR_NAVIGATION_COMPLETE: navigationComplete,
   });
 }

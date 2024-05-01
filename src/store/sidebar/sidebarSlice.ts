@@ -218,13 +218,28 @@ const sidebarSlice = createSlice({
 
       fixActiveTabOnRemove(state, entry);
     },
-    markTemporaryPanelsAsUnavailable(state) {
+    invalidatePanels(state) {
+      for (const panel of state.panels) {
+        // Regular panels are invalidated when the content script has emitted the notifyNavigationComplete event,
+        // and they are still in `connecting` state (meaning that the mod did not mount for the new page)
+        panel.unavailable = false;
+        panel.connecting = true;
+      }
+
       for (const form of state.forms) {
-        form.isUnavailable = true;
+        form.unavailable = true;
       }
 
       for (const temporaryPanel of state.temporaryPanels) {
-        temporaryPanel.isUnavailable = true;
+        temporaryPanel.unavailable = true;
+      }
+    },
+    invalidateConnectingPanels(state) {
+      for (const panel of state.panels) {
+        if (panel.connecting) {
+          panel.connecting = false;
+          panel.unavailable = true;
+        }
       }
     },
     updateTemporaryPanel(
@@ -277,9 +292,19 @@ const sidebarSlice = createSlice({
       }
     },
     setPanels(state, action: PayloadAction<{ panels: PanelEntry[] }>) {
+      // Keep any old panels from state.panels that are unavailable or connecting and not in the new panels
+      const oldPanels = state.panels.filter(
+        (oldPanel) =>
+          (oldPanel.unavailable || oldPanel.connecting) &&
+          !action.payload.panels.some(
+            (newPanel) => newPanel.extensionId === oldPanel.extensionId,
+          ),
+      );
+
       // For now, pick an arbitrary order that's stable. There's no guarantees on which order panels are registered
-      state.panels = castDraft(
-        sortBy(action.payload.panels, (panel) => panel.extensionId),
+      state.panels = sortBy(
+        [...oldPanels, ...castDraft(action.payload.panels)],
+        (panel) => panel.extensionId,
       );
 
       // Try fulfilling the pendingActivePanel request

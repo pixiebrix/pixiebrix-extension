@@ -119,7 +119,15 @@ type BasePanelEntry = {
    *
    * @since 1.8.14
    */
-  isUnavailable?: boolean;
+  unavailable?: boolean;
+
+  /**
+   * Determines if the panel is connecting to the page.
+   * This is used to display a spinner modal over the panel after a navigation occurs while the mod is remounting.
+   *
+   * @since 1.8.14
+   */
+  connecting?: boolean;
 };
 
 /**

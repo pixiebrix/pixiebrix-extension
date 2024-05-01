@@ -82,7 +82,6 @@
     "./background/locator.ts",
     "./background/messenger/strict/api.ts",
     "./background/messenger/strict/registration.ts",
-    "./background/navigation.ts",
     "./background/partnerIntegrations.ts",
     "./background/proxyUtils.ts",
     "./background/refreshRegistries.ts",
