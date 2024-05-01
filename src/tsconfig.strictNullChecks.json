@@ -78,6 +78,7 @@
     "./background/contentScript.ts",
     "./background/contextMenus/ensureContextMenu.ts",
     "./background/contextMenus/makeMenuId.ts",
+    "./background/contextMenus/uninstallContextMenu.ts",
     "./background/dataStore.ts",
     "./background/externalProtocol.ts",
     "./background/initTheme.ts",

@@ -25,10 +25,6 @@
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import {
-  preloadContextMenus,
-  uninstallContextMenu,
-} from "@/background/contextMenus"; // 201 strictNullCheck errors
-import {
   requestRunInAllFrames,
   requestRunInOtherTabs,
   requestRunInOpener,
@@ -39,13 +35,13 @@ import { removeExtensionForEveryTab } from "@/background/removeExtensionForEvery
 import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 209 strictNullCheck errors
 
 import { setCopilotProcessData } from "@/background/partnerHandlers"; // Depends on contentScript/messenger to pass strictNullCheck
+import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus"; // 197 strictNullCheck errors
 
 expectContext("background");
 
 declare global {
   interface MessengerMethods {
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
-    UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
 
     SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
 
@@ -68,7 +64,6 @@ export default function registerMessenger(): void {
     INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
 
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
-    UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
 
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
 
