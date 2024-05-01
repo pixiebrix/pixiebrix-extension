@@ -5,7 +5,7 @@ import {
 import { removeSidebars } from "@/contentScript/messenger/strict/api";
 import { forEachTab } from "@/utils/extensionUtils";
 import { type UUID } from "@/types/stringTypes";
-import { uninstallContextMenu } from "./contextMenus";
+import { uninstallContextMenu } from "./contextMenus/uninstallContextMenu";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { clearLog } from "@/telemetry/logging";
 
