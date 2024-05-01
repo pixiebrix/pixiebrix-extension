@@ -79,7 +79,7 @@ export type CustomFieldWidget<
   > = CustomFieldWidgetProps<TValue, TInputElement>,
 > = React.ComponentType<TFieldWidgetProps>;
 
-const emptyAnnotations: FieldAnnotation[] = [];
+const EMPTY_ANNOTATIONS = Object.freeze([]) as FieldAnnotation[];
 
 const FieldTemplate: <As extends React.ElementType, T = Element>(
   p: FieldProps<As, T>,
@@ -89,7 +89,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   fitLabelWidth,
   widerLabel,
   description,
-  annotations = emptyAnnotations,
+  annotations = EMPTY_ANNOTATIONS,
   value,
   children,
   blankValue = "",

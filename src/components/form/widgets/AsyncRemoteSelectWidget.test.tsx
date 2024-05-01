@@ -224,8 +224,6 @@ describe("AsyncRemoteSelectWidget", () => {
       />,
     );
 
-    jest.runOnlyPendingTimers();
-
     await waitForEffect();
 
     await userEvent.type(screen.getByRole("combobox"), "o");
