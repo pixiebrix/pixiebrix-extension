@@ -64,9 +64,14 @@ export class ModsPage {
         /* eslint-disable no-await-in-loop -- optimization via parallelization not relevant here */
         await expect(async () => {
           await mod.locator(".dropdown").click();
-          await mod.getByRole("button", { name: "Deactivate" }).click({
-            timeout: 500,
+          const deactivateOption = mod.getByRole("button", {
+            name: "Deactivate",
           });
+          if (await deactivateOption.isVisible()) {
+            await deactivateOption.click({
+              timeout: 500,
+            });
+          }
         }).toPass({
           timeout: 2000,
         });
