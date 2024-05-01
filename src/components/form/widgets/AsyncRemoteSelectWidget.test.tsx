@@ -44,6 +44,7 @@ describe("AsyncRemoteSelectWidget", () => {
         optionsFactory={optionsFactoryMock}
         onChange={onChangeMock}
         value={null}
+        setLocalError={jest.fn()}
       />,
       {
         initialValues: { [name]: null },
@@ -69,6 +70,7 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         defaultOptions
         value={null}
+        setLocalError={jest.fn()}
       />,
       {
         initialValues: { [name]: null },
@@ -98,6 +100,7 @@ describe("AsyncRemoteSelectWidget", () => {
         optionsFactory={optionsFactoryMock}
         onChange={onChangeMock}
         value={null}
+        setLocalError={jest.fn()}
       />,
       {
         initialValues: { [name]: null },
@@ -245,6 +248,7 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         defaultOptions
         value="test-value"
+        setLocalError={jest.fn()}
       />,
       {
         initialValues: { [name]: null },
