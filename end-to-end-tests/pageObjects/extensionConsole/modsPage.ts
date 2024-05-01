@@ -59,7 +59,6 @@ export class ModsPage {
 
   async deleteModByName(modName: string) {
     await this.searchModsInput().fill(modName);
-    await this.page.waitForTimeout(1000);
     for (const mod of await this.modTableItems().all()) {
       if (mod.getByText(modName, { exact: true })) {
         await expect(async () => {
