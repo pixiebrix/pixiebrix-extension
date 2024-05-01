@@ -25,7 +25,6 @@
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import {
-  ensureContextMenu,
   preloadContextMenus,
   uninstallContextMenu,
 } from "@/background/contextMenus"; // 201 strictNullCheck errors
@@ -47,7 +46,6 @@ declare global {
   interface MessengerMethods {
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
-    ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
 
     SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
 
@@ -71,7 +69,6 @@ export default function registerMessenger(): void {
 
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
-    ENSURE_CONTEXT_MENU: ensureContextMenu,
 
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
 
