@@ -16,15 +16,11 @@
  */
 
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import {
-  getErrorMessage,
-  getRootCause,
-  selectError,
-} from "@/errors/errorHelpers";
+import { getErrorMessage, selectError } from "@/errors/errorHelpers";
 import { isObject } from "@/utils/objectUtils";
-import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { deleteCachedAuthData } from "@/background/messenger/strict/api";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { selectAxiosError } from "@/data/service/requestErrorUtils";
 
 class PermissionsError extends Error {
   override name = "PermissionsError";
@@ -41,11 +37,9 @@ export async function handleGoogleRequestRejection(
   error: unknown,
   googleAccount: Nullishable<SanitizedIntegrationConfig>,
 ): Promise<Error> {
-  // Request errors from proxyRequest are wrapped in ContextError which includes metadata about the integration
-  // configuration. Therefore, get root cause for determining if this is an Axios error
-  const rootCause = getRootCause(error);
-
-  console.debug("Error making Google request", { error });
+  console.debug("Error making Google request", {
+    error,
+  });
 
   if (!isObject(error)) {
     // Shouldn't happen in practice, but be defensive
@@ -54,12 +48,16 @@ export async function handleGoogleRequestRejection(
     });
   }
 
-  if (!isAxiosError(rootCause) || rootCause.response == null) {
+  // Request errors from proxyRequest are wrapped in ContextError which includes metadata about the integration
+  // configuration. Therefore, get axios error if it exists.
+  const axiosError = selectAxiosError(error);
+
+  if (axiosError?.response == null) {
     // It should always be an error-like object at this point, but be defensive.
     return selectError(error);
   }
 
-  const { status } = rootCause.response;
+  const { status } = axiosError.response;
 
   if ([403, 404].includes(status)) {
     const message =
