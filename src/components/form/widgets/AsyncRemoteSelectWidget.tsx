@@ -78,7 +78,8 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   extraFactoryArgs,
   unknownOptionLabel,
   setLocalError,
-  ...asyncSelectProps
+  isInvalid,
+  ...asyncSelectPropsIn
 }) => {
   const [knownOptions, setKnownOptions] = useState<Option[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -97,7 +98,6 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   const loadOptions = useDebouncedCallback(
     (query: string, callback: (options: Option[]) => void) => {
       const generate = async () => {
-        console.log("** generate()", { query, value, extraFactoryArgs });
         try {
           const rawOptions = (await optionsFactory({
             ...extraFactoryArgs,
@@ -145,6 +145,8 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
     selectedOption = { value, label };
   }
 
+  const { placeholder, ...asyncSelectProps } = asyncSelectPropsIn;
+
   return (
     <div className="d-flex">
       <div className="flex-grow-1">
@@ -153,6 +155,8 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
           loadOptions={loadOptions}
           onChange={patchedOnChange}
           value={selectedOption}
+          isDisabled={isInvalid}
+          placeholder={isInvalid ? "" : placeholder}
           {...asyncSelectProps}
         />
       </div>

@@ -209,14 +209,14 @@ describe("AsyncRemoteSelectWidget", () => {
     ];
 
     optionsFactoryMock.mockImplementation(
-      async ({ query }: { query: string }) => {
-        console.log("factory mock called");
-        return options.filter((option) =>
+      async ({ query }: { query: string }) =>
+        options.filter((option) =>
           option.label.toLowerCase().includes(query.toLowerCase()),
-        );
-      },
+        ),
     );
 
+    // We need to force a re-mount of the component for the error to clear
+    rerender(null);
     rerender(
       <ConnectedFieldTemplate
         name={name}
@@ -229,7 +229,7 @@ describe("AsyncRemoteSelectWidget", () => {
 
     await waitForEffect();
 
-    await userEvent.type(screen.getByRole("combobox"), "o");
+    await userEvent.type(screen.getByRole("combobox"), "foo");
 
     expect(screen.queryByText("Oh No!")).not.toBeInTheDocument();
     expect(screen.getByText("Foo Option")).toBeInTheDocument();

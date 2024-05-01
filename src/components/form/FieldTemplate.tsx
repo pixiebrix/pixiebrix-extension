@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ReactNode, useMemo } from "react";
+import React, { type ReactNode, useMemo, useState } from "react";
 import {
   Collapse,
   FormControl,
@@ -70,6 +70,7 @@ export type CustomFieldWidgetProps<
   value: TValue;
   onChange: React.ChangeEventHandler<TInputElement>;
   setLocalError?: (error: string | null) => void;
+  isInvalid?: boolean;
 };
 export type CustomFieldWidget<
   TValue = string | string[] | number,
@@ -98,7 +99,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   className,
   ...restFieldProps
 }) => {
-  const [localError, setLocalError] = React.useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
   const localErrorAnnotation = useMemo<FieldAnnotation | null>(() => {
     if (localError == null) {
       return null;
