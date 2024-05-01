@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import SelectWidget, {
   type Option,
   type SelectLike,
@@ -30,6 +30,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import useAsyncState from "@/hooks/useAsyncState";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 export type OptionsFactory<T = unknown> = (
   config: SanitizedIntegrationConfig,
@@ -43,6 +44,9 @@ type RemoteSelectWidgetProps<T = unknown> = CustomFieldWidgetProps<
   isClearable?: boolean;
   optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>;
   config: SanitizedIntegrationConfig | null;
+  /**
+   * Additional arguments to pass to optionsFactory, if optionsFactory is a function.
+   */
   factoryArgs?: UnknownObject;
   loadingMessage?: string;
 };
@@ -74,9 +78,10 @@ export function useOptionsResolver<T>(
  * @see AsyncRemoteSelectWidget
  */
 const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
-  config,
   optionsFactory,
+  config,
   factoryArgs,
+  setLocalError,
   ...selectProps
 }) => {
   const {
@@ -88,13 +93,20 @@ const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
 
   useReportError(error);
 
+  useEffect(() => {
+    if (error == null) {
+      setLocalError?.(null);
+    } else {
+      setLocalError?.(getErrorMessage(error, "Error loading options"));
+    }
+  }, [error, setLocalError]);
+
   return (
     <div className="d-flex">
       <div className="flex-grow-1">
         <SelectWidget
           options={options}
           isLoading={isLoading}
-          loadError={error}
           {...selectProps}
         />
       </div>

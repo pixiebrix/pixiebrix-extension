@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { useField } from "formik";
-import Select from "react-select";
-import { type Option } from "@/components/form/widgets/SelectWidget";
+import React, { type ChangeEvent, useEffect } from "react";
+import Select, { type MultiValue } from "react-select";
+import {
+  type MultiSelectLike,
+  type Option,
+} from "@/components/form/widgets/SelectWidget";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import {
   type OptionsFactory,
@@ -26,65 +28,75 @@ import {
 } from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import useReportError from "@/hooks/useReportError";
+import type { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 
-type RemoteMultiSelectWidgetProps = {
-  id?: string;
-  name: string;
-  disabled?: boolean;
-  isClearable?: boolean;
-  optionsFactory: OptionsFactory | Promise<Array<Option<unknown>>>;
-  config: SanitizedIntegrationConfig | null;
-  /**
-   * Additional arguments to pass to optionsFactory, if optionsFactory is a function.
-   */
-  factoryArgs?: UnknownObject;
-  loadingMessage?: string;
-};
+type RemoteMultiSelectWidgetProps<TOption extends Option<TOption["value"]>> =
+  CustomFieldWidgetProps<Array<TOption["value"]>, MultiSelectLike<TOption>> & {
+    isClearable?: boolean;
+    optionsFactory: OptionsFactory<TOption["value"]> | Promise<TOption[]>;
+    config: SanitizedIntegrationConfig | null;
+    /**
+     * Additional arguments to pass to optionsFactory, if optionsFactory is a function.
+     */
+    factoryArgs?: UnknownObject;
+  };
 
 /**
  * @see RemoteSelectWidget
  */
-const RemoteMultiSelectWidget: React.FC<RemoteMultiSelectWidgetProps> = ({
+const RemoteMultiSelectWidget = <TOption extends Option<TOption["value"]>>({
   id,
   isClearable = false,
   disabled,
+  value,
   optionsFactory,
-  factoryArgs,
   config,
-  ...props
-}) => {
-  const [field, , helpers] = useField<unknown[]>(props);
+  factoryArgs,
+  onChange,
+  setLocalError,
+  ...selectProps
+}: RemoteMultiSelectWidgetProps<TOption>) => {
   const {
-    data: options,
+    data: options = [],
     isLoading,
-    error: loadError,
+    error,
   } = useOptionsResolver(config, optionsFactory, factoryArgs);
-  useReportError(loadError);
 
-  if (loadError) {
-    return (
-      <div className="text-danger">
-        Error loading options: {getErrorMessage(loadError)}
-      </div>
-    );
-  }
+  useReportError(error);
+
+  useEffect(() => {
+    if (error == null) {
+      setLocalError?.(null);
+    } else {
+      setLocalError?.(getErrorMessage(error, "Error loading options"));
+    }
+  }, [error, setLocalError]);
+
+  // Option will be null when the select is "cleared"
+  const patchedOnChange = (newOptions: MultiValue<TOption>) => {
+    onChange({
+      target: {
+        value: newOptions.map(({ value }) => value),
+        name: selectProps.name,
+        options,
+      },
+    } as ChangeEvent<MultiSelectLike<TOption>>);
+  };
+
+  const selectedOptions = options.filter((option: Option) =>
+    value.includes(option.value),
+  );
 
   return (
     <Select
       inputId={id}
       isMulti
       isDisabled={disabled}
-      isClearable={isClearable}
-      options={options ?? []}
+      options={options}
       isLoading={isLoading}
-      value={
-        options?.filter((option: Option) =>
-          (field.value ?? []).includes(option.value),
-        ) ?? []
-      }
-      onChange={async (options) => {
-        await helpers.setValue(options.map((option) => option.value));
-      }}
+      value={selectedOptions}
+      onChange={patchedOnChange}
+      {...selectProps}
     />
   );
 };
