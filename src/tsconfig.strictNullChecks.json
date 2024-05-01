@@ -116,6 +116,7 @@
     "./bricks/effects/error.ts",
     "./bricks/effects/event.ts",
     "./bricks/effects/exportCsv.ts",
+    "./bricks/effects/exportFileEffect.ts",
     "./bricks/effects/forms.ts",
     "./bricks/effects/hide.ts",
     "./bricks/effects/highlight.ts",
