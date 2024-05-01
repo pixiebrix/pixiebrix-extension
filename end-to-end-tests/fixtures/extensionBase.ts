@@ -129,18 +129,7 @@ export const test = mergeTests(
       // Go to the mods page and clean up all mods with modName after the test
       const modsPage = new ModsPage(page, extensionId);
       await modsPage.goto();
-      await modsPage.searchModsInput().fill(modName);
-      await page.waitForTimeout(1000);
-      for (const mod of await modsPage.modTableItems().all()) {
-        console.log("*** mod", mod);
-        if (mod.getByText(modName, { exact: true })) {
-          await mod.locator(".dropdown").click();
-          await mod.getByText("Deactivate").click();
-          await mod.locator(".dropdown").click();
-          await page.getByText("Delete").click();
-          await page.getByRole("button", { name: "Delete" }).click();
-        }
-      }
+      await modsPage.deleteModByName(modName);
     },
     async extensionId({ context }, use) {
       const extensionId = await getExtensionId(context);

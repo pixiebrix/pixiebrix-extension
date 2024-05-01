@@ -56,6 +56,36 @@ export class ModsPage {
   searchModsInput() {
     return this.page.getByTestId("blueprints-search-input");
   }
+
+  async deleteModByName(modName: string) {
+    await this.searchModsInput().fill(modName);
+    await this.page.waitForTimeout(1000);
+    for (const mod of await this.modTableItems().all()) {
+      if (mod.getByText(modName, { exact: true })) {
+        await expect(async () => {
+          await mod.locator(".dropdown").click();
+          await mod.getByRole("button", { name: "Deactivate" }).click({
+            timeout: 500,
+          });
+        }).toPass({
+          timeout: 2000,
+        });
+
+        await expect(async () => {
+          await mod.locator(".dropdown").click();
+          await this.page.getByRole("button", { name: "Delete" }).click({
+            timeout: 500,
+          });
+        }).toPass({
+          timeout: 2000,
+        });
+        await this.page.getByRole("button", { name: "Delete" }).click();
+        await expect(
+          this.page.getByText(`Deleted mod ${modName} from your account`),
+        ).toBeVisible();
+      }
+    }
+  }
 }
 
 export class ActivateModPage {
