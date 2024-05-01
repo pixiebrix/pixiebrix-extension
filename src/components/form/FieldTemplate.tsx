@@ -120,7 +120,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   );
 
   const isInvalid = !isEmpty(
-    fieldAnnotations?.filter(
+    fieldAnnotations.filter(
       (annotation) => annotation.type === AnnotationType.Error,
     ),
   );

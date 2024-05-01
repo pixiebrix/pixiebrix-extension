@@ -36,7 +36,7 @@ export function makeFieldAnnotationsForValue(
           return true;
         }
 
-        // Also need to handle { expression: ... } detail format
+        // Also need to handle annotation.detail: { expression: ... } format
         const detailValue =
           typeof annotation.detail === "object" &&
           "expression" in annotation.detail

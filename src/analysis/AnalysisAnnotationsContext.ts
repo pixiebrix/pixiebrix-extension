@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import { createContext } from "react";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 
 export type AnalysisAnnotationsContextType = {
@@ -25,7 +25,7 @@ export type AnalysisAnnotationsContextType = {
 };
 
 const AnalysisAnnotationsContext =
-  React.createContext<AnalysisAnnotationsContextType>({
+  createContext<AnalysisAnnotationsContextType>({
     analysisAnnotationsSelectorForPath() {
       return () => [];
     },
