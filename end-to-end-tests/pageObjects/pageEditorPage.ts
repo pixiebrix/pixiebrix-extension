@@ -57,7 +57,7 @@ export class PageEditorPage {
    * extensionBase.ts if saving the mod for test cleanup.
    */
   async addStarterBrick(starterBrickName: StarterBrickName, modName: string) {
-    await this.page.getByText("Add").click();
+    await this.page.getByRole("button", { name: "Add", exact: true }).click();
     await this.page
       .locator("[role=button].dropdown-item", {
         hasText: starterBrickName,

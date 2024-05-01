@@ -72,6 +72,12 @@ export class ModsPage {
               timeout: 500,
             });
           }
+
+          await mod.locator(".dropdown").click();
+          const deleteOption = mod.getByRole("button", { name: "Delete" });
+          await expect(deleteOption).toBeVisible({
+            timeout: 500,
+          });
         }).toPass({
           timeout: 2000,
         });

@@ -115,13 +115,15 @@ export const test = mergeTests(
      * Adds a new starter brick in the Page Editor. Cleans up the saved mod component after the test, if applicable.
      */
     async addStarterBrick({ page, extensionId }, use) {
-      const modName = `Test Mod ${uuidv4()}`;
+      const modNames: string[] = [];
 
       await use(
         async (
           pageEditorPage: PageEditorPage,
           starterBrickName: StarterBrickName,
         ) => {
+          const modName = `Test ${starterBrickName} ${uuidv4()}`;
+          modNames.push(modName);
           await pageEditorPage.addStarterBrick(starterBrickName, modName);
           return modName;
         },
@@ -129,7 +131,10 @@ export const test = mergeTests(
       // Go to the mods page and clean up all mods with modName after the test
       const modsPage = new ModsPage(page, extensionId);
       await modsPage.goto();
-      await modsPage.deleteModByName(modName);
+      for (const modName of modNames) {
+        // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
+        await modsPage.deleteModByName(modName);
+      }
     },
     async extensionId({ context }, use) {
       const extensionId = await getExtensionId(context);
