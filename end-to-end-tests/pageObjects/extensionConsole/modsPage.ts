@@ -61,6 +61,7 @@ export class ModsPage {
     await this.searchModsInput().fill(modName);
     for (const mod of await this.modTableItems().all()) {
       if (mod.getByText(modName, { exact: true })) {
+        /* eslint-disable no-await-in-loop -- optimization via parallelization not relevant here */
         await expect(async () => {
           await mod.locator(".dropdown").click();
           await mod.getByRole("button", { name: "Deactivate" }).click({
@@ -82,6 +83,7 @@ export class ModsPage {
         await expect(
           this.page.getByText(`Deleted mod ${modName} from your account`),
         ).toBeVisible();
+        /* eslint-enable no-await-in-loop */
       }
     }
   }
