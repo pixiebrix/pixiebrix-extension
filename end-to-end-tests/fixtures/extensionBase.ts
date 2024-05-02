@@ -29,6 +29,7 @@ import {
 } from "./utils";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 import { test as envSetup } from "./envSetup";
+import { PageEditorPage } from "../pageObjects/pageEditorPage";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // See https://github.com/microsoft/playwright/issues/26693
@@ -45,7 +46,7 @@ export const test = mergeTests(
       context: BrowserContext;
       extensionId: string;
       chromiumChannel: "chrome" | "msedge";
-      addStandaloneModToCleanup: (modName: string) => Promise<void>;
+      newPageEditorPage: (urlToConnectTo: string) => Promise<PageEditorPage>;
     },
     {
       checkRequiredEnvironmentVariables: () => void;
@@ -104,21 +105,26 @@ export const test = mergeTests(
       // The page is closed by the context fixture `.close` cleanup step
     },
     /**
-     * Adds a standalone mod to a list of mods saved during the test to be cleaned up after the test.
+     * Create a new page editor instance for the given URL. Cleans up any saved standalone mods after the test.
+     * TODO: support "packaged" mod cleanup
      */
-    async addStandaloneModToCleanup({ page, extensionId }, use) {
-      const savedStandaloneModNames: string[] = [];
-
-      await use(async (modName: string) => {
-        savedStandaloneModNames.push(modName);
+    async newPageEditorPage({ context, extensionId }, use) {
+      const pageEditorPages: PageEditorPage[] = [];
+      await use(async (urlToConnectTo: string) => {
+        const newPage = await context.newPage();
+        const newPageEditorPage = new PageEditorPage(
+          newPage,
+          urlToConnectTo,
+          extensionId,
+        );
+        await newPageEditorPage.goto();
+        pageEditorPages.push(newPageEditorPage);
+        return newPageEditorPage;
       });
 
-      // Go to the mods page and clean up all saved standalone mods
-      const modsPage = new ModsPage(page, extensionId);
-      await modsPage.goto();
-      for (const modName of savedStandaloneModNames) {
+      for (const page of pageEditorPages) {
         // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
-        await modsPage.deleteModByName(modName);
+        await page.cleanup();
       }
     },
     async extensionId({ context }, use) {

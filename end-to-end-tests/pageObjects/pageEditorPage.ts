@@ -16,8 +16,7 @@
  */
 
 import { getBasePageEditorUrl } from "./constants";
-import { type BrowserContext, type Page } from "@playwright/test";
-import { expect } from "../fixtures/extensionBase";
+import { type Page, expect } from "@playwright/test";
 import { uuidv4 } from "@/types/helpers";
 import { ModsPage } from "./extensionConsole/modsPage";
 
@@ -31,31 +30,31 @@ export type StarterBrickName =
   | "Sidebar Panel"
   | "Tour";
 
+/**
+ * Page object for the Page Editor. Prefer the newPageEditorPage fixture in extensionBase.ts to directly creating an
+ * instance of this class to take advantage of automatic cleanup of saved mods.
+ */
 export class PageEditorPage {
   private readonly pageEditorUrl: string;
-  private page: Page;
   private readonly savedStandaloneModNames: string[] = [];
 
   constructor(
-    private readonly context: BrowserContext,
+    private readonly page: Page,
     private readonly urlToConnectTo: string,
     private readonly extensionId: string,
-    private readonly addStandaloneModToCleanup: (modName: string) => void,
   ) {
     this.pageEditorUrl = getBasePageEditorUrl(extensionId);
   }
 
   async goto() {
-    const pageEditorPage = await this.context.newPage();
-    await pageEditorPage.goto(this.pageEditorUrl);
+    await this.page.goto(this.pageEditorUrl);
     // Set the viewport size to the expected in horizontal layout size of the devconsole when docked on the bottom.
-    await pageEditorPage.setViewportSize({ width: 1280, height: 300 });
-    await pageEditorPage.getByTestId(`tab-${this.urlToConnectTo}`).click();
-    const heading = pageEditorPage.getByRole("heading", {
+    await this.page.setViewportSize({ width: 1280, height: 300 });
+    await this.page.getByTestId(`tab-${this.urlToConnectTo}`).click();
+    const heading = this.page.getByRole("heading", {
       name: "Welcome to the Page Editor!",
     });
     await expect(heading).toBeVisible();
-    this.page = pageEditorPage;
   }
 
   getTemplateGalleryButton() {
@@ -94,10 +93,14 @@ export class PageEditorPage {
     await modListItem.locator("[data-icon=save]").click();
     await expect(this.page.getByText("Saved Mod")).toBeVisible();
     this.savedStandaloneModNames.push(modName);
-    this.addStandaloneModToCleanup(modName);
   }
 
-  /* Make sure to only call this method once after test completion */
+  /**
+   * This method is meant to be called exactly once after the test is done to clean up any saved mods created during the
+   * test.
+   *
+   * @see newPageEditorPage in fixtures/extensionBase.ts
+   */
   async cleanup() {
     const modsPage = new ModsPage(this.page, this.extensionId);
     await modsPage.goto();
