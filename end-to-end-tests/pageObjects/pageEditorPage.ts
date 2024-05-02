@@ -18,6 +18,7 @@
 import { getBasePageEditorUrl } from "./constants";
 import { type BrowserContext, type Page } from "@playwright/test";
 import { expect } from "../fixtures/extensionBase";
+import { uuidv4 } from "@/types/helpers";
 
 // TODO: add the rest of the starter brick names (as they appear in the UI) or
 //  reuse a type from the codebase if it exists
@@ -31,6 +32,7 @@ export class PageEditorPage {
     private readonly context: BrowserContext,
     private readonly urlToConnectTo: string,
     extensionId: string,
+    private readonly addStandaloneModToCleanup: (modName: string) => void,
   ) {
     this.pageEditorUrl = getBasePageEditorUrl(extensionId);
   }
@@ -53,10 +55,15 @@ export class PageEditorPage {
   }
 
   /**
-   * Adds a starter brick in the Page Editor. Prefer the `addStarterBrick` fixture in
-   * extensionBase.ts if saving the mod for test cleanup.
+   * Adds a starter brick in the Page Editor. Randomly generates a mod name to prevent
+   * test collision.
+   *
+   * @param starterBrickName the starter brick name to add, corresponding to the name shown in the Page Editor UI,
+   * not the underlying type
+   * @returns modName the generated mod name
    */
-  async addStarterBrick(starterBrickName: StarterBrickName, modName: string) {
+  async addStarterBrick(starterBrickName: StarterBrickName) {
+    const modName = `Test ${starterBrickName} ${uuidv4()}`;
     await this.page.getByRole("button", { name: "Add", exact: true }).click();
     await this.page
       .locator("[role=button].dropdown-item", {
@@ -64,18 +71,20 @@ export class PageEditorPage {
       })
       .click();
     await this.fillInBrickField("Name", modName);
+    return modName;
   }
 
   async fillInBrickField(fieldLabel: string, value: string) {
     await this.page.getByLabel(fieldLabel).fill(value);
   }
 
-  async saveMod(modName: string) {
+  async saveStandaloneMod(modName: string) {
     const modListItem = this.page.locator(".list-group-item", {
       hasText: modName,
     });
     await modListItem.click();
     await modListItem.locator("[data-icon=save]").click();
     await expect(this.page.getByText("Saved Mod")).toBeVisible();
+    this.addStandaloneModToCleanup(modName);
   }
 }

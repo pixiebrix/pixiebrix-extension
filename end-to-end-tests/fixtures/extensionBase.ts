@@ -29,11 +29,6 @@ import {
 } from "./utils";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 import { test as envSetup } from "./envSetup";
-import { uuidv4 } from "@/types/helpers";
-import {
-  type PageEditorPage,
-  type StarterBrickName,
-} from "../pageObjects/pageEditorPage";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // See https://github.com/microsoft/playwright/issues/26693
@@ -50,10 +45,7 @@ export const test = mergeTests(
       context: BrowserContext;
       extensionId: string;
       chromiumChannel: "chrome" | "msedge";
-      addStarterBrick: (
-        pageEditorPage: PageEditorPage,
-        starterBrickType: string,
-      ) => Promise<string>;
+      addStandaloneModToCleanup: (modName: string) => Promise<void>;
     },
     {
       checkRequiredEnvironmentVariables: () => void;
@@ -112,26 +104,19 @@ export const test = mergeTests(
       // The page is closed by the context fixture `.close` cleanup step
     },
     /**
-     * Adds a new starter brick in the Page Editor. Cleans up the saved mod component after the test, if applicable.
+     * Adds a standalone mod to a list of mods saved during the test to be cleaned up after the test.
      */
-    async addStarterBrick({ page, extensionId }, use) {
-      const modNames: string[] = [];
+    async addStandaloneModToCleanup({ page, extensionId }, use) {
+      const savedStandaloneModNames: string[] = [];
 
-      await use(
-        async (
-          pageEditorPage: PageEditorPage,
-          starterBrickName: StarterBrickName,
-        ) => {
-          const modName = `Test ${starterBrickName} ${uuidv4()}`;
-          modNames.push(modName);
-          await pageEditorPage.addStarterBrick(starterBrickName, modName);
-          return modName;
-        },
-      );
-      // Go to the mods page and clean up all mods with modName after the test
+      await use(async (modName: string) => {
+        savedStandaloneModNames.push(modName);
+      });
+
+      // Go to the mods page and clean up all saved standalone mods
       const modsPage = new ModsPage(page, extensionId);
       await modsPage.goto();
-      for (const modName of modNames) {
+      for (const modName of savedStandaloneModNames) {
         // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
         await modsPage.deleteModByName(modName);
       }
