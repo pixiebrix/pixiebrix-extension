@@ -63,7 +63,7 @@ async function initNavigation(): Promise<void> {
         console.debug("activating prerendered tab", detail);
       }
 
-      void activatePrerenderedTab({
+      activatePrerenderedTab({
         tabId: detail.tabId,
         frameId: "allFrames",
       });
