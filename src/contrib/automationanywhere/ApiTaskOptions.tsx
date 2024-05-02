@@ -70,9 +70,9 @@ const ApiTaskOptionsContent: React.FC<{
 
       <RemoteFileSelectField
         fileIdFieldName={fileIdFieldName}
-        label={"API Task"}
-        description={"The Automation Anywhere API Task to run"}
-        placeholder={"Type to search API Tasks..."}
+        label="API Task"
+        description="The Automation Anywhere API Task to run"
+        placeholder="Type to search API Tasks..."
         workspaceTypeFieldValue={workspaceTypeFieldValue}
         controlRoomConfig={controlRoomConfig}
         optionsFactory={cachedSearchApiTasks}

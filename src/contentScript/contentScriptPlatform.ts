@@ -23,16 +23,14 @@ import {
   traces,
   openTab,
   performConfiguredRequestInBackground,
+  ensureContextMenu,
+  uninstallContextMenu,
 } from "@/background/messenger/strict/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import {
-  ensureContextMenu,
-  uninstallContextMenu,
-} from "@/background/messenger/api";
 import { ephemeralForm } from "@/contentScript/ephemeralForm";
 import { ephemeralPanel } from "@/contentScript/ephemeralPanel";
 import type { ElementReference } from "@/types/runtimeTypes";

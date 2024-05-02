@@ -23,6 +23,8 @@ import UrlMatchPatternField, {
 } from "./UrlMatchPatternField";
 import { action } from "@storybook/addon-actions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { editorStore } from "@/testUtils/storyUtils";
+import { Provider } from "react-redux";
 
 registerDefaultWidgets();
 
@@ -39,19 +41,21 @@ const defaultProps: UrlMatchPatternFieldProps = {
 const Template: ComponentStory<
   React.VoidFunctionComponent<UrlMatchPatternFieldProps>
 > = (props) => (
-  <Form
-    initialValues={{
-      apiVersion: "v3",
-      matchPatterns: [],
-    }}
-    validationSchema={null}
-    onSubmit={(values, { setSubmitting }) => {
-      action("onSubmit")(values);
-      setSubmitting(false);
-    }}
-  >
-    <UrlMatchPatternField {...props} />
-  </Form>
+  <Provider store={editorStore()}>
+    <Form
+      initialValues={{
+        apiVersion: "v3",
+        matchPatterns: [],
+      }}
+      validationSchema={null}
+      onSubmit={(values, { setSubmitting }) => {
+        action("onSubmit")(values);
+        setSubmitting(false);
+      }}
+    >
+      <UrlMatchPatternField {...props} />
+    </Form>
+  </Provider>
 );
 
 export const Default = Template.bind({});

@@ -36,7 +36,6 @@ import {
   selectTabHasPermissions,
   selectTabIsConnectingToContentScript,
 } from "@/pageEditor/tabState/tabStateSelectors";
-import useCurrentInspectedUrl from "@/pageEditor/hooks/useCurrentInspectedUrl";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { selectPageEditorDimensions } from "@/pageEditor/utils";
 import { DefaultErrorComponent } from "@/components/ErrorBoundary";
@@ -52,22 +51,6 @@ const EditorContent: React.FC = () => {
   const activeModId = useSelector(selectActiveModId);
   const { isPendingInstalledModComponents, isPendingDynamicModComponents } =
     useSelector(selectModComponentAvailability);
-
-  const url = useCurrentInspectedUrl();
-
-  useEffect(() => {
-    console.debug("EditorContent debug effect", {
-      url,
-      isPendingInstalledModComponents,
-      isPendingDynamicModComponents,
-      isConnectingToContentScript,
-    });
-  }, [
-    url,
-    isPendingInstalledModComponents,
-    isPendingDynamicModComponents,
-    isConnectingToContentScript,
-  ]);
 
   const isPendingModComponents =
     isPendingInstalledModComponents || isPendingDynamicModComponents;

@@ -91,7 +91,7 @@ export async function selectExtraContext(
   const axiosError = selectAxiosError(error);
 
   if (
-    axiosError &&
+    axiosError?.config &&
     ((await flagOn("enterprise-telemetry")) ||
       (await isAppRequestError(axiosError)))
   ) {

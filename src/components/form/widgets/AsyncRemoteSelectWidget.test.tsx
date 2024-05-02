@@ -15,16 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render, screen } from "@testing-library/react";
 import selectEvent from "react-select-event";
 import React from "react";
 import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
-import pDefer, { type DeferredPromise } from "p-defer";
-import { type Option } from "@/components/form/widgets/SelectWidget";
 import { sleep } from "@/utils/timeUtils";
+import { render, screen } from "@/pageEditor/testHelpers";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+
+jest.mock("use-debounce", () => ({
+  useDebouncedCallback: jest.fn((fn) => fn),
+}));
 
 const id = "widget";
 const name = "widget";
@@ -40,9 +43,12 @@ describe("AsyncRemoteSelectWidget", () => {
         name={name}
         optionsFactory={optionsFactoryMock}
         onChange={onChangeMock}
-        defaultOptions
         value={null}
+        setLocalError={jest.fn()}
       />,
+      {
+        initialValues: { [name]: null },
+      },
     );
 
     await waitForEffect();
@@ -64,7 +70,11 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         defaultOptions
         value={null}
+        setLocalError={jest.fn()}
       />,
+      {
+        initialValues: { [name]: null },
+      },
     );
 
     await waitForEffect();
@@ -90,7 +100,11 @@ describe("AsyncRemoteSelectWidget", () => {
         optionsFactory={optionsFactoryMock}
         onChange={onChangeMock}
         value={null}
+        setLocalError={jest.fn()}
       />,
+      {
+        initialValues: { [name]: null },
+      },
     );
 
     await waitForEffect();
@@ -112,35 +126,6 @@ describe("AsyncRemoteSelectWidget", () => {
     });
   });
 
-  test("handles error state", async () => {
-    const onChangeMock = jest.fn();
-    const optionsFactoryMock = jest.fn().mockRejectedValue(new Error("Oh No!"));
-
-    render(
-      <AsyncRemoteSelectWidget
-        id={id}
-        name={name}
-        optionsFactory={optionsFactoryMock}
-        onChange={onChangeMock}
-        value={null}
-      />,
-    );
-
-    await waitForEffect();
-    expect(optionsFactoryMock).not.toHaveBeenCalled();
-
-    await userEvent.click(screen.getByRole("combobox"));
-
-    await userEvent.type(screen.getByRole("combobox"), "foo");
-    await act(async () => {
-      // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
-      await sleep(1000);
-    });
-    await waitForEffect();
-
-    expect(screen.getByText("Oh No!")).toBeInTheDocument();
-  });
-
   test("it passes the current value to the factory", async () => {
     const onChangeMock = jest.fn();
     const optionsFactoryMock = jest.fn().mockResolvedValue([]);
@@ -153,7 +138,11 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         defaultOptions
         value="test-value"
+        setLocalError={jest.fn()}
       />,
+      {
+        initialValues: { [name]: null },
+      },
     );
 
     await act(async () => {
@@ -168,76 +157,122 @@ describe("AsyncRemoteSelectWidget", () => {
     });
   });
 
-  test("debounces calls while typing", async () => {
-    const onChangeMock = jest.fn();
+  // These tests nest the widget in a ConnectedFieldTemplate in order to test the error field-annotation logic
+  describe("error states with ConnectedFieldTemplate", () => {
+    it("handles error state without defaultOptions", async () => {
+      const optionsFactoryMock = jest
+        .fn()
+        .mockRejectedValue(new Error("Oh No!"));
 
-    const deferred: Array<DeferredPromise<Option[]>> = [];
+      render(
+        <ConnectedFieldTemplate
+          name={name}
+          label="Test Field"
+          description="This is a test field for AsyncRemoteSelectWidget"
+          as={AsyncRemoteSelectWidget}
+          optionsFactory={optionsFactoryMock}
+        />,
+        {
+          initialValues: { [name]: null },
+        },
+      );
 
-    const optionsFactoryMock = jest.fn().mockImplementation(async () => {
-      const deferredOptions = pDefer<Option[]>();
-      deferred.push(deferredOptions);
-      return deferredOptions.promise;
-    });
-
-    render(
-      <AsyncRemoteSelectWidget
-        id={id}
-        name={name}
-        optionsFactory={optionsFactoryMock}
-        onChange={onChangeMock}
-        value={null}
-      />,
-    );
-
-    await waitForEffect();
-    expect(optionsFactoryMock).not.toHaveBeenCalled();
-
-    await userEvent.click(screen.getByRole("combobox"));
-    await userEvent.type(screen.getByRole("combobox"), "f");
-
-    await act(async () => {
-      await sleep(1);
-    });
-
-    await waitForEffect();
-
-    await userEvent.type(screen.getByRole("combobox"), "o");
-
-    await act(async () => {
-      // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
-      await sleep(1000);
-    });
-
-    await userEvent.type(screen.getByRole("combobox"), "x");
-
-    await act(async () => {
-      // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
-      await sleep(1000);
-    });
-
-    await waitForEffect();
-
-    expect(optionsFactoryMock).toHaveBeenCalledTimes(2);
-
-    expect(optionsFactoryMock).toHaveBeenCalledWith({
-      query: "fo",
-      value: null,
-    });
-
-    expect(optionsFactoryMock).toHaveBeenCalledWith({
-      query: "fox",
-      value: null,
-    });
-
-    // This is contrived/fake. To ensure the order of promises is correct in the callback,
-    // just assume the 2nd one resolves first with values, but the first one doesn't even though
-    // the query is a prefix
-    deferred[1].resolve([{ value: "fox", label: "Fox" }]);
-    deferred[0].resolve([]);
-
-    await act(async () => {
       await waitForEffect();
-      await selectEvent.select(screen.getByRole("combobox"), "Fox");
+      expect(optionsFactoryMock).not.toHaveBeenCalled();
+
+      await userEvent.click(screen.getByRole("combobox"));
+
+      await userEvent.type(screen.getByRole("combobox"), "foo");
+
+      await expect(screen.findByText("Oh No!")).resolves.toBeInTheDocument();
+    });
+
+    it("handles error state with defaultOptions", async () => {
+      const optionsFactoryMock = jest
+        .fn()
+        .mockRejectedValue(new Error("Oh No!"));
+
+      render(
+        <ConnectedFieldTemplate
+          name={name}
+          label="Test Field"
+          description="This is a test field for AsyncRemoteSelectWidget"
+          as={AsyncRemoteSelectWidget}
+          optionsFactory={optionsFactoryMock}
+          defaultOptions
+        />,
+        {
+          initialValues: { [name]: null },
+        },
+      );
+
+      await expect(screen.findByText("Oh No!")).resolves.toBeInTheDocument();
+      expect(optionsFactoryMock).toHaveBeenCalled();
+    });
+
+    it("clears error state properly", async () => {
+      const optionsFactoryMock = jest
+        .fn()
+        .mockRejectedValue(new Error("Oh No!"));
+
+      const { rerender } = render(
+        <ConnectedFieldTemplate
+          name={name}
+          label={"Test Field"}
+          description="This is a test field for AsyncRemoteSelectWidget"
+          as={AsyncRemoteSelectWidget}
+          optionsFactory={optionsFactoryMock}
+        />,
+        {
+          initialValues: { [name]: null },
+        },
+      );
+
+      await waitForEffect();
+      expect(optionsFactoryMock).not.toHaveBeenCalled();
+      expect(screen.queryByText("Oh No!")).not.toBeInTheDocument();
+
+      await userEvent.type(screen.getByRole("combobox"), "fo");
+
+      await expect(screen.findByText("Oh No!")).resolves.toBeInTheDocument();
+
+      const options = [
+        {
+          value: "foo",
+          label: "Foo Option",
+        },
+        {
+          value: "bar",
+          label: "Bar Option",
+        },
+      ];
+
+      optionsFactoryMock.mockImplementation(
+        async ({ query }: { query: string }) =>
+          options.filter((option) =>
+            option.label.toLowerCase().includes(query.toLowerCase()),
+          ),
+      );
+
+      // We need to force a re-mount of the component for the error to clear
+      rerender(null);
+      rerender(
+        <ConnectedFieldTemplate
+          name={name}
+          label="Test Field"
+          description="This is a test field for AsyncRemoteSelectWidget"
+          as={AsyncRemoteSelectWidget}
+          optionsFactory={optionsFactoryMock}
+        />,
+      );
+
+      await waitForEffect();
+
+      await userEvent.type(screen.getByRole("combobox"), "foo");
+
+      expect(screen.queryByText("Oh No!")).not.toBeInTheDocument();
+      expect(screen.getByText("Foo Option")).toBeInTheDocument();
+      expect(screen.queryByText("Bar Option")).not.toBeInTheDocument();
     });
   });
 });

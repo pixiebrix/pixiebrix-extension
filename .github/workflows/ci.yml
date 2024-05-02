@@ -1,6 +1,18 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - .gitignore
+      - .editorconfig
+      - LICENSE
+      - "**.iml"
+      - .idea/**
+  push:
+    branches:
+      - release/**
 
 env:
   # Creates and uploads sourcemaps to Application error telemetry, and save the built extension as an artifact
