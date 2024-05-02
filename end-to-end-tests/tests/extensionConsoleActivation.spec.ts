@@ -106,3 +106,46 @@ test("can activate a mod with built-in integration", async ({
     service_id: "@pixies/giphy/giphy-service",
   });
 });
+
+test("can activate a mod with a database", async ({ page, extensionId }) => {
+  const modId = "@e2e-testing/shared-notes-sidebar";
+  const note = "This is a test note";
+
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.goto();
+
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
+  await page.goto("/");
+
+  await runModViaQuickBar(page, "Open Sidebar");
+  const sideBarPage = await getSidebarPage(page, extensionId);
+
+  await sideBarPage.getByRole("button", { name: "Add note" }).click();
+
+  await sideBarPage.frameLocator("iframe").getByLabel("Note*").fill(note);
+
+  await sideBarPage
+    .frameLocator("iframe")
+    .getByRole("button", { name: "Submit" })
+    .click();
+
+  // TODO: Remove when the sidebar is reloaded automatically
+  // See: https://github.com/pixiebrix/pixiebrix-extension/issues/8376
+  await sideBarPage
+    .getByRole("button", { name: "Reload sidebar (button only" })
+    .click();
+
+  // NOTE: There should only be one card, but if the test ever fails before cleanup, there could be more
+  await expect(sideBarPage.getByTestId("card").last()).toContainText(note);
+
+  await sideBarPage.getByRole("button", { name: "Delete Notes" }).click();
+
+  // TODO: Remove when the sidebar is reloaded automatically
+  // See: https://github.com/pixiebrix/pixiebrix-extension/issues/8376
+  await sideBarPage
+    .getByRole("button", { name: "Reload sidebar (button only" })
+    .click();
+
+  await expect(sideBarPage.getByTestId("card")).toBeHidden();
+});
