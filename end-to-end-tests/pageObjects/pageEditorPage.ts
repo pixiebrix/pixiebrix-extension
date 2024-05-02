@@ -19,6 +19,7 @@ import { getBasePageEditorUrl } from "./constants";
 import { type BrowserContext, type Page } from "@playwright/test";
 import { expect } from "../fixtures/extensionBase";
 import { uuidv4 } from "@/types/helpers";
+import { ModsPage } from "./extensionConsole/modsPage";
 
 // Starter brick names as shown in the Page Editor UI
 export type StarterBrickName =
@@ -33,11 +34,12 @@ export type StarterBrickName =
 export class PageEditorPage {
   private readonly pageEditorUrl: string;
   private page: Page;
+  private readonly savedStandaloneModNames: string[] = [];
 
   constructor(
     private readonly context: BrowserContext,
     private readonly urlToConnectTo: string,
-    extensionId: string,
+    private readonly extensionId: string,
     private readonly addStandaloneModToCleanup: (modName: string) => void,
   ) {
     this.pageEditorUrl = getBasePageEditorUrl(extensionId);
@@ -91,6 +93,17 @@ export class PageEditorPage {
     await modListItem.click();
     await modListItem.locator("[data-icon=save]").click();
     await expect(this.page.getByText("Saved Mod")).toBeVisible();
+    this.savedStandaloneModNames.push(modName);
     this.addStandaloneModToCleanup(modName);
+  }
+
+  /* Make sure to only call this method once after test completion */
+  async cleanup() {
+    const modsPage = new ModsPage(this.page, this.extensionId);
+    await modsPage.goto();
+    for (const modName of this.savedStandaloneModNames) {
+      // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
+      await modsPage.deleteModByName(modName);
+    }
   }
 }
