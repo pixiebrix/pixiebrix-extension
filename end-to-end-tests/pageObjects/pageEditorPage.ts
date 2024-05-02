@@ -20,9 +20,14 @@ import { type BrowserContext, type Page } from "@playwright/test";
 import { expect } from "../fixtures/extensionBase";
 import { uuidv4 } from "@/types/helpers";
 
-// TODO: add the rest of the starter brick names (as they appear in the UI) or
-//  reuse a type from the codebase if it exists
-export type StarterBrickName = "Context Menu" | "Trigger" | "Button";
+export type StarterBrickName =
+  | "Context Menu"
+  | "Trigger"
+  | "Button"
+  | "Quick Bar Action"
+  | "Dynamic Quick Bar"
+  | "Sidebar Panel"
+  | "Tour";
 
 export class PageEditorPage {
   private readonly pageEditorUrl: string;
