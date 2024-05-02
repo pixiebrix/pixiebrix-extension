@@ -19,7 +19,7 @@ import { test, expect } from "../fixtures/extensionBase";
 import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
-import { getSidebarPage, runModViaQuickBar } from "../utils";
+import { ensureVisibility, getSidebarPage, runModViaQuickBar } from "../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
@@ -132,6 +132,9 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
 
   // TODO: Remove when the sidebar is reloaded automatically
   // See: https://github.com/pixiebrix/pixiebrix-extension/issues/8376
+  await ensureVisibility(
+    sideBarPage.getByRole("button", { name: "Reload sidebar (button only" }),
+  );
   await sideBarPage
     .getByRole("button", { name: "Reload sidebar (button only" })
     .click();
