@@ -22,7 +22,7 @@ import { Button, Modal } from "react-bootstrap";
 
 const UnavailableOverlay = ({ onClose }: { onClose: () => void }) => (
   <div className={styles.blurOverlay}>
-    <Modal.Dialog size="sm" className={cx(styles.modalDialog, "shadow")}>
+    <Modal.Dialog size="lg" className={cx(styles.modalDialog, "shadow")}>
       <Modal.Header className={styles.modalHeader}>
         <strong>Panel no longer available</strong>
       </Modal.Header>

@@ -23,7 +23,7 @@ import Loader from "@/components/Loader";
 
 const ConnectingOverlay = () => (
   <div className={styles.blurOverlay}>
-    <Modal.Dialog size="sm" className={cx(styles.modalDialog, "shadow")}>
+    <Modal.Dialog size="lg" className={cx(styles.modalDialog, "shadow")}>
       <Modal.Header className={styles.modalHeader}>
         <strong>Connecting to page</strong>
       </Modal.Header>
