@@ -45,6 +45,7 @@ export const test = mergeTests(
       context: BrowserContext;
       extensionId: string;
       chromiumChannel: "chrome" | "msedge";
+      addStandaloneModToCleanup: (modName: string) => Promise<void>;
     },
     {
       checkRequiredEnvironmentVariables: () => void;
@@ -101,6 +102,24 @@ export const test = mergeTests(
 
       await use(page);
       // The page is closed by the context fixture `.close` cleanup step
+    },
+    /**
+     * Adds a standalone mod to a list of mods saved during the test to be cleaned up after the test.
+     */
+    async addStandaloneModToCleanup({ page, extensionId }, use) {
+      const savedStandaloneModNames: string[] = [];
+
+      await use(async (modName: string) => {
+        savedStandaloneModNames.push(modName);
+      });
+
+      // Go to the mods page and clean up all saved standalone mods
+      const modsPage = new ModsPage(page, extensionId);
+      await modsPage.goto();
+      for (const modName of savedStandaloneModNames) {
+        // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
+        await modsPage.deleteModByName(modName);
+      }
     },
     async extensionId({ context }, use) {
       const extensionId = await getExtensionId(context);
