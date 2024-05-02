@@ -396,6 +396,7 @@
     "./contentScript/messenger/strict/registration.ts",
     "./contentScript/modalDom.tsx",
     "./contentScript/pageEditor/beautify.ts",
+    "./contentScript/pageEditor/dynamic/overlay.ts",
     "./contentScript/pageEditor/elementInformation.ts",
     "./contentScript/pageEditor/elementPicker.ts",
     "./contentScript/pageEditor/insertButton",
