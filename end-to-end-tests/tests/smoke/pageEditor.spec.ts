@@ -25,10 +25,16 @@ test.describe("page editor smoke test", () => {
     context,
     page,
     extensionId,
+    addStandaloneModToCleanup,
   }) => {
     await page.goto("/bootstrap-5");
 
-    const pageEditorPage = new PageEditorPage(context, page.url(), extensionId);
+    const pageEditorPage = new PageEditorPage(
+      context,
+      page.url(),
+      extensionId,
+      addStandaloneModToCleanup,
+    );
     await pageEditorPage.goto();
     await expect(pageEditorPage.getTemplateGalleryButton()).toBeVisible();
   });
