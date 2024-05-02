@@ -32,10 +32,6 @@ import {
   removePersistedExtension,
 } from "@/contentScript/lifecycle"; // 202 strictNullCheck errors
 import {
-  runExtensionPointReader,
-  updateDynamicElement,
-} from "@/contentScript/pageEditor/dynamic"; // 205 strictNullCheck errors
-import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
@@ -49,6 +45,8 @@ import {
 import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect"; // Depends on background/messenger to pass strictNullCheck
 import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Depends on background/messenger to pass strictNullCheck
 import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements"; // 201 strictNullCheck errors
+import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader"; // 193 strictNullCheck errors
+import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateDynamicElement"; // 199 strictNullCheck errors
 
 expectContext("contentScript");
 
@@ -64,7 +62,7 @@ declare global {
 
     CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
     UPDATE_DYNAMIC_ELEMENT: typeof updateDynamicElement;
-    RUN_EXTENSION_POINT_READER: typeof runExtensionPointReader;
+    RUN_EXTENSION_POINT_READER: typeof runStarterBrickReader;
 
     INSTALLED_EXTENSION_POINTS: typeof getActiveExtensionPoints;
     ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
@@ -93,7 +91,7 @@ export default function registerMessenger(): void {
 
     CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
     UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
-    RUN_EXTENSION_POINT_READER: runExtensionPointReader,
+    RUN_EXTENSION_POINT_READER: runStarterBrickReader,
 
     INSTALLED_EXTENSION_POINTS: getActiveExtensionPoints,
     ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
