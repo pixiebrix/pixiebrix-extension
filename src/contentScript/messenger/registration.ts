@@ -30,17 +30,17 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 197 strictNullCheck errors
+} from "@/contentScript/lifecycle"; // 196 strictNullCheck errors
 import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
 import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Depends on background/messenger to pass strictNullCheck
-import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements"; // 201 strictNullCheck errors
-import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader"; // 193 strictNullCheck errors
-import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateDynamicElement"; // 199 strictNullCheck errors
-import { runBlockPreview } from "@/contentScript/pageEditor/runBlockPreview"; // 202 strictNullCheck errors
-import { resetTab } from "@/contentScript/pageEditor/resetTab"; // 199 strictNullCheck errors
-import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock"; // 54 strictNullCheck errors
-import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadlessPipeline"; // 51 strictNullCheck errors
-import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline"; // 52 strictNullCheck errors
+import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements"; // Depends on contentScript/lifecycle to pass strictNullCheck
+import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader"; // Depends on contentScript/messenger to pass strictNullCheck
+import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateDynamicElement"; // Depends on contentScript/lifecycle to pass strictNullCheck
+import { runBlockPreview } from "@/contentScript/pageEditor/runBlockPreview"; // Depends on background/messenger
+import { resetTab } from "@/contentScript/pageEditor/resetTab"; // Depends on contentScript/lifecycle to pass strictNullCheck
+import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock"; // Depends on background/messenger
+import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadlessPipeline"; // Depends on background/messenger
+import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline"; // Depends on background/messenger
 
 expectContext("contentScript");
 
