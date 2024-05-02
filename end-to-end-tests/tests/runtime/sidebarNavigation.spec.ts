@@ -41,11 +41,6 @@ test("sidebar mod panels are persistent during navigation", async ({
   await runModViaQuickBar(page, "Open Sidebar");
 
   const sideBarPage = (await getSidebarPage(page, extensionId)) as Page; // MV3 sidebar is a separate page
-  // Set up close listener for sidebar page
-  let sideBarPageClosed = false;
-  sideBarPage.on("close", () => {
-    sideBarPageClosed = true;
-  });
 
   await expect(
     sideBarPage.getByRole("heading", { name: "Sidebar 2" }), // The panel for Sidebar 2 is the one that is shown (last panel is shown by default)
@@ -57,7 +52,9 @@ test("sidebar mod panels are persistent during navigation", async ({
     sideBarPage.getByRole("tab", { name: "Test sidebar 2" }),
   ).toBeVisible();
 
-  const notesField = sideBarPage.getByLabel("Example Notes Field");
+  const notesField = sideBarPage.getByRole("textbox", {
+    name: "Example Notes Field",
+  });
   // The notes field in this mod defaults its value to the current url.
   await expect(notesField).toContainText("https://pbx.vercel.app/");
   await notesField.fill("Something else");
@@ -79,21 +76,49 @@ test("sidebar mod panels are persistent during navigation", async ({
   );
 
   // Navigating in the browser to another page should keep the sidebar open and reset the state of the panel.
+  await page.route(SERVICE_URL, async (route) => {
+    // Expect the temporary connecting overlay to be visible while the mod panel is remounting after navigation.
+    await expect(
+      sideBarPage.getByLabel("Test sidebar 2").getByText("Connecting to page"),
+    ).toBeVisible();
+    await route.continue();
+  });
   await page.goto(SERVICE_URL);
+  await expect(
+    sideBarPage.getByLabel("Test sidebar 2").getByText("Connecting to page"),
+  ).toBeHidden();
   await expect(
     sideBarPage.getByRole("heading", { name: "Sidebar 2" }),
   ).toBeVisible();
-  // Sidebar 1 tab is hidden since it is not enabled in this page.
   await expect(
     sideBarPage.getByRole("tab", { name: "Test sidebar 1" }),
-  ).toBeHidden();
+  ).toBeVisible();
   await expect(
     sideBarPage.getByRole("tab", { name: "Test sidebar 2" }),
   ).toBeVisible();
   await expect(notesField).toContainText(SERVICE_URL);
+  // Sidebar 1 tab is now unavailable since it is not enabled in this page.
+  await sideBarPage.getByRole("tab", { name: "Test sidebar 1" }).click();
+  await expect(
+    sideBarPage.getByRole("heading", { name: "Sidebar 1" }),
+  ).toBeVisible();
+  await expect(
+    sideBarPage.getByLabel("Close the unavailable panel"),
+  ).toBeVisible();
+  await sideBarPage.getByLabel("Close the unavailable panel").click();
+
+  await expect(
+    sideBarPage.getByRole("tab", { name: "Test sidebar 1" }),
+  ).toBeHidden();
+  await expect(
+    sideBarPage.getByRole("heading", { name: "Sidebar 2" }),
+  ).toBeVisible();
 
   // Reloading also works the same way.
   await page.reload();
+  await expect(
+    sideBarPage.getByLabel("Test sidebar 2").getByText("Connecting to page"),
+  ).toBeHidden();
   await expect(
     sideBarPage.getByRole("heading", { name: "Sidebar 2" }),
   ).toBeVisible();
@@ -102,9 +127,19 @@ test("sidebar mod panels are persistent during navigation", async ({
   // Navigating to a page where all mod sidebar panels are not enabled should close the sidebar since no panels are open.
   await page.getByTestId("sidebarToggler").click();
   await page.getByRole("link", { name: "Documentation" }).click();
-  await expect(() => {
-    expect(sideBarPageClosed).toBe(true);
-  }).toPass({ timeout: 5000 });
+  await expect(
+    sideBarPage.getByLabel("Test sidebar 2").getByText("Connecting to page"),
+  ).toBeHidden();
+  await expect(
+    sideBarPage.getByRole("button", { name: "Close the unavailable panel" }),
+  ).toBeVisible();
+  await sideBarPage
+    .getByRole("button", { name: "Close the unavailable panel" })
+    .click();
+  await expect(
+    sideBarPage.getByRole("tab", { name: "Test sidebar 2" }),
+  ).toBeHidden();
+  await expect(sideBarPage.getByRole("tab", { name: "Mods" })).toBeVisible();
 });
 
 const navigationMethods: Array<{

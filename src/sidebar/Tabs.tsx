@@ -321,11 +321,13 @@ const Tabs: React.FC = () => {
                   });
                 }}
               >
-                {panel.connecting && <ConnectingOverlay />}
-                {panel.unavailable && (
+                {panel.isConnecting && <ConnectingOverlay />}
+                {panel.isUnavailable && (
                   <UnavailableOverlay
                     onClose={async () =>
-                      dispatch(removeFormPanel(panel.extensionId))
+                      dispatch(
+                        sidebarSlice.actions.closeTab(eventKeyForEntry(panel)),
+                      )
                     }
                   />
                 )}
@@ -358,7 +360,7 @@ const Tabs: React.FC = () => {
                   });
                 }}
               >
-                {form.unavailable && (
+                {form.isUnavailable && (
                   <UnavailableOverlay
                     onClose={async () => dispatch(removeFormPanel(form.nonce))}
                   />

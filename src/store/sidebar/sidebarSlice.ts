@@ -222,23 +222,23 @@ const sidebarSlice = createSlice({
       for (const panel of state.panels) {
         // Regular panels are invalidated when the content script has emitted the notifyNavigationComplete event,
         // and they are still in `connecting` state (meaning that the mod did not mount for the new page)
-        panel.unavailable = false;
-        panel.connecting = true;
+        panel.isUnavailable = false;
+        panel.isConnecting = true;
       }
 
       for (const form of state.forms) {
-        form.unavailable = true;
+        form.isUnavailable = true;
       }
 
       for (const temporaryPanel of state.temporaryPanels) {
-        temporaryPanel.unavailable = true;
+        temporaryPanel.isUnavailable = true;
       }
     },
     invalidateConnectingPanels(state) {
       for (const panel of state.panels) {
-        if (panel.connecting) {
-          panel.connecting = false;
-          panel.unavailable = true;
+        if (panel.isConnecting) {
+          panel.isConnecting = false;
+          panel.isUnavailable = true;
         }
       }
     },
@@ -295,7 +295,7 @@ const sidebarSlice = createSlice({
       // Keep any old panels from state.panels that are unavailable or connecting and not in the new panels
       const oldPanels = state.panels.filter(
         (oldPanel) =>
-          (oldPanel.unavailable || oldPanel.connecting) &&
+          (oldPanel.isUnavailable || oldPanel.isConnecting) &&
           !action.payload.panels.some(
             (newPanel) => newPanel.extensionId === oldPanel.extensionId,
           ),

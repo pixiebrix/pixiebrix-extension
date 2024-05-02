@@ -119,7 +119,7 @@ type BasePanelEntry = {
    *
    * @since 1.8.14
    */
-  unavailable?: boolean;
+  isUnavailable?: boolean;
 
   /**
    * Determines if the panel is connecting to the page.
@@ -127,7 +127,7 @@ type BasePanelEntry = {
    *
    * @since 1.8.14
    */
-  connecting?: boolean;
+  isConnecting?: boolean;
 };
 
 /**

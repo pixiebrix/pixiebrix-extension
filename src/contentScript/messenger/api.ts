@@ -34,7 +34,7 @@ export function reactivateEveryTab(): void {
 }
 
 // Notifies the content script that it can activate mods for a prerendered tab (no-op if the tab is already active)
-export const activatePrerenderedTab = getMethod("ACTIVATE_PRERENDERED_TAB");
+export const activatePrerenderedTab = getNotifier("ACTIVATE_PRERENDERED_TAB");
 
 export const ensureExtensionPointsInstalled = getMethod(
   "ENSURE_EXTENSION_POINTS_INSTALLED",

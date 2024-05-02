@@ -51,15 +51,18 @@ const debouncedTraceNavigation = debounce(traceNavigation, 100, {
 });
 
 async function initNavigation(): Promise<void> {
-  const navigationTraceFlag = await flagOn("navigation-trace");
+  const navigationTraceFlag = flagOn("navigation-trace");
 
   // Notifies the content script when their tab is active so that if they were prerendered,
   // they can begin to mount their mods (which avoids mods mounting before a page is actually visible
-  // and affecting non-content script state such as the sidebar).
-  chrome.webNavigation.onCommitted.addListener((detail) => {
+  // and affecting other extension state such as the sidebar).
+  // See: https://developer.chrome.com/blog/extension-instantnav
+  chrome.webNavigation.onCommitted.addListener(async (detail) => {
     if (detail.documentLifecycle === "active" && detail.frameId === 0) {
-      if (navigationTraceFlag)
+      if (await navigationTraceFlag) {
         console.debug("activating prerendered tab", detail);
+      }
+
       void activatePrerenderedTab({
         tabId: detail.tabId,
         frameId: "allFrames",
@@ -67,7 +70,7 @@ async function initNavigation(): Promise<void> {
     }
   });
 
-  if (!navigationTraceFlag) {
+  if (!(await navigationTraceFlag)) {
     return;
   }
 

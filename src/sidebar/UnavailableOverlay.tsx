@@ -16,31 +16,29 @@
  */
 
 import React from "react";
-import styles from "./unavailableOverlay.module.scss";
+import styles from "./blurSidebarOverlay.module.scss";
 import cx from "classnames";
 import { Button, Modal } from "react-bootstrap";
 
 const UnavailableOverlay = ({ onClose }: { onClose: () => void }) => (
-  <div className={styles.unavailableOverlay}>
-    <div className="modal">
-      <Modal.Dialog size={"sm"} className={cx(styles.modalDialog, "shadow")}>
-        <Modal.Header className={styles.modalHeader}>
-          <strong>Panel no longer available</strong>
-        </Modal.Header>
+  <div className={styles.blurOverlay}>
+    <Modal.Dialog size="sm" className={cx(styles.modalDialog, "shadow")}>
+      <Modal.Header className={styles.modalHeader}>
+        <strong>Panel no longer available</strong>
+      </Modal.Header>
 
-        <Modal.Body className={styles.modalBody}>
-          <p>The browser navigated away from the page</p>
-          <Button
-            onClick={onClose}
-            variant="primary"
-            size="sm"
-            aria-label="Close the unavailable panel"
-          >
-            Close
-          </Button>
-        </Modal.Body>
-      </Modal.Dialog>
-    </div>
+      <Modal.Body className={styles.modalBody}>
+        <p>The browser navigated away from the page</p>
+        <Button
+          onClick={onClose}
+          variant="primary"
+          size="sm"
+          aria-label="Close the unavailable panel"
+        >
+          Close
+        </Button>
+      </Modal.Body>
+    </Modal.Dialog>
   </div>
 );
 

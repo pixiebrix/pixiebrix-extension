@@ -244,7 +244,7 @@ export async function updateSidebar(
   }
 }
 
-export async function renderPanelsIfVisible(): Promise<void> {
+async function renderPanelsIfVisible(): Promise<void> {
   expectContext("contentScript");
 
   if (isLoadedInIframe()) {

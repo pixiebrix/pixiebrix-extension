@@ -658,6 +658,7 @@ export async function activatePrerenderedTab(): Promise<void> {
 export async function initNavigation() {
   // If in prerendering mode, wait until the background notifies that the page is now active before running mods.
   // note: `prerendering` attribute only supported in Chromium-based browsers
+  // https://developer.mozilla.org/en-US/docs/Web/API/Document/prerendering
   if ("prerendering" in document && document.prerendering) {
     await prerenderedTabActivated.promise;
   }

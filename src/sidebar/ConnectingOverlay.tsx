@@ -16,24 +16,22 @@
  */
 
 import React from "react";
-import styles from "./unavailableOverlay.module.scss";
+import styles from "./blurSidebarOverlay.module.scss";
 import cx from "classnames";
 import { Modal } from "react-bootstrap";
 import Loader from "@/components/Loader";
 
 const ConnectingOverlay = () => (
-  <div className={styles.unavailableOverlay}>
-    <div className="modal">
-      <Modal.Dialog size={"sm"} className={cx(styles.modalDialog, "shadow")}>
-        <Modal.Header className={styles.modalHeader}>
-          <strong>Connecting to page</strong>
-        </Modal.Header>
+  <div className={styles.blurOverlay}>
+    <Modal.Dialog size="sm" className={cx(styles.modalDialog, "shadow")}>
+      <Modal.Header className={styles.modalHeader}>
+        <strong>Connecting to page</strong>
+      </Modal.Header>
 
-        <Modal.Body className={styles.modalBody}>
-          <Loader />
-        </Modal.Body>
-      </Modal.Dialog>
-    </div>
+      <Modal.Body className={styles.modalBody}>
+        <Loader />
+      </Modal.Body>
+    </Modal.Dialog>
   </div>
 );
 
