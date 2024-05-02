@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  debouncedActivateStarterMods,
-  getBuiltInIntegrationConfigs,
-} from "@/background/starterMods";
+import { debouncedActivateStarterMods } from "@/background/starterMods";
 import {
   getModComponentState,
   saveModComponentState,
@@ -58,6 +55,7 @@ import {
 } from "@/integrations/constants";
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
 
 const axiosMock = new MockAdapter(axios);
 
