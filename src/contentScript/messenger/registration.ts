@@ -31,11 +31,6 @@ import {
   reactivateTab,
   removePersistedExtension,
 } from "@/contentScript/lifecycle"; // 202 strictNullCheck errors
-import {
-  runBlockPreview,
-  resetTab,
-  runRendererBlock,
-} from "@/contentScript/pageEditor"; // 207 strictNullCheck errors
 import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
 import {
   runHeadlessPipeline,
@@ -47,6 +42,9 @@ import { showBannerFromConfig } from "@/contentScript/integrations/deferredLogin
 import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements"; // 201 strictNullCheck errors
 import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader"; // 193 strictNullCheck errors
 import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateDynamicElement"; // 199 strictNullCheck errors
+import { runBlockPreview } from "@/contentScript/pageEditor/runBlockPreview"; // 202 strictNullCheck errors
+import { resetTab } from "@/contentScript/pageEditor/resetTab"; // 199 strictNullCheck errors
+import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock"; // 54 strictNullCheck errors
 
 expectContext("contentScript");
 
