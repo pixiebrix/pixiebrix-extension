@@ -109,7 +109,7 @@ test("can activate a mod with built-in integration", async ({
 
 test("can activate a mod with a database", async ({ page, extensionId }) => {
   const modId = "@e2e-testing/shared-notes-sidebar";
-  const note = "This is a test note";
+  const note = `This is a test note ${Date.now()}`;
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();
