@@ -32,6 +32,8 @@ import {
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
+import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
+import { type BrickConfig } from "@/bricks/types";
 
 export interface DynamicDefinition<
   TExtensionPoint extends StarterBrickDefinition = StarterBrickDefinition,
@@ -66,4 +68,26 @@ export type ButtonSelectionResult = {
 export type AttributeExample = {
   name: string;
   value: string;
+};
+
+export type RunBlockArgs = {
+  /**
+   * The runtime API version to use
+   */
+  apiVersion: ApiVersion;
+  /**
+   * The Brick configuration.
+   */
+  blockConfig: BrickConfig;
+  /**
+   * Context to render the BlockArg, should include @input, @options, and integrations context
+   * @see IntegrationsContext
+   * @see makeIntegrationsContextFromDependencies
+   */
+  context: BrickArgsContext;
+  /**
+   * Root jQuery selector to determine the root if the rootMode is "inherit".
+   * @see BrickConfig.rootMode
+   */
+  rootSelector: string | undefined;
 };
