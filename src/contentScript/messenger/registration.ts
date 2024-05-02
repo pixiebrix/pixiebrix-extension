@@ -33,11 +33,6 @@ import {
   removePersistedExtension,
 } from "@/contentScript/lifecycle"; // 202 strictNullCheck errors
 import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
-import {
-  runHeadlessPipeline,
-  runMapArgs,
-  runRendererPipeline,
-} from "@/contentScript/pipelineProtocol"; // Depends on background/messenger to pass strictNullCheck
 import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect"; // Depends on background/messenger to pass strictNullCheck
 import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Depends on background/messenger to pass strictNullCheck
 import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements"; // 201 strictNullCheck errors
@@ -46,6 +41,8 @@ import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateD
 import { runBlockPreview } from "@/contentScript/pageEditor/runBlockPreview"; // 202 strictNullCheck errors
 import { resetTab } from "@/contentScript/pageEditor/resetTab"; // 199 strictNullCheck errors
 import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock"; // 54 strictNullCheck errors
+import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadlessPipeline"; // 51 strictNullCheck errors
+import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline"; // 52 strictNullCheck errors
 
 expectContext("contentScript");
 
@@ -71,7 +68,6 @@ declare global {
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
-    RUN_MAP_ARGS: typeof runMapArgs;
 
     GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
 
@@ -101,7 +97,6 @@ export default function registerMessenger(): void {
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,
     RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
-    RUN_MAP_ARGS: runMapArgs,
 
     GET_COPILOT_HOST_DATA: getCopilotHostData,
 

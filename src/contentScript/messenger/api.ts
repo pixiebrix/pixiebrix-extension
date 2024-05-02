@@ -60,7 +60,6 @@ export const runBrick = getMethod("RUN_BRICK");
 
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
 export const runHeadlessPipeline = getMethod("RUN_HEADLESS_PIPELINE");
-export const runMapArgs = getMethod("RUN_MAP_ARGS");
 
 export const getCopilotHostData = getMethod("GET_COPILOT_HOST_DATA");
 

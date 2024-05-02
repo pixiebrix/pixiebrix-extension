@@ -55,6 +55,7 @@ import {
   disableOverlay,
   enableOverlay,
 } from "@/contentScript/pageEditor/dynamic/overlay";
+import { runMapArgs } from "@/contentScript/pipelineProtocol/runMapArgs";
 
 declare global {
   interface MessengerMethods {
@@ -91,6 +92,7 @@ declare global {
     INSERT_BUTTON: typeof insertButton;
     ENABLE_OVERLAY: typeof enableOverlay;
     DISABLE_OVERLAY: typeof disableOverlay;
+    RUN_MAP_ARGS: typeof runMapArgs;
   }
 }
 export default function registerMessenger(): void {
@@ -128,5 +130,6 @@ export default function registerMessenger(): void {
     INSERT_BUTTON: insertButton,
     ENABLE_OVERLAY: enableOverlay,
     DISABLE_OVERLAY: disableOverlay,
+    RUN_MAP_ARGS: runMapArgs,
   });
 }

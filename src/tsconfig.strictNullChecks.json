@@ -4,8 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./components/form/makeFieldActionForAnnotationAction.ts",
-    "./components/form/makeFieldAnnotationsForValue.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/envSetup.ts",
@@ -318,6 +316,8 @@
     "./components/form/FieldTemplate.tsx",
     "./components/form/Form.tsx",
     "./components/form/lockedLabel/LockedExtensionPointLabel.tsx",
+    "./components/form/makeFieldActionForAnnotationAction.ts",
+    "./components/form/makeFieldAnnotationsForValue.ts",
     "./components/form/popoverInfoLabel/PopoverInfoLabel.tsx",
     "./components/form/widgets/AsyncRemoteSelectWidget.tsx",
     "./components/form/widgets/KeyNameWidget.tsx",
@@ -404,6 +404,8 @@
     "./contentScript/pageEditor/types.ts",
     "./contentScript/partnerIntegrations.ts",
     "./contentScript/performanceMonitoring.ts",
+    "./contentScript/pipelineProtocol/runMapArgs.ts",
+    "./contentScript/pipelineProtocol/types.ts",
     "./contentScript/popoverDom.ts",
     "./contentScript/ready.ts",
     "./contentScript/setExtensionIdInApp.ts",
