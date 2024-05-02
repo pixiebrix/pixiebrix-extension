@@ -49,7 +49,8 @@ import { onContextInvalidated } from "webext-events";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
 import { ReusableAbortController } from "abort-utils";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { renderPanelsIfVisible } from "@/contentScript/sidebarController";
+import { notifyNavigationComplete } from "@/contentScript/sidebarController";
+import pDefer from "p-defer";
 
 /**
  * True if handling the initial page load.
@@ -601,13 +602,9 @@ export async function handleNavigate({
         }),
       ),
     );
-
-    // This ensures that in the case there are mods with sidebar starter bricks whose panels are not active for the current page,
-    // the sidebar will still be updated to reflect the new page state (since otherwise, the sidebar panels would not be updated).
-    // NEXT: in slice 3 (https://github.com/pixiebrix/pixiebrix-extension/issues/8294) we will instead show
-    // stale panels with a special UX, and this bit of code will be removed.
+    // After all extension points have been installed, notify the sidebar that it is complete.
     if (!isLoadedInIframe()) {
-      void renderPanelsIfVisible();
+      void notifyNavigationComplete();
     }
   }
 }
@@ -651,7 +648,21 @@ async function onNavigate(event: NavigateEvent): Promise<void> {
   }
 }
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- not used in background script
+const prerenderedTabActivated = pDefer<void>();
+
+export async function activatePrerenderedTab(): Promise<void> {
+  prerenderedTabActivated.resolve();
+}
+
 export async function initNavigation() {
+  // If in prerendering mode, wait until the background notifies that the page is now active before running mods.
+  // note: `prerendering` attribute only supported in Chromium-based browsers
+  // https://developer.mozilla.org/en-US/docs/Web/API/Document/prerendering
+  if ("prerendering" in document && document.prerendering) {
+    await prerenderedTabActivated.promise;
+  }
+
   // Initiate PB for the current page
   await handleNavigate();
 

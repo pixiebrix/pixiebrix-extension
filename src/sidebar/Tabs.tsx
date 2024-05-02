@@ -63,6 +63,7 @@ import { type AsyncDispatch } from "@/sidebar/store";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
 import UnavailableOverlay from "@/sidebar/UnavailableOverlay";
 import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
+import ConnectingOverlay from "@/sidebar/ConnectingOverlay";
 
 const ActivateModPanel = lazy(
   async () =>
@@ -320,6 +321,16 @@ const Tabs: React.FC = () => {
                   });
                 }}
               >
+                {panel.isConnecting && <ConnectingOverlay />}
+                {panel.isUnavailable && (
+                  <UnavailableOverlay
+                    onClose={async () =>
+                      dispatch(
+                        sidebarSlice.actions.closeTab(eventKeyForEntry(panel)),
+                      )
+                    }
+                  />
+                )}
                 <PanelBody
                   isRootPanel
                   payload={panel.payload}

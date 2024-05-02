@@ -25,6 +25,7 @@
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import {
+  activatePrerenderedTab,
   ensureInstalled,
   getActiveExtensionPoints,
   queueReactivateTab,
@@ -51,6 +52,7 @@ declare global {
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
     RESET_TAB: typeof resetTab;
+    ACTIVATE_PRERENDERED_TAB: typeof activatePrerenderedTab;
 
     RUN_SINGLE_BLOCK: typeof runBlockPreview;
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
@@ -79,6 +81,7 @@ export default function registerMessenger(): void {
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
     RESET_TAB: resetTab,
+    ACTIVATE_PRERENDERED_TAB: activatePrerenderedTab,
 
     RUN_SINGLE_BLOCK: runBlockPreview,
     RUN_RENDERER_BLOCK: runRendererBlock,
