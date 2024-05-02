@@ -20,7 +20,6 @@ import {
   runEditorExtension,
 } from "@/contentScript/lifecycle";
 import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
-import Overlay from "@/vendors/Overlay";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
 import { type TriggerDefinition } from "@/starterBricks/triggerExtension";
@@ -32,26 +31,8 @@ import {
 import { type TourDefinition } from "@/starterBricks/tour/types";
 import { type JsonObject } from "type-fest";
 import { type SelectorRoot } from "@/types/runtimeTypes";
-import { type UUID } from "@/types/stringTypes";
 import { $safeFind } from "@/utils/domUtils";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-
-let _overlay: Overlay | null = null;
-
-/**
- * A version of `clearEditorExtension` that takes an object instead of a positional UUID argument.
- * @param uuid the uuid of the extension, or null to clear all page editor extensions
- * @see clearEditorExtension
- */
-export async function clearDynamicElements({
-  uuid,
-}: {
-  uuid?: UUID;
-}): Promise<void> {
-  expectContext("contentScript");
-
-  clearEditorExtension(uuid);
-}
 
 export async function runExtensionPointReader(
   { extensionPointConfig }: Pick<DynamicDefinition, "extensionPointConfig">,
@@ -145,22 +126,4 @@ export async function updateDynamicElement({
     await showSidebar();
     await activateExtensionPanel(extensionConfig.id);
   }
-}
-
-export async function enableOverlay(selector: string): Promise<void> {
-  expectContext("contentScript");
-
-  _overlay ??= new Overlay();
-
-  const elements = $safeFind(selector).toArray();
-  if (elements.length > 0) {
-    _overlay.inspect(elements, null);
-  }
-}
-
-export async function disableOverlay(): Promise<void> {
-  expectContext("contentScript");
-
-  _overlay?.remove();
-  _overlay = null;
 }
