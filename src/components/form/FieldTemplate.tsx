@@ -34,6 +34,7 @@ import { DESCRIPTION_ALLOWED_TAGS } from "@/types/schemaTypes";
 import MarkdownInline from "@/components/MarkdownInline";
 import { type Except } from "type-fest";
 import { type ActionMeta } from "react-select";
+import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType,
@@ -69,7 +70,6 @@ export type CustomFieldWidgetProps<
   disabled?: boolean;
   value: TValue;
   onChange: React.ChangeEventHandler<TInputElement>;
-  setLocalError?: (error: string | null) => void;
   isInvalid?: boolean;
 };
 export type CustomFieldWidget<
@@ -169,7 +169,6 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
       name={name}
       isInvalid={isInvalid}
       value={nonUndefinedValue}
-      setLocalError={setLocalError}
       {...restFieldProps}
     >
       {children}
@@ -207,7 +206,9 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
         </FormLabel>
       )}
       <div className={styles.formField}>
-        {formControl}
+        <FieldTemplateLocalErrorContext.Provider value={{ setLocalError }}>
+          {formControl}
+        </FieldTemplateLocalErrorContext.Provider>
         {description && (
           <FormText className="text-muted">
             {typeof description === "string" ? (

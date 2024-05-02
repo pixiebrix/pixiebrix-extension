@@ -15,20 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ChangeEvent, useEffect } from "react";
+import React, { type ChangeEvent, useContext, useEffect } from "react";
 import Select, { type MultiValue } from "react-select";
 import {
   type MultiSelectLike,
   type Option,
 } from "@/components/form/widgets/SelectWidget";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import {
-  type OptionsFactory,
-  useOptionsResolver,
-} from "@/components/form/widgets/RemoteSelectWidget";
+import { type OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import useReportError from "@/hooks/useReportError";
 import type { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
+import { useOptionsResolver } from "@/components/form/widgets/useOptionsResolver";
+import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
 
 type RemoteMultiSelectWidgetProps<TOption extends Option<TOption["value"]>> =
   CustomFieldWidgetProps<Array<TOption["value"]>, MultiSelectLike<TOption>> & {
@@ -53,7 +52,6 @@ const RemoteMultiSelectWidget = <TOption extends Option<TOption["value"]>>({
   config,
   factoryArgs,
   onChange,
-  setLocalError,
   ...selectProps
 }: RemoteMultiSelectWidgetProps<TOption>) => {
   const {
@@ -64,15 +62,17 @@ const RemoteMultiSelectWidget = <TOption extends Option<TOption["value"]>>({
 
   useReportError(error);
 
+  const { setLocalError } = useContext(FieldTemplateLocalErrorContext);
+
   useEffect(() => {
     if (error == null) {
-      setLocalError?.(null);
+      setLocalError(null);
     } else {
-      setLocalError?.(getErrorMessage(error, "Error loading options"));
+      setLocalError(getErrorMessage(error, "Error loading options"));
     }
   }, [error, setLocalError]);
 
-  // Option will be null when the select is "cleared"
+  // Input newOptions will be empty array when the select is "cleared"
   const patchedOnChange = (newOptions: MultiValue<TOption>) => {
     onChange({
       target: {
@@ -91,6 +91,7 @@ const RemoteMultiSelectWidget = <TOption extends Option<TOption["value"]>>({
     <Select
       inputId={id}
       isMulti
+      closeMenuOnSelect={selectedOptions.length + 1 === options.length} // Close if selecting the last item
       isDisabled={disabled}
       options={options}
       isLoading={isLoading}
