@@ -20,7 +20,6 @@ import {
   runEditorExtension,
 } from "@/contentScript/lifecycle";
 import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
-import Overlay from "@/vendors/Overlay";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
 import { type TriggerDefinition } from "@/starterBricks/triggerExtension";
@@ -30,72 +29,7 @@ import {
   showSidebar,
 } from "@/contentScript/sidebarController";
 import { type TourDefinition } from "@/starterBricks/tour/types";
-import { type JsonObject } from "type-fest";
-import { type SelectorRoot } from "@/types/runtimeTypes";
-import { type UUID } from "@/types/stringTypes";
-import { $safeFind } from "@/utils/domUtils";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-
-let _overlay: Overlay | null = null;
-
-/**
- * A version of `clearEditorExtension` that takes an object instead of a positional UUID argument.
- * @param uuid the uuid of the extension, or null to clear all page editor extensions
- * @see clearEditorExtension
- */
-export async function clearDynamicElements({
-  uuid,
-}: {
-  uuid?: UUID;
-}): Promise<void> {
-  expectContext("contentScript");
-
-  clearEditorExtension(uuid);
-}
-
-export async function runExtensionPointReader(
-  { extensionPointConfig }: Pick<DynamicDefinition, "extensionPointConfig">,
-  rootSelector: string | undefined,
-): Promise<JsonObject> {
-  expectContext("contentScript");
-
-  const { activeElement } = document;
-  let root: SelectorRoot = null;
-
-  // Handle element-based reader context for triggers
-  if (rootSelector) {
-    const $root = $safeFind(rootSelector);
-    if ($root.length === 1) {
-      // If there's a single root, use that even if it's not the active element (because that's likely the one the user
-      // is intending to use).
-      root = $root.get(0);
-    } else if ($root.length > 1 && activeElement) {
-      $root.each(function () {
-        if (activeElement === this) {
-          root = activeElement as HTMLElement;
-        }
-      });
-
-      if (root == null) {
-        throw new Error(
-          `Focused element ${activeElement.tagName} does not match the root selector. There are ${$root.length} matching elements on the page`,
-        );
-      }
-    } else if ($root.length === 0) {
-      throw new Error(
-        `No elements matching selector are currently on the page: ${rootSelector}`,
-      );
-    }
-  }
-
-  const starterBrick = starterBrickFactory(extensionPointConfig);
-
-  const reader = await starterBrick.previewReader();
-
-  // FIXME: this will return an incorrect value in the following scenario(s):
-  //  - A menuItem uses a readerSelector (which is OK, because that param is not exposed in the Page Editor)
-  return reader.read(root ?? document);
-}
 
 export async function updateDynamicElement({
   extensionPointConfig,
@@ -145,22 +79,4 @@ export async function updateDynamicElement({
     await showSidebar();
     await activateExtensionPanel(extensionConfig.id);
   }
-}
-
-export async function enableOverlay(selector: string): Promise<void> {
-  expectContext("contentScript");
-
-  _overlay ??= new Overlay();
-
-  const elements = $safeFind(selector).toArray();
-  if (elements.length > 0) {
-    _overlay.inspect(elements, null);
-  }
-}
-
-export async function disableOverlay(): Promise<void> {
-  expectContext("contentScript");
-
-  _overlay?.remove();
-  _overlay = null;
 }

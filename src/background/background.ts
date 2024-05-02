@@ -30,7 +30,7 @@ import registerMessenger from "@/background/messenger/registration";
 import registerMessengerStrict from "@/background/messenger/strict/registration";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import initLocator from "@/background/locator";
-import initContextMenus from "@/background/contextMenus";
+import initContextMenus from "@/background/contextMenus/initContextMenus";
 import initBrowserAction from "@/background/browserAction";
 import initInstaller from "@/background/installer";
 import initNavigation from "@/background/navigation";

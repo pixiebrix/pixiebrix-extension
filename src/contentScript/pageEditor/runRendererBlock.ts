@@ -16,130 +16,19 @@
  */
 
 import { serializeError } from "serialize-error";
-import {
-  blockReducer,
-  type IntermediateState,
-  type ReduceOptions,
-} from "@/runtime/reducePipeline";
-import { type BrickConfig } from "@/bricks/types";
-import { cloneDeep } from "lodash";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type SerializableResponse } from "@/types/messengerTypes";
-import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic";
-import { reactivateTab } from "./lifecycle";
-import {
-  BusinessError,
-  CancelError,
-  NoRendererError,
-} from "@/errors/businessErrors";
+
+import { CancelError, NoRendererError } from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
 import { type PanelPayload } from "@/types/sidebarTypes";
 import { HeadlessModeError } from "@/bricks/errors";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
-import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";
 import { waitForTemporaryPanel } from "@/platform/panels/panelController";
-import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import extendModVariableContext from "@/runtime/extendModVariableContext";
-import { $safeFind } from "@/utils/domUtils";
 import { createFrameSource } from "@/contentScript/ephemeralPanel";
 import { showModal } from "@/contentScript/modalDom";
-
-export type RunBlockArgs = {
-  /**
-   * The runtime API version to use
-   */
-  apiVersion: ApiVersion;
-  /**
-   * The Brick configuration.
-   */
-  blockConfig: BrickConfig;
-  /**
-   * Context to render the BlockArg, should include @input, @options, and integrations context
-   * @see IntegrationsContext
-   * @see makeIntegrationsContextFromDependencies
-   */
-  context: BrickArgsContext;
-  /**
-   * Root jQuery selector to determine the root if the rootMode is "inherit".
-   * @see BrickConfig.rootMode
-   */
-  rootSelector: string | undefined;
-};
-
-/**
- * Run a single block (e.g., for generating output previews)
- * @see BlockPreview
- */
-export async function runBlockPreview({
-  blockConfig,
-  context,
-  apiVersion,
-  blueprintId,
-  rootSelector,
-}: RunBlockArgs & {
-  blueprintId: RegistryId | null;
-}): Promise<unknown> {
-  const versionOptions = apiVersionOptions(apiVersion);
-
-  if (!versionOptions.explicitDataFlow) {
-    throw new BusinessError(
-      "Preview only supported for mods using runtime v2 or later",
-    );
-  }
-
-  const state: IntermediateState = {
-    context: extendModVariableContext(context, {
-      blueprintId,
-      update: true,
-      options: versionOptions,
-    }),
-    // Can pick any index. It's only used for adding context to log messages, and we're disabling value logging
-    // below with `logValues: false`
-    index: 0,
-    // Force isLastBlock so blockReducer does not complain about the outputKey being forced to undefined
-    isLastBlock: true,
-    // `root` is over-ridden below if rootSelector is provided
-    root: document,
-    // We're forcing apiVersion: 2 or higher above values must come from the context
-    previousOutput: {},
-  };
-
-  if (rootSelector) {
-    // Handle non-document contexts. If the selector is unique, this gives the root that would be available at runtime.
-    // Differences in behavior:
-    // - For triggers, the PixieBrix looks for the closest ancestor to the DOM event target matching the selector
-    //   See TriggerExtensionPoint.eventHandler for reference
-    // - For multi-menus (not currently available in the Page Editor), the below logic returns an arbitrary menu
-    const rootElement = $safeFind(rootSelector);
-    if (rootElement.length > 0) {
-      state.root = rootElement.get(0);
-    }
-  }
-
-  const options: ReduceOptions = {
-    ...versionOptions,
-    branches: [],
-    headless: true,
-    logValues: false,
-    logger: new ConsoleLogger(),
-    // Excluding runId will prevent the run from being stored in traces
-    runId: null,
-    extensionId: null,
-  };
-
-  // Exclude the outputKey so that `output` is the output of the brick. Alternatively we could have taken then
-  // value from the context[outputKey] from the return value of blockReducer
-  const { output } = await blockReducer(
-    { ...blockConfig, outputKey: undefined },
-    state,
-    options,
-  );
-
-  return cloneDeep(output) as SerializableResponse;
-}
+import { runBlockPreview } from "@/contentScript/pageEditor/runBlockPreview";
+import { type RunBlockArgs } from "@/contentScript/pageEditor/types";
 
 type Location = "modal" | "panel";
 
@@ -244,10 +133,4 @@ export async function runRendererBlock({
       );
     }
   }
-}
-
-export async function resetTab(): Promise<void> {
-  stopInspectingNativeHandler();
-  await clearDynamicElements({});
-  await reactivateTab();
 }

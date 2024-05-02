@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,44 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.unavailableOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.5);
-  justify-content: center;
-  align-items: flex-start;
-  backdrop-filter: blur(2.5px);
-  pointer-events: all;
-  z-index: 1; // ensure overlay is on top of the sidebar panel content
-  > div {
-    display: block;
-    margin-top: 10vh;
-  }
-}
+import { type BrickPipeline } from "@/bricks/types";
+import { type ApiVersionOptions } from "@/runtime/apiVersionOptions";
+import { type UUID } from "@/types/stringTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type RunMetadata, type BrickArgsContext } from "@/types/runtimeTypes";
 
-.modalDialog {
-  text-align: center;
-  margin: 23px;
-  padding: 16px;
-  border-radius: 12px;
-  background: white;
-  border: 1px solid #cfcbd6;
-  > div {
-    border: 0;
-  }
-}
-
-.modalHeader {
-  display: block;
-  padding-bottom: 0;
-  background: white;
-  border: 0;
-}
-
-.modalBody {
-  background: white;
-  border: 0;
-}
+export type RunPipelineParams = {
+  nonce: UUID;
+  pipeline: BrickPipeline;
+  context: BrickArgsContext;
+  options: ApiVersionOptions;
+  meta: RunMetadata;
+  messageContext: MessageContext;
+};

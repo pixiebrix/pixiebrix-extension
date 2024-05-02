@@ -42,13 +42,13 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
-import { uninstallContextMenu } from "@/background/contextMenus";
+import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
 import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError");
 jest.mock("@/utils/extensionUtils");
-jest.mock("@/background/contextMenus");
+jest.mock("@/background/contextMenus/uninstallContextMenu");
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
 

@@ -65,8 +65,6 @@ import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
 
-jest.mock("@/background/contextMenus");
-
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
   lookupExtensionPoint: jest.fn(),

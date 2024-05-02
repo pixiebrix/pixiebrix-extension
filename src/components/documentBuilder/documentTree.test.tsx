@@ -22,6 +22,7 @@ import React from "react";
 import blockRegistry from "@/bricks/registry";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
+import * as contentScriptStrictAPI from "@/contentScript/messenger/strict/api";
 import { uuidv4 } from "@/types/helpers";
 import { buildDocumentBranch } from "./documentTree";
 import {
@@ -387,7 +388,7 @@ describe("When rendered in panel", () => {
       ctxt: { "@input": {}, "@options": {} },
     } as any);
     jest
-      .mocked(contentScriptAPI.runMapArgs)
+      .mocked(contentScriptStrictAPI.runMapArgs)
       .mockImplementationOnce(async (inputConfig) => inputConfig);
 
     const yamlConfig = `
