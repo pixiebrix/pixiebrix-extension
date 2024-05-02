@@ -26,7 +26,7 @@ import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { type SerializableResponse } from "@/types/messengerTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/updateDynamicElement";
+import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements";
 import { reactivateTab } from "./lifecycle";
 import {
   BusinessError,
