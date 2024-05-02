@@ -34,12 +34,6 @@ export const removeExtensionForEveryTab = getNotifier(
 
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 
-/**
- * Uninstall context menu and return whether the context menu was uninstalled.
- */
-export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
-export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
-
 export const requestRun = {
   inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
   inTarget: getMethod("REQUEST_RUN_IN_TARGET", bg),

@@ -15,13 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  preloadContextMenus,
-  ensureContextMenu,
-} from "@/background/contextMenus";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { fromJS } from "@/starterBricks/contextMenu/contextMenu";
-import * as backgroundApi from "@/background/messenger/api";
+import * as backgroundApi from "@/background/messenger/strict/api";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";
@@ -33,6 +29,8 @@ import {
   type ContextMenuDefinition,
   type ContextMenuConfig,
 } from "@/starterBricks/contextMenu/types";
+import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
+import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
 
 TEST_setContext("background");
 

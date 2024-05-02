@@ -55,12 +55,10 @@ const RemoteFileSelectField: React.FC<RemoteFileSelectFieldProps> = ({
   workspaceTypeFieldValue,
   controlRoomConfig,
   optionsFactory,
-  ...asyncRemoteSelectProps
+  ...restProps
 }) => (
   <ConnectedFieldTemplate
-    label="Bot"
     name={fileIdFieldName}
-    description="The Automation Anywhere bot to run"
     // Due to quirks with the memoization inside react-select, we need
     // to force this to re-render when the integration config or the
     // workspace fields change in order to force a fetch of new options
@@ -74,7 +72,7 @@ const RemoteFileSelectField: React.FC<RemoteFileSelectFieldProps> = ({
     isClearable
     defaultOptions
     optionsFactory={partial(optionsFactory, controlRoomConfig)}
-    {...asyncRemoteSelectProps}
+    {...restProps}
   />
 );
 

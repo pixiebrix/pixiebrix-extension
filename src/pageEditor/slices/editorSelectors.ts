@@ -41,6 +41,7 @@ import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { selectKnownEventNames } from "@/analysis/analysisSelectors";
 import { normalizeModOptionsDefinition } from "@/utils/modUtils";
+import { type AnalysisRootState } from "@/analysis/analysisTypes";
 
 export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -373,18 +374,22 @@ export function selectNodePreviewActiveElement(state: EditorRootState): string {
 export const selectAddBlockLocation = ({ editor }: EditorRootState) =>
   editor.addBlockLocation;
 
-const annotationsForPathSelector = createSelector(
+const activeModComponentAnalysisAnnotationsForPath = createSelector(
   selectActiveModComponentId,
-  // Null-safe access here so this doesn't break with the options redux store
-  (state: RootState) => state.analysis?.extensionAnnotations,
+  ({ analysis }: AnalysisRootState) => analysis.extensionAnnotations,
   (state: RootState, path: string) => path,
-  (activeElementId, annotations, path) => {
+  ({ editor }: EditorRootState) => editor.isVariablePopoverVisible,
+  (activeElementId, annotations, path, isVariablePopoverVisible) => {
     // eslint-disable-next-line security/detect-object-injection -- UUID
     const elementAnnotations = annotations?.[activeElementId] ?? [];
-    const pathAnnotations = elementAnnotations.filter(
-      (x) => x.position.path === path,
+    const filteredAnnotations = elementAnnotations.filter(
+      ({ analysisId, position }) =>
+        position.path === path &&
+        // Hide variable/template annotations while the popover is open because the user is editing the field
+        (!isVariablePopoverVisible ||
+          !["var", "template"].includes(analysisId)),
     );
-    return sortBy(pathAnnotations, (annotation) => {
+    return sortBy(filteredAnnotations, (annotation) => {
       switch (annotation.type) {
         case AnnotationType.Error: {
           return 2;
@@ -403,14 +408,14 @@ const annotationsForPathSelector = createSelector(
 );
 
 /**
- * Selects the annotations for the given path
+ * Selects the analysis annotations for the given path
  * @param path A path relative to the root of the extension or root pipeline
+ *
+ * @note This should NOT be used outside the page editor, it is tightly coupled with editorSlice
  */
-export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
-  annotationsForPathSelector(state, path);
-
-export const selectVariablePopoverVisible = ({ editor }: EditorRootState) =>
-  editor.isVariablePopoverVisible;
+export const selectActiveModComponentAnalysisAnnotationsForPath =
+  (path: string) => (state: RootState) =>
+    activeModComponentAnalysisAnnotationsForPath(state, path);
 
 export const selectCopiedBlock = ({ editor }: EditorRootState) =>
   editor.copiedBlock;
