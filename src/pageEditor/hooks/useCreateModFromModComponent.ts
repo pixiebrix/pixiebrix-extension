@@ -120,7 +120,9 @@ function useCreateModFromModComponent(
           } catch (error) {
             if (error instanceof BusinessError) {
               // Error is already handled by buildAndValidateMod.
-            } else throw error; // Other errors can be thrown during mod installation
+            } else {
+              throw error;
+            } // Other errors can be thrown during mod installation
           }
         },
       ),
