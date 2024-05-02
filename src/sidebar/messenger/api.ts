@@ -35,6 +35,7 @@ const sidebarInThisTab = {
   hideTemporaryPanel: getMethod("SIDEBAR_HIDE_TEMPORARY_PANEL", target),
   showModActivationPanel: getMethod("SIDEBAR_SHOW_ACTIVATE_RECIPE", target),
   hideModActivationPanel: getMethod("SIDEBAR_HIDE_ACTIVATE_RECIPE", target),
+  notifyNavigationComplete: getMethod("SIDEBAR_NAVIGATION_COMPLETE", target),
 };
 
 export default sidebarInThisTab;

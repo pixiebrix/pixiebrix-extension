@@ -780,6 +780,7 @@
     "./sandbox/messenger/executor.ts",
     "./sandbox/messenger/registration.ts",
     "./sandbox/sandbox.ts",
+    "./sidebar/ConnectingOverlay.tsx",
     "./sidebar/DefaultPanel.tsx",
     "./sidebar/FormBody.tsx",
     "./sidebar/Header.tsx",

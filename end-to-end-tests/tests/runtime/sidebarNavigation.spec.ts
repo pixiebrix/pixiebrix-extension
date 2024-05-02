@@ -27,84 +27,101 @@ test("sidebar mod panels are persistent during navigation", async ({
   extensionId,
 }) => {
   test.skip(MV === "2", "Navigation is not supported for MV2 sidebar");
-  // This mod shows two panels in the sidebar with a simple form. One is enabled for the pbx.vercel.app domain and app
-  // domain, and the other is enabled just for the pbx.vercel.app domain.
+
   const modId = "@e2e-testing/test-sidebar-navigation";
-
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
-  await modActivationPage.goto();
 
-  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
-
-  await page.goto("/");
-
-  await runModViaQuickBar(page, "Open Sidebar");
-
-  const sideBarPage = (await getSidebarPage(page, extensionId)) as Page; // MV3 sidebar is a separate page
-  // Set up close listener for sidebar page
-  let sideBarPageClosed = false;
-  sideBarPage.on("close", () => {
-    sideBarPageClosed = true;
+  await test.step("Activate the mod and open the sidebar for the pbx testing site", async () => {
+    await modActivationPage.goto();
+    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+    await page.goto("/");
+    await runModViaQuickBar(page, "Open Sidebar");
   });
 
-  await expect(
-    sideBarPage.getByRole("heading", { name: "Sidebar 2" }), // The panel for Sidebar 2 is the one that is shown (last panel is shown by default)
-  ).toBeVisible();
-  await expect(
-    sideBarPage.getByRole("tab", { name: "Test sidebar 1" }),
-  ).toBeVisible();
-  await expect(
-    sideBarPage.getByRole("tab", { name: "Test sidebar 2" }),
-  ).toBeVisible();
+  const sideBarPage = (await getSidebarPage(page, extensionId)) as Page; // MV3 sidebar is a separate page
 
-  const notesField = sideBarPage.getByLabel("Example Notes Field");
-  // The notes field in this mod defaults its value to the current url.
-  await expect(notesField).toContainText("https://pbx.vercel.app/");
-  await notesField.fill("Something else");
+  // Define common locators
+  const sidebar1Heading = sideBarPage.getByRole("heading", {
+    name: "Sidebar 1",
+  });
+  const sidebar2Heading = sideBarPage.getByRole("heading", {
+    name: "Sidebar 2",
+  });
+  const sidebar1Tab = sideBarPage.getByRole("tab", { name: "Test sidebar 1" });
+  const sidebar2Tab = sideBarPage.getByRole("tab", { name: "Test sidebar 2" });
+  const modsTab = sideBarPage.getByRole("tab", { name: "Mods" });
+  const notesField = sideBarPage.getByRole("textbox", {
+    name: "Example Notes Field",
+  });
+  const connectingOverlay2 = sideBarPage
+    .getByLabel("Test sidebar 2")
+    .getByText("Connecting to page");
+  const closeOverlayButton = sideBarPage.getByRole("button", {
+    name: "Close the unavailable panel",
+  });
 
-  // Navigate to the "advanced-fields" subpage
-  await page.getByRole("link", { name: "advanced-fields" }).click();
-  await expect(
-    sideBarPage.getByRole("heading", { name: "Sidebar 2" }),
-  ).toBeVisible();
-  await expect(
-    sideBarPage.getByRole("tab", { name: "Test sidebar 1" }),
-  ).toBeVisible();
-  await expect(
-    sideBarPage.getByRole("tab", { name: "Test sidebar 2" }),
-  ).toBeVisible();
-  // The sidebar resets the state of the panel, so notes field resets its value to the current url.
-  await expect(notesField).toContainText(
-    "https://pbx.vercel.app/advanced-fields/",
-  );
+  await test.step("Check initial state of the sidebar", async () => {
+    await expect(sidebar2Heading).toBeVisible();
+    await expect(sidebar1Tab).toBeVisible();
+    await expect(sidebar2Tab).toBeVisible();
+    // The notes field in this mod defaults its value to the current url.
+    await expect(notesField).toContainText("https://pbx.vercel.app/");
+  });
 
-  // Navigating in the browser to another page should keep the sidebar open and reset the state of the panel.
-  await page.goto(SERVICE_URL);
-  await expect(
-    sideBarPage.getByRole("heading", { name: "Sidebar 2" }),
-  ).toBeVisible();
-  // Sidebar 1 tab is hidden since it is not enabled in this page.
-  await expect(
-    sideBarPage.getByRole("tab", { name: "Test sidebar 1" }),
-  ).toBeHidden();
-  await expect(
-    sideBarPage.getByRole("tab", { name: "Test sidebar 2" }),
-  ).toBeVisible();
-  await expect(notesField).toContainText(SERVICE_URL);
+  await test.step("Navigate to the 'advanced-fields' subpage", async () => {
+    await notesField.fill("Something else"); // Change the notes field to check if it resets
+    await page.getByRole("link", { name: "advanced-fields" }).click();
+    await expect(sidebar2Heading).toBeVisible();
+    await expect(sidebar1Tab).toBeVisible();
+    await expect(sidebar2Tab).toBeVisible();
+    await expect(notesField).toContainText(
+      "https://pbx.vercel.app/advanced-fields/",
+    ); // Navigation should reset the notes field to the new url
+  });
 
-  // Reloading also works the same way.
-  await page.reload();
-  await expect(
-    sideBarPage.getByRole("heading", { name: "Sidebar 2" }),
-  ).toBeVisible();
-  await expect(notesField).toContainText(SERVICE_URL);
+  await test.step("Navigate to SERVICE_URL", async () => {
+    await page.route(SERVICE_URL, async (route) => {
+      // Expect the temporary connecting overlay to be visible while the mod panel is remounting after navigation.
+      await expect(connectingOverlay2).toBeVisible();
+      await route.continue();
+    });
 
-  // Navigating to a page where all mod sidebar panels are not enabled should close the sidebar since no panels are open.
-  await page.getByTestId("sidebarToggler").click();
-  await page.getByRole("link", { name: "Documentation" }).click();
-  await expect(() => {
-    expect(sideBarPageClosed).toBe(true);
-  }).toPass({ timeout: 5000 });
+    await page.goto(SERVICE_URL);
+    await expect(connectingOverlay2).toBeHidden();
+    await expect(sidebar2Heading).toBeVisible();
+    await expect(sidebar1Tab).toBeVisible();
+    await expect(sidebar2Tab).toBeVisible();
+    await expect(notesField).toContainText(SERVICE_URL);
+  });
+
+  // Sidebar 1 panel is not enabled for the app SERVICE_URL
+  await test.step("Check unavailability of Sidebar 1", async () => {
+    await sidebar1Tab.click();
+    await expect(sidebar1Heading).toBeVisible();
+    await expect(closeOverlayButton).toBeVisible();
+    await closeOverlayButton.click();
+
+    await expect(sidebar1Tab).toBeHidden();
+    await expect(sidebar2Heading).toBeVisible();
+  });
+
+  await test.step("Reload the page", async () => {
+    await page.reload();
+    await expect(connectingOverlay2).toBeHidden();
+    await expect(sidebar2Heading).toBeVisible();
+    await expect(notesField).toContainText(SERVICE_URL);
+  });
+
+  await test.step("Navigate to a page where all mod sidebar panels are not enabled", async () => {
+    await page.getByTestId("sidebarToggler").click();
+    await page.getByRole("link", { name: "Documentation" }).click();
+    await expect(connectingOverlay2).toBeHidden();
+    await expect(closeOverlayButton).toBeVisible();
+    await closeOverlayButton.click();
+    await expect(sidebar2Tab).toBeHidden();
+    // When all mod sidebar panels are closed, the Mods tab should be visible
+    await expect(modsTab).toBeVisible();
+  });
 });
 
 const navigationMethods: Array<{

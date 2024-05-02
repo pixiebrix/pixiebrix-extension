@@ -51,8 +51,6 @@ import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
 import useEventListener from "@/hooks/useEventListener";
-import { WebNavigation } from "webextension-polyfill";
-import OnBeforeNavigateDetailsType = WebNavigation.OnBeforeNavigateDetailsType;
 import { isMV3 } from "@/mv3/api";
 
 /**
@@ -92,6 +90,9 @@ function useConnectedListener(): SidebarListener {
       onHideActivateRecipe() {
         dispatch(sidebarSlice.actions.hideModActivationPanel());
       },
+      onNavigationComplete() {
+        dispatch(sidebarSlice.actions.invalidateConnectingPanels());
+      },
     }),
     [dispatch],
   );
@@ -107,21 +108,27 @@ const ConnectedSidebar: React.VFC = () => {
   // Listen for navigation events to mark temporary panels as unavailable.
   // Not used in MV2 because the sidebar closes automatically on navigation.
   useEffect(() => {
-    const navigationListenerMV3 = (details: OnBeforeNavigateDetailsType) => {
-      const { frameId, tabId } = details;
+    const navigationListenerMV3 = (
+      details: chrome.webNavigation.WebNavigationFramedCallbackDetails,
+    ) => {
+      const { frameId, tabId, documentLifecycle } = details;
       const connectedTabId = getConnectedTabIdMv3();
-      if (tabId === connectedTabId && frameId === 0) {
+      if (
+        documentLifecycle === "active" &&
+        tabId === connectedTabId &&
+        frameId === 0
+      ) {
         console.log("navigationListener:connectedTabId", connectedTabId);
-        dispatch(sidebarSlice.actions.markTemporaryPanelsAsUnavailable());
+        dispatch(sidebarSlice.actions.invalidatePanels());
       }
     };
 
     if (isMV3()) {
-      browser.webNavigation.onBeforeNavigate.addListener(navigationListenerMV3);
+      chrome.webNavigation.onBeforeNavigate.addListener(navigationListenerMV3);
     }
 
     return () => {
-      browser.webNavigation.onBeforeNavigate.removeListener(
+      chrome.webNavigation.onBeforeNavigate.removeListener(
         navigationListenerMV3,
       );
     };

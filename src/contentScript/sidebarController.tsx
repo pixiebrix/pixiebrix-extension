@@ -244,7 +244,7 @@ export async function updateSidebar(
   }
 }
 
-export async function renderPanelsIfVisible(): Promise<void> {
+async function renderPanelsIfVisible(): Promise<void> {
   expectContext("contentScript");
 
   if (isLoadedInIframe()) {
@@ -261,6 +261,27 @@ export async function renderPanelsIfVisible(): Promise<void> {
   } else {
     console.debug(
       "sidebarController:renderPanelsIfVisible: skipping renderPanels because the sidebar is not visible",
+    );
+  }
+}
+
+export async function notifyNavigationComplete(): Promise<void> {
+  expectContext("contentScript");
+
+  if (isLoadedInIframe()) {
+    // The top-level frame is responsible for managing the panels for the sidebar.
+    // Include this isLoadedInIframe check as a stop gap to prevent accidental calls from iframes.
+    console.warn(
+      "sidebarController:notifyNavigationComplete should not be called from a frame",
+    );
+    return;
+  }
+
+  if (await isSidePanelOpen()) {
+    void sidebarInThisTab.notifyNavigationComplete(getTimedSequence());
+  } else {
+    console.debug(
+      "sidebarController:notifyNavigationComplete: skipping notifyNavigationComplete because the sidebar is not visible",
     );
   }
 }

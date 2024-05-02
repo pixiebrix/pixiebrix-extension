@@ -15,21 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.unavailableOverlay {
+.blurOverlay {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.5);
-  justify-content: center;
-  align-items: flex-start;
   backdrop-filter: blur(2.5px);
   pointer-events: all;
   z-index: 1; // ensure overlay is on top of the sidebar panel content
   > div {
-    display: block;
-    margin-top: 10vh;
+    margin-top: 15vh;
+    width: 300px;
   }
 }
 
