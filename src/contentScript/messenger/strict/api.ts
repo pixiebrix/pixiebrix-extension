@@ -64,3 +64,5 @@ export const selectElement = getMethod("SELECT_ELEMENT");
 
 export const insertPanel = getMethod("INSERT_PANEL");
 export const insertButton = getMethod("INSERT_BUTTON");
+export const enableOverlay = getMethod("ENABLE_OVERLAY");
+export const disableOverlay = getMethod("DISABLE_OVERLAY");
