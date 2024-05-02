@@ -31,7 +31,9 @@ const ConnectExtensionCard: React.FunctionComponent = () => {
   useAsyncEffect(
     async (isMounted) => {
       const hasKey = await isLinked();
-      if (isMounted()) return;
+      if (isMounted()) {
+        return;
+      }
       setHasExtensionKey(hasKey);
     },
     [setHasExtensionKey],

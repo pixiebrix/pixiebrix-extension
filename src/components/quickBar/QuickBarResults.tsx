@@ -35,7 +35,9 @@ const ResultItem = forwardRef(
     ref: React.Ref<HTMLDivElement>,
   ) => {
     const ancestors = useMemo(() => {
-      if (!currentRootActionId) return action.ancestors;
+      if (!currentRootActionId) {
+        return action.ancestors;
+      }
       const index = action.ancestors.findIndex(
         (ancestor) => ancestor.id === currentRootActionId,
       );

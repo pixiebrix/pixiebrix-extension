@@ -39,7 +39,7 @@ export function watchNavigation(): void {
   browser.permissions.onRemoved.addListener(updatePageEditor);
   window.addEventListener("beforeunload", onEditorClose);
 
-  if (process.env.DEBUG)
+  if (process.env.DEBUG) {
     browser.webNavigation.onTabReplaced.addListener(
       ({ replacedTabId, tabId }) => {
         console.warn(
@@ -47,4 +47,5 @@ export function watchNavigation(): void {
         );
       },
     );
+  }
 }

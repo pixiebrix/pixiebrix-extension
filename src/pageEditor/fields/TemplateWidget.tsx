@@ -45,7 +45,9 @@ const TemplateWidget: React.FC<TemplateWidgetProps> = ({
 
   const insertSnippet = useCallback((snippet: string) => {
     const { current } = templateInput;
-    if (!current) return;
+    if (!current) {
+      return;
+    }
     const pos = current.selectionStart ?? 0;
     current.setRangeText(snippet, pos, pos);
     current.focus();

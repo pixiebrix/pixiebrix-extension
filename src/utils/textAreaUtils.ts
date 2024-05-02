@@ -85,7 +85,9 @@ export function getCaretCoordinates(element: NativeField, position: number) {
 
   // Default textarea styles
   style.whiteSpace = "pre-wrap";
-  if (!isInput) style.overflowWrap = "break-word"; // Only for textarea-s
+  if (!isInput) {
+    style.overflowWrap = "break-word";
+  } // Only for textarea-s
 
   // Position off-screen
   style.position = "absolute"; // Required to return coordinates properly
@@ -134,7 +136,9 @@ export function getCaretCoordinates(element: NativeField, position: number) {
   div.textContent = element.value.slice(0, Math.max(0, position));
   // The second special handling for input type="text" vs textarea:
   // spaces need to be replaced with non-breaking spaces - http://stackoverflow.com/a/13402035/1269037
-  if (isInput) div.textContent = div.textContent.replaceAll(/\s/g, "\u00A0");
+  if (isInput) {
+    div.textContent = div.textContent.replaceAll(/\s/g, "\u00A0");
+  }
 
   const span = document.createElement("span");
   // Wrapping must be replicated *exactly*, including when a long word gets

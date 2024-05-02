@@ -45,11 +45,15 @@ function useBrickOptions(
       setBlock({ block: null, error: null });
       try {
         const block = await blockRegistry.lookup(id);
-        if (!isMounted()) return;
+        if (!isMounted()) {
+          return;
+        }
         setBlock({ block });
       } catch (error) {
         reportError(error);
-        if (!isMounted()) return;
+        if (!isMounted()) {
+          return;
+        }
         setBlock({ error: String(error) });
       }
     },

@@ -168,7 +168,9 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
 
   const onHighlighted = useCallback(
     ({ suggestion }: { suggestion: SuggestionType | CreateNew | null }) => {
-      if (isNew(suggestion)) return;
+      if (isNew(suggestion)) {
+        return;
+      }
       onSuggestionHighlighted(suggestion);
     },
     [onSuggestionHighlighted],
