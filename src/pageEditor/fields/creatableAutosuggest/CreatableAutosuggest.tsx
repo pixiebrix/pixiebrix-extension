@@ -171,6 +171,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
       if (isNew(suggestion)) {
         return;
       }
+
       onSuggestionHighlighted(suggestion);
     },
     [onSuggestionHighlighted],

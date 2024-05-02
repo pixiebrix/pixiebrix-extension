@@ -38,6 +38,7 @@ const ResultItem = forwardRef(
       if (!currentRootActionId) {
         return action.ancestors;
       }
+
       const index = action.ancestors.findIndex(
         (ancestor) => ancestor.id === currentRootActionId,
       );

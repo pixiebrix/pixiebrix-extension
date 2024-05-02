@@ -48,12 +48,14 @@ function useBrickOptions(
         if (!isMounted()) {
           return;
         }
+
         setBlock({ block });
       } catch (error) {
         reportError(error);
         if (!isMounted()) {
           return;
         }
+
         setBlock({ error: String(error) });
       }
     },

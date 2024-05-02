@@ -34,6 +34,7 @@ const ConnectExtensionCard: React.FunctionComponent = () => {
       if (isMounted()) {
         return;
       }
+
       setHasExtensionKey(hasKey);
     },
     [setHasExtensionKey],

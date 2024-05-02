@@ -48,6 +48,7 @@ const TemplateWidget: React.FC<TemplateWidgetProps> = ({
     if (!current) {
       return;
     }
+
     const pos = current.selectionStart ?? 0;
     current.setRangeText(snippet, pos, pos);
     current.focus();
