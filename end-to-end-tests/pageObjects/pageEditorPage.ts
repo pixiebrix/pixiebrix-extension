@@ -20,6 +20,7 @@ import { type BrowserContext, type Page } from "@playwright/test";
 import { expect } from "../fixtures/extensionBase";
 import { uuidv4 } from "@/types/helpers";
 
+// Starter brick names as shown in the Page Editor UI
 export type StarterBrickName =
   | "Context Menu"
   | "Trigger"
