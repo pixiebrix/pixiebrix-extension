@@ -18,6 +18,7 @@
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import { getSharingType } from "@/hooks/auth";
 import { type RemoteIntegrationConfig } from "@/types/contract";
+import reportError from "@/telemetry/reportError";
 
 export async function getBuiltInIntegrationConfigs(): Promise<
   RemoteIntegrationConfig[]

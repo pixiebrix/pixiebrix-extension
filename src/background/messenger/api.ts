@@ -22,11 +22,6 @@ import {
   getNotifier,
 } from "webext-messenger";
 
-export const setPartnerCopilotData = getNotifier(
-  "SET_PARTNER_COPILOT_DATA",
-  bg,
-);
-
 export const removeExtensionForEveryTab = getNotifier(
   "REMOVE_EXTENSION_EVERY_TAB",
   bg,
