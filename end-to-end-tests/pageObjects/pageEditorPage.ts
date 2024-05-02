@@ -61,7 +61,7 @@ export class PageEditorPage {
   }
 
   /**
-   * Adds a starter brick in the Page Editor. Randomly generates a mod name to prevent
+   * Adds a starter brick in the Page Editor. Generates a unique mod name to prevent
    * test collision.
    *
    * @param starterBrickName the starter brick name to add, corresponding to the name shown in the Page Editor UI,
