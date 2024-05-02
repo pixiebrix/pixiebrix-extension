@@ -475,8 +475,9 @@ class TourStepTransformer extends TransformerABC {
       backgroundColor: element.style.backgroundColor,
     };
 
-    if (config.backgroundColor)
+    if (config.backgroundColor) {
       element.style.backgroundColor = config.backgroundColor;
+    }
   }
 
   unhighlightTarget(element: HTMLElement): void {

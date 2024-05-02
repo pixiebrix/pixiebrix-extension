@@ -226,7 +226,9 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   // when the menu is shown. This is needed because the position is computed asynchronously (see usePositionVarPopup).
   // Also see the discussion thread for floating-ui to support synchronous computePosition:
   // https://github.com/floating-ui/floating-ui/discussions/2720
-  if (!positioned) return <div className="hidden" ref={rootElementRef} />;
+  if (!positioned) {
+    return <div className="hidden" ref={rootElementRef} />;
+  }
 
   if (knownVars == null) {
     return (
