@@ -57,11 +57,19 @@ export class ModsPage {
     return this.page.getByTestId("blueprints-search-input");
   }
 
+  /**
+   * Deletes a standalone mod component by name. This method will conditionally deactivate the mod as needed.
+   * @param modName the name of the standalone mod to delete (must be a standalone mod, not a packaged mod)
+   */
   async deleteModByName(modName: string) {
     await this.searchModsInput().fill(modName);
     for (const mod of await this.modTableItems().all()) {
       if (mod.getByText(modName, { exact: true })) {
         /* eslint-disable no-await-in-loop -- optimization via parallelization not relevant here */
+
+        // Note that there is a race condition in the Page Editor where the action dropdown menu will disappear when
+        // certain network requests resolve, so we need to add handling to retry clicking the dropdown menu if it
+        // disappears.
         await expect(async () => {
           await mod.locator(".dropdown").click();
           const deactivateOption = mod.getByRole("button", {
