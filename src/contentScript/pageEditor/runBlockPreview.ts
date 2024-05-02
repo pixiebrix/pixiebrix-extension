@@ -26,9 +26,9 @@ import { type SerializableResponse } from "@/types/messengerTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { $safeFind } from "@/utils/domUtils";
-import { type RunBlockArgs } from "@/contentScript/pageEditor/runRendererBlock";
 import { BusinessError } from "@/errors/businessErrors";
 import { type RegistryId } from "@/types/registryTypes";
+import { type RunBlockArgs } from "@/contentScript/pageEditor/types";
 
 /**
  * Run a single block (e.g., for generating output previews)
