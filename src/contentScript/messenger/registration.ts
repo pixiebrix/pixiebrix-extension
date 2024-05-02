@@ -30,9 +30,8 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 202 strictNullCheck errors
+} from "@/contentScript/lifecycle"; // 197 strictNullCheck errors
 import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
-import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect"; // Depends on background/messenger to pass strictNullCheck
 import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Depends on background/messenger to pass strictNullCheck
 import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements"; // 201 strictNullCheck errors
 import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader"; // 193 strictNullCheck errors
@@ -67,8 +66,6 @@ declare global {
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
 
-    GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
-
     SHOW_LOGIN_BANNER: typeof showBannerFromConfig;
   }
 }
@@ -94,8 +91,6 @@ export default function registerMessenger(): void {
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,
     RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
-
-    GET_COPILOT_HOST_DATA: getCopilotHostData,
 
     SHOW_LOGIN_BANNER: showBannerFromConfig,
   });
