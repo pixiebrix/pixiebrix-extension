@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./validators/formValidator.test.ts",
     "./vendors/reactPerformanceTesting/perf.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",

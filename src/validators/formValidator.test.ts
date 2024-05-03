@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion -- strictNullChecks isn't on for all files yet */
 /* eslint-disable max-nested-callbacks -- copied from RJSF test suite */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
@@ -144,17 +145,17 @@ describe("RJSF Tests", () => {
 
         it("should return an error list", () => {
           expect(errors).toHaveLength(2);
-          expect(errors[0].message).toBe(
+          expect(errors[0]!.message).toBe(
             'Instance type "number" is invalid. Expected "string".',
           );
-          expect(errors[1].message).toBe(
+          expect(errors[1]!.message).toBe(
             'Instance type "number" is invalid. Expected "string".',
           );
         });
 
         it("should return an errorSchema", () => {
-          expect(errorSchema.foo.__errors).toHaveLength(1);
-          expect(errorSchema.foo.__errors[0]).toBe(
+          expect(errorSchema.foo!.__errors).toHaveLength(1);
+          expect(errorSchema.foo!.__error![0]).toBe(
             'Instance type "number" is invalid. Expected "string".',
           );
         });
@@ -210,16 +211,16 @@ describe("RJSF Tests", () => {
         });
 
         it("first error is for minimum", () => {
-          expect(errors[0].message).toBe("0.14 is less than 1.");
+          expect(errors[0]!.message).toBe("0.14 is less than 1.");
         });
 
         it("first error is for multipleOf", () => {
-          expect(errors[1].message).toBe("0.14 is not a multiple of 0.03.");
+          expect(errors[1]!.message).toBe("0.14 is not a multiple of 0.03.");
         });
 
         it("should return an errorSchema", () => {
-          expect(errorSchema.price.__errors).toHaveLength(2);
-          expect(errorSchema.price.__errors).toEqual([
+          expect(errorSchema.price!.__errors).toHaveLength(2);
+          expect(errorSchema.price!.__errors).toEqual([
             "0.14 is less than 1.",
             "0.14 is not a multiple of 0.03.",
           ]);
@@ -249,14 +250,14 @@ describe("RJSF Tests", () => {
 
           it("should return an error list", () => {
             expect(errors).toHaveLength(1);
-            expect(errors[0].stack).toBe(
+            expect(errors[0]!.stack).toBe(
               '#/required Instance does not have required property "pass2".',
             );
           });
 
           it("should return an errorSchema", () => {
-            expect(errorSchema.pass2.__errors).toHaveLength(1);
-            expect(errorSchema.pass2.__errors[0]).toBe(
+            expect(errorSchema.pass2!.__errors).toHaveLength(1);
+            expect(errorSchema.pass2!.__errors![0]).toBe(
               'Instance does not have required property "pass2".',
             );
           });
@@ -286,14 +287,14 @@ describe("RJSF Tests", () => {
 
           it("should return an error list", () => {
             expect(errors).toHaveLength(1);
-            expect(errors[0].stack).toBe(
+            expect(errors[0]!.stack).toBe(
               '#/properties/nested/required Instance does not have required property "pass2".',
             );
           });
 
           it("should return an errorSchema", () => {
-            expect(errorSchema.nested.pass2.__errors).toHaveLength(1);
-            expect(errorSchema.nested.pass2.__errors[0]).toBe(
+            expect(errorSchema.nested!.pass2!.__errors).toHaveLength(1);
+            expect(errorSchema.nested!.pass2!.__errors![0]).toBe(
               'Instance does not have required property "pass2".',
             );
           });
@@ -318,14 +319,14 @@ describe("RJSF Tests", () => {
 
         it("should return an error list", () => {
           expect(errors).toHaveLength(1);
-          expect(errors[0].message).toBe(
+          expect(errors[0]!.message).toBe(
             'Instance type "number" is invalid. Expected "string".',
           );
         });
 
         it("should return an errorSchema", () => {
-          expect(errorSchema.foo.__errors).toHaveLength(1);
-          expect(errorSchema.foo.__errors[0]).toBe(
+          expect(errorSchema.foo!.__errors).toHaveLength(1);
+          expect(errorSchema.foo!.__errors![0]).toBe(
             'Instance type "number" is invalid. Expected "string".',
           );
         });
@@ -369,7 +370,7 @@ describe("RJSF Tests", () => {
 
         it("should use transformErrors function", () => {
           expect(errors).not.toHaveLength(0);
-          expect(errors[0].message).toEqual(newErrorMessage);
+          expect(errors[0]!.message).toEqual(newErrorMessage);
         });
 
         it("transformErrors function was called with uiSchema", () => {
@@ -393,7 +394,7 @@ describe("RJSF Tests", () => {
 
           validate = jest.fn((formData: any, errors: FormValidation) => {
             if (formData.pass1 !== formData.pass2) {
-              errors.pass2.addError("passwords don`t match.");
+              errors.pass2!.addError("passwords don`t match.");
             }
 
             return errors;
@@ -426,12 +427,12 @@ describe("RJSF Tests", () => {
 
           it("should return an error list", () => {
             expect(errors).toHaveLength(1);
-            expect(errors[0].stack).toBe(".pass2 passwords don`t match.");
+            expect(errors[0]!.stack).toBe(".pass2 passwords don`t match.");
           });
 
           it("should return an errorSchema", () => {
-            expect(errorSchema.pass2.__errors).toHaveLength(1);
-            expect(errorSchema.pass2.__errors[0]).toBe(
+            expect(errorSchema.pass2!.__errors).toHaveLength(1);
+            expect(errorSchema.pass2!.__errors![0]).toBe(
               "passwords don`t match.",
             );
           });
@@ -466,12 +467,12 @@ describe("RJSF Tests", () => {
 
           it("should return an error list", () => {
             expect(errors).toHaveLength(1);
-            expect(errors[0].stack).toBe(".pass2 passwords don`t match.");
+            expect(errors[0]!.stack).toBe(".pass2 passwords don`t match.");
           });
 
           it("should return an errorSchema", () => {
-            expect(errorSchema.pass2.__errors).toHaveLength(1);
-            expect(errorSchema.pass2.__errors[0]).toBe(
+            expect(errorSchema.pass2!.__errors).toHaveLength(1);
+            expect(errorSchema.pass2!.__errors![0]).toBe(
               "passwords don`t match.",
             );
           });
@@ -542,17 +543,17 @@ describe("RJSF Tests", () => {
 
         it("should return an error list", () => {
           expect(errors).toHaveLength(1);
-          expect(errors[0].name).toBe("type");
-          expect(errors[0].property).toBe("foo");
-          expect(errors[0].schemaPath).toBe("#/foo");
-          expect(errors[0].message).toBe(
+          expect(errors[0]!.name).toBe("type");
+          expect(errors[0]!.property).toBe("foo");
+          expect(errors[0]!.schemaPath).toBe("#/foo");
+          expect(errors[0]!.message).toBe(
             'Instance type "number" is invalid. Expected "string".',
           );
         });
 
         it("should return an errorSchema", () => {
-          expect(errorSchema.foo.__errors).toHaveLength(1);
-          expect(errorSchema.foo.__errors[0]).toBe(
+          expect(errorSchema.foo!.__errors).toHaveLength(1);
+          expect(errorSchema.foo!.__errors![0]).toBe(
             'Instance type "number" is invalid. Expected "string".',
           );
         });
