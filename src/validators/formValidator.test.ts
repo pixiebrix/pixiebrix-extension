@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion -- strictNullChecks isn't on for all files yet */
 /* eslint-disable max-nested-callbacks -- copied from RJSF test suite */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.

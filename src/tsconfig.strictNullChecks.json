@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./utils/inference/inferSingleElementSelector.test.ts",
     "./utils/inference/markupInference.test.tsx",
     "./utils/inference/selectorInference.test.ts",
     "./utils/objectUtils.test.ts",

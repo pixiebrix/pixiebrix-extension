@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion -- ok to throw errors */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *

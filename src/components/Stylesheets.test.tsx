@@ -36,7 +36,7 @@ it("renders the children after the stylesheet is loaded", () => {
     </Stylesheets>,
   );
 
-  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access, @typescript-eslint/no-unnecessary-type-assertion -- Not a visible element
+  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- Not a visible element
   const stylesheet = container.querySelector("link")!;
   expect(stylesheet).toHaveAttribute("href", "https://example.com/style.css");
 
@@ -93,7 +93,7 @@ it("renders the children immediately even when the loading of the stylesheet fai
     </Stylesheets>,
   );
 
-  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access, @typescript-eslint/no-unnecessary-type-assertion -- Not a visible element
+  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- Not a visible element
   const stylesheet = container.querySelector("link")!;
   expect(stylesheet).not.toBeNull();
   expect(stylesheet).toHaveAttribute("href", "https://example.com/style.css");
