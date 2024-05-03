@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./tours/tourRunDatabase.test.ts",
     "./utils/cachePromise.test.ts",
     "./utils/formUtils.test.ts",
     "./utils/inference/inferSingleElementSelector.test.ts",
