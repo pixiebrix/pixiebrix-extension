@@ -106,6 +106,10 @@ export class PageEditorPage {
     await this.page.getByRole("button", { name: "Save" }).click();
   }
 
+  getByText(text: string) {
+    return this.page.getByText(text);
+  }
+
   async saveStandaloneMod(modName: string) {
     const modListItem = this.page.locator(".list-group-item", {
       hasText: modName,
