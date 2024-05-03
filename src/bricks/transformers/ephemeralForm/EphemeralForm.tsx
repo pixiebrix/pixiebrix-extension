@@ -65,7 +65,7 @@ const IsolatedEphemeralFormContent: React.FunctionComponent<
 const EphemeralForm: React.FC = () => {
   const params = new URLSearchParams(location.search);
   const nonce = validateUUID(params.get("nonce"));
-  const opener = JSON.parse(params.get("opener") ?? "") as Target;
+  const opener = JSON.parse(params.get("opener") ?? "{}") as Target;
   const mode = params.get("mode") ?? "modal";
 
   const isModal = mode === "modal";
