@@ -66,6 +66,7 @@ import {
 } from "@/background/telemetry";
 import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
 import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
+import { setCopilotProcessData } from "@/background/partnerHandlers";
 
 expectContext("background");
 
@@ -128,6 +129,7 @@ declare global {
 
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
+    SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
   }
 }
 
@@ -190,5 +192,6 @@ export default function registerMessenger(): void {
 
     ENSURE_CONTEXT_MENU: ensureContextMenu,
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
+    SET_PARTNER_COPILOT_DATA: setCopilotProcessData,
   });
 }

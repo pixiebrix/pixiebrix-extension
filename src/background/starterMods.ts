@@ -32,8 +32,7 @@ import { type ModComponentState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";
-import type { Database, RemoteIntegrationConfig } from "@/types/contract";
-import { getSharingType } from "@/hooks/auth";
+import type { Database } from "@/types/contract";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
@@ -61,6 +60,7 @@ import type { OptionsArgs } from "@/types/runtimeTypes";
 import { isDatabasePreviewField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isRequired } from "@/utils/schemaUtils";
 import type { Schema } from "@/types/schemaTypes";
+import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: extensionsReducer, actions: extensionsActions } =
@@ -71,28 +71,6 @@ const { reducer: sidebarReducer, actions: sidebarActions } = sidebarSlice;
 const PLAYGROUND_URL = "https://www.pixiebrix.com/welcome";
 const MOD_ACTIVATION_DEBOUNCE_MS = 10_000;
 const MOD_ACTIVATION_MAX_MS = 60_000;
-
-export async function getBuiltInIntegrationConfigs(): Promise<
-  RemoteIntegrationConfig[]
-> {
-  const client = await maybeGetLinkedApiClient();
-  if (client == null) {
-    return [];
-  }
-
-  try {
-    const { data: integrationConfigs } = await client.get<
-      RemoteIntegrationConfig[]
-    >("/api/services/shared/?meta=1");
-
-    return integrationConfigs.filter(
-      (auth) => getSharingType(auth) === "built-in",
-    );
-  } catch (error) {
-    reportError(error);
-    return [];
-  }
-}
 
 function activateModInOptionsState(
   state: ModComponentState,
