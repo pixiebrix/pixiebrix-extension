@@ -49,6 +49,7 @@ import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
+import { freeze } from "@/utils/objectUtils";
 
 type BrickOption<T extends Metadata = Brick> = {
   data: T;
@@ -178,14 +179,14 @@ const defaultAddCaption = (
   </span>
 );
 
-const defaultRecommendations: RegistryId[] = [] as const;
+const DEFAULT_RECOMMENDATIONS = freeze<RegistryId[]>([]);
 
 function ActualModal<T extends Metadata>({
   bricks,
   close,
   onSelect,
   selectCaption = defaultAddCaption,
-  recommendations = defaultRecommendations,
+  recommendations = DEFAULT_RECOMMENDATIONS,
   modalClassName,
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");

@@ -5,7 +5,9 @@
   },
   "exclude": [
     "./background/messenger/external/_implementation.ts",
-
+    "./background/starterMods.test.ts",
+    "./background/starterMods.ts",
+    "./bricks/effects/CommentOptions.tsx",
     "./background/messenger/api.ts",
     "./activation/useActivateModWizard.ts",
     "./activation/useActivateModWizard.test.tsx",

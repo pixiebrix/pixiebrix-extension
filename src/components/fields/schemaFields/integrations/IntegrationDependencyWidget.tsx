@@ -43,6 +43,7 @@ import useAsyncEffect from "use-async-effect";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
+import { freeze } from "@/utils/objectUtils";
 
 export type IntegrationDependencyWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the integration auth already selected, or the only available credential (default=true) */
@@ -168,7 +169,7 @@ function clearIntegrationSelection(
   return produceExcludeUnusedDependencies(nextState);
 }
 
-const NO_AUTH_OPTIONS = Object.freeze([] as AuthOption[]);
+const NO_AUTH_OPTIONS = freeze<AuthOption[]>([]);
 
 // The only reason these inputs are optional is for tests, need to investigate better mocking instead
 // @see BotOptions.test.ts

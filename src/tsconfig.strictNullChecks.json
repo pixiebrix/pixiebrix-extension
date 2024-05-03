@@ -4,6 +4,8 @@
     "strictNullChecks": true
   },
   "files": [
+    "./background/restrictUnauthenticatedUrlAccess.test.ts",
+    "./background/refreshToken.test.ts",
     "./background/performConfiguredRequest.test.ts",
     "./background/partnerIntegrations.test.ts",
     "../end-to-end-tests/auth.setup.ts",

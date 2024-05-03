@@ -212,7 +212,7 @@ describe("enforceAuthentication", () => {
     });
 
     // Mock that tab no longer exists
-    jest.mocked(browser.tabs.get).mockResolvedValue(null);
+    jest.mocked(browser.tabs.get).mockReset();
 
     TEST_triggerListeners({ token: "foo" });
 
