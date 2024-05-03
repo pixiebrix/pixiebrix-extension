@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import SelectWidget, {
   type Option,
   type SelectLike,
@@ -24,12 +24,12 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import isPromise from "is-promise";
 import useReportError from "@/hooks/useReportError";
-import { BusinessError } from "@/errors/businessErrors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
-import useAsyncState from "@/hooks/useAsyncState";
-import type { FetchableAsyncState } from "@/types/sliceTypes";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { useOptionsResolver } from "@/components/form/widgets/useOptionsResolver";
+import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
 
 export type OptionsFactory<T = unknown> = (
   config: SanitizedIntegrationConfig,
@@ -43,39 +43,20 @@ type RemoteSelectWidgetProps<T = unknown> = CustomFieldWidgetProps<
   isClearable?: boolean;
   optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>;
   config: SanitizedIntegrationConfig | null;
+  /**
+   * Additional arguments to pass to optionsFactory, if optionsFactory is a function.
+   */
   factoryArgs?: UnknownObject;
   loadingMessage?: string;
 };
-
-export function useOptionsResolver<T>(
-  config: SanitizedIntegrationConfig | null,
-  optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>,
-  factoryArgs?: UnknownObject,
-): FetchableAsyncState<Array<Option<T>>> {
-  return useAsyncState<Array<Option<T>>>(async () => {
-    if (isPromise(optionsFactory)) {
-      console.debug("Options is a promise, returning promise directly");
-      return optionsFactory;
-    }
-
-    if (config) {
-      console.debug("Options is a factory, fetching options with config", {
-        config,
-      });
-      return optionsFactory(config, factoryArgs);
-    }
-
-    throw new BusinessError("No integration configured");
-  }, [config, optionsFactory, factoryArgs]);
-}
 
 /**
  * Widget for selecting values retrieved from a 3rd party API
  * @see AsyncRemoteSelectWidget
  */
 const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
-  config,
   optionsFactory,
+  config,
   factoryArgs,
   ...selectProps
 }) => {
@@ -88,13 +69,22 @@ const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
 
   useReportError(error);
 
+  const { setLocalError } = useContext(FieldTemplateLocalErrorContext);
+
+  useEffect(() => {
+    if (error == null) {
+      setLocalError(null);
+    } else {
+      setLocalError(getErrorMessage(error, "Error loading options"));
+    }
+  }, [error, setLocalError]);
+
   return (
     <div className="d-flex">
       <div className="flex-grow-1">
         <SelectWidget
           options={options}
           isLoading={isLoading}
-          loadError={error}
           {...selectProps}
         />
       </div>
