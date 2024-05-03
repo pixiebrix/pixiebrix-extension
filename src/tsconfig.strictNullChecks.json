@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./store/sidebar/eventKeyUtils.test.ts",
     "./telemetry/logging.test.ts",
     "./testUtils/testItRenders.tsx",
     "./themes/themeStore.test.ts",
