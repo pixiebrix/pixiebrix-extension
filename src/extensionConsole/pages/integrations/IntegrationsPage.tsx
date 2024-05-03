@@ -17,7 +17,7 @@
 
 import styles from "@/extensionConsole/pages/integrations/PrivateIntegrationsCard.module.scss";
 
-import React, { useCallback, useContext, useReducer } from "react";
+import React, { useCallback, useContext, useEffect, useReducer } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import integrationsSlice from "@/integrations/store/integrationsSlice";
 import Page from "@/layout/Page";
@@ -30,7 +30,7 @@ import { faCloud, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { services } from "@/background/messenger/strict/api";
 import ZapierIntegrationModal from "@/extensionConsole/pages/integrations/ZapierIntegrationModal";
 import notify from "@/utils/notify";
-import { useParams } from "react-router";
+import { useLocation } from "react-router";
 import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isUUID, uuidv4 } from "@/types/helpers";
@@ -43,13 +43,16 @@ import {
 } from "@/integrations/integrationTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  type AnyAction,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import registry from "@/integrations/registry";
 import { isEmpty, isEqual, sortBy } from "lodash";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 import useAsyncEffect from "use-async-effect";
 import { type RegistryId } from "@/types/registryTypes";
-import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
 import { freshIdentifier } from "@/utils/variableUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import {
@@ -60,6 +63,16 @@ import { type Draft } from "immer";
 
 const { upsertIntegrationConfig, deleteIntegrationConfig } =
   integrationsSlice.actions;
+
+type URLParamValue = UUID | "zapier" | "new" | undefined;
+
+function validationUrlParamValue(value: string): URLParamValue {
+  if (isUUID(value) || value === "zapier" || value === "new") {
+    return value as URLParamValue;
+  }
+
+  return undefined;
+}
 
 type State = {
   /**
@@ -91,6 +104,9 @@ type State = {
    * table to ensure this item is showing.
    */
   createdIntegrationConfigId: UUID | null;
+
+  urlPathParam?: URLParamValue;
+  integrationConfigs: IntegrationConfig[];
 };
 
 const initialState: State = {
@@ -101,9 +117,8 @@ const initialState: State = {
   selectedIntegration: null,
   isCreateNew: false,
   createdIntegrationConfigId: null,
+  integrationConfigs: [],
 };
-
-type URLParamValue = UUID | "zapier" | "new" | undefined;
 
 const componentState = createSlice({
   name: "integrationsPageState",
@@ -117,6 +132,16 @@ const componentState = createSlice({
       }>,
     ) {
       const { urlParam, integrationConfigs } = action.payload;
+
+      if (
+        urlParam === state.urlPathParam &&
+        isEqual(integrationConfigs, state.integrationConfigs)
+      ) {
+        return;
+      }
+
+      state.urlPathParam = urlParam;
+      state.integrationConfigs = integrationConfigs;
 
       if (urlParam === "zapier") {
         state.showZapier = true;
@@ -167,6 +192,7 @@ const componentState = createSlice({
         state.isCreateNew = true;
         state.createdIntegrationConfigId = null;
       } else {
+        state.showZapier = false;
         state.editingIntegrationConfig = null;
         state.selectedIntegration = null;
         state.isCreateNew = false;
@@ -232,6 +258,26 @@ const componentState = createSlice({
   },
 });
 
+function useUrlOrConfigsChangeHandler(
+  dispatch: React.Dispatch<AnyAction>,
+  integrationConfigs: IntegrationConfig[],
+) {
+  let { pathname } = useLocation();
+  if (pathname.endsWith("/")) {
+    pathname = pathname.slice(0, -1);
+  }
+
+  const urlParam = validationUrlParamValue(pathname.split("/").pop() ?? "");
+  useEffect(() => {
+    dispatch(
+      componentState.actions.urlParamOrConfigsChanged({
+        urlParam,
+        integrationConfigs,
+      }),
+    );
+  }, [dispatch, integrationConfigs, urlParam]);
+}
+
 const IntegrationsPage: React.VFC = () => {
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
@@ -265,19 +311,8 @@ const IntegrationsPage: React.VFC = () => {
   }, []);
 
   const integrationConfigs = useSelector(selectIntegrationConfigs);
-  const { id: urlParam } = useParams<{ id: URLParamValue }>();
-  useOnChangeEffect(
-    { urlParam, integrationConfigs },
-    ({ urlParam, integrationConfigs }) => {
-      localDispatch(
-        componentState.actions.urlParamOrConfigsChanged({
-          urlParam,
-          integrationConfigs,
-        }),
-      );
-    },
-    isEqual,
-  );
+
+  useUrlOrConfigsChangeHandler(localDispatch, integrationConfigs);
 
   const syncIntegrations = useCallback(async () => {
     await flushReduxPersistence();

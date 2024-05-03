@@ -23,6 +23,11 @@ import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSaniti
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
 import useAsyncState from "@/hooks/useAsyncState";
 import { validateIntegrationAuth } from "@/integrations/util/validateIntegrationAuth";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
+import { AnnotationType } from "@/types/annotationTypes";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 type ConfigProps = {
   integrationFieldSchema: Schema;
@@ -31,6 +36,45 @@ type ConfigProps = {
     sanitizedConfig: SanitizedIntegrationConfig;
   }) => React.ReactElement;
 };
+
+function useAuthErrorAnnotation(
+  sanitizedConfig: SanitizedIntegrationConfig,
+): FieldAnnotation | null {
+  const { data: isConfigValid = true } = useAsyncState(async () => {
+    if (sanitizedConfig == null) {
+      return true;
+    }
+
+    return validateIntegrationAuth(sanitizedConfig);
+  }, [sanitizedConfig]);
+
+  if (isConfigValid) {
+    return null;
+  }
+
+  const editConfigUrl = `${getExtensionConsoleUrl(
+    "services",
+  )}/${encodeURIComponent(sanitizedConfig.id)}`;
+  return {
+    type: AnnotationType.Error,
+    message: (
+      <div>
+        <div>
+          <span>
+            The configuration for this integration is invalid. Please check your
+            credentials and try again.
+          </span>
+        </div>
+        <div>
+          <a href={editConfigUrl} target="_blank" rel="noopener noreferrer">
+            <FontAwesomeIcon icon={faEdit} />
+            &nbsp;Edit the integration configuration here.
+          </a>
+        </div>
+      </div>
+    ),
+  };
+}
 
 /**
  * Gate component that presents an integration dependency field, and then gates the child components
@@ -53,13 +97,7 @@ const RequireIntegrationConfig: React.FC<ConfigProps> = ({
     integrationFieldName,
   );
 
-  const { data: isConfigValid = true } = useAsyncState(async () => {
-    if (sanitizedConfig == null) {
-      return true;
-    }
-
-    return validateIntegrationAuth(sanitizedConfig);
-  }, [sanitizedConfig]);
+  const authErrorAnnotation = useAuthErrorAnnotation(sanitizedConfig);
 
   return (
     <>
@@ -67,9 +105,9 @@ const RequireIntegrationConfig: React.FC<ConfigProps> = ({
         label="Integration"
         name={integrationFieldName}
         schema={integrationFieldSchema}
-        isAuthInvalid={!isConfigValid}
+        annotations={authErrorAnnotation ? [authErrorAnnotation] : []}
       />
-      {sanitizedConfig && isConfigValid && children({ sanitizedConfig })}
+      {sanitizedConfig && !authErrorAnnotation && children({ sanitizedConfig })}
     </>
   );
 };

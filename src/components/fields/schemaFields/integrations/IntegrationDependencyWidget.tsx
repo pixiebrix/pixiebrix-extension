@@ -31,8 +31,8 @@ import { type SelectWidgetOnChange } from "@/components/form/widgets/SelectWidge
 import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
 import {
   type Expression,
-  type OutputKey,
   type IntegrationDependencyVarRef,
+  type OutputKey,
 } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
@@ -43,10 +43,12 @@ import useAsyncEffect from "use-async-effect";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 
 export type IntegrationDependencyWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the integration auth already selected, or the only available credential (default=true) */
   detectDefault?: boolean;
+  annotations?: FieldAnnotation[];
 };
 
 const DEFAULT_INTEGRATION_OUTPUT_KEY = "integration" as OutputKey;

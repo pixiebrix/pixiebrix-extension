@@ -27,8 +27,6 @@ import IntegrationDependencyWidget, {
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
-import { FieldAnnotation } from "@/components/form/FieldAnnotation";
-import { AnnotationType } from "@/types/annotationTypes";
 
 export const IntegrationDependencyFieldDescription: React.FC<{
   schema: Schema;
@@ -63,18 +61,9 @@ export const IntegrationDependencyFieldDescription: React.FC<{
  * @see IntegrationDependencyWidget
  */
 const IntegrationDependencyField: React.FunctionComponent<
-  IntegrationDependencyWidgetProps & { isAuthInvalid?: boolean }
-> = ({ detectDefault = true, isAuthInvalid, ...props }) => {
+  IntegrationDependencyWidgetProps
+> = ({ detectDefault = true, ...props }) => {
   const { name, schema } = props;
-  const annotations: FieldAnnotation[] = [];
-  if (isAuthInvalid) {
-    annotations.push({
-      type: AnnotationType.Error,
-      message:
-        "The authentication for this integration is invalid. Please check your credentials and try again.",
-    });
-  }
-
   // Use FieldTemplate here directly b/c this component is mapping between the Formik state and the options for the
   // select widget.
   return (
@@ -82,7 +71,6 @@ const IntegrationDependencyField: React.FunctionComponent<
       name={name}
       label={makeLabelForSchemaField(props)}
       description={<IntegrationDependencyFieldDescription schema={schema} />}
-      annotations={annotations}
       as={IntegrationDependencyWidget}
       {...props}
     />
