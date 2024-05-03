@@ -191,7 +191,7 @@ describe("getActiveTheme", () => {
         showSidebarLogo: true,
       });
       expect(reportErrorMock).toHaveBeenCalledOnce();
-      expect((reportErrorMock.mock.calls[0][0] as AxiosError).message).toBe(
+      expect((reportErrorMock.mock.calls[0]![0] as AxiosError).message).toBe(
         "Request failed with status code 500",
       );
     });

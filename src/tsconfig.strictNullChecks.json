@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./themes/themeStore.test.ts",
     "./tours/tourRunDatabase.test.ts",
     "./utils/cachePromise.test.ts",
     "./utils/formUtils.test.ts",
