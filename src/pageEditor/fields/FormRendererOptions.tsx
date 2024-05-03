@@ -161,6 +161,7 @@ const FormDataBindingOptions: React.FC<{
           label="Namespace"
           isRequired
           schema={
+            // @ts-expect-error -- Custom property
             CUSTOM_FORM_SCHEMA.properties.storage.oneOf[1].properties
               .namespace as Schema
           }

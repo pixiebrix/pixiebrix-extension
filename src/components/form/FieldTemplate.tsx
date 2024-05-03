@@ -35,6 +35,7 @@ import MarkdownInline from "@/components/MarkdownInline";
 import { type Except } from "type-fest";
 import { type ActionMeta } from "react-select";
 import { freeze } from "@/utils/objectUtils";
+import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType,

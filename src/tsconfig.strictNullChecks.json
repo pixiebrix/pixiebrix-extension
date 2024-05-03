@@ -95,6 +95,7 @@
     "./background/locator.ts",
     "./background/messenger/strict/api.ts",
     "./background/messenger/strict/registration.ts",
+    "./background/partnerHandlers.ts",
     "./background/partnerIntegrations.test.ts",
     "./background/partnerIntegrations.ts",
     "./background/performConfiguredRequest.test.ts",
