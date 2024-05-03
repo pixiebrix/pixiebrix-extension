@@ -17,7 +17,7 @@
 
 import { BusinessError } from "@/errors/businessErrors";
 import { isNullOrBlank } from "@/utils/stringUtils";
-import { assertNotNullish } from "./nullishUtils";
+import { type Nullishable, assertNotNullish } from "./nullishUtils";
 
 const SPACE_ENCODED_VALUE = "%20";
 
@@ -64,7 +64,7 @@ export function selectAbsoluteUrl({
 
 export function makeURL(
   url: string,
-  params: Record<string, string | number | boolean> = {},
+  params: Record<string, Nullishable<string | number | boolean>> = {},
   spaceEncoding: "plus" | "percent" = URL_INPUT_SPACE_ENCODING_DEFAULT,
 ): string {
   // https://javascript.info/url#searchparams

@@ -29,7 +29,7 @@ const specialCharsRegex = /[\s.[\]]/;
  */
 export function joinName(
   baseFieldName: string | null,
-  ...rest: string[]
+  ...rest: Array<string | null>
 ): string {
   const fieldNames = compact(rest);
 

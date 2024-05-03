@@ -141,11 +141,7 @@ describe("logging", () => {
 
     const nestedError = new Error("nested cause");
     const reportedError = new Error("test", { cause: nestedError });
-    await reportToApplicationErrorTelemetry(
-      reportedError,
-      null,
-      "error message",
-    );
+    await reportToApplicationErrorTelemetry(reportedError, {}, "error message");
 
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
       "application-error-telemetry-disable-report",
@@ -172,7 +168,7 @@ describe("logging", () => {
   test("disable Application error telemetry reporting", async () => {
     flagOnMock.mockResolvedValue(true);
 
-    await reportToApplicationErrorTelemetry(new Error("test"), null, null);
+    await reportToApplicationErrorTelemetry(new Error("test"), {}, "");
 
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
       "application-error-telemetry-disable-report",

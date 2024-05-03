@@ -37,7 +37,7 @@ describe("cachePromise", () => {
     // The promises are cached
     expect(deferred).toHaveLength(1);
 
-    deferred[0].reject(new Error("error"));
+    deferred[0]!.reject(new Error("error"));
 
     await expect(cached1).rejects.toThrow("error");
     await expect(cached2).rejects.toThrow("error");
@@ -58,13 +58,13 @@ describe("cachePromise", () => {
     const cached1 = cachedMethod();
 
     expect(deferred).toHaveLength(1);
-    deferred[0].reject(new Error("error"));
+    deferred[0]!.reject(new Error("error"));
     await expect(cached1).rejects.toThrow("error");
 
     const cached2 = cachedMethod();
     expect(deferred).toHaveLength(2);
 
-    deferred[1].reject(new Error("other error"));
+    deferred[1]!.reject(new Error("other error"));
     await expect(cached2).rejects.toThrow("other error");
   });
 
@@ -86,7 +86,7 @@ describe("cachePromise", () => {
     // The promises are cached
     expect(deferred).toHaveLength(1);
 
-    deferred[0].resolve(42);
+    deferred[0]!.resolve(42);
 
     await expect(cached1).resolves.toBe(42);
     await expect(cached2).resolves.toBe(42);

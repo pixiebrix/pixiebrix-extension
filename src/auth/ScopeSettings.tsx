@@ -78,7 +78,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
           return;
         }
 
-        switch (error.response.status) {
+        switch (error.response?.status) {
           case StatusCodes.UNAUTHORIZED: {
             notify.error({
               message: "Could not authenticate with PixieBrix",
@@ -91,7 +91,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
             if (isSingleObjectBadRequestError(error)) {
               helpers.setErrors(
                 mapValues(
-                  error.response.data,
+                  error.response?.data,
                   (xs) => castArray(xs)[0],
                 ) as FormikErrors<Profile>,
               );

@@ -20,7 +20,12 @@ import {
   eventKeyForEntry,
 } from "@/store/sidebar/eventKeyUtils";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type SidebarState, type SidebarEntries } from "@/types/sidebarTypes";
+import {
+  type SidebarState,
+  type SidebarEntries,
+  type PanelEntry,
+  type TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
 
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
@@ -55,8 +60,13 @@ describe("defaultEventKey", () => {
   it("prefers latest temporary panel", () => {
     const args: SidebarEntries = {
       forms: [],
-      temporaryPanels: [{ nonce: uuidv4() }, { nonce: uuidv4() }],
-      panels: [{ extensionId: uuidv4() }],
+      temporaryPanels: [
+        { nonce: uuidv4() },
+        { nonce: uuidv4() },
+      ] as TemporaryPanelEntry[],
+      panels: [{ extensionId: uuidv4() }] as PanelEntry[],
+      staticPanels: [],
+      modActivationPanel: null,
     } as SidebarEntries;
 
     expect(defaultEventKey(args, {})).toBe(
@@ -70,7 +80,12 @@ describe("defaultEventKey", () => {
       const entries = {
         forms: [],
         temporaryPanels: [],
-        panels: [{ extensionId: uuidv4() }, { extensionId: uuidv4() }],
+        panels: [
+          { extensionId: uuidv4() },
+          { extensionId: uuidv4() },
+        ] as PanelEntry[],
+        staticPanels: [],
+        modActivationPanel: null,
       } as SidebarEntries;
 
       expect(defaultEventKey(entries, {})).toBe(
@@ -86,6 +101,8 @@ describe("defaultEventKey", () => {
         forms: [],
         temporaryPanels: [],
         panels: [firstPanel, secondPanel],
+        staticPanels: [],
+        modActivationPanel: null,
       } as SidebarEntries;
 
       const closedTabs: SidebarState["closedTabs"] = {

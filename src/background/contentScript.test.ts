@@ -48,7 +48,7 @@ describe("waitForContentScript", () => {
         ) => Promise<any> | true | void,
       ) => {
         // eslint-disable-next-line @typescript-eslint/promise-function-async -- Not on messaging APIs
-        messageEvents.add(({ message, sender }) => listener(message, sender));
+        messageEvents!.add(({ message, sender }) => listener(message, sender));
       },
     );
   });
@@ -73,7 +73,7 @@ describe("waitForContentScript", () => {
     await expect(first).toBePending();
     await expect(second).toBePending();
 
-    messageEvents.emit({
+    messageEvents!.emit({
       message: { type: CONTENT_SCRIPT_READY_NOTIFICATION },
       sender: {
         id: browser.runtime.id,

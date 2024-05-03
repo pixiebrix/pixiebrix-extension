@@ -61,7 +61,7 @@ extend UnknownObject, or making the call-sites awful, so plain object works
 better than Record or UnknownObject. There are type checks in the function
 body for safety. We'll need to re-type all state slices and fix tests in
 order to refactor this to use UnknownObject instead of object. */
-export async function readReduxStorage<T extends object>(
+export async function readReduxStorage<T extends object | undefined>(
   storageKey: ReduxStorageKey,
   migrations: MigrationManifest,
   defaultValue: T,

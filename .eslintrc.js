@@ -1,5 +1,5 @@
-const { readFileSync } = require("fs");
-const { resolve } = require("path");
+const { readFileSync } = require("node:fs");
+const { resolve } = require("node:path");
 const noRestrictedImports = require("eslint-config-pixiebrix/no-restricted-imports");
 
 function extendNoRestrictedImports({ patterns = [], paths = [] }) {
@@ -86,7 +86,7 @@ module.exports = {
           "@testing-library/jest-dom",
           "regenerator-runtime/runtime", // Automatic registration
           "@/vendors/hoverintent", // JQuery plugin
-          "iframe-resizer/js/iframeResizer.contentWindow", // vendor library imported for side-effect
+          "iframe-resizer/js/iframeResizer.contentWindow", // Vendor library imported for side-effect
         ],
       },
     ],
@@ -281,6 +281,12 @@ module.exports = {
       rules: {
         "react/forbid-dom-props": forbiddenDomPropsConfig,
         "react/forbid-component-props": forbiddenDomPropsConfig,
+      },
+    },
+    {
+      files: ["**/*.test.ts?(x)"],
+      rules: {
+        "@typescript-eslint/no-unnecessary-type-assertion": "off",
       },
     },
   ],

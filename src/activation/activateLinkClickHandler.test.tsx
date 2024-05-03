@@ -60,8 +60,8 @@ describe("activateLinkClickHandler", () => {
 
       // Not using constructActivationUrl because testing support for id and id[] params
       const url = new URL("https://app.pixiebrix.com/activate");
-      url.searchParams.append(paramName, modIds[0]);
-      url.searchParams.append(paramName, modIds[1]);
+      url.searchParams.append(paramName, modIds[0]!);
+      url.searchParams.append(paramName, modIds[1]!);
 
       render(<a href={url.href}>Activate Mod</a>);
 

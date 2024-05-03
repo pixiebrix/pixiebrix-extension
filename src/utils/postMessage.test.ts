@@ -40,7 +40,6 @@ describe("postMessage", () => {
           payload: undefined,
         });
         expect(port).toBeInstanceOf(MessagePort);
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- strictNullChecks config mismatch
         port!.postMessage({ response: "pong" });
       },
     };
@@ -56,7 +55,6 @@ describe("postMessage", () => {
   test("post message and receive error", async () => {
     const channel = {
       postMessage(_: unknown, __: string, [port]: MessagePort[]): void {
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- strictNullChecks config mismatch
         port!.postMessage({
           error: serializeError(new Error("No balls found")),
         });
