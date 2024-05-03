@@ -155,7 +155,7 @@ describe("RJSF Tests", () => {
 
         it("should return an errorSchema", () => {
           expect(errorSchema.foo!.__errors).toHaveLength(1);
-          expect(errorSchema.foo!.__error![0]).toBe(
+          expect(errorSchema.foo!.__errors![0]).toBe(
             'Instance type "number" is invalid. Expected "string".',
           );
         });
