@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./utils/cachePromise.test.ts",
     "./utils/formUtils.test.ts",
     "./utils/inference/inferSingleElementSelector.test.ts",
     "./utils/inference/markupInference.test.tsx",
