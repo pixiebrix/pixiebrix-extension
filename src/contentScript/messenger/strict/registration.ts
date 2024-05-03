@@ -56,6 +56,7 @@ import {
   enableOverlay,
 } from "@/contentScript/pageEditor/dynamic/overlay";
 import { runMapArgs } from "@/contentScript/pipelineProtocol/runMapArgs";
+import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
 
 declare global {
   interface MessengerMethods {
@@ -93,6 +94,7 @@ declare global {
     ENABLE_OVERLAY: typeof enableOverlay;
     DISABLE_OVERLAY: typeof disableOverlay;
     RUN_MAP_ARGS: typeof runMapArgs;
+    GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
   }
 }
 export default function registerMessenger(): void {
@@ -131,5 +133,6 @@ export default function registerMessenger(): void {
     ENABLE_OVERLAY: enableOverlay,
     DISABLE_OVERLAY: disableOverlay,
     RUN_MAP_ARGS: runMapArgs,
+    GET_COPILOT_HOST_DATA: getCopilotHostData,
   });
 }
