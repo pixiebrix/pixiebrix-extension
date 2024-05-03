@@ -59,7 +59,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
       typeof initialFieldValue === "string" &&
       !isUUID(initialFieldValue) &&
       // Don't add the preview option if a database with the name already exists
-      !loadedOptions.some(
+      !loadedOptions?.some(
         (option) => option.label === `${initialFieldValue} - Private`,
       )
     ) {
@@ -68,7 +68,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
           label: initialFieldValue,
           value: initialFieldValue,
         },
-        ...loadedOptions,
+        ...(loadedOptions ?? []),
       ];
     }
 
@@ -124,7 +124,9 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
         onChange={async (
           event: React.ChangeEvent<SelectLike<Option<UUID>>>,
         ) => {
-          await setDatabaseId(event.target.value);
+          if (event.target.value) {
+            await setDatabaseId(event.target.value);
+          }
         }}
         components={{
           MenuList: createMenuListWithAddButton(() => {

@@ -4,6 +4,20 @@
     "strictNullChecks": true
   },
   "files": [
+    "./components/documentBuilder/render/ListElement.tsx",
+    "./components/fields/schemaFields/integrations/IntegrationAuthSelectWidget.stories.tsx",
+    "./components/fields/schemaFields/integrations/IntegrationDependencyField.tsx",
+    "./components/fields/schemaFields/integrations/IntegrationDependencyWidget.tsx",
+    "./components/fields/schemaFields/schemaFieldUtils.ts",
+    "./components/fields/schemaFields/widgets/cssClassWidgets/CssSpacingWidget.tsx",
+    "./components/fields/schemaFields/widgets/DatabaseCreateModal.tsx",
+
+    "./components/ConfirmationModal.stories.tsx",
+    "./components/addBlockModal/groupListingsByTag.test.ts",
+    "./bricks/transformers/ephemeralForm/EphemeralForm.tsx",
+    "./bricks/transformers/ephemeralForm/EphemeralForm.test.tsx",
+    "./bricks/renderers/propertyTable.tsx",
+    "./bricks/renderers/customForm.tsx",
     "./background/restrictUnauthenticatedUrlAccess.test.ts",
     "./background/refreshToken.test.ts",
     "./background/performConfiguredRequest.test.ts",

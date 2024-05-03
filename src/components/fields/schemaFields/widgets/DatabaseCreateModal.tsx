@@ -48,12 +48,12 @@ type DatabaseConfig = {
   /**
    * UUID of an Organization for a shared DB, or null/empty for a personal DB.
    */
-  organizationId: string | null;
+  organizationId?: string;
 
   /**
    * UUID of a Group for a shared DB, or null/empty for a personal DB.
    */
-  groupId: string | null;
+  groupId?: string;
 };
 
 const databaseSchema: yup.SchemaOf<DatabaseConfig> = yup.object().shape({
@@ -89,7 +89,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
   onDatabaseCreated,
   onClose,
 }) => {
-  const { data: organizations, isLoading: isLoadingOrganizations } =
+  const { data: organizations = [], isLoading: isLoadingOrganizations } =
     useGetOrganizationsQuery();
 
   const [createDatabase] = useCreateDatabaseMutation();

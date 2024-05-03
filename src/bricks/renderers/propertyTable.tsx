@@ -23,6 +23,7 @@ import { canParseUrl } from "@/utils/urlUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import type TreeNode from "primereact/treenode";
+import { isObject } from "@/utils/objectUtils";
 
 interface Item {
   key: string;
@@ -46,7 +47,7 @@ function richValue(value: unknown): unknown {
 }
 
 function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
-  if (isPlainObject(inputs)) {
+  if (isObject(inputs)) {
     return sortBy(
       Object.entries(inputs).map(([name, value]) => ({ name, value })),
       (x) => x.name,

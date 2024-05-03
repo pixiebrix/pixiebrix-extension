@@ -34,7 +34,7 @@ export type Option<TValue = string> = {
 
 // Type passed as target in onChange event
 export type SelectLike<TOption extends Option<TOption["value"]> = Option> = {
-  value: TOption["value"];
+  value?: TOption["value"];
   name: string;
   options: TOption[];
 };

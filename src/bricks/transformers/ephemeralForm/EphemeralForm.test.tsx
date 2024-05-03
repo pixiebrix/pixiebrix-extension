@@ -77,7 +77,7 @@ describe("EphemeralForm", () => {
     ).resolves.toBeInTheDocument();
     expect(
       screen.getByShadowText(
-        (_, element) => element.textContent === "I am bold",
+        (_, element) => element!.textContent === "I am bold",
       ),
     ).toBeInTheDocument();
     expect(screen.getByShadowRole("strong")).toHaveTextContent("bold");
@@ -104,7 +104,7 @@ describe("EphemeralForm", () => {
     ).resolves.toBeInTheDocument();
     expect(
       screen.getByShadowText(
-        (_, element) => element.textContent === "I am bold",
+        (_, element) => element!.textContent === "I am bold",
       ),
     ).toBeInTheDocument();
     expect(screen.getByShadowRole("strong")).toHaveTextContent("bold");

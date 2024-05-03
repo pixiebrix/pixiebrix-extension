@@ -19,6 +19,7 @@ import { ReaderABC } from "@/types/bricks/readerTypes";
 import { getUserData } from "@/background/messenger/api";
 import { type Schema } from "@/types/schemaTypes";
 import { type UserData } from "@/auth/authTypes";
+import { type UUID } from "@/types/stringTypes";
 
 class ProfileReader extends ReaderABC {
   override defaultOutputKey = "profile";
@@ -36,8 +37,8 @@ class ProfileReader extends ReaderABC {
   > {
     const profile = await getUserData();
     return {
-      user: profile.user,
-      email: profile.email,
+      user: profile.user ?? ("" as UUID),
+      email: profile.email ?? "",
       organizations: profile.organizations ?? [],
       groups: profile.groups ?? [],
     };

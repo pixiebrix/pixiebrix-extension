@@ -68,7 +68,7 @@ export type CustomFieldWidgetProps<
   id?: string;
   name: string;
   disabled?: boolean;
-  value: TValue;
+  value?: TValue;
   onChange: React.ChangeEventHandler<TInputElement>;
   setLocalError?: (error: string | null) => void;
   isInvalid?: boolean;

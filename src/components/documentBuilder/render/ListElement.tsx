@@ -136,7 +136,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
 
   return (
     <>
-      {rootDefinitions.map(({ documentElement, elementContext }, index) => {
+      {rootDefinitions?.map(({ documentElement, elementContext }, index) => {
         const { Component, props } = buildDocumentBranch(
           documentElement as DocumentElement,
           {

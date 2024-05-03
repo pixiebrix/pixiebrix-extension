@@ -30,6 +30,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import useReportError from "@/hooks/useReportError";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import { type EphemeralFormContentProps } from "./EphemeralFormContent";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ModalLayout: React.FC = ({ children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
@@ -64,7 +65,7 @@ const IsolatedEphemeralFormContent: React.FunctionComponent<
 const EphemeralForm: React.FC = () => {
   const params = new URLSearchParams(location.search);
   const nonce = validateUUID(params.get("nonce"));
-  const opener = JSON.parse(params.get("opener")) as Target;
+  const opener = JSON.parse(params.get("opener") ?? "") as Target;
   const mode = params.get("mode") ?? "modal";
 
   const isModal = mode === "modal";
@@ -113,6 +114,8 @@ const EphemeralForm: React.FC = () => {
       </FormContainer>
     );
   }
+
+  assertNotNullish(formDefinition, "unable to load form definition");
 
   return (
     <FormContainer>
