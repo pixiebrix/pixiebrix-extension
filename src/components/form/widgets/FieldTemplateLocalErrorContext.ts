@@ -15,18 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../../fixtures/extensionBase";
-// @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { test as base } from "@playwright/test";
+import { createContext } from "react";
 
-test.describe("page editor smoke test", () => {
-  test("can open the page editor and connect to an open tab", async ({
-    page,
-    newPageEditorPage,
-  }) => {
-    await page.goto("/bootstrap-5");
+export type FieldTemplateLocalErrorContextType = {
+  setLocalError: (error: string | null) => void;
+};
 
-    const pageEditorPage = await newPageEditorPage(page.url());
-    await expect(pageEditorPage.getTemplateGalleryButton()).toBeVisible();
+const FieldTemplateLocalErrorContext =
+  createContext<FieldTemplateLocalErrorContextType>({
+    setLocalError() {},
   });
-});
+
+export default FieldTemplateLocalErrorContext;

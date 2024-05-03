@@ -109,6 +109,7 @@ const extensionsSlice = createSlice({
     ) {
       const { extensionId, recipeMetadata } = payload;
       const extension = state.extensions.find((x) => x.id === extensionId);
+
       if (extension != null) {
         extension._recipe = recipeMetadata;
       }
@@ -273,8 +274,8 @@ const extensionsSlice = createSlice({
       // eslint-disable-next-line security/detect-object-injection -- index is number
       state.extensions[index] = {
         ...state.extensions.at(index),
-        ...(extensionUpdate as ActivatedModComponent),
-      };
+        ...extensionUpdate,
+      } as ActivatedModComponent;
     },
 
     updateRecipeMetadataForExtensions(

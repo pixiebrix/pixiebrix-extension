@@ -17,6 +17,16 @@
 
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
+/**
+ * Runtime event type for setting Co-Pilot data
+ */
+export const SET_COPILOT_DATA_MESSAGE_TYPE = "SET_COPILOT_DATA";
+
+/**
+ * Mapping from processId to form data.
+ */
+export type ProcessDataMap = Record<string, UnknownObject>;
+
 export type CommunityBotArgs = {
   service: SanitizedIntegrationConfig;
   fileId: string;

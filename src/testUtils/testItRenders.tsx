@@ -31,9 +31,9 @@ export type ItRendersOptions<TProps> = {
   renderFn?: RenderFn;
 };
 
-function testItRenders<
-  TProps extends JSX.IntrinsicAttributes = JSX.IntrinsicAttributes,
->(options: ItRendersOptions<TProps> | (() => ItRendersOptions<TProps>)) {
+function testItRenders<TProps extends UnknownObject = UnknownObject>(
+  options: ItRendersOptions<TProps> | (() => ItRendersOptions<TProps>),
+) {
   const {
     Component,
     props,

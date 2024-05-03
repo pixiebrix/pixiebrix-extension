@@ -61,6 +61,4 @@ export const runBrick = getMethod("RUN_BRICK");
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
 export const runHeadlessPipeline = getMethod("RUN_HEADLESS_PIPELINE");
 
-export const getCopilotHostData = getMethod("GET_COPILOT_HOST_DATA");
-
 export const showLoginBanner = getMethod("SHOW_LOGIN_BANNER");
