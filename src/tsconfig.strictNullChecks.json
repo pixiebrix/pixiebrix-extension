@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./telemetry/logging.test.ts",
     "./testUtils/testItRenders.tsx",
     "./themes/themeStore.test.ts",
     "./tours/tourRunDatabase.test.ts",
