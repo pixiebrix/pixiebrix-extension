@@ -33,6 +33,9 @@ export function reactivateEveryTab(): void {
   void forEachTab(reactivateTab);
 }
 
+// Notifies the content script that it can activate mods for a prerendered tab (no-op if the tab is already active)
+export const activatePrerenderedTab = getNotifier("ACTIVATE_PRERENDERED_TAB");
+
 export const ensureExtensionPointsInstalled = getMethod(
   "ENSURE_EXTENSION_POINTS_INSTALLED",
 );
@@ -57,8 +60,5 @@ export const runBrick = getMethod("RUN_BRICK");
 
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
 export const runHeadlessPipeline = getMethod("RUN_HEADLESS_PIPELINE");
-export const runMapArgs = getMethod("RUN_MAP_ARGS");
-
-export const getCopilotHostData = getMethod("GET_COPILOT_HOST_DATA");
 
 export const showLoginBanner = getMethod("SHOW_LOGIN_BANNER");

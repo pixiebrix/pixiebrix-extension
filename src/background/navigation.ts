@@ -22,6 +22,7 @@ import { debounce } from "lodash";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
 import { isTargetReady } from "@/contentScript/ready";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { activatePrerenderedTab } from "@/contentScript/messenger/api";
 
 /**
  * Log details about a navigation to the console for debugging content script/navigation bugs.
@@ -50,7 +51,26 @@ const debouncedTraceNavigation = debounce(traceNavigation, 100, {
 });
 
 async function initNavigation(): Promise<void> {
-  if (!(await flagOn("navigation-trace"))) {
+  const navigationTraceFlag = flagOn("navigation-trace");
+
+  // Notifies the content script when their tab is active so that if they were prerendered,
+  // they can begin to mount their mods (which avoids mods mounting before a page is actually visible
+  // and affecting other extension state such as the sidebar).
+  // See: https://developer.chrome.com/blog/extension-instantnav
+  chrome.webNavigation.onCommitted.addListener(async (detail) => {
+    if (detail.documentLifecycle === "active" && detail.frameId === 0) {
+      if (await navigationTraceFlag) {
+        console.debug("activating prerendered tab", detail);
+      }
+
+      activatePrerenderedTab({
+        tabId: detail.tabId,
+        frameId: "allFrames",
+      });
+    }
+  });
+
+  if (!(await navigationTraceFlag)) {
     return;
   }
 

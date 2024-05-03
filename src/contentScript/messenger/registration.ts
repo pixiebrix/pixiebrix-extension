@@ -25,26 +25,23 @@
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import {
+  activatePrerenderedTab,
   ensureInstalled,
   getActiveExtensionPoints,
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 202 strictNullCheck errors
+} from "@/contentScript/lifecycle"; // 196 strictNullCheck errors
 import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
-import {
-  runHeadlessPipeline,
-  runMapArgs,
-  runRendererPipeline,
-} from "@/contentScript/pipelineProtocol"; // Depends on background/messenger to pass strictNullCheck
-import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect"; // Depends on background/messenger to pass strictNullCheck
 import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Depends on background/messenger to pass strictNullCheck
-import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements"; // 201 strictNullCheck errors
-import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader"; // 193 strictNullCheck errors
-import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateDynamicElement"; // 199 strictNullCheck errors
-import { runBlockPreview } from "@/contentScript/pageEditor/runBlockPreview"; // 202 strictNullCheck errors
-import { resetTab } from "@/contentScript/pageEditor/resetTab"; // 199 strictNullCheck errors
-import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock"; // 54 strictNullCheck errors
+import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements"; // Depends on contentScript/lifecycle to pass strictNullCheck
+import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader"; // Depends on contentScript/messenger to pass strictNullCheck
+import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateDynamicElement"; // Depends on contentScript/lifecycle to pass strictNullCheck
+import { runBlockPreview } from "@/contentScript/pageEditor/runBlockPreview"; // Depends on background/messenger
+import { resetTab } from "@/contentScript/pageEditor/resetTab"; // Depends on contentScript/lifecycle to pass strictNullCheck
+import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock"; // Depends on background/messenger
+import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadlessPipeline"; // Depends on background/messenger
+import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline"; // Depends on background/messenger
 
 expectContext("contentScript");
 
@@ -54,6 +51,7 @@ declare global {
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
     RESET_TAB: typeof resetTab;
+    ACTIVATE_PRERENDERED_TAB: typeof activatePrerenderedTab;
 
     RUN_SINGLE_BLOCK: typeof runBlockPreview;
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
@@ -69,9 +67,6 @@ declare global {
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
-    RUN_MAP_ARGS: typeof runMapArgs;
-
-    GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
 
     SHOW_LOGIN_BANNER: typeof showBannerFromConfig;
   }
@@ -83,6 +78,7 @@ export default function registerMessenger(): void {
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
     RESET_TAB: resetTab,
+    ACTIVATE_PRERENDERED_TAB: activatePrerenderedTab,
 
     RUN_SINGLE_BLOCK: runBlockPreview,
     RUN_RENDERER_BLOCK: runRendererBlock,
@@ -98,9 +94,6 @@ export default function registerMessenger(): void {
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,
     RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
-    RUN_MAP_ARGS: runMapArgs,
-
-    GET_COPILOT_HOST_DATA: getCopilotHostData,
 
     SHOW_LOGIN_BANNER: showBannerFromConfig,
   });

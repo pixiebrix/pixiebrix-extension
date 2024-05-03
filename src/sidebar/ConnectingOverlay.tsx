@@ -18,28 +18,21 @@
 import React from "react";
 import styles from "./blurSidebarOverlay.module.scss";
 import cx from "classnames";
-import { Button, Modal } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
+import Loader from "@/components/Loader";
 
-const UnavailableOverlay = ({ onClose }: { onClose: () => void }) => (
+const ConnectingOverlay = () => (
   <div className={styles.blurOverlay}>
     <Modal.Dialog size="lg" className={cx(styles.modalDialog, "shadow")}>
       <Modal.Header className={styles.modalHeader}>
-        <strong>Panel no longer available</strong>
+        <strong>Connecting to page</strong>
       </Modal.Header>
 
       <Modal.Body className={styles.modalBody}>
-        <p>The browser navigated away from the page</p>
-        <Button
-          onClick={onClose}
-          variant="primary"
-          size="sm"
-          aria-label="Close the unavailable panel"
-        >
-          Close
-        </Button>
+        <Loader />
       </Modal.Body>
     </Modal.Dialog>
   </div>
 );
 
-export default UnavailableOverlay;
+export default ConnectingOverlay;

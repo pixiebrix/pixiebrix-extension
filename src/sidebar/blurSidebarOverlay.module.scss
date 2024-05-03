@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,18 +15,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../../fixtures/extensionBase";
-// @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { test as base } from "@playwright/test";
+.blurOverlay {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(2.5px);
+  pointer-events: all;
+  z-index: 1; // ensure overlay is on top of the sidebar panel content
+  > div {
+    margin-top: 15vh;
+    width: 300px;
+  }
+}
 
-test.describe("page editor smoke test", () => {
-  test("can open the page editor and connect to an open tab", async ({
-    page,
-    newPageEditorPage,
-  }) => {
-    await page.goto("/bootstrap-5");
+.modalDialog {
+  text-align: center;
+  margin: 23px;
+  padding: 16px;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid #cfcbd6;
+  > div {
+    border: 0;
+  }
+}
 
-    const pageEditorPage = await newPageEditorPage(page.url());
-    await expect(pageEditorPage.getTemplateGalleryButton()).toBeVisible();
-  });
-});
+.modalHeader {
+  display: block;
+  padding-bottom: 0;
+  background: white;
+  border: 0;
+}
+
+.modalBody {
+  background: white;
+  border: 0;
+}

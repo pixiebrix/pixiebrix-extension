@@ -129,3 +129,8 @@ export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
  * Uninstall context menu and return whether the context menu was uninstalled.
  */
 export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
+
+export const setPartnerCopilotData = getNotifier(
+  "SET_PARTNER_COPILOT_DATA",
+  bg,
+);
