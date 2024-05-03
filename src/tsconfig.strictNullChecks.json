@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./utils/stringUtils.test.ts",
     "./utils/urlUtils.test.ts",
     "./validators/formValidator.test.ts",
     "./vendors/reactPerformanceTesting/perf.ts",
