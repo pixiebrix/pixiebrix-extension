@@ -33,6 +33,9 @@ export type StarterBrickName =
 /**
  * Page object for the Page Editor. Prefer the newPageEditorPage fixture in extensionBase.ts to directly creating an
  * instance of this class to take advantage of automatic cleanup of saved mods.
+ *
+ * @knip usage of PageEditorPage indirectly via the newPageEditorPage fixture in extensionBase.ts causes a
+ * false-positive
  */
 export class PageEditorPage {
   private readonly pageEditorUrl: string;
