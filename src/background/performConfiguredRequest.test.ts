@@ -122,7 +122,7 @@ serviceRegistry.register([
     isOAuth2PKCE: true,
     isOAuth2: true,
   },
-] as IntegrationABC[]);
+] as unknown[] as IntegrationABC[]);
 
 const requestConfig: NetworkRequestConfig = {
   url: "https://www.example.com",
@@ -204,9 +204,7 @@ describe("authenticated direct requests", () => {
   });
 
   it("throws on missing local config", async () => {
-    jest
-      .spyOn(Locator.prototype, "findIntegrationConfig")
-      .mockResolvedValue(null);
+    jest.spyOn(Locator.prototype, "findIntegrationConfig").mockReset();
 
     await expect(async () =>
       performConfiguredRequest(directIntegrationConfig, requestConfig, {
@@ -288,7 +286,7 @@ describe("proxy service requests", () => {
       requestConfig,
       { interactiveLogin: false },
     );
-    expect(JSON.parse(String(axiosMock.history.post[0].data))).toEqual({
+    expect(JSON.parse(String(axiosMock.history.post![0]!.data))).toEqual({
       ...requestConfig,
       service_id: EXAMPLE_SERVICE_API,
       auth_id: proxiedIntegrationConfig.id,

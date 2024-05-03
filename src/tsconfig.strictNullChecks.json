@@ -4,6 +4,8 @@
     "strictNullChecks": true
   },
   "files": [
+    "./background/performConfiguredRequest.test.ts",
+    "./background/partnerIntegrations.test.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/envSetup.ts",

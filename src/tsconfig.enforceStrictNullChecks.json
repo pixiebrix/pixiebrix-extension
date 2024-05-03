@@ -4,9 +4,12 @@
     "strictNullChecks": true
   },
   "exclude": [
+    "./background/messenger/external/_implementation.ts",
+
+    "./background/messenger/api.ts",
+    "./activation/useActivateModWizard.ts",
     "./activation/useActivateModWizard.test.tsx",
     "./activation/useActivateRecipe.test.ts",
-    "./activation/useActivateRecipe.ts",
     "./activation/useActivateRecipe.ts",
     "./analysis/analysisVisitors/baseAnalysisVisitors.ts",
     "./analysis/analysisVisitors/brickTypeAnalysis.test.ts",

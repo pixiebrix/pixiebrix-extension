@@ -66,7 +66,7 @@ jest.mock("@/integrations/registry", () => {
 jest.mocked(registry.find).mockImplementation(async (id: RegistryId) => {
   const config = integrationDefinitionMap.get(id);
   return {
-    id: (config.metadata as any).id,
+    id: (config!.metadata as any).id,
     config,
   } as any;
 });
