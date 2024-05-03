@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./utils/inference/selectorInference.test.ts",
     "./utils/objectUtils.test.ts",
     "./utils/stringUtils.test.ts",
     "./utils/urlUtils.test.ts",

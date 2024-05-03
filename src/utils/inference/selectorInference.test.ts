@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion -- ok to throw errors */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -50,7 +51,7 @@ expect.extend({
   toFindSelector(receivedHTML: string, selector: string) {
     const document = getDocument(receivedHTML);
     const element = document.querySelector<HTMLElement>(selector);
-    const generatedSelector = generateSelector(element);
+    const generatedSelector = generateSelector(element!);
 
     return {
       pass: generatedSelector === selector,
@@ -100,7 +101,7 @@ describe("safeCssSelector", () => {
     document.body.innerHTML = body;
 
     const inferredSelector = safeCssSelector(
-      [document.body.querySelector(selector)],
+      [document.body.querySelector(selector)!],
       {
         excludeRandomClasses: true,
       },
@@ -246,8 +247,8 @@ describe("expandedCssSelector", () => {
     body: string,
   ) => {
     document.body.innerHTML = body;
-    const manualElements = manualElementSelectors.map((x) =>
-      document.body.querySelector<HTMLElement>(x),
+    const manualElements = manualElementSelectors.map(
+      (x) => document.body.querySelector<HTMLElement>(x)!,
     );
     const otherElements = otherElementSelectors.map((x) =>
       document.body.querySelector<HTMLElement>(x),
@@ -255,7 +256,7 @@ describe("expandedCssSelector", () => {
 
     const commonSelector = expandedCssSelector(manualElements);
     const commonElements = [
-      ...document.body.querySelectorAll<HTMLElement>(commonSelector),
+      ...document.body.querySelectorAll<HTMLElement>(commonSelector!),
     ];
 
     const expectedElements = [...manualElements, ...otherElements];
@@ -409,7 +410,7 @@ describe("inferSelectors", () => {
     expect(uniq(userSelectedElements)).toHaveLength(1);
 
     // The provided selector list should match the inferred list
-    const inferredSelectors = inferSelectors(userSelectedElements[0]);
+    const inferredSelectors = inferSelectors(userSelectedElements[0]!);
     expect(inferredSelectors).toEqual(selectors);
   };
 
@@ -500,7 +501,7 @@ describe("inferSelectorsIncludingStableAncestors", () => {
 
     // The provided selector list should match the inferred list
     const inferredSelectors = inferSelectorsIncludingStableAncestors(
-      userSelectedElements[0],
+      userSelectedElements[0]!,
       document.body,
       true,
     );
