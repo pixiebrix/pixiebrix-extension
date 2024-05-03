@@ -35,3 +35,5 @@ test("can save a standalone trigger mod", async ({
     page.locator(".list-group-item", { hasText: modName }),
   ).toBeVisible();
 });
+
+test("updating a mod without incrementing the version shows an error notification", async ({}) => {});
