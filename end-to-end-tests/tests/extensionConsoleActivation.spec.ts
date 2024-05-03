@@ -18,7 +18,7 @@
 import { test, expect } from "../fixtures/extensionBase";
 import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { test as base } from "@playwright/test";
+import { type Page, test as base, type Frame } from "@playwright/test";
 import { getSidebarPage, runModViaQuickBar } from "../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
@@ -105,4 +105,62 @@ test("can activate a mod with built-in integration", async ({
     auth_id: expect.stringMatching(VALID_UUID_REGEX),
     service_id: "@pixies/giphy/giphy-service",
   });
+});
+
+// Temporary hack until https://github.com/pixiebrix/pixiebrix-extension/issues/8376 is resolved
+async function reloadSidebar(
+  page: Page,
+  sideBarPage: Page | Frame,
+  extensionId: string,
+) {
+  if (MV === "3") {
+    await (sideBarPage as Page).reload();
+  } else {
+    await page.reload();
+    await runModViaQuickBar(page, "Open Sidebar");
+  }
+
+  return getSidebarPage(page, extensionId);
+}
+
+test("can activate a mod with a database", async ({ page, extensionId }) => {
+  const modId = "@e2e-testing/shared-notes-sidebar";
+  const note = `This is a test note ${Date.now()}`;
+
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.goto();
+
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
+  await page.goto("/");
+
+  await runModViaQuickBar(page, "Open Sidebar");
+  let sideBarPage = await getSidebarPage(page, extensionId);
+
+  await sideBarPage.getByRole("button", { name: "Add note" }).click();
+
+  await sideBarPage.frameLocator("iframe").getByLabel("Note*").fill(note);
+
+  await sideBarPage
+    .frameLocator("iframe")
+    .getByRole("button", { name: "Submit" })
+    .click();
+
+  // TODO: Remove when the sidebar is reloaded automatically
+  // See: https://github.com/pixiebrix/pixiebrix-extension/issues/8376
+  sideBarPage = await reloadSidebar(page, sideBarPage, extensionId);
+
+  await expect(sideBarPage.getByTestId("card").getByText(note)).toBeVisible();
+
+  // Get the correct container element, as the note text and delete button are wrapped in a div
+  await sideBarPage
+    .getByText(`${note} Delete Note`)
+    .getByRole("button", { name: "Delete Note" })
+    .click();
+
+  // TODO: Remove when the sidebar is reloaded automatically
+  // See: https://github.com/pixiebrix/pixiebrix-extension/issues/8376
+  sideBarPage = await reloadSidebar(page, sideBarPage, extensionId);
+
+  await expect(sideBarPage.getByTestId("card").getByText(note)).toBeHidden();
 });
