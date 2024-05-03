@@ -76,7 +76,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
 
   async run(extension: ModComponentFormState): Promise<void> {
     for (const fieldName of urlPatternFields) {
-      const urlPatterns: unknown[] = get(extension, fieldName);
+      const urlPatterns: UnknownObject[] = get(extension, fieldName);
       if (urlPatterns == null || urlPatterns.length === 0) {
         continue;
       }
@@ -99,7 +99,10 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     await Promise.all(stringUrlsFieldAnalysisPromises);
   }
 
-  analyzeUrlPatternsField(urlPatterns: unknown[], fieldName: string): void {
+  analyzeUrlPatternsField(
+    urlPatterns: UnknownObject[],
+    fieldName: string,
+  ): void {
     for (const [index, urlPattern] of Object.entries(urlPatterns)) {
       for (const [key, pattern] of Object.entries(urlPattern)) {
         if (pattern == null || pattern === "") {
@@ -147,8 +150,8 @@ class ExtensionUrlPatternAnalysis implements Analysis {
         continue;
       }
 
-      const { scheme, host } = match.groups;
-      if (!schemeRegexp.test(scheme)) {
+      const { scheme, host } = match.groups ?? {};
+      if (!scheme || !schemeRegexp.test(scheme)) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
           message: INVALID_SCHEME_MESSAGE,

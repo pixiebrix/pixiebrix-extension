@@ -4,6 +4,10 @@
     "strictNullChecks": true
   },
   "files": [
+    "./analysis/analysisVisitors/extensionUrlPatternAnalysis.test.ts",
+    "./analysis/analysisSlice.ts",
+    "./analysis/analysisSelectors.ts",
+    "./activation/activateLinkClickHandler.test.tsx",
     "./starterBricks/helpers.test.ts",
     "./starterBricks/tour/tourController.test.ts",
     "./store/sidebar/eventKeyUtils.test.ts",
