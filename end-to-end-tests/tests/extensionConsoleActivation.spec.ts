@@ -19,7 +19,7 @@ import { test, expect } from "../fixtures/extensionBase";
 import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base, type Frame } from "@playwright/test";
-import { ensureVisibility, getSidebarPage, runModViaQuickBar } from "../utils";
+import { getSidebarPage, runModViaQuickBar } from "../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
