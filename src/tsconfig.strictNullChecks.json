@@ -4,6 +4,10 @@
     "strictNullChecks": true
   },
   "files": [
+    "./background/installer.test.ts",
+    "./background/contentScript.test.ts",
+    "./auth/ScopeSettings.tsx",
+    "./analysis/analysisVisitors/varAnalysis/varMap.test.ts",
     "./analysis/analysisVisitors/extensionUrlPatternAnalysis.test.ts",
     "./analysis/analysisSlice.ts",
     "./analysis/analysisSelectors.ts",

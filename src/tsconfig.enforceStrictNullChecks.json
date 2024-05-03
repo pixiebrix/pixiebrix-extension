@@ -4,6 +4,19 @@
     "strictNullChecks": true
   },
   "exclude": [
+    "./analysis/analysisVisitors/traceAnalysis.test.ts",
+    "./analysis/analysisVisitors/traceAnalysis.ts",
+    "./analysis/analysisVisitors/varAnalysis/varAnalysis.ts",
+    "./auth/useRequiredPartnerAuth.test.tsx",
+    "./background/executor.test.ts",
+    "./background/executor.ts",
+    "./background/initBrowserCommands.ts",
+
+    "./analysis/analysisVisitors/selectorAnalysis.ts",
+    "./analysis/analysisVisitors/renderersAnalysis.ts",
+    "./analysis/analysisVisitors/regexAnalysisTest.test.ts",
+    "./analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor.ts",
+    "./analysis/analysisVisitors/httpRequestAnalysis.ts",
     "./analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis.ts",
     "./analysis/analysisVisitors/baseAnalysisVisitors.ts",
     "./activation/useActivateRecipe.ts",
