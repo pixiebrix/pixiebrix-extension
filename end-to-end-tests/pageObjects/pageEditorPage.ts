@@ -88,6 +88,24 @@ export class PageEditorPage {
     await this.page.getByLabel(fieldLabel).fill(value);
   }
 
+  getModListItemByName(modName: string) {
+    return this.page
+      .locator(".list-group-item")
+      .locator("span", { hasText: modName })
+      .first();
+  }
+
+  /**
+   * Save a packaged mod. Prefer saveStandaloneMod for standalone mods.
+   */
+  async savePackagedMod() {
+    // TODO: this method is currently meant for packaged mods that aren't meant to be
+    //  cleaned up after the test. Future work is adding affordance to clean up saved packaged
+    //  mods, with an option to avoid cleanup for certain mods.
+    await this.page.locator("[data-icon=save]").click();
+    await this.page.getByRole("button", { name: "Save" }).click();
+  }
+
   async saveStandaloneMod(modName: string) {
     const modListItem = this.page.locator(".list-group-item", {
       hasText: modName,
