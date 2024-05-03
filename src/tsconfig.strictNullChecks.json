@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./starterBricks/tour/tourController.test.ts",
     "./store/sidebar/eventKeyUtils.test.ts",
     "./telemetry/logging.test.ts",
     "./testUtils/testItRenders.tsx",

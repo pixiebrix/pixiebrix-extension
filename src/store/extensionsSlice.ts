@@ -109,7 +109,9 @@ const extensionsSlice = createSlice({
     ) {
       const { extensionId, recipeMetadata } = payload;
       const extension = state.extensions.find((x) => x.id === extensionId);
-      extension._recipe = recipeMetadata;
+      if (extension != null) {
+        extension._recipe = recipeMetadata;
+      }
     },
 
     activateMod(
@@ -271,7 +273,7 @@ const extensionsSlice = createSlice({
       // eslint-disable-next-line security/detect-object-injection -- index is number
       state.extensions[index] = {
         ...state.extensions.at(index),
-        ...extensionUpdate,
+        ...(extensionUpdate as ActivatedModComponent),
       };
     },
 
@@ -281,7 +283,7 @@ const extensionsSlice = createSlice({
     ) {
       const metadata = action.payload;
       const recipeExtensions = state.extensions.filter(
-        (extension) => extension._recipe?.id === metadata.id,
+        (extension) => extension._recipe?.id === metadata?.id,
       );
       for (const extension of recipeExtensions) {
         extension._recipe = metadata;
