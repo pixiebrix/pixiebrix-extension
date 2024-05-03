@@ -52,6 +52,7 @@ const RemoteMultiSelectWidget = <TOption extends Option<TOption["value"]>>({
   config,
   factoryArgs,
   onChange,
+  isInvalid,
   ...selectProps
 }: RemoteMultiSelectWidgetProps<TOption>) => {
   const {

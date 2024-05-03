@@ -21,6 +21,8 @@ import { type Schema } from "@/types/schemaTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
+import useAsyncState from "@/hooks/useAsyncState";
+import { validateIntegrationAuth } from "@/integrations/util/validateIntegrationAuth";
 
 type ConfigProps = {
   integrationFieldSchema: Schema;
@@ -51,14 +53,23 @@ const RequireIntegrationConfig: React.FC<ConfigProps> = ({
     integrationFieldName,
   );
 
+  const { data: isConfigValid = true } = useAsyncState(async () => {
+    if (sanitizedConfig == null) {
+      return true;
+    }
+
+    return validateIntegrationAuth(sanitizedConfig);
+  }, [sanitizedConfig]);
+
   return (
     <>
       <IntegrationDependencyField
         label="Integration"
         name={integrationFieldName}
         schema={integrationFieldSchema}
+        isAuthInvalid={!isConfigValid}
       />
-      {sanitizedConfig && children({ sanitizedConfig })}
+      {sanitizedConfig && isConfigValid && children({ sanitizedConfig })}
     </>
   );
 };
