@@ -105,9 +105,10 @@ async function interactiveWriteToClipboard(
     }
 
     const type = "image" in content ? "image" : "text";
-    await focusCaptureDialog(
-      `Please click "OK" to allow PixieBrix to copy the ${type} to your clipboard.`,
-    );
+    await focusCaptureDialog({
+      message: `Please click "Copy ${type}" to copy the ${type} to your clipboard.`,
+      buttonText: `Copy ${type}`,
+    });
 
     // Let the error be caught by the caller if it still fails
     await navigator.clipboard.write(clipboardItems);
