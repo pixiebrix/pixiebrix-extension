@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ChangeEvent, useCallback, useState } from "react";
+import React, {
+  type ChangeEvent,
+  useCallback,
+  useContext,
+  useState,
+} from "react";
 import {
   type Option,
   type SelectLike,
@@ -26,6 +31,7 @@ import { uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useDebouncedCallback } from "use-debounce";
 import { type GroupBase } from "react-select";
+import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
 
 type DefaultFactoryArgs = {
   /**
@@ -77,7 +83,6 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   optionsFactory,
   extraFactoryArgs,
   unknownOptionLabel,
-  setLocalError,
   isInvalid,
   ...asyncSelectPropsIn
 }) => {
@@ -92,6 +97,8 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
     [],
   );
 
+  const { setLocalError } = useContext(FieldTemplateLocalErrorContext);
+
   // `react-select` doesn't automatically debounce requests
   // See quirks here: https://github.com/JedWatson/react-select/issues/3075#issuecomment-506647171
   // Need to use callback and ensure that the callback is not returning a promise
@@ -105,10 +112,10 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
             value,
           })) as Option[];
           setOptions(rawOptions, callback);
-          setLocalError?.(null);
+          setLocalError(null);
         } catch (error) {
           setOptions([], callback);
-          setLocalError?.(getErrorMessage(error, "Error loading options"));
+          setLocalError(getErrorMessage(error, "Error loading options"));
         } finally {
           setIsLoading(false);
         }

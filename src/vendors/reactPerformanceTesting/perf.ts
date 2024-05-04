@@ -8,7 +8,9 @@ let origCreateFactory: any = null;
 let origCloneElement: any = null;
 let origReact: any = null;
 
-export const perf = <T = DefaultPerfToolsField>(React?: any) => {
+export const perf = <T extends DefaultPerfToolsField = DefaultPerfToolsField>(
+  React?: any,
+) => {
   if (!React) {
     return getPerfTools<T>();
   }

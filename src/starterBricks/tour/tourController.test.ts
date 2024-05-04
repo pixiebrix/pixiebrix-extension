@@ -27,6 +27,7 @@ import {
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 describe("tourController", () => {
   test("ad-hoc tour", () => {
@@ -35,7 +36,7 @@ describe("tourController", () => {
     const abortController = new AbortController();
     markTourStart(
       nonce,
-      { id: extensionId, label: "Ad-hoc", _recipe: null },
+      { id: extensionId, label: "Ad-hoc", _recipe: undefined },
       { abortController, context: { extensionId } },
     );
 
@@ -52,7 +53,7 @@ describe("tourController", () => {
     const abortController = new AbortController();
     markTourStart(
       nonce,
-      { id: extensionId, label: "Ad-hoc", _recipe: null },
+      { id: extensionId, label: "Ad-hoc", _recipe: undefined },
       { abortController, context: { extensionId } },
     );
 
@@ -73,7 +74,10 @@ describe("tourController", () => {
       extension: {
         id: uuidv4(),
         label: "Test Tour",
-        _recipe: null,
+        _recipe: undefined,
+        apiVersion: "v3",
+        extensionPointId: "" as RegistryId,
+        config: {},
       } as ResolvedModComponent,
       allowUserRun: false,
       run: () => ({
@@ -87,7 +91,7 @@ describe("tourController", () => {
       blueprintId,
     });
 
-    expect(getCurrentTour().nonce).toBe(nonce);
+    expect(getCurrentTour()?.nonce).toBe(nonce);
 
     tourPromise.resolve();
 

@@ -45,7 +45,8 @@ const updateRenderCount = (
 
     if (Array.isArray(field)) {
       const formattedIndex = index === -1 ? 0 : index;
-      field[formattedIndex].value += 1;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- index check above
+      field[formattedIndex]!.value += 1;
       return;
     }
 
@@ -79,8 +80,10 @@ const startMeasureRenderTime = (
         const formattedIndex = index === -1 ? 0 : index;
         const fieldValues = field[formattedIndex];
         field[formattedIndex] = {
-          mount: fieldValues.mount || duration,
-          updates: fieldValues.mount ? [...fieldValues.updates, duration] : [],
+          mount: fieldValues?.mount || duration,
+          updates: fieldValues?.mount
+            ? [...(fieldValues?.updates ?? []), duration]
+            : [],
         };
         return;
       }

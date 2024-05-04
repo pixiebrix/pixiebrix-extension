@@ -51,10 +51,7 @@ describe("mapObject", () => {
 
   test("the callback alters the type of the Record", () => {
     const callback = (value: string) => value.codePointAt(0);
-    const result: Record<string, number> = mapObject(
-      { foo: "bar", baz: "qux" },
-      callback,
-    );
+    const result = mapObject({ foo: "bar", baz: "qux" }, callback);
     expect(result).toStrictEqual({
       foo: 98,
       baz: 113,

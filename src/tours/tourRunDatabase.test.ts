@@ -38,7 +38,7 @@ describe("tourRunDatabase", () => {
     const records = await getAll();
 
     expect(records).toHaveLength(1);
-    expect(records[0].id).toEqual(nonce);
+    expect(records[0]!.id).toEqual(nonce);
   });
 
   test("ignore update of unknown tour", async () => {

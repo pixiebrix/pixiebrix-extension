@@ -29,6 +29,7 @@ import {
 } from "./utils";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 import { test as envSetup } from "./envSetup";
+import { PageEditorPage } from "../pageObjects/pageEditorPage";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // See https://github.com/microsoft/playwright/issues/26693
@@ -45,6 +46,7 @@ export const test = mergeTests(
       context: BrowserContext;
       extensionId: string;
       chromiumChannel: "chrome" | "msedge";
+      newPageEditorPage: (urlToConnectTo: string) => Promise<PageEditorPage>;
     },
     {
       checkRequiredEnvironmentVariables: () => void;
@@ -101,6 +103,29 @@ export const test = mergeTests(
 
       await use(page);
       // The page is closed by the context fixture `.close` cleanup step
+    },
+    /**
+     * Create a new page editor instance for the given URL. Cleans up any saved standalone mods after the test.
+     * TODO: support "packaged" mod cleanup
+     */
+    async newPageEditorPage({ context, extensionId }, use) {
+      const pageEditorPages: PageEditorPage[] = [];
+      await use(async (urlToConnectTo: string) => {
+        const newPage = await context.newPage();
+        const newPageEditorPage = new PageEditorPage(
+          newPage,
+          urlToConnectTo,
+          extensionId,
+        );
+        await newPageEditorPage.goto();
+        pageEditorPages.push(newPageEditorPage);
+        return newPageEditorPage;
+      });
+
+      for (const page of pageEditorPages) {
+        // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
+        await page.cleanup();
+      }
     },
     async extensionId({ context }, use) {
       const extensionId = await getExtensionId(context);

@@ -22,7 +22,9 @@ import {
 import { type UUID } from "@/types/stringTypes";
 
 // Serves to avoid creating new arrays and ensure reference equality for empty annotations
-const EMPTY_ANNOTATIONS = Object.freeze([]) as AnalysisAnnotation[];
+const EMPTY_ANNOTATIONS = Object.freeze(
+  [] as AnalysisAnnotation[],
+) as AnalysisAnnotation[]; // Have to cast twice to avoid "neither type sufficiently overlaps" error
 
 export function selectExtensionAnnotations(
   extensionId: UUID,
