@@ -106,7 +106,7 @@ async function interactiveWriteToClipboard(
 
     const type = "image" in content ? "image" : "text";
     await focusCaptureDialog({
-      message: `Please click "Copy ${type}" to copy the ${type} to your clipboard.`,
+      message: `Click "Copy ${type}" to copy the ${type} to your clipboard.`,
       buttonText: `Copy ${type}`,
     });
 

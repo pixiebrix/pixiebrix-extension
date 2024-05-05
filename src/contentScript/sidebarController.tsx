@@ -136,7 +136,7 @@ export async function showSidebarInTopFrame() {
       }
 
       await focusCaptureDialog({
-        message: 'Please click "Open Sidebar" to open the mod sidebar',
+        message: 'Click "Open Sidebar" to open the mod sidebar',
         buttonText: "Open Sidebar",
         signal: signalFromEvent(sidebarShowEvents, sidebarShowEvents.coreEvent),
       });
