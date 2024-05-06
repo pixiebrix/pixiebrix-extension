@@ -53,13 +53,13 @@ type DatabaseConfig = {
   /**
    * UUID of a Group for a shared DB, or null/empty for a personal DB.
    */
-  groupId?: string;
+  groupId: string | null;
 };
 
 const databaseSchema: yup.SchemaOf<DatabaseConfig> = yup.object().shape({
   name: yup.string().required(),
   organizationId: yup.string(),
-  groupId: yup.string(),
+  groupId: yup.string().required().nullable(),
 });
 
 const initialValues: DatabaseConfig = {
