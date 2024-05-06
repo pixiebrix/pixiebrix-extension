@@ -45,7 +45,7 @@ const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   const [{ value }, , { setValue }] = useField<string>(name);
   const [show, setShow] = useState<boolean>(false);
 
-  const defaultInputRef = useRef<HTMLElement>();
+  const defaultInputRef = useRef<HTMLElement>(null);
   const inputRef = inputRefProp ?? defaultInputRef;
   useAutoFocusConfiguration({ elementRef: inputRef, focus: focusInput });
 

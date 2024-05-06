@@ -45,7 +45,6 @@ const OptionComponent = ({
   >
     <Button
       data-testid="variant-option"
-      type={null}
       variant={data.value}
       size="sm"
       className={styles.exampleButton}
@@ -58,7 +57,6 @@ const OptionComponent = ({
 const ValueComponent = ({ data }: SingleValueProps<Option>) => (
   <Button
     data-testid="selected-variant"
-    type={null}
     variant={data.value}
     size="sm"
     className={styles.exampleButton}
@@ -86,10 +84,7 @@ const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
     [schema, value],
   );
 
-  const selectedValue = options.find((x) => x.value === value) ?? {
-    label: null,
-    value: null,
-  };
+  const selectedValue = options.find((x) => x.value === value);
 
   return (
     <div className="mt-2" data-testid="select-container">

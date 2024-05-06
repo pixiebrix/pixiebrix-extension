@@ -4,6 +4,10 @@
     "strictNullChecks": true
   },
   "files": [
+    "./components/fields/schemaFields/widgets/NumberWidget.tsx",
+    "./components/fields/schemaFields/widgets/PasswordWidget.tsx",
+    "./components/fields/schemaFields/widgets/SchemaButtonVariantWidget.tsx",
+
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/envSetup.ts",

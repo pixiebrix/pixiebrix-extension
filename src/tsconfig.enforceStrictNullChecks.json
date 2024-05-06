@@ -4,6 +4,10 @@
     "strictNullChecks": true
   },
   "exclude": [
+    "./components/fields/schemaFields/widgets/ObjectWidget.test.tsx",
+    "./components/fields/schemaFields/widgets/ObjectWidget.tsx",
+    "./components/fields/schemaFields/widgets/SchemaButtonVariantWidget.test.tsx",
+
     "./activation/useActivateModWizard.test.tsx",
     "./activation/useActivateModWizard.ts",
     "./activation/useActivateRecipe.test.ts",
