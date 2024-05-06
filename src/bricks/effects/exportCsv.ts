@@ -19,8 +19,32 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { PropError } from "@/errors/businessErrors";
-import { isUnknownObjectArray } from "@/utils/objectUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { type JsonPrimitive } from "type-fest";
+
+// Derived from the unexported type in the `export-to-csv` package
+type CSVData = {
+  [k: string]: JsonPrimitive | undefined;
+  [k: number]: JsonPrimitive | undefined;
+};
+
+function isCSVData(data: unknown): data is CSVData {
+  return (
+    typeof data === "object" &&
+    data != null &&
+    (Object.values(data) as JsonPrimitive[]).every(
+      (value) =>
+        value == null ||
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean",
+    )
+  );
+}
+
+function isCSVDataArray(data: unknown): data is CSVData[] {
+  return Array.isArray(data) && data.every((element) => isCSVData(element));
+}
 
 export class ExportCsv extends EffectABC {
   constructor() {
@@ -97,7 +121,7 @@ export class ExportCsv extends EffectABC {
       );
     }
 
-    if (!isUnknownObjectArray(rows)) {
+    if (!isCSVDataArray(rows)) {
       // Don't pass `value` because it may be a large amount of data
       throw new PropError(
         `Expected array of array for data, got ${typeof rows[0]}`,
