@@ -42,6 +42,7 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { selectKnownEventNames } from "@/analysis/analysisSelectors";
 import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -61,7 +62,10 @@ export const selectModComponentFormStates = ({
 export const selectActiveModComponentFormState = createSelector(
   selectActiveModComponentId,
   selectModComponentFormStates,
-  (activeModComponentId, formStates): EditorState["elements"][number] =>
+  (
+    activeModComponentId,
+    formStates,
+  ): Nullishable<EditorState["elements"][number]> =>
     formStates.find((x) => x.uuid === activeModComponentId),
 );
 
@@ -71,9 +75,14 @@ export const selectActiveModId = ({ editor }: EditorRootState) =>
 export const selectShowV3UpgradeMessageForActiveModComponent = createSelector(
   selectActiveModComponentId,
   ({ editor }: EditorRootState) => editor.showV3UpgradeMessageByElement,
-  (activeModComponentId, showV3UpgradeMessageByModComponentId) =>
+  (activeModComponentId, showV3UpgradeMessageByModComponentId) => {
+    if (activeModComponentId == null) {
+      return false;
+    }
+
     // eslint-disable-next-line security/detect-object-injection -- using an internally-looked-up uuid
-    showV3UpgradeMessageByModComponentId[activeModComponentId] ?? false,
+    return showV3UpgradeMessageByModComponentId[activeModComponentId] ?? false;
+  },
 );
 
 export const selectIsInsertingNewStarterBrick = ({ editor }: EditorRootState) =>
@@ -221,7 +230,7 @@ const modIsDirtySelector = createSelector(
 
 export const selectModIsDirty =
   (modId?: RegistryId) => (state: EditorRootState) =>
-    Boolean(modId) && modIsDirtySelector(state, modId);
+    Boolean(modId && modIsDirtySelector(state, modId));
 
 export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
   isAddToModModalVisible: editor.visibleModalKey === ModalKey.ADD_TO_RECIPE,
@@ -250,7 +259,7 @@ export const selectInstalledModMetadatas = createSelector(
 
     return uniqBy(
       [...formStateModMetadatas, ...activatedModComponentModMetadatas],
-      (modMetadata) => modMetadata.id,
+      (modMetadata) => modMetadata?.id,
     );
   },
 );
@@ -273,7 +282,14 @@ export const selectExpandedModId = ({ editor }: EditorRootState) =>
 // UI state
 export function selectActiveModComponentUIState({
   editor,
-}: EditorRootState): ModComponentUIState {
+}: EditorRootState): Nullishable<ModComponentUIState> {
+  if (editor.activeElementId == null) {
+    console.warn(
+      "selectActiveModComponentUIState called without activeElementId",
+    );
+    return null;
+  }
+
   return editor.elementUIStates[editor.activeElementId];
 }
 
@@ -329,7 +345,7 @@ const parentBlockInfoSelector = createSelector(
     }
 
     // eslint-disable-next-line security/detect-object-injection -- UUID
-    const { parentNodeId } = uiState.pipelineMap[instanceId];
+    const { parentNodeId } = uiState.pipelineMap[instanceId] ?? {};
     if (!parentNodeId) {
       return null;
     }
@@ -349,26 +365,28 @@ export const selectParentBlockInfo =
 
 export const selectNodeDataPanelTabSelected: (
   rootState: EditorRootState,
-) => DataPanelTabKey = createSelector(
+) => Nullishable<DataPanelTabKey> = createSelector(
   selectActiveNodeUIState,
-  (nodeUIState) => nodeUIState.dataPanel.activeTabKey,
+  (nodeUIState) => nodeUIState?.dataPanel.activeTabKey,
 );
 
 export function selectNodeDataPanelTabState(
   rootState: EditorRootState,
   tabKey: DataPanelTabKey,
-): TabUIState {
+): Nullishable<TabUIState> {
   const nodeUIState = selectActiveNodeUIState(rootState);
   // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
-  return nodeUIState.dataPanel[tabKey];
+  return nodeUIState?.dataPanel[tabKey];
 }
 
 /**
  * Selects the activeElement of the Document or Form builder on the Preview tab
  */
-export function selectNodePreviewActiveElement(state: EditorRootState): string {
+export function selectNodePreviewActiveElement(
+  state: EditorRootState,
+): Nullishable<string> {
   return selectNodeDataPanelTabState(state, DataPanelTabKey.Preview)
-    .activeElement;
+    ?.activeElement;
 }
 
 export const selectAddBlockLocation = ({ editor }: EditorRootState) =>
@@ -380,8 +398,13 @@ const activeModComponentAnalysisAnnotationsForPath = createSelector(
   (state: RootState, path: string) => path,
   ({ editor }: EditorRootState) => editor.isVariablePopoverVisible,
   (activeElementId, annotations, path, isVariablePopoverVisible) => {
+    if (activeElementId == null) {
+      return [];
+    }
+
     // eslint-disable-next-line security/detect-object-injection -- UUID
     const elementAnnotations = annotations?.[activeElementId] ?? [];
+
     const filteredAnnotations = elementAnnotations.filter(
       ({ analysisId, position }) =>
         position.path === path &&
@@ -389,6 +412,7 @@ const activeModComponentAnalysisAnnotationsForPath = createSelector(
         (!isVariablePopoverVisible ||
           !["var", "template"].includes(analysisId)),
     );
+
     return sortBy(filteredAnnotations, (annotation) => {
       switch (annotation.type) {
         case AnnotationType.Error: {
@@ -437,9 +461,14 @@ export const selectModComponentAvailability = ({
 export const selectKnownEventNamesForActiveModComponent = createSelector(
   selectActiveModComponentId,
   selectKnownEventNames,
-  (activeElementId, knownEventNameMap) =>
+  (activeElementId, knownEventNameMap) => {
+    if (activeElementId == null) {
+      return [];
+    }
+
     // eslint-disable-next-line security/detect-object-injection -- is a UUID
-    knownEventNameMap[activeElementId] ?? [],
+    return knownEventNameMap[activeElementId] ?? [];
+  },
 );
 
 export const selectIsDimensionsWarningDismissed = (state: EditorRootState) =>
