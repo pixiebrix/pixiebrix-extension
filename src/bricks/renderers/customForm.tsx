@@ -50,7 +50,10 @@ import { getPlatform } from "@/platform/platformContext";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import { type CustomFormComponentProps } from "./CustomFormComponent";
 import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
-import { type Nullishable } from "@/utils/nullishUtils";
+import {
+  assumeNotNullish_UNSAFE,
+  type Nullishable,
+} from "@/utils/nullishUtils";
 
 interface DatabaseResult {
   success: boolean;
@@ -272,7 +275,7 @@ export class CustomFormRenderer extends RendererABC {
       postSubmitAction = "save",
     }: BrickArgs<{
       storage?: Storage;
-      recordId?: string | null;
+      recordId: string | null;
       schema: Schema;
       uiSchema?: UiSchema;
       autoSave?: boolean;
@@ -300,11 +303,15 @@ export class CustomFormRenderer extends RendererABC {
         "recordId",
         recordId,
       );
+    } else {
+      // We can assume that recordId is not null for state because recordId is not needed
+      // This greatly simplifies the typing for the rest of the function
+      assumeNotNullish_UNSAFE(recordId);
     }
 
     const { blueprintId, extensionId } = logger.context;
 
-    const initialData = await getInitialData(storage, recordId ?? "", {
+    const initialData = await getInitialData(storage, recordId, {
       blueprintId,
       extensionId,
     });
@@ -357,13 +364,13 @@ export class CustomFormRenderer extends RendererABC {
               );
 
               if (postSubmitAction === "save") {
-                await setData(storage, recordId ?? "", normalizedValues, {
+                await setData(storage, recordId, normalizedValues, {
                   blueprintId,
                   extensionId,
                 });
               }
             } else {
-              await setData(storage, recordId ?? "", normalizedValues, {
+              await setData(storage, recordId, normalizedValues, {
                 blueprintId,
                 extensionId,
               });
