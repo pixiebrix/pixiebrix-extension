@@ -98,7 +98,7 @@ export class PageEditorPage {
   /**
    * Save a packaged mod. Prefer saveStandaloneMod for standalone mods.
    */
-  async savePackagedMod() {
+  async saveSelectedMod() {
     // TODO: this method is currently meant for packaged mods that aren't meant to be
     //  cleaned up after the test. Future work is adding affordance to clean up saved packaged
     //  mods, with an option to avoid cleanup for certain mods.
@@ -108,6 +108,12 @@ export class PageEditorPage {
 
   getByText(text: string) {
     return this.page.getByText(text);
+  }
+
+  getIncrementVersionErrorToast() {
+    return this.page.getByText(
+      "Cannot overwrite version of a published brick. Increment the version",
+    );
   }
 
   async saveStandaloneMod(modName: string) {

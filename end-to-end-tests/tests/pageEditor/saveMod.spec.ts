@@ -54,10 +54,6 @@ test("shows error notification when updating a public mod without incrementing t
   const modListItem = pageEditorPage.getModListItemByName(modName);
   await modListItem.click();
   await pageEditorPage.fillInBrickField("Name", "8203 Repro Updated");
-  await pageEditorPage.savePackagedMod();
-  await expect(
-    pageEditorPage.getByText(
-      "Cannot overwrite version of a published brick. Increment the version",
-    ),
-  ).toBeVisible();
+  await pageEditorPage.saveSelectedMod();
+  await expect(pageEditorPage.getIncrementVersionErrorToast()).toBeVisible();
 });
