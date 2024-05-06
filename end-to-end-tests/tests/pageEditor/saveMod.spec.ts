@@ -18,7 +18,10 @@
 import { expect, test } from "../../fixtures/extensionBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
-import { ModsPage } from "../../pageObjects/extensionConsole/modsPage";
+import {
+  ActivateModPage,
+  ModsPage,
+} from "../../pageObjects/extensionConsole/modsPage";
 
 test("can save a standalone trigger mod", async ({
   page,
@@ -34,4 +37,23 @@ test("can save a standalone trigger mod", async ({
   await expect(
     page.locator(".list-group-item", { hasText: modName }),
   ).toBeVisible();
+});
+
+test("shows error notification when updating a public mod without incrementing the version", async ({
+  page,
+  newPageEditorPage,
+  extensionId,
+}) => {
+  const modId = "@e2e-testing/8203-repro";
+  const modName = "8203 Repro";
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.goto();
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+  await page.goto("/");
+  const pageEditorPage = await newPageEditorPage(page.url());
+  const modListItem = pageEditorPage.getModListItemByName(modName);
+  await modListItem.click();
+  await pageEditorPage.fillInBrickField("Name", "8203 Repro Updated");
+  await pageEditorPage.saveSelectedPackagedMod();
+  await expect(pageEditorPage.getIncrementVersionErrorToast()).toBeVisible();
 });
