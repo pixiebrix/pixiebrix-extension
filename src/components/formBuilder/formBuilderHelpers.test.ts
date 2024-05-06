@@ -46,20 +46,20 @@ describe("replaceStringInArray", () => {
   test("does not mutate the source array", () => {
     const refToTheInitialArray = array;
     const copyOfInitialArray = [...array];
-    replaceStringInArray(array, array[1]);
+    replaceStringInArray(array, array[1]!);
     expect(array).toBe(refToTheInitialArray);
     expect(array).toEqual(copyOfInitialArray);
   });
 
   test("can delete a string", () => {
     const expected = [array[0], array[2]];
-    expect(replaceStringInArray(array, array[1])).toEqual(expected);
+    expect(replaceStringInArray(array, array[1]!)).toEqual(expected);
   });
 
   test("can replace a string", () => {
     const stringToInsert = "insert";
     const expected = [array[0], stringToInsert, array[2]];
-    expect(replaceStringInArray(array, array[1], stringToInsert)).toEqual(
+    expect(replaceStringInArray(array, array[1]!, stringToInsert)).toEqual(
       expected,
     );
   });
@@ -140,11 +140,9 @@ describe("validateNextPropertyName", () => {
 
 describe("normalizeSchema", () => {
   test("init schema", () => {
-    const schema: Schema = undefined;
-
     const actual = produce(
       {
-        schema,
+        schema: undefined,
         uiSchema: minimalUiSchemaFactory(),
       } as RJSFSchema,
       (draft) => {
@@ -187,7 +185,7 @@ describe("normalizeSchema", () => {
           type: "string",
         },
       },
-      required: null,
+      required: undefined,
     };
 
     const actual = produce(
@@ -277,9 +275,9 @@ describe("produceSchemaOnUiTypeChange", () => {
     );
 
     expect(
-      (nextSchema.schema.properties.field1 as Schema).enum,
+      (nextSchema.schema!.properties!.field1 as Schema).enum,
     ).toBeUndefined();
-    expect((nextSchema.schema.properties.field1 as Schema).oneOf).toEqual([
+    expect((nextSchema.schema!.properties!.field1 as Schema).oneOf).toEqual([
       {
         const: "foo",
       },
@@ -335,9 +333,9 @@ describe("produceSchemaOnUiTypeChange", () => {
     );
 
     expect(
-      (nextSchema.schema.properties.field1 as Schema).oneOf,
+      (nextSchema.schema!.properties!.field1 as Schema).oneOf,
     ).toBeUndefined();
-    expect((nextSchema.schema.properties.field1 as Schema).enum).toEqual([
+    expect((nextSchema.schema!.properties!.field1 as Schema).enum).toEqual([
       "foo",
       "bar",
       "baz",
@@ -364,7 +362,7 @@ describe("produceSchemaOnUiTypeChange", () => {
       stringifyUiType({ propertyType: "string", uiWidget: "database" }),
     );
 
-    expect(nextSchema.schema.properties.field1).toEqual({
+    expect(nextSchema.schema!.properties!.field1).toEqual({
       title: "Field 1",
       $ref: databaseSchema.$id,
     });
@@ -399,7 +397,7 @@ describe("produceSchemaOnUiTypeChange", () => {
       stringifyUiType({ propertyType: "string" }),
     );
 
-    expect(nextSchema.schema.properties.field1).toEqual({
+    expect(nextSchema.schema!.properties!.field1).toEqual({
       title: "Field 1",
       type: "string",
     });
@@ -427,7 +425,7 @@ describe("produceSchemaOnUiTypeChange", () => {
       stringifyUiType({ propertyType: "string", uiWidget: "googleSheet" }),
     );
 
-    expect(nextSchema.schema.properties.field1).toEqual({
+    expect(nextSchema.schema!.properties!.field1).toEqual({
       title: "Field 1",
       $ref: googleSheetSchema.$id,
     });
@@ -462,7 +460,7 @@ describe("produceSchemaOnUiTypeChange", () => {
       stringifyUiType({ propertyType: "string" }),
     );
 
-    expect(nextSchema.schema.properties.field1).toEqual({
+    expect(nextSchema.schema!.properties!.field1).toEqual({
       title: "Field 1",
       type: "string",
     });

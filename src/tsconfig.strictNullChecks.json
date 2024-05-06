@@ -11,6 +11,10 @@
     "./components/form/widgets/SelectWidget.test.tsx",
     "./components/form/widgets/switchButton/SwitchButtonWidget.test.tsx",
     "./components/formBuilder/BaseInputTemplate.test.tsx",
+    "./components/formBuilder/formBuilderHelpers.test.ts",
+    "./components/formBuilder/formBuilderHelpers.ts",
+    "./components/formBuilder/formEditor.testCases.ts",
+    "./components/formBuilder/preview/FormPreview.test.tsx",
 
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",

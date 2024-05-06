@@ -55,7 +55,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   activeField,
   setActiveField,
 }) => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<unknown>(null);
   const onDataChanged = ({ formData }: IChangeEvent<unknown>) => {
     setData(formData);
   };
@@ -121,7 +121,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
             continue;
           }
 
-          const propertySchema = draftSchema.properties[key];
+          const propertySchema = draftSchema.properties?.[key];
 
           if (!(UI_WIDGET in value) || typeof propertySchema !== "object") {
             continue;

@@ -21,6 +21,12 @@
     "./components/form/Form.stories.tsx",
     "./components/form/widgets/AsyncRemoteSelectWidget.test.tsx",
     "./components/form/widgets/RegistryIdWidget.test.tsx",
+    "./components/formBuilder/edit/FieldEditor.tsx",
+    "./components/formBuilder/edit/FormEditor.test.tsx",
+    "./components/formBuilder/edit/FormEditor.tsx",
+    "./components/formBuilder/FormBuilder.stories.tsx",
+    "./components/formBuilder/FormBuilder.test.tsx",
+    "./components/formBuilder/FormBuilder.tsx",
 
     "./activation/useActivateModWizard.test.tsx",
     "./activation/useActivateModWizard.ts",

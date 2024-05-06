@@ -20,7 +20,7 @@ import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { type Draft, produce } from "immer";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
-import { isEmpty } from "lodash";
+import { compact, isEmpty } from "lodash";
 import {
   KEYS_OF_UI_SCHEMA,
   type Schema,
@@ -123,8 +123,9 @@ export const moveStringInArray = (
   }
 
   const toIndex = direction === "up" ? fromIndex - 1 : fromIndex + 1;
-  // eslint-disable-next-line security/detect-object-injection -- checked with indexOf
-  [copy[fromIndex], copy[toIndex]] = [copy[toIndex], copy[fromIndex]];
+
+  // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked with indexOf
+  [copy[fromIndex]!, copy[toIndex]!] = [copy[toIndex]!, copy[fromIndex]!];
   return copy;
 };
 
@@ -171,12 +172,19 @@ export const produceSchemaOnPropertyNameChange = (
   nextPropertyName: string,
 ) =>
   produce(rjsfSchema, (draft) => {
-    /* eslint-disable security/detect-object-injection -- Relying on Immer to protect against object injections */
-    draft.schema.properties[nextPropertyName] =
-      draft.schema.properties[propertyName];
-    delete draft.schema.properties[propertyName];
+    if (
+      draft.schema?.properties &&
+      propertyName in draft.schema.properties &&
+      draft.schema.properties[propertyName] != null
+    ) {
+      // eslint-disable-next-line security/detect-object-injection -- Relying on Immer to protect against object injections
+      draft.schema.properties[nextPropertyName] =
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, security/detect-object-injection -- Verified above
+        draft.schema.properties[propertyName]!;
+      delete draft.schema.properties[propertyName];
+    }
 
-    if (draft.schema.required?.includes(propertyName)) {
+    if (draft.schema?.required?.includes(propertyName)) {
       draft.schema.required = replaceStringInArray(
         draft.schema.required,
         propertyName,
@@ -197,7 +205,6 @@ export const produceSchemaOnPropertyNameChange = (
       draft.uiSchema[nextPropertyName] = draft.uiSchema[propertyName];
       delete draft.uiSchema[propertyName];
     }
-    /* eslint-enable security/detect-object-injection  */
   });
 
 export const produceSchemaOnUiTypeChange = (
@@ -210,7 +217,9 @@ export const produceSchemaOnUiTypeChange = (
 
   return produce(rjsfSchema, (draft) => {
     /* eslint-disable security/detect-object-injection -- Relying on Immer to protect against object injections */
-    const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
+    const draftPropertySchema = draft.schema?.properties?.[
+      propertyName
+    ] as Schema;
 
     switch (uiWidget) {
       case "database": {
@@ -237,7 +246,9 @@ export const produceSchemaOnUiTypeChange = (
       delete draftPropertySchema.format;
     }
 
-    const propertySchema = rjsfSchema.schema.properties[propertyName] as Schema;
+    const propertySchema = rjsfSchema.schema?.properties?.[
+      propertyName
+    ] as Schema;
     if (
       propertySchema.type !== propertyType ||
       propertySchema.format !== propertyFormat
@@ -274,7 +285,7 @@ export const produceSchemaOnUiTypeChange = (
       } else {
         // If switching from Dropdown with labels, convert the values to enum
         draftPropertySchema.enum = Array.isArray(draftPropertySchema.oneOf)
-          ? draftPropertySchema.oneOf.map((item: Schema) => item.const)
+          ? compact(draftPropertySchema.oneOf.map((item: Schema) => item.const))
           : [];
         delete draftPropertySchema.oneOf;
       }
