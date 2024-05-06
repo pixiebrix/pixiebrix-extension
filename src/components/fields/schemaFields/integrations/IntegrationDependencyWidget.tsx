@@ -106,7 +106,7 @@ function setIntegrationAuthSelectionForField(
   fieldName: string,
   authOption: AuthOption,
 ): IntegrationsFormSlice {
-  let outputKey = "" as OutputKey;
+  let outputKey: OutputKey | undefined;
 
   let nextState = produce(state, (draft) => {
     // Unlike when defaulting, we don't need to check against the registry ids from the schema because this method
@@ -141,6 +141,8 @@ function setIntegrationAuthSelectionForField(
       });
     }
   });
+
+  assertNotNullish(outputKey, "Integration outputKey must be set");
 
   // Update field value before calling produceExcludeUnusedDependencies, otherwise it will see the stale service var
   nextState = setIn(
