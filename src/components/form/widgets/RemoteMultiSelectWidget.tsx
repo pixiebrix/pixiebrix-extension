@@ -28,9 +28,13 @@ import useReportError from "@/hooks/useReportError";
 import type { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { useOptionsResolver } from "@/components/form/widgets/useOptionsResolver";
 import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
+import { type SetRequired } from "type-fest";
 
 type RemoteMultiSelectWidgetProps<TOption extends Option<TOption["value"]>> =
-  CustomFieldWidgetProps<Array<TOption["value"]>, MultiSelectLike<TOption>> & {
+  SetRequired<
+    CustomFieldWidgetProps<Array<TOption["value"]>, MultiSelectLike<TOption>>,
+    "value"
+  > & {
     isClearable?: boolean;
     optionsFactory: OptionsFactory<TOption["value"]> | Promise<TOption[]>;
     config: SanitizedIntegrationConfig | null;
@@ -83,8 +87,8 @@ const RemoteMultiSelectWidget = <TOption extends Option<TOption["value"]>>({
     } as ChangeEvent<MultiSelectLike<TOption>>);
   };
 
-  const selectedOptions = options.filter(
-    (option: Option) => value?.includes(option.value),
+  const selectedOptions = options.filter((option: Option) =>
+    value.includes(option.value),
   );
 
   return (
