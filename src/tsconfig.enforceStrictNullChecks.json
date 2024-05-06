@@ -18,6 +18,9 @@
     "./components/fields/schemaFields/widgets/varPopup/VariablesTree.test.tsx",
     "./components/fields/schemaFields/widgets/varPopup/VariablesTree.tsx",
     "./components/fields/schemaFields/widgets/varPopup/VarMenu.tsx",
+    "./components/form/Form.stories.tsx",
+    "./components/form/widgets/AsyncRemoteSelectWidget.test.tsx",
+    "./components/form/widgets/RegistryIdWidget.test.tsx",
 
     "./activation/useActivateModWizard.test.tsx",
     "./activation/useActivateModWizard.ts",
