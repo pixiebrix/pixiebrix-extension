@@ -9,6 +9,8 @@
     "./components/fields/schemaFields/widgets/SchemaButtonVariantWidget.tsx",
     "./components/fields/schemaFields/widgets/varPopup/varSelectors.ts",
     "./components/form/widgets/SelectWidget.test.tsx",
+    "./components/form/widgets/switchButton/SwitchButtonWidget.test.tsx",
+    "./components/formBuilder/BaseInputTemplate.test.tsx",
 
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
