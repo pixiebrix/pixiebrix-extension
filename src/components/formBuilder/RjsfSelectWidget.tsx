@@ -23,7 +23,6 @@ type OptionType = { label: string; value: string };
 const DEFAULT_OPTION: OptionType[] = [];
 
 const RjsfSelectWidget: React.FC<WidgetProps> = ({
-  schema,
   id,
   options,
   value,
@@ -33,11 +32,10 @@ const RjsfSelectWidget: React.FC<WidgetProps> = ({
   onChange,
   onBlur,
   onFocus,
-  rawErrors,
-  label,
   multiple,
 }) => {
   const _onChange = (option: OptionType | null) => {
+    // FIXME: this will pass "" when the value is cleared, but the form may expect undefined/null
     onChange(option ? option.value : "");
   };
 
@@ -64,6 +62,7 @@ const RjsfSelectWidget: React.FC<WidgetProps> = ({
     <div data-testid="formbuilder-select-wrapper">
       <Select
         id={id}
+        isClearable={!required}
         options={selectOptions}
         isDisabled={disabled || readonly}
         isMulti={multiple}
