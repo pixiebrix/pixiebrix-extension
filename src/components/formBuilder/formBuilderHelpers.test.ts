@@ -185,7 +185,9 @@ describe("normalizeSchema", () => {
           type: "string",
         },
       },
-      required: undefined,
+      // Type conflict between versions of tsconfig
+      // TODO: remove the cast when strict null checks is complete
+      required: null as unknown as string[],
     };
 
     const actual = produce(
