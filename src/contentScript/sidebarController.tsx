@@ -135,15 +135,11 @@ export async function showSidebarInTopFrame() {
         throw error;
       }
 
-      await focusCaptureDialog(
-        'Please click "OK" to allow PixieBrix to open the sidebar.',
-        {
-          signal: signalFromEvent(
-            sidebarShowEvents,
-            sidebarShowEvents.coreEvent,
-          ),
-        },
-      );
+      await focusCaptureDialog({
+        message: 'Click "Open Sidebar" to open the mod sidebar',
+        buttonText: "Open Sidebar",
+        signal: signalFromEvent(sidebarShowEvents, sidebarShowEvents.coreEvent),
+      });
       await showMySidePanel();
     }
   } else if (!sidebarMv2.isSidebarFrameVisible()) {

@@ -66,11 +66,15 @@ test.describe("sidebar controller", () => {
     await page.waitForTimeout(8000);
 
     // Focus dialog should be visible in the top-level frame
-    await expect(page.getByRole("button", { name: "OK" })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Open Sidebar" }),
+    ).toBeVisible();
 
     // The focus dialog should not be shown in the iframe. Check after checking the top-level frame
     // because it's a positive check for the dialog being shown.
-    await expect(frame.getByRole("button", { name: "OK" })).toBeHidden();
+    await expect(
+      frame.getByRole("button", { name: "Open Sidebar" }),
+    ).toBeHidden();
 
     // Will error if page/frame not available
     await getSidebarPage(page, extensionId);
