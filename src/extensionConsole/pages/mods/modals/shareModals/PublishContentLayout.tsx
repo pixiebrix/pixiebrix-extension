@@ -24,7 +24,7 @@ import { faInfoCircle, faUsers } from "@fortawesome/free-solid-svg-icons";
 import styles from "./ShareModals.module.scss";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { RequireScope } from "@/auth/RequireScope";
-import OwnerLabel from "@/extensionConsole/pages/mods/modals/shareModals/OwnerLabel";
+import ModOwnerLabel from "@/extensionConsole/pages/mods/modals/shareModals/ModOwnerLabel";
 import useHasEditPermissions from "@/extensionConsole/pages/mods/modals/shareModals/useHasEditPermissions";
 import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
 
@@ -50,7 +50,7 @@ const PublishContentLayout: React.FunctionComponent<
         to change sharing
       </div>
       <div className={styles.row}>
-        <OwnerLabel blueprintId={blueprintId} />
+        <ModOwnerLabel modId={blueprintId} />
         <span className="text-muted">Owner</span>
       </div>
       {sortedOrganizations

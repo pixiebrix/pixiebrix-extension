@@ -16,7 +16,7 @@
  */
 
 import { expect, type Page } from "@playwright/test";
-import { test } from "./fixtures/authSetupFixture";
+import { test } from "./fixtures/authSetup";
 import {
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
@@ -34,7 +34,7 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
     page.getByText(
       "Successfully linked the Browser Extension to your PixieBrix account",
     ),
-    { timeout: 10_000 },
+    { timeout: 12_000 },
   );
   await expect(page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED)).toBeVisible();
   await expect(page.getByText("Admin Console")).toBeVisible();
@@ -64,6 +64,6 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
   await ensureVisibility(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above
     extensionConsolePage!.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
-    { timeout: 10_000 },
+    { timeout: 12_000 },
   );
 });

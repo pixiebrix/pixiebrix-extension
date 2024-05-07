@@ -16,7 +16,7 @@
  */
 
 import type AxeBuilder from "@axe-core/playwright";
-import { type Locator, expect, type Page, Frame } from "@playwright/test";
+import { type Locator, expect, type Page, type Frame } from "@playwright/test";
 import { MV } from "./env";
 
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
@@ -53,7 +53,7 @@ export function checkForCriticalViolations(
   }
 
   // Expectation only fails if there are any criticalViolations that aren't explicitly allowed
-  expect(unallowedViolations).toEqual([]);
+  expect(unallowedViolations).toStrictEqual([]);
 }
 
 // This function is a workaround for the fact that `expect(locator).toBeVisible()` will immediately fail if the element is hidden or unmounted.
@@ -63,45 +63,79 @@ export async function ensureVisibility(
   options?: { timeout: number },
 ) {
   await expect(async () => {
-    await expect(locator).toBeVisible();
+    await expect(locator).toBeVisible({ timeout: 0 }); // Retry handling is done by the outer expect
   }).toPass({ timeout: 5000, ...options });
 }
 
 // Run a mod via the Quickbar.
-// NOTE: Page needs to be focused before running this function, e.g. by clicking on the page.
-// TODO: Fix the page-focus precondition by generalizing the page-focusing logic to be page-agnostic
 export async function runModViaQuickBar(page: Page, modName: string) {
+  await waitForQuickBarReadiness(page);
+  await page.locator("html").focus(); // Ensure the page is focused before running the keyboard shortcut
   await page.keyboard.press("Meta+M"); // MacOS
   await page.keyboard.press("Control+M"); // Windows and Linux
+  // Short delay to allow the quickbar to finish opening
+  // eslint-disable-next-line playwright/no-wait-for-timeout -- TODO: Find a better way to detect when the quickbar is done loading opening
+  await page.waitForTimeout(500);
   await page.getByRole("option", { name: modName }).click();
 }
 
-// Finds the Pixiebrix sidebar page. In MV3, this is a Page contained in the browser sidepanel window.
-// In MV2, this is a Frame as it's contained in an iframe attached to the current page.
-export async function getSidebarPage(page: Page, extensionId: string) {
+function findSidebarPage(page: Page, extensionId: string): Page | undefined {
+  return page
+    .context()
+    .pages()
+    .find((value) =>
+      value.url().startsWith(`chrome-extension://${extensionId}/sidebar.html`),
+    );
+}
+
+function findSidebarFrame(page: Page, extensionId: string): Frame | undefined {
+  return page
+    .frames()
+    .find((frame) =>
+      frame.url().startsWith(`chrome-extension://${extensionId}/sidebar.html`),
+    );
+}
+
+/**
+ * Immediately returns whether the sidebar is open. Works on both MV2 and MV3.
+ * @see getSidebarPage
+ */
+export function isSidebarOpen(page: Page, extensionId: string): boolean {
+  const match =
+    MV === "3"
+      ? findSidebarPage(page, extensionId)
+      : findSidebarFrame(page, extensionId);
+
+  return match != null;
+}
+
+/**
+ * Finds the Pixiebrix sidebar page/frame.
+ *
+ * For MV3, automatically clicks "OK" on the dialog that appears if the sidebar requires a user gesture to open
+ *
+ * - In MV3, this is a Page contained in the browser sidepanel window.
+ * - In MV2, this is a Frame as it's contained in an iframe attached to the current page.
+ *
+ * @throws {Error} if the sidebar is not available
+ */
+export async function getSidebarPage(
+  page: Page,
+  extensionId: string,
+): Promise<Page | Frame> {
   if (MV === "3") {
     let sidebarPage: Page | undefined;
-    const findSidebarPage = (page: Page) =>
-      page
-        .context()
-        .pages()
-        .find((value) =>
-          value
-            .url()
-            .startsWith(`chrome-extension://${extensionId}/sidebar.html`),
-        );
 
     // In MV3, the sidebar sometimes requires the user to interact with modal to open the sidebar via a user gesture
     const conditionallyPerformUserGesture = async () => {
-      await expect(page.getByRole("button", { name: "OK" })).toBeVisible();
-      await page.getByRole("button", { name: "OK" }).click();
-      return findSidebarPage(page);
+      await page.getByRole("button", { name: "Open Sidebar" }).click();
+      return findSidebarPage(page, extensionId);
     };
 
     await expect(async () => {
       sidebarPage = await Promise.race([
         conditionallyPerformUserGesture(),
-        findSidebarPage(page),
+        findSidebarPage(page, extensionId),
       ]);
       expect(sidebarPage).toBeDefined();
     }).toPass({ timeout: 5000 });
@@ -111,16 +145,8 @@ export async function getSidebarPage(page: Page, extensionId: string) {
   }
 
   let sidebarFrame: Frame | undefined;
-  const findSidebarFrame = (page: Page) =>
-    page
-      .frames()
-      .find((frame) =>
-        frame
-          .url()
-          .startsWith(`chrome-extension://${extensionId}/sidebar.html`),
-      );
   await expect(() => {
-    sidebarFrame = findSidebarFrame(page);
+    sidebarFrame = findSidebarFrame(page, extensionId);
     expect(sidebarFrame).toBeDefined();
   }).toPass({ timeout: 5000 });
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
@@ -131,9 +157,26 @@ export async function getSidebarPage(page: Page, extensionId: string) {
 // see: https://github.com/pixiebrix/pixiebrix-extension/blob/5693a4db1c4f3411910ef9cf6a60f5a20c132761/src/contentScript/textSelectionMenu/selectionMenuController.tsx#L336
 export async function waitForSelectionMenuReadiness(page: Page) {
   await expect(async () => {
-    const pbReady = await page
-      .locator("html")
-      .getAttribute("data-pb-selection-menu-ready");
-    expect(pbReady).toBeTruthy();
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-pb-selection-menu-ready",
+    );
   }).toPass({ timeout: 5000 });
+}
+
+// Waits for the quick bar to be ready to use
+async function waitForQuickBarReadiness(page: Page) {
+  await expect(async () => {
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-pb-quick-bar-ready",
+    );
+  }).toPass({ timeout: 5000 });
+}
+
+// Simulates mouse entering the sidebar to track focus on MV2
+// https://github.com/pixiebrix/pixiebrix-extension/blob/1794863937f343fbc8e3a4434eace74191f8dfbd/src/contentScript/sidebarController.tsx#L563-L563
+export async function conditionallyHoverOverMV2Sidebar(page: Page) {
+  if (MV === "2") {
+    const sidebarFrame = page.locator("#pixiebrix-extension");
+    await sidebarFrame.dispatchEvent("mouseenter");
+  }
 }

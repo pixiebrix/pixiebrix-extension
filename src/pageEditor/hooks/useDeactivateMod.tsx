@@ -23,7 +23,7 @@ import {
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
-import { selectElements } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentFormStates } from "@/pageEditor/slices/editorSelectors";
 import { uniq } from "lodash";
 import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -41,8 +41,8 @@ type Config = {
 function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
-  const extensions = useSelector(selectActivatedModComponents);
-  const elements = useSelector(selectElements);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
+  const modComponentFormStates = useSelector(selectModComponentFormStates);
   const { showConfirmation } = useModals();
 
   return useCallback(
@@ -55,15 +55,15 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
         }
       }
 
-      const extensionIds = uniq(
-        [...extensions, ...elements]
+      const modComponentIds = uniq(
+        [...activatedModComponents, ...modComponentFormStates]
           .filter((x) => getModIdForElement(x) === modId)
           .map((x) => getIdForElement(x)),
       );
       await Promise.all(
-        extensionIds.map(async (extensionId) =>
+        modComponentIds.map(async (modComponentId) =>
           removeModComponentFromStorage({
-            extensionId,
+            extensionId: modComponentId,
           }),
         ),
       );
@@ -76,8 +76,8 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
     },
     [
       dispatch,
-      elements,
-      extensions,
+      modComponentFormStates,
+      activatedModComponents,
       useRemoveModComponentFromStorage,
       showConfirmation,
     ],

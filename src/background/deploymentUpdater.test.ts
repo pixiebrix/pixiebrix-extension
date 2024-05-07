@@ -19,7 +19,7 @@ import {
   getModComponentState,
   saveModComponentState,
 } from "@/store/extensionsStorage";
-import { uuidv4, validateSemVerString } from "@/types/helpers";
+import { uuidv4, normalizeSemVerString } from "@/types/helpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { omit } from "lodash";
 import { syncDeployments } from "@/background/deploymentUpdater";
@@ -68,8 +68,8 @@ jest.mock("@/store/settings/settingsStorage");
 jest.mock("@/hooks/useRefreshRegistries");
 
 jest.mock("@/utils/extensionUtils", () => ({
+  ...jest.requireActual("@/utils/extensionUtils"),
   forEachTab: jest.fn(),
-  getExtensionVersion: () => browser.runtime.getManifest().version,
 }));
 
 // Override manual mock to support `expect` assertions
@@ -380,7 +380,7 @@ describe("syncDeployments", () => {
       _recipe: {
         id: deployment.package.package_id,
         name: deployment.package.name,
-        version: validateSemVerString("0.0.1"),
+        version: normalizeSemVerString("0.0.1"),
         updated_at: deployment.updated_at,
         sharing: sharingDefinitionFactory(),
       },
@@ -438,7 +438,7 @@ describe("syncDeployments", () => {
       _recipe: {
         id: deployment.package.package_id,
         name: deployment.package.name,
-        version: validateSemVerString("0.0.1"),
+        version: normalizeSemVerString("0.0.1"),
         updated_at: deployment.updated_at,
         sharing: sharingDefinitionFactory(),
       },

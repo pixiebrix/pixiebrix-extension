@@ -50,6 +50,23 @@ import {
 import { fetchFeatureFlags } from "@/auth/featureFlagStorage";
 import { locator, refreshServices } from "@/background/locator";
 import { closeTab, focusTab, openTab } from "@/background/tabs";
+import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow";
+import { performConfiguredRequest } from "@/background/requests";
+import {
+  getPartnerPrincipals,
+  launchAuthIntegration,
+} from "@/background/partnerIntegrations";
+import { getAvailableVersion } from "@/background/installer";
+import {
+  collectPerformanceDiagnostics,
+  initTelemetry,
+  pong,
+  recordEvent,
+  sendDeploymentAlert,
+} from "@/background/telemetry";
+import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
+import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
+import { setCopilotProcessData } from "@/background/partnerHandlers";
 
 expectContext("background");
 
@@ -94,6 +111,25 @@ declare global {
     OPEN_TAB: typeof openTab;
     CLOSE_TAB: typeof closeTab;
     FOCUS_TAB: typeof focusTab;
+
+    LAUNCH_INTERACTIVE_OAUTH_FLOW: typeof launchInteractiveOAuth2Flow;
+
+    CONFIGURED_REQUEST: typeof performConfiguredRequest;
+
+    GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
+    LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
+
+    GET_AVAILABLE_VERSION: typeof getAvailableVersion;
+
+    PING: typeof pong;
+    COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
+    RECORD_EVENT: typeof recordEvent;
+    INIT_TELEMETRY: typeof initTelemetry;
+    SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
+
+    ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
+    UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
+    SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
   }
 }
 
@@ -138,5 +174,24 @@ export default function registerMessenger(): void {
     OPEN_TAB: openTab,
     CLOSE_TAB: closeTab,
     FOCUS_TAB: focusTab,
+
+    LAUNCH_INTERACTIVE_OAUTH_FLOW: launchInteractiveOAuth2Flow,
+
+    CONFIGURED_REQUEST: performConfiguredRequest,
+
+    GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
+    LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
+
+    GET_AVAILABLE_VERSION: getAvailableVersion,
+
+    PING: pong,
+    COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
+    RECORD_EVENT: recordEvent,
+    INIT_TELEMETRY: initTelemetry,
+    SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
+
+    ENSURE_CONTEXT_MENU: ensureContextMenu,
+    UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
+    SET_PARTNER_COPILOT_DATA: setCopilotProcessData,
   });
 }

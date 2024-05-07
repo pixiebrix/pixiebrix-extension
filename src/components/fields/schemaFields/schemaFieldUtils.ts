@@ -21,7 +21,7 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import {
   isDatabaseField,
-  isServiceField,
+  isIntegrationDependencyField,
 } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import pipelineSchema from "@schemas/pipeline.json";
 import { isEmpty, sortBy } from "lodash";
@@ -77,7 +77,7 @@ export function sortedFields(
 
   const fieldTypeOrder = (field: FieldConfig) => {
     // Integration configurations
-    if (isServiceField(field.fieldSchema)) {
+    if (isIntegrationDependencyField(field.fieldSchema)) {
       return 0;
     }
 

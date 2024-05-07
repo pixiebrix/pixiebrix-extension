@@ -27,7 +27,7 @@ import { render } from "react-dom";
 import React from "react";
 import App from "@/extensionConsole/App";
 import { initToaster } from "@/utils/notify";
-import { initTelemetry } from "@/background/messenger/api";
+import { initTelemetry } from "@/background/messenger/strict/api";
 import { initMessengerLogging } from "@/development/messengerLogging";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { initRuntimeLogging } from "@/development/runtimeLogging";

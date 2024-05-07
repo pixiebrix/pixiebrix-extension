@@ -34,7 +34,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
-import { type SidebarStarterBrickABC } from "@/starterBricks/sidebarExtension";
+import { type SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
 import {
   getReloadOnNextNavigate,
   setReloadOnNextNavigate,
@@ -46,8 +46,11 @@ import {
 } from "@/utils/promiseUtils";
 import { $safeFind } from "@/utils/domUtils";
 import { onContextInvalidated } from "webext-events";
-import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
 import { ReusableAbortController } from "abort-utils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { notifyNavigationComplete } from "@/contentScript/sidebarController";
+import pDefer from "p-defer";
 
 /**
  * True if handling the initial page load.
@@ -599,6 +602,10 @@ export async function handleNavigate({
         }),
       ),
     );
+    // After all extension points have been installed, notify the sidebar that it is complete.
+    if (!isLoadedInIframe()) {
+      void notifyNavigationComplete();
+    }
   }
 }
 
@@ -641,7 +648,21 @@ async function onNavigate(event: NavigateEvent): Promise<void> {
   }
 }
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- not used in background script
+const prerenderedTabActivated = pDefer<void>();
+
+export async function activatePrerenderedTab(): Promise<void> {
+  prerenderedTabActivated.resolve();
+}
+
 export async function initNavigation() {
+  // If in prerendering mode, wait until the background notifies that the page is now active before running mods.
+  // note: `prerendering` attribute only supported in Chromium-based browsers
+  // https://developer.mozilla.org/en-US/docs/Web/API/Document/prerendering
+  if ("prerendering" in document && document.prerendering) {
+    await prerenderedTabActivated.promise;
+  }
+
   // Initiate PB for the current page
   await handleNavigate();
 

@@ -16,29 +16,128 @@
  */
 
 import { getBasePageEditorUrl } from "./constants";
-import { type BrowserContext } from "@playwright/test";
-import { expect } from "../fixtures/extensionBase";
+import { type Page, expect } from "@playwright/test";
+import { uuidv4 } from "@/types/helpers";
+import { ModsPage } from "./extensionConsole/modsPage";
 
+// Starter brick names as shown in the Page Editor UI
+export type StarterBrickName =
+  | "Context Menu"
+  | "Trigger"
+  | "Button"
+  | "Quick Bar Action"
+  | "Dynamic Quick Bar"
+  | "Sidebar Panel"
+  | "Tour";
+
+/**
+ * Page object for the Page Editor. Prefer the newPageEditorPage fixture in extensionBase.ts to directly creating an
+ * instance of this class to take advantage of automatic cleanup of saved mods.
+ *
+ * @knip usage of PageEditorPage indirectly via the newPageEditorPage fixture in extensionBase.ts causes a
+ * false-positive
+ */
 export class PageEditorPage {
   private readonly pageEditorUrl: string;
+  private readonly savedStandaloneModNames: string[] = [];
 
   constructor(
-    private readonly context: BrowserContext,
+    private readonly page: Page,
     private readonly urlToConnectTo: string,
-    extensionId: string,
+    private readonly extensionId: string,
   ) {
     this.pageEditorUrl = getBasePageEditorUrl(extensionId);
   }
 
   async goto() {
-    const pageEditorPage = await this.context.newPage();
-    await pageEditorPage.goto(this.pageEditorUrl);
+    await this.page.goto(this.pageEditorUrl);
     // Set the viewport size to the expected in horizontal layout size of the devconsole when docked on the bottom.
-    await pageEditorPage.setViewportSize({ width: 1280, height: 300 });
-    await pageEditorPage.getByTestId(`tab-${this.urlToConnectTo}`).click();
-    const heading = pageEditorPage.getByRole("heading", {
+    await this.page.setViewportSize({ width: 1280, height: 300 });
+    await this.page.getByTestId(`tab-${this.urlToConnectTo}`).click();
+    const heading = this.page.getByRole("heading", {
       name: "Welcome to the Page Editor!",
     });
     await expect(heading).toBeVisible();
+  }
+
+  getTemplateGalleryButton() {
+    return this.page.getByRole("button", { name: "Launch Template Gallery" });
+  }
+
+  /**
+   * Adds a starter brick in the Page Editor. Generates a unique mod name to prevent
+   * test collision.
+   *
+   * @param starterBrickName the starter brick name to add, corresponding to the name shown in the Page Editor UI,
+   * not the underlying type
+   * @returns modName the generated mod name
+   */
+  async addStarterBrick(starterBrickName: StarterBrickName) {
+    const modName = `Test ${starterBrickName} ${uuidv4()}`;
+    await this.page.getByRole("button", { name: "Add", exact: true }).click();
+    await this.page
+      .locator("[role=button].dropdown-item", {
+        hasText: starterBrickName,
+      })
+      .click();
+    await this.fillInBrickField("Name", modName);
+    return modName;
+  }
+
+  async fillInBrickField(fieldLabel: string, value: string) {
+    await this.page.getByLabel(fieldLabel).fill(value);
+  }
+
+  getModListItemByName(modName: string) {
+    return this.page
+      .locator(".list-group-item")
+      .locator("span", { hasText: modName })
+      .first();
+  }
+
+  /**
+   * Save a selected packaged mod. Prefer saveStandaloneMod for standalone mods.
+   */
+  async saveSelectedPackagedMod() {
+    // TODO: this method is currently meant for packaged mods that aren't meant to be
+    //  cleaned up after the test. Future work is adding affordance to clean up saved packaged
+    //  mods, with an option to avoid cleanup for certain mods.
+    await this.page.locator("[data-icon=save]").click();
+    await this.page.getByRole("button", { name: "Save" }).click();
+  }
+
+  getByText(text: string) {
+    return this.page.getByText(text);
+  }
+
+  getIncrementVersionErrorToast() {
+    return this.page.getByText(
+      "Cannot overwrite version of a published brick. Increment the version",
+    );
+  }
+
+  async saveStandaloneMod(modName: string) {
+    const modListItem = this.page.locator(".list-group-item", {
+      hasText: modName,
+    });
+    await modListItem.click();
+    await modListItem.locator("[data-icon=save]").click();
+    await expect(this.page.getByText("Saved Mod")).toBeVisible();
+    this.savedStandaloneModNames.push(modName);
+  }
+
+  /**
+   * This method is meant to be called exactly once after the test is done to clean up any saved mods created during the
+   * test.
+   *
+   * @see newPageEditorPage in fixtures/extensionBase.ts
+   */
+  async cleanup() {
+    const modsPage = new ModsPage(this.page, this.extensionId);
+    await modsPage.goto();
+    for (const modName of this.savedStandaloneModNames) {
+      // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
+      await modsPage.deleteModByName(modName);
+    }
   }
 }

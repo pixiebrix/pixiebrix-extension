@@ -70,6 +70,10 @@ async function getAuthUrlPatterns(organizationId: UUID): Promise<string[]> {
 
 async function isRestrictedUrl(url: string): Promise<boolean> {
   const cachedAuthUrlPatterns = await authUrlPatternCache.get();
+  if (!cachedAuthUrlPatterns) {
+    return false;
+  }
+
   return testMatchPatterns(cachedAuthUrlPatterns, url);
 }
 

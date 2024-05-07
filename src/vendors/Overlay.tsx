@@ -281,7 +281,7 @@ export default class Overlay {
 
     while (this.rects.length > elements.length) {
       const rect = this.rects.pop();
-      rect.remove();
+      rect?.remove();
     }
     if (elements.length === 0) {
       return;
@@ -314,11 +314,11 @@ export default class Overlay {
       outerBox.left = Math.min(outerBox.left, box.left - dims.marginLeft);
 
       const rect = this.rects[index];
-      rect.update(box, dims);
+      rect?.update(box, dims);
     }
 
     if (!name) {
-      name = elements[0].nodeName.toLowerCase();
+      name = elements[0]!.nodeName.toLowerCase();
     }
 
     this.tip.updateText(
@@ -397,7 +397,7 @@ function getNestedBoundingClientRect(
   const ownerIframe = getOwnerIframe(node);
   if (ownerIframe) {
     const rects = [node.getBoundingClientRect()];
-    let currentIframe = ownerIframe;
+    let currentIframe: HTMLElement | null = ownerIframe;
     let onlyOneMore = false;
     while (currentIframe) {
       const rect = getBoundingClientRectWithBorderOffset(currentIframe);

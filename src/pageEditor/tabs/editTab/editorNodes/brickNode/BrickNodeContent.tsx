@@ -30,7 +30,7 @@ function isFontAwesomeIcon(
 ): maybeIcon is IconProp {
   return (
     typeof maybeIcon === "string" ||
-    (typeof maybeIcon === "object" && "icon" in maybeIcon)
+    (typeof maybeIcon === "object" && maybeIcon != null && "icon" in maybeIcon)
   );
 }
 
@@ -47,7 +47,7 @@ const BrickNodeContent: React.FC<BrickNodeContentProps> = ({
     iconProp
   );
 
-  let badgeSource: string;
+  let badgeSource: string | null = null;
 
   switch (runStatus) {
     case RunStatus.SUCCESS: {

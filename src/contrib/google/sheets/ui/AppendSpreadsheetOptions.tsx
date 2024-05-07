@@ -22,7 +22,6 @@ import { type Expression } from "@/types/runtimeTypes";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/bricks/append";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/ui/TabField";
-import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { isEmpty } from "lodash";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";
@@ -141,24 +140,11 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
         {({ googleAccount, spreadsheet }) => (
           <>
-            <FormErrorContext.Provider
-              value={{
-                shouldUseAnalysis: false,
-                showUntouchedErrors: true,
-                showFieldActions: false,
-              }}
-            >
-              {
-                // The problem with including this inside the nested FormErrorContext.Provider is that we
-                // would like analysis to run if this is in text/template mode, but not if it's in select mode.
-                // Select mode is more important, so we're leaving it like this for now.
-                <TabField
-                  name={joinName(blockConfigPath, "tabName")}
-                  schema={APPEND_SCHEMA.properties.tabName as Schema}
-                  spreadsheet={spreadsheet}
-                />
-              }
-            </FormErrorContext.Provider>
+            <TabField
+              name={joinName(blockConfigPath, "tabName")}
+              schema={APPEND_SCHEMA.properties.tabName as Schema}
+              spreadsheet={spreadsheet}
+            />
             <RowValuesField
               name={joinName(blockConfigPath, "rowValues")}
               googleAccount={googleAccount}

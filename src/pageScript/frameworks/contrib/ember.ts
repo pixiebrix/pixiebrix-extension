@@ -65,7 +65,7 @@ declare global {
   }
 }
 
-function getEmberApplication(): EmberApplication {
+function getEmberApplication(): EmberApplication | undefined {
   // https://stackoverflow.com/questions/32971707/how-to-access-the-ember-data-store-from-the-console
   if (window.Ember) {
     const { Ember } = window;
@@ -81,7 +81,7 @@ function getEmberApplication(): EmberApplication {
   return undefined;
 }
 
-function getEmberComponentById(componentId: string): EmberObject {
+function getEmberComponentById(componentId: string): EmberObject | undefined {
   if (isNullOrBlank(componentId)) {
     throw new Error("componentId is required for getEmberComponentById");
   }
@@ -95,6 +95,10 @@ function getEmberComponentById(componentId: string): EmberObject {
 }
 
 function isMutableCell(cell: unknown): cell is MutableCell {
+  if (!isObject(cell)) {
+    return false;
+  }
+
   // As of Ember 4.6.0 this is not a real Symbol, so Object.keys should detect it. If they change it, this will stop working:
   // https://github.com/emberjs/ember.js/blob/55ffe6326f11efcaeb278cdf7e0f86543daa9f04/packages/%40ember/-internals/utils/lib/symbol.ts#L14-L26
   // https://github.com/emberjs/ember.js/blob/55ffe6326f11efcaeb278cdf7e0f86543daa9f04/packages/%40ember/-internals/views/lib/compat/attrs.ts#L1
@@ -232,33 +236,34 @@ function targetForComponent(component: any): UnknownObject {
 
 function isEmberElement(node: Node): boolean {
   return (
-    node instanceof Element && node.getAttribute("id")?.startsWith("ember")
+    node instanceof Element &&
+    (node.getAttribute("id")?.startsWith("ember") ?? false)
   );
 }
 
 function findEmberElement(node: Node): Element | null {
-  let current = node;
+  let current: Node | null = node;
 
-  while (current && !isEmberElement(current)) {
+  while (current != null && !isEmberElement(current)) {
     current = current.parentNode;
   }
 
-  if (isEmberElement(current)) {
-    return current as Element;
+  if (current == null || !isEmberElement(current)) {
+    return null;
   }
 
-  return null;
+  return current as Element;
 }
 
 const adapter: ReadableComponentAdapter<EmberObject> = {
   isManaged,
-  getComponent(node) {
+  getComponent(node): EmberObject | null {
     const elt = findEmberElement(node);
     if (!elt) {
       throw new Error("No Ember component associated with the DOM node");
     }
 
-    return ignoreNotFound(() => getEmberComponentById(elt.id));
+    return ignoreNotFound(() => getEmberComponentById(elt.id) ?? null);
   },
   getParent: (instance) => instance.parentView,
   getNode: (instance) => instance.element,

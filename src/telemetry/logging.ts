@@ -42,6 +42,13 @@ import { deleteDatabase } from "@/utils/idbUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { StorageItem } from "webext-storage";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
+import { readAuthData } from "@/auth/authStorage";
+import {
+  type RecordErrorMessage,
+  sendErrorViaErrorReporter,
+  setupOffscreenDocument,
+} from "@/tinyPages/offscreen";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -330,7 +337,7 @@ export async function reportToApplicationErrorTelemetry(
   // treats it as the error. Note, Rollbar, treats POJO as the custom data.
   error: Error,
   flatContext: MessageContext,
-  message: string,
+  errorMessage: string,
 ): Promise<void> {
   // Business errors are now sent to the PixieBrix error service instead of the Application error service - see reportToErrorService
   if (
@@ -367,29 +374,44 @@ export async function reportToApplicationErrorTelemetry(
     return;
   }
 
-  // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
-  // to determine log level also handle serialized/deserialized errors.
-  // See https://github.com/sindresorhus/serialize-error/issues/48
+  const { version_name: versionName, manifest_version: manifestVersion } =
+    chrome.runtime.getManifest();
+  const [telemetryUser, extraContext] = await Promise.all([
+    mapAppUserToTelemetryUser(await readAuthData()),
+    selectExtraContext(error),
+  ]);
+  const errorData: RecordErrorMessage["data"] = {
+    error,
+    errorMessage,
+    errorReporterInitInfo: {
+      // It should never happen that versionName is undefined, but handle undefined just in case
+      versionName: versionName ?? "",
+      telemetryUser,
+    },
+    messageContext: {
+      ...flatContext,
+      ...extraContext,
+    },
+  };
 
-  const { getErrorReporter } = await import(
-    /* webpackChunkName: "errorReporter" */
-    "@/telemetry/initErrorReporter"
-  );
+  if (manifestVersion === 3) {
+    // Due to service worker limitations with the Datadog SDK, which we currently use for Application error telemetry,
+    // we need to send the error from an offscreen document.
+    // See https://github.com/pixiebrix/pixiebrix-extension/issues/8268
+    // and offscreen.ts
+    await setupOffscreenDocument();
 
-  const reporter = await getErrorReporter();
+    const recordErrorMessage: RecordErrorMessage = {
+      type: "record-error",
+      target: "offscreen-doc",
+      data: errorData,
+    };
 
-  if (!reporter) {
-    // Error reported not initialized
+    await chrome.runtime.sendMessage(recordErrorMessage);
     return;
   }
 
-  const details = await selectExtraContext(error);
-
-  reporter.error({
-    message,
-    error,
-    messageContext: { ...flatContext, ...details },
-  });
+  await sendErrorViaErrorReporter(errorData);
 }
 
 /** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */
@@ -409,18 +431,18 @@ export async function recordError(
 
   try {
     const error = deserializeError(serializedError);
-    const message = getErrorMessage(error);
+    const errorMessage = getErrorMessage(error);
     const flatContext = flattenContext(error, context);
 
     await Promise.all([
-      reportToApplicationErrorTelemetry(error, flatContext, message),
-      reportToErrorService(error, flatContext, message),
+      reportToApplicationErrorTelemetry(error, flatContext, errorMessage),
+      reportToErrorService(error, flatContext, errorMessage),
       appendEntry({
         uuid: uuidv4(),
         timestamp: Date.now().toString(),
         level: "error",
         context: flatContext,
-        message,
+        message: errorMessage,
         data,
         // Ensure the object is fully serialized. Required because it will be stored in IDB and flow through the Redux state
         error: serializedError,

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders an extension with sub pipeline 1`] = `
+exports[`renders a mod component with sub pipeline 1`] = `
 <DocumentFragment>
   <form
     autocomplete="off"
@@ -829,7 +829,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   <span>
                     URL match patterns permitting this starter brick to run on a site. If PixieBrix does not already have access to a site, your browser will prompt you to grant access. See 
                     <a
-                      href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
+                      href="https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns"
                       rel="noreferrer"
                       target="_blank"
                     >

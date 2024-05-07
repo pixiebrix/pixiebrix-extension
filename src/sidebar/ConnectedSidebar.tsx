@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   addListener,
   removeListener,
@@ -40,7 +40,10 @@ import DefaultPanel from "@/sidebar/DefaultPanel";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { ensureExtensionPointsInstalled } from "@/contentScript/messenger/api";
 import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api";
-import { getConnectedTarget } from "@/sidebar/connectedTarget";
+import {
+  getConnectedTabIdMv3,
+  getConnectedTarget,
+} from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
@@ -48,6 +51,7 @@ import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
 import useEventListener from "@/hooks/useEventListener";
+import { isMV3 } from "@/mv3/api";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -86,6 +90,9 @@ function useConnectedListener(): SidebarListener {
       onHideActivateRecipe() {
         dispatch(sidebarSlice.actions.hideModActivationPanel());
       },
+      onNavigationComplete() {
+        dispatch(sidebarSlice.actions.invalidateConnectingPanels());
+      },
     }),
     [dispatch],
   );
@@ -98,7 +105,36 @@ const ConnectedSidebar: React.VFC = () => {
   const listener = useConnectedListener();
   const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
 
-  // `useAsyncEffect` will run once on component mount since listener and formsRef don't change on renders.
+  // Listen for navigation events to mark temporary panels as unavailable.
+  // Not used in MV2 because the sidebar closes automatically on navigation.
+  useEffect(() => {
+    const navigationListenerMV3 = (
+      details: chrome.webNavigation.WebNavigationFramedCallbackDetails,
+    ) => {
+      const { frameId, tabId, documentLifecycle } = details;
+      const connectedTabId = getConnectedTabIdMv3();
+      if (
+        documentLifecycle === "active" &&
+        tabId === connectedTabId &&
+        frameId === 0
+      ) {
+        console.log("navigationListener:connectedTabId", connectedTabId);
+        dispatch(sidebarSlice.actions.invalidatePanels());
+      }
+    };
+
+    if (isMV3()) {
+      chrome.webNavigation.onBeforeNavigate.addListener(navigationListenerMV3);
+    }
+
+    return () => {
+      chrome.webNavigation.onBeforeNavigate.removeListener(
+        navigationListenerMV3,
+      );
+    };
+  }, [dispatch]);
+
+  // `useAsyncEffect` will run once on component mount since listeners and formsRef don't change on renders.
   // We could instead consider moving the initial panel logic to SidebarApp.tsx and pass the entries as the
   // initial state to the sidebarSlice reducer.
   useAsyncEffect(async () => {

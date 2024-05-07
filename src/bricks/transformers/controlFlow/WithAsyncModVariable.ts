@@ -104,7 +104,7 @@ export class WithAsyncModVariable extends TransformerABC {
   ): Promise<Schema | undefined> {
     const { stateKey } = _config.config;
 
-    let name = "";
+    let name: string | null = null;
     try {
       name = castTextLiteralOrThrow(stateKey);
     } catch {
@@ -280,7 +280,7 @@ export class WithAsyncModVariable extends TransformerABC {
             currentData: null,
             data: null,
             requestId,
-            error: serializeError(error),
+            error: serializeError(error) as JsonObject,
           },
           "put",
         );

@@ -37,11 +37,11 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
-  selectActiveElement,
-  selectActiveElementUIState,
+  selectActiveModComponentFormState,
+  selectActiveModComponentUIState,
   selectActiveNodeUIState,
-  selectNotDeletedElements,
-  selectNotDeletedExtensions,
+  selectNotDeletedModComponentFormStates,
+  selectNotDeletedActivatedModComponents,
 } from "./editorSelectors";
 import {
   isQuickBarExtensionPoint,
@@ -67,7 +67,7 @@ import {
   getInstalledExtensionPoints,
 } from "@/contentScript/messenger/api";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
 import { testMatchPatterns } from "@/bricks/available";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
@@ -126,8 +126,8 @@ const cloneActiveExtension = createAsyncThunk<
   { state: EditorRootState }
 >("editor/cloneActiveExtension", async (arg, thunkAPI) => {
   const state = thunkAPI.getState();
-  const newElement = await produce(
-    selectActiveElement(state),
+  const newActiveModComponentFormState = await produce(
+    selectActiveModComponentFormState(state),
     async (draft) => {
       draft.uuid = uuidv4();
       draft.label += " (Copy)";
@@ -140,7 +140,7 @@ const cloneActiveExtension = createAsyncThunk<
     },
   );
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned extension
-  thunkAPI.dispatch(actions.addElement(newElement));
+  thunkAPI.dispatch(actions.addElement(newActiveModComponentFormState));
 });
 
 type AvailableInstalled = {
@@ -152,32 +152,40 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
   void,
   { state: EditorRootState & ModComponentsRootState }
 >("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
-  const elements = selectNotDeletedElements(thunkAPI.getState());
-  const extensions = selectNotDeletedExtensions(thunkAPI.getState());
-  const extensionPoints = await getInstalledExtensionPoints(inspectedTab);
-  const installedExtensionPoints = new Map(
-    extensionPoints.map((extensionPoint) => [
-      extensionPoint.id,
-      extensionPoint,
-    ]),
+  const notDeletedFormStates = selectNotDeletedModComponentFormStates(
+    thunkAPI.getState(),
+  );
+  const notDeletedModComponents = selectNotDeletedActivatedModComponents(
+    thunkAPI.getState(),
+  );
+  const starterBricks = await getInstalledExtensionPoints(inspectedTab);
+  const activatedStarterBricks = new Map(
+    starterBricks.map((starterBrick) => [starterBrick.id, starterBrick]),
   );
   const resolved = await Promise.all(
-    extensions.map(async (extension) =>
-      resolveExtensionInnerDefinitions(extension),
+    notDeletedModComponents.map(async (modComponent) =>
+      resolveExtensionInnerDefinitions(modComponent),
     ),
   );
   const tabUrl = await getCurrentInspectedURL();
   const availableExtensionPointIds = resolved
     .filter((x) => {
-      const extensionPoint = installedExtensionPoints.get(x.extensionPointId);
+      const activatedStarterBrick = activatedStarterBricks.get(
+        x.extensionPointId,
+      );
       // Not installed means not available
-      if (extensionPoint == null) {
+      if (activatedStarterBrick == null) {
         return false;
       }
 
       // QuickBar is installed on every page, need to filter by the documentUrlPatterns
-      if (QuickBarStarterBrickABC.isQuickBarExtensionPoint(extensionPoint)) {
-        return testMatchPatterns(extensionPoint.documentUrlPatterns, tabUrl);
+      if (
+        QuickBarStarterBrickABC.isQuickBarExtensionPoint(activatedStarterBrick)
+      ) {
+        return testMatchPatterns(
+          activatedStarterBrick.documentUrlPatterns,
+          tabUrl,
+        );
       }
 
       return true;
@@ -185,9 +193,10 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
     .map((x) => x.id);
 
   // Note: we can take out this filter if and when we persist the editor
-  // slice and remove installed extensions when they become dynamic elements
-  const notDynamicInstalled = extensions.filter(
-    (extension) => !elements.some((element) => element.uuid === extension.id),
+  // slice and remove installed mod components when they become dynamic form states
+  const notDynamicInstalled = notDeletedModComponents.filter(
+    (modComponent) =>
+      !notDeletedFormStates.some((element) => element.uuid === modComponent.id),
   );
 
   const availableInstalledIds = notDynamicInstalled
@@ -224,20 +233,24 @@ const checkAvailableDynamicElements = createAsyncThunk<
   void,
   { state: EditorRootState }
 >("editor/checkAvailableDynamicElements", async (arg, thunkAPI) => {
-  const elements = selectNotDeletedElements(thunkAPI.getState());
+  const notDeletedFormStates = selectNotDeletedModComponentFormStates(
+    thunkAPI.getState(),
+  );
   const tabUrl = await getCurrentInspectedURL();
-  const availableElementIds = await Promise.all(
-    elements.map(async ({ uuid, extensionPoint: elementExtensionPoint }) => {
-      const isAvailable = await isElementAvailable(
-        tabUrl,
-        elementExtensionPoint,
-      );
+  const availableFormStateIds = await Promise.all(
+    notDeletedFormStates.map(
+      async ({ uuid, extensionPoint: formStateStarterBrick }) => {
+        const isAvailable = await isElementAvailable(
+          tabUrl,
+          formStateStarterBrick,
+        );
 
-      return isAvailable ? uuid : null;
-    }),
+        return isAvailable ? uuid : null;
+      },
+    ),
   );
 
-  const availableDynamicIds = uniq(compact(availableElementIds));
+  const availableDynamicIds = uniq(compact(availableFormStateIds));
 
   return { availableDynamicIds };
 });
@@ -252,22 +265,22 @@ const checkActiveElementAvailability = createAsyncThunk<
   const tabUrl = await getCurrentInspectedURL();
   const state = thunkAPI.getState();
   // The currently selected element in the page editor
-  const activeElement = selectActiveElement(state);
+  const activeModComponentFormState = selectActiveModComponentFormState(state);
   // Calculate new availability for the active element
   const isAvailable = await isElementAvailable(
     tabUrl,
-    activeElement.extensionPoint,
+    activeModComponentFormState.extensionPoint,
   );
   // Calculate the new dynamic element availability, depending on the
   // new availability of the active element -- should be a unique list of ids,
   // and we add/remove the active element's id based on isAvailable
   const availableDynamicIds = [...state.editor.availableDynamicIds];
   if (isAvailable) {
-    if (!availableDynamicIds.includes(activeElement.uuid)) {
-      availableDynamicIds.push(activeElement.uuid);
+    if (!availableDynamicIds.includes(activeModComponentFormState.uuid)) {
+      availableDynamicIds.push(activeModComponentFormState.uuid);
     }
   } else {
-    pull(availableDynamicIds, activeElement.uuid);
+    pull(availableDynamicIds, activeModComponentFormState.uuid);
   }
 
   return {
@@ -682,10 +695,15 @@ export const editorSlice = createSlice({
       }>,
     ) {
       const { nodeId, direction } = action.payload;
-      const element = selectActiveElement({ editor: state });
-      const elementUiState = selectActiveElementUIState({ editor: state });
-      const { pipelinePath, index } = elementUiState.pipelineMap[nodeId];
-      const pipeline = get(element, pipelinePath);
+      const activeModComponentFormState = selectActiveModComponentFormState({
+        editor: state,
+      });
+      const activeModComponentUiState = selectActiveModComponentUIState({
+        editor: state,
+      });
+      const { pipelinePath, index } =
+        activeModComponentUiState.pipelineMap[nodeId];
+      const pipeline = get(activeModComponentFormState, pipelinePath);
 
       if (direction === "up") {
         // Swap the prev and current index values in the pipeline array, "up" in
@@ -704,7 +722,7 @@ export const editorSlice = createSlice({
       }
 
       // Make sure the pipeline map is updated
-      syncElementNodeUIStates(state, element);
+      syncElementNodeUIStates(state, activeModComponentFormState);
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
@@ -712,11 +730,18 @@ export const editorSlice = createSlice({
     },
     removeNode(state, action: PayloadAction<UUID>) {
       const nodeIdToRemove = action.payload;
-      const element = selectActiveElement({ editor: state });
-      const elementUiState = selectActiveElementUIState({ editor: state });
+      const activeModComponentFormState = selectActiveModComponentFormState({
+        editor: state,
+      });
+      const activeModComponentUiState = selectActiveModComponentUIState({
+        editor: state,
+      });
       const { pipelinePath, index } =
-        elementUiState.pipelineMap[nodeIdToRemove];
-      const pipeline: BrickConfig[] = get(element, pipelinePath);
+        activeModComponentUiState.pipelineMap[nodeIdToRemove];
+      const pipeline: BrickConfig[] = get(
+        activeModComponentFormState,
+        pipelinePath,
+      );
 
       // TODO: this fails when the brick is the last in a pipeline, need to select parent node
       const nextActiveNode =
@@ -725,14 +750,14 @@ export const editorSlice = createSlice({
           : pipeline[index + 1]; // Not last item, select next
       pipeline.splice(index, 1);
 
-      removeUnusedDependencies(element);
+      removeUnusedDependencies(activeModComponentFormState);
 
-      syncElementNodeUIStates(state, element);
+      syncElementNodeUIStates(state, activeModComponentFormState);
 
-      elementUiState.activeNodeId =
+      activeModComponentUiState.activeNodeId =
         nextActiveNode?.instanceId ?? FOUNDATION_NODE_ID;
 
-      state.dirty[element.uuid] = true;
+      state.dirty[activeModComponentFormState.uuid] = true;
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
@@ -755,13 +780,15 @@ export const editorSlice = createSlice({
         return;
       }
 
-      const elements = selectNotDeletedElements({ editor: state });
-      const recipeElements = elements.filter(
-        (element) => element.recipe?.id === recipeId,
+      const notDeletedFormStates = selectNotDeletedModComponentFormStates({
+        editor: state,
+      });
+      const modFormStates = notDeletedFormStates.filter(
+        (formState) => formState.recipe?.id === recipeId,
       );
-      for (const element of recipeElements) {
-        element.optionsArgs = action.payload;
-        state.dirty[element.uuid] = true;
+      for (const formState of modFormStates) {
+        formState.optionsArgs = action.payload;
+        state.dirty[formState.uuid] = true;
       }
     },
     setExpandedFieldSections(

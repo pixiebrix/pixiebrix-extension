@@ -51,7 +51,7 @@ const TagSearchInput: React.VFC<{
   focusInput,
   className,
 }) => {
-  const inputRef = useRef<HTMLInputElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
   useAutoFocusConfiguration({ elementRef: inputRef, focus: focusInput });
 
   const [internalValue, setInternalValue] = useState(value);

@@ -22,7 +22,7 @@ import {
   replaceModComponent,
   selectExtensionPointIntegrations,
 } from "@/pageEditor/panes/save/saveHelpers";
-import { validateRegistryId, validateSemVerString } from "@/types/helpers";
+import { validateRegistryId, normalizeSemVerString } from "@/types/helpers";
 import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
 import {
   internalStarterBrickMetaFactory,
@@ -32,7 +32,7 @@ import {
 import { produce } from "immer";
 import { makeInternalId } from "@/registry/internal";
 import { cloneDeep, range, uniq } from "lodash";
-import { type MenuDefinition } from "@/starterBricks/menuItemExtension";
+import { type MenuItemDefinition } from "@/starterBricks/menuItem/types";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
   type StarterBrickConfig,
@@ -61,11 +61,9 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
-
-jest.mock("@/background/contextMenus");
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
@@ -190,7 +188,7 @@ describe("replaceModComponent round trip", () => {
       metadata: {
         id: makeInternalId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
-        version: validateSemVerString("1.0.0"),
+        version: normalizeSemVerString("1.0.0"),
       },
     } as any);
 
@@ -240,7 +238,7 @@ describe("replaceModComponent round trip", () => {
       metadata: {
         id: makeInternalId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
-        version: validateSemVerString("1.0.0"),
+        version: normalizeSemVerString("1.0.0"),
       },
     } as any);
 
@@ -269,7 +267,7 @@ describe("replaceModComponent round trip", () => {
           modDefinition.definitions.extensionPoint,
         );
         (
-          draft.definitions.extensionPoint2.definition as MenuDefinition
+          draft.definitions.extensionPoint2.definition as MenuItemDefinition
         ).template = newTemplate;
         draft.extensionPoints[0].id = "extensionPoint2" as InnerDefinitionRef;
         draft.extensionPoints[0].label = "New Label";
@@ -300,7 +298,7 @@ describe("replaceModComponent round trip", () => {
       metadata: {
         id: makeInternalId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
-        version: validateSemVerString("1.0.0"),
+        version: normalizeSemVerString("1.0.0"),
       },
     } as any);
 

@@ -46,7 +46,7 @@ import createMenuListWithAddButton from "@/components/form/widgets/createMenuLis
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import Loader from "@/components/Loader";
 import useHasEditPermissions from "@/extensionConsole/pages/mods/modals/shareModals/useHasEditPermissions";
-import OwnerLabel from "@/extensionConsole/pages/mods/modals/shareModals/OwnerLabel";
+import ModOwnerLabel from "@/extensionConsole/pages/mods/modals/shareModals/ModOwnerLabel";
 import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
 
 type ShareModFormState = {
@@ -172,7 +172,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
                 />
 
                 <div className={styles.row}>
-                  <OwnerLabel blueprintId={blueprintId} />
+                  <ModOwnerLabel modId={blueprintId} />
                   <span className="text-muted">Owner</span>
                 </div>
 
@@ -224,7 +224,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
             permissions to change sharing
           </div>
           <div className={styles.row}>
-            <OwnerLabel blueprintId={blueprintId} />
+            <ModOwnerLabel modId={blueprintId} />
             <span className="text-muted">Owner</span>
           </div>
           {organizationsForSelect

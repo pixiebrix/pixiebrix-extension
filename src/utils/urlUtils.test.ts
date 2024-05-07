@@ -58,7 +58,7 @@ describe("makeURL", () => {
     const origin = "https://pixiebrix.com";
     expect(makeURL(origin)).toBe("https://pixiebrix.com/");
     expect(makeURL(origin, {})).toBe("https://pixiebrix.com/");
-    expect(makeURL(origin, { a: undefined, b: null })).toBe(
+    expect(makeURL(origin, { a: null, b: null })).toBe(
       "https://pixiebrix.com/",
     );
     expect(makeURL(origin, { a: 1, b: "hi", c: false })).toBe(

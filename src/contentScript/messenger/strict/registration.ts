@@ -18,8 +18,8 @@
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 
 import {
-  hideSidebar,
-  showSidebar,
+  hideMv2SidebarInTopFrame,
+  showSidebarInTopFrame,
   sidebarWasLoaded,
   updateSidebar,
   removeExtensions as removeSidebars,
@@ -45,6 +45,18 @@ import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol"
 import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 import { registerMethods } from "webext-messenger";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
+import { cancelSelect } from "@/contentScript/pageEditor/elementPicker";
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
+import selectElement from "@/contentScript/pageEditor/selectElement";
+import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
+import { insertButton } from "@/contentScript/pageEditor/insertButton";
+import {
+  disableOverlay,
+  enableOverlay,
+} from "@/contentScript/pageEditor/dynamic/overlay";
+import { runMapArgs } from "@/contentScript/pipelineProtocol/runMapArgs";
+import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
 
 declare global {
   interface MessengerMethods {
@@ -53,8 +65,8 @@ declare global {
     FORM_CANCEL: typeof cancelForm;
     UPDATE_SIDEBAR: typeof updateSidebar;
     SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
-    SHOW_SIDEBAR: typeof showSidebar;
-    HIDE_SIDEBAR: typeof hideSidebar;
+    SHOW_SIDEBAR: typeof showSidebarInTopFrame;
+    HIDE_SIDEBAR: typeof hideMv2SidebarInTopFrame;
     REMOVE_SIDEBARS: typeof removeSidebars;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
     GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
@@ -73,6 +85,16 @@ declare global {
     WALKTHROUGH_MODAL_CLOSE: typeof closeWalkthroughModal;
     WALKTHROUGH_MODAL_SHOW: typeof showWalkthroughModal;
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
+    CANCEL_SELECT_ELEMENT: typeof cancelSelect;
+    RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
+    GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
+    SELECT_ELEMENT: typeof selectElement;
+    INSERT_PANEL: typeof insertPanel;
+    INSERT_BUTTON: typeof insertButton;
+    ENABLE_OVERLAY: typeof enableOverlay;
+    DISABLE_OVERLAY: typeof disableOverlay;
+    RUN_MAP_ARGS: typeof runMapArgs;
+    GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
   }
 }
 export default function registerMessenger(): void {
@@ -82,8 +104,8 @@ export default function registerMessenger(): void {
     FORM_CANCEL: cancelForm,
     UPDATE_SIDEBAR: updateSidebar,
     SIDEBAR_WAS_LOADED: sidebarWasLoaded,
-    SHOW_SIDEBAR: showSidebar,
-    HIDE_SIDEBAR: hideSidebar,
+    SHOW_SIDEBAR: showSidebarInTopFrame,
+    HIDE_SIDEBAR: hideMv2SidebarInTopFrame,
     REMOVE_SIDEBARS: removeSidebars,
     HANDLE_MENU_ACTION: handleMenuAction,
     GET_RESERVED_SIDEBAR_ENTRIES: getReservedPanelEntries,
@@ -102,5 +124,15 @@ export default function registerMessenger(): void {
     WALKTHROUGH_MODAL_CLOSE: closeWalkthroughModal,
     WALKTHROUGH_MODAL_SHOW: showWalkthroughModal,
     TOGGLE_QUICK_BAR: toggleQuickBar,
+    CANCEL_SELECT_ELEMENT: cancelSelect,
+    RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
+    GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
+    SELECT_ELEMENT: selectElement,
+    INSERT_PANEL: insertPanel,
+    INSERT_BUTTON: insertButton,
+    ENABLE_OVERLAY: enableOverlay,
+    DISABLE_OVERLAY: disableOverlay,
+    RUN_MAP_ARGS: runMapArgs,
+    GET_COPILOT_HOST_DATA: getCopilotHostData,
   });
 }

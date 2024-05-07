@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { type KeyboardEventHandler, useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
   KBarAnimator,
@@ -33,6 +33,7 @@ import { once } from "lodash";
 import {
   MAX_Z_INDEX,
   PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS,
+  QUICK_BAR_READY_ATTRIBUTE,
 } from "@/domConstants";
 import useEventListener from "@/hooks/useEventListener";
 import { Stylesheets } from "@/components/Stylesheets";
@@ -94,9 +95,17 @@ const KBarComponent: React.FC = () => {
   useActions();
   useActionGenerators();
 
-  const { showing } = useKBar((state) => ({
+  const { query, showing } = useKBar((state) => ({
     showing: state.visualState !== VisualState.hidden,
   }));
+
+  const closeQuickBarOnEscape: KeyboardEventHandler<HTMLInputElement> = (
+    event,
+  ) => {
+    if (event.key === "Escape") {
+      query.toggle();
+    }
+  };
 
   useScrollLock(showing);
 
@@ -147,7 +156,10 @@ const KBarComponent: React.FC = () => {
             <Stylesheets href={faStyleSheet} mountOnLoad>
               <StopPropagation onKeyPress onKeyDown onKeyUp onInput>
                 {/* eslint-disable-next-line react/jsx-max-depth -- Not worth simplifying */}
-                <KBarSearch style={searchStyle} />
+                <KBarSearch
+                  onKeyDown={closeQuickBarOnEscape}
+                  style={searchStyle}
+                />
               </StopPropagation>
               <QuickBarResults />
             </Stylesheets>
@@ -192,6 +204,11 @@ export const QuickBarApp: React.FC = () => (
   </KBarProvider>
 );
 
+function markQuickBarReady() {
+  const html = globalThis.document?.documentElement;
+  html.setAttribute(QUICK_BAR_READY_ATTRIBUTE, "true");
+}
+
 export const initQuickBarApp = once(async () => {
   expectContext("contentScript");
 
@@ -214,6 +231,8 @@ export const initQuickBarApp = once(async () => {
   document.body.prepend(container);
   ReactDOM.render(<QuickBarApp />, container);
   console.debug("Initialized quick bar");
+
+  markQuickBarReady();
 
   onContextInvalidated.addListener(() => {
     console.debug("Removed quick bar due to context invalidation");

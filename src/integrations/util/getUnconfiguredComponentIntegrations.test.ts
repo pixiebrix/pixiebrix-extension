@@ -18,8 +18,8 @@
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 import { validateRegistryId } from "@/types/helpers";
 import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 describe("getUnconfiguredComponentIntegrations", () => {
   it("returns empty if no integrations", () => {

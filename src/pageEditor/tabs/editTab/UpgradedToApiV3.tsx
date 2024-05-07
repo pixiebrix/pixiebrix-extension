@@ -26,10 +26,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { selectShowV3UpgradeMessageForActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectShowV3UpgradeMessageForActiveModComponent } from "@/pageEditor/slices/editorSelectors";
 
 const UpgradedToApiV3: React.FC = () => {
-  const showMessage = useSelector(selectShowV3UpgradeMessageForActiveElement);
+  const showMessage = useSelector(
+    selectShowV3UpgradeMessageForActiveModComponent,
+  );
   const dispatch = useDispatch();
 
   return (

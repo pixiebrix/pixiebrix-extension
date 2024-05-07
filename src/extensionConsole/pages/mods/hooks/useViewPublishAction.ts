@@ -28,7 +28,7 @@ import {
 } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import useFlags from "@/hooks/useFlags";
 
-function useViewPublishAction(modViewItem: ModViewItem): () => void | null {
+function useViewPublishAction(modViewItem: ModViewItem): (() => void) | null {
   const { flagOn } = useFlags();
   const { mod, unavailable, sharing } = modViewItem;
   const isDeployment = sharing.source.type === "Deployment";

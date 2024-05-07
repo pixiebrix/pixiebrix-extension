@@ -34,7 +34,7 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import { isServiceField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { isIntegrationDependencyField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import MarkdownInline from "@/components/MarkdownInline";
 
 type SchemaTreeRow = {
@@ -97,7 +97,7 @@ const getFormattedType = (definition: Schema) => {
 
   if (anyOf) {
     for (const field of anyOf) {
-      if (isServiceField(field as Schema)) {
+      if (isIntegrationDependencyField(field as Schema)) {
         return "integration";
       }
     }

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getPartnerPrincipals } from "@/background/messenger/api";
+import { getPartnerPrincipals } from "@/background/messenger/strict/api";
 
 const INTEGRATION_ATTR = "data-pb-integration-userid";
 
@@ -25,7 +25,8 @@ async function markPartnerIntegrations() {
   const principal = principals.find(
     (principal) => principal.hostname === location.hostname,
   );
-  if (principal) {
+
+  if (principal?.principalId) {
     document.documentElement.setAttribute(
       INTEGRATION_ATTR,
       principal.principalId,

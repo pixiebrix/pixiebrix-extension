@@ -56,6 +56,55 @@ export class ModsPage {
   searchModsInput() {
     return this.page.getByTestId("blueprints-search-input");
   }
+
+  /**
+   * Deletes a standalone mod component by name. This method will conditionally deactivate the mod as needed.
+   * Will fail if the mod is not found, or multiple mods are found for the same mod name.
+   * @param modName the name of the standalone mod to delete (must be a standalone mod, not a packaged mod)
+   */
+  async deleteModByName(modName: string) {
+    await this.searchModsInput().fill(modName);
+    const modToDelete = this.page.locator(".list-group-item", {
+      hasText: modName,
+    });
+    await expect(modToDelete).toBeVisible();
+
+    // There is a race condition in the Page Editor where the action dropdown menu will disappear when
+    // certain network requests resolve, so we need to add handling to retry clicking the dropdown menu if it
+    // disappears.
+    await expect(async () => {
+      await modToDelete.locator(".dropdown").click();
+      const deactivateOption = modToDelete.getByRole("button", {
+        name: "Deactivate",
+      });
+      if (await deactivateOption.isVisible()) {
+        await deactivateOption.click({
+          timeout: 500,
+        });
+      }
+
+      await modToDelete.locator(".dropdown").click();
+      const deleteOption = modToDelete.getByRole("button", { name: "Delete" });
+      await expect(deleteOption).toBeVisible({
+        timeout: 500,
+      });
+    }).toPass({
+      timeout: 2000,
+    });
+
+    await expect(async () => {
+      await modToDelete.locator(".dropdown").click();
+      await this.page.getByRole("button", { name: "Delete" }).click({
+        timeout: 500,
+      });
+    }).toPass({
+      timeout: 2000,
+    });
+    await this.page.getByRole("button", { name: "Delete" }).click();
+    await expect(
+      this.page.getByText(`Deleted mod ${modName} from your account`),
+    ).toBeVisible();
+  }
 }
 
 export class ActivateModPage {

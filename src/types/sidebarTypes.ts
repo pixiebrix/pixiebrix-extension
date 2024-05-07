@@ -111,6 +111,23 @@ type BasePanelEntry = {
    * The panel type.
    */
   type: EntryType;
+
+  /**
+   * Determines if the panel cannot be displayed for the current tab. Used
+   * to show an overlay over the panel to indicate it is unavailable. Added this
+   * field to account for MV3 side panel that persists across page navigation
+   *
+   * @since 1.8.14
+   */
+  isUnavailable?: boolean;
+
+  /**
+   * Determines if the panel is connecting to the page.
+   * This is used to display a spinner modal over the panel after a navigation occurs while the mod is remounting.
+   *
+   * @since 1.8.14
+   */
+  isConnecting?: boolean;
 };
 
 /**

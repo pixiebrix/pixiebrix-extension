@@ -45,6 +45,7 @@ import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel";
 import { initialSidebarState } from "@/store/sidebar/initialState";
+import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
 
 function eventKeyExists(
   state: SidebarState,
@@ -217,6 +218,30 @@ const sidebarSlice = createSlice({
 
       fixActiveTabOnRemove(state, entry);
     },
+    invalidatePanels(state) {
+      for (const panel of state.panels) {
+        // Regular panels are invalidated when the content script has emitted the notifyNavigationComplete event,
+        // and they are still in `connecting` state (meaning that the mod did not mount for the new page)
+        panel.isUnavailable = false;
+        panel.isConnecting = true;
+      }
+
+      for (const form of state.forms) {
+        form.isUnavailable = true;
+      }
+
+      for (const temporaryPanel of state.temporaryPanels) {
+        temporaryPanel.isUnavailable = true;
+      }
+    },
+    invalidateConnectingPanels(state) {
+      for (const panel of state.panels) {
+        if (panel.isConnecting) {
+          panel.isConnecting = false;
+          panel.isUnavailable = true;
+        }
+      }
+    },
     updateTemporaryPanel(
       state,
       action: PayloadAction<{ panel: TemporaryPanelEntry }>,
@@ -267,9 +292,19 @@ const sidebarSlice = createSlice({
       }
     },
     setPanels(state, action: PayloadAction<{ panels: PanelEntry[] }>) {
+      // Keep any old panels from state.panels that are unavailable or connecting and not in the new panels
+      const oldPanels = state.panels.filter(
+        (oldPanel) =>
+          (oldPanel.isUnavailable || oldPanel.isConnecting) &&
+          !action.payload.panels.some(
+            (newPanel) => newPanel.extensionId === oldPanel.extensionId,
+          ),
+      );
+
       // For now, pick an arbitrary order that's stable. There's no guarantees on which order panels are registered
-      state.panels = castDraft(
-        sortBy(action.payload.panels, (panel) => panel.extensionId),
+      state.panels = sortBy(
+        [...oldPanels, ...castDraft(action.payload.panels)],
+        (panel) => panel.extensionId,
       );
 
       // Try fulfilling the pendingActivePanel request
@@ -334,6 +369,14 @@ const sidebarSlice = createSlice({
 
           state.forms = castDraft(forms);
           state.activeKey = eventKeyForEntry(newForm);
+        }
+      })
+      .addCase(removeFormPanel.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { removedEntry, forms } = action.payload;
+
+          state.forms = castDraft(forms);
+          fixActiveTabOnRemove(state, removedEntry);
         }
       })
       .addCase(addTemporaryPanel.fulfilled, (state, action) => {

@@ -53,3 +53,18 @@ export const notify = {
   error: getNotifier("NOTIFY_ERROR"),
   success: getNotifier("NOTIFY_SUCCESS"),
 };
+
+export const cancelSelect = getMethod("CANCEL_SELECT_ELEMENT");
+
+export const reloadMarketplaceEnhancements = getMethod(
+  "RELOAD_MARKETPLACE_ENHANCEMENTS",
+);
+export const getAttributeExamples = getMethod("GET_ATTRIBUTE_EXAMPLES");
+export const selectElement = getMethod("SELECT_ELEMENT");
+
+export const insertPanel = getMethod("INSERT_PANEL");
+export const insertButton = getMethod("INSERT_BUTTON");
+export const enableOverlay = getMethod("ENABLE_OVERLAY");
+export const disableOverlay = getMethod("DISABLE_OVERLAY");
+export const runMapArgs = getMethod("RUN_MAP_ARGS");
+export const getCopilotHostData = getMethod("GET_COPILOT_HOST_DATA");

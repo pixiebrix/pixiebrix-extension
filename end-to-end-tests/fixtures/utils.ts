@@ -52,11 +52,15 @@ export const getExtensionId = async (context: BrowserContext) => {
 
   if (MV === "3") {
     background = context.serviceWorkers()[0];
-    background ||= await context.waitForEvent("serviceworker");
+    background ||= await context.waitForEvent("serviceworker", {
+      timeout: 3000,
+    });
   } else {
     // For manifest v2:
     background = context.backgroundPages()[0];
-    background ||= await context.waitForEvent("backgroundpage");
+    background ||= await context.waitForEvent("backgroundpage", {
+      timeout: 3000,
+    });
   }
 
   const extensionId = background.url().split("/")[2];

@@ -49,6 +49,7 @@ import { isExpression } from "@/utils/expressionUtils";
 import { getPlatform } from "@/platform/platformContext";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import { type CustomFormComponentProps } from "./CustomFormComponent";
+import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
 
 interface DatabaseResult {
   success: boolean;
@@ -94,9 +95,7 @@ export const CUSTOM_FORM_SCHEMA = {
               type: "string",
               format: "uuid",
             },
-            service: {
-              $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/api",
-            },
+            service: PIXIEBRIX_INTEGRATION_FIELD_SCHEMA,
           },
           required: ["type", "service", "databaseId"],
         },
@@ -201,6 +200,22 @@ export const CUSTOM_FORM_SCHEMA = {
   required: ["schema"],
 };
 
+const IsolatedCustomFormComponent: React.FunctionComponent<
+  CustomFormComponentProps & { disableParentStyles: boolean }
+> = ({ disableParentStyles, ...props }) => (
+  <IsolatedComponent
+    name="CustomFormComponent"
+    noStyle={disableParentStyles}
+    lazy={async () =>
+      import(
+        /* webpackChunkName: "isolated/CustomFormComponent" */
+        "./CustomFormComponent"
+      )
+    }
+    factory={(CustomFormComponent) => <CustomFormComponent {...props} />}
+  />
+);
+
 export class CustomFormRenderer extends RendererABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/form");
 
@@ -300,24 +315,8 @@ export class CustomFormRenderer extends RendererABC {
       normalizedData,
     });
 
-    const CustomFormComponent: React.FunctionComponent<
-      CustomFormComponentProps
-    > = (props) => (
-      <IsolatedComponent
-        name="CustomFormComponent"
-        noStyle={disableParentStyles}
-        lazy={async () =>
-          import(
-            /* webpackChunkName: "isolated/CustomFormComponent" */
-            "./CustomFormComponent"
-          )
-        }
-        factory={(CustomFormComponent) => <CustomFormComponent {...props} />}
-      />
-    );
-
     return {
-      Component: CustomFormComponent,
+      Component: IsolatedCustomFormComponent,
       props: {
         recordId,
         formData: normalizedData,
@@ -329,6 +328,7 @@ export class CustomFormRenderer extends RendererABC {
         stylesheets,
         // Option only applies if a custom onSubmit handler is provided
         resetOnSubmit: onSubmit != null && postSubmitAction === "reset",
+        disableParentStyles,
         async onSubmit(
           values: JsonObject,
           { submissionCount }: { submissionCount: number },

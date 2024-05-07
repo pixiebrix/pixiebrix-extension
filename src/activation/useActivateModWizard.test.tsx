@@ -16,9 +16,7 @@
  */
 
 import * as redux from "react-redux";
-import useActivateModWizard, {
-  makeDatabasePreviewName,
-} from "@/activation/useActivateModWizard";
+import useActivateModWizard from "@/activation/useActivateModWizard";
 import { renderHook } from "@testing-library/react-hooks";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
@@ -26,6 +24,7 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { makeDatabasePreviewName } from "@/activation/modOptionsHelpers";
 
 jest.mock("@/components/integrations/AuthWidget", () => {});
 jest.mock("react-redux");

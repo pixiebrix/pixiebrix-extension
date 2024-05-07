@@ -23,7 +23,7 @@ export function timeSince(dateIso: string): string {
   });
 }
 
-export const sleep = async (milliseconds: number): Promise<void> =>
+export const sleep = async (milliseconds?: number): Promise<void> =>
   new Promise((resolve) => {
     setTimeout(resolve, milliseconds);
   });

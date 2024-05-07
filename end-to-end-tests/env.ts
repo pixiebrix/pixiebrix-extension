@@ -24,6 +24,7 @@ const requiredEnvVariables = [
   "SERVICE_URL",
   "E2E_TEST_USER_EMAIL_UNAFFILIATED",
   "E2E_TEST_USER_PASSWORD_UNAFFILIATED",
+  "SHADOW_DOM",
 ] as const;
 
 // It's not strictly required for the test run itself, but the extension manifest.json must have been built with
@@ -45,20 +46,24 @@ type OptionalEnvVariables = Record<
   string | undefined
 >;
 
-for (const key of requiredEnvVariables) {
-  // eslint-disable-next-line security/detect-object-injection -- key is a constant
-  if (process.env[key] === undefined) {
-    throw new Error(`Required environment variable is not configured: ${key}`);
-  }
+export const assertRequiredEnvVariables = () => {
+  for (const key of requiredEnvVariables) {
+    // eslint-disable-next-line security/detect-object-injection -- key is a constant
+    if (process.env[key] === undefined) {
+      throw new Error(
+        `Required environment variable is not configured: ${key}`,
+      );
+    }
 
-  // eslint-disable-next-line security/detect-object-injection -- key is a constant
-  if (typeof process.env[key] !== "string") {
-    // For the time being we expect all of our requiredEnvVariables to be strings
-    throw new TypeError(
-      `Required environment variable is not configured: ${key}`,
-    );
+    // eslint-disable-next-line security/detect-object-injection -- key is a constant
+    if (typeof process.env[key] !== "string") {
+      // For the time being we expect all of our requiredEnvVariables to be strings
+      throw new TypeError(
+        `Required environment variable is not configured: ${key}`,
+      );
+    }
   }
-}
+};
 
 export const {
   SERVICE_URL,
@@ -68,8 +73,7 @@ export const {
 
 export const {
   CI,
-  MV,
+  MV = "3",
   SLOWMO,
   PWDEBUG,
-  REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST,
 } = process.env as OptionalEnvVariables;

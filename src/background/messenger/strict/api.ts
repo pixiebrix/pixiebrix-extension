@@ -21,6 +21,12 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
+import type { RemoteResponse } from "@/types/contract";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
+
+export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 
 export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL", bg);
 export const waitForContentScript = getMethod("WAIT_FOR_CONTENT_SCRIPT", bg);
@@ -87,3 +93,44 @@ export const services = {
 export const openTab = getMethod("OPEN_TAB", bg);
 export const closeTab = getMethod("CLOSE_TAB", bg);
 export const focusTab = getMethod("FOCUS_TAB", bg);
+
+export const launchInteractiveOAuthFlow = getMethod(
+  "LAUNCH_INTERACTIVE_OAUTH_FLOW",
+  bg,
+);
+
+// `getMethod` currently strips generics, so we must copy the function signature here
+export const performConfiguredRequestInBackground = getMethod(
+  "CONFIGURED_REQUEST",
+  bg,
+) as <TData>(
+  integrationConfig: Nullishable<SanitizedIntegrationConfig>,
+  requestConfig: NetworkRequestConfig,
+  options: { interactiveLogin: boolean },
+) => Promise<RemoteResponse<TData>>;
+
+export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
+export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
+
+export const ping = getMethod("PING", bg);
+export const collectPerformanceDiagnostics = getMethod(
+  "COLLECT_PERFORMANCE_DIAGNOSTICS",
+  bg,
+);
+
+// Use this instead: `import reportError from "@/telemetry/reportError"`
+// export const recordError = getNotifier("RECORD_ERROR", bg);
+
+export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
+export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
+
+export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
+/**
+ * Uninstall context menu and return whether the context menu was uninstalled.
+ */
+export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
+
+export const setPartnerCopilotData = getNotifier(
+  "SET_PARTNER_COPILOT_DATA",
+  bg,
+);

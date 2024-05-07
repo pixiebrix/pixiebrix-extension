@@ -24,14 +24,16 @@ import { type Except } from "type-fest";
 import {
   type PanelConfig,
   type PanelDefinition,
-} from "@/starterBricks/panelExtension";
+} from "@/starterBricks/panel/types";
 import {
-  type MenuDefinition,
+  type MenuItemDefinition,
   type MenuItemStarterBrickConfig,
-} from "@/starterBricks/menuItemExtension";
+} from "@/starterBricks/menuItem/types";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
+import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
+import { type BrickConfig } from "@/bricks/types";
 
 export interface DynamicDefinition<
   TExtensionPoint extends StarterBrickDefinition = StarterBrickDefinition,
@@ -53,12 +55,12 @@ export type PanelSelectionResult = {
   containerInfo: ElementInfo;
 };
 export type ButtonDefinition = DynamicDefinition<
-  MenuDefinition,
+  MenuItemDefinition,
   MenuItemStarterBrickConfig
 >;
 export type ButtonSelectionResult = {
   uuid: UUID;
-  menu: Except<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
+  menu: Except<MenuItemDefinition, "defaultOptions" | "isAvailable" | "reader">;
   item: Pick<MenuItemStarterBrickConfig, "caption">;
   containerInfo: ElementInfo;
 };
@@ -66,4 +68,26 @@ export type ButtonSelectionResult = {
 export type AttributeExample = {
   name: string;
   value: string;
+};
+
+export type RunBlockArgs = {
+  /**
+   * The runtime API version to use
+   */
+  apiVersion: ApiVersion;
+  /**
+   * The Brick configuration.
+   */
+  blockConfig: BrickConfig;
+  /**
+   * Context to render the BlockArg, should include @input, @options, and integrations context
+   * @see IntegrationsContext
+   * @see makeIntegrationsContextFromDependencies
+   */
+  context: BrickArgsContext;
+  /**
+   * Root jQuery selector to determine the root if the rootMode is "inherit".
+   * @see BrickConfig.rootMode
+   */
+  rootSelector: string | undefined;
 };

@@ -35,6 +35,7 @@ import { isMac } from "@/utils/browserUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import reportEvent from "@/telemetry/reportEvent";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type WalkthroughModalStep = {
   title: string;
@@ -149,15 +150,18 @@ const steps: WalkthroughModalStep[] = [
 const WalkthroughModalApp: React.FunctionComponent = () => {
   const [stepIndex, setStepIndex] = useState(0);
   const params = new URLSearchParams(location.search);
-  const opener = JSON.parse(params.get("opener")) as Target;
+  const openerParam = params.get("opener");
+  assertNotNullish(openerParam, "Can't find opener URL parameter");
+  const opener = JSON.parse(openerParam) as Target;
+  // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- steps are constants defined in this file, and logic will never allow this to go out of bounds
+  const currentStep = steps[stepIndex]!;
 
   useEffect(() => {
     reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_MODAL_VIEW, {
       stepNumber: stepIndex + 1,
-      // eslint-disable-next-line security/detect-object-injection -- steps are constants defined in this file
-      stepTitle: steps[stepIndex].title,
+      stepTitle: currentStep.title,
     });
-  }, [stepIndex]);
+  }, [currentStep.title, stepIndex]);
 
   return (
     <Modal
@@ -174,7 +178,7 @@ const WalkthroughModalApp: React.FunctionComponent = () => {
           <small>
             Step {stepIndex + 1} of {steps.length}
           </small>
-          <Modal.Title>{steps[stepIndex].title}</Modal.Title>
+          <Modal.Title>{currentStep.title}</Modal.Title>
         </Container>
       </Modal.Header>
       <Carousel

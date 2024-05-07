@@ -21,21 +21,21 @@ import {
   type ContextMenuConfig,
   type ContextMenuTargetMode,
   type MenuDefaultOptions as ContextMenuDefaultOptions,
-} from "@/starterBricks/contextMenu";
+} from "@/starterBricks/contextMenu/types";
 import {
   type MenuItemStarterBrickConfig,
   type MenuPosition,
-} from "@/starterBricks/menuItemExtension";
-import { type PanelConfig } from "@/starterBricks/panelExtension";
+} from "@/starterBricks/menuItem/types";
+import { type PanelConfig } from "@/starterBricks/panel/types";
 import {
   type QuickBarConfig,
   type QuickBarDefaultOptions,
   type QuickBarTargetMode,
-} from "@/starterBricks/quickBarExtension";
+} from "@/starterBricks/quickBar/types";
 import {
   type SidebarConfig,
   type Trigger as SidebarTrigger,
-} from "@/starterBricks/sidebarExtension";
+} from "@/starterBricks/sidebar/types";
 import {
   type AttachMode,
   type ReportMode,
@@ -52,8 +52,8 @@ import { type Menus } from "webextension-polyfill";
 import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefaultOptions,
-} from "@/starterBricks/quickBarProviderExtension";
-import { type TourDefinition } from "@/starterBricks/tourExtension";
+} from "@/starterBricks/quickBarProvider/types";
+import { type TourDefinition } from "@/starterBricks/tour/types";
 import {
   type BaseExtensionPointState,
   type BaseExtensionState,

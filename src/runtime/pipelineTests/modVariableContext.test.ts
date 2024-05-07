@@ -36,11 +36,11 @@ beforeEach(() => {
 describe("modVariableContext", () => {
   test("use mod variable in variable condition", async () => {
     setState({
-      namespace: "blueprint",
+      namespace: "blueprint" as const,
       data: { run: true },
       mergeStrategy: "replace",
-      extensionId: autoUUIDSequence(),
-      blueprintId: undefined,
+      extensionId: null,
+      blueprintId: null,
     });
 
     const pipeline = [

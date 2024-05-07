@@ -20,13 +20,13 @@ import {
   PACKAGE_REGEX,
   testIsSemVerString,
   validateRegistryId,
-  validateSemVerString,
+  normalizeSemVerString,
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectActiveElement,
-  selectActiveRecipeId,
-  selectDirtyMetadataForRecipeId,
+  selectActiveModComponentFormState,
+  selectActiveModId,
+  selectDirtyMetadataForModId,
   selectEditorModalVisibilities,
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
@@ -73,7 +73,7 @@ function useInitialFormState({
 
   const activeModId = activeElement?.recipe?.id ?? activeMod?.metadata?.id;
   const dirtyModMetadata = useSelector(
-    selectDirtyMetadataForRecipeId(activeModId),
+    selectDirtyMetadataForModId(activeModId),
   );
   const modMetadata = dirtyModMetadata ?? activeMod?.metadata;
 
@@ -88,7 +88,7 @@ function useInitialFormState({
     return {
       id: newModId,
       name: `${modMetadata.name} (Copy)`,
-      version: validateSemVerString("1.0.0"),
+      version: normalizeSemVerString("1.0.0"),
       description: modMetadata.description,
     };
   }
@@ -98,7 +98,7 @@ function useInitialFormState({
     return {
       id: generatePackageId(scope, activeElement.label),
       name: activeElement.label,
-      version: validateSemVerString("1.0.0"),
+      version: normalizeSemVerString("1.0.0"),
       description: "Created with the PixieBrix Page Editor",
     };
   }
@@ -136,14 +136,14 @@ function useFormSchema() {
 
 const CreateModModalBody: React.FC = () => {
   const dispatch = useDispatch();
-  const activeModComponent = useSelector(selectActiveElement);
+  const activeModComponent = useSelector(selectActiveModComponentFormState);
   const { createModFromMod } = useCreateModFromMod();
   const { createModFromComponent } =
     useCreateModFromModComponent(activeModComponent);
 
   // `selectActiveRecipeId` returns the mod id if a mod is selected. Assumption: if the CreateModal
   // is open, and a mod is active, then we're performing a "Save as New" on that mod.
-  const directlyActiveModId = useSelector(selectActiveRecipeId);
+  const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId = directlyActiveModId ?? activeModComponent?.recipe?.id;
   const { data: activeMod, isFetching: isRecipeFetching } =
     useOptionalModDefinition(activeModId);
@@ -196,6 +196,7 @@ const CreateModModalBody: React.FC = () => {
         label="Mod ID"
         description={FieldDescriptions.MOD_ID}
         widerLabel
+        showUntouchedErrors
         as={RegistryIdWidget}
       />
       <ConnectedFieldTemplate
@@ -203,18 +204,21 @@ const CreateModModalBody: React.FC = () => {
         label="Name"
         widerLabel
         description={FieldDescriptions.MOD_NAME}
+        showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="version"
         label="Version"
         widerLabel
         description={FieldDescriptions.MOD_VERSION}
+        showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="description"
         label="Description"
         widerLabel
         description={FieldDescriptions.MOD_DESCRIPTION}
+        showUntouchedErrors
       />
     </Modal.Body>
   );
@@ -241,7 +245,6 @@ const CreateModModalBody: React.FC = () => {
       ) : (
         <Form
           validationSchema={formSchema}
-          showUntouchedErrors
           validateOnMount
           initialValues={initialModMetadataFormState}
           onSubmit={onSubmit}
@@ -254,7 +257,7 @@ const CreateModModalBody: React.FC = () => {
 };
 
 const CreateModModal: React.FunctionComponent = () => {
-  const { isCreateRecipeModalVisible: show } = useSelector(
+  const { isCreateModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
 

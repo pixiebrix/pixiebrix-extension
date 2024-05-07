@@ -15,17 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ChangeEvent, useState } from "react";
+import React, {
+  type ChangeEvent,
+  useCallback,
+  useContext,
+  useState,
+} from "react";
 import {
   type Option,
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import AsyncSelect from "react-select/async";
+import AsyncSelect, { type AsyncProps } from "react-select/async";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useDebouncedCallback } from "use-debounce";
+import { type GroupBase } from "react-select";
+import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
 
 type DefaultFactoryArgs = {
   /**
@@ -40,23 +46,27 @@ type DefaultFactoryArgs = {
 
 export type AsyncOptionsFactory<
   Args extends DefaultFactoryArgs = DefaultFactoryArgs,
-  T = unknown,
-> = (
-  config: SanitizedIntegrationConfig | null,
-  factoryArgs?: Args,
-) => Promise<Array<Option<T>>>;
+  TValue = unknown,
+> = (factoryArgs?: Args) => Promise<Array<Option<TValue>>>;
 
-type AsyncRemoteSelectWidgetProps<
-  Args extends DefaultFactoryArgs = DefaultFactoryArgs,
+export type AsyncRemoteSelectWidgetProps<
+  ExtraArgs extends UnknownObject = UnknownObject,
   TValue = unknown,
 > = CustomFieldWidgetProps<TValue, SelectLike<Option<TValue>>> & {
-  isClearable?: boolean;
-  optionsFactory: AsyncOptionsFactory<Args, TValue>;
-  config: SanitizedIntegrationConfig | null;
-  factoryArgs?: UnknownObject;
-  loadingMessage?: React.FC<{ inputValue: string }>;
-  defaultOptions?: boolean | Array<Option<TValue>>;
-};
+  optionsFactory: AsyncOptionsFactory<DefaultFactoryArgs & ExtraArgs, TValue>;
+  extraFactoryArgs?: ExtraArgs;
+  unknownOptionLabel?: (value: TValue) => string;
+} & Pick<
+    AsyncProps<Option<TValue>, false, GroupBase<Option<TValue>>>,
+    | "isClearable"
+    | "placeholder"
+    | "defaultOptions"
+    | "loadingMessage"
+    | "noOptionsMessage"
+  >;
+
+// See: react-select Props --> loadingMessage, noOptionsMessage
+export type AsyncSelectStatusMessage = React.FC<{ inputValue: string }>;
 
 /**
  * Widget for selecting values retrieved from a 3rd party API based on the user query.
@@ -67,15 +77,27 @@ type AsyncRemoteSelectWidgetProps<
  * @see RemoteSelectWidget
  */
 const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
-  config,
-  optionsFactory,
-  factoryArgs,
-  onChange,
   name,
   value,
-  ...selectProps
+  onChange,
+  optionsFactory,
+  extraFactoryArgs,
+  unknownOptionLabel,
+  isInvalid,
+  ...asyncSelectPropsIn
 }) => {
   const [knownOptions, setKnownOptions] = useState<Option[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const setOptions = useCallback(
+    (options: Option[], reactSelectCallback: (options: Option[]) => void) => {
+      setKnownOptions((prev) => uniqBy([...prev, ...options], (x) => x.value));
+      reactSelectCallback(options);
+    },
+    [],
+  );
+
+  const { setLocalError } = useContext(FieldTemplateLocalErrorContext);
 
   // `react-select` doesn't automatically debounce requests
   // See quirks here: https://github.com/JedWatson/react-select/issues/3075#issuecomment-506647171
@@ -84,40 +106,18 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
     (query: string, callback: (options: Option[]) => void) => {
       const generate = async () => {
         try {
-          const rawOptions = (await optionsFactory(config, {
-            ...factoryArgs,
+          const rawOptions = (await optionsFactory({
+            ...extraFactoryArgs,
             query,
             value,
           })) as Option[];
-
-          if (Array.isArray(rawOptions)) {
-            setKnownOptions((prev) =>
-              uniqBy([...prev, ...rawOptions], (x) => x.value),
-            );
-          } else {
-            // Throw locally, to translate into error for AsyncSelect
-            console.error(
-              `Expected array of options, got ${typeof rawOptions}`,
-              rawOptions,
-            );
-            throw new TypeError(
-              `Expected array of options, got ${typeof rawOptions}`,
-            );
-          }
-
-          callback(rawOptions);
+          setOptions(rawOptions, callback);
+          setLocalError(null);
         } catch (error) {
-          // Return options to AsyncSelect, but do not cache in local knownOptions
-          // `react-select` doesn't have native support for error in AsyncSelect :shrug:
-          // https://github.com/JedWatson/react-select/issues/1528
-          callback([
-            {
-              value: "error",
-              label: getErrorMessage(error, "Error loading options"),
-              isDisabled: true,
-              // `isDisabled` is not on the type definition, but it is supported
-            } as Option,
-          ]);
+          setOptions([], callback);
+          setLocalError(getErrorMessage(error, "Error loading options"));
+        } finally {
+          setIsLoading(false);
         }
       };
 
@@ -137,11 +137,22 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   };
 
   // Pass null instead of undefined if options is not defined
-  const selectedOption =
-    knownOptions?.find((option: Option) => value === option.value) ??
-    // Not great UX, if the result is not in the default options, we'll just show the value
-    // instead of the label.
-    (value ? ({ value, label: value } as Option<unknown>) : null);
+  let selectedOption: Option<unknown> | null = null;
+  const knownOption = knownOptions?.find(
+    (option: Option) => value === option.value,
+  );
+  if (knownOption) {
+    selectedOption = knownOption;
+  } else if (value) {
+    const label = isLoading
+      ? "Loading..."
+      : unknownOptionLabel
+        ? unknownOptionLabel(value)
+        : `Unknown option: ${String(value)}`;
+    selectedOption = { value, label };
+  }
+
+  const { placeholder, ...asyncSelectProps } = asyncSelectPropsIn;
 
   return (
     <div className="d-flex">
@@ -151,7 +162,9 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
           loadOptions={loadOptions}
           onChange={patchedOnChange}
           value={selectedOption}
-          {...selectProps}
+          isDisabled={isInvalid}
+          placeholder={isInvalid ? "" : placeholder}
+          {...asyncSelectProps}
         />
       </div>
     </div>

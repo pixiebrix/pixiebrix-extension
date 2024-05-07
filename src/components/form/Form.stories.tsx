@@ -32,6 +32,8 @@ import { type CustomFieldWidget } from "./FieldTemplate";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { range } from "lodash";
 import SwitchButtonWidget from "./widgets/switchButton/SwitchButtonWidget";
+import { Provider } from "react-redux";
+import { editorStore } from "@/testUtils/storyUtils";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",
@@ -60,30 +62,38 @@ const initialValues = {
 };
 
 export const WithFormikField: ComponentStory<typeof Form> = (args) => (
-  <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
-    <ConnectedFieldTemplate name="title" placeholder="Title" />
-    <ConnectedFieldTemplate
-      name="name"
-      placeholder="Title"
-      label="Name"
-      description="A name"
-    />
-    <ConnectedFieldTemplate name="age" label="Age" description="Your age" />
-  </Form>
+  <Provider store={editorStore()}>
+    <Form
+      validationSchema={SchemaShape}
+      initialValues={initialValues}
+      {...args}
+    >
+      <ConnectedFieldTemplate name="title" placeholder="Title" />
+      <ConnectedFieldTemplate
+        name="name"
+        placeholder="Title"
+        label="Name"
+        description="A name"
+      />
+      <ConnectedFieldTemplate name="age" label="Age" description="Your age" />
+    </Form>
+  </Provider>
 );
 WithFormikField.storyName = "With FormikField";
 
 export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
-  <Form
-    validationSchema={SchemaShape}
-    initialValues={initialValues}
-    {...args}
-    renderSubmit={() => <button type="submit">Click to submit</button>}
-  >
-    <ConnectedFieldTemplate name="title" placeholder="Title" />
-    <ConnectedFieldTemplate name="name" label="Name" description="A name" />
-    <ConnectedFieldTemplate name="age" label="Age" description="Your age" />
-  </Form>
+  <Provider store={editorStore()}>
+    <Form
+      validationSchema={SchemaShape}
+      initialValues={initialValues}
+      {...args}
+      renderSubmit={() => <button type="submit">Click to submit</button>}
+    >
+      <ConnectedFieldTemplate name="title" placeholder="Title" />
+      <ConnectedFieldTemplate name="name" label="Name" description="A name" />
+      <ConnectedFieldTemplate name="age" label="Age" description="Your age" />
+    </Form>
+  </Provider>
 );
 
 const AllFieldsSchema = yup.object().shape({
@@ -109,67 +119,69 @@ const BootstrapFormControlWidget: CustomFieldWidget = (props) => (
 );
 
 export const AllFields: ComponentStory<typeof Form> = (args) => (
-  <Form
-    validationSchema={AllFieldsSchema}
-    initialValues={allFieldsInitialValues}
-    {...args}
-  >
-    <ConnectedFieldTemplate name="name" label="Name" description="A name" />
-    <ConnectedFieldTemplate
-      name="story"
-      label="Story"
-      as="textarea"
-      description="Tell me your story"
-      rows={10}
-    />
-    <ConnectedFieldTemplate
-      name="select"
-      label="Select"
-      description="Demonstration dropdown"
-      as={SelectWidget}
-      blankValue={null}
-      options={selectOptions}
-    />
-    <ConnectedFieldTemplate
-      name="select-add-new"
-      label="Select with Add New"
-      description="Creatable"
-      as={SelectWidget}
-      blankValue={null}
-      options={selectOptions}
-      components={{
-        MenuList: createMenuListWithAddButton(action("onAddNew clicked")),
-      }}
-    />
-    <ConnectedFieldTemplate
-      name="public"
-      as={SwitchButtonWidget}
-      label={
-        <span>
-          <FontAwesomeIcon icon={faGlobe} /> This is a boolean field
-        </span>
-      }
-    />
-    <ConnectedFieldTemplate
-      name="bsCustomFormControl"
-      label="BS Form Control as Custom Widget"
-      as={BootstrapFormControlWidget}
-      description="You can use a FormControl as a wrapped Widget"
-    />
+  <Provider store={editorStore()}>
+    <Form
+      validationSchema={AllFieldsSchema}
+      initialValues={allFieldsInitialValues}
+      {...args}
+    >
+      <ConnectedFieldTemplate name="name" label="Name" description="A name" />
+      <ConnectedFieldTemplate
+        name="story"
+        label="Story"
+        as="textarea"
+        description="Tell me your story"
+        rows={10}
+      />
+      <ConnectedFieldTemplate
+        name="select"
+        label="Select"
+        description="Demonstration dropdown"
+        as={SelectWidget}
+        blankValue={null}
+        options={selectOptions}
+      />
+      <ConnectedFieldTemplate
+        name="select-add-new"
+        label="Select with Add New"
+        description="Creatable"
+        as={SelectWidget}
+        blankValue={null}
+        options={selectOptions}
+        components={{
+          MenuList: createMenuListWithAddButton(action("onAddNew clicked")),
+        }}
+      />
+      <ConnectedFieldTemplate
+        name="public"
+        as={SwitchButtonWidget}
+        label={
+          <span>
+            <FontAwesomeIcon icon={faGlobe} /> This is a boolean field
+          </span>
+        }
+      />
+      <ConnectedFieldTemplate
+        name="bsCustomFormControl"
+        label="BS Form Control as Custom Widget"
+        as={BootstrapFormControlWidget}
+        description="You can use a FormControl as a wrapped Widget"
+      />
 
-    <ConnectedFieldTemplate
-      widerLabel
-      name="name"
-      label="Name"
-      description="Field with widerLabel"
-    />
-    <ConnectedFieldTemplate
-      fitLabelWidth
-      name="name"
-      label="Name"
-      description="Field with fitLabelWidth"
-    />
-  </Form>
+      <ConnectedFieldTemplate
+        widerLabel
+        name="name"
+        label="Name"
+        description="Field with widerLabel"
+      />
+      <ConnectedFieldTemplate
+        fitLabelWidth
+        name="name"
+        label="Name"
+        description="Field with fitLabelWidth"
+      />
+    </Form>
+  </Provider>
 );
 
 export default componentMeta;

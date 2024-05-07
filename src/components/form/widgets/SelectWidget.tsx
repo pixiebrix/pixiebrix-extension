@@ -20,10 +20,10 @@ import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import Select, {
   type GroupBase,
   type SelectComponentsConfig,
+  type SingleValue,
   type StylesConfig,
 } from "react-select";
 import Creatable from "react-select/creatable";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import useAddCreatablePlaceholder from "@/components/form/widgets/useAddCreatablePlaceholder";
 
 // Type of the Select options
@@ -39,6 +39,13 @@ export type SelectLike<TOption extends Option<TOption["value"]> = Option> = {
   options: TOption[];
 };
 
+export type MultiSelectLike<TOption extends Option<TOption["value"]> = Option> =
+  {
+    value: Array<TOption["value"]>;
+    name: string;
+    options: TOption[];
+  };
+
 // Type of the SelectWidget.onChange event handler
 // The signature of onChange is dictated by the compatibility with Formik. for a Widget to be compatible with Formik
 // it should trigger onChange with an event, that has target and value
@@ -52,9 +59,7 @@ export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
     isClearable?: boolean;
     options?: TOption[];
     isLoading?: boolean;
-    loadError?: unknown;
     loadingMessage?: string;
-    error?: unknown;
     disabled?: boolean;
     components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
     className?: string;
@@ -66,19 +71,12 @@ export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
     creatable?: boolean;
   };
 
-export const makeStringOptions = (...items: string[]): Option[] =>
-  items.map((item) => ({
-    label: item,
-    value: item,
-  }));
-
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
   id,
   options,
   // Default to true to match the default isClearable value in SchemaSelectWidget
   isClearable = true,
   isLoading,
-  loadError,
   disabled,
   value,
   onChange,
@@ -97,18 +95,10 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
     textInputValue,
   });
 
-  if (loadError) {
-    return (
-      <div className="text-danger">
-        Error loading options: {getErrorMessage(loadError)}
-      </div>
-    );
-  }
-
   // Option will be null when the select is "cleared"
-  const patchedOnChange = (option: TOption | null) => {
+  const patchedOnChange = (newOption: SingleValue<TOption>) => {
     onChange({
-      target: { value: option?.value ?? null, name, options },
+      target: { value: newOption?.value ?? null, name, options },
     } as ChangeEvent<SelectLike<TOption>>);
   };
 

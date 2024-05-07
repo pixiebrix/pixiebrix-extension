@@ -84,9 +84,10 @@ export type OutputKey = string & {
 };
 
 /**
- * A variable with a "@"-prefix that refers to a service
+ * A variable with a "@"-prefix that refers to an integration
  */
-export type ServiceVarRef = string & {
+export type IntegrationDependencyVarRef = string & {
+  // Preserve legacy branding field name for backwards compatibility
   _serviceVarRefBrand: never;
 };
 
@@ -272,16 +273,18 @@ export type RenderedArgs = UnknownObject & {
   _renderedArgBrand: never;
 };
 
+export type IntegrationsContextValue = {
+  __service: SanitizedIntegrationConfig;
+  [prop: string]: string | SanitizedIntegrationConfig | null;
+};
+
 /**
- * Service context passed to bricks.
+ * Integrations context passed to bricks.
  * @see BrickArgsContext
  */
-export type ServiceContext = Record<
-  ServiceVarRef,
-  {
-    __service: SanitizedIntegrationConfig;
-    [prop: string]: string | SanitizedIntegrationConfig | null;
-  }
+export type IntegrationsContext = Record<
+  IntegrationDependencyVarRef,
+  IntegrationsContextValue | null
 >;
 
 /**

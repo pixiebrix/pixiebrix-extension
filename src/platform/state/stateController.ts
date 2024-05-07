@@ -21,8 +21,11 @@ import { cloneDeep, isEqual, merge } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
 import { assertPlatformCapability } from "@/platform/platformContext";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 type MergeStrategy = "shallow" | "replace" | "deep";
+
+type StateNamespace = "blueprint" | "extension" | "shared";
 
 const privateState = new Map<UUID, JsonObject>();
 
@@ -69,8 +72,8 @@ function dispatchStageChangeEventOnChange({
   previous: unknown;
   next: unknown;
   namespace: string;
-  extensionId: UUID;
-  blueprintId: RegistryId | null;
+  extensionId: Nullishable<UUID>;
+  blueprintId: Nullishable<RegistryId>;
 }) {
   if (!isEqual(previous, next)) {
     // For now, leave off the event data because we're using a public channel
@@ -95,17 +98,13 @@ export function setState({
   // Normalize undefined to null for lookup
   blueprintId = null,
 }: {
-  namespace: string;
+  namespace: StateNamespace;
   data: JsonObject;
   mergeStrategy: MergeStrategy;
-  extensionId: UUID | null;
-  blueprintId: RegistryId | null;
+  extensionId: Nullishable<UUID>;
+  blueprintId: Nullishable<RegistryId>;
 }) {
   assertPlatformCapability("state");
-
-  if (extensionId == null) {
-    throw new Error("extensionId is required");
-  }
 
   const notifyOnChange = (previous: JsonObject, next: JsonObject) => {
     dispatchStageChangeEventOnChange({
@@ -135,6 +134,7 @@ export function setState({
     }
 
     case "extension": {
+      assertNotNullish(extensionId, "Invalid context: extensionId not found");
       const previous = privateState.get(extensionId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
       privateState.set(extensionId, next);
@@ -143,7 +143,8 @@ export function setState({
     }
 
     default: {
-      throw new BusinessError(`Invalid namespace: ${namespace}`);
+      const exhaustiveCheck: never = namespace;
+      throw new BusinessError(`Invalid namespace: ${exhaustiveCheck}`);
     }
   }
 }
@@ -154,9 +155,9 @@ export function getState({
   // Normalize undefined to null for lookup
   blueprintId = null,
 }: {
-  namespace: string;
-  extensionId: UUID;
-  blueprintId: RegistryId | null;
+  namespace: StateNamespace;
+  extensionId: Nullishable<UUID>;
+  blueprintId: Nullishable<RegistryId>;
 }): JsonObject {
   assertPlatformCapability("state");
 
@@ -170,15 +171,13 @@ export function getState({
     }
 
     case "extension": {
-      if (extensionId == null) {
-        throw new Error("Invalid context: extensionId not found");
-      }
-
+      assertNotNullish(extensionId, "Invalid context: extensionId not found");
       return privateState.get(extensionId) ?? {};
     }
 
     default: {
-      throw new BusinessError(`Invalid namespace: ${namespace}`);
+      const exhaustiveCheck: never = namespace;
+      throw new BusinessError(`Invalid namespace: ${exhaustiveCheck}`);
     }
   }
 }

@@ -59,7 +59,7 @@ export function inferInputMode(
     safeDefault?: boolean;
     isRequired?: boolean;
   } = DEFAULT_OPTIONS,
-): FieldInputMode {
+): FieldInputMode | undefined {
   const { safeDefault = true, isRequired } = options;
 
   // eslint-disable-next-line security/detect-object-injection -- config field names
@@ -90,7 +90,7 @@ export function inferInputMode(
           }),
         ),
     );
-    if (!isEmpty(inputModes)) {
+    if (inputModes[0] != null) {
       return inputModes[0];
     }
   }

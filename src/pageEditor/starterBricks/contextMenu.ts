@@ -31,11 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { type StarterBrickConfig } from "@/starterBricks/types";
-import {
-  type ContextMenuConfig,
-  ContextMenuStarterBrickABC,
-  type MenuDefinition,
-} from "@/starterBricks/contextMenu";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
@@ -43,6 +39,10 @@ import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
+import {
+  type ContextMenuDefinition,
+  type ContextMenuConfig,
+} from "@/starterBricks/contextMenu/types";
 
 function fromNativeElement(
   url: string,
@@ -81,7 +81,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: ContextMenuFormState,
-): StarterBrickConfig<MenuDefinition> {
+): StarterBrickConfig<ContextMenuDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {
@@ -127,7 +127,7 @@ async function fromExtension(
   config: ModComponentBase<ContextMenuConfig>,
 ): Promise<ContextMenuFormState> {
   const extensionPoint = await lookupExtensionPoint<
-    MenuDefinition,
+    ContextMenuDefinition,
     ContextMenuConfig,
     "contextMenu"
   >(config, "contextMenu");

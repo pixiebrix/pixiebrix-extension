@@ -17,8 +17,9 @@
 
 import { type Config, define, extend } from "cooky-cutter";
 import {
-  type ModComponentBase,
   type ActivatedModComponent,
+  type ModComponentBase,
+  type ModMetadata,
 } from "@/types/modComponentTypes";
 import {
   timestampFactory,
@@ -32,7 +33,7 @@ import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type StandaloneModDefinition } from "@/types/contract";
 import { type Metadata } from "@/types/registryTypes";
 
-export const modMetadataFactory = extend<Metadata, ModComponentBase["_recipe"]>(
+export const modMetadataFactory = extend<Metadata, ModMetadata>(
   metadataFactory,
   {
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
@@ -94,8 +95,8 @@ export const activatedModComponentFactory = extend<
 >(modComponentFactory, {
   createTimestamp: timestampFactory,
   updateTimestamp: timestampFactory,
-  _unresolvedModComponentBrand: undefined,
   active: true,
+  _unresolvedModComponentBrand: undefined as never,
 });
 
 // StandaloneModDefinition is a type in contract.ts. But it's really defined based on the ModComponentBase type not the backend API.

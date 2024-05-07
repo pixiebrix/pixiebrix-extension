@@ -139,6 +139,10 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
             <Formik
               initialValues={initialValues}
               initialErrors={initialErrors}
+              // Don't validate, we don't pass in a validation schema here
+              validateOnMount={false}
+              validateOnChange={false}
+              validateOnBlur={false}
               onSubmit={onSubmit}
             >
               {({ handleSubmit, values, setValues }) => {

@@ -23,6 +23,8 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import UrlPatternField, {
   type UrlPatternFieldProps,
 } from "@/pageEditor/fields/UrlPatternField";
+import { editorStore } from "@/testUtils/storyUtils";
+import { Provider } from "react-redux";
 
 registerDefaultWidgets();
 
@@ -39,19 +41,21 @@ const defaultProps: UrlPatternFieldProps = {
 const Template: ComponentStory<
   React.VoidFunctionComponent<UrlPatternFieldProps>
 > = (props) => (
-  <Form
-    initialValues={{
-      apiVersion: "v3",
-      matchPatterns: [],
-    }}
-    validationSchema={null}
-    onSubmit={(values, { setSubmitting }) => {
-      action("onSubmit")(values);
-      setSubmitting(false);
-    }}
-  >
-    <UrlPatternField {...props} />
-  </Form>
+  <Provider store={editorStore()}>
+    <Form
+      initialValues={{
+        apiVersion: "v3",
+        matchPatterns: [],
+      }}
+      validationSchema={null}
+      onSubmit={(values, { setSubmitting }) => {
+        action("onSubmit")(values);
+        setSubmitting(false);
+      }}
+    >
+      <UrlPatternField {...props} />
+    </Form>
+  </Provider>
 );
 
 export const Default = Template.bind({});

@@ -43,6 +43,8 @@ import {
 import useAsyncEffect from "use-async-effect";
 import CommentEffect from "@/bricks/effects/comment";
 import useAsyncState from "@/hooks/useAsyncState";
+import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
+import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 
 const BrickConfiguration: React.FunctionComponent<{
   name: string;
@@ -157,18 +159,25 @@ const BrickConfiguration: React.FunctionComponent<{
       <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
 
       <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
-        {brickErrors?.id && (
-          <div className="invalid-feedback d-block mb-4">
-            Unknown brick: {brickId}
-          </div>
-        )}
-        {BrickOptions ? (
-          <BrickOptions name={name} configKey="config" />
-        ) : error ? (
-          <div className="invalid-feedback d-block mb-4">{error}</div>
-        ) : (
-          <Loader />
-        )}
+        <AnalysisAnnotationsContext.Provider
+          value={{
+            analysisAnnotationsSelectorForPath:
+              selectActiveModComponentAnalysisAnnotationsForPath,
+          }}
+        >
+          {brickErrors?.id && (
+            <div className="invalid-feedback d-block mb-4">
+              Unknown brick: {brickId}
+            </div>
+          )}
+          {BrickOptions ? (
+            <BrickOptions name={name} configKey="config" />
+          ) : error ? (
+            <div className="invalid-feedback d-block mb-4">{error}</div>
+          ) : (
+            <Loader />
+          )}
+        </AnalysisAnnotationsContext.Provider>
       </SchemaFieldContext.Provider>
 
       <ConnectedCollapsibleFieldSection

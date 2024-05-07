@@ -90,10 +90,10 @@ function readReactProps(fiber: Fiber): UnknownObject {
   return pickBy(fiber.memoizedProps, (value, key) => key !== "children");
 }
 
-function getComponentFiber(fiber: Fiber): Fiber {
+function getComponentFiber(fiber: Fiber): Fiber | null {
   // Return fiber._debugOwner; // this also works, but is __DEV__ only
   let parentFiber = fiber.return;
-  while (typeof parentFiber.type === "string") {
+  while (parentFiber && typeof parentFiber.type === "string") {
     // String for HTML nodes, so traverse
     parentFiber = parentFiber.return;
   }
@@ -101,14 +101,14 @@ function getComponentFiber(fiber: Fiber): Fiber {
   return parentFiber;
 }
 
-function findReactComponent(node: Node, traverseUp = 0): Fiber {
+function findReactComponent(node: Node, traverseUp = 0): Fiber | null {
   // https://stackoverflow.com/a/39165137/402560
   const key = Object.keys(node).find((key) =>
     key.startsWith("__reactInternalInstance$"),
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Internal React types
-  const domFiber: Fiber | LegacyInstance | null = (node as any)[key];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- Internal React types
+  const domFiber: Fiber | LegacyInstance | null = (node as any)[key!];
 
   if (domFiber == null) {
     throw new ComponentNotFoundError("React fiber not found for element");
@@ -118,6 +118,10 @@ function findReactComponent(node: Node, traverseUp = 0): Fiber {
     // FIXME: test this for React <16
     const owner = (x: LegacyInstance) => x._currentElement._owner;
     const fiber = traverse(owner, owner(domFiber), traverseUp);
+    if (fiber == null) {
+      return null;
+    }
+
     return fiber._instance as Fiber;
   }
 

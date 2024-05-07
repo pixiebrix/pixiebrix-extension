@@ -129,6 +129,13 @@ describe("QuickBarApp", () => {
     });
 
     expect(saveSelectionMock).toHaveBeenCalledOnce();
+
+    // Verify that Escape key closes the quick bar
+    await user.keyboard("{Escape}");
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+    expect(screen.queryByTestId("quickBar")).toBeNull();
   });
 
   it("debounces action generation on typing", async () => {

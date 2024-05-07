@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JsonObject } from "type-fest";
 import { compact, debounce, throttle, uniq } from "lodash";
 import { getModComponentState } from "@/store/extensionsStorage";
 import {
@@ -30,7 +29,7 @@ import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
 import { getUUID } from "@/telemetry/telemetryHelpers";
-import { getTabsWithAccess } from "@/utils/extensionUtils";
+import { getExtensionVersion, getTabsWithAccess } from "@/utils/extensionUtils";
 import { type Event } from "@/telemetry/events";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
@@ -64,7 +63,7 @@ interface UserTelemetryEvent {
   /**
    * Event data/payload.
    */
-  data: JsonObject;
+  data: UnknownObject;
 }
 
 interface UserSummary {
@@ -76,22 +75,22 @@ interface UserSummary {
   /**
    * The version_name from the manifest.
    */
-  versionName: string;
+  versionName?: string;
 
   /**
    * The number of active mod components.
    */
-  numActiveExtensions: number;
+  numActiveExtensions: number | null;
 
   /**
    * The number of active mods.
    */
-  numActiveBlueprints: number;
+  numActiveBlueprints: number | null;
 
   /**
    * The number of active starer bricks.
    */
-  numActiveExtensionPoints: number;
+  numActiveExtensionPoints: number | null;
 
   /**
    * The detected operating system.
@@ -106,7 +105,7 @@ interface UserSummary {
   /**
    * The detected browser version.
    */
-  $browser_version: number;
+  $browser_version: number | null;
 }
 
 /**
@@ -275,13 +274,14 @@ export async function TEST_flushAll(): Promise<void> {
 
 async function collectUserSummary(): Promise<UserSummary> {
   const { os } = await browser.runtime.getPlatformInfo();
-  const { version, version_name: versionName } = browser.runtime.getManifest();
+  const { version_name: versionName } = browser.runtime.getManifest();
+  const version = getExtensionVersion();
   // Not supported on Chromium, and may require additional permissions
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/getBrowserInfo
   // const {name: browserName} = await browser.runtime.getBrowserInfo();
-  let numActiveExtensions: number = null;
-  let numActiveExtensionPoints: number = null;
-  let numActiveBlueprints: number = null;
+  let numActiveExtensions: number | null = null;
+  let numActiveExtensionPoints: number | null = null;
+  let numActiveBlueprints: number | null = null;
 
   try {
     const { extensions } = await getModComponentState();
@@ -334,14 +334,12 @@ export async function recordEvent({
   data = {},
 }: {
   event: Event;
-  data: JsonObject | undefined;
+  data: UnknownObject | undefined;
 }): Promise<void> {
   if (await allowsTrack()) {
-    const {
-      version,
-      version_name: versionName,
-      manifest_version: manifestVersion,
-    } = browser.runtime.getManifest();
+    const { version_name: versionName, manifest_version: manifestVersion } =
+      browser.runtime.getManifest();
+    const version = getExtensionVersion();
     const telemetryEvent = {
       uid: await getUUID(),
       event,

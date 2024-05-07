@@ -17,7 +17,7 @@
 
 import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
-import { requestRun, sendDeploymentAlert } from "@/background/messenger/api";
+import { requestRun } from "@/background/messenger/api";
 import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/bricks/errors";
@@ -61,7 +61,7 @@ import {
   type BrickArgsContext,
   type SelectorRoot,
   type RenderedArgs,
-  type ServiceContext,
+  type IntegrationsContext,
   type OptionsArgs,
   type PipelineExpression,
   type RunMetadata,
@@ -73,6 +73,7 @@ import type { RegistryId, RegistryProtocol } from "@/types/registryTypes";
 import type { Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 import { getPlatform } from "@/platform/platformContext";
+import { sendDeploymentAlert } from "@/background/messenger/strict/api";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -139,7 +140,7 @@ export type InitialValues = {
    * Service credentials provided by the user during activation of an extension
    * @see ModComponentBase.services
    */
-  serviceContext: ServiceContext;
+  serviceContext: IntegrationsContext;
   /**
    * The document root for root-aware bricks, including readers
    * @see Brick.isRootAware

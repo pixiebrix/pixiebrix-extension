@@ -39,7 +39,7 @@ import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { ContextError } from "@/errors/genericErrors";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
-import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import type {
   SanitizedConfig,
   SanitizedIntegrationConfig,
@@ -189,7 +189,7 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     integrationRegistry.register([fromJS(integrationDefinition)]);
     brickRegistry.register([new IntegrationBrick()]);
 
-    const serviceContext = await makeServiceContextFromDependencies([
+    const serviceContext = await makeIntegrationsContextFromDependencies([
       {
         integrationId: integrationDefinition.metadata.id,
         configId: config.id,

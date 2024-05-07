@@ -32,8 +32,17 @@ import {
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { isMV3 } from "@/mv3/api";
 
 jest.mock("@/auth/useLinkState");
+jest.mock("@/mv3/api");
+
+browser.webNavigation.onBeforeNavigate = {
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  hasListener: jest.fn(),
+  hasListeners: jest.fn(),
+};
 
 jest.mock("@/contentScript/messenger/strict/api", () => ({
   ensureExtensionPointsInstalled: jest.fn(),
@@ -96,8 +105,45 @@ describe("SidebarApp", () => {
       },
     );
 
+    // The navigation listener should not be added for MV2
+    expect(
+      browser.webNavigation.onBeforeNavigate.addListener,
+    ).not.toHaveBeenCalled();
+
     await waitForEffect();
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  describe("mv3", () => {
+    beforeEach(() => {
+      jest.mocked(isMV3).mockReturnValue(true);
+    });
+
+    test("it registers the navigation listener", async () => {
+      await mockAuthenticatedMeApiResponse();
+      const { unmount } = render(
+        <MemoryRouter>
+          <ConnectedSidebar />
+        </MemoryRouter>,
+        {
+          setupRedux(dispatch) {
+            dispatch(authActions.setAuth(authStateFactory()));
+          },
+        },
+      );
+
+      // The navigation listener should be added for MV3
+      expect(
+        browser.webNavigation.onBeforeNavigate.addListener,
+      ).toHaveBeenCalledWith(expect.any(Function));
+
+      unmount();
+
+      // Removed on unmount
+      expect(
+        browser.webNavigation.onBeforeNavigate.removeListener,
+      ).toHaveBeenCalledWith(expect.any(Function));
+    });
   });
 });

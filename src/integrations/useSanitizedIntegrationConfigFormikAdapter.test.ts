@@ -17,10 +17,9 @@
 
 import { renderHook } from "@/pageEditor/testHelpers";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
-import serviceRegistry from "@/integrations/registry";
+import { validateRegistryId } from "@/types/helpers";
 import {
-  type IntegrationABC,
+  type IntegrationDependency,
   type SanitizedIntegrationConfig,
 } from "@/integrations/integrationTypes";
 import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
@@ -30,15 +29,59 @@ import {
   sanitizedIntegrationConfigFactory,
 } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { makeVariableExpression } from "@/utils/variableUtils";
+import { type Expression, type OutputKey } from "@/types/runtimeTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
-const sanitizedIntegrationConfig: SanitizedIntegrationConfig =
-  sanitizedIntegrationConfigFactory({
-    serviceId: validateRegistryId("google/sheet"),
-  });
+const integrationId1 = validateRegistryId("test/test-integration-1");
+const integrationId2 = validateRegistryId("test/test-integration-2");
+const outputKey1 = validateOutputKey("third_party_service1");
+const outputKey1a = validateOutputKey("third_party_service1a");
+const outputKey2 = validateOutputKey("third_party_service2");
+
+const integrationConfig1 = sanitizedIntegrationConfigFactory({
+  serviceId: integrationId1,
+});
+const integrationConfig1a = sanitizedIntegrationConfigFactory({
+  serviceId: integrationId1,
+});
+const integrationConfig2 = sanitizedIntegrationConfigFactory({
+  serviceId: integrationId2,
+});
+
+const integrationDependency1 = integrationDependencyFactory({
+  integrationId: integrationId1,
+  outputKey: outputKey1,
+  configId: integrationConfig1.id,
+});
+const integrationDependency1a = integrationDependencyFactory({
+  integrationId: integrationId1,
+  outputKey: outputKey1a,
+  configId: integrationConfig1a.id,
+});
+const integrationDependency2 = integrationDependencyFactory({
+  integrationId: integrationId2,
+  outputKey: outputKey2,
+  configId: integrationConfig2.id,
+});
 
 jest
   .mocked(backgroundApi.services.locate)
-  .mockResolvedValue(sanitizedIntegrationConfig);
+  .mockImplementation(async (serviceId, authId) => {
+    if (serviceId === integrationId2) {
+      return integrationConfig2;
+    }
+
+    if (authId === integrationConfig1.id) {
+      return integrationConfig1;
+    }
+
+    if (authId === integrationConfig1a.id) {
+      return integrationConfig1a;
+    }
+
+    throw new Error(`Unknown authId: ${authId}`);
+  });
 
 jest.mock("@/integrations/registry", () => {
   const actual = jest.requireActual("@/integrations/registry");
@@ -56,67 +99,69 @@ jest.mock("@/integrations/registry", () => {
   };
 });
 
-const serviceRegistryMock = jest.mocked(serviceRegistry);
+const INTEGRATION_FIELD_NAME = "integration";
 
 describe("useSanitizedIntegrationConfigFormikAdapter", () => {
   beforeEach(() => {
     INTERNAL_reset();
   });
 
-  it.each([null, []])("handles %s", async () => {
-    const { waitForEffect, result } = renderHook(
-      () => useSanitizedIntegrationConfigFormikAdapter(null),
-      {
-        initialValues: { integrationDependencies: [] },
-      },
-    );
+  test.each`
+    integrationIds                      | integrationDependencies                              | configuredOutputKey | expectedConfig
+    ${[]}                               | ${[]}                                                | ${null}             | ${null}
+    ${[integrationId1]}                 | ${[]}                                                | ${null}             | ${null}
+    ${[integrationId1]}                 | ${[integrationDependency1]}                          | ${null}             | ${null}
+    ${[integrationId1]}                 | ${[integrationDependency1, integrationDependency2]}  | ${null}             | ${null}
+    ${[integrationId1, integrationId2]} | ${[integrationDependency1, integrationDependency2]}  | ${null}             | ${null}
+    ${[integrationId1]}                 | ${[integrationDependency1, integrationDependency1a]} | ${null}             | ${null}
+    ${[integrationId1]}                 | ${[integrationDependency1]}                          | ${outputKey1}       | ${integrationConfig1}
+    ${[integrationId1, integrationId2]} | ${[integrationDependency1]}                          | ${outputKey1}       | ${integrationConfig1}
+    ${[integrationId1]}                 | ${[integrationDependency1, integrationDependency2]}  | ${outputKey1}       | ${integrationConfig1}
+    ${[integrationId1, integrationId2]} | ${[integrationDependency1, integrationDependency2]}  | ${outputKey1}       | ${integrationConfig1}
+    ${[integrationId1]}                 | ${[integrationDependency1, integrationDependency1a]} | ${outputKey1}       | ${integrationConfig1}
+    ${[integrationId2]}                 | ${[integrationDependency1, integrationDependency2]}  | ${outputKey2}       | ${integrationConfig2}
+    ${[integrationId1, integrationId2]} | ${[integrationDependency1, integrationDependency2]}  | ${outputKey2}       | ${integrationConfig2}
+    ${[integrationId1]}                 | ${[integrationDependency1, integrationDependency1a]} | ${outputKey1a}      | ${integrationConfig1a}
+  `(
+    "given $integrationDependencies.length configured dependencies and configured output key: $configuredOutputKey, when called with integrationIds: $integrationIds, then returns the correct config",
+    async ({
+      integrationIds,
+      integrationDependencies,
+      configuredOutputKey,
+      expectedConfig,
+    }: {
+      integrationIds: RegistryId[];
+      integrationDependencies: IntegrationDependency[];
+      configuredOutputKey: OutputKey | null;
+      expectedConfig: SanitizedIntegrationConfig | null;
+    }) => {
+      const initialValues: {
+        integrationDependencies: IntegrationDependency[];
+        [INTEGRATION_FIELD_NAME]?: Expression<string, "var">;
+      } = {
+        integrationDependencies,
+      };
+      if (configuredOutputKey) {
+        initialValues[INTEGRATION_FIELD_NAME] =
+          makeVariableExpression(configuredOutputKey);
+      }
 
-    await waitForEffect();
+      const { waitForEffect, result } = renderHook(
+        () =>
+          useSanitizedIntegrationConfigFormikAdapter(
+            integrationIds,
+            INTEGRATION_FIELD_NAME,
+          ),
+        { initialValues },
+      );
 
-    expect(result.current.data).toBeNull();
-  });
+      await waitForEffect();
 
-  it("handles single registry id when not configured", async () => {
-    const registryId = validateRegistryId("google/sheet");
-
-    const { waitForEffect, result } = renderHook(
-      () => useSanitizedIntegrationConfigFormikAdapter(registryId),
-      {
-        initialValues: { integrationDependencies: [] },
-      },
-    );
-
-    await waitForEffect();
-
-    expect(result.current.data).toBeNull();
-  });
-
-  it("handles single registry id when configured", async () => {
-    const registryId = validateRegistryId("google/sheet");
-    const configId = uuidv4();
-
-    serviceRegistryMock.lookup.mockResolvedValue({
-      id: registryId,
-      getOrigins: () => [] as any,
-    } as unknown as IntegrationABC);
-
-    const { waitForEffect, result } = renderHook(
-      () => useSanitizedIntegrationConfigFormikAdapter(registryId),
-      {
-        initialValues: {
-          integrationDependencies: [
-            integrationDependencyFactory({
-              integrationId: registryId,
-              outputKey: validateOutputKey("sheet"),
-              configId,
-            }),
-          ],
-        },
-      },
-    );
-
-    await waitForEffect();
-
-    expect(result.current.data).toStrictEqual(sanitizedIntegrationConfig);
-  });
+      if (expectedConfig == null) {
+        expect(result.current.data).toBeNull();
+      } else {
+        expect(result.current.data).toStrictEqual(expectedConfig);
+      }
+    },
+  );
 });

@@ -27,8 +27,11 @@ import {
   UnsavedChangesIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
 import { type UUID } from "@/types/stringTypes";
-import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
-import { updateSidebar } from "@/contentScript/messenger/strict/api";
+import {
+  disableOverlay,
+  enableOverlay,
+  updateSidebar,
+} from "@/contentScript/messenger/strict/api";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import cx from "classnames";
 import reportEvent from "@/telemetry/reportEvent";
@@ -36,9 +39,9 @@ import { Events } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
-  selectActiveElement,
-  selectActiveRecipeId,
-  selectElementIsDirty,
+  selectActiveModComponentFormState,
+  selectActiveModId,
+  selectModComponentIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 import useSaveStandaloneModComponent from "@/pageEditor/hooks/useSaveStandaloneModComponent";
@@ -69,18 +72,23 @@ const DynamicModComponentListItem: React.FunctionComponent<
 > = ({ modComponentFormState, isAvailable, isNested = false }) => {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
-  const activeModId = useSelector(selectActiveRecipeId);
-  const activeElement = useSelector(selectActiveElement);
+  const activeModId = useSelector(selectActiveModId);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
 
-  const isActive = activeElement?.uuid === modComponentFormState.uuid;
+  const isActive =
+    activeModComponentFormState?.uuid === modComponentFormState.uuid;
   const modId = modComponentFormState.recipe?.id;
-  const isSiblingOfActiveListItem = activeElement?.recipe?.id
-    ? modId === activeElement?.recipe?.id
+  const isSiblingOfActiveListItem = activeModComponentFormState?.recipe?.id
+    ? modId === activeModComponentFormState?.recipe?.id
     : false;
   const isChildOfActiveListItem = modId === activeModId;
   const isRelativeOfActiveListItem =
     !isActive && (isChildOfActiveListItem || isSiblingOfActiveListItem);
-  const isDirty = useSelector(selectElementIsDirty(modComponentFormState.uuid));
+  const isDirty = useSelector(
+    selectModComponentIsDirty(modComponentFormState.uuid),
+  );
   const isSavedOnCloud = useSelector(
     selectIsModComponentSavedOnCloud(modComponentFormState.uuid),
   );

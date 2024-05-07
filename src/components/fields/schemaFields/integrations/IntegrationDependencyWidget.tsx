@@ -32,13 +32,13 @@ import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integr
 import {
   type Expression,
   type OutputKey,
-  type ServiceVarRef,
+  type IntegrationDependencyVarRef,
 } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
-import { freshIdentifier, getVariableExpression } from "@/utils/variableUtils";
+import { freshIdentifier, makeVariableExpression } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -78,14 +78,14 @@ export function defaultOutputKey(
 function lookupAuthId(
   dependencies: IntegrationDependency[],
   authOptions: AuthOption[],
-  value: ServiceVarRef,
+  value: IntegrationDependencyVarRef,
 ): UUID {
   const dependency =
     value == null
       ? null
       : dependencies.find(
           ({ outputKey }) =>
-            getVariableExpression(outputKey).__value__ === value,
+            makeVariableExpression(outputKey).__value__ === value,
         );
 
   return dependency == null
@@ -110,7 +110,8 @@ function setIntegrationAuthSelectionForField(
     // Unlike when defaulting, we don't need to check against the registry ids from the schema because this method
     // will only be called with an allowed option.
     const match = draft.integrationDependencies.find(
-      ({ integrationId }) => integrationId === authOption.serviceId,
+      ({ integrationId, configId }) =>
+        integrationId === authOption.serviceId && configId === authOption.value,
     );
 
     if (match) {
@@ -140,7 +141,11 @@ function setIntegrationAuthSelectionForField(
   });
 
   // Update field value before calling produceExcludeUnusedDependencies, otherwise it will see the stale service var
-  nextState = setIn(nextState, fieldName, getVariableExpression(outputKey));
+  nextState = setIn(
+    nextState,
+    fieldName,
+    makeVariableExpression(outputKey),
+  ) as IntegrationsFormSlice;
 
   // Perform cleanup of the service dependencies
   nextState = produceExcludeUnusedDependencies(nextState);
@@ -199,7 +204,7 @@ const IntegrationDependencyWidget: React.FC<
   const { values: rootValues, setValues: setRootValues } =
     useFormikContext<IntegrationsFormSlice>();
   const [{ value, ...field }, , helpers] =
-    useField<Expression<ServiceVarRef>>(props);
+    useField<Expression<IntegrationDependencyVarRef>>(props);
 
   const { validDefaultIntegrationIds, options } = useMemo(() => {
     // Registry ids specified by the schema, or returns empty if any allowed
@@ -267,7 +272,7 @@ const IntegrationDependencyWidget: React.FC<
             match.outputKey,
             { rootValues, match },
           );
-          await helpers.setValue(getVariableExpression(match.outputKey));
+          await helpers.setValue(makeVariableExpression(match.outputKey));
           const authOption = authOptions.find(
             ({ value }) => value === match.configId,
           );
@@ -297,7 +302,7 @@ const IntegrationDependencyWidget: React.FC<
       } else if (
         value &&
         !rootValues.integrationDependencies.some((dependency) =>
-          isEqual(getVariableExpression(dependency.outputKey), value),
+          isEqual(makeVariableExpression(dependency.outputKey), value),
         )
       ) {
         // This currently happens when a brick is copy-pasted into a separate extension

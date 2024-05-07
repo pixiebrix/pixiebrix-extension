@@ -25,8 +25,8 @@ import starterBrickRegistry from "@/starterBricks/registry";
 import { type RegistryId } from "@/types/registryTypes";
 import { compact, uniq } from "lodash";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
-import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
-import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProviderExtension";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
+import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProvider/quickBarProviderExtension";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 

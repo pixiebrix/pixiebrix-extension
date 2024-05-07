@@ -28,7 +28,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { selectModMetadata } from "@/pageEditor/utils";
-import { selectKeepLocalCopyOnCreateRecipe } from "@/pageEditor/slices/editorSelectors";
+import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/slices/editorSelectors";
 import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
@@ -44,7 +44,7 @@ function useCreateModFromModComponent(
   activeModComponent: ModComponentFormState,
 ): UseCreateModFromModReturn {
   const dispatch = useDispatch();
-  const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
+  const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
   const [createMod] = useCreateRecipeMutation();
   const upsertModComponentFormState = useUpsertModComponentFormState();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
@@ -120,7 +120,9 @@ function useCreateModFromModComponent(
           } catch (error) {
             if (error instanceof BusinessError) {
               // Error is already handled by buildAndValidateMod.
-            } else throw error; // Other errors can be thrown during mod installation
+            } else {
+              throw error;
+            } // Other errors can be thrown during mod installation
           }
         },
       ),

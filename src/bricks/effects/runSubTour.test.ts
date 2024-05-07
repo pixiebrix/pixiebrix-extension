@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isTourInProgress, registerTour } from "@/starterBricks/tourController";
+import {
+  isTourInProgress,
+  registerTour,
+} from "@/starterBricks/tour/tourController";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
 import { RunSubTourEffect } from "@/bricks/effects/runSubTour";

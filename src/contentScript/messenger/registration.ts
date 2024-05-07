@@ -25,38 +25,23 @@
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import {
+  activatePrerenderedTab,
   ensureInstalled,
   getActiveExtensionPoints,
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 275 strictNullCheck errors
-import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 300 strictNullCheck errors
-import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 300 strictNullCheck errors
-import {
-  clearDynamicElements,
-  disableOverlay,
-  enableOverlay,
-  runExtensionPointReader,
-  updateDynamicElement,
-} from "@/contentScript/pageEditor/dynamic"; // 300 strictNullCheck errors
-import {
-  runBlockPreview,
-  resetTab,
-  runRendererBlock,
-} from "@/contentScript/pageEditor"; // 300 strictNullCheck errors
-import { runBrick } from "@/contentScript/executor"; // 290 strictNullCheck errors
-import { cancelSelect } from "@/contentScript/pageEditor/elementPicker"; // 290 strictNullCheck errors
-import selectElement from "@/contentScript/pageEditor/selectElement"; // 290 strictNullCheck errors
-import {
-  runHeadlessPipeline,
-  runMapArgs,
-  runRendererPipeline,
-} from "@/contentScript/pipelineProtocol"; // Depends on background/messenger to pass strictNullCheck
-import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore"; // 248 strictNullCheck errors
-import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation"; // 246 strictNullCheck errors
-import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
+} from "@/contentScript/lifecycle"; // 196 strictNullCheck errors
+import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
 import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Depends on background/messenger to pass strictNullCheck
+import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements"; // Depends on contentScript/lifecycle to pass strictNullCheck
+import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader"; // Depends on contentScript/messenger to pass strictNullCheck
+import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateDynamicElement"; // Depends on contentScript/lifecycle to pass strictNullCheck
+import { runBlockPreview } from "@/contentScript/pageEditor/runBlockPreview"; // Depends on background/messenger
+import { resetTab } from "@/contentScript/pageEditor/resetTab"; // Depends on contentScript/lifecycle to pass strictNullCheck
+import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock"; // Depends on background/messenger
+import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadlessPipeline"; // Depends on background/messenger
+import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline"; // Depends on background/messenger
 
 expectContext("contentScript");
 
@@ -66,35 +51,24 @@ declare global {
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
     RESET_TAB: typeof resetTab;
+    ACTIVATE_PRERENDERED_TAB: typeof activatePrerenderedTab;
 
-    INSERT_PANEL: typeof insertPanel;
-    INSERT_BUTTON: typeof insertButton;
-
-    GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
     RUN_SINGLE_BLOCK: typeof runBlockPreview;
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
 
     CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
     UPDATE_DYNAMIC_ELEMENT: typeof updateDynamicElement;
-    RUN_EXTENSION_POINT_READER: typeof runExtensionPointReader;
-    ENABLE_OVERLAY: typeof enableOverlay;
-    DISABLE_OVERLAY: typeof disableOverlay;
+    RUN_EXTENSION_POINT_READER: typeof runStarterBrickReader;
+
     INSTALLED_EXTENSION_POINTS: typeof getActiveExtensionPoints;
     ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
 
     RUN_BRICK: typeof runBrick;
-    CANCEL_SELECT_ELEMENT: typeof cancelSelect;
-    SELECT_ELEMENT: typeof selectElement;
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
-    RUN_MAP_ARGS: typeof runMapArgs;
-
-    GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
 
     SHOW_LOGIN_BANNER: typeof showBannerFromConfig;
-
-    RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
   }
 }
 
@@ -104,34 +78,23 @@ export default function registerMessenger(): void {
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
     RESET_TAB: resetTab,
+    ACTIVATE_PRERENDERED_TAB: activatePrerenderedTab,
 
-    INSERT_PANEL: insertPanel,
-    INSERT_BUTTON: insertButton,
-
-    GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
     RUN_SINGLE_BLOCK: runBlockPreview,
     RUN_RENDERER_BLOCK: runRendererBlock,
 
     CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
     UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
-    RUN_EXTENSION_POINT_READER: runExtensionPointReader,
-    ENABLE_OVERLAY: enableOverlay,
-    DISABLE_OVERLAY: disableOverlay,
+    RUN_EXTENSION_POINT_READER: runStarterBrickReader,
+
     INSTALLED_EXTENSION_POINTS: getActiveExtensionPoints,
     ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
 
     RUN_BRICK: runBrick,
-    CANCEL_SELECT_ELEMENT: cancelSelect,
-    SELECT_ELEMENT: selectElement,
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,
     RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
-    RUN_MAP_ARGS: runMapArgs,
-
-    GET_COPILOT_HOST_DATA: getCopilotHostData,
 
     SHOW_LOGIN_BANNER: showBannerFromConfig,
-
-    RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
   });
 }

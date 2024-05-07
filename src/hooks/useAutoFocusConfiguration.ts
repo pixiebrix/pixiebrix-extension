@@ -16,6 +16,7 @@
  */
 
 import { useEffect } from "react";
+import { type SelectInstance } from "react-select";
 
 /** Like setTimeout, except that if the delay is 0 or lower, the function is called synchronously */
 const semiSyncTimeout = (
@@ -35,7 +36,7 @@ const semiSyncTimeout = (
 };
 
 type AutoFocusConfiguration = {
-  elementRef: React.MutableRefObject<HTMLElement>;
+  elementRef: React.MutableRefObject<HTMLElement | SelectInstance | null>;
   focus?: boolean;
   delayMillis?: number;
 };

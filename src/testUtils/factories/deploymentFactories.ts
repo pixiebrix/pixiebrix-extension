@@ -21,7 +21,7 @@ import { type ActivatableDeployment } from "@/types/deploymentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   validateRegistryId,
-  validateSemVerString,
+  normalizeSemVerString,
   validateTimestamp,
 } from "@/types/helpers";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
@@ -32,7 +32,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 const deploymentPackageFactory = define<Deployment["package"]>({
   id: uuidSequence,
   name: "Test Starter Brick",
-  version: (n: number) => validateSemVerString(`1.0.${n}`),
+  version: (n: number) => normalizeSemVerString(`1.0.${n}`),
   package_id: (n: number) => validateRegistryId(`test/starter-brick-${n}`),
 });
 

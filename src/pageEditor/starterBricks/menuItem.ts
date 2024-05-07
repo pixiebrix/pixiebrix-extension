@@ -31,23 +31,23 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import {
-  type MenuDefinition,
-  type MenuItemStarterBrickConfig,
-  MenuItemStarterBrickABC,
-} from "@/starterBricks/menuItemExtension";
+import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemExtension";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import MenuItemConfiguration from "@/pageEditor/tabs/menuItem/MenuItemConfiguration";
-import { insertButton } from "@/contentScript/messenger/api";
+import { insertButton } from "@/contentScript/messenger/strict/api";
 import {
   type ButtonDefinition,
   type ButtonSelectionResult,
 } from "@/contentScript/pageEditor/types";
 import { type ActionFormState } from "./formStateTypes";
+import {
+  type MenuItemDefinition,
+  type MenuItemStarterBrickConfig,
+} from "@/starterBricks/menuItem/types";
 
 function fromNativeElement(
   url: string,
@@ -87,7 +87,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: ActionFormState,
-): StarterBrickConfig<MenuDefinition> {
+): StarterBrickConfig<MenuItemDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {
@@ -140,7 +140,7 @@ async function fromExtension(
   config: ModComponentBase<MenuItemStarterBrickConfig>,
 ): Promise<ActionFormState> {
   const extensionPoint = await lookupExtensionPoint<
-    MenuDefinition,
+    MenuItemDefinition,
     MenuItemStarterBrickConfig,
     "menuItem"
   >(config, "menuItem");

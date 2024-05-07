@@ -28,8 +28,9 @@ import { AlertEffect } from "./alert";
 import { GetPageState, SetPageState } from "./pageState";
 import { HideEffect } from "./hide";
 import { ExportCsv } from "./exportCsv";
-import { HideSidebar, ShowSidebar } from "./sidebar";
-import { CancelEffect } from "./cancel";
+import { HideSidebar, ShowSidebar, ToggleSidebar } from "./sidebarEffects";
+import CancelEffect from "./CancelEffect";
+import CancelEphemeralElements from "@/bricks/effects/CancelEphemeralElements";
 import { ErrorEffect } from "./error";
 import { ShowEffect } from "./show";
 import { TelemetryEffect } from "./telemetry";
@@ -57,6 +58,7 @@ import SetToolbarBadge from "@/bricks/effects/setToolbarBadge";
 import InsertAtCursorEffect from "@/bricks/effects/InsertAtCursorEffect";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
+import ExportFileEffect from "@/bricks/effects/exportFileEffect";
 
 function getAllEffects(): Brick[] {
   return [
@@ -79,9 +81,12 @@ function getAllEffects(): Brick[] {
     new AssignModVariable(),
     new HideEffect(),
     new ExportCsv(),
+    new ExportFileEffect(),
     new HideSidebar(),
     new ShowSidebar(),
+    new ToggleSidebar(),
     new CancelEffect(),
+    new CancelEphemeralElements(),
     new ErrorEffect(),
     new ShowEffect(),
     new TelemetryEffect(),

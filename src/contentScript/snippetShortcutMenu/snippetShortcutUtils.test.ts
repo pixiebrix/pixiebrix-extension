@@ -30,7 +30,6 @@ describe("replaceAtCommandKey", () => {
       '<input type="text" value="\\hello world" id="input" />';
 
     await replaceAtCommandKey({
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- defined above
       element: document.querySelector("#input")!,
       text: "new text",
       query: "",

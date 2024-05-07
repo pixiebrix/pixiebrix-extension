@@ -36,7 +36,7 @@ export function modDefinitionToMarketplacePackage(
 ): MarketplaceListing["package"] {
   return {
     name: modDefinition.metadata.name,
-    description: modDefinition.metadata.description,
+    description: modDefinition.metadata.description ?? "",
     version: modDefinition.metadata.version,
     config: modDefinition as unknown as UnknownObject,
     kind: "recipe",

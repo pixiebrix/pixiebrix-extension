@@ -20,8 +20,8 @@ import collectExistingConfiguredDependenciesForMod from "@/integrations/util/col
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import {
-  selectDirtyRecipeOptionDefinitions,
-  selectKeepLocalCopyOnCreateRecipe,
+  selectDirtyModOptionsDefinitions,
+  selectKeepLocalCopyOnCreateMod,
 } from "@/pageEditor/slices/editorSelectors";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import { collectModOptions } from "@/store/extensionsUtils";
@@ -49,8 +49,8 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
   );
-  const dirtyModOptions = useSelector(selectDirtyRecipeOptionDefinitions);
-  const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
+  const dirtyModOptions = useSelector(selectDirtyModOptionsDefinitions);
+  const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const createModFromMod = useCallback(
@@ -116,7 +116,9 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
       } catch (error) {
         if (error instanceof BusinessError) {
           // Error is already handled by buildAndValidateMod.
-        } else throw error; // Other errors can be thrown during mod installation
+        } else {
+          throw error;
+        } // Other errors can be thrown during mod installation
       }
     },
     [
