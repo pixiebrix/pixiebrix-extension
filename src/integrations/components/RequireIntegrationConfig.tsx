@@ -66,7 +66,7 @@ function useAuthErrorAnnotation(
       <div>
         <div>
           <span>
-            The configuration for this integration is invalid. Please check your
+            The configuration for this integration is invalid. Check your
             credentials and try again.
           </span>
         </div>
@@ -117,7 +117,6 @@ const RequireIntegrationConfig: React.FC<ConfigProps> = ({
   return (
     <>
       <IntegrationDependencyField
-        label="Integration"
         name={integrationFieldName}
         schema={integrationFieldSchema}
         annotations={authErrorAnnotation ? [authErrorAnnotation] : []}

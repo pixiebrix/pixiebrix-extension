@@ -62,7 +62,7 @@ const FieldAnnotationAlert: React.FunctionComponent<
       {actions?.length ? (
         <div className={styles.actions}>
           {actions.map(({ caption, action }) => (
-            <AsyncButton key={caption} onClick={action}>
+            <AsyncButton key={caption} onClick={action} variant="danger">
               {caption}
             </AsyncButton>
           ))}
