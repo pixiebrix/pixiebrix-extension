@@ -66,7 +66,7 @@ const { upsertIntegrationConfig, deleteIntegrationConfig } =
 
 type URLParamValue = UUID | "zapier" | "new" | undefined;
 
-function validationUrlParamValue(value: string): URLParamValue {
+function validateUrlParamValue(value: string): URLParamValue {
   if (isUUID(value) || value === "zapier" || value === "new") {
     return value as URLParamValue;
   }
@@ -267,7 +267,7 @@ function useUrlOrConfigsChangeHandler(
     pathname = pathname.slice(0, -1);
   }
 
-  const urlParam = validationUrlParamValue(pathname.split("/").pop() ?? "");
+  const urlParam = validateUrlParamValue(pathname.split("/").pop() ?? "");
   useEffect(() => {
     dispatch(
       componentState.actions.urlParamOrConfigsChanged({
