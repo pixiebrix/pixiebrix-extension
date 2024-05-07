@@ -20,10 +20,31 @@ import { render } from "@testing-library/react";
 import React from "react";
 import EphemeralForm from "./EphemeralForm";
 import { screen } from "shadow-dom-testing-library";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/contentScript/messenger/strict/api");
 
 const getFormDefinitionMock = jest.mocked(getFormDefinition);
+
+jest.spyOn(URLSearchParams.prototype, "get").mockImplementation((key) => {
+  switch (key) {
+    case "opener": {
+      return JSON.stringify({ tabId: 0, frameId: 0 });
+    }
+
+    case "nonce": {
+      return uuidSequence(0);
+    }
+
+    case "mode": {
+      return "modal";
+    }
+
+    default: {
+      throw new Error(`Unexpected key: ${key}`);
+    }
+  }
+});
 
 describe("EphemeralForm", () => {
   it("shows field titles", async () => {
@@ -77,7 +98,7 @@ describe("EphemeralForm", () => {
     ).resolves.toBeInTheDocument();
     expect(
       screen.getByShadowText(
-        (_, element) => element.textContent === "I am bold",
+        (_, element) => element!.textContent === "I am bold",
       ),
     ).toBeInTheDocument();
     expect(screen.getByShadowRole("strong")).toHaveTextContent("bold");
@@ -104,7 +125,7 @@ describe("EphemeralForm", () => {
     ).resolves.toBeInTheDocument();
     expect(
       screen.getByShadowText(
-        (_, element) => element.textContent === "I am bold",
+        (_, element) => element!.textContent === "I am bold",
       ),
     ).toBeInTheDocument();
     expect(screen.getByShadowRole("strong")).toHaveTextContent("bold");

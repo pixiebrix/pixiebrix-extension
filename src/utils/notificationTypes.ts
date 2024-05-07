@@ -26,11 +26,11 @@ export type NotificationType =
 
 export type Notification = RequireAtLeastOne<
   {
-    message: string;
+    message?: string;
     type?: NotificationType;
     id?: string;
     autoDismissTimeMs?: number;
-    error: unknown;
+    error?: unknown;
     dismissable?: boolean;
     reportError?: boolean;
     includeErrorDetails?: boolean;

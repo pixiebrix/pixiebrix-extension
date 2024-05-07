@@ -20,7 +20,7 @@ import type React from "react";
 
 export type Spacing = {
   side: string | null;
-  size: number;
+  size: number | null;
 };
 
 export type Value = string | Expression;

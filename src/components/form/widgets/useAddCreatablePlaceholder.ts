@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { freeze } from "@/utils/objectUtils";
 import { useMemo } from "react";
 
 // Disabled placeholder option to indicate that a user can create an option
@@ -24,7 +25,7 @@ const CREATABLE_PLACEHOLDER = {
   isDisabled: true,
 } as const;
 
-const DEFAULT_OPTIONS = [] as const;
+const DEFAULT_OPTIONS = freeze([]);
 
 /**
  * Adds a disabled placeholder options if creatable === true and the text-input is empty

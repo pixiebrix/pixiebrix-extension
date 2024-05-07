@@ -109,6 +109,7 @@ const extensionsSlice = createSlice({
     ) {
       const { extensionId, recipeMetadata } = payload;
       const extension = state.extensions.find((x) => x.id === extensionId);
+
       if (extension != null) {
         extension._recipe = recipeMetadata;
       }

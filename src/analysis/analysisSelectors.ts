@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { freeze } from "@/utils/objectUtils";
 import {
   type AnalysisRootState,
   type AnalysisAnnotation,
@@ -22,9 +23,7 @@ import {
 import { type UUID } from "@/types/stringTypes";
 
 // Serves to avoid creating new arrays and ensure reference equality for empty annotations
-const EMPTY_ANNOTATIONS = Object.freeze(
-  [] as AnalysisAnnotation[],
-) as AnalysisAnnotation[]; // Have to cast twice to avoid "neither type sufficiently overlaps" error
+const EMPTY_ANNOTATIONS = freeze<AnalysisAnnotation[]>([]);
 
 export function selectExtensionAnnotations(
   extensionId: UUID,

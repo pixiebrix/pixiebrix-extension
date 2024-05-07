@@ -45,9 +45,9 @@ describe("groupListingsByTag", () => {
     });
 
     const taggedBrickIds = groupListingsByTag([popular, other, category], {
-      [popularListing.package.name]: popularListing,
-      [regularListing.package.name]: regularListing,
-      [otherListing.package.name]: otherListing,
+      [popularListing.package.name!]: popularListing,
+      [regularListing.package.name!]: regularListing,
+      [otherListing.package.name!]: otherListing,
     });
 
     expect(taggedBrickIds).toStrictEqual({

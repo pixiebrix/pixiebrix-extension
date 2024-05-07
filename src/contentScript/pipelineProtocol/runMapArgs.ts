@@ -20,6 +20,7 @@ import { type Except } from "type-fest";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { type RegistryId } from "@/types/registryTypes";
 import { expectContext } from "@/utils/expectContext";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Run `mapArgs` in the contentScript.
@@ -50,7 +51,7 @@ export async function runMapArgs({
      */
     extendModVariable: boolean;
   };
-  blueprintId: RegistryId | null;
+  blueprintId: Nullishable<RegistryId>;
 }): Promise<unknown> {
   expectContext("contentScript");
 
