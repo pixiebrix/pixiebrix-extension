@@ -40,7 +40,11 @@ type ConfigProps = {
 function useAuthErrorAnnotation(
   sanitizedConfig: SanitizedIntegrationConfig,
 ): FieldAnnotation | null {
-  const { data: isConfigValid = true } = useAsyncState(async () => {
+  const {
+    data: isConfigValid = true,
+    refetch,
+    isFetching,
+  } = useAsyncState(async () => {
     if (sanitizedConfig == null) {
       return true;
     }
@@ -48,7 +52,8 @@ function useAuthErrorAnnotation(
     return validateIntegrationAuth(sanitizedConfig);
   }, [sanitizedConfig]);
 
-  if (isConfigValid) {
+  // We need to check for null config here because this hook can re-render with null config before the above async effect fires and sets the invalid flag
+  if (isConfigValid || sanitizedConfig == null) {
     return null;
   }
 
@@ -73,6 +78,16 @@ function useAuthErrorAnnotation(
         </div>
       </div>
     ),
+    actions: [
+      {
+        caption: isFetching ? "Retrying..." : "Retry",
+        async action() {
+          if (!isFetching) {
+            refetch();
+          }
+        },
+      },
+    ],
   };
 }
 
