@@ -142,10 +142,12 @@ export function calculateNextSpacing(
       .filter((rule) =>
         spacingUpdate.side == null ? rule.side == null : rule.side != null,
       )
-      .map(
-        ({ side = "", size = 0 }: { side: string; size: number }) =>
-          `${prefix}${side}-${size < 0 ? "n" : ""}${Math.abs(size)}`,
-      ),
+      .map(({ side, size = 0 }: { side: string; size: number }) => {
+        side ??= "";
+        size ??= 0;
+
+        return `${prefix}${side}-${size < 0 ? "n" : ""}${Math.abs(size)}`;
+      }),
   ];
 
   const nextValue = compact(uniq(nextClasses)).join(" ");

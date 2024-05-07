@@ -180,10 +180,9 @@ export const CUSTOM_FORM_SCHEMA: Schema = {
     },
     // Added in 1.7.33 to allow for adjusting the native margin/padding when used in the document builder
     className: {
-      // @ts-expect-error -- Custom format
       schema: { type: "string", format: "bootstrap-class" },
       label: "Layout/Style",
-    },
+    } as Schema,
     stylesheets: {
       type: "array",
       items: {
