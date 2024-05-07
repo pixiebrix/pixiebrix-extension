@@ -38,6 +38,7 @@ const EMPTY_ARRAY = freeze<Snippet[]>([]);
 const TemplateWidget: React.FC<TemplateWidgetProps> = ({
   snippets = EMPTY_ARRAY,
   rows = 4,
+  value,
   ...props
 }) => {
   const templateInput = useRef<HTMLTextAreaElement | HTMLInputElement | null>(
@@ -82,7 +83,12 @@ const TemplateWidget: React.FC<TemplateWidgetProps> = ({
           ))}
         </div>
       )}
-      <Form.Control {...controlProps} {...props} ref={templateInput} />
+      <Form.Control
+        {...controlProps}
+        {...props}
+        ref={templateInput}
+        value={value ?? undefined}
+      />
     </div>
   );
 };
