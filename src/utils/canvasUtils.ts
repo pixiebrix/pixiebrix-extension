@@ -47,6 +47,10 @@ async function loadBlobAsImage(
   return image;
 }
 
+function isHTMLImageElement(image: unknown): image is HTMLImageElement {
+  return !isMV3 && image instanceof HTMLImageElement;
+}
+
 /**
  * Converts a blob into ImageData.
  *
@@ -60,7 +64,7 @@ export async function blobToImageData(
   const image = await loadBlobAsImage(blob);
   // Can only check for HTMLImageElement in MV2
   // TODO: Remove this check when MV3 is the only supported version and we are using only PNGs
-  const isImageElement = !isMV3 && image instanceof HTMLImageElement;
+  const isImageElement = isHTMLImageElement(image);
 
   // SVGs might not have width/height attributes, but they likely have a viewBox
   // so their aspect ratio is natively preserved, regardless of `resizeToFit`
