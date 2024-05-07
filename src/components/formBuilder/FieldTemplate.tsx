@@ -26,21 +26,21 @@ import { DescriptionField } from "./DescriptionField";
 import { type SetActiveField } from "@/components/formBuilder/formBuilderTypes";
 import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
 import { noop, uniq } from "lodash";
+import { freeze } from "@/utils/objectUtils";
 
 interface FormPreviewFieldTemplateProps extends FieldTemplateProps {
   // Only used in the FormPreview
   setActiveField: SetActiveField;
 }
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const emptyArray: string[] = [] as const;
+const EMPTY_ARRAY = freeze<string[]>([]);
 
 // RJSF Bootstrap 4 implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/bootstrap-4/src/FieldTemplate/FieldTemplate.tsx
 const FieldTemplate = ({
   id,
   children,
   displayLabel,
-  rawErrors = emptyArray,
+  rawErrors = EMPTY_ARRAY,
   rawHelp,
   hidden,
   rawDescription,

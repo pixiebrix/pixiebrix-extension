@@ -42,7 +42,7 @@ export function makeLabelForSchemaField({
 
 type FieldConfig = {
   prop: string;
-  isRequired: boolean;
+  isRequired?: boolean;
   fieldSchema: Schema;
   propUiSchema: unknown;
 };

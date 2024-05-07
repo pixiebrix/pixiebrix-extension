@@ -50,6 +50,10 @@ import { getPlatform } from "@/platform/platformContext";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import { type CustomFormComponentProps } from "./CustomFormComponent";
 import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
+import {
+  assumeNotNullish_UNSAFE,
+  type Nullishable,
+} from "@/utils/nullishUtils";
 
 interface DatabaseResult {
   success: boolean;
@@ -70,7 +74,7 @@ export type Storage =
     }
   | StateStorage;
 
-type Context = { blueprintId: RegistryId | null; extensionId: UUID };
+type Context = { blueprintId: Nullishable<RegistryId>; extensionId: UUID };
 
 /**
  * Action to perform after the onSubmit handler is executed.
@@ -78,7 +82,7 @@ type Context = { blueprintId: RegistryId | null; extensionId: UUID };
  */
 export type PostSubmitAction = "save" | "reset";
 
-export const CUSTOM_FORM_SCHEMA = {
+export const CUSTOM_FORM_SCHEMA: Schema = {
   type: "object",
   properties: {
     storage: {
@@ -178,7 +182,7 @@ export const CUSTOM_FORM_SCHEMA = {
     className: {
       schema: { type: "string", format: "bootstrap-class" },
       label: "Layout/Style",
-    },
+    } as Schema,
     stylesheets: {
       type: "array",
       items: {
@@ -229,7 +233,7 @@ export class CustomFormRenderer extends RendererABC {
     );
   }
 
-  inputSchema: Schema = CUSTOM_FORM_SCHEMA as Schema;
+  inputSchema: Schema = CUSTOM_FORM_SCHEMA;
 
   override async isPageStateAware(): Promise<boolean> {
     return true;
@@ -244,7 +248,7 @@ export class CustomFormRenderer extends RendererABC {
         isPlainObject(_config.config.schema) &&
         !isExpression(_config.config.schema)
       ) {
-        return _config.config.schema;
+        return _config.config.schema as Schema;
       }
 
       return SCHEMA_ALLOW_ANY;
@@ -270,7 +274,7 @@ export class CustomFormRenderer extends RendererABC {
       postSubmitAction = "save",
     }: BrickArgs<{
       storage?: Storage;
-      recordId?: string | null;
+      recordId: string | null;
       schema: Schema;
       uiSchema?: UiSchema;
       autoSave?: boolean;
@@ -298,6 +302,10 @@ export class CustomFormRenderer extends RendererABC {
         "recordId",
         recordId,
       );
+    } else {
+      // We can assume that recordId is not null for state because recordId is not needed
+      // This greatly simplifies the typing for the rest of the function
+      assumeNotNullish_UNSAFE(recordId);
     }
 
     const { blueprintId, extensionId } = logger.context;
@@ -367,7 +375,7 @@ export class CustomFormRenderer extends RendererABC {
               });
             }
 
-            if (!isEmpty(successMessage)) {
+            if (successMessage) {
               platform.toasts.showNotification({
                 type: "success",
                 message: successMessage,
@@ -390,7 +398,7 @@ export class CustomFormRenderer extends RendererABC {
 async function getInitialData(
   storage: Storage,
   recordId: string,
-  { blueprintId, extensionId }: Context,
+  { blueprintId, extensionId }: Partial<Context>,
 ): Promise<UnknownObject> {
   switch (storage.type) {
     case "localStorage": {
@@ -498,7 +506,7 @@ async function setData(
 // (not event undefined - this prevents setting the default value properly)
 export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
   const normalizedData: UnknownObject = {};
-  for (const key of Object.keys(schema.properties)) {
+  for (const key of Object.keys(schema.properties ?? {})) {
     // eslint-disable-next-line security/detect-object-injection -- iterating over object keys
     const fieldValue = data[key];
 
@@ -514,7 +522,7 @@ export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
 // so we need to make all the undefined field values null instead, so that the server will clear those fields instead of ignoring them
 export function normalizeOutgoingFormData(schema: Schema, data: UnknownObject) {
   const normalizedData = { ...data };
-  for (const key of Object.keys(schema.properties)) {
+  for (const key of Object.keys(schema.properties ?? {})) {
     if (normalizedData[key] === undefined) {
       normalizedData[key] = null;
     }

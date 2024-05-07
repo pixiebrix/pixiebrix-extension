@@ -22,12 +22,13 @@ import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { createSelector } from "@reduxjs/toolkit";
 import { getLatestBrickCall } from "@/telemetry/traceHelpers";
 import { selectActiveNodeId } from "./editorSelectors";
+import { freeze } from "@/utils/objectUtils";
 
 type RootState = { runtime: RuntimeState; editor: EditorState };
 
 type EditorSelector<T> = (state: RootState) => T;
 
-const EMPTY_TRACE: TraceRecord[] = Object.freeze([]) as TraceRecord[];
+const EMPTY_TRACE = freeze<TraceRecord[]>([]);
 
 export const selectActiveElementTraces: EditorSelector<TraceRecord[]> = ({
   runtime,

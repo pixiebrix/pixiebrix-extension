@@ -35,6 +35,7 @@ import { isDeferExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
+import { freeze } from "@/utils/objectUtils";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -44,7 +45,7 @@ type DocumentListProps = {
   tracePath: DynamicPath;
 };
 
-const DEFAULT_ARRAY = Object.freeze([]);
+const DEFAULT_ARRAY = freeze<UnknownObject[]>([]);
 
 const ListElementInternal: React.FC<DocumentListProps> = ({
   array = DEFAULT_ARRAY,
@@ -135,7 +136,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
 
   return (
     <>
-      {rootDefinitions.map(({ documentElement, elementContext }, index) => {
+      {rootDefinitions?.map(({ documentElement, elementContext }, index) => {
         const { Component, props } = buildDocumentBranch(
           documentElement as DocumentElement,
           {

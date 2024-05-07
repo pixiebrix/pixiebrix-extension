@@ -34,6 +34,7 @@ import { DESCRIPTION_ALLOWED_TAGS } from "@/types/schemaTypes";
 import MarkdownInline from "@/components/MarkdownInline";
 import { type Except } from "type-fest";
 import { type ActionMeta } from "react-select";
+import { freeze } from "@/utils/objectUtils";
 import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
 
 export type FieldProps<
@@ -68,7 +69,7 @@ export type CustomFieldWidgetProps<
   id?: string;
   name: string;
   disabled?: boolean;
-  value: TValue;
+  value: TValue | null;
   onChange: React.ChangeEventHandler<TInputElement>;
   isInvalid?: boolean;
 };
@@ -81,7 +82,7 @@ export type CustomFieldWidget<
   > = CustomFieldWidgetProps<TValue, TInputElement>,
 > = React.ComponentType<TFieldWidgetProps>;
 
-const EMPTY_ANNOTATIONS: FieldAnnotation[] = [] as const;
+const EMPTY_ANNOTATIONS = freeze<FieldAnnotation[]>([]);
 
 const FieldTemplate: <As extends React.ElementType, T = Element>(
   p: FieldProps<As, T>,

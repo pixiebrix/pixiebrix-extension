@@ -36,7 +36,7 @@ export type IconValue = {
 };
 
 const IconWidget: CustomFieldWidget = (props) => {
-  const [field, meta, helpers] = useField<IconValue | null>(props);
+  const [field, meta, helpers] = useField<IconValue | null>(props.name);
 
   const handleSelect = async (option: IconOption | null) => {
     if (option) {

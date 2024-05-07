@@ -30,6 +30,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import useReportError from "@/hooks/useReportError";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import { type EphemeralFormContentProps } from "./EphemeralFormContent";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ModalLayout: React.FC = ({ children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
@@ -58,13 +59,35 @@ const IsolatedEphemeralFormContent: React.FunctionComponent<
   />
 );
 
+function validateOpener(opener: string | null): Target {
+  if (opener == null) {
+    throw new Error("Missing opener");
+  }
+
+  try {
+    const parsed = JSON.parse(opener);
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      "tabId" in parsed &&
+      "frameId" in parsed
+    ) {
+      return parsed as Target;
+    }
+
+    throw new TypeError(`Invalid opener: ${opener}`);
+  } catch {
+    throw new TypeError(`Invalid opener: ${opener}`);
+  }
+}
+
 /**
  * @see FormTransformer
  */
 const EphemeralForm: React.FC = () => {
   const params = new URLSearchParams(location.search);
   const nonce = validateUUID(params.get("nonce"));
-  const opener = JSON.parse(params.get("opener")) as Target;
+  const opener = validateOpener(params.get("opener"));
   const mode = params.get("mode") ?? "modal";
 
   const isModal = mode === "modal";
@@ -113,6 +136,8 @@ const EphemeralForm: React.FC = () => {
       </FormContainer>
     );
   }
+
+  assertNotNullish(formDefinition, "unable to load form definition");
 
   return (
     <FormContainer>

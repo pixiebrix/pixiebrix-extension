@@ -20,6 +20,7 @@ import React, { useCallback, useRef } from "react";
 import { Form } from "react-bootstrap";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { LinkButton } from "@/components/LinkButton";
+import { freeze } from "@/utils/objectUtils";
 
 export type Snippet = {
   label: string;
@@ -32,11 +33,12 @@ type TemplateWidgetProps = CustomFieldWidgetProps & {
   snippets?: Snippet[];
 };
 
-const emptyArray = [] as const;
+const EMPTY_ARRAY = freeze<Snippet[]>([]);
 
 const TemplateWidget: React.FC<TemplateWidgetProps> = ({
-  snippets = emptyArray,
+  snippets = EMPTY_ARRAY,
   rows = 4,
+  value,
   ...props
 }) => {
   const templateInput = useRef<HTMLTextAreaElement | HTMLInputElement | null>(
@@ -81,7 +83,12 @@ const TemplateWidget: React.FC<TemplateWidgetProps> = ({
           ))}
         </div>
       )}
-      <Form.Control {...controlProps} {...props} ref={templateInput} />
+      <Form.Control
+        {...controlProps}
+        {...props}
+        ref={templateInput}
+        value={value ?? undefined}
+      />
     </div>
   );
 };

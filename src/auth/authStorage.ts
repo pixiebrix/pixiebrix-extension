@@ -57,12 +57,12 @@ export function removeListener(handler: AuthListener): void {
 }
 
 function triggerListeners(
-  auth: Partial<TokenAuthData | PartnerAuthData>,
+  auth?: Partial<TokenAuthData | PartnerAuthData>,
 ): void {
   authChanges.emit(auth);
 }
 
-export function TEST_triggerListeners(auth: Partial<TokenAuthData>): void {
+export function TEST_triggerListeners(auth?: Partial<TokenAuthData>): void {
   triggerListeners(auth);
 }
 

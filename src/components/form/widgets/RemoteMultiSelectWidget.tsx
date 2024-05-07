@@ -28,6 +28,7 @@ import useReportError from "@/hooks/useReportError";
 import type { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { useOptionsResolver } from "@/components/form/widgets/useOptionsResolver";
 import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type RemoteMultiSelectWidgetProps<TOption extends Option<TOption["value"]>> =
   CustomFieldWidgetProps<Array<TOption["value"]>, MultiSelectLike<TOption>> & {
@@ -54,6 +55,11 @@ const RemoteMultiSelectWidget = <TOption extends Option<TOption["value"]>>({
   onChange,
   ...selectProps
 }: RemoteMultiSelectWidgetProps<TOption>) => {
+  assertNotNullish(
+    value,
+    "Value must always be defined for RemoteMultiSelectWidget",
+  );
+
   const {
     data: options = [],
     isLoading,

@@ -21,6 +21,7 @@ import { Badge, Button, ButtonGroup, Nav, Tab } from "react-bootstrap";
 import { type ButtonVariant, type Variant } from "react-bootstrap/types";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { freeze } from "@/utils/objectUtils";
 
 export interface TabItem {
   name: string;
@@ -38,13 +39,13 @@ export interface ActionButton {
   icon?: IconProp;
 }
 
-const emptyArray = [] as const;
+const EMPTY_ARRAY = freeze<ActionButton[]>([]);
 
 const EditorTabLayout: React.FC<{
   tabs: TabItem[];
   actionButtons?: ActionButton[];
   defaultTabName?: string;
-}> = ({ tabs, actionButtons = emptyArray, defaultTabName }) => {
+}> = ({ tabs, actionButtons = EMPTY_ARRAY, defaultTabName }) => {
   const [activeTabName, setActiveTabName] = useState<string | undefined>(
     defaultTabName ?? tabs[0]?.name,
   );
