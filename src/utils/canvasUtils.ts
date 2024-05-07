@@ -17,6 +17,7 @@
 
 import axios from "axios";
 import resizeToFit from "intrinsic-scale";
+import { isMV3 } from "@/mv3/api";
 
 export async function loadImageData(
   url: string,
@@ -57,7 +58,9 @@ export async function blobToImageData(
   height: number,
 ): Promise<ImageData> {
   const image = await loadBlobAsImage(blob);
-  const isImageElement = image instanceof HTMLImageElement;
+  // Can only check for HTMLImageElement in MV2
+  // TODO: Remove this check when MV3 is the only supported version and we are using only PNGs
+  const isImageElement = !isMV3 && image instanceof HTMLImageElement;
 
   // SVGs might not have width/height attributes, but they likely have a viewBox
   // so their aspect ratio is natively preserved, regardless of `resizeToFit`
