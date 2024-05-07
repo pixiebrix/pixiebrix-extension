@@ -33,7 +33,7 @@ describe("awaitElementOnce", () => {
       '<div id="root"><div id="menu"></div></div>',
     ).body.innerHTML;
     const promise = awaitElementOnce(".newClass #menu");
-    document.querySelector("#root").classList.add("newClass");
+    document.querySelector("#root")!.classList.add("newClass");
 
     requestIdleCallback.runIdleCallbacks();
     await tick();
@@ -46,7 +46,7 @@ describe("awaitElementOnce", () => {
       '<div id="root"><h1>Foo</h1><div id="menu"></div></div>',
     ).body.innerHTML;
     const promise = awaitElementOnce('#root:has(h1:contains("Bar")) #menu');
-    document.querySelector("h1").textContent = "Bar";
+    document.querySelector("h1")!.textContent = "Bar";
 
     requestIdleCallback.runIdleCallbacks();
     await tick();

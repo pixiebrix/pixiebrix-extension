@@ -22,17 +22,23 @@ import {
   memoizeUntilSettled,
 } from "@/utils/promiseUtils";
 
-async function rawFocusCaptureDialog(
-  message: string,
-  { signal }: AbortSignalAsOptions = {},
-): Promise<void> {
+type FocusCaptureDialogOptions = {
+  message: string;
+  buttonText?: string;
+} & AbortSignalAsOptions;
+
+async function rawFocusCaptureDialog({
+  message,
+  buttonText = "OK",
+  signal,
+}: FocusCaptureDialogOptions): Promise<void> {
   const dialog = document.createElement("dialog");
   dialog.className = "pixiebrix-dialog";
   dialog.textContent = message;
 
   const button = document.createElement("button");
   button.autofocus = true;
-  button.textContent = "OK";
+  button.textContent = buttonText;
 
   dialog.append(button);
   document.body.append(dialog);

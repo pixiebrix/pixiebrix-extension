@@ -31,7 +31,7 @@ export type ItRendersOptions<TProps> = {
   renderFn?: RenderFn;
 };
 
-function testItRenders<TProps = unknown>(
+function testItRenders<TProps extends UnknownObject = UnknownObject>(
   options: ItRendersOptions<TProps> | (() => ItRendersOptions<TProps>),
 ) {
   const {

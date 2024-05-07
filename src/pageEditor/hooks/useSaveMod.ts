@@ -129,74 +129,64 @@ function useSaveMod(): ModSaver {
     // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
     const dirtyModMetadata = allDirtyModMetadatas[modId];
 
-    try {
-      const newMod = await buildAndValidateMod({
-        sourceMod: modDefinition,
-        cleanModComponents,
-        dirtyModComponentFormStates,
-        dirtyModOptions,
-        dirtyModMetadata,
-      });
+    const newMod = await buildAndValidateMod({
+      sourceMod: modDefinition,
+      cleanModComponents,
+      dirtyModComponentFormStates,
+      dirtyModOptions,
+      dirtyModMetadata,
+    });
 
-      const packageId = editablePackages.find(
-        // Bricks endpoint uses "name" instead of id
-        (x) => x.name === newMod.metadata.id,
-      )?.id;
+    const packageId = editablePackages.find(
+      // Bricks endpoint uses "name" instead of id
+      (x) => x.name === newMod.metadata.id,
+    )?.id;
 
-      const upsertResponse = await updateMod({
-        packageId,
-        recipe: newMod,
-      }).unwrap();
+    const upsertResponse = await updateMod({
+      packageId,
+      recipe: newMod,
+    }).unwrap();
 
-      const newModMetadata = selectModMetadata(newMod, upsertResponse);
+    const newModMetadata = selectModMetadata(newMod, upsertResponse);
 
-      // Don't push to cloud since we're saving it with the mod
-      await Promise.all(
-        dirtyModComponentFormStates.map(async (modComponentFormState) =>
-          upsertModComponentFormState({
-            element: modComponentFormState,
-            options: {
-              pushToCloud: false,
-              // Permissions were already checked earlier in the save function here
-              checkPermissions: false,
-              // Notified and reactivated once in safeSave below
-              notifySuccess: false,
-              reactivateEveryTab: false,
-            },
-            modId: newModMetadata.id,
-          }),
-        ),
-      );
+    // Don't push to cloud since we're saving it with the mod
+    await Promise.all(
+      dirtyModComponentFormStates.map(async (modComponentFormState) =>
+        upsertModComponentFormState({
+          element: modComponentFormState,
+          options: {
+            pushToCloud: false,
+            // Permissions were already checked earlier in the save function here
+            checkPermissions: false,
+            // Notified and reactivated once in safeSave below
+            notifySuccess: false,
+            reactivateEveryTab: false,
+          },
+          modId: newModMetadata.id,
+        }),
+      ),
+    );
 
-      // Update the mod metadata on mod components in the options slice
-      dispatch(
-        optionsActions.updateRecipeMetadataForExtensions(newModMetadata),
-      );
+    // Update the mod metadata on mod components in the options slice
+    dispatch(optionsActions.updateRecipeMetadataForExtensions(newModMetadata));
 
-      // Update the mod metadata on mod component form states in the page editor slice
-      dispatch(editorActions.updateRecipeMetadataForElements(newModMetadata));
+    // Update the mod metadata on mod component form states in the page editor slice
+    dispatch(editorActions.updateRecipeMetadataForElements(newModMetadata));
 
-      // Remove any deleted mod component form states from the extensions slice
-      for (const modComponentId of getDeletedComponentIdsForMod(modId)) {
-        dispatch(
-          optionsActions.removeExtension({ extensionId: modComponentId }),
-        );
-      }
-
-      // Clear the dirty states
-      dispatch(
-        editorActions.resetMetadataAndOptionsForRecipe(newModMetadata.id),
-      );
-      dispatch(editorActions.clearDeletedElementsForRecipe(newModMetadata.id));
-
-      reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
-        modId: newMod.metadata.id,
-      });
-
-      return true;
-    } catch {
-      return false;
+    // Remove any deleted mod component form states from the extensions slice
+    for (const modComponentId of getDeletedComponentIdsForMod(modId)) {
+      dispatch(optionsActions.removeExtension({ extensionId: modComponentId }));
     }
+
+    // Clear the dirty states
+    dispatch(editorActions.resetMetadataAndOptionsForRecipe(newModMetadata.id));
+    dispatch(editorActions.clearDeletedElementsForRecipe(newModMetadata.id));
+
+    reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
+      modId: newMod.metadata.id,
+    });
+
+    return true;
   }
 
   async function safeSave(modId: RegistryId) {

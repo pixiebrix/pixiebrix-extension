@@ -31,7 +31,7 @@ export type ActivateModComponentParam = {
   modComponentDefinition: ModComponentDefinition;
   modDefinition: ModDefinition;
   deployment?: Deployment;
-  optionsArgs: OptionsArgs;
+  optionsArgs?: OptionsArgs;
   integrationDependencies: IntegrationDependency[];
 };
 

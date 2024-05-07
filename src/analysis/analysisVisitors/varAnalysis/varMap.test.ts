@@ -47,7 +47,7 @@ describe("setExistence", () => {
     });
 
     const map = varMap.getMap();
-    expect(map.brick1["@foo"][SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
+    expect(map.brick1!["@foo"]![SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
   });
 
   test("overrides MAYBE with DEFINITELY", () => {
@@ -64,7 +64,7 @@ describe("setExistence", () => {
     });
 
     const map = varMap.getMap();
-    expect(map.brick1["@foo"][SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
+    expect(map.brick1!["@foo"]![SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
   });
 
   test("sets a nested key", () => {
