@@ -48,7 +48,7 @@ async function loadBlobAsImage(
 }
 
 function isHTMLImageElement(image: unknown): image is HTMLImageElement {
-  return !isMV3 && image instanceof HTMLImageElement;
+  return !isMV3() && image instanceof HTMLImageElement;
 }
 
 /**
