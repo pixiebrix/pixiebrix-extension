@@ -35,8 +35,8 @@ const RjsfSelectWidget: React.FC<WidgetProps> = ({
   multiple,
 }) => {
   const _onChange = (option: OptionType | null) => {
-    // FIXME: this will pass "" when the value is cleared, but the form may expect undefined/null
-    onChange(option ? option.value : "");
+    // Pass `undefined` on clear to indicate no value is selected. In JSON Schema validation, `null` is a type
+    onChange(option ? option.value : undefined);
   };
 
   const _onBlur = () => {

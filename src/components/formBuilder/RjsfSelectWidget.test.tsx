@@ -22,31 +22,62 @@ import type { Schema } from "@/types/schemaTypes";
 import selectEvent from "react-select-event";
 import { act, screen } from "@testing-library/react";
 
+const optionalFruitSchema: Schema = {
+  type: "object",
+  properties: {
+    fruit: {
+      type: "string",
+      title: "Fruit",
+      enum: ["apple", "banana", "cherry"],
+    },
+  },
+};
+
 describe("RjsfSelectWidget", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test("CustomFormComponent renders clearable widget", async () => {
-    const schema: Schema = {
-      type: "object",
-      properties: {
-        fruit: {
-          type: "string",
-          title: "Fruit",
-          enum: ["apple", "banana", "cherry"],
-        },
-      },
-    };
+  test("selects and and submit", async () => {
+    const onSubmit = jest.fn();
 
     render(
       <CustomFormComponent
-        schema={schema}
+        schema={optionalFruitSchema}
         formData={{}}
         uiSchema={{}}
         submitCaption="Submit"
         autoSave={false}
-        onSubmit={jest.fn()}
+        onSubmit={onSubmit}
+      />,
+    );
+
+    const select = screen.getByRole("combobox");
+
+    await act(async () => {
+      await selectEvent.select(select, "banana");
+      screen.getByRole("button").click();
+    });
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        fruit: "banana",
+      },
+      { submissionCount: 1 },
+    );
+  });
+
+  test("clears and submits", async () => {
+    const onSubmit = jest.fn();
+
+    render(
+      <CustomFormComponent
+        schema={optionalFruitSchema}
+        formData={{}}
+        uiSchema={{}}
+        submitCaption="Submit"
+        autoSave={false}
+        onSubmit={onSubmit}
       />,
     );
 
@@ -59,18 +90,20 @@ describe("RjsfSelectWidget", () => {
     await act(async () => {
       await selectEvent.clearAll(select);
     });
+
+    screen.getByRole("button").click();
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        fruit: undefined,
+      },
+      { submissionCount: 1 },
+    );
   });
 
-  test("CustomFormComponent renders required widget", async () => {
+  test("can't clear required field", async () => {
     const schema: Schema = {
-      type: "object",
-      properties: {
-        fruit: {
-          type: "string",
-          title: "Fruit",
-          enum: ["apple", "banana", "cherry"],
-        },
-      },
+      ...optionalFruitSchema,
       required: ["fruit"],
     };
 
