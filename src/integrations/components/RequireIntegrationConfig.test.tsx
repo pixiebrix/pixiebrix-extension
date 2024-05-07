@@ -85,8 +85,6 @@ const integrationDependency1 = integrationDependencyFactory({
 
 const integrationFieldSchema: Schema = {
   $ref: `https://app.pixiebrix.com/schemas/services/${integrationId}`,
-  title: "Test Service Integration",
-  description: "This is a test service integration description",
 };
 
 const ChildComponent: React.FC<{
@@ -96,6 +94,10 @@ const ChildComponent: React.FC<{
 );
 
 describe("RequireIntegrationConfig", () => {
+  beforeEach(() => {
+    validateIntegrationAuthMock.mockReset();
+  });
+
   it("shows auth options and renders children when option is selected", async () => {
     validateIntegrationAuthMock.mockResolvedValue(true);
     const formState = formStateFactory(
@@ -121,7 +123,7 @@ describe("RequireIntegrationConfig", () => {
     );
 
     // Wait for field to be visible
-    const select = await screen.findByLabelText("Test Service Integration");
+    const select = await screen.findByLabelText("Integration");
     expect(select).toBeInTheDocument();
     // Child should not be visible yet
     expect(
@@ -179,7 +181,7 @@ describe("RequireIntegrationConfig", () => {
     );
 
     // Wait for field to be visible
-    const select = await screen.findByLabelText("Test Service Integration");
+    const select = await screen.findByLabelText("Integration");
     expect(select).toBeInTheDocument();
     // Child should not be visible
     expect(
@@ -255,7 +257,7 @@ describe("RequireIntegrationConfig", () => {
 
     // Wait for field to be visible
     await expect(
-      screen.findByLabelText("Test Service Integration"),
+      screen.findByLabelText("Integration"),
     ).resolves.toBeInTheDocument();
     // Error alert should be visible
     await expect(

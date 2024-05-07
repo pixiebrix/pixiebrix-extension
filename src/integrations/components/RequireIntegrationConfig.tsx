@@ -117,6 +117,7 @@ const RequireIntegrationConfig: React.FC<ConfigProps> = ({
   return (
     <>
       <IntegrationDependencyField
+        label="Integration"
         name={integrationFieldName}
         schema={integrationFieldSchema}
         annotations={authErrorAnnotation ? [authErrorAnnotation] : []}

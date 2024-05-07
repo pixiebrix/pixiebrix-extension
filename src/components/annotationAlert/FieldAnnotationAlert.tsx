@@ -24,24 +24,29 @@ import styles from "./FieldAnnotationAlert.module.scss";
 import AsyncButton from "@/components/AsyncButton";
 import { AnnotationType } from "@/types/annotationTypes";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
+import { type ButtonVariant } from "react-bootstrap/types";
 
 const FieldAnnotationAlert: React.FunctionComponent<
   FieldAnnotation & { className?: string }
 > = ({ message, type, actions, className }) => {
   let Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
+  let variant: ButtonVariant;
   switch (type) {
     case AnnotationType.Error: {
       Icon = ErrorIcon;
+      variant = "danger";
       break;
     }
 
     case AnnotationType.Warning: {
       Icon = WarningIcon;
+      variant = "warning";
       break;
     }
 
     case AnnotationType.Info: {
       Icon = InfoIcon;
+      variant = "info";
       break;
     }
 
@@ -62,7 +67,7 @@ const FieldAnnotationAlert: React.FunctionComponent<
       {actions?.length ? (
         <div className={styles.actions}>
           {actions.map(({ caption, action }) => (
-            <AsyncButton key={caption} onClick={action} variant="danger">
+            <AsyncButton key={caption} onClick={action} variant={variant}>
               {caption}
             </AsyncButton>
           ))}
