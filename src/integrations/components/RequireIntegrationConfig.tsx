@@ -22,7 +22,7 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
 import useAsyncState from "@/hooks/useAsyncState";
-import { validateIntegrationAuth } from "@/integrations/util/validateIntegrationAuth";
+import { checkIntegrationAuth } from "@/integrations/util/checkIntegrationAuth";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 import { AnnotationType } from "@/types/annotationTypes";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
@@ -49,7 +49,7 @@ function useAuthErrorAnnotation(
       return true;
     }
 
-    return validateIntegrationAuth(sanitizedConfig);
+    return checkIntegrationAuth(sanitizedConfig);
   }, [sanitizedConfig]);
 
   // We need to check for null config here because this hook can re-render with null config before the above async effect fires and sets the invalid flag

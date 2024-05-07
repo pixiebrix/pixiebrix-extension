@@ -22,7 +22,7 @@ import {
 } from "@/integrations/constants";
 import { checkConfigAuth } from "@/contrib/automationanywhere/aaApi";
 
-export async function validateIntegrationAuth(
+export async function checkIntegrationAuth(
   config: SanitizedIntegrationConfig,
 ): Promise<boolean> {
   switch (config.serviceId) {

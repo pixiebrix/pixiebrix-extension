@@ -33,15 +33,15 @@ import selectEvent from "react-select-event";
 import { waitFor } from "@testing-library/react";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { pipelineFactory } from "@/testUtils/factories/brickFactories";
-import { validateIntegrationAuth } from "@/integrations/util/validateIntegrationAuth";
+import { checkIntegrationAuth } from "@/integrations/util/checkIntegrationAuth";
 import { makeVariableExpression } from "@/utils/variableUtils";
 
 jest.mock("@/hooks/auth");
-jest.mock("@/integrations/util/validateIntegrationAuth.ts");
+jest.mock("@/integrations/util/checkIntegrationAuth.ts");
 
 const serviceLocateMock = jest.mocked(services.locate);
 const useAuthOptionMock = jest.mocked(useAuthOptions);
-const validateIntegrationAuthMock = jest.mocked(validateIntegrationAuth);
+const checkIntegrationAuthMock = jest.mocked(checkIntegrationAuth);
 
 const integrationId = registryIdFactory();
 
@@ -95,11 +95,11 @@ const ChildComponent: React.FC<{
 
 describe("RequireIntegrationConfig", () => {
   beforeEach(() => {
-    validateIntegrationAuthMock.mockReset();
+    checkIntegrationAuthMock.mockReset();
   });
 
   it("shows auth options and renders children when option is selected", async () => {
-    validateIntegrationAuthMock.mockResolvedValue(true);
+    checkIntegrationAuthMock.mockResolvedValue(true);
     const formState = formStateFactory(
       undefined,
       pipelineFactory({
@@ -157,7 +157,7 @@ describe("RequireIntegrationConfig", () => {
   });
 
   it("does not show children and shows error alert when integration auth is not valid", async () => {
-    validateIntegrationAuthMock.mockResolvedValue(false);
+    checkIntegrationAuthMock.mockResolvedValue(false);
     const formState = formStateFactory(
       undefined,
       pipelineFactory({
@@ -209,7 +209,7 @@ describe("RequireIntegrationConfig", () => {
     ).toBeInTheDocument();
 
     // Error should go away when a valid config is selected
-    validateIntegrationAuthMock.mockResolvedValue(true);
+    checkIntegrationAuthMock.mockResolvedValue(true);
     // Select the second config
     await waitFor(async () => {
       await selectEvent.select(select, config2.label);
@@ -230,7 +230,7 @@ describe("RequireIntegrationConfig", () => {
   });
 
   it("shows retry button in error alert that calls validate again when clicked", async () => {
-    validateIntegrationAuthMock.mockResolvedValue(false);
+    checkIntegrationAuthMock.mockResolvedValue(false);
     const formState = formStateFactory(
       {
         integrationDependencies: [integrationDependency1],
@@ -275,6 +275,6 @@ describe("RequireIntegrationConfig", () => {
         "The configuration for this integration is invalid. Check your credentials and try again.",
       ),
     ).toBeInTheDocument();
-    expect(validateIntegrationAuthMock).toHaveBeenCalledTimes(2);
+    expect(checkIntegrationAuthMock).toHaveBeenCalledTimes(2);
   });
 });
