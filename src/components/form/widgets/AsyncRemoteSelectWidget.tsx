@@ -32,6 +32,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { useDebouncedCallback } from "use-debounce";
 import { type GroupBase } from "react-select";
 import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
+import useIsMounted from "@/hooks/useIsMounted";
 
 type DefaultFactoryArgs = {
   /**
@@ -89,6 +90,8 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   const [knownOptions, setKnownOptions] = useState<Option[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const isMounted = useIsMounted();
+
   const setOptions = useCallback(
     (options: Option[], reactSelectCallback: (options: Option[]) => void) => {
       setKnownOptions((prev) => uniqBy([...prev, ...options], (x) => x.value));
@@ -111,13 +114,24 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
             query,
             value,
           })) as Option[];
+
+          if (!isMounted()) {
+            return;
+          }
+
           setOptions(rawOptions, callback);
           setLocalError(null);
         } catch (error) {
+          if (!isMounted()) {
+            return;
+          }
+
           setOptions([], callback);
           setLocalError(getErrorMessage(error, "Error loading options"));
         } finally {
-          setIsLoading(false);
+          if (isMounted()) {
+            setIsLoading(false);
+          }
         }
       };
 
@@ -162,7 +176,6 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
           loadOptions={loadOptions}
           onChange={patchedOnChange}
           value={selectedOption}
-          isDisabled={isInvalid}
           placeholder={isInvalid ? "" : placeholder}
           {...asyncSelectProps}
         />

@@ -64,7 +64,6 @@ const IntegrationDependencyField: React.FunctionComponent<
   IntegrationDependencyWidgetProps
 > = ({ detectDefault = true, ...props }) => {
   const { schema } = props;
-
   // Use FieldTemplate here directly b/c this component is mapping between the Formik state and the options for the
   // select widget.
   return (

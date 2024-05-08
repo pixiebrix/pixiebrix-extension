@@ -93,6 +93,24 @@ type PaginationPayload = {
 };
 
 /**
+ * Check a control room integration to see if the authentication is valid
+ */
+export async function checkConfigAuth(
+  config: SanitizedIntegrationConfig,
+): Promise<boolean> {
+  try {
+    const response = await getPlatform().request<boolean>(config, {
+      url: "v1/authentication/token",
+      method: "GET",
+    });
+    return response.data;
+  } catch (error) {
+    console.warn("Error while validating control room integration", error);
+    return false;
+  }
+}
+
+/**
  * Fetch paginated Control Room responses.
  * @param config the control room integration configuration
  * @param requestConfig the axios configuration for the request

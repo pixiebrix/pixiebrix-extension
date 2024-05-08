@@ -23,7 +23,7 @@ exports[`FieldAnnotationAlert renders error 1`] = `
       class="actions"
     >
       <button
-        class="btn btn-primary"
+        class="btn btn-danger"
         type="button"
       >
         Test Action
@@ -56,7 +56,7 @@ exports[`FieldAnnotationAlert renders info 1`] = `
       class="actions"
     >
       <button
-        class="btn btn-primary"
+        class="btn btn-info"
         type="button"
       >
         Test Action
@@ -89,7 +89,7 @@ exports[`FieldAnnotationAlert renders warning 1`] = `
       class="actions"
     >
       <button
-        class="btn btn-primary"
+        class="btn btn-warning"
         type="button"
       >
         Test Action
