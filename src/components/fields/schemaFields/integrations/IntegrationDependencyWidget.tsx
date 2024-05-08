@@ -337,7 +337,7 @@ const IntegrationDependencyWidget: React.FC<
             authOptions ?? [],
             value.__value__,
           )
-        : undefined,
+        : null,
     [authOptions, rootValues.integrationDependencies, value?.__value__],
   );
 
