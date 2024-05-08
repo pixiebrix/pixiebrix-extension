@@ -25,7 +25,6 @@ import {
   type SettingsFlags,
   type SettingsState,
 } from "@/store/settings/settingsTypes";
-import { isEmpty } from "lodash";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
@@ -97,13 +96,11 @@ const settingsSlice = createSlice({
       state,
       {
         payload: { integrationId },
-      }: { payload: { integrationId: RegistryId } },
+      }: { payload: { integrationId: RegistryId | null } },
     ) {
       // Ensure valid data for authServiceId
       state.authIntegrationId =
-        !isEmpty(integrationId) && isRegistryId(integrationId)
-          ? integrationId
-          : null;
+        integrationId && isRegistryId(integrationId) ? integrationId : null;
     },
     setAuthMethod(
       state,

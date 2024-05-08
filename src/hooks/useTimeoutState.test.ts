@@ -40,6 +40,6 @@ test("clear timeout state", () => {
   expect(result.current).toBe(false);
   jest.advanceTimersByTime(300);
   expect(result.current).toBe(true);
-  rerender(null);
+  rerender(undefined);
   expect(result.current).toBe(false);
 });

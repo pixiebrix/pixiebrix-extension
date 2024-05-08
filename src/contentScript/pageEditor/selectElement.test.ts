@@ -34,7 +34,7 @@ beforeEach(() => {
 describe("selectElement", () => {
   test("can select single element", async () => {
     document.body.innerHTML = "<div><span>hello</span></div>";
-    const span = document.querySelector("span");
+    const span = document.querySelector("span")!;
 
     const selectPromise = selectElement({
       mode: "element",
@@ -55,7 +55,7 @@ describe("selectElement", () => {
   test("can select relative to single root", async () => {
     document.body.innerHTML =
       '<div><div id="root"><span>hello</span></div><div><span>goodbye</span></div></div>';
-    const span = document.querySelector("span");
+    const span = document.querySelector("span")!;
 
     const selectPromise = selectElement({
       mode: "element",
@@ -81,7 +81,7 @@ describe("selectElement", () => {
       document.body.innerHTML =
         '<div><div id="root1" class="root"><span>hello</span></div><div id="root2" class="root"><span>goodbye</span></div></div>';
 
-      const span = document.querySelector(`${root} span`);
+      const span = document.querySelector(`${root} span`)!;
 
       const selectPromise = selectElement({
         mode: "element",
@@ -112,7 +112,7 @@ describe("selectElement", () => {
       isMulti: true,
     });
 
-    const args = showSelectionToolPopoverMock.mock.calls[0][0];
+    const args = showSelectionToolPopoverMock.mock.calls[0]![0];
 
     const selectionHandlerMock = jest.fn();
 
@@ -120,12 +120,12 @@ describe("selectElement", () => {
 
     // React testing userEvent library doesn't seem to work here
     document
-      .querySelector("#span1")
+      .querySelector("#span1")!
       .dispatchEvent(
         new MouseEvent("click", { bubbles: true, cancelable: true }),
       );
     document
-      .querySelector("#span2")
+      .querySelector("#span2")!
       .dispatchEvent(
         new MouseEvent("click", { bubbles: true, cancelable: true }),
       );
@@ -153,7 +153,7 @@ describe("selectElement", () => {
       isMulti: true,
     });
 
-    const args = showSelectionToolPopoverMock.mock.calls[0][0];
+    const args = showSelectionToolPopoverMock.mock.calls[0]![0];
 
     const selectionHandlerMock = jest.fn();
 
@@ -164,12 +164,12 @@ describe("selectElement", () => {
 
     // React testing userEvent library doesn't seem to work here
     document
-      .querySelector("#span1")
+      .querySelector("#span1")!
       .dispatchEvent(
         new MouseEvent("click", { bubbles: true, cancelable: true }),
       );
     document
-      .querySelector("#span2")
+      .querySelector("#span2")!
       .dispatchEvent(
         new MouseEvent("click", { bubbles: true, cancelable: true }),
       );

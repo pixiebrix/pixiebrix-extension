@@ -24,7 +24,7 @@ const Template: ComponentStory<typeof Pagination> = ({
   };
 
   return (
-    <Pagination page={page} setPage={onSetPage} numPages={numPages} {...rest} />
+    <Pagination setPage={onSetPage} numPages={numPages} {...rest} page={page} />
   );
 };
 

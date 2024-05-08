@@ -30,13 +30,16 @@ import { rest } from "msw";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
+import { type ApiVersion } from "@/types/runtimeTypes";
+import { type Timestamp } from "@/types/stringTypes";
+import { validateRegistryId } from "@/types/helpers";
 
 export default {
   title: "ModsPage/GetStartedView",
   component: GetStartedView,
 } as ComponentMeta<typeof GetStartedView>;
 
-function optionsStore(initialState?: unknown) {
+function optionsStore(initialState?: UnknownObject) {
   return configureStore({
     reducer: {
       modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),
@@ -53,10 +56,17 @@ function optionsStore(initialState?: unknown) {
 
 const testRecipe = {
   metadata: {
-    id: "@pixiebrix/test-blueprint",
+    id: validateRegistryId("@pixiebrix/test-blueprint"),
     name: "Test Blueprint",
   },
   extensionPoints: [],
+  sharing: {
+    public: true,
+    organizations: [],
+  },
+  updated_at: "2022-01-01T00:00:00Z" as Timestamp,
+  kind: "recipe",
+  apiVersion: "v3" as ApiVersion,
 } as ModDefinition;
 
 const Template: ComponentStory<typeof GetStartedView> = (args) => (

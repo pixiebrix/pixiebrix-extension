@@ -37,9 +37,13 @@ import {
   type KindFilterValue,
   mapKindToKindUiValue,
 } from "@/extensionConsole/pages/workshop/workshopUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 type TableColumn = Column<EnrichedBrick>;
-function inferIcon(kind: KindFilterValue, verboseName: string): IconProp {
+function inferIcon(
+  kind: KindFilterValue,
+  verboseName: Nullishable<string>,
+): IconProp {
   switch (kind) {
     case "Integration": {
       return faCloud;
@@ -50,6 +54,10 @@ function inferIcon(kind: KindFilterValue, verboseName: string): IconProp {
     }
 
     case "Starter": {
+      if (verboseName == null) {
+        return faCube;
+      }
+
       // HACK: inferring from the brick naming convention instead of the type since the API doesn't return it yet
       const normalized = verboseName.toLowerCase();
       if (normalized.includes("trigger")) {

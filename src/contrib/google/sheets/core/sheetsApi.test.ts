@@ -176,7 +176,7 @@ describe("error handling", () => {
       expect(deleteCachedAuthDataMock).toHaveBeenCalledOnce();
 
       expect(
-        axiosMock.history.get.filter((x) => x.url.startsWith(DRIVE_BASE_URL)),
+        axiosMock.history.get!.filter((x) => x.url!.startsWith(DRIVE_BASE_URL)),
       ).toHaveLength(2);
       expect(axiosMock.history.post).toHaveLength(0);
     },
@@ -221,7 +221,7 @@ describe("error handling", () => {
       expect(deleteCachedAuthDataMock).toHaveBeenCalledOnce();
 
       expect(
-        axiosMock.history.get.filter((x) => x.url.startsWith(DRIVE_BASE_URL)),
+        axiosMock.history.get!.filter((x) => x.url!.startsWith(DRIVE_BASE_URL)),
       ).toHaveLength(2);
       expect(axiosMock.history.post).toHaveLength(1);
     },
@@ -258,14 +258,14 @@ describe("error handling", () => {
       });
       expect(deleteCachedAuthDataMock).not.toHaveBeenCalled();
 
-      const googleGetRequests = axiosMock.history.get.filter((x) =>
-        x.url.startsWith(DRIVE_BASE_URL),
+      const googleGetRequests = axiosMock.history.get!.filter((x) =>
+        x.url!.startsWith(DRIVE_BASE_URL),
       );
       expect(googleGetRequests).toHaveLength(2);
-      expect(googleGetRequests[0].headers.Authorization).toBe(
+      expect(googleGetRequests[0]!.headers!.Authorization).toBe(
         "Bearer NOTAREALTOKEN",
       );
-      expect(googleGetRequests[1].headers.Authorization).toBe(
+      expect(googleGetRequests[1]!.headers!.Authorization).toBe(
         "Bearer NOTAREALTOKEN2",
       );
       expect(axiosMock.history.post).toHaveLength(1);

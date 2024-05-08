@@ -94,13 +94,14 @@ describe("useMilestones", () => {
   });
 
   test("get milestone", () => {
-    const test_milestone_response: components["schemas"]["Me"]["milestones"][number] =
-      {
-        key: "test_milestone_1",
-        metadata: {
-          value: "foo",
-        },
-      };
+    const test_milestone_response: NonNullable<
+      components["schemas"]["Me"]["milestones"]
+    >[number] = {
+      key: "test_milestone_1",
+      metadata: {
+        value: "foo",
+      },
+    };
     const {
       result: {
         current: { getMilestone },
