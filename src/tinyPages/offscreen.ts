@@ -24,7 +24,9 @@ import { type SemVerString } from "@/types/registryTypes";
 const OFFSCREEN_DOCUMENT_PATH = "offscreen.html";
 let createOffscreenDocumentPromise: Promise<void> | null = null;
 
-chrome.runtime.onMessage.addListener(handleMessages);
+// Use optional chaining in case the chrome runtime is not available:
+// https://github.com/pixiebrix/pixiebrix-extension/issues/8397
+chrome.runtime?.onMessage.addListener(handleMessages);
 
 export type RecordErrorMessage = {
   target: "offscreen-doc";
