@@ -25,12 +25,12 @@ import {
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { type AuthOption } from "@/auth/authTypes";
-import { render, screen } from "@/pageEditor/testHelpers";
+import { render, screen, userEvent } from "@/pageEditor/testHelpers";
 import RequireIntegrationConfig from "@/integrations/components/RequireIntegrationConfig";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type Schema } from "@/types/schemaTypes";
 import selectEvent from "react-select-event";
-import { waitFor } from "@testing-library/react";
+import { act } from "@testing-library/react";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { pipelineFactory } from "@/testUtils/factories/brickFactories";
 import { checkIntegrationAuth } from "@/integrations/util/checkIntegrationAuth";
@@ -133,7 +133,7 @@ describe("RequireIntegrationConfig", () => {
       screen.queryByText("Child Component using config Test Config 2"),
     ).not.toBeInTheDocument();
     // Select the first config
-    await waitFor(async () => {
+    await act(async () => {
       await selectEvent.select(select, config1.label);
     });
     // Child 1 should now be visible
@@ -144,7 +144,7 @@ describe("RequireIntegrationConfig", () => {
       screen.queryByText("Child Component using config Test Config 2"),
     ).not.toBeInTheDocument();
     // Select the second config
-    await waitFor(async () => {
+    await act(async () => {
       await selectEvent.select(select, config2.label);
     });
     // Child 2 should now be visible
@@ -191,9 +191,15 @@ describe("RequireIntegrationConfig", () => {
       screen.queryByText("Child Component using config Test Config 2"),
     ).not.toBeInTheDocument();
     // Select the first config
-    await waitFor(async () => {
+    await act(async () => {
       await selectEvent.select(select, config1.label);
     });
+    // Error alert should be visible
+    expect(
+      screen.getByText(
+        "The configuration for this integration is invalid. Check your credentials and try again.",
+      ),
+    ).toBeInTheDocument();
     // Child still should not be visible
     expect(
       screen.queryByText("Child Component using config Test Config 1"),
@@ -201,17 +207,11 @@ describe("RequireIntegrationConfig", () => {
     expect(
       screen.queryByText("Child Component using config Test Config 2"),
     ).not.toBeInTheDocument();
-    // Error alert should be visible
-    expect(
-      screen.getByText(
-        "The configuration for this integration is invalid. Check your credentials and try again.",
-      ),
-    ).toBeInTheDocument();
 
     // Error should go away when a valid config is selected
     checkIntegrationAuthMock.mockResolvedValue(true);
     // Select the second config
-    await waitFor(async () => {
+    await act(async () => {
       await selectEvent.select(select, config2.label);
     });
     // Error alert should not be visible
@@ -260,15 +260,13 @@ describe("RequireIntegrationConfig", () => {
       screen.findByLabelText("Integration"),
     ).resolves.toBeInTheDocument();
     // Error alert should be visible
-    await expect(
-      screen.findByText(
+    expect(
+      screen.getByText(
         "The configuration for this integration is invalid. Check your credentials and try again.",
       ),
-    ).resolves.toBeInTheDocument();
+    ).toBeInTheDocument();
     // Click the retry button
-    await waitFor(() => {
-      screen.getByText("Retry").click();
-    });
+    await userEvent.click(screen.getByText("Retry"));
     // Error alert should still be visible
     expect(
       screen.getByText(

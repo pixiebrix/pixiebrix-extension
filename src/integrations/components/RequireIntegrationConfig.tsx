@@ -117,6 +117,7 @@ const RequireIntegrationConfig: React.FC<ConfigProps> = ({
   return (
     <>
       <IntegrationDependencyField
+        // Hard-coding this because it's hard to change the schema to add a title, and we don't want it to default to "Service"
         label="Integration"
         name={integrationFieldName}
         schema={integrationFieldSchema}
