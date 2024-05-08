@@ -32,7 +32,7 @@ export function mapSchemaToOptions({
   created = [],
 }: {
   schema: Pick<Schema, "examples" | "enum" | "type" | "oneOf">;
-  value: string;
+  value?: string;
   created?: string[];
 }): {
   creatable: boolean;

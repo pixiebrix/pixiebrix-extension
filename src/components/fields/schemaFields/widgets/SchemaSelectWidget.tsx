@@ -29,8 +29,8 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 
 export type StringOption = {
-  label: string;
-  value: string;
+  label?: string;
+  value?: string;
 };
 
 export type StringOptionsType = Options<StringOption>;

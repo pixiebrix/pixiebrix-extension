@@ -31,15 +31,18 @@ test("useTimeoutState", () => {
 });
 
 test("clear timeout state", () => {
-  const { result, rerender } = renderHook((props) => useTimeoutState(props), {
-    initialProps: 300,
-  });
+  const { result, rerender } = renderHook(
+    (props: number | null) => useTimeoutState(props),
+    {
+      initialProps: 300,
+    },
+  );
 
   expect(result.current).toBe(false);
   jest.advanceTimersByTime(30);
   expect(result.current).toBe(false);
   jest.advanceTimersByTime(300);
   expect(result.current).toBe(true);
-  rerender(undefined);
+  rerender(null);
   expect(result.current).toBe(false);
 });

@@ -46,19 +46,6 @@ function selectFilters(state: { workshop: WorkshopState }) {
   return state.workshop.filters;
 }
 
-function validateBrickName(brickName: string): {
-  scope: string;
-  collection: string;
-} {
-  const match = PACKAGE_REGEX.exec(brickName);
-
-  if (!match?.groups?.scope || !match.groups.collection) {
-    throw new TypeError(`Invalid brick name: ${brickName}`);
-  }
-
-  return { scope: match.groups.scope, collection: match.groups.collection };
-}
-
 export function useEnrichBricks(
   bricks: Nullishable<EditablePackageMetadata[]>,
 ): EnrichedBrick[] {
@@ -69,7 +56,9 @@ export function useEnrichBricks(
 
     return orderBy(
       (bricks ?? []).map((brick) => {
-        const { scope, collection } = validateBrickName(brick.name);
+        const match = PACKAGE_REGEX.exec(brick.name);
+
+        const { scope, collection } = match?.groups ?? {};
 
         return {
           ...brick,
@@ -163,8 +152,9 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
 
     return results.filter(
       (x) =>
-        (scopes.length === 0 || scopes.includes(x.scope)) &&
-        (collections.length === 0 || collections.includes(x.collection)) &&
+        (scopes.length === 0 || (x.scope && scopes.includes(x.scope))) &&
+        (collections.length === 0 ||
+          (x.collection && collections.includes(x.collection))) &&
         (kinds.length === 0 || kinds.includes(mapKindToKindUiValue(x.kind))),
     );
   }, [fuse, query, scopes, collections, kinds, bricks]);
@@ -193,7 +183,9 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
             isMulti
             placeholder="Filter @scope"
             options={scopeOptions}
-            value={scopeOptions.filter((x) => scopes.includes(x.value))}
+            value={scopeOptions.filter(
+              (x) => x.value && scopes.includes(x.value),
+            )}
             onChange={(values) => {
               dispatch(actions.setScopes((values ?? []).map((x) => x.value)));
             }}
@@ -204,8 +196,8 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
             isMulti
             placeholder="Filter collection"
             options={collectionOptions}
-            value={collectionOptions.filter((x) =>
-              collections.includes(x.value),
+            value={collectionOptions.filter(
+              (x) => x.value && collections.includes(x.value),
             )}
             onChange={(values) => {
               dispatch(
