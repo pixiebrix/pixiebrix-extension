@@ -496,7 +496,6 @@
     "./testUtils/factories/pageEditorFactories.ts",
     "./testUtils/factories/runtimeFactories.ts",
     "./testUtils/injectRegistries.ts",
-    "./tinyPages/frame.ts",
     "./utils/deploymentUtils.test.ts"
   ]
 }
