@@ -4,6 +4,20 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/slices/editorSelectors.ts",
+    "./pageEditor/slices/runtimeSelectors.ts",
+    "./pageEditor/tabs/editTab/AnalysisResult.tsx",
+    "./pageEditor/tabs/editTab/editorNodes/brickNode/BrickNode.tsx",
+    "./pageEditor/tabs/editTab/useReportTraceError.ts",
+    "./pageEditor/tabs/effect/AdvancedLinks.test.tsx",
+    "./pageEditor/utils.ts",
+    "./pageScript/pageScript.ts",
+    "./runtime/extendModVariableContext.test.ts",
+    "./runtime/mapArgs.test.ts",
+    "./components/form/FieldTemplate.test.tsx",
+    "./integrations/components/RequireIntegrationConfig.tsx",
+    "./pageEditor/tabs/editTab/dataPanel/tabs/PageStateTab.tsx",
+
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/envSetup.ts",

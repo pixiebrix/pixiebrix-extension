@@ -136,7 +136,7 @@ attachListener(
     waitMillis: number;
   }) => {
     const factory = () => {
-      const values = readPathSpec(window, pathSpec);
+      const values = readPathSpec(window, pathSpec) as UnknownObject;
       return Object.values(values).every((value) => isEmpty(value))
         ? undefined
         : values;
@@ -176,7 +176,7 @@ async function read<TComponent>(
     throw error;
   }
 
-  let component: TComponent;
+  let component: TComponent | null = null;
 
   try {
     component = await awaitValue(() => adapter.getComponent(element), {
@@ -224,7 +224,7 @@ async function read<TComponent>(
 attachListener(
   GET_COMPONENT_DATA,
   async ({ framework, selector, ...options }: ReadPayload) => {
-    if (isEmpty(selector)) {
+    if (!selector) {
       // Just warn here, as there's no harm in returning blank data value (e.g., when a load trigger is first
       // added via the page editor)
       console.warn("No selector provided");
@@ -249,7 +249,7 @@ attachListener(
     }
 
     const adapter = adapters.get(framework as FrameworkAdapter);
-    if (!("setData" in adapter)) {
+    if (!adapter || !("setData" in adapter)) {
       throw new Error(`No write adapter available for ${framework}`);
     }
 
@@ -261,7 +261,11 @@ attachListener(
 
 attachListener(
   GET_ELEMENT_INFO,
-  async ({ selector }: { selector: string }): Promise<ElementInfo> => {
+  async ({
+    selector,
+  }: {
+    selector: string;
+  }): Promise<ElementInfo | undefined> => {
     const element = findSingleElement(selector);
     const info = await elementInfo(element, [selector], 0);
     console.debug("Element info", { element, selector, info });
