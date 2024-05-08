@@ -77,7 +77,7 @@ function testStore() {
 
 const TEST_MESSAGE = "Test message";
 
-function createUncaughtRejection(reason: string | Error) {
+function createUncaughtRejection(reason: string | Error | null) {
   // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- We want to test both
   const promise = Promise.reject(reason);
   // eslint-disable-next-line promise/prefer-await-to-then -- Test only
@@ -524,7 +524,7 @@ describe("selectErrorFromRejectionEvent", () => {
   it("handles PromiseRejectionEvent with null reason", () => {
     const errorEvent = new PromiseRejectionEvent(
       "error",
-      createUncaughtRejection("test"),
+      createUncaughtRejection(null),
     );
 
     const selectedError = selectErrorFromRejectionEvent(errorEvent);
