@@ -39,7 +39,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [{ value: fieldValue }, , { setValue: setFieldValue }] = useField<
-    UUID | Expression | string
+    UUID | Expression | null
   >(name);
   const { allowExpressions } = useContext(FieldRuntimeContext);
 
@@ -49,7 +49,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   const initialFieldValue = useMemo(() => fieldValue, []);
   const fullDatabaseOptions = useMemo(() => {
-    const loadedOptions = isLoadingDatabaseOptions ? [] : databaseOptions;
+    const loadedOptions = isLoadingDatabaseOptions ? [] : databaseOptions ?? [];
 
     // If the schema format is 'preview', and the initial field value is a string, use that string
     // as the auto-created database name, and add it as an option to the database dropdown at the

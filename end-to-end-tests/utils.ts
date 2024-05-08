@@ -128,8 +128,7 @@ export async function getSidebarPage(
 
     // In MV3, the sidebar sometimes requires the user to interact with modal to open the sidebar via a user gesture
     const conditionallyPerformUserGesture = async () => {
-      await expect(page.getByRole("button", { name: "OK" })).toBeVisible();
-      await page.getByRole("button", { name: "OK" }).click();
+      await page.getByRole("button", { name: "Open Sidebar" }).click();
       return findSidebarPage(page, extensionId);
     };
 

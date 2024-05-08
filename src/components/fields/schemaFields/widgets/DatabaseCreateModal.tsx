@@ -59,7 +59,7 @@ type DatabaseConfig = {
 const databaseSchema: yup.SchemaOf<DatabaseConfig> = yup.object().shape({
   name: yup.string().required(),
   organizationId: yup.string(),
-  groupId: yup.string(),
+  groupId: yup.string().required().nullable(),
 });
 
 const initialValues: DatabaseConfig = {

@@ -183,7 +183,7 @@ export const CUSTOM_FORM_SCHEMA: Schema = {
       // @ts-expect-error -- Custom format
       schema: { type: "string", format: "bootstrap-class" },
       label: "Layout/Style",
-    },
+    } as Schema,
     stylesheets: {
       type: "array",
       items: {

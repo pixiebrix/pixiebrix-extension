@@ -81,18 +81,19 @@ function lookupAuthId(
   dependencies: IntegrationDependency[],
   authOptions: AuthOption[],
   value: IntegrationDependencyVarRef,
-): UUID | undefined {
-  const dependency =
-    value == null
-      ? null
-      : dependencies.find(
-          ({ outputKey }) =>
-            makeVariableExpression(outputKey).__value__ === value,
-        );
+): UUID | null {
+  if (value == null) {
+    return null;
+  }
+
+  const dependency = dependencies.find(
+    ({ outputKey }) => makeVariableExpression(outputKey).__value__ === value,
+  );
 
   return dependency == null
-    ? undefined
-    : authOptions.find(({ value }) => value === dependency.configId)?.value;
+    ? null
+    : authOptions.find(({ value }) => value === dependency.configId)?.value ??
+        null;
 }
 
 /**
