@@ -50,8 +50,6 @@ export const launchPersistentContextWithExtension = async (
 export const getExtensionId = async (context: BrowserContext) => {
   let background;
 
-  console.log("MV", MV);
-
   if (MV === "3") {
     background = context.serviceWorkers()[0];
     background ||= await context.waitForEvent("serviceworker", {
