@@ -124,9 +124,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
         onChange={async (
           event: React.ChangeEvent<SelectLike<Option<UUID>>>,
         ) => {
-          if (event.target.value) {
-            await setDatabaseId(event.target.value);
-          }
+          await setDatabaseId(event.target.value);
         }}
         components={{
           MenuList: createMenuListWithAddButton(() => {
