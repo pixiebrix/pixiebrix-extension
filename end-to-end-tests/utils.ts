@@ -209,8 +209,10 @@ export async function clickAndWaitForNewPage(
 // A permanent fix has been merged but not released
 // See: https://github.com/microsoft/playwright/pull/30572
 export async function getBrowserOs(page: Page): Promise<string> {
-  let OSName: string;
+  let OSName = "";
+
   const response = String(await page.evaluate(() => navigator.userAgent));
+
   if (response.includes("Win")) {
     OSName = "Windows";
   }
