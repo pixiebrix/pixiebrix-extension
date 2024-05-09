@@ -54,12 +54,10 @@ export class ExtensionsShortcutsPage {
 
     if (this.chromiumChannel === "chrome") {
       await expect(
-        this.page.getByRole("heading", { name: "PixieBrix - Development" }),
+        this.page.getByRole("heading", { name: /PixieBrix/ }),
       ).toBeVisible();
     } else {
-      await expect(
-        this.page.getByText("PixieBrix - Development"),
-      ).toBeVisible();
+      await expect(this.page.getByText(/PixieBrix/)).toBeVisible();
     }
   }
 
@@ -79,17 +77,14 @@ export class ExtensionsShortcutsPage {
         .click();
 
       await expect(
-        this.page.getByLabel(
-          "Shortcut Toggle Quick Bar for PixieBrix - Development",
-          {
-            exact: true,
-          },
-        ),
+        this.page.getByLabel(/Shortcut Toggle Quick Bar for PixieBrix/, {
+          exact: true,
+        }),
       ).toBeEmpty();
     } else {
       await expect(
         this.page.getByLabel(
-          "Type a shortcut that will Toggle Quick Bar for PixieBrix - Development extension",
+          /Type a shortcut that will Toggle Quick Bar for PixieBrix/,
         ),
       ).toHaveValue(shortcut);
 
@@ -111,12 +106,7 @@ export class ExtensionsShortcutsPage {
 
     if (this.chromiumChannel === "chrome") {
       await expect(
-        this.page.getByLabel(
-          "Shortcut Toggle Quick Bar for PixieBrix - Development",
-          {
-            exact: true,
-          },
-        ),
+        this.page.getByLabel(/Shortcut Toggle Quick Bar for PixieBrix/),
       ).toBeEmpty();
 
       await this.page.getByLabel("Edit shortcut Toggle Quick").click();
@@ -137,7 +127,7 @@ export class ExtensionsShortcutsPage {
       ).toHaveValue(shortcut);
     } else {
       const input = this.page.getByLabel(
-        "Type a shortcut that will Toggle Quick Bar for PixieBrix - Development extension",
+        /Type a shortcut that will Toggle Quick Bar for PixieBrix/,
       );
 
       await expect(input).toBeEmpty();
