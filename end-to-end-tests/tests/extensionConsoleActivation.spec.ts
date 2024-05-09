@@ -19,12 +19,12 @@ import { test, expect } from "../fixtures/extensionBase";
 import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base, type Frame } from "@playwright/test";
-import { getSidebarPage, runModViaQuickBar } from "../utils";
+import { getSidebarPage, openInNewPage, runModViaQuickBar } from "../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
 import { MV } from "../env";
-import { extension } from "webextension-polyfill";
+import { ExtensionsShortcutsPage } from "end-to-end-tests/pageObjects/extensionsShortcutsPage";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -167,12 +167,51 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
 });
 
 test("activating a mod when the quickbar shortcut is not configured", async ({
+  context,
   page,
   extensionId,
+  chromiumChannel,
 }) => {
-  const shortcutsPage = new ChromeExtensionsShortcutsPage(page);
+  const modId = "@e2e-testing/show-alert";
+
+  const shortcutsPage = new ExtensionsShortcutsPage(page, chromiumChannel);
 
   await shortcutsPage.goto();
 
-  await shortcutsPage.pause();
+  await shortcutsPage.clearShortcut();
+
+  const newPage = await context.newPage();
+
+  const modActivationPage = new ActivateModPage(newPage, extensionId, modId);
+  await modActivationPage.goto();
+
+  await expect(
+    modActivationPage.keyboardShortcutDocumentationLink(),
+  ).toBeVisible();
+  await modActivationPage.keyboardShortcutDocumentationLink().click();
+
+  await expect(
+    newPage.getByRole("heading", { name: "Changing the Quick Bar" }),
+  ).toBeVisible();
+  await newPage.goBack();
+
+  await expect(modActivationPage.configureQuickbarShortcutLink()).toBeVisible();
+
+  const configureShortcutPage = await openInNewPage(
+    modActivationPage.configureQuickbarShortcutLink(),
+    context,
+  );
+
+  await expect(configureShortcutPage).toHaveURL(shortcutsPage.getPageUrl());
+  await configureShortcutPage.close();
+
+  await shortcutsPage.setShortcut();
+
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
+  await page.bringToFront();
+  await page.goto("/");
+
+  await runModViaQuickBar(page, "Show Alert");
+  await expect(page.getByText("Quick Bar Action ran")).toBeVisible();
 });

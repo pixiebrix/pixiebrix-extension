@@ -16,7 +16,13 @@
  */
 
 import type AxeBuilder from "@axe-core/playwright";
-import { type Locator, expect, type Page, type Frame } from "@playwright/test";
+import {
+  type Locator,
+  expect,
+  type Page,
+  type Frame,
+  type BrowserContext,
+} from "@playwright/test";
 import { MV } from "./env";
 
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
@@ -179,4 +185,55 @@ export async function conditionallyHoverOverMV2Sidebar(page: Page) {
     const sidebarFrame = page.locator("#pixiebrix-extension");
     await sidebarFrame.dispatchEvent("mouseenter");
   }
+}
+
+/**
+ * Returns a reference to the new page that was opened.
+ * @param locator The anchor or button that opens the new page (must be clickable)
+ * @param context The browser context
+ */
+export async function openInNewPage(
+  locator: Locator,
+  context: BrowserContext,
+): Promise<Page> {
+  const pagePromise = context.waitForEvent("page");
+
+  await locator.click();
+
+  return pagePromise;
+}
+
+// Temporary workaround for determining which modifiers to use for keyboard shortcuts
+// A permanent fix has been merged but not released
+// See: https://github.com/microsoft/playwright/pull/30572
+export async function getBrowserOs(page: Page): Promise<string> {
+  let OSName: string;
+  const response = String(await page.evaluate(() => navigator.userAgent));
+  if (response.includes("Win")) {
+    OSName = "Windows";
+  }
+
+  if (response.includes("Mac")) {
+    OSName = "MacOS";
+  }
+
+  if (response.includes("X11")) {
+    OSName = "Unix";
+  }
+
+  if (response.includes("Linux")) {
+    OSName = "Linux";
+  }
+
+  return OSName;
+}
+
+export async function getModifierKey(page: Page): Promise<string> {
+  const OSName = await getBrowserOs(page);
+  return OSName === "MacOS" ? "Meta" : "Control";
+}
+
+export async function getModifierSymbol(page: Page): Promise<string> {
+  const OSName = await getBrowserOs(page);
+  return OSName === "MacOS" ? "⌘" : "⌃";
 }
