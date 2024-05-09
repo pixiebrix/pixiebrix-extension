@@ -34,6 +34,7 @@ import { mapKindToKindUiValue } from "@/extensionConsole/pages/workshop/workshop
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { useGetEditablePackagesQuery } from "@/data/service/api";
 import { type EditablePackageMetadata } from "@/types/contract";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const { actions } = workshopSlice;
 
@@ -46,7 +47,7 @@ function selectFilters(state: { workshop: WorkshopState }) {
 }
 
 export function useEnrichBricks(
-  bricks: EditablePackageMetadata[],
+  bricks: Nullishable<EditablePackageMetadata[]>,
 ): EnrichedBrick[] {
   const recent = useSelector(selectRecent);
 
@@ -56,11 +57,14 @@ export function useEnrichBricks(
     return orderBy(
       (bricks ?? []).map((brick) => {
         const match = PACKAGE_REGEX.exec(brick.name);
+
+        const { scope, collection } = match?.groups ?? {};
+
         return {
           ...brick,
-          scope: match.groups.scope,
-          collection: match.groups.collection,
-          timestamp: recent.get(brick.id),
+          scope,
+          collection,
+          timestamp: recent.get(brick.id) ?? null,
         };
       }),
       // Show recently accessed first
@@ -112,6 +116,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
 }) => {
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
+
   const {
     data: remoteBricks,
     isLoading,
@@ -120,11 +125,13 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
     // Make sure user always see the latest bricks available (e.g., because they just saved a mod in the page editor)
     refetchOnMountOrArgChange: true,
   });
+
   const {
     scopes = [],
     collections = [],
     kinds = [],
   } = useSelector(selectFilters);
+
   const bricks = useEnrichBricks(remoteBricks);
   const { scopeOptions, kindOptions, collectionOptions } =
     useSearchOptions(bricks);
@@ -142,10 +149,12 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
   const sortedBricks = useMemo(() => {
     const results =
       query.trim() === "" ? bricks : fuse.search(query).map((x) => x.item);
+
     return results.filter(
       (x) =>
-        (scopes.length === 0 || scopes.includes(x.scope)) &&
-        (collections.length === 0 || collections.includes(x.collection)) &&
+        (scopes.length === 0 || (x.scope && scopes.includes(x.scope))) &&
+        (collections.length === 0 ||
+          (x.collection && collections.includes(x.collection))) &&
         (kinds.length === 0 || kinds.includes(mapKindToKindUiValue(x.kind))),
     );
   }, [fuse, query, scopes, collections, kinds, bricks]);
@@ -174,7 +183,9 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
             isMulti
             placeholder="Filter @scope"
             options={scopeOptions}
-            value={scopeOptions.filter((x) => scopes.includes(x.value))}
+            value={scopeOptions.filter(
+              (x) => x.value && scopes.includes(x.value),
+            )}
             onChange={(values) => {
               dispatch(actions.setScopes((values ?? []).map((x) => x.value)));
             }}
@@ -185,8 +196,8 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
             isMulti
             placeholder="Filter collection"
             options={collectionOptions}
-            value={collectionOptions.filter((x) =>
-              collections.includes(x.value),
+            value={collectionOptions.filter(
+              (x) => x.value && collections.includes(x.value),
             )}
             onChange={(values) => {
               dispatch(

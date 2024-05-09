@@ -22,7 +22,7 @@ export const initOneFieldSchemaCase: (fieldName: string) => RJSFSchema = (
   }) as RJSFSchema;
 
 export const initAddingFieldCases: () => Array<
-  [string, RJSFSchema, RJSFSchema]
+  [string | null, RJSFSchema, RJSFSchema]
 > = () => [
   [
     null,

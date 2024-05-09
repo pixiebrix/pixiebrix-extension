@@ -40,7 +40,7 @@ test.each(values)("calls onChange", async (value) => {
   );
 
   // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- TODO: use better selector method
-  await userEvent.click(container.querySelector(".switch"));
+  await userEvent.click(container.querySelector(".switch")!);
 
   expect(onChangeMock).toHaveBeenCalledWith({
     target: {

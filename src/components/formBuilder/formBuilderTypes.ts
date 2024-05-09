@@ -18,7 +18,7 @@
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 
 export type RJSFSchema = {
-  schema: Schema;
+  schema?: Schema;
   uiSchema: UiSchema;
 };
 

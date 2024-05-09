@@ -50,14 +50,15 @@ function useToggleFormField(
   schema: Schema,
   isRequired: boolean,
 ): {
-  inputMode: FieldInputMode;
+  inputMode: FieldInputMode | undefined;
   onOmitField: () => void;
 } {
   const [parentFieldName, fieldName] = getFieldNamesFromPathString(name);
   const { values: formState, setValues: setFormState } =
     useFormikContext<ModComponentFormState>();
-  const parentValues: UnknownObject =
-    getIn(formState, parentFieldName) ?? formState;
+  const parentValues: UnknownObject = parentFieldName
+    ? getIn(formState, parentFieldName, formState)
+    : formState;
   const value = getIn(formState, name);
 
   const inputMode = useMemo(

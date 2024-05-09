@@ -38,7 +38,7 @@ test("renders value", () => {
       id="idForTest"
       name={name}
       options={options}
-      value={options[1].value}
+      value={options[1]!.value}
       onChange={jest.fn()}
     />,
   );
@@ -54,18 +54,18 @@ test("calls onChange", async () => {
       id={id}
       name={name}
       options={options}
-      value={options[1].value}
+      value={options[1]!.value}
       onChange={onChangeMock}
     />,
   );
 
   const optionToSelect = options[0];
-  await selectEvent.select(screen.getByRole("combobox"), optionToSelect.label);
+  await selectEvent.select(screen.getByRole("combobox"), optionToSelect!.label);
 
   expect(onChangeMock).toHaveBeenCalledWith({
     target: {
       options,
-      value: optionToSelect.value,
+      value: optionToSelect!.value,
       name,
     },
   });
