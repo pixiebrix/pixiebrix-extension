@@ -483,6 +483,7 @@
     "./contrib/automationanywhere/FolderIdConfigAlert.tsx",
     "./contrib/automationanywhere/RunApiTask.ts",
     "./contrib/automationanywhere/SetCopilotDataEffect.ts",
+    "./contrib/automationanywhere/SetCopilotDataEffect.ts",
     "./contrib/automationanywhere/aaApi.ts",
     "./contrib/automationanywhere/aaFrameProtocol.ts",
     "./contrib/automationanywhere/aaTypes.ts",

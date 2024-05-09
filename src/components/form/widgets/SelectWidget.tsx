@@ -29,7 +29,7 @@ import useAddCreatablePlaceholder from "@/components/form/widgets/useAddCreatabl
 // Type of the Select options
 export type Option<TValue = string> = {
   label: string;
-  value?: TValue;
+  value: TValue | null;
 };
 
 // Type passed as target in onChange event
