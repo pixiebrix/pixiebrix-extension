@@ -24,6 +24,7 @@ import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
 import { MV } from "../env";
+import { extension } from "webextension-polyfill";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -163,4 +164,15 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
   sideBarPage = await reloadSidebar(page, sideBarPage, extensionId);
 
   await expect(sideBarPage.getByTestId("card").getByText(note)).toBeHidden();
+});
+
+test("activating a mod when the quickbar shortcut is not configured", async ({
+  page,
+  extensionId,
+}) => {
+  const shortcutsPage = new ChromeExtensionsShortcutsPage(page);
+
+  await shortcutsPage.goto();
+
+  await shortcutsPage.pause();
 });
