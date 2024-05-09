@@ -524,7 +524,7 @@ describe("selectErrorFromRejectionEvent", () => {
   it("handles PromiseRejectionEvent with null reason", () => {
     const errorEvent = new PromiseRejectionEvent(
       "error",
-      createUncaughtRejection("test"),
+      createUncaughtRejection(null),
     );
 
     const selectedError = selectErrorFromRejectionEvent(errorEvent);
