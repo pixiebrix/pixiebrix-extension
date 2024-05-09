@@ -36,6 +36,7 @@ jest.mock("@/auth/authStorage", () => ({
 }));
 
 jest.mock("@/utils/extensionUtils", () => ({
+  ...jest.requireActual("@/utils/extensionUtils"),
   forEachTab: jest.fn(),
 }));
 
@@ -211,7 +212,7 @@ describe("enforceAuthentication", () => {
     });
 
     // Mock that tab no longer exists
-    jest.mocked(browser.tabs.get).mockResolvedValue(null);
+    jest.mocked(browser.tabs.get).mockReset();
 
     TEST_triggerListeners({ token: "foo" });
 

@@ -43,7 +43,7 @@ const SwitchButtonWidget: CustomFieldWidget<boolean, CheckBoxLike> = ({
         disabled={disabled}
         onlabel=" "
         offlabel=" "
-        checked={value}
+        checked={value ?? undefined}
         onChange={patchedOnChange}
       />
     </div>

@@ -43,6 +43,7 @@ import type { Location } from "@/types/starterBrickTypes";
 import { getThisFrame } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import { showModal } from "@/contentScript/modalDom";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 export async function createFrameSource(
   nonce: string,
@@ -81,6 +82,13 @@ export async function ephemeralPanel({
   onCloseClick,
 }: TemporaryPanelDefinition): Promise<JsonObject> {
   expectContext("contentScript");
+
+  if (location === "panel" && isLoadedInIframe()) {
+    // Validate before registerEmptyTemporaryPanel to avoid an uncaught promise rejection
+    throw new BusinessError(
+      "Cannot show sidebar in a frame. To use the sidebar, set the target to Top-level Frame",
+    );
+  }
 
   const nonce = uuidv4();
   let onReady: (() => void) | undefined;

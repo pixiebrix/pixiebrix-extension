@@ -58,13 +58,14 @@ export function useOptionalModDefinition(
   const modDefinitionState = useMergeAsyncState(state, findModDefinition);
 
   // Avoid reference change when useAllModDefinitions switches from cache to remote fetch
-  const data = useMemoCompare<ModDefinition>(
+  const data = useMemoCompare<ModDefinition | undefined>(
     modDefinitionState.data,
     deepEquals,
   );
-  const currentData = useMemoCompare<ModDefinition>(
+  const currentData = useMemoCompare<ModDefinition | undefined>(
     modDefinitionState.data,
     deepEquals,
+    [id],
   );
 
   return {
@@ -111,13 +112,14 @@ export function useRequiredModDefinitions(
   );
 
   // Avoid reference change when useAllModDefinitions switches from cache to remote fetch
-  const data = useMemoCompare<ModDefinition[]>(
+  const data = useMemoCompare<ModDefinition[] | undefined>(
     modDefinitionState.data,
     deepEquals,
   );
-  const currentData = useMemoCompare<ModDefinition[]>(
+  const currentData = useMemoCompare<ModDefinition[] | undefined>(
     modDefinitionState.currentData,
     deepEquals,
+    ids,
   );
 
   // Don't error until the lookup fails against the remote data

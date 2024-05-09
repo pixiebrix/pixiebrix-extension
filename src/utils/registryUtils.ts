@@ -40,25 +40,20 @@ export function generatePackageId(scope: string, label: string): RegistryId {
  *  as everything following the first / character
  * @param value the full RegistryId
  */
-export function getScopeAndId(
-  value: RegistryId | null,
-): [string | undefined, string | undefined] {
-  // We call getScopeAndId in several places with a recipe that can be undefined
-  // @see useHasEditPermissions.ts
-  if (value == null) {
-    return [undefined, undefined];
-  }
-
+export function getScopeAndId(value: RegistryId): {
+  scope: string | undefined;
+  id: string | undefined;
+} {
   // Scope needs to start with @
   if (!value.startsWith("@")) {
-    return [undefined, value];
+    return { scope: undefined, id: value };
   }
 
   // If the value starts with @ and doesn't have a slash, interpret it as a scope
   if (!value.includes("/")) {
-    return [value, undefined];
+    return { scope: value, id: undefined };
   }
 
   const [scope, ...idParts] = split(value, "/");
-  return [scope, idParts.join("/")];
+  return { scope, id: idParts.join("/") };
 }

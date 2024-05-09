@@ -23,7 +23,7 @@ import { render } from "@/pageEditor/testHelpers";
 import { Accordion, ListGroup } from "react-bootstrap";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { validateSemVerString } from "@/types/helpers";
+import { normalizeSemVerString } from "@/types/helpers";
 
 describe("ModListItem", () => {
   it("renders expanded", async () => {
@@ -99,7 +99,7 @@ describe("ModListItem", () => {
     const modDefinition = modDefinitionFactory({
       metadata: {
         ...modMetadata,
-        version: validateSemVerString("1.0.1"),
+        version: normalizeSemVerString("1.0.1"),
       },
     });
     appApiMock

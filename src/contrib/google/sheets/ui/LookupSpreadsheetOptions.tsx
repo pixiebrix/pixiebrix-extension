@@ -24,7 +24,6 @@ import TabField from "@/contrib/google/sheets/ui/TabField";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/bricks/lookup";
 import { isEmpty } from "lodash";
-import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { isExpression, toExpression } from "@/utils/expressionUtils";
 import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
@@ -138,41 +137,24 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
         {({ googleAccount, spreadsheet }) => (
           <>
-            <FormErrorContext.Provider
-              value={{
-                shouldUseAnalysis: false,
-                showUntouchedErrors: true,
-                showFieldActions: false,
-              }}
-            >
-              {
-                // The problem with including these inside the nested FormErrorContext.Provider is that we
-                // would like analysis to run if they are in text/template mode, but not in select mode.
-                // Select mode is more important, so we're leaving it like this for now.
-                <>
-                  <TabField
-                    name={joinName(blockConfigPath, "tabName")}
-                    schema={LOOKUP_SCHEMA.properties.tabName as Schema}
-                    spreadsheet={spreadsheet}
-                  />
-                  <SchemaField
-                    name={filterRowsFieldPath}
-                    schema={LOOKUP_SCHEMA.properties.filterRows as Schema}
-                    defaultType="boolean"
-                  />
-                  {showFilters && (
-                    <HeaderField
-                      name={joinName(blockConfigPath, "header")}
-                      googleAccount={googleAccount}
-                      spreadsheetId={spreadsheet?.spreadsheetId}
-                      tabName={tabName}
-                    />
-                  )}
-                </>
-              }
-            </FormErrorContext.Provider>
+            <TabField
+              name={joinName(blockConfigPath, "tabName")}
+              schema={LOOKUP_SCHEMA.properties.tabName as Schema}
+              spreadsheet={spreadsheet}
+            />
+            <SchemaField
+              name={filterRowsFieldPath}
+              schema={LOOKUP_SCHEMA.properties.filterRows as Schema}
+              defaultType="boolean"
+            />
             {showFilters && (
               <>
+                <HeaderField
+                  name={joinName(blockConfigPath, "header")}
+                  googleAccount={googleAccount}
+                  spreadsheetId={spreadsheet?.spreadsheetId}
+                  tabName={tabName}
+                />
                 <SchemaField
                   name={joinName(blockConfigPath, "query")}
                   label="Query"

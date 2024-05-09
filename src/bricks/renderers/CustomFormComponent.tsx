@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "@/vendors/bootstrapWithoutRem.css";
+import "@/sidebar/sidebarBootstrapOverrides.scss";
+import "@/bricks/renderers/customForm.css";
 import React, { useEffect, useRef, useState } from "react";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
@@ -24,12 +27,12 @@ import { Stylesheets } from "@/components/Stylesheets";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import validator from "@/validators/formValidator";
 import { type IChangeEvent } from "@rjsf/core";
+import { templates } from "@/components/formBuilder/RjsfTemplates";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
-import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { cloneDeep } from "lodash";
 import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
 
@@ -43,7 +46,7 @@ const UI_WIDGETS = {
   TextareaWidget: TextAreaWidget,
 } as const;
 
-const CustomFormComponent: React.FunctionComponent<{
+export type CustomFormComponentProps = {
   schema: Schema;
   uiSchema: UiSchema;
   submitCaption: string;
@@ -64,7 +67,11 @@ const CustomFormComponent: React.FunctionComponent<{
   className?: string;
   stylesheets?: string[];
   disableParentStyles?: boolean;
-}> = ({
+};
+
+const CustomFormComponent: React.FunctionComponent<
+  CustomFormComponentProps
+> = ({
   schema,
   uiSchema,
   submitCaption,
@@ -73,8 +80,8 @@ const CustomFormComponent: React.FunctionComponent<{
   className,
   onSubmit,
   resetOnSubmit = false,
-  stylesheets: newStylesheets,
   disableParentStyles = false,
+  stylesheets: newStylesheets,
 }) => {
   // Use useRef instead of useState because we don't need/want a re-render when count changes
   // This ref is used to track the onSubmit run number for runtime tracing

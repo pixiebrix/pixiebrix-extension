@@ -23,6 +23,7 @@ import { canParseUrl } from "@/utils/urlUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import type TreeNode from "primereact/treenode";
+import { isObject } from "@/utils/objectUtils";
 
 interface Item {
   key: string;
@@ -46,7 +47,7 @@ function richValue(value: unknown): unknown {
 }
 
 function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
-  if (isPlainObject(inputs)) {
+  if (isObject(inputs)) {
     return sortBy(
       Object.entries(inputs).map(([name, value]) => ({ name, value })),
       (x) => x.name,
@@ -97,6 +98,19 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
   ];
 }
 
+const IsolatedPropertyTree: React.FC<{ value: TreeNode[] }> = ({ value }) => (
+  <IsolatedComponent
+    name="PropertyTree"
+    lazy={async () =>
+      import(
+        /* webpackChunkName: "isolated/PropertyTree" */
+        "./PropertyTree"
+      )
+    }
+    factory={(PropertyTree) => <PropertyTree value={value} />}
+  />
+);
+
 export class PropertyTableRenderer extends RendererABC {
   constructor() {
     super(
@@ -117,21 +131,8 @@ export class PropertyTableRenderer extends RendererABC {
   );
 
   async render({ data }: BrickArgs, { ctxt }: BrickOptions) {
-    const PropertyTree: React.FC<{ value: TreeNode[] }> = ({ value }) => (
-      <IsolatedComponent
-        name="PropertyTree"
-        lazy={async () =>
-          import(
-            /* webpackChunkName: "isolated/PropertyTree" */
-            "./PropertyTree"
-          )
-        }
-        factory={(PropertyTree) => <PropertyTree value={value} />}
-      />
-    );
-
     return {
-      Component: PropertyTree,
+      Component: IsolatedPropertyTree,
       props: {
         value: shapeData(data ?? ctxt),
       },

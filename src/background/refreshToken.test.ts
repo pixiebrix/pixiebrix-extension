@@ -120,7 +120,7 @@ describe.each([googleIntegration, microsoftIntegration])(
 
       getCachedAuthDataMock.mockResolvedValue({
         access_token: "notatoken",
-        _oauthBrand: undefined,
+        _oauthBrand: null,
       });
 
       const isTokenRefreshed = await refreshPKCEToken(
@@ -140,7 +140,7 @@ describe.each([googleIntegration, microsoftIntegration])(
       getCachedAuthDataMock.mockResolvedValue({
         access_token: "notatoken",
         refresh_token: "notarefreshtoken",
-        _oauthBrand: undefined,
+        _oauthBrand: null,
       });
 
       readRawConfigurationsMock.mockResolvedValue([
@@ -178,7 +178,7 @@ describe.each([googleIntegration, microsoftIntegration])(
       getCachedAuthDataMock.mockResolvedValue({
         access_token: "notatoken",
         refresh_token: "notarefreshtoken",
-        _oauthBrand: undefined,
+        _oauthBrand: null,
       });
 
       readRawConfigurationsMock.mockResolvedValue([
@@ -215,7 +215,7 @@ describe.each([googleIntegration, microsoftIntegration])(
       getCachedAuthDataMock.mockResolvedValue({
         access_token: "notatoken",
         refresh_token: "notarefreshtoken",
-        _oauthBrand: undefined,
+        _oauthBrand: null,
       });
 
       readRawConfigurationsMock.mockResolvedValue([

@@ -21,18 +21,16 @@ import {
   clearExtensionDebugLogs,
   setToolbarBadge,
   traces,
+  openTab,
+  performConfiguredRequestInBackground,
+  ensureContextMenu,
+  uninstallContextMenu,
 } from "@/background/messenger/strict/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import {
-  ensureContextMenu,
-  openTab,
-  performConfiguredRequestInBackground,
-  uninstallContextMenu,
-} from "@/background/messenger/api";
 import { ephemeralForm } from "@/contentScript/ephemeralForm";
 import { ephemeralPanel } from "@/contentScript/ephemeralPanel";
 import type { ElementReference } from "@/types/runtimeTypes";
@@ -49,7 +47,6 @@ import { writeToClipboard } from "@/utils/clipboardUtils";
 import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import * as sidebarController from "@/contentScript/sidebarController";
-import { validateSemVerString } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
 import { PlatformBase } from "@/platform/platformBase";
 import type { Nullishable } from "@/utils/nullishUtils";
@@ -61,6 +58,7 @@ import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { selectionMenuActionRegistry } from "@/contentScript/textSelectionMenu/selectionMenuController";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -91,10 +89,7 @@ class ContentScriptPlatform extends PlatformBase {
   });
 
   constructor() {
-    super(
-      "contentScript",
-      validateSemVerString(browser.runtime.getManifest().version),
-    );
+    super("contentScript", getExtensionVersion());
   }
 
   override capabilities: PlatformCapability[] = [

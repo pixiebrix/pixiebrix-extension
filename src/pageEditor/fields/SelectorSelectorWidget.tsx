@@ -32,9 +32,9 @@ import { useField } from "formik";
 import {
   disableOverlay,
   enableOverlay,
-  selectElement,
   cancelSelect,
-} from "@/contentScript/messenger/api";
+  selectElement,
+} from "@/contentScript/messenger/strict/api";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
 import { useSelector } from "react-redux";
 import { type SettingsState } from "@/store/settings/settingsTypes";

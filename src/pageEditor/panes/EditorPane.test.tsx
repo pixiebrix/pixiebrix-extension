@@ -19,7 +19,7 @@ import React from "react";
 import { render, screen, within } from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
 import brickRegistry from "@/bricks/registry";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import {
@@ -214,7 +214,7 @@ describe("renders", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("an extension with sub pipeline", async () => {
+  test("a mod component with sub pipeline", async () => {
     const formState = getFormStateWithSubPipelines();
     const { asFragment } = render(<EditorPane />, {
       setupRedux(dispatch) {
@@ -264,7 +264,7 @@ describe("can add a node", () => {
     expect(newNode).toHaveTextContent(/jq - json processor/i);
   });
 
-  test("to an empty extension", async () => {
+  test("to an empty mod component", async () => {
     const element = formStateFactory(undefined, []);
     render(
       <>
@@ -327,9 +327,10 @@ describe("can add a node", () => {
 
     // Adding a node in the middle of the sub pipeline, between JQ and Echo nodes
     const reduxState = getReduxStore().getState() as EditorRootState;
-    const currentElement = selectActiveElement(reduxState);
+    const activeModComponentFormState =
+      selectActiveModComponentFormState(reduxState);
     const jqNodeId = (
-      currentElement.extension.blockPipeline[1].config
+      activeModComponentFormState.extension.blockPipeline[1].config
         .body as PipelineExpression
     ).__value__[0].instanceId;
     const addButtonInSubPipeline = screen.getByTestId(
@@ -627,21 +628,21 @@ describe("validation", () => {
     );
   });
 
-  test("preserves validation results when switching between extensions", async () => {
-    // The test adds 2 extensions.
-    // It creates an input field error to one node of the extension 1,
+  test("preserves validation results when switching between mod components", async () => {
+    // The test adds 2 mod components.
+    // It creates an input field error to one node of the mod component 1,
     // then it creates a node level error on another node (adding a renderer at the beginning of the pipeline).
-    // Then we select the second extension and make sure there're no error badges displayed.
-    // Going back to extension 1.
+    // Then we select the second mod component and make sure there're no error badges displayed.
+    // Going back to mod component 1.
     // See the 2 error badges in the Node Layout.
     // Select the Markdown node and check the error.
     // Select the Echo brick and check the error.
-    const extension1 = getPlainFormState();
-    const extension2 = getPlainFormState();
+    const modComponent1 = getPlainFormState();
+    const modComponent2 = getPlainFormState();
 
-    // Selecting the Echo brick in the first extension
+    // Selecting the Echo brick in the first mod component
     const { instanceId: echoBlockInstanceId } =
-      extension1.extension.blockPipeline[0];
+      modComponent1.extension.blockPipeline[0];
     const { container, getReduxStore } = render(
       <>
         <EditorPane />
@@ -649,9 +650,9 @@ describe("validation", () => {
       </>,
       {
         setupRedux(dispatch) {
-          dispatch(editorActions.addElement(extension1));
-          dispatch(editorActions.addElement(extension2));
-          dispatch(editorActions.selectElement(extension1.uuid));
+          dispatch(editorActions.addElement(modComponent1));
+          dispatch(editorActions.addElement(modComponent2));
+          dispatch(editorActions.selectElement(modComponent1.uuid));
           dispatch(editorActions.setElementActiveNodeId(echoBlockInstanceId));
         },
       },
@@ -677,7 +678,7 @@ describe("validation", () => {
     await tickAsyncEffects();
 
     // Select foundation node.
-    // For testing purposes we don't want a node with error to be active when we select extension1 again
+    // For testing purposes we don't want a node with error to be active when we select mod component 1 again
     await immediateUserEvent.click(screen.getAllByTestId("editor-node")[0]);
 
     // Ensure 2 nodes have error badges
@@ -686,19 +687,19 @@ describe("validation", () => {
       container.querySelectorAll('[data-testid="editor-node"] span.badge'),
     ).toHaveLength(2);
 
-    // Selecting another extension. Only possible with Redux
+    // Selecting another mod component. Only possible with Redux
     const store = getReduxStore();
-    store.dispatch(editorActions.selectElement(extension2.uuid));
+    store.dispatch(editorActions.selectElement(modComponent2.uuid));
 
     // Ensure no error is displayed
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- TODO: use a better selector
-    const errorBadgesOfAnotherExtension = container.querySelectorAll(
+    const errorBadgesOfAnotherModComponent = container.querySelectorAll(
       '[data-testid="editor-node"] span.badge',
     );
-    expect(errorBadgesOfAnotherExtension).toHaveLength(0);
+    expect(errorBadgesOfAnotherModComponent).toHaveLength(0);
 
-    // Selecting the first extension
-    store.dispatch(editorActions.selectElement(extension1.uuid));
+    // Selecting the first mod component
+    store.dispatch(editorActions.selectElement(modComponent1.uuid));
 
     // Run the timers of the Formik-Redux state synchronization and analysis
     await tickAsyncEffects();
@@ -711,7 +712,7 @@ describe("validation", () => {
 
     const editorNodes = screen.getAllByTestId("editor-node");
 
-    // Selecting the markdown brick in the first extension
+    // Selecting the markdown brick in the first mod component
     await immediateUserEvent.click(editorNodes[1]);
 
     expectEditorError(container, "A renderer must be the last brick.");

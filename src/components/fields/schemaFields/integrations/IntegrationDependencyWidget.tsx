@@ -31,22 +31,26 @@ import { type SelectWidgetOnChange } from "@/components/form/widgets/SelectWidge
 import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
 import {
   type Expression,
+  type IntegrationDependencyVarRef,
   type OutputKey,
-  type ServiceVarRef,
 } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
-import { freshIdentifier, getVariableExpression } from "@/utils/variableUtils";
+import { freshIdentifier, makeVariableExpression } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
+import { freeze } from "@/utils/objectUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 
 export type IntegrationDependencyWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the integration auth already selected, or the only available credential (default=true) */
   detectDefault?: boolean;
+  annotations?: FieldAnnotation[];
 };
 
 const DEFAULT_INTEGRATION_OUTPUT_KEY = "integration" as OutputKey;
@@ -59,7 +63,7 @@ export function defaultOutputKey(
 
   if (integrationId) {
     const match = PACKAGE_REGEX.exec(integrationId);
-    rawKey = (match.groups.collection?.replace(".", "_").replace("-", "_") ??
+    rawKey = (match?.groups?.collection?.replace(".", "_").replace("-", "_") ??
       DEFAULT_INTEGRATION_OUTPUT_KEY) as OutputKey;
   }
 
@@ -78,19 +82,20 @@ export function defaultOutputKey(
 function lookupAuthId(
   dependencies: IntegrationDependency[],
   authOptions: AuthOption[],
-  value: ServiceVarRef,
-): UUID {
-  const dependency =
-    value == null
-      ? null
-      : dependencies.find(
-          ({ outputKey }) =>
-            getVariableExpression(outputKey).__value__ === value,
-        );
+  value: IntegrationDependencyVarRef,
+): UUID | null {
+  if (value == null) {
+    return null;
+  }
+
+  const dependency = dependencies.find(
+    ({ outputKey }) => makeVariableExpression(outputKey).__value__ === value,
+  );
 
   return dependency == null
     ? null
-    : authOptions.find(({ value }) => value === dependency.configId)?.value;
+    : authOptions.find(({ value }) => value === dependency.configId)?.value ??
+        null;
 }
 
 /**
@@ -104,13 +109,14 @@ function setIntegrationAuthSelectionForField(
   fieldName: string,
   authOption: AuthOption,
 ): IntegrationsFormSlice {
-  let outputKey: OutputKey;
+  let outputKey: OutputKey | undefined;
 
   let nextState = produce(state, (draft) => {
     // Unlike when defaulting, we don't need to check against the registry ids from the schema because this method
     // will only be called with an allowed option.
     const match = draft.integrationDependencies.find(
-      ({ integrationId }) => integrationId === authOption.serviceId,
+      ({ integrationId, configId }) =>
+        integrationId === authOption.serviceId && configId === authOption.value,
     );
 
     if (match) {
@@ -139,8 +145,14 @@ function setIntegrationAuthSelectionForField(
     }
   });
 
+  assertNotNullish(outputKey, "Integration outputKey must be set");
+
   // Update field value before calling produceExcludeUnusedDependencies, otherwise it will see the stale service var
-  nextState = setIn(nextState, fieldName, getVariableExpression(outputKey));
+  nextState = setIn(
+    nextState,
+    fieldName,
+    makeVariableExpression(outputKey),
+  ) as IntegrationsFormSlice;
 
   // Perform cleanup of the service dependencies
   nextState = produceExcludeUnusedDependencies(nextState);
@@ -163,7 +175,7 @@ function clearIntegrationSelection(
   return produceExcludeUnusedDependencies(nextState);
 }
 
-const NO_AUTH_OPTIONS = Object.freeze([] as AuthOption[]);
+const NO_AUTH_OPTIONS = freeze<AuthOption[]>([]);
 
 // The only reason these inputs are optional is for tests, need to investigate better mocking instead
 // @see BotOptions.test.ts
@@ -199,7 +211,7 @@ const IntegrationDependencyWidget: React.FC<
   const { values: rootValues, setValues: setRootValues } =
     useFormikContext<IntegrationsFormSlice>();
   const [{ value, ...field }, , helpers] =
-    useField<Expression<ServiceVarRef>>(props);
+    useField<Expression<IntegrationDependencyVarRef> | null>(props);
 
   const { validDefaultIntegrationIds, options } = useMemo(() => {
     // Registry ids specified by the schema, or returns empty if any allowed
@@ -209,7 +221,7 @@ const IntegrationDependencyWidget: React.FC<
       validDefaultIntegrationIds: schemaServiceIds,
       options: isEmpty(schemaServiceIds)
         ? authOptions
-        : authOptions.filter((x) => schemaServiceIds.includes(x.serviceId)),
+        : authOptions?.filter((x) => schemaServiceIds.includes(x.serviceId)),
     };
   }, [authOptions, schema]);
 
@@ -226,6 +238,9 @@ const IntegrationDependencyWidget: React.FC<
         reportEvent(Events.INTEGRATION_WIDGET_CLEAR);
       } else {
         const authOption = options.find((x) => x.value === value);
+
+        assertNotNullish(authOption, `option: ${value} not found in options`);
+
         newState = setIntegrationAuthSelectionForField(
           rootValues,
           field.name,
@@ -267,22 +282,23 @@ const IntegrationDependencyWidget: React.FC<
             match.outputKey,
             { rootValues, match },
           );
-          await helpers.setValue(getVariableExpression(match.outputKey));
-          const authOption = authOptions.find(
+          await helpers.setValue(makeVariableExpression(match.outputKey));
+          const authOption = authOptions?.find(
             ({ value }) => value === match.configId,
           );
           reportEvent(
             Events.INTEGRATION_WIDGET_SELECT,
             makeSelectedEventPayload(authOption, false),
           );
-        } else if (options.length === 1) {
+        } else if (options?.length === 1) {
           // This condition is only true when the auth services have been filtered by the schema
           console.debug("Defaulting to only integration option", {
             option: options[0],
             options,
           });
           // Try defaulting to the only option available.
-          const authOption = options[0];
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+          const authOption = options[0]!;
           const newState = setIntegrationAuthSelectionForField(
             rootValues,
             field.name,
@@ -297,7 +313,7 @@ const IntegrationDependencyWidget: React.FC<
       } else if (
         value &&
         !rootValues.integrationDependencies.some((dependency) =>
-          isEqual(getVariableExpression(dependency.outputKey), value),
+          isEqual(makeVariableExpression(dependency.outputKey), value),
         )
       ) {
         // This currently happens when a brick is copy-pasted into a separate extension
@@ -320,7 +336,7 @@ const IntegrationDependencyWidget: React.FC<
       value?.__value__
         ? lookupAuthId(
             rootValues.integrationDependencies,
-            authOptions,
+            authOptions ?? [],
             value.__value__,
           )
         : null,

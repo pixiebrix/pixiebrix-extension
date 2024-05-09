@@ -21,9 +21,9 @@ import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import {
-  selectActiveElement,
+  selectActiveModComponentFormState,
   selectEditorModalVisibilities,
-  selectInstalledRecipeMetadatas,
+  selectInstalledModMetadatas,
 } from "@/pageEditor/slices/editorSelectors";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import notify from "@/utils/notify";
@@ -58,21 +58,23 @@ const formStateSchema = object({
 });
 
 const AddToRecipeModal: React.FC = () => {
-  const { isAddToRecipeModalVisible: show } = useSelector(
+  const { isAddToModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
-  const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
-  const activeElement = useSelector(selectActiveElement);
+  const activatedModMetadatas = useSelector(selectInstalledModMetadatas);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
 
-  const recipeMetadataById = useMemo(() => {
+  const modMetadataById = useMemo(() => {
     const result: Record<RegistryId, ModComponentBase["_recipe"]> = {};
-    for (const metadata of recipeMetadatas) {
+    for (const metadata of activatedModMetadatas) {
       result[metadata.id] = metadata;
     }
 
     return result;
-  }, [recipeMetadatas]);
+  }, [activatedModMetadatas]);
 
   const dispatch = useDispatch();
 
@@ -91,21 +93,21 @@ const AddToRecipeModal: React.FC = () => {
       return;
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- recipe id is from select options
-    const recipeMetadata = recipeMetadataById[recipeId];
+    // eslint-disable-next-line security/detect-object-injection -- mod id is from select options
+    const modMetadata = modMetadataById[recipeId];
 
     try {
-      const elementId = activeElement.uuid;
+      const modComponentId = activeModComponentFormState.uuid;
       dispatch(
         editorActions.addElementToRecipe({
-          elementId,
-          recipeMetadata,
+          elementId: modComponentId,
+          recipeMetadata: modMetadata,
           keepLocalCopy,
         }),
       );
       if (!keepLocalCopy) {
         await removeModComponentFromStorage({
-          extensionId: elementId,
+          extensionId: modComponentId,
         });
       }
 
@@ -132,12 +134,12 @@ const AddToRecipeModal: React.FC = () => {
   const selectOptions = useMemo(
     () => [
       { label: "➕ Create new mod...", value: NEW_RECIPE_ID },
-      ...recipeMetadatas.map((metadata) => ({
+      ...activatedModMetadatas.map((metadata) => ({
         label: metadata.name,
         value: metadata.id,
       })),
     ],
-    [recipeMetadatas],
+    [activatedModMetadatas],
   );
 
   const radioItems: RadioItem[] = useMemo(
@@ -199,7 +201,7 @@ const AddToRecipeModal: React.FC = () => {
     <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>
-          Add <em>{activeElement?.label}</em> to a mod
+          Add <em>{activeModComponentFormState?.label}</em> to a mod
         </Modal.Title>
       </Modal.Header>
       <Form

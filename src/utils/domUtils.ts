@@ -132,9 +132,38 @@ export async function waitForBody(): Promise<void> {
 
 /**
  * Return true if the element is visible (i.e. not in `display: none`), even if outside the viewport
+ * See https://developer.mozilla.org/en-US/docs/Web/API/Element/checkVisibility
+ *
+ * To determine if an element is fully contained within the viewport, use `isInViewport`.
+ *
+ * @see isInViewport
  */
 export function isVisible(element: HTMLElement): boolean {
   return element.checkVisibility();
+}
+
+/**
+ * Returns true if the element is completely in the viewport. The method does not consider the element's
+ * opacity, z-index, or other CSS properties that may affect visibility.
+ *
+ * Example scenarios where the method may return counterintuitive results:
+ * - Elements hidden by z-index
+ * - If they are hidden by overflow-scroll in element's container
+ * - Things hidden by relative/absolute positioning
+ * - Elements within an iframe that is not entirely visible in the top frame
+ *
+ * @see isVisible
+ */
+export function isInViewport(element: HTMLElement): boolean {
+  // https://stackoverflow.com/a/125106
+  const rect = element.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <=
+      (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
 }
 
 /**

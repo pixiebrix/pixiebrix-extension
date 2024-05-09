@@ -141,7 +141,7 @@ export class SetPageState extends TransformerABC {
     }>,
     { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
-    const { blueprintId = null, extensionId } = logger.context;
+    const { blueprintId, extensionId } = logger.context;
 
     return platform.state.setState({
       namespace,
@@ -194,13 +194,12 @@ export class GetPageState extends TransformerABC {
     { namespace = "blueprint" }: BrickArgs<{ namespace?: Namespace }>,
     { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
-    const { blueprintId = null, extensionId } = logger.context;
+    const { blueprintId, extensionId } = logger.context;
 
     return platform.state.getState({
       namespace,
       blueprintId,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7891
-      extensionId: extensionId!,
+      extensionId,
     });
   }
 }

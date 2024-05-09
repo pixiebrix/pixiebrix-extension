@@ -76,7 +76,7 @@ export const logSlice: Slice<
     refreshEntries(state: Draft<LogState>): void;
     setContext(
       state: Draft<LogState>,
-      action: PayloadAction<MessageContext>,
+      action: PayloadAction<MessageContext | null>,
     ): void;
   },
   "logs"

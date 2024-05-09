@@ -1,12 +1,11 @@
 // Injected unminified. Don't add too much fluff
 
-:host {
+body {
   // Don't inherit any style
   all: initial;
+}
 
-  // Set a font baseline style. Bootstrap targets `body` specifically, which isn't available in a shadow DOM
-  font: 16px / 1.5 sans-serif;
-
+:host {
   // Set a good default for our custom `pixiebrix-widget` element
   display: block;
 

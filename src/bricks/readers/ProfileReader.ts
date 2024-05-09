@@ -19,6 +19,7 @@ import { ReaderABC } from "@/types/bricks/readerTypes";
 import { getUserData } from "@/background/messenger/api";
 import { type Schema } from "@/types/schemaTypes";
 import { type UserData } from "@/auth/authTypes";
+import { BusinessError } from "@/errors/businessErrors";
 
 class ProfileReader extends ReaderABC {
   override defaultOutputKey = "profile";
@@ -35,9 +36,14 @@ class ProfileReader extends ReaderABC {
     Required<Pick<UserData, "user" | "email" | "organizations" | "groups">>
   > {
     const profile = await getUserData();
+
+    if (!profile.user) {
+      throw new BusinessError("User is not authenticated");
+    }
+
     return {
       user: profile.user,
-      email: profile.email,
+      email: profile.email ?? "",
       organizations: profile.organizations ?? [],
       groups: profile.groups ?? [],
     };

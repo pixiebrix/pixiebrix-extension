@@ -53,7 +53,7 @@ describe("inferElementSelector", () => {
       </div>
     `;
 
-    const element = document.body.querySelector<HTMLElement>("#test");
+    const element = document.body.querySelector<HTMLElement>("#test")!;
     await expect(
       inferSingleElementSelector({
         element,
@@ -84,7 +84,7 @@ describe("inferElementSelector", () => {
       </div>
     `;
 
-    const element = document.body.querySelector<HTMLElement>("#test");
+    const element = document.body.querySelector<HTMLElement>("#test")!;
     await expect(
       inferSingleElementSelector({
         element,
@@ -108,7 +108,7 @@ describe("inferElementSelector", () => {
       </div>
     `;
 
-    const element = document.body.querySelector<HTMLElement>(".testValue");
+    const element = document.body.querySelector<HTMLElement>(".testValue")!;
     await expect(
       inferSingleElementSelector({
         element,
@@ -141,7 +141,7 @@ describe("inferElementSelector", () => {
       </div>
     `;
 
-    const element = $safeFind(".testValue:last").get(0);
+    const element = $safeFind(".testValue:last").get(0)!;
 
     expect(element.textContent).toBe("Label Value");
 
@@ -184,7 +184,7 @@ describe("inferElementSelector", () => {
       </div>
     `;
 
-    const element = $safeFind(".active .testValue").get(0);
+    const element = $safeFind(".active .testValue").get(0)!;
 
     expect(element.textContent).toBe("Label Value");
 
@@ -229,7 +229,7 @@ describe("inferElementSelector", () => {
       </div>
     `;
 
-    const element = $safeFind(".testValue").get(0);
+    const element = $safeFind(".testValue").get(0)!;
 
     await expect(
       inferSingleElementSelector({

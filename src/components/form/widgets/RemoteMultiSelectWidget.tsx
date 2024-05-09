@@ -15,76 +15,96 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { useField } from "formik";
-import Select from "react-select";
-import { type Option } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import React, { type ChangeEvent, useContext, useEffect } from "react";
+import Select, { type MultiValue } from "react-select";
 import {
-  type OptionsFactory,
-  useOptionsResolver,
-} from "@/components/form/widgets/RemoteSelectWidget";
+  type MultiSelectLike,
+  type Option,
+} from "@/components/form/widgets/SelectWidget";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import useReportError from "@/hooks/useReportError";
+import type { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
+import { useOptionsResolver } from "@/components/form/widgets/useOptionsResolver";
+import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
-type RemoteMultiSelectWidgetProps = {
-  id?: string;
-  name: string;
-  disabled?: boolean;
-  isClearable?: boolean;
-  optionsFactory: OptionsFactory | Promise<Array<Option<unknown>>>;
-  config: SanitizedIntegrationConfig | null;
-  /**
-   * Additional arguments to pass to optionsFactory, if optionsFactory is a function.
-   */
-  factoryArgs?: UnknownObject;
-  loadingMessage?: string;
-};
+type RemoteMultiSelectWidgetProps<TOption extends Option<TOption["value"]>> =
+  CustomFieldWidgetProps<Array<TOption["value"]>, MultiSelectLike<TOption>> & {
+    isClearable?: boolean;
+    optionsFactory: OptionsFactory<TOption["value"]> | Promise<TOption[]>;
+    config: SanitizedIntegrationConfig | null;
+    /**
+     * Additional arguments to pass to optionsFactory, if optionsFactory is a function.
+     */
+    factoryArgs?: UnknownObject;
+  };
 
 /**
  * @see RemoteSelectWidget
  */
-const RemoteMultiSelectWidget: React.FC<RemoteMultiSelectWidgetProps> = ({
+const RemoteMultiSelectWidget = <TOption extends Option<TOption["value"]>>({
   id,
   isClearable = false,
   disabled,
+  value,
   optionsFactory,
-  factoryArgs,
   config,
-  ...props
-}) => {
-  const [field, , helpers] = useField<unknown[]>(props);
-  const {
-    data: options,
-    isLoading,
-    error: loadError,
-  } = useOptionsResolver(config, optionsFactory, factoryArgs);
-  useReportError(loadError);
+  factoryArgs,
+  onChange,
+  isInvalid,
+  ...selectProps
+}: RemoteMultiSelectWidgetProps<TOption>) => {
+  assertNotNullish(
+    value,
+    "Value must always be defined for RemoteMultiSelectWidget",
+  );
 
-  if (loadError) {
-    return (
-      <div className="text-danger">
-        Error loading options: {getErrorMessage(loadError)}
-      </div>
-    );
-  }
+  const {
+    data: options = [],
+    isLoading,
+    error,
+  } = useOptionsResolver(config, optionsFactory, factoryArgs);
+
+  useReportError(error);
+
+  const { setLocalError } = useContext(FieldTemplateLocalErrorContext);
+
+  useEffect(() => {
+    if (error == null) {
+      setLocalError(null);
+    } else {
+      setLocalError(getErrorMessage(error, "Error loading options"));
+    }
+  }, [error, setLocalError]);
+
+  // Input newOptions will be empty array when the select is "cleared"
+  const patchedOnChange = (newOptions: MultiValue<TOption>) => {
+    onChange({
+      target: {
+        value: newOptions.map(({ value }) => value),
+        name: selectProps.name,
+        options,
+      },
+    } as ChangeEvent<MultiSelectLike<TOption>>);
+  };
+
+  const selectedOptions = options.filter((option: Option) =>
+    value.includes(option.value),
+  );
 
   return (
     <Select
       inputId={id}
       isMulti
+      closeMenuOnSelect={selectedOptions.length + 1 === options.length} // Close if selecting the last item
       isDisabled={disabled}
-      isClearable={isClearable}
-      options={options ?? []}
+      options={options}
       isLoading={isLoading}
-      value={
-        options?.filter((option: Option) =>
-          (field.value ?? []).includes(option.value),
-        ) ?? []
-      }
-      onChange={async (options) => {
-        await helpers.setValue(options.map((option) => option.value));
-      }}
+      value={selectedOptions}
+      onChange={patchedOnChange}
+      {...selectProps}
     />
   );
 };

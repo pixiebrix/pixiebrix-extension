@@ -17,13 +17,13 @@
 
 import { selectKnownVars } from "@/analysis/analysisSelectors";
 import {
-  selectActiveElementId,
+  selectActiveModComponentId,
   selectActiveNodeInfo,
 } from "@/pageEditor/slices/editorSelectors";
 import { createSelector } from "@reduxjs/toolkit";
 
 export const selectKnownVarsForActiveNode = createSelector(
-  selectActiveElementId,
+  selectActiveModComponentId,
   selectActiveNodeInfo,
   selectKnownVars,
   (activeElementId, activeNodeInfo, knownVars) => {

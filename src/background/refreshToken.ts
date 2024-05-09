@@ -26,7 +26,10 @@ import {
   getCachedAuthData,
   setCachedAuthData,
 } from "@/background/auth/authStorage";
-import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 /**
  * Refresh an OAuth2 PKCE token. NOOP if a refresh token is not available.
@@ -36,13 +39,13 @@ import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
  */
 export default async function refreshPKCEToken(
   integration: Integration,
-  integrationConfig: SanitizedIntegrationConfig,
+  sanitizedConfig: SanitizedIntegrationConfig,
 ): Promise<boolean> {
   expectContext("background");
 
-  if (integration.id !== integrationConfig.serviceId) {
+  if (integration.id !== sanitizedConfig.serviceId) {
     throw new Error(
-      `Integration id and config service id do not match: ${integration.id} !== ${integrationConfig.serviceId}`,
+      `Integration id and config service id do not match: ${integration.id} !== ${sanitizedConfig.serviceId}`,
     );
   } else if (integration.id === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
     throw new Error(
@@ -54,17 +57,41 @@ export default async function refreshPKCEToken(
     );
   }
 
-  const cachedAuthData = await getCachedAuthData(integrationConfig.id);
+  const cachedAuthData = await getCachedAuthData(sanitizedConfig.id);
 
-  if (integrationConfig.id && cachedAuthData?.refresh_token) {
+  // The PIXIEBRIX_INTEGRATION_ID check is mostly for backwards compatibility
+  // to avoid dealing with undefined sanitizedConfig id's.
+  if (
+    integration.id !== PIXIEBRIX_INTEGRATION_ID &&
+    cachedAuthData?.refresh_token
+  ) {
     console.debug("Refreshing PKCE token");
 
-    const { config } = await serviceLocator.findIntegrationConfig(
-      integrationConfig.id,
+    const integrationConfig = await serviceLocator.findIntegrationConfig(
+      sanitizedConfig.id,
     );
-    const { tokenUrl, client_id, client_secret } =
+    if (integrationConfig == null) {
+      throw new Error(
+        `Integration config not found for config id ${sanitizedConfig.id}`,
+      );
+    }
+
+    const { config } = integrationConfig;
+    const oauth2Context =
       // XXX: pass interactive: true to match the legacy behavior
       integration.getOAuth2Context(config, { interactive: true });
+    if (oauth2Context == null) {
+      throw new Error(
+        `OAuth2 context not found in config for ${integration.id}`,
+      );
+    }
+
+    const { tokenUrl, client_id, client_secret } = oauth2Context;
+    if (tokenUrl == null) {
+      throw new Error(
+        `OAuth2 PKCE token URL not found in OAuth2 context for ${integration.id}`,
+      );
+    }
 
     // https://axios-http.com/docs/urlencoded
     const params = new URLSearchParams();

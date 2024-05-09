@@ -28,7 +28,7 @@ import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import brickRegistry from "@/bricks/registry";
 import { initNavigation } from "@/contentScript/lifecycle";
-import { initTelemetry } from "@/background/messenger/api";
+import { initTelemetry } from "@/background/messenger/strict/api";
 import { initToaster } from "@/utils/notify";
 import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
 import {
@@ -40,10 +40,7 @@ import initFloatingActions from "@/components/floatingActions/initFloatingAction
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
 import { initRuntime } from "@/runtime/reducePipeline";
-import {
-  initSidebarFocusEvents,
-  renderPanelsIfVisible,
-} from "./sidebarController";
+import { initSidebarFocusEvents } from "./sidebarController";
 import {
   isSidebarFrameVisible,
   removeSidebarFrame,
@@ -100,9 +97,6 @@ export async function init(): Promise<void> {
 
   initSidebarFocusEvents();
   void initSidebarActivation();
-
-  // Update `sidePanel`
-  void renderPanelsIfVisible();
 
   // Let the partner page know
   initPartnerIntegrations();

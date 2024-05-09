@@ -43,7 +43,7 @@ type ChildComponentType = {
 };
 const ChildComponent = ({
   title,
-  message,
+  message = "",
   submitCaption,
   cancelCaption,
 }: ChildComponentType) => {
@@ -77,7 +77,7 @@ const Template: Story<StoryType> = (args) => {
 };
 
 export const DefaultContent = Template.bind({});
-DefaultContent.args = null;
+DefaultContent.args = undefined;
 
 export const CustomContent = Template.bind({});
 CustomContent.args = {

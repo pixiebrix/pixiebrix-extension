@@ -186,8 +186,7 @@ export interface SanitizedIntegrationConfig {
   /**
    * UUID of the integration configuration.
    */
-  // ID is only undefined for the PixieBrix integration
-  id?: UUID;
+  id: UUID;
 
   /**
    * Human-readable label for the configuration to distinguish it from other configurations for the same integration in the

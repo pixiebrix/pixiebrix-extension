@@ -22,7 +22,7 @@ import AppApiIntegrationDependencyField from "@/components/fields/schemaFields/A
 import CssClassField from "./CssClassField";
 import HeadingStyleField from "./HeadingStyleField";
 import {
-  isAppServiceField,
+  isPixiebrixIntegrationField,
   isCssClassField,
   isHeadingStyleField,
   hasCustomWidget,
@@ -37,7 +37,7 @@ const SchemaField: SchemaFieldComponent = (props) => {
   const { schema, uiSchema } = props;
   const { customWidgets } = useContext(SchemaFieldContext);
 
-  if (isAppServiceField(schema)) {
+  if (isPixiebrixIntegrationField(schema)) {
     return <AppApiIntegrationDependencyField {...props} />;
   }
 

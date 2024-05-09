@@ -55,7 +55,7 @@ const GetStartedView: React.VoidFunctionComponent<{
   const onboardingModId = getMilestone("first_time_public_blueprint_install")
     ?.metadata?.blueprintId as RegistryId;
 
-  const { data: recipe, isFetching: isFetchingRecipe } =
+  const { data: modDefinition, isFetching: isFetchingRecipe } =
     useOptionalModDefinition(onboardingModId);
 
   const { data: listings } = useGetMarketplaceListingsQuery(
@@ -77,13 +77,13 @@ const GetStartedView: React.VoidFunctionComponent<{
           <div className={styles.infoRow}>
             <h4>
               Success!{" "}
-              {!isFetchingRecipe && (
+              {!isFetchingRecipe && modDefinition && (
                 <>
-                  <ModIcon mod={recipe} />{" "}
+                  <ModIcon mod={modDefinition} />{" "}
                 </>
               )}
               <ExternalLink
-                linkText={onboardingModListing.package.verbose_name}
+                linkText={onboardingModListing.package.verbose_name ?? ""}
                 url={marketplaceUrl}
               />{" "}
               is ready to use.

@@ -24,7 +24,10 @@ import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { useSelector } from "react-redux";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveModComponentAnalysisAnnotationsForPath,
+  selectActiveModComponentFormState,
+} from "@/pageEditor/slices/editorSelectors";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -33,6 +36,7 @@ import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
+import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
   const { isConfigured } = useQuickbarShortcut();
@@ -61,26 +65,35 @@ const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
 const FoundationNodeConfigPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showVersionField = flagOn("page-editor-developer");
-  const { extensionPoint } = useSelector(selectActiveElement);
+  const { extensionPoint: starterBrick } = useSelector(
+    selectActiveModComponentFormState,
+  );
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
-    () => !isInnerDefinitionRegistryId(extensionPoint.metadata.id),
-    [extensionPoint.metadata.id],
+    () => !isInnerDefinitionRegistryId(starterBrick.metadata.id),
+    [starterBrick.metadata.id],
   );
 
-  const { EditorNode } = ADAPTERS.get(extensionPoint.definition.type);
+  const { EditorNode } = ADAPTERS.get(starterBrick.definition.type);
 
   return (
     <>
-      {extensionPoint.definition.type === "quickBar" && (
+      {starterBrick.definition.type === "quickBar" && (
         <UnconfiguredQuickBarAlert />
       )}
       <ConnectedFieldTemplate name="label" label="Name" />
       {showVersionField && <ApiVersionField />}
       <UpgradedToApiV3 />
       <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
-        <EditorNode isLocked={isLocked} />
+        <AnalysisAnnotationsContext.Provider
+          value={{
+            analysisAnnotationsSelectorForPath:
+              selectActiveModComponentAnalysisAnnotationsForPath,
+          }}
+        >
+          <EditorNode isLocked={isLocked} />
+        </AnalysisAnnotationsContext.Provider>
       </SchemaFieldContext.Provider>
     </>
   );

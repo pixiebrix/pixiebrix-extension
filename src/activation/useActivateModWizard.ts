@@ -45,6 +45,7 @@ import { isPrimitive } from "@/utils/typeUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import { makeDatabasePreviewName } from "@/activation/modOptionsHelpers";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: IntegrationsBody },
@@ -69,14 +70,6 @@ export type UseActivateRecipeWizardResult = {
   initialValues: WizardValues;
   validationSchema: Yup.AnyObjectSchema;
 };
-
-export function makeDatabasePreviewName(
-  recipe: ModDefinition,
-  optionSchema: Schema,
-  name: string,
-): string {
-  return `${recipe.metadata.name} - ${optionSchema.title ?? name}`;
-}
 
 export function wizardStateFactory({
   modDefinition,

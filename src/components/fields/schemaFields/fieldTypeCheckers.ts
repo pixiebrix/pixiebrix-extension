@@ -20,6 +20,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import {
   type LabelledEnumSchema,
   type Schema,
+  type SchemaDefinition,
   type UiSchema,
 } from "@/types/schemaTypes";
 import { get, isEmpty } from "lodash";
@@ -31,19 +32,27 @@ import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { isVarExpression } from "@/utils/expressionUtils";
 import {
   INTEGRATION_DEPENDENCY_FIELD_REFS,
-  PIXIEBRIX_INTEGRATION_ID,
+  PIXIEBRIX_INTEGRATION_REF_URL,
+  SERVICES_BASE_SCHEMA_URL,
 } from "@/integrations/constants";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
-export const isAppServiceField = createTypePredicate(
-  (schema) =>
-    schema.$ref === `${SERVICES_BASE_SCHEMA_URL}${PIXIEBRIX_INTEGRATION_ID}`,
+export const isPixiebrixIntegrationField = createTypePredicate(
+  (schema) => schema.$ref === PIXIEBRIX_INTEGRATION_REF_URL,
 );
 
-export const isServiceField = createTypePredicate(
-  (x) =>
-    x.$ref?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
-    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(x.$ref),
+function isIntegrationRef(ref?: string): boolean {
+  if (!ref) {
+    return false;
+  }
+
+  return (
+    ref.startsWith(SERVICES_BASE_SCHEMA_URL) ||
+    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(ref)
+  );
+}
+
+export const isIntegrationDependencyField = createTypePredicate((x) =>
+  isIntegrationRef(x.$ref),
 );
 
 export const isCssClassField = (fieldDefinition: Schema) =>
@@ -92,6 +101,22 @@ export function isDatabaseField(schema: Schema): boolean {
   return schema.$ref === databaseSchema.$id;
 }
 
+type DataPreviewFieldSchema = {
+  $ref: typeof databaseSchema.$id;
+  format: "preview";
+};
+
+// Provide generic to support additional properties on the schema (e.g., title)
+export function isDatabasePreviewField<T extends DataPreviewFieldSchema>(
+  schema: SchemaDefinition,
+): schema is T {
+  return (
+    typeof schema !== "boolean" &&
+    isDatabaseField(schema) &&
+    schema.format === "preview"
+  );
+}
+
 export function isIconField(schema: Schema): boolean {
   return schema.$ref === iconSchema.$id;
 }
@@ -107,12 +132,7 @@ export function isGoogleSheetIdField(schema: Schema): boolean {
  * Check if a schema matches a service field without checking anyOf/oneOf/allOf
  */
 export function isSimpleServiceField(schema: Schema): boolean {
-  return (
-    schema.$ref?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
-    schema.$id?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
-    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(schema.$ref) ||
-    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(schema.$id)
-  );
+  return isIntegrationRef(schema.$ref) || isIntegrationRef(schema.$id);
 }
 
 export function isIntegrationDependencyValueFormat(

@@ -21,14 +21,14 @@ import {
   PlatformCapabilityNotAvailableError,
 } from "@/platform/capabilities";
 import { PlatformBase } from "@/platform/platformBase";
-import { validateSemVerString } from "@/types/helpers";
+import { normalizeSemVerString } from "@/types/helpers";
 
 /**
  * A platform protocol with no available capabilities.
  */
 export const uninitializedPlatform = new PlatformBase(
   "uninitialized",
-  validateSemVerString("0.0.0"),
+  normalizeSemVerString("0.0.0"),
 );
 
 /**

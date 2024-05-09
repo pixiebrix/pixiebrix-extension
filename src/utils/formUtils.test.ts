@@ -30,9 +30,8 @@ describe("joinName", () => {
     expect(joinName("foo.bar", "baz")).toBe("foo.bar.baz");
   });
 
-  test("accepts null/undefined base path part", () => {
+  test("accepts null base path part", () => {
     expect(joinName(null, "foo")).toBe("foo");
-    expect(joinName(undefined, "foo")).toBe("foo");
   });
 
   test.each([

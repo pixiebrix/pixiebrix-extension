@@ -36,7 +36,10 @@ export function splitStartingEmoji(value: string) {
  * @param chars the characters to trim
  * @see trimEnd
  */
-export function trimEndOnce(value: string, chars: string): string {
+export function trimEndOnce(
+  value: string | null,
+  chars: string,
+): string | null {
   if (value?.endsWith(chars)) {
     return value.slice(0, -chars.length);
   }

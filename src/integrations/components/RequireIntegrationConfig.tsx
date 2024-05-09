@@ -21,40 +21,109 @@ import { type Schema } from "@/types/schemaTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
+import useAsyncState from "@/hooks/useAsyncState";
+import { checkIntegrationAuth } from "@/integrations/util/checkIntegrationAuth";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
+import { AnnotationType } from "@/types/annotationTypes";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 type ConfigProps = {
-  integrationsSchema: Schema;
-  integrationsFieldName: string;
+  integrationFieldSchema: Schema;
+  integrationFieldName: string;
   children: (childProps: {
     sanitizedConfig: SanitizedIntegrationConfig;
   }) => React.ReactElement;
 };
 
+function useAuthErrorAnnotation(
+  sanitizedConfig: SanitizedIntegrationConfig,
+): FieldAnnotation | null {
+  const {
+    data: isConfigValid = true,
+    refetch,
+    isFetching,
+  } = useAsyncState(async () => {
+    if (sanitizedConfig == null) {
+      return true;
+    }
+
+    return checkIntegrationAuth(sanitizedConfig);
+  }, [sanitizedConfig]);
+
+  // We need to check for null config here because this hook can re-render with null config before the above async effect fires and sets the invalid flag
+  if (isConfigValid || sanitizedConfig == null) {
+    return null;
+  }
+
+  const editConfigUrl = `${getExtensionConsoleUrl(
+    "services",
+  )}/${encodeURIComponent(sanitizedConfig.id)}`;
+  return {
+    type: AnnotationType.Error,
+    message: (
+      <div>
+        <div>
+          <span>
+            The configuration for this integration is invalid. Check your
+            credentials and try again.
+          </span>
+        </div>
+        <div>
+          <a href={editConfigUrl} target="_blank" rel="noopener noreferrer">
+            <FontAwesomeIcon icon={faEdit} />
+            &nbsp;Edit the integration configuration here.
+          </a>
+        </div>
+      </div>
+    ),
+    actions: [
+      {
+        caption: isFetching ? "Retrying..." : "Retry",
+        async action() {
+          if (!isFetching) {
+            refetch();
+          }
+        },
+      },
+    ],
+  };
+}
+
 /**
  * Gate component that presents an integration dependency field, and then gates the child components
  * on the user selecting an authentication option for the integration, in the formik context.
  *
- * @param integrationsSchema The schema for the integration dependency field
- * @param integrationsFieldName The formik field path of the integration dependency field
+ * @param integrationFieldSchema The schema for the integration dependency field
+ * @param integrationFieldName The formik field path of the integration dependency field
  * @param children A function that takes the sanitized integration config and returns the child components
  */
 const RequireIntegrationConfig: React.FC<ConfigProps> = ({
-  integrationsSchema,
-  integrationsFieldName,
+  integrationFieldSchema,
+  integrationFieldName,
   children,
 }) => {
-  const integrationIds = extractIntegrationIdsFromSchema(integrationsSchema);
-  const { data: sanitizedConfig } =
-    useSanitizedIntegrationConfigFormikAdapter(integrationIds);
+  const integrationIds = extractIntegrationIdsFromSchema(
+    integrationFieldSchema,
+  );
+  const { data: sanitizedConfig } = useSanitizedIntegrationConfigFormikAdapter(
+    integrationIds,
+    integrationFieldName,
+  );
+
+  const authErrorAnnotation = useAuthErrorAnnotation(sanitizedConfig);
 
   return (
     <>
       <IntegrationDependencyField
+        // Hard-coding this because it's hard to change the schema to add a title, and we don't want it to default to "Service"
         label="Integration"
-        name={integrationsFieldName}
-        schema={integrationsSchema}
+        name={integrationFieldName}
+        schema={integrationFieldSchema}
+        annotations={authErrorAnnotation ? [authErrorAnnotation] : []}
       />
-      {sanitizedConfig && children({ sanitizedConfig })}
+      {sanitizedConfig && !authErrorAnnotation && children({ sanitizedConfig })}
     </>
   );
 };

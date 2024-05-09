@@ -20,9 +20,29 @@ import { normalizeManifestPermissions } from "webext-permissions";
 import { excludeDuplicatePatterns } from "webext-patterns";
 
 function getVersion(env) {
+  const stageMap = {
+    alpha: 1000,
+    beta: 2000,
+    release: 3000,
+  };
+
   // `manifest.json` only supports numbers in the version, so use the semver
-  const match = /^(?<version>\d+\.\d+\.\d+)/.exec(env.npm_package_version);
-  return match.groups.version;
+  const match =
+    /^(?<version>\d+\.\d+\.\d+)(?:-(?<stage>\w+)(?:\.(?<stageNumber>\d+))?)?/.exec(
+      env.npm_package_version,
+    );
+  const { version, stage, stageNumber } = match.groups;
+
+  // Add 4th digit for differentiating alpha/beta/stable release builds.
+  // Used primarily to update the extension BETA listing in the Chrome Web Store.
+  if (stage && stageNumber) {
+    // Ex: 1.8.13-alpha.1 -> 1.8.13.1001
+    // Ex: 1.8.13-beta.55 -> 1.8.13.2055
+    return `${version}.${stageMap[stage] + Number(stageNumber)}`;
+  }
+
+  // Ex: 1.8.13.3000 -- Ensures that the release build version number is greater than the alpha/beta build version numbers
+  return `${version}.${stageMap.release}`;
 }
 
 function getVersionName(env, isProduction) {
@@ -40,7 +60,7 @@ function getVersionName(env, isProduction) {
 }
 
 /**
- * @param {chrome.runtime.ManifestV2} manifestV2
+ * @param manifestV2
  * @returns chrome.runtime.ManifestV3
  */
 function updateManifestToV3(manifestV2) {
@@ -49,7 +69,7 @@ function updateManifestToV3(manifestV2) {
 
   // Extract host permissions
   const { permissions, origins } = normalizeManifestPermissions(manifest);
-  manifest.permissions = [...permissions, "scripting"];
+  manifest.permissions = [...permissions, "scripting", "offscreen"];
   manifest.host_permissions = origins;
   // Sidebar Panel open() is only available in Chrome 116+
   // https://developer.chrome.com/docs/extensions/reference/api/sidePanel#method-open
@@ -99,8 +119,8 @@ function updateManifestToV3(manifestV2) {
  * Add internal URLs to the content scripts targeting the Admin Console so the Extension can talk to
  * a locally running Admin Console during development.
  *
- * @param {chrome.runtime.Manifest} manifest
- * @param {string[]} internal
+ * @param manifest
+ * @param internal
  */
 function addInternalUrlsToContentScripts(manifest, internal) {
   const ADMIN_CONSOLE_MATCH_PATTERN = "https://*.pixiebrix.com/*";
@@ -118,7 +138,7 @@ function addInternalUrlsToContentScripts(manifest, internal) {
 }
 
 /**
- * @param {chrome.runtime.ManifestV2} manifestV2
+ * @param manifestV2
  * @returns chrome.runtime.Manifest
  */
 function customizeManifest(manifestV2, options = {}) {

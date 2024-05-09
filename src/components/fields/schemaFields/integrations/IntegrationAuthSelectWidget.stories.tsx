@@ -20,6 +20,7 @@ import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { type UUID } from "@/types/stringTypes";
 
 export default {
   title: "Widgets/ServiceSelectWidget",
@@ -33,7 +34,7 @@ const Template: ComponentStory<typeof IntegrationAuthSelectWidget> = ({
   //  In the Page Editor the height renders OK
   <IntegrationAuthSelectWidget
     name="service"
-    value={null}
+    value={"" as UUID}
     onChange={action("onChange")}
     options={options}
     refreshOptions={action("refreshOptions")}

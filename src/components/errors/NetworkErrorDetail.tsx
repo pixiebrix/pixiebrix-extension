@@ -55,7 +55,7 @@ const NetworkErrorDetail: React.FunctionComponent<{
   );
 
   const cleanConfig = useMemo(() => {
-    const { data, ...rest } = error.config;
+    const { data, ...rest } = error.config ?? {};
     return {
       ...rest,
       data: tryParse(data),

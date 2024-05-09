@@ -196,47 +196,45 @@ const CssSpacingWidget: React.VFC<
 
   const disableControls = isVar || includesTemplate;
 
-  return (
-    (controlOptions.margin || controlOptions.padding) && (
-      <div className={cx("d-flex", styles.spacingControlWrapper)}>
-        {controlOptions.margin && (
-          <SpacingControl
-            prefix="m"
-            label="Margin"
-            placeholder="Select -5 to 5"
-            classes={classes}
-            disabled={disableControls}
-            options={marginOptions}
-            onUpdate={async (option) => {
-              try {
-                await setValue(calculateNextSpacing(value, "m", option));
-              } catch (error) {
-                reportError(error);
-              }
-            }}
-          />
-        )}
+  return controlOptions.margin || controlOptions.padding ? (
+    <div className={cx("d-flex", styles.spacingControlWrapper)}>
+      {controlOptions.margin && (
+        <SpacingControl
+          prefix="m"
+          label="Margin"
+          placeholder="Select -5 to 5"
+          classes={classes}
+          disabled={disableControls}
+          options={marginOptions}
+          onUpdate={async (option) => {
+            try {
+              await setValue(calculateNextSpacing(value, "m", option));
+            } catch (error) {
+              reportError(error);
+            }
+          }}
+        />
+      )}
 
-        {controlOptions.padding && (
-          <SpacingControl
-            prefix="p"
-            label="Padding"
-            placeholder="Select 0 to 5"
-            classes={classes}
-            disabled={disableControls}
-            options={paddingOptions}
-            onUpdate={async (option) => {
-              try {
-                await setValue(calculateNextSpacing(value, "p", option));
-              } catch (error) {
-                reportError(error);
-              }
-            }}
-          />
-        )}
-      </div>
-    )
-  );
+      {controlOptions.padding && (
+        <SpacingControl
+          prefix="p"
+          label="Padding"
+          placeholder="Select 0 to 5"
+          classes={classes}
+          disabled={disableControls}
+          options={paddingOptions}
+          onUpdate={async (option) => {
+            try {
+              await setValue(calculateNextSpacing(value, "p", option));
+            } catch (error) {
+              reportError(error);
+            }
+          }}
+        />
+      )}
+    </div>
+  ) : null;
 };
 
 export default CssSpacingWidget;

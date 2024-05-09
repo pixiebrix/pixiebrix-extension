@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { type Webhook } from "@/contrib/zapier/contract";
 import { type Permissions } from "webextension-polyfill";
@@ -26,6 +25,7 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { absoluteApiUrl } from "@/data/service/apiClient";
+import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
 
 export const ZAPIER_ID = validateRegistryId("@pixiebrix/zapier/push-data");
 
@@ -72,7 +72,7 @@ export class PushZap extends EffectABC {
   ): Promise<void> {
     const { data: webhooks } = await options.platform.request<{
       new_push_fields: Webhook[];
-    }>(await pixiebrixConfigurationFactory(), {
+    }>(pixiebrixConfigurationFactory(), {
       url: await absoluteApiUrl("/api/webhooks/hooks/"),
       method: "get",
     });

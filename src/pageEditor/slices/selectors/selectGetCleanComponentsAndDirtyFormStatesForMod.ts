@@ -18,15 +18,15 @@
 import { createSelector } from "@reduxjs/toolkit";
 import type { RegistryId } from "@/types/registryTypes";
 import {
-  selectDirty,
-  selectNotDeletedElements,
-  selectNotDeletedExtensions,
+  selectIsModComponentDirtyById,
+  selectNotDeletedModComponentFormStates,
+  selectNotDeletedActivatedModComponents,
 } from "@/pageEditor/slices/editorSelectors";
 
 export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
-  selectNotDeletedExtensions,
-  selectNotDeletedElements,
-  selectDirty,
+  selectNotDeletedActivatedModComponents,
+  selectNotDeletedModComponentFormStates,
+  selectIsModComponentDirtyById,
   (activatedModComponents, formStates, isDirtyByComponentId) =>
     (modId: RegistryId) => {
       const dirtyModComponentFormStates = formStates.filter(

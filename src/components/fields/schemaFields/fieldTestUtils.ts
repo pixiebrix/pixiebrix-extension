@@ -20,10 +20,14 @@ import { waitFor, screen, within } from "@testing-library/react";
 
 export async function expectToggleOptions(testId: string, expected: string[]) {
   if (testId) {
+    const testElement = screen.getByTestId(testId);
+    const toggleButton = within(testElement).getAllByRole("button").at(0);
+    if (toggleButton == null) {
+      throw new Error(`No toggle button found for testId: ${testId}`);
+    }
+
     // React Bootstrap dropdown does not render children items unless toggled
-    await userEvent.click(
-      within(screen.getByTestId(testId)).getAllByRole("button").at(0),
-    );
+    await userEvent.click(toggleButton);
   }
 
   const actual = new Set(

@@ -30,7 +30,6 @@ import {
 import type * as yup from "yup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { FormErrorContext } from "@/components/form/FormErrorContext";
 
 export type OnSubmit<TValues = FormikValues> = (
   values: TValues,
@@ -58,11 +57,6 @@ type FormProps = {
    * The starting formik field values for the form
    */
   initialValues: FormikValues;
-
-  /**
-   * Should the form be validated on component mount?
-   */
-  validateOnMount?: boolean;
 
   /**
    * (from Formik): Should Formik reset the form when new initialValues change?
@@ -104,20 +98,19 @@ type FormProps = {
   validationSchema?: yup.AnyObjectSchema;
 
   /**
-   * Use the analysis annotations instead of formik to get the errors
-   * Note: validationSchema will be ignored if this is true
+   * Whether the form should be validated on component mount
    */
-  enableAnalysisFieldErrors?: boolean;
+  validateOnMount?: boolean;
 
   /**
-   * Should we show errors on fields that are not marked touched yet?
+   * Whether the form should be validated on change
    */
-  showUntouchedErrors?: boolean;
+  validateOnChange?: boolean;
 
   /**
-   * Should we show actions for errors and warnings?
+   * Whether the form should be validated on blur
    */
-  showFieldActions?: boolean;
+  validateOnBlur?: boolean;
 
   /**
    * CSS class name to apply to the form element
@@ -142,53 +135,31 @@ const emptyObject = {} as const;
 const Form: React.FC<FormProps> = ({
   // Default to {} to be defensive against callers that pass through null/undefined form state when uninitialized
   initialValues = emptyObject,
-  validateOnMount,
-  enableReinitialize,
   children,
   renderBody,
   renderSubmit = defaultRenderSubmit,
   renderStatus = defaultRenderStatus,
-  onSubmit,
-  validationSchema,
-  validate,
-  enableAnalysisFieldErrors,
-  showUntouchedErrors,
-  showFieldActions,
   className,
+  ...restFormikProps
 }) => (
-  <FormErrorContext.Provider
-    value={{
-      shouldUseAnalysis: enableAnalysisFieldErrors,
-      showUntouchedErrors,
-      showFieldActions,
-    }}
-  >
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      validate={validate}
-      validateOnMount={validateOnMount}
-      enableReinitialize={enableReinitialize}
-      onSubmit={onSubmit}
-    >
-      {({
-        handleSubmit,
-        isSubmitting,
-        isValid,
-        values,
-        status,
-        setFieldValue,
-      }) => (
-        <BootstrapForm noValidate onSubmit={handleSubmit} className={className}>
-          {status && renderStatus({ status })}
-          {renderBody
-            ? renderBody({ isValid, values, setFieldValue, isSubmitting })
-            : children}
-          {renderSubmit({ isSubmitting, isValid, values })}
-        </BootstrapForm>
-      )}
-    </Formik>
-  </FormErrorContext.Provider>
+  <Formik initialValues={initialValues} {...restFormikProps}>
+    {({
+      handleSubmit,
+      isSubmitting,
+      isValid,
+      values,
+      status,
+      setFieldValue,
+    }) => (
+      <BootstrapForm noValidate onSubmit={handleSubmit} className={className}>
+        {status && renderStatus({ status })}
+        {renderBody
+          ? renderBody({ isValid, values, setFieldValue, isSubmitting })
+          : children}
+        {renderSubmit({ isSubmitting, isValid, values })}
+      </BootstrapForm>
+    )}
+  </Formik>
 );
 
 export default Form;

@@ -47,7 +47,7 @@ export function getDocument(html: string): Document {
 export class RootReader extends ReaderABC {
   static BRICK_ID = validateRegistryId("test/root-reader");
 
-  ref: ElementReference;
+  ref: ElementReference | null = null;
   readCount = 0;
 
   override async isAvailable($elements?: JQuery): Promise<boolean> {

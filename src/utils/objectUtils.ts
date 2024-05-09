@@ -177,3 +177,7 @@ export function mapObject<Input, Output>(
 export function isUnknownObjectArray(value: unknown): value is UnknownObject[] {
   return Array.isArray(value) && value.every((element) => isObject(element));
 }
+
+export function freeze<T>(value: T): T {
+  return Object.freeze(value);
+}

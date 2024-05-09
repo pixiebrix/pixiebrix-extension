@@ -15,21 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "@/vendors/bootstrapWithoutRem.css";
+import "@/sidebar/sidebarBootstrapOverrides.scss";
+import "@/bricks/renderers/customForm.css";
 import React from "react";
 import validator from "@/validators/formValidator";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { cancelForm, resolveForm } from "@/contentScript/messenger/strict/api";
 import { type Target } from "@/types/messengerTypes";
-import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { cloneDeep } from "lodash";
-import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
 import { type FormDefinition } from "@/platform/forms/formTypes";
 import { type UUID } from "@/types/stringTypes";
+import { templates } from "@/components/formBuilder/RjsfTemplates";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import { Stylesheets } from "@/components/Stylesheets";
+import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
 
 export const fields = {
   DescriptionField,
@@ -40,26 +43,33 @@ export const uiWidgets = {
   TextareaWidget: TextAreaWidget,
 } as const;
 
-export const EphemeralFormContent: React.FC<{
+export type EphemeralFormContentProps = {
   definition: FormDefinition;
   target: Target;
   nonce: UUID;
   isModal: boolean;
-}> = ({ definition, target, nonce, isModal }) => {
+};
+
+const EphemeralFormContent: React.FC<EphemeralFormContentProps> = ({
+  definition,
+  target,
+  nonce,
+  isModal,
+}) => {
   const {
     schema,
     uiSchema,
     cancelable,
     submitCaption,
     stylesheets: newStylesheets,
-    disableParentStyles = false,
+    disableParentStyles,
   } = definition;
 
   // Ephemeral form can never be nested, but we use this to pull in
   // the (boostrap) base themes
   const { stylesheets } = useStylesheetsContextWithFormDefault({
     newStylesheets,
-    disableParentStyles,
+    disableParentStyles: disableParentStyles ?? false,
   });
 
   return (
@@ -98,3 +108,5 @@ export const EphemeralFormContent: React.FC<{
     </Stylesheets>
   );
 };
+
+export default EphemeralFormContent;

@@ -30,7 +30,7 @@ import registerMessenger from "@/background/messenger/registration";
 import registerMessengerStrict from "@/background/messenger/strict/registration";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import initLocator from "@/background/locator";
-import initContextMenus from "@/background/contextMenus";
+import initContextMenus from "@/background/contextMenus/initContextMenus";
 import initBrowserAction from "@/background/browserAction";
 import initInstaller from "@/background/installer";
 import initNavigation from "@/background/navigation";
@@ -49,6 +49,7 @@ import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthent
 import { setPlatform } from "@/platform/platformContext";
 import backgroundPlatform from "@/background/backgroundPlatform";
 import { initFeatureFlagBackgroundListeners } from "@/auth/featureFlagStorage";
+import initTabListener from "./tabs";
 
 // The background "platform" currently is used to execute API requests from Google Sheets/Automation Anywhere.
 // In the future, it might also run other background tasks from mods (e.g., background intervals)
@@ -65,6 +66,7 @@ void initSidePanel();
 initInstaller();
 void initNavigation();
 initExecutor();
+initTabListener();
 initFeatureFlagBackgroundListeners();
 initContextMenus();
 initBrowserCommands();

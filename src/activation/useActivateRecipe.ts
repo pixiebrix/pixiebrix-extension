@@ -26,12 +26,10 @@ import { uninstallRecipe } from "@/store/uninstallUtils";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
-import { isEmpty } from "lodash";
 import { useCreateDatabaseMutation } from "@/data/service/api";
-import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { isUUID, validateUUID } from "@/types/helpers";
 import { Events } from "@/telemetry/events";
 import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { autoCreateDatabaseOptionsArgsInPlace } from "@/activation/modOptionsHelpers";
 
 export type ActivateResult = {
   success: boolean;
@@ -129,35 +127,13 @@ function useActivateRecipe(
 
         const { optionsArgs, integrationDependencies } = formValues;
 
-        // Create databases for any recipe options database fields where the
-        // schema format is "preview", and the field value is a string to use
-        // as the database name
-        const autoCreateDatabaseFieldNames = Object.entries(
-          recipe.options?.schema?.properties ?? {},
-        )
-          .filter(
-            ([name, fieldSchema]) =>
-              typeof fieldSchema !== "boolean" &&
-              isDatabaseField(fieldSchema) &&
-              fieldSchema.format === "preview" &&
-              typeof optionsArgs[name] === "string" &&
-              !isEmpty(optionsArgs[name]) &&
-              // If the value is a UUID, then it's a database ID for an existing database
-              !isUUID(optionsArgs[name] as string),
-          )
-          .map(([name]) => name);
-        await Promise.all(
-          autoCreateDatabaseFieldNames.map(async (name) => {
-            // Type-checked in the filter above
-            const databaseName: string = optionsArgs[name] as string;
-            const result = await createDatabase({ name: databaseName });
-
-            if ("error" in result) {
-              throw result.error;
-            }
-
-            optionsArgs[name] = validateUUID(result.data.id);
-          }),
+        await autoCreateDatabaseOptionsArgsInPlace(
+          recipe,
+          optionsArgs,
+          async (args) => {
+            const result = await createDatabase(args).unwrap();
+            return result.id;
+          },
         );
 
         const recipeExtensions = extensions.filter(

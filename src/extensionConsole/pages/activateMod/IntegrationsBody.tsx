@@ -35,6 +35,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { joinName } from "@/utils/formUtils";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
+import { freeze } from "@/utils/objectUtils";
 
 interface OwnProps {
   mod: ModDefinition;
@@ -48,9 +49,7 @@ type ValueField = {
   isOptional?: boolean;
 };
 
-const emptyAuthOptions: readonly AuthOption[] = Object.freeze(
-  [] as AuthOption[],
-);
+const EMPTY_AUTH_OPTIONS = freeze<AuthOption[]>([]);
 
 const IntegrationsBody: React.FunctionComponent<OwnProps> = ({
   mod,
@@ -59,7 +58,7 @@ const IntegrationsBody: React.FunctionComponent<OwnProps> = ({
 }) => {
   const { data: authOptions, refetch: refreshAuthOptions } = fallbackValue(
     useAuthOptions(),
-    emptyAuthOptions,
+    EMPTY_AUTH_OPTIONS,
   );
   const [
     integrationDependenciesField,

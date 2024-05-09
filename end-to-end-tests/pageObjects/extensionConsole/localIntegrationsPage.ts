@@ -40,7 +40,7 @@ export class LocalIntegrationsPage {
       this.page.getByRole("heading", { name: "Local Integrations" }),
     ).toBeVisible();
 
-    await expect(this.page.getByTestId("loader")).not.toBeVisible();
+    await expect(this.page.getByTestId("loader")).toBeHidden();
   }
 
   async createNewIntegration(integrationName: string) {
@@ -52,8 +52,8 @@ export class LocalIntegrationsPage {
       .getByPlaceholder("Start typing to find results")
       .fill(integrationName);
 
-    await this.page.getByText(integrationName).first().hover();
+    await this.page.getByText(integrationName).first().click();
 
-    await this.page.getByTestId(`${integrationName} button`).click();
+    await this.page.getByTestId(`${integrationName} detail button`).click();
   }
 }

@@ -111,9 +111,9 @@ describe("analyzeStringUrlsField", () => {
     "rejects invalid URL [$url]",
     async ({ url, message }) => {
       const analysis = new ExtensionUrlPatternAnalysis();
-      await analysis.analyzeStringUrlsField([url], "testField");
+      await analysis.analyzeStringUrlsField([url!], "testField");
       expect(analysis.getAnnotations()).toHaveLength(1);
-      expect(analysis.getAnnotations()[0].message).toEqual(message);
+      expect(analysis.getAnnotations()[0]!.message).toEqual(message);
     },
   );
 });

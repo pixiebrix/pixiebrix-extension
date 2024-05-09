@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES as REMOTE_UIPATH_PROPERTIES } from "@/contrib/uipath/process";
-import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
+import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 import RequireIntegrationConfig from "@/integrations/components/RequireIntegrationConfig";
@@ -32,7 +32,11 @@ import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
 import useAsyncState from "@/hooks/useAsyncState";
-import { fallbackValue } from "@/utils/asyncStateUtils";
+import {
+  fallbackValue,
+  loadingAsyncStateFactory,
+  valueToAsyncState,
+} from "@/utils/asyncStateUtils";
 import type { Option } from "@/components/form/widgets/SelectWidget";
 import { inspectedTab } from "@/pageEditor/context/connection";
 
@@ -47,10 +51,13 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   );
 
   const configName = partial(joinName, name, configKey);
+  const integrationFieldName = configName("service");
+  const releaseKeyFieldName = configName("releaseKey");
 
   // Fetch the release from the server, because inputSchema is not available locally via the robot SDK
   const { releaseKey, selectedRelease } = useSelectedRelease(
-    configName("releaseKey"),
+    releaseKeyFieldName,
+    integrationFieldName,
   );
 
   const robotState = useAsyncState(async () => {
@@ -104,24 +111,28 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       <RequireIntegrationConfig
         // FIXME: this integration use is options-only. As-is this will create an integration entry in the background.
         //  We  need to support 1) making RemoteServiceConfig optional, and 2) not storing the state in Formik
-        integrationsSchema={REMOTE_UIPATH_PROPERTIES.uipath as Schema}
-        integrationsFieldName={configName("service")}
+        integrationFieldSchema={REMOTE_UIPATH_PROPERTIES.uipath as Schema}
+        integrationFieldName={integrationFieldName}
       >
         {() => (
           <>
             <ConnectedFieldTemplate
               label="Process"
               description="Select a local process"
-              name={configName("releaseKey")}
+              name={releaseKeyFieldName}
               as={RemoteSelectWidget}
               blankValue={null}
               optionsFactory={processOptionsPromise}
             />
 
-            <ChildObjectField
+            <RemoteSchemaObjectField
               heading={selectedRelease?.release?.Name ?? "Input Arguments"}
-              schema={selectedRelease?.schema}
               name={configName("inputArguments")}
+              remoteSchemaState={
+                selectedRelease?.schema
+                  ? valueToAsyncState(selectedRelease.schema)
+                  : loadingAsyncStateFactory()
+              }
             />
           </>
         )}

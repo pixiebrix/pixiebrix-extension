@@ -15,15 +15,20 @@ export default defineConfig<{ chromiumChannel: string }>({
   retries: CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: CI ? 1 : 2,
-  /* Timeout for each test */
-  timeout: 120_000,
+  /* Timeout for each test, if a test should take longer than this, use `test.slow()` */
+  timeout: 60_000,
+  /* Timeout for the entire test run */
+  globalTimeout: 20 * 60 * 1000, // 20 minutes
   expect: {
     /* Timeout for each assertion. If a particular interaction is timing out, adjust its specific timeout value rather than this global setting */
     timeout: 5000,
   },
   reportSlowTests: null,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [["html", { outputFolder: "./end-to-end-tests/.report" }]],
+  reporter: [
+    ["html", { outputFolder: "./end-to-end-tests/.report" }],
+    ["json", { outputFile: "./end-to-end-tests/.report/report.json" }],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */

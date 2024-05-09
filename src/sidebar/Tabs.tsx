@@ -57,12 +57,13 @@ import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
-import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { cancelForm } from "@/contentScript/messenger/strict/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
+import UnavailableOverlay from "@/sidebar/UnavailableOverlay";
+import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
+import ConnectingOverlay from "@/sidebar/ConnectingOverlay";
 
 const ActivateModPanel = lazy(
   async () =>
@@ -172,8 +173,7 @@ const Tabs: React.FC = () => {
     if (isTemporaryPanelEntry(panel)) {
       await dispatch(removeTemporaryPanel(panel.nonce));
     } else if (isFormPanelEntry(panel)) {
-      const frame = await getConnectedTarget();
-      cancelForm(frame, panel.nonce);
+      await dispatch(removeFormPanel(panel.nonce));
     } else if (isModActivationPanelEntry(panel)) {
       dispatch(sidebarSlice.actions.hideModActivationPanel());
     } else {
@@ -321,6 +321,16 @@ const Tabs: React.FC = () => {
                   });
                 }}
               >
+                {panel.isConnecting && <ConnectingOverlay />}
+                {panel.isUnavailable && (
+                  <UnavailableOverlay
+                    onClose={async () =>
+                      dispatch(
+                        sidebarSlice.actions.closeTab(eventKeyForEntry(panel)),
+                      )
+                    }
+                  />
+                )}
                 <PanelBody
                   isRootPanel
                   payload={panel.payload}
@@ -350,6 +360,11 @@ const Tabs: React.FC = () => {
                   });
                 }}
               >
+                {form.isUnavailable && (
+                  <UnavailableOverlay
+                    onClose={async () => dispatch(removeFormPanel(form.nonce))}
+                  />
+                )}
                 <FormBody form={form} />
               </ErrorBoundary>
             </Tab.Pane>

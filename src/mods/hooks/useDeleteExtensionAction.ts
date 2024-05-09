@@ -27,7 +27,9 @@ import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors/businessErrors";
 import { Events } from "@/telemetry/events";
 
-function useDeleteExtensionAction(modViewItem: ModViewItem): () => void | null {
+function useDeleteExtensionAction(
+  modViewItem: ModViewItem,
+): (() => void) | null {
   const { mod, sharing, status } = modViewItem;
   const modals = useModals();
   const [deleteStandaloneModDefinition] =

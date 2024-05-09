@@ -19,20 +19,20 @@ import { type PlatformProtocol } from "@/platform/platformProtocol";
 import { hideNotification, showNotification } from "@/utils/notify";
 import type { PlatformCapability } from "@/platform/capabilities";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { validateSemVerString } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
 import {
   traces,
   clearExtensionDebugLogs,
+  performConfiguredRequestInBackground,
 } from "@/background/messenger/strict/api";
 import { PlatformBase } from "@/platform/platformBase";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import integrationRegistry from "@/integrations/registry";
 import { performConfiguredRequest } from "@/background/requests";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 /**
  * The extension page platform.
@@ -56,10 +56,7 @@ class ExtensionPagePlatform extends PlatformBase {
   });
 
   constructor() {
-    super(
-      "extension",
-      validateSemVerString(browser.runtime.getManifest().version),
-    );
+    super("extension", getExtensionVersion());
   }
 
   override alert = window.alert;
@@ -97,7 +94,7 @@ class ExtensionPagePlatform extends PlatformBase {
     requestConfig: NetworkRequestConfig,
   ): Promise<RemoteResponse<TData>> {
     const integration = await integrationRegistry.lookup(
-      integrationConfig.serviceId,
+      integrationConfig?.serviceId,
     );
 
     // Use the background messenger to perform 3rd party API calls that may require refreshing credentials so that

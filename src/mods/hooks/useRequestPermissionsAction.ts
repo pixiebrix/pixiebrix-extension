@@ -24,7 +24,7 @@ import { type ModComponentState } from "@/store/extensionsTypes";
 
 function useRequestPermissionsAction(
   modViewItem: ModViewItem,
-): () => void | null {
+): (() => void) | null {
   const { mod } = modViewItem;
 
   // Without memoization, the selector reference changes on every render, which causes useModPermissions

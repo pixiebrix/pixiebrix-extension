@@ -49,7 +49,7 @@ const GeneralSettings: React.FunctionComponent = () => {
                 ? "The floating action button is not available for enterprise and partner users"
                 : "Toggle on to enable floating button that opens the Quick Bar"
             }
-            isEnabled={checked}
+            isEnabled={checked ?? false}
             disabled={disableFloatingActionButton}
             flag="isFloatingActionButtonEnabled"
           />

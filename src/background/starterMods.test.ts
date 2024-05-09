@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  debouncedActivateStarterMods,
-  getBuiltInIntegrationConfigs,
-} from "@/background/starterMods";
+import { debouncedActivateStarterMods } from "@/background/starterMods";
 import {
   getModComponentState,
   saveModComponentState,
@@ -52,6 +49,13 @@ import produce from "immer";
 import { type StarterBrickDefinition } from "@/starterBricks/types";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
+import {
+  PIXIEBRIX_INTEGRATION_ID,
+  PIXIEBRIX_INTEGRATION_CONFIG_ID,
+} from "@/integrations/constants";
+import { databaseFactory } from "@/testUtils/factories/databaseFactories";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -359,5 +363,132 @@ describe("debouncedActivateStarterMods", () => {
     expect(dependency1.configId).toBe(builtInIntegrationConfigs[0].id);
     // Expect the required dependency to be configured
     expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
+  });
+
+  test("activate starter mod with required pixiebrix integration", async () => {
+    isLinkedMock.mockResolvedValue(true);
+
+    const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
+    modDefinition.extensionPoints[0].services = {
+      type: "object",
+      properties: {
+        service: {
+          $ref: `https://app.pixiebrix.com/schemas/services/${PIXIEBRIX_INTEGRATION_ID}`,
+        },
+      },
+      required: ["service"],
+    };
+
+    axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
+
+    axiosMock
+      .onGet("/api/onboarding/starter-blueprints/")
+      .reply(200, [modDefinition]);
+
+    await debouncedActivateStarterMods();
+    const { extensions: activatedModComponents } = await getModComponentState();
+
+    expect(activatedModComponents).toBeArrayOfSize(1);
+
+    const activatedModComponent = activatedModComponents[0];
+    expect(activatedModComponent.extensionPointId).toBe(
+      modDefinition.extensionPoints[0].id,
+    );
+    expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(1);
+
+    const dependency = activatedModComponent.integrationDependencies.find(
+      ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID,
+    );
+
+    // As of 1.8.13, a sentinel value is used for the configId of the integration to simplify strict null checks
+    expect(dependency.configId).toBe(PIXIEBRIX_INTEGRATION_CONFIG_ID);
+  });
+
+  describe("databases", () => {
+    beforeEach(() => {
+      isLinkedMock.mockResolvedValue(true);
+      axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
+    });
+
+    function modFactory() {
+      const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
+
+      (modDefinition.metadata as any).name = "Test Mod";
+
+      modDefinition.options = {
+        schema: {
+          properties: {
+            database: {
+              $ref: "https://app.pixiebrix.com/schemas/database#",
+              title: "Test Database",
+              format: "preview",
+            },
+          },
+          required: ["database"],
+        },
+      };
+
+      modDefinition.extensionPoints[0].services = {
+        type: "object",
+        properties: {
+          service: {
+            $ref: `https://app.pixiebrix.com/schemas/services/${PIXIEBRIX_INTEGRATION_ID}`,
+          },
+        },
+        required: ["service"],
+      };
+
+      return modDefinition;
+    }
+
+    test("activate starter mod with required pixiebrix database", async () => {
+      const modDefinition = modFactory();
+
+      axiosMock
+        .onGet("/api/onboarding/starter-blueprints/")
+        .reply(200, [modDefinition]);
+
+      const databaseId = autoUUIDSequence();
+
+      axiosMock.onPost("/api/databases/").reply((args) => {
+        const data = JSON.parse(args.data) as UnknownObject;
+        expect(data).toStrictEqual({ name: "Test Mod - Test Database" });
+
+        return [
+          201,
+          databaseFactory({ id: databaseId, name: data.name as string }),
+        ];
+      });
+
+      await debouncedActivateStarterMods();
+      const { extensions: activatedModComponents } =
+        await getModComponentState();
+
+      expect(activatedModComponents).toBeArrayOfSize(1);
+
+      expect(activatedModComponents[0].optionsArgs).toStrictEqual({
+        // Activated with the ID of the database created
+        database: databaseId,
+      });
+    });
+
+    test("optional database is not created", async () => {
+      // Mark DB as optional
+      const modDefinition = modFactory();
+      modDefinition.options.schema.required = [];
+
+      axiosMock
+        .onGet("/api/onboarding/starter-blueprints/")
+        .reply(200, [modDefinition]);
+
+      await debouncedActivateStarterMods();
+      const { extensions: activatedModComponents } =
+        await getModComponentState();
+
+      expect(activatedModComponents).toBeArrayOfSize(1);
+
+      // Database should not be created
+      expect(activatedModComponents[0].optionsArgs).toStrictEqual({});
+    });
   });
 });

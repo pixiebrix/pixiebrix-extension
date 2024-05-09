@@ -28,6 +28,7 @@ import {
 } from "@rjsf/utils";
 import React from "react";
 import { FormControl, type FormControlProps } from "react-bootstrap";
+import { freeze } from "@/utils/objectUtils";
 
 // RJSF's BaseInputTemplateProps is overly permissive. Tightening it up here.
 export interface StrictBaseInputTemplateProps<
@@ -100,7 +101,7 @@ function getValue(
   return value || value === 0 ? value : "";
 }
 
-const emptyArray: string[] = [] as const;
+const EMPTY_ARRAY = freeze<string[]>([]);
 
 export default function BaseInputTemplate<
   T = HTMLInputElement,
@@ -121,7 +122,7 @@ export default function BaseInputTemplate<
   autofocus,
   options,
   schema,
-  rawErrors = emptyArray,
+  rawErrors = EMPTY_ARRAY,
   children,
   extraProps,
 }: StrictBaseInputTemplateProps<T, S, F>) {

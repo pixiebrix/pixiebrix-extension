@@ -26,10 +26,11 @@ import { type Target } from "@/types/messengerTypes";
 import { validateUUID } from "@/types/helpers";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import useAsyncState from "@/hooks/useAsyncState";
-import { EphemeralFormContent } from "./EphemeralFormContent";
-import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import useReportError from "@/hooks/useReportError";
+import IsolatedComponent from "@/components/IsolatedComponent";
+import { type EphemeralFormContentProps } from "./EphemeralFormContent";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ModalLayout: React.FC = ({ children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
@@ -42,13 +43,51 @@ const PanelLayout: React.FC = ({ children }) => (
   <div className="p-3">{children}</div>
 );
 
+const IsolatedEphemeralFormContent: React.FunctionComponent<
+  EphemeralFormContentProps
+> = (props) => (
+  <IsolatedComponent
+    name="EphemeralFormContent"
+    noStyle={props.definition.disableParentStyles}
+    lazy={async () =>
+      import(
+        /* webpackChunkName: "isolated/EphemeralFormContent" */
+        "./EphemeralFormContent"
+      )
+    }
+    factory={(EphemeralFormContent) => <EphemeralFormContent {...props} />}
+  />
+);
+
+function validateOpener(opener: string | null): Target {
+  if (opener == null) {
+    throw new Error("Missing opener");
+  }
+
+  try {
+    const parsed = JSON.parse(opener);
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      "tabId" in parsed &&
+      "frameId" in parsed
+    ) {
+      return parsed as Target;
+    }
+
+    throw new TypeError(`Invalid opener: ${opener}`);
+  } catch {
+    throw new TypeError(`Invalid opener: ${opener}`);
+  }
+}
+
 /**
  * @see FormTransformer
  */
 const EphemeralForm: React.FC = () => {
   const params = new URLSearchParams(location.search);
   const nonce = validateUUID(params.get("nonce"));
-  const opener = JSON.parse(params.get("opener")) as Target;
+  const opener = validateOpener(params.get("opener"));
   const mode = params.get("mode") ?? "modal";
 
   const isModal = mode === "modal";
@@ -98,17 +137,17 @@ const EphemeralForm: React.FC = () => {
     );
   }
 
+  assertNotNullish(formDefinition, "unable to load form definition");
+
   return (
     <FormContainer>
       <ErrorBoundary>
-        <EmotionShadowRoot>
-          <EphemeralFormContent
-            definition={formDefinition}
-            target={target}
-            nonce={nonce}
-            isModal={isModal}
-          />
-        </EmotionShadowRoot>
+        <IsolatedEphemeralFormContent
+          definition={formDefinition}
+          target={target}
+          nonce={nonce}
+          isModal={isModal}
+        />
       </ErrorBoundary>
     </FormContainer>
   );

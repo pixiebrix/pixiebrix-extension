@@ -24,7 +24,7 @@ import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 const InvitationBanner: React.FunctionComponent = () => {
   const { data: invitations } = useGetInvitationsQuery();
-  const invitationsAvailable = invitations?.length > 0;
+  const invitationsAvailable = invitations && invitations.length > 0;
 
   if (!invitationsAvailable) {
     return null;

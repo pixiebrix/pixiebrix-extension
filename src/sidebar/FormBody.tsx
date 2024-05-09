@@ -64,7 +64,7 @@ const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
       title={form.nonce}
       height="100%"
       width="100%"
-      src={sourceURL.toString()}
+      src={sourceURL?.toString()}
       style={{ border: "none" }}
       allowFullScreen={false}
     />

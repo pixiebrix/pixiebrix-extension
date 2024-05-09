@@ -19,10 +19,12 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
+import * as contentScriptApi from "@/contentScript/messenger/strict/api";
 import { isEmpty, throttle } from "lodash";
 import { signalFromEvent } from "abort-utils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import * as sidebarMv2 from "@/contentScript/sidebarDomControllerLite";
+import { getSidebarElement } from "@/contentScript/sidebarDomControllerLite";
 import { type Except } from "type-fest";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -30,63 +32,45 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type ModComponentRef } from "@/types/modComponentTypes";
 import type {
   ActivatePanelOptions,
-  ModActivationPanelEntry,
   FormPanelEntry,
+  ModActivationPanelEntry,
   PanelEntry,
   PanelPayload,
   TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import { getTemporaryPanelSidebarEntries } from "@/platform/panels/panelController";
 import { getFormPanelSidebarEntries } from "@/platform/forms/formController";
-import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
-import { messenger } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { showMySidePanel } from "@/background/messenger/strict/api";
-import { getSidebarElement } from "@/contentScript/sidebarDomControllerLite";
 import focusController from "@/utils/focusController";
 import selectionController from "@/utils/selectionController";
+import { getTopLevelFrame, messenger } from "webext-messenger";
+import {
+  getSidebarTargetForCurrentTab,
+  isUserGestureRequiredError,
+} from "@/utils/sidePanelUtils";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
-/* Approximate sidebar width in pixels. Used to determine whether it's open */
-const MINIMUM_SIDEBAR_WIDTH = 300;
-
-export const isSidePanelOpen = isMV3()
-  ? isSidePanelOpenMv3
-  : sidebarMv2.isSidebarFrameVisible;
-
 /**
- * Determines whether the sidebar is open.
- * @returns false when it's definitely closed or 'unknown' when it cannot be determined,
- * because the extra padding might be caused by the dev tools being open on the side
- * or due to another sidebar
+ * Event listeners triggered when the sidebar shows and is ready to receive messages.
  */
-// The type cannot be `undefined` due to strictNullChecks
-function isSidePanelOpenSync(): false | "unknown" {
-  if (!isMV3()) {
-    throw new Error("isSidePanelOpenSync is only available in MV3");
-  }
+export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
-  if (!globalThis.window) {
-    return "unknown";
-  }
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
+const panels: PanelEntry[] = [];
 
-  return window.outerWidth - window.innerWidth > MINIMUM_SIDEBAR_WIDTH
-    ? "unknown"
-    : false;
-}
+let modActivationPanelEntry: ModActivationPanelEntry | null = null;
 
-// This method is exclusive to the content script, don't export it
-async function isSidePanelOpenMv3(): Promise<boolean> {
-  if (isSidePanelOpenSync() === false) {
-    return false;
-  }
-
+/*
+ * Only one check at a time
+ * Cannot throttle because subsequent checks need to be able to be made immediately
+ */
+const isSidePanelOpenMv3 = memoizeUntilSettled(async () => {
   try {
     await messenger(
       "SIDEBAR_PING",
@@ -97,7 +81,11 @@ async function isSidePanelOpenMv3(): Promise<boolean> {
   } catch {
     return false;
   }
-}
+});
+
+export const isSidePanelOpen = isMV3()
+  ? isSidePanelOpenMv3
+  : sidebarMv2.isSidebarFrameVisible;
 
 // - Only start one ping at a time
 // - Limit to one request every second (if the user closes the sidebar that quickly, we likely see those errors anyway)
@@ -113,42 +101,45 @@ const pingSidebar = memoizeUntilSettled(
   }, 1000) as () => Promise<void>,
 );
 
-/**
- * Event listeners triggered when the sidebar shows and is ready to receive messages.
- */
-export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
-
 export function sidebarWasLoaded(): void {
   sidebarShowEvents.emit({ reason: RunReason.MANUAL });
 }
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
-const panels: PanelEntry[] = [];
-
-let modActivationPanelEntry: ModActivationPanelEntry | null = null;
-
 /**
- * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
+ * Content script handler for showing the sidebar in the top-level frame. Regular callers should call
+ * showSidebar instead, which handles calls from iframes.
+ *
+ * - Resolves when the sidebar is initialized (responds to a ping)
+ * - Shows focusCaptureDialog if a user gesture is required
+ *
+ * @see showSidebar
+ * @see pingSidebar
+ * @throws Error if the sidebar ping fails or does not respond in time
  */
-export async function showSidebar(): Promise<void> {
+// Don't memoizeUntilSettled this method. focusCaptureDialog is memoized which prevents this method from showing
+// the focus dialog from multiple times. By allowing multiple concurrent calls to showSidebarInTopFrame,
+// a subsequent call might succeed, which will then automatically close the focusCaptureDialog (via it's abort signal)
+export async function showSidebarInTopFrame() {
   reportEvent(Events.SIDEBAR_SHOW);
+
+  if (isLoadedInIframe()) {
+    console.warn("showSidebarInTopFrame should not be called in an iframe");
+  }
+
+  // Defensively handle accidental calls from iframes
   if (isMV3() || isLoadedInIframe()) {
     try {
       await showMySidePanel();
     } catch (error) {
-      if (!getErrorMessage(error).includes("user gesture")) {
+      if (!isUserGestureRequiredError(error)) {
         throw error;
       }
 
-      await focusCaptureDialog(
-        'Please click "OK" to allow PixieBrix to open the sidebar.',
-        {
-          signal: signalFromEvent(
-            sidebarShowEvents,
-            sidebarShowEvents.coreEvent,
-          ),
-        },
-      );
+      await focusCaptureDialog({
+        message: 'Click "Open Sidebar" to open the mod sidebar',
+        buttonText: "Open Sidebar",
+        signal: signalFromEvent(sidebarShowEvents, sidebarShowEvents.coreEvent),
+      });
       await showMySidePanel();
     }
   } else if (!sidebarMv2.isSidebarFrameVisible()) {
@@ -160,6 +151,18 @@ export async function showSidebar(): Promise<void> {
   } catch (error) {
     throw new Error("The sidebar did not respond in time", { cause: error });
   }
+}
+
+/**
+ * Attach the sidebar to the page if it's not already attached. Safe to call from any frame. Resolves when the
+ * sidebar is initialized.
+ * @see showSidebarInTopFrame
+ */
+export async function showSidebar(): Promise<void> {
+  // Could consider explicitly calling showSidebarInTopFrame directly if we're already in the top frame.
+  // But the messenger will already handle that case automatically.
+  const topLevelFrame = await getTopLevelFrame();
+  await contentScriptApi.showSidebar(topLevelFrame);
 }
 
 /**
@@ -180,13 +183,43 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
 }
 
 /**
- * Hide the sidebar. Dispatches HIDE_SIDEBAR_EVENT_NAME event even if the sidebar is not currently visible.
+ * Content script handler for hiding the MV2 sidebar in the top-level frame. Regular callers should call
+ * hideSidebar instead, which handles calls from MV3 and iframes.
+ *
+ * Dispatches HIDE_SIDEBAR_EVENT_NAME event even if the sidebar is not currently visible.
  * @see HIDE_SIDEBAR_EVENT_NAME
+ * @see hideSidebar
  */
-export function hideSidebar(): void {
+export function hideMv2SidebarInTopFrame(): void {
+  if (isMV3()) {
+    console.warn("hideMv2SidebarInTopFrame should not be called in MV3");
+  }
+
   reportEvent(Events.SIDEBAR_HIDE);
   sidebarMv2.removeSidebarFrame();
   window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
+}
+
+/**
+ * Hide the sidebar. Works from any frame.
+ */
+export function hideSidebar(): void {
+  if (isMV3() || isLoadedInIframe()) {
+    sidebarInThisTab.close();
+  } else {
+    hideMv2SidebarInTopFrame();
+  }
+}
+
+/**
+ * Toggle the sidebar opened/closed state. Can be called from any frame.
+ */
+export async function toggleSidebar(): Promise<void> {
+  if (await isSidePanelOpen()) {
+    hideSidebar();
+  } else {
+    await showSidebar();
+  }
 }
 
 /**
@@ -207,14 +240,44 @@ export async function updateSidebar(
   }
 }
 
-export async function renderPanelsIfVisible(): Promise<void> {
+async function renderPanelsIfVisible(): Promise<void> {
   expectContext("contentScript");
+
+  if (isLoadedInIframe()) {
+    // The top-level frame is responsible for managing the panels for the sidebar.
+    // Include this isLoadedInIframe check as a stop gap to prevent accidental calls from iframes.
+    console.warn(
+      "sidebarController:renderPanelsIfVisible should not be called from a frame",
+    );
+    return;
+  }
 
   if (await isSidePanelOpen()) {
     void sidebarInThisTab.renderPanels(getTimedSequence(), panels);
   } else {
     console.debug(
       "sidebarController:renderPanelsIfVisible: skipping renderPanels because the sidebar is not visible",
+    );
+  }
+}
+
+export async function notifyNavigationComplete(): Promise<void> {
+  expectContext("contentScript");
+
+  if (isLoadedInIframe()) {
+    // The top-level frame is responsible for managing the panels for the sidebar.
+    // Include this isLoadedInIframe check as a stop gap to prevent accidental calls from iframes.
+    console.warn(
+      "sidebarController:notifyNavigationComplete should not be called from a frame",
+    );
+    return;
+  }
+
+  if (await isSidePanelOpen()) {
+    void sidebarInThisTab.notifyNavigationComplete(getTimedSequence());
+  } else {
+    console.debug(
+      "sidebarController:notifyNavigationComplete: skipping notifyNavigationComplete because the sidebar is not visible",
     );
   }
 }
@@ -297,6 +360,12 @@ export function removeExtensions(extensionIds: UUID[]): void {
   expectContext("contentScript");
 
   console.debug("sidebarController:removeExtensions", { extensionIds });
+
+  // Avoid unnecessary messaging. More importantly, renderPanelsIfVisible should not be called from iframes. Iframes
+  // might call removeExtensions as part of cleanup
+  if (extensionIds.length === 0) {
+    return;
+  }
 
   // `panels` is const, so replace the contents
   const current = panels.splice(0);
@@ -504,14 +573,10 @@ function sidePanelOnCloseSignal(): AbortSignal {
   if (isMV3()) {
     window.addEventListener(
       "resize",
-      () => {
-        // TODO: It doesn't work when the dev tools are open on the side.
-        // This is a rare event because we condition users to move the dev tools to
-        // the bottom via https://github.com/pixiebrix/pixiebrix-extension/pull/6952
-        // … but it's still possible for people with very large screens and those
-        // who temporarily moved the dev tools to the side anyway.
+      async () => {
+        // TODO: Replace with official event when available
         // Official event requested in https://github.com/w3c/webextensions/issues/517
-        if (isSidePanelOpenSync() === false) {
+        if (!(await isSidePanelOpenMv3())) {
           controller.abort();
         }
       },

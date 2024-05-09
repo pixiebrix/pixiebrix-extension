@@ -19,15 +19,14 @@ import { type Logger } from "@/types/loggerTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import {
   type Activity,
-  API_TASK_TYPE,
   type ApiTaskResponse,
-  type Bot,
-  BOT_TYPE,
   type DeployResponse,
   type Device,
   type DevicePool,
   type Execution,
   FAILURE_STATUSES,
+  type File,
+  FileType,
   type Folder,
   type Interface,
   type ListResponse,
@@ -46,7 +45,7 @@ import {
   type EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { castArray, cloneDeep, isEmpty, sortBy } from "lodash";
+import { castArray, cloneDeep, isEmpty, partial, sortBy } from "lodash";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
@@ -92,6 +91,24 @@ const SORT_BY_NAME: Pick<SearchPayload, "sort"> = {
 type PaginationPayload = {
   page: { offset: number; length: number };
 };
+
+/**
+ * Check a control room integration to see if the authentication is valid
+ */
+export async function checkConfigAuth(
+  config: SanitizedIntegrationConfig,
+): Promise<boolean> {
+  try {
+    const response = await getPlatform().request<boolean>(config, {
+      url: "v1/authentication/token",
+      method: "GET",
+    });
+    return response.data;
+  } catch (error) {
+    console.warn("Error while validating control room integration", error);
+    return false;
+  }
+}
 
 /**
  * Fetch paginated Control Room responses.
@@ -159,9 +176,9 @@ async function fetchPages<TData>(
 async function fetchBotFile(
   config: SanitizedIntegrationConfig,
   fileId: string,
-): Promise<Bot> {
+): Promise<File> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
-  const response = await getPlatform().request<Bot>(config, {
+  const response = await getPlatform().request<File>(config, {
     url: `/v2/repository/files/${fileId}`,
     method: "GET",
   });
@@ -193,7 +210,8 @@ export const cachedFetchFolder = cachePromiseMethod(
   fetchFolder,
 );
 
-async function searchBots(
+async function searchFiles(
+  fileType: FileType,
   config: SanitizedIntegrationConfig,
   options: {
     workspaceType: WorkspaceType;
@@ -205,6 +223,12 @@ async function searchBots(
     throw new TypeError("workspaceType is required");
   }
 
+  const fileTypeOperand = {
+    operator: "eq" as const,
+    field: "type",
+    value: fileType,
+  };
+
   let searchPayload: SearchPayload = {
     ...SORT_BY_NAME,
     filter: {
@@ -215,23 +239,17 @@ async function searchBots(
           field: "name",
           value: options.query ?? "",
         },
-        {
-          operator: "eq",
-          field: "type",
-          value: BOT_TYPE,
-        },
+        fileTypeOperand,
       ],
     },
   };
 
   if (isNullOrBlank(options.query) && !isNullOrBlank(options.value)) {
-    // If the value is set, but not the query just return the result set for the current value to ensure we can show
-    // the label for the value. Ideally we'd show the value + a page of results to allow easily switching the value
-    // but that would require an extra request unless the sort could somehow put the known value first
+    // Show the selected value + a page of results
     searchPayload = {
       ...SORT_BY_NAME,
       filter: {
-        operator: "and",
+        operator: "or",
         operands: [
           {
             operator: "eq",
@@ -239,22 +257,18 @@ async function searchBots(
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above with isNullOrBlank
             value: options.value!,
           },
-          {
-            operator: "eq",
-            field: "type",
-            value: BOT_TYPE,
-          },
+          fileTypeOperand,
         ],
       },
     };
   }
 
-  let bots: Bot[];
+  let files: File[];
 
   // The folderId field on the integration is now deprecated. See BotOptions for the alert shown to user if
   // the Page Editor configuration is only showing bots for the folder id.
   if (isEmpty(config.config.folderId)) {
-    bots = await fetchPages<Bot>(
+    files = await fetchPages<File>(
       config,
       {
         url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
@@ -266,7 +280,7 @@ async function searchBots(
   } else {
     // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
     // include `type` field for filters or in the body or the response
-    bots = await fetchPages<Bot>(
+    files = await fetchPages<File>(
       config,
       {
         url: `/v2/repository/folders/${config.config.folderId}/list`,
@@ -277,110 +291,20 @@ async function searchBots(
     );
   }
 
-  return bots.map((bot) => ({
-    value: bot.id,
-    label: bot.name,
+  return files.map((file) => ({
+    value: file.id,
+    label: file.name,
   }));
 }
 
 export const cachedSearchBots = cachePromiseMethod(
   ["aa:fetchBots"],
-  searchBots,
+  partial(searchFiles, FileType.BOT),
 );
-
-async function searchApiTasks(
-  config: SanitizedIntegrationConfig,
-  options: {
-    workspaceType: WorkspaceType;
-    query: string;
-    value: string | null;
-  },
-): Promise<Option[]> {
-  if (isNullOrBlank(options.workspaceType)) {
-    throw new TypeError("workspaceType is required");
-  }
-
-  let searchPayload: SearchPayload = {
-    ...SORT_BY_NAME,
-    filter: {
-      operator: "and",
-      operands: [
-        {
-          operator: "substring",
-          field: "name",
-          value: options.query ?? "",
-        },
-        {
-          operator: "eq",
-          field: "type",
-          value: API_TASK_TYPE,
-        },
-      ],
-    },
-  };
-
-  if (isNullOrBlank(options.query) && !isNullOrBlank(options.value)) {
-    // If the value is set, but not the query just return the result set for the current value to ensure we can show
-    // the label for the value. Ideally we'd show the value + a page of results to allow easily switching the value
-    // but that would require an extra request unless the sort could somehow put the known value first
-    searchPayload = {
-      ...SORT_BY_NAME,
-      filter: {
-        operator: "and",
-        operands: [
-          {
-            operator: "eq",
-            field: "id",
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above with isNullOrBlank
-            value: options.value!,
-          },
-          {
-            operator: "eq",
-            field: "type",
-            value: API_TASK_TYPE,
-          },
-        ],
-      },
-    };
-  }
-
-  let bots: Bot[];
-
-  // The folderId field on the integration is now deprecated. See BotOptions for the alert shown to user if
-  // the Page Editor configuration is only showing bots for the folder id.
-  if (isEmpty(config.config.folderId)) {
-    bots = await fetchPages<Bot>(
-      config,
-      {
-        url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
-        method: "POST",
-        data: searchPayload,
-      },
-      { maxPages: 1 },
-    );
-  } else {
-    // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
-    // include `type` field for filters or in the body or the response
-    bots = await fetchPages<Bot>(
-      config,
-      {
-        url: `/v2/repository/folders/${config.config.folderId}/list`,
-        method: "POST",
-        data: searchPayload,
-      },
-      { maxPages: 1 },
-    );
-  }
-
-  return bots.map((bot) => ({
-    value: bot.id,
-    label: bot.name,
-  }));
-}
 
 export const cachedSearchApiTasks = cachePromiseMethod(
   ["aa:fetchApiTasks"],
-  searchApiTasks,
+  partial(searchFiles, FileType.API_TASK),
 );
 
 async function fetchDevices(

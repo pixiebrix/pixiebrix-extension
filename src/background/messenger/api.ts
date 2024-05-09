@@ -21,33 +21,13 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
-import type { NetworkRequestConfig } from "@/types/networkTypes";
-import type { RemoteResponse } from "@/types/contract";
-import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
-export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
-export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
-export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
-export const setPartnerCopilotData = getNotifier(
-  "SET_PARTNER_COPILOT_DATA",
-  bg,
-);
-
-export const focusTab = getMethod("FOCUS_TAB", bg);
 export const removeExtensionForEveryTab = getNotifier(
   "REMOVE_EXTENSION_EVERY_TAB",
   bg,
 );
 
-export const closeTab = getMethod("CLOSE_TAB", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
-
-/**
- * Uninstall context menu and return whether the context menu was uninstalled.
- */
-export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
-export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
-export const openTab = getMethod("OPEN_TAB", bg);
 
 export const requestRun = {
   inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
@@ -61,37 +41,9 @@ export const contextMenus = {
   preload: getMethod("PRELOAD_CONTEXT_MENUS", bg),
 };
 
-// `getMethod` currently strips generics, so we must copy the function signature here
-export const performConfiguredRequestInBackground = getMethod(
-  "CONFIGURED_REQUEST",
-  bg,
-) as <TData>(
-  integrationConfig: SanitizedIntegrationConfig | null,
-  requestConfig: NetworkRequestConfig,
-  options: { interactiveLogin: boolean },
-) => Promise<RemoteResponse<TData>>;
-
-// Use this instead: `import reportError from "@/telemetry/reportError"`
-// export const recordError = getNotifier("RECORD_ERROR", bg);
-
-export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
-export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
-
 export const getUserData = getMethod("GET_USER_DATA", bg);
 
 export const installStarterBlueprints = getMethod(
   "INSTALL_STARTER_BLUEPRINTS",
-  bg,
-);
-
-export const ping = getMethod("PING", bg);
-
-export const collectPerformanceDiagnostics = getMethod(
-  "COLLECT_PERFORMANCE_DIAGNOSTICS",
-  bg,
-);
-
-export const launchInteractiveOAuthFlow = getMethod(
-  "LAUNCH_INTERACTIVE_OAUTH_FLOW",
   bg,
 );

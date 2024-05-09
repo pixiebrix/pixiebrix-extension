@@ -37,6 +37,7 @@ export type DocumentViewProps = {
    * Whether to disable the base (bootstrap) styles, plus any inherited styles, on the document (and children).
    */
   disableParentStyles?: boolean;
+
   options: BrickOptions<BrickArgsContext>;
   meta: {
     runId: UUID;

@@ -115,11 +115,6 @@ const createConfig = (env, options) =>
       [
         "background/background",
 
-        // TODO: Move to isolatedComponentList.mjs and use <IsolatedComponent/>
-        "bricks/renderers/CustomFormComponent",
-        "bricks/renderers/documentView/DocumentView",
-        "bricks/transformers/ephemeralForm/EphemeralFormContent",
-
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",
@@ -141,6 +136,8 @@ const createConfig = (env, options) =>
 
         // The script that gets injected into the host page
         "pageScript/pageScript",
+
+        "tinyPages/offscreen",
 
         // The isolated components whose CSS will be loaded in a shadow DOM
         ...isolatedComponentList,
@@ -206,7 +203,7 @@ const createConfig = (env, options) =>
         }),
 
       // Only notifies when watching. `zsh-notify` is suggested for the `build` script
-      options.watch &&
+      !isProd(options) &&
         process.env.DEV_NOTIFY !== "false" &&
         new WebpackBuildNotifierPlugin({
           title: "PB Extension",
@@ -257,7 +254,7 @@ const createConfig = (env, options) =>
         DEV_EVENT_TELEMETRY: false,
         SANDBOX_LOGGING: false,
         IS_BETA: process.env.PUBLIC_NAME === "-beta",
-        SHADOW_DOM: "closed",
+        SHADOW_DOM: "open",
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,

@@ -58,7 +58,7 @@ const getUserData = jest.mocked(auth.getUserData);
 const locateAllForServiceMock = jest.mocked(locator.locateAllForService);
 const browserManagedStorageMock = jest.mocked(browser.storage.managed.get);
 
-afterEach(async () => {
+beforeEach(async () => {
   jest.clearAllMocks();
   await resetManagedStorage();
 });
@@ -142,7 +142,7 @@ describe("checkPartnerAuth", () => {
 
   it("skip if partner JWT install", async () => {
     isLinkedMock.mockResolvedValue(true);
-    getExtensionTokenMock.mockResolvedValue(null);
+    getExtensionTokenMock.mockReset();
     getUserData.mockResolvedValue({
       partner: userPartnerFactory(),
     });

@@ -31,7 +31,7 @@ import { type DebounceOptions } from "@/starterBricks/types";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { type Trigger } from "@/starterBricks/triggerExtensionTypes";
 import { useSelector } from "react-redux";
-import { selectExtensionKnownEventNames } from "@/pageEditor/slices/editorSelectors";
+import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/slices/editorSelectors";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { joinName } from "@/utils/formUtils";
 
@@ -59,7 +59,9 @@ const TriggerConfiguration: React.FC<{
 
   const { setFieldValue } = useFormikContext<TriggerFormState>();
 
-  const knownEventNames = useSelector(selectExtensionKnownEventNames);
+  const knownEventNames = useSelector(
+    selectKnownEventNamesForActiveModComponent,
+  );
 
   const onTriggerChange = ({
     currentTarget,

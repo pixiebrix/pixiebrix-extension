@@ -1,5 +1,5 @@
-const { readFileSync } = require("fs");
-const { resolve } = require("path");
+const { readFileSync } = require("node:fs");
+const { resolve } = require("node:path");
 const noRestrictedImports = require("eslint-config-pixiebrix/no-restricted-imports");
 
 function extendNoRestrictedImports({ patterns = [], paths = [] }) {
@@ -86,7 +86,7 @@ module.exports = {
           "@testing-library/jest-dom",
           "regenerator-runtime/runtime", // Automatic registration
           "@/vendors/hoverintent", // JQuery plugin
-          "iframe-resizer/js/iframeResizer.contentWindow", // vendor library imported for side-effect
+          "iframe-resizer/js/iframeResizer.contentWindow", // Vendor library imported for side-effect
         ],
       },
     ],
@@ -143,10 +143,39 @@ module.exports = {
     {
       // TODO: consider packaging e2e tests in a mono-repo structure for specific linting rules
       files: ["end-to-end-tests/**"], // Or *.test.js
+      extends: "plugin:playwright/recommended",
       rules: {
         "no-restricted-imports": "off",
         "unicorn/prefer-dom-node-dataset": "off",
         "unicorn/prefer-module": "off", // `import.meta.dirname` throws "cannot use 'import meta' outside a module"
+        "playwright/no-skipped-test": [
+          "error",
+          {
+            allowConditional: true,
+          },
+        ],
+        "playwright/no-wait-for-timeout": "error",
+        "playwright/no-useless-not": "error",
+        "playwright/expect-expect": [
+          "error",
+          { assertFunctionNames: ["checkUnavailibilityForNavigationMethod"] },
+        ],
+        "playwright/no-conditional-in-test": "error",
+        "playwright/no-conditional-expect": "error",
+        "playwright/no-commented-out-tests": "error",
+        "playwright/no-hooks": "error", // Use fixtures instead to share common setup / teardown code
+        "playwright/no-get-by-title": "error",
+        // Disabled because raw locators are sometimes necessary for specific test scenarios, and we don't want noisy warnings in the IDE
+        // However, our README encourages writing tests using the recommended built-in locators where possible
+        // "playwright/no-raw-locators": "warn",
+        "playwright/prefer-comparison-matcher": "error",
+        "playwright/prefer-equality-matcher": "error",
+        "playwright/prefer-strict-equal": "error",
+        "playwright/prefer-to-be": "error",
+        "playwright/prefer-to-contain": "error",
+        "playwright/prefer-to-have-count": "error",
+        "playwright/prefer-to-have-length": "error",
+        "playwright/require-to-throw-message": "error",
         "no-restricted-syntax": [
           "error",
           {
@@ -252,6 +281,12 @@ module.exports = {
       rules: {
         "react/forbid-dom-props": forbiddenDomPropsConfig,
         "react/forbid-component-props": forbiddenDomPropsConfig,
+      },
+    },
+    {
+      files: ["**/*.test.ts?(x)"],
+      rules: {
+        "@typescript-eslint/no-unnecessary-type-assertion": "off",
       },
     },
   ],

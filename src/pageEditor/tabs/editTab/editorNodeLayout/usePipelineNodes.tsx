@@ -61,7 +61,7 @@ import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import {
-  selectActiveElement,
+  selectActiveModComponentFormState,
   selectActiveNodeId,
   selectCollapsedNodes,
   selectNodePreviewActiveElement,
@@ -195,14 +195,16 @@ const usePipelineNodes = (): {
   nodes: EditorNodeProps[];
 } => {
   const dispatch = useDispatch();
-  const activeElement = useSelector(selectActiveElement);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectActiveElementTraces);
   const maybePipelineMap = useSelector(selectPipelineMap);
   const collapsedNodes = useSelector(selectCollapsedNodes);
 
   const annotations = useSelector(
-    selectExtensionAnnotations(activeElement.uuid),
+    selectExtensionAnnotations(activeModComponentFormState.uuid),
   );
   const activeNodePreviewElementId = useSelector(
     selectNodePreviewActiveElement,
@@ -215,11 +217,11 @@ const usePipelineNodes = (): {
   const pasteBlock = usePasteBlock();
   const showPaste = pasteBlock && isApiAtLeastV2;
 
-  const extensionPointType = activeElement.type;
+  const starterBrickType = activeModComponentFormState.type;
   const { label: extensionPointLabel, icon: extensionPointIcon } =
-    ADAPTERS.get(extensionPointType);
-  const rootPipeline = activeElement.extension.blockPipeline;
-  const rootPipelineFlavor = getRootPipelineFlavor(extensionPointType);
+    ADAPTERS.get(starterBrickType);
+  const rootPipeline = activeModComponentFormState.extension.blockPipeline;
+  const rootPipelineFlavor = getRootPipelineFlavor(starterBrickType);
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
   const { nodes, extensionHasTraces } = mapPipelineToNodes({

@@ -30,8 +30,8 @@ import ElementWizard from "@/pageEditor/ElementWizard";
 import { logActions } from "@/components/logViewer/logSlice";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
-  selectActiveElement,
-  selectSelectionSeq,
+  selectActiveModComponentFormState,
+  selectEditorUpdateKey,
 } from "@/pageEditor/slices/editorSelectors";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 
@@ -76,29 +76,27 @@ const EditorPaneContent: React.VoidFunctionComponent<{
 };
 
 const EditorPane: React.VFC = () => {
-  const activeElement = useSelector(selectActiveElement);
-  const selectionSeq = useSelector(selectSelectionSeq);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
+  const editorUpdateKey = useSelector(selectEditorUpdateKey);
   // Key to force reload of component when user selects a different element from the sidebar
-  const key = `${activeElement.uuid}-${activeElement.installed}-${selectionSeq}`;
+  const key = `${activeModComponentFormState.uuid}-${activeModComponentFormState.installed}-${editorUpdateKey}`;
 
   return (
     <ErrorBoundary key={key}>
       <Formik
         key={key}
-        initialValues={activeElement}
+        initialValues={activeModComponentFormState}
         onSubmit={() => {
           console.error(
             "Formik's submit should not be called to save an extension.",
           );
         }}
-        // We're validating on blur instead of on change as a stop-gap measure to improve typing
-        // performance in schema fields of block configs in dev builds of the extension.
-        // The long-term better solution is to split up our pipeline validation code to work
-        // on one block at a time, and then modify the usePipelineField hook to only validate
-        // one block at a time. Then we can re-enable change validation here once this doesn't
-        // cause re-rendering the entire form on every change.
+        // Don't validate -- we're using analysis, so we don't pass in a validation schema here
+        validateOnMount={false}
         validateOnChange={false}
-        validateOnBlur={true}
+        validateOnBlur={false}
       >
         {({ values: element }) => <EditorPaneContent element={element} />}
       </Formik>

@@ -83,8 +83,8 @@ export class SplitText extends TransformerABC {
 
   async transform({
     text,
-    chunkSize,
-    chunkOverlap,
+    chunkSize = 1000,
+    chunkOverlap = 200,
   }: BrickArgs<SplitArgs>): Promise<unknown> {
     const documents = [];
     let start = 0;

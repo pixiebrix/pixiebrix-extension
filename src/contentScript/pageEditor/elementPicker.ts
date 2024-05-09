@@ -38,12 +38,12 @@ let expandOverlay: Overlay | null = null;
  * Overlay for the root element.
  */
 let rootOverlay: Overlay | null = null;
-let styleElement: HTMLStyleElement = null;
-let multiSelectionToolElement: HTMLElement = null;
-let selectionHandler: SelectionHandlerType;
-let stopInspectingNative: () => void;
+let styleElement: HTMLStyleElement | null = null;
+let multiSelectionToolElement: HTMLElement | null = null;
+let selectionHandler: SelectionHandlerType | null = null;
+let stopInspectingNative: (() => void) | null = null;
 
-function setSelectionHandler(handler: SelectionHandlerType) {
+function setSelectionHandler(handler: SelectionHandlerType): void {
   selectionHandler = handler;
 }
 
@@ -60,7 +60,7 @@ export function stopInspectingNativeHandler(): void {
   stopInspectingNative?.();
 }
 
-let _cancelSelect: () => void = null;
+let _cancelSelect: (() => void) | null = null;
 
 interface UserSelection {
   /** Element(s) to limit the selection to. */
@@ -108,8 +108,8 @@ export async function userSelectElement({
     function highlightRoots() {
       // Highlight and scroll to root element so the user knows where they can click
       if (roots.length > 0) {
-        roots[0].scrollTo({ behavior: "smooth" });
-        rootOverlay.inspect(roots);
+        roots[0]?.scrollTo({ behavior: "smooth" });
+        rootOverlay?.inspect(roots);
       }
     }
 
@@ -123,7 +123,7 @@ export async function userSelectElement({
             return;
           }
 
-          overlay.inspect(filteredElements);
+          overlay?.inspect(filteredElements);
           setTimeout(() => requestAnimationFrame(updateOverlay), 30); // Only when the tab is visible
         };
 
@@ -133,9 +133,9 @@ export async function userSelectElement({
       }
     }
 
-    function findExpectedTarget(target: EventTarget): HTMLElement | void {
+    function findExpectedTarget(target: EventTarget): HTMLElement | null {
       if (!(target instanceof HTMLElement)) {
-        return;
+        return null;
       }
 
       if (!filter) {
@@ -145,7 +145,7 @@ export async function userSelectElement({
       return target.closest<HTMLElement>(filter);
     }
 
-    function startInspectingNative() {
+    function startInspectingNative(): void {
       _cancelSelect = cancel;
       registerListenersOnWindow(window);
       addInspectingModeStyles(window);
@@ -157,7 +157,7 @@ export async function userSelectElement({
       onContextInvalidated.addListener(cancel);
     }
 
-    function handleDone(target?: HTMLElement) {
+    function handleDone(target?: HTMLElement): void {
       try {
         const result = uniq(compact([...targets, target]));
         if (
@@ -181,28 +181,29 @@ export async function userSelectElement({
       isMulti = value;
       if (!isMulti) {
         shouldSelectSimilar = false;
-        overlay.inspect([]);
-        expandOverlay.inspect([]);
+        overlay?.inspect([]);
+        expandOverlay?.inspect([]);
         targets.clear();
-        selectionHandler(targets.size);
+        selectionHandler?.(targets.size);
       }
     }
 
     function handleSimilarSelectionChange(value: boolean) {
       shouldSelectSimilar = value;
       if (shouldSelectSimilar) {
-        const commonSelector = expandedCssSelector([...targets]);
+        const commonSelector = expandedCssSelector([...targets]) ?? "";
         const expandTargets = difference($(commonSelector), [...targets]);
-        selectionHandler(expandTargets.length);
-        expandOverlay.inspect([...expandTargets]);
+        selectionHandler?.(expandTargets.length);
+        expandOverlay?.inspect([...expandTargets]);
       } else {
-        selectionHandler(targets.size);
-        expandOverlay.inspect([]);
+        selectionHandler?.(targets.size);
+        expandOverlay?.inspect([]);
       }
     }
 
     function noopMouseHandler(event: MouseEvent) {
-      const target = findExpectedTarget(event.target);
+      const target: HTMLElement | null =
+        event.target == null ? null : findExpectedTarget(event.target);
       if (!target) {
         event.preventDefault();
         event.stopPropagation();
@@ -219,7 +220,8 @@ export async function userSelectElement({
     }
 
     function onClick(event: MouseEvent) {
-      const target = findExpectedTarget(event.target);
+      const target: HTMLElement | null =
+        event.target == null ? null : findExpectedTarget(event.target);
       if (event.altKey || !target) {
         return;
       }
@@ -239,16 +241,16 @@ export async function userSelectElement({
           targets.add(target);
         }
 
-        overlay.inspect([...targets]);
+        overlay?.inspect([...targets]);
 
         if (targets.size > 1 && shouldSelectSimilar) {
-          const commonSelector = expandedCssSelector([...targets]);
+          const commonSelector = expandedCssSelector([...targets]) ?? "";
           const expandTargets = difference($(commonSelector), [...targets]);
-          selectionHandler(expandTargets.length);
-          expandOverlay.inspect([...expandTargets]);
+          selectionHandler?.(expandTargets.length);
+          expandOverlay?.inspect([...expandTargets]);
         } else {
-          selectionHandler(targets.size);
-          expandOverlay.inspect([]);
+          selectionHandler?.(targets.size);
+          expandOverlay?.inspect([]);
         }
 
         return;
@@ -258,6 +260,10 @@ export async function userSelectElement({
     }
 
     function onPointerDown(event: MouseEvent) {
+      if (event.target == null) {
+        return;
+      }
+
       const target = findExpectedTarget(event.target);
       if (!target) {
         event.preventDefault();
@@ -279,15 +285,16 @@ export async function userSelectElement({
     function onPointerOver(event: MouseEvent) {
       event.preventDefault();
       event.stopPropagation();
-      const target = findExpectedTarget(event.target);
+      const target: HTMLElement | null =
+        event.target == null ? null : findExpectedTarget(event.target);
 
       if (target) {
-        overlay.inspect([...targets, target]);
+        overlay?.inspect([...targets, target]);
       }
     }
 
     function onPointerLeave() {
-      overlay.inspect([...targets]);
+      overlay?.inspect([...targets]);
     }
 
     function escape(event: KeyboardEvent) {
@@ -299,7 +306,7 @@ export async function userSelectElement({
     }
 
     function cancel() {
-      stopInspectingNative();
+      stopInspectingNative?.();
       reject(new CancelError("Selection cancelled"));
     }
 

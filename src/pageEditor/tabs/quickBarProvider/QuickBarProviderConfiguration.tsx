@@ -23,7 +23,7 @@ import IconWidget from "@/components/fields/IconWidget";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField, useFormikContext } from "formik";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { type QuickBarProviderConfig } from "@/starterBricks/quickBarProviderExtension";
+import { type QuickBarProviderConfig } from "@/starterBricks/quickBarProvider/types";
 import { type QuickBarProviderFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import SwitchButtonWidget, {
   type CheckBoxLike,
@@ -48,7 +48,7 @@ const QuickBarProviderConfiguration: React.FC<{
           <span>
             URL match patterns to show the menu item on. See{" "}
             <a
-              href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
+              href="https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns"
               target="_blank"
               rel="noreferrer"
             >

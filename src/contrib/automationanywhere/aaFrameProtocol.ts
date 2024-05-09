@@ -17,17 +17,11 @@
 
 import { expectContext } from "@/utils/expectContext";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { getCopilotHostData } from "@/contentScript/messenger/api";
-
-/**
- * Runtime event type for setting Co-Pilot data
- */
-export const SET_COPILOT_DATA_MESSAGE_TYPE = "SET_COPILOT_DATA";
-
-/**
- * Mapping from processId to form data.
- */
-export type ProcessDataMap = Record<string, UnknownObject>;
+import { getCopilotHostData } from "@/contentScript/messenger/strict/api";
+import {
+  SET_COPILOT_DATA_MESSAGE_TYPE,
+  type ProcessDataMap,
+} from "@/contrib/automationanywhere/aaTypes";
 
 /**
  * `window.postMessage` data payload the Co-Pilot frame sends to the host application.

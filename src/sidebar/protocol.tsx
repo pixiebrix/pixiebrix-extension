@@ -54,6 +54,7 @@ export type SidebarListener = {
   onHideTemporaryPanel: (panel: { nonce: UUID }) => void;
   onShowActivateRecipe: (activateRecipeEntry: ModActivationPanelEntry) => void;
   onHideActivateRecipe: () => void;
+  onNavigationComplete: () => void;
 };
 
 // Because protocol.tsx accepts webext-messenger messages before the React App and listener initializes, we have to
@@ -228,4 +229,8 @@ export async function closeSelf(): Promise<void> {
     const topLevelFrame = await getTopLevelFrame();
     await hideSidebar(topLevelFrame);
   }
+}
+
+export async function navigationComplete(sequence: TimedSequence) {
+  runListeners("onNavigationComplete", sequence);
 }

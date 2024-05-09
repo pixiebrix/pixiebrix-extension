@@ -45,7 +45,7 @@ function getMatchingRequiredSelectors(
  */
 function mapSelectorOverrideToAncestors(
   element: HTMLElement,
-  root: HTMLElement | Document,
+  root?: HTMLElement | Document,
 ): Array<{ element: HTMLElement; selectorOverride: string }> {
   const { requiredSelectors, selectorTemplates } = getSiteSelectorHint(element);
 
@@ -157,7 +157,7 @@ async function inferSingleElementSelector({
   // Ancestors in order from root to element
   const ancestorSelectorOverrides = mapSelectorOverrideToAncestors(
     element,
-    root,
+    root ?? undefined,
   );
 
   const ancestorSelectors = ancestorSelectorOverrides.map(
@@ -179,14 +179,17 @@ async function inferSingleElementSelector({
   const inferredSelectors = uniq(
     [
       selectorWithRootOverride,
-      ...inferSelectorsIncludingStableAncestors(element, rootOverride),
+      ...inferSelectorsIncludingStableAncestors(
+        element,
+        rootOverride ?? undefined,
+      ),
     ].map((selector) => [...ancestorSelectors, selector].join(" ")),
   );
 
   // Filter out any malformed selectors and/or selectors that don't exactly match the element
   const validatedSelectors = inferredSelectors.filter((selector) => {
     try {
-      const match = $safeFind(selector, root);
+      const match = $safeFind(selector, root ?? undefined);
       return match.length === 1 && match.get(0) === element;
     } catch {
       console.warn("Invalid selector", selector);
