@@ -409,10 +409,17 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
   // Exclude the following:
   // - disabled deployments: the organization admin might have disabled the deployment because via Admin Console
   // - dynamic extensions: these are already installed on the page via the Page Editor
-  const activeExtensions = options.extensions.filter(
-    (extension) =>
-      isDeploymentActive(extension) && !_editorExtensions.has(extension.id),
-  );
+  const activeExtensions = options.extensions.filter((extension) => {
+    if (_editorExtensions.has(extension.id)) {
+      const editorExtension = _editorExtensions.get(extension.id);
+      // Include sidebar (i.e. "actionPanel") starterbrick kind as those are replaced
+      // by the sidebar itself, automatically replacing old panels keyed by extension id
+      return editorExtension.kind === "actionPanel";
+    }
+
+    // Exclude disabled deployments
+    return isDeploymentActive(extension);
+  });
 
   const resolvedActiveExtensions = await logPromiseDuration(
     "loadPersistedExtensions:resolveDefinitions",

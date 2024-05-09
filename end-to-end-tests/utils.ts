@@ -126,6 +126,8 @@ export async function getSidebarPage(
   if (MV === "3") {
     let sidebarPage: Page | undefined;
 
+    await page.bringToFront(); // Ensure the tab is active before interacting with the sidebar
+
     // In MV3, the sidebar sometimes requires the user to interact with modal to open the sidebar via a user gesture
     const conditionallyPerformUserGesture = async () => {
       await page.getByRole("button", { name: "Open Sidebar" }).click();
