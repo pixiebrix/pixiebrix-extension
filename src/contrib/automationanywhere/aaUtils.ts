@@ -45,7 +45,7 @@ export function isCommunityControlRoom(
   return COMMUNITY_CONTROL_ROOM_REGEX.test(hostnameOrUrl ?? "");
 }
 
-export function hostnameToUrl(hostname: string): string {
+export function hostnameToUrl(hostname: Nullishable<string>): string {
   if (hostname == null) {
     // Give hint to user to include https: scheme
     return "https://";

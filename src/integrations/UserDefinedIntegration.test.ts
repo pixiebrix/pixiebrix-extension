@@ -89,7 +89,7 @@ describe("UserDefinedIntegration", () => {
       automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
     const oauth2 = integration.getOAuth2Context({} as unknown as SecretsConfig);
-    expect(oauth2.client_id).toBe("g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM");
+    expect(oauth2!.client_id).toBe("g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM");
   });
 
   test("custom client ID", () => {
@@ -101,7 +101,7 @@ describe("UserDefinedIntegration", () => {
     const oauth2 = integration.getOAuth2Context({
       clientId,
     } as unknown as SecretsConfig);
-    expect(oauth2.client_id).toBe(clientId);
+    expect(oauth2!.client_id).toBe(clientId);
   });
 });
 

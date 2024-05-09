@@ -99,7 +99,7 @@ describe("baseQuery", () => {
     expect(isPlainObject(error)).toBe(true);
     expect(axiosError.isAxiosError).toBeUndefined();
     expect(axiosError.response).toBeDefined();
-    expect(axiosError.response.status).toBe(404);
+    expect(axiosError.response!.status).toBe(404);
     // The type definition is incorrect: https://github.com/axios/axios/pull/5331
     expect(axiosError.status).toBeUndefined();
   });
@@ -121,7 +121,7 @@ describe("baseQuery", () => {
 
     await waitForEffect();
 
-    expect(appApiMock.history.get[0].params).toStrictEqual({
+    expect(appApiMock.history.get![0]!.params).toStrictEqual({
       package__name: "bar",
     });
   });

@@ -53,7 +53,7 @@ type DatabaseConfig = {
   /**
    * UUID of a Group for a shared DB, or null/empty for a personal DB.
    */
-  groupId: string | null;
+  groupId?: string;
 };
 
 const databaseSchema: yup.SchemaOf<DatabaseConfig> = yup.object().shape({

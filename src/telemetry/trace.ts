@@ -331,8 +331,12 @@ export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
 }
 
 export async function getLatestRunByExtensionId(
-  extensionId: UUID,
+  extensionId: UUID | null,
 ): Promise<TraceRecord[]> {
+  if (extensionId == null) {
+    return [];
+  }
+
   const db = await openTraceDB();
 
   try {

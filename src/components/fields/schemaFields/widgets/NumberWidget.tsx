@@ -55,7 +55,7 @@ const NumberWidget: React.VFC<
     useField<number>(name);
   const [value, setValue] = useState<string>(String(formValue));
 
-  const defaultInputRef = useRef<HTMLElement>();
+  const defaultInputRef = useRef<HTMLElement>(null);
   const inputRef = inputRefProp ?? defaultInputRef;
 
   useAutoFocusConfiguration({ elementRef: inputRef, focus: focusInput });

@@ -34,7 +34,7 @@ describe("userSelectElement", () => {
   test("can select single element", async () => {
     document.body.innerHTML = "<div><span>hello</span></div>";
 
-    const span = document.querySelector("span");
+    const span = document.querySelector("span")!;
 
     const elementPromise = userSelectElement();
 
@@ -54,7 +54,7 @@ describe("userSelectElement", () => {
     document.body.innerHTML =
       '<div><div><span>hello</span></div><div id="root"></div></div>';
 
-    const span = document.querySelector("span");
+    const span = document.querySelector("span")!;
 
     const elementPromise = userSelectElement({
       roots: [...document.querySelectorAll("#root")] as HTMLElement[],

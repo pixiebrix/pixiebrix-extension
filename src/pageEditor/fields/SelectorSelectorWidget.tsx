@@ -49,6 +49,7 @@ import {
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;
@@ -103,7 +104,7 @@ export type SelectorSelectorProps = {
    * Placeholder for the text input
    */
   placeholder?: string;
-  onChange?: (value: string, isMulti: boolean) => void;
+  onChange?: (value: string | undefined, isMulti: boolean) => void;
 };
 
 /**
@@ -114,7 +115,7 @@ export type SelectorSelectorProps = {
  * @see getSelectorPreference
  */
 export function getSuggestionsForElement(
-  elementInfo: ElementInfo | undefined,
+  elementInfo: Nullishable<ElementInfo>,
   { sort }: { sort: boolean },
 ): ElementSuggestion[] {
   if (!elementInfo) {
@@ -142,7 +143,7 @@ function renderSuggestion(suggestion: ElementSuggestion): React.ReactNode {
   return (
     <SelectorListItem
       value={suggestion.value}
-      tag={suggestion.elementInfo.tagName}
+      tag={suggestion.elementInfo?.tagName ?? null}
     />
   );
 }
@@ -162,7 +163,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   onChange,
 }) => {
   const [{ value: valueOrExpression }, , { setValue }] = useField<
-    string | Expression
+    string | Expression | undefined
   >(name);
 
   const [element, setElement] = useState(initialElement);
@@ -171,7 +172,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   const excludeRandomClasses = useSelector<
     { settings: SettingsState },
     boolean
-  >((x) => x.settings.excludeRandomClasses);
+  >((x) => x.settings.excludeRandomClasses ?? false);
 
   const suggestions: ElementSuggestion[] = useMemo(
     () =>

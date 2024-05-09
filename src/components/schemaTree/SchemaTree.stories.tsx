@@ -30,7 +30,7 @@ const Template: ComponentStory<typeof SchemaTree> = (args) => (
 
 export const NoSchema = Template.bind({});
 NoSchema.args = {
-  schema: null,
+  schema: undefined,
 };
 
 export const NonObject = Template.bind({});

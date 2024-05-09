@@ -18,8 +18,8 @@
 import { type EditablePackageMetadata } from "@/types/contract";
 
 export type EnrichedBrick = EditablePackageMetadata & {
-  scope: string;
-  collection: string;
+  scope?: string;
+  collection?: string;
   timestamp: number | null;
 };
 

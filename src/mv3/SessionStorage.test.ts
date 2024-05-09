@@ -42,7 +42,7 @@ test("SessionMap accepts undefined", async () => {
   await expect(map.has("alpha")).resolves.toBeTrue();
 
   // `undefined` is a type-error because it's not a JsonValue. Keeping this test just to document the current behavior.
-  await map.set("alpha", undefined);
+  await map.set("alpha", undefined as unknown as string);
   await expect(map.get("alpha")).resolves.toBeUndefined();
   // SessionMap will unset the value
   await expect(map.has("alpha")).resolves.toBeFalse();
@@ -66,6 +66,6 @@ test("SessionValue allows setting undefined", async () => {
   await expect(value.get()).resolves.toBe(1);
 
   // `undefined` is a type-error because it's not a JsonValue. Keeping this test just to document the current behavior.
-  await value.set(undefined);
+  await value.set(undefined as unknown as string);
   await expect(value.get()).resolves.toBeUndefined();
 });
