@@ -103,6 +103,7 @@ const Header: React.FunctionComponent = () => {
         size="sm"
         variant="link"
         className={headerButtonClassName}
+        aria-label="Open Extension Console"
         title="Open Extension Console"
       >
         <FontAwesomeIcon icon={faCog} />
