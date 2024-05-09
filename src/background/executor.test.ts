@@ -21,7 +21,7 @@ import {
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
 import { type MessengerMeta } from "webext-messenger";
-import { runBrick } from "@/contentScript/messenger/api";
+import { runBrick } from "@/contentScript/messenger/strict/api";
 import { type WebNavigation } from "webextension-polyfill";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { define, derive } from "cooky-cutter";

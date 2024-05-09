@@ -17,7 +17,10 @@
 
 import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
-import { requestRun } from "@/background/messenger/api";
+import {
+  requestRun,
+  sendDeploymentAlert,
+} from "@/background/messenger/strict/api";
 import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/bricks/errors";
@@ -73,7 +76,7 @@ import type { RegistryId, RegistryProtocol } from "@/types/registryTypes";
 import type { Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 import { getPlatform } from "@/platform/platformContext";
-import { sendDeploymentAlert } from "@/background/messenger/strict/api";
+import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -235,7 +238,7 @@ interface TraceMetadata extends RunMetadata {
    *
    * @see BrickConfig.instanceId
    */
-  blockInstanceId: UUID | null;
+  blockInstanceId: Nullishable<UUID>;
 }
 
 type RunBlockOptions = CommonOptions & {
@@ -869,7 +872,7 @@ async function getStepLogger(
   blockConfig: BrickConfig,
   pipelineLogger: Logger,
 ): Promise<Logger> {
-  let resolvedConfig: ResolvedBrickConfig;
+  let resolvedConfig: ResolvedBrickConfig | null = null;
 
   try {
     resolvedConfig = await resolveBlockConfig(blockConfig);
@@ -877,7 +880,12 @@ async function getStepLogger(
     // NOP
   }
 
-  let version = resolvedConfig?.block.version;
+  assertNotNullish(
+    resolvedConfig,
+    "resolvedConfig should be set by resolveBlockConfig",
+  );
+
+  let { version } = resolvedConfig.block;
 
   if (resolvedConfig && !version) {
     // Built-in bricks don't have a version number. Use the browser extension version to identify bugs introduced
@@ -907,8 +915,12 @@ export async function reduceExtensionPipeline(
 
   if (platform.capabilities.includes("debugger")) {
     try {
-      // `await` promise to avoid race condition where the calls here delete entries from this call to reducePipeline
-      await platform.debugger.clear(pipelineLogger.context.extensionId);
+      const { extensionId } = pipelineLogger.context;
+
+      if (extensionId) {
+        // `await` promise to avoid race condition where the calls here delete entries from this call to reducePipeline
+        await platform.debugger.clear(extensionId);
+      }
     } catch {
       // NOP
     }
@@ -960,7 +972,7 @@ export async function reducePipeline(
       }),
     };
 
-    let nextValues: BlockOutput;
+    let nextValues: BlockOutput | null = null;
 
     const stepOptions = {
       ...options,
@@ -984,6 +996,11 @@ export async function reducePipeline(
     } catch (error) {
       throwBlockError(blockConfig, state, error, stepOptions);
     }
+
+    assertNotNullish(
+      nextValues,
+      "nextValues should be set after running brick",
+    );
 
     output = nextValues.output;
     localVariableContext = nextValues.context;
@@ -1030,7 +1047,7 @@ async function reducePipelineExpression(
       }),
     };
 
-    let nextValues: BlockOutput;
+    let nextValues: BlockOutput | null = null;
 
     const stepOptions = {
       ...options,
@@ -1045,6 +1062,11 @@ async function reducePipelineExpression(
     } catch (error) {
       throwBlockError(blockConfig, state, error, stepOptions);
     }
+
+    assertNotNullish(
+      nextValues,
+      "nextValues should be set after running brick",
+    );
 
     legacyOutput = nextValues.output;
     lastBlockOutput = nextValues.blockOutput;

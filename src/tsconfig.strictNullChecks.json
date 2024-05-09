@@ -4,6 +4,9 @@
     "strictNullChecks": true
   },
   "files": [
+    "./contentScript/executor.ts",
+    "./runtime/reducePipeline.ts",
+    "./contentScript/pageEditor/runBlockPreview.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/envSetup.ts",
@@ -901,6 +904,7 @@
     "./store/enterprise/singleSignOn.ts",
     "./store/enterprise/useManagedStorageState.ts",
     "./store/extensionsSelectors.ts",
+    "./store/extensionsStorage.ts",
     "./store/extensionsSliceInitialState.ts",
     "./store/extensionsTypes.ts",
     "./store/extensionsUtils.ts",
