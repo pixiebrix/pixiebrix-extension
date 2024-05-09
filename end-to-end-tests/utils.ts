@@ -77,8 +77,10 @@ export async function ensureVisibility(
 export async function runModViaQuickBar(page: Page, modName: string) {
   await waitForQuickBarReadiness(page);
   await page.locator("html").focus(); // Ensure the page is focused before running the keyboard shortcut
-  await page.keyboard.press("Meta+M"); // MacOS
-  await page.keyboard.press("Control+M"); // Windows and Linux
+
+  const modifierKey = await getModifierKey(page);
+  await page.keyboard.press(`${modifierKey}+M`);
+
   // Short delay to allow the quickbar to finish opening
   // eslint-disable-next-line playwright/no-wait-for-timeout -- TODO: Find a better way to detect when the quickbar is done loading opening
   await page.waitForTimeout(500);
