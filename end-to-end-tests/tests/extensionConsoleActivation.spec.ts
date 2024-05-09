@@ -19,7 +19,11 @@ import { test, expect } from "../fixtures/extensionBase";
 import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base, type Frame } from "@playwright/test";
-import { getSidebarPage, openInNewPage, runModViaQuickBar } from "../utils";
+import {
+  getSidebarPage,
+  clickAndWaitForNewPage,
+  runModViaQuickBar,
+} from "../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
@@ -172,46 +176,56 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
   extensionId,
   chromiumChannel,
 }) => {
-  const modId = "@e2e-testing/show-alert";
-
   const shortcutsPage = new ExtensionsShortcutsPage(page, chromiumChannel);
+  await test.step("Clear the quickbar shortcut before activing a quickbar mod", async () => {
+    await shortcutsPage.goto();
 
-  await shortcutsPage.goto();
+    await shortcutsPage.clearQuickbarShortcut();
+  });
 
-  await shortcutsPage.clearShortcut();
-
+  let modActivationPage: ActivateModPage;
   const newPage = await context.newPage();
+  await test.step("Begin activation of a mod with a quickbar shortcut", async () => {
+    const modId = "@e2e-testing/show-alert";
+    modActivationPage = new ActivateModPage(newPage, extensionId, modId);
+    await modActivationPage.goto();
+  });
 
-  const modActivationPage = new ActivateModPage(newPage, extensionId, modId);
-  await modActivationPage.goto();
+  await test.step("Verify the mod activation page has links for setting the shortcut", async () => {
+    await expect(
+      modActivationPage.keyboardShortcutDocumentationLink(),
+    ).toBeVisible();
+    await modActivationPage.keyboardShortcutDocumentationLink().click();
 
-  await expect(
-    modActivationPage.keyboardShortcutDocumentationLink(),
-  ).toBeVisible();
-  await modActivationPage.keyboardShortcutDocumentationLink().click();
+    await expect(
+      newPage.getByRole("heading", { name: "Changing the Quick Bar" }),
+    ).toBeVisible();
+    await newPage.goBack();
 
-  await expect(
-    newPage.getByRole("heading", { name: "Changing the Quick Bar" }),
-  ).toBeVisible();
-  await newPage.goBack();
+    await expect(
+      modActivationPage.configureQuickbarShortcutLink(),
+    ).toBeVisible();
 
-  await expect(modActivationPage.configureQuickbarShortcutLink()).toBeVisible();
+    const configureShortcutPage = await clickAndWaitForNewPage(
+      modActivationPage.configureQuickbarShortcutLink(),
+      context,
+    );
 
-  const configureShortcutPage = await openInNewPage(
-    modActivationPage.configureQuickbarShortcutLink(),
-    context,
-  );
+    await expect(configureShortcutPage).toHaveURL(shortcutsPage.getPageUrl());
+    await configureShortcutPage.close();
+  });
 
-  await expect(configureShortcutPage).toHaveURL(shortcutsPage.getPageUrl());
-  await configureShortcutPage.close();
+  await test.step("Restore the shortcut and activate the mod", async () => {
+    await shortcutsPage.setQuickbarShortcut();
 
-  await shortcutsPage.setShortcut();
+    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+  });
 
-  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+  await test.step("Verify the mod is activated and works as expected", async () => {
+    await page.bringToFront();
+    await page.goto("/");
 
-  await page.bringToFront();
-  await page.goto("/");
-
-  await runModViaQuickBar(page, "Show Alert");
-  await expect(page.getByText("Quick Bar Action ran")).toBeVisible();
+    await runModViaQuickBar(page, "Show Alert");
+    await expect(page.getByText("Quick Bar Action ran")).toBeVisible();
+  });
 });

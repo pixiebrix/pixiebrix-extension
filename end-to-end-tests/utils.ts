@@ -194,7 +194,7 @@ export async function conditionallyHoverOverMV2Sidebar(page: Page) {
  * @param locator The anchor or button that opens the new page (must be clickable)
  * @param context The browser context
  */
-export async function openInNewPage(
+export async function clickAndWaitForNewPage(
   locator: Locator,
   context: BrowserContext,
 ): Promise<Page> {

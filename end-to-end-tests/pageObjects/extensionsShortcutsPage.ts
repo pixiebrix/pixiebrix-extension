@@ -18,6 +18,23 @@
 import { expect, type Page } from "@playwright/test";
 import { getModifierKey, getModifierSymbol } from "end-to-end-tests/utils";
 
+function getExtensionShortcutsUrl(chromiumChannel: "chrome" | "msedge") {
+  switch (chromiumChannel) {
+    case "chrome": {
+      return "chrome://extensions/shortcuts";
+    }
+
+    case "msedge": {
+      return "edge://extensions/shortcuts";
+    }
+
+    default: {
+      const exhaustiveCheck: never = chromiumChannel;
+      throw new Error(`Unexpected channel: ${exhaustiveCheck}`);
+    }
+  }
+}
+
 export class ExtensionsShortcutsPage {
   private readonly pageUrl: string;
 
@@ -25,10 +42,7 @@ export class ExtensionsShortcutsPage {
     private readonly page: Page,
     private readonly chromiumChannel: "chrome" | "msedge",
   ) {
-    this.pageUrl =
-      chromiumChannel === "chrome"
-        ? "chrome://extensions/shortcuts"
-        : "edge://extensions/shortcuts";
+    this.pageUrl = getExtensionShortcutsUrl(this.chromiumChannel);
   }
 
   getPageUrl() {
@@ -49,7 +63,7 @@ export class ExtensionsShortcutsPage {
     }
   }
 
-  async clearShortcut() {
+  async clearQuickbarShortcut() {
     const modifierSymbol = await getModifierSymbol(this.page);
     const shortcut = `${modifierSymbol}M`;
 
@@ -58,6 +72,7 @@ export class ExtensionsShortcutsPage {
         this.page.getByPlaceholder(`Shortcut set: ${shortcut}`),
       ).toHaveValue(shortcut);
 
+      // Clear the shortcut
       await this.page.getByLabel("Edit shortcut Toggle Quick").click();
       await this.page
         .locator("extensions-keyboard-shortcuts #container")
@@ -88,7 +103,7 @@ export class ExtensionsShortcutsPage {
     }
   }
 
-  async setShortcut() {
+  async setQuickbarShortcut() {
     const modifierKey = await getModifierKey(this.page);
 
     const modifierSymbol = await getModifierSymbol(this.page);
