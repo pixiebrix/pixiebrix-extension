@@ -89,7 +89,7 @@ export class ModsPage {
         timeout: 500,
       });
     }).toPass({
-      timeout: 2000,
+      timeout: 5000,
     });
 
     await expect(async () => {

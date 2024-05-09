@@ -110,6 +110,10 @@ export class PageEditorPage {
     return this.page.getByText(text);
   }
 
+  getRenderPanelButton() {
+    return this.page.getByRole("button", { name: "Render Panel" });
+  }
+
   getIncrementVersionErrorToast() {
     return this.page.getByText(
       "Cannot overwrite version of a published brick. Increment the version",
@@ -117,6 +121,10 @@ export class PageEditorPage {
   }
 
   async saveStandaloneMod(modName: string) {
+    // We need to wait at least 500ms to permit the page editor to persist the mod changes to redux before saving.
+    // https://github.com/pixiebrix/pixiebrix-extension/blob/277eab74d2c85c2d16053bbcd27023d2612f9e31/src/pageEditor/panes/EditorPane.tsx#L48
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- see above
+    await this.page.waitForTimeout(600);
     const modListItem = this.page.locator(".list-group-item", {
       hasText: modName,
     });
