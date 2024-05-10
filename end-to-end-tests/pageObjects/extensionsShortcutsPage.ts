@@ -69,6 +69,8 @@ export class ExtensionsShortcutsPage {
   }
 
   async clearQuickbarShortcut() {
+    await this.page.bringToFront();
+
     const shortcut = await getShortcut(this.page);
 
     if (this.chromiumChannel === "chrome") {
@@ -105,6 +107,8 @@ export class ExtensionsShortcutsPage {
   }
 
   async setQuickbarShortcut() {
+    await this.page.bringToFront();
+
     const modifierKey = await getModifierKey(this.page);
     const shortcut = await getShortcut(this.page);
 
@@ -130,7 +134,7 @@ export class ExtensionsShortcutsPage {
         /Type a shortcut that will Toggle Quick Bar for PixieBrix/,
       );
 
-      await expect(input).toBeEmpty();
+      await expect(input).toHaveValue("");
 
       await input.click();
       await input.press(`${modifierKey}+m`);

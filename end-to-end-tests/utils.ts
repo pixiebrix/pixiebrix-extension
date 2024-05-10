@@ -236,7 +236,7 @@ export async function getBrowserOs(page: Page): Promise<string> {
 
 export async function getModifierKey(page: Page): Promise<string> {
   const OSName = await getBrowserOs(page);
-  return OSName === "MacOS" ? "Meta" : "Control";
+  return OSName === "MacOS" ? "Meta" : "Ctrl";
 }
 
 export async function getModifierSymbol(page: Page): Promise<string> {

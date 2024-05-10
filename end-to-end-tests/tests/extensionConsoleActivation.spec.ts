@@ -173,13 +173,13 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
 
 test("activating a mod when the quickbar shortcut is not configured", async ({
   context,
-  page,
+  page: firstTab,
   extensionId,
   chromiumChannel,
 }) => {
-  const shortcutsPage = new ExtensionsShortcutsPage(page, chromiumChannel);
+  const shortcutsPage = new ExtensionsShortcutsPage(firstTab, chromiumChannel);
   await test.step("Clear the quickbar shortcut before activing a quickbar mod", async () => {
-    const os = await getBrowserOs(page);
+    const os = await getBrowserOs(firstTab);
     // See https://github.com/pixiebrix/pixiebrix-extension/issues/6268
     // eslint-disable-next-line playwright/no-conditional-in-test -- Existing bug where shortcut isn't set on Edge in Windows/Linux
     if (os === "MacOS" || chromiumChannel === "chrome") {
@@ -190,10 +190,10 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
   });
 
   let modActivationPage: ActivateModPage;
-  const newPage = await context.newPage();
+  const secondTab = await context.newPage();
   await test.step("Begin activation of a mod with a quickbar shortcut", async () => {
     const modId = "@e2e-testing/show-alert";
-    modActivationPage = new ActivateModPage(newPage, extensionId, modId);
+    modActivationPage = new ActivateModPage(secondTab, extensionId, modId);
     await modActivationPage.goto();
   });
 
@@ -204,9 +204,9 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
     await modActivationPage.keyboardShortcutDocumentationLink().click();
 
     await expect(
-      newPage.getByRole("heading", { name: "Changing the Quick Bar" }),
+      secondTab.getByRole("heading", { name: "Changing the Quick Bar" }),
     ).toBeVisible();
-    await newPage.goBack();
+    await secondTab.goBack();
 
     await expect(
       modActivationPage.configureQuickbarShortcutLink(),
@@ -228,10 +228,10 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
   });
 
   await test.step("Verify the mod is activated and works as expected", async () => {
-    await page.bringToFront();
-    await page.goto("/");
+    await firstTab.bringToFront();
+    await firstTab.goto("/");
 
-    await runModViaQuickBar(page, "Show Alert");
-    await expect(page.getByText("Quick Bar Action ran")).toBeVisible();
+    await runModViaQuickBar(firstTab, "Show Alert");
+    await expect(firstTab.getByText("Quick Bar Action ran")).toBeVisible();
   });
 });
