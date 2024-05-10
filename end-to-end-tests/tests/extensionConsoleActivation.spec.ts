@@ -23,6 +23,7 @@ import {
   getSidebarPage,
   clickAndWaitForNewPage,
   runModViaQuickBar,
+  getBrowserOs,
 } from "../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
@@ -178,9 +179,14 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
 }) => {
   const shortcutsPage = new ExtensionsShortcutsPage(page, chromiumChannel);
   await test.step("Clear the quickbar shortcut before activing a quickbar mod", async () => {
-    await shortcutsPage.goto();
+    const os = await getBrowserOs(page);
+    // See https://github.com/pixiebrix/pixiebrix-extension/issues/6268
+    // eslint-disable-next-line playwright/no-conditional-in-test -- Existing bug where shortcut isn't set on Edge in Windows/Linux
+    if (os === "mac" || chromiumChannel === "chrome") {
+      await shortcutsPage.goto();
 
-    await shortcutsPage.clearQuickbarShortcut();
+      await shortcutsPage.clearQuickbarShortcut();
+    }
   });
 
   let modActivationPage: ActivateModPage;
