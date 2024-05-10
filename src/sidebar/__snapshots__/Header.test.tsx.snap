@@ -36,6 +36,7 @@ exports[`Header renders 1`] = `
       />
     </div>
     <a
+      aria-label="Open Extension Console"
       class="button themeColorOverride btn btn-link btn-sm"
       href="chrome-extension://abcxyz/options.html"
       title="Open Extension Console"
@@ -96,6 +97,7 @@ exports[`Header renders sidebar header logo per organization theme 1`] = `
       />
     </div>
     <a
+      aria-label="Open Extension Console"
       class="button themeColorOverride btn btn-link btn-sm"
       href="chrome-extension://abcxyz/options.html"
       title="Open Extension Console"
