@@ -182,7 +182,7 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
     const os = await getBrowserOs(page);
     // See https://github.com/pixiebrix/pixiebrix-extension/issues/6268
     // eslint-disable-next-line playwright/no-conditional-in-test -- Existing bug where shortcut isn't set on Edge in Windows/Linux
-    if (os === "mac" || chromiumChannel === "chrome") {
+    if (os === "MacOS" || chromiumChannel === "chrome") {
       await shortcutsPage.goto();
 
       await shortcutsPage.clearQuickbarShortcut();

@@ -35,6 +35,13 @@ function getExtensionShortcutsUrl(chromiumChannel: "chrome" | "msedge") {
   }
 }
 
+async function getShortcut(page: Page): Promise<string> {
+  const modifierKey = await getModifierKey(page);
+  const modifierSymbol = await getModifierSymbol(page);
+
+  return modifierKey === "Meta" ? `${modifierSymbol}M` : `${modifierKey} + M`;
+}
+
 export class ExtensionsShortcutsPage {
   private readonly pageUrl: string;
 
@@ -62,8 +69,7 @@ export class ExtensionsShortcutsPage {
   }
 
   async clearQuickbarShortcut() {
-    const modifierSymbol = await getModifierSymbol(this.page);
-    const shortcut = `${modifierSymbol}M`;
+    const shortcut = await getShortcut(this.page);
 
     if (this.chromiumChannel === "chrome") {
       await expect(this.page.getByPlaceholder(/shortcut set: /i)).toHaveValue(
@@ -100,9 +106,7 @@ export class ExtensionsShortcutsPage {
 
   async setQuickbarShortcut() {
     const modifierKey = await getModifierKey(this.page);
-
-    const modifierSymbol = await getModifierSymbol(this.page);
-    const shortcut = `${modifierSymbol}M`;
+    const shortcut = await getShortcut(this.page);
 
     if (this.chromiumChannel === "chrome") {
       await expect(
@@ -118,13 +122,9 @@ export class ExtensionsShortcutsPage {
         .locator("extensions-keyboard-shortcuts #container")
         .click();
 
-      await expect(
-        this.page.getByPlaceholder(
-          `Shortcut set: ${
-            modifierKey === "Meta" ? "Command" : modifierKey
-          } + M`,
-        ),
-      ).toHaveValue(shortcut);
+      await expect(this.page.getByPlaceholder(/shortcut set: /i)).toHaveValue(
+        shortcut,
+      );
     } else {
       const input = this.page.getByLabel(
         /Type a shortcut that will Toggle Quick Bar for PixieBrix/,
