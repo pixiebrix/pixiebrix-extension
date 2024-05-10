@@ -100,7 +100,7 @@ export class ExtensionsShortcutsPage {
 
       await expect(
         this.page.getByLabel(
-          "Type a shortcut that will Toggle Quick Bar for PixieBrix - Development extension",
+          /Type a shortcut that will Toggle Quick Bar for PixieBrix/,
         ),
       ).toBeEmpty();
     }
@@ -130,16 +130,15 @@ export class ExtensionsShortcutsPage {
         shortcut,
       );
     } else {
-      const input = this.page.getByLabel(
-        /Type a shortcut that will Toggle Quick Bar for PixieBrix/,
-      );
+      const shortcutLabel =
+        /Type a shortcut that will Toggle Quick Bar for PixieBrix/;
 
-      await input.click();
-      await input.press(`${modifierKey}+m`);
+      await this.page.getByLabel(shortcutLabel).click();
+      await this.page.getByLabel(shortcutLabel).press(`${modifierKey}+m`);
 
       await this.page.getByText("Keyboard ShortcutsPixieBrix").click();
 
-      await expect(input).toHaveValue(shortcut);
+      await expect(this.page.getByLabel(shortcutLabel)).toHaveValue(shortcut);
     }
   }
 }
