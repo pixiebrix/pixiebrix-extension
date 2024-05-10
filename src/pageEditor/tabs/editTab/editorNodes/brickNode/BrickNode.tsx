@@ -33,8 +33,8 @@ import { useSelector } from "react-redux";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 
 const useScrollIntoViewEffect = (
-  active: boolean,
-  isSubPipelineHeaderActive: boolean,
+  active = false,
+  isSubPipelineHeaderActive = false,
 ) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   const activeNodePreviewElementId = useSelector(

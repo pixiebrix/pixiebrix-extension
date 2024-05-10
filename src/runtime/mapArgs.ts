@@ -118,7 +118,7 @@ export function renderMustache(config: Args, ctxt: UnknownObject): unknown {
 export async function renderImplicit(
   config: Args,
   ctxt: UnknownObject,
-  render: AsyncTemplateRenderer | TemplateRenderer,
+  render: AsyncTemplateRenderer | TemplateRenderer | null,
 ): Promise<unknown> {
   if (Array.isArray(config)) {
     return Promise.all(
@@ -146,7 +146,7 @@ export async function renderImplicit(
       return prop;
     }
 
-    return render(config, ctxt);
+    return render?.(config, ctxt);
   }
 
   return config;

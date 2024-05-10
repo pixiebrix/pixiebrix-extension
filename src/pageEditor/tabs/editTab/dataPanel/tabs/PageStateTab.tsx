@@ -47,13 +47,13 @@ const PageStateTab: React.VFC = () => {
   }>(
     async () => {
       const context = {
-        extensionId: activeModComponentFormState.uuid,
-        blueprintId: activeModComponentFormState.recipe?.id,
+        extensionId: activeModComponentFormState?.uuid,
+        blueprintId: activeModComponentFormState?.recipe?.id,
       };
 
       const [shared, mod, local] = await Promise.all([
         getPageState(inspectedTab, { namespace: "shared", ...context }),
-        activeModComponentFormState.recipe
+        activeModComponentFormState?.recipe
           ? getPageState(inspectedTab, { namespace: "blueprint", ...context })
           : Promise.resolve("Starter Brick is not in a mod"),
         getPageState(inspectedTab, { namespace: "extension", ...context }),
