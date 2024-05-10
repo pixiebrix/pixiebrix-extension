@@ -59,7 +59,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
       typeof initialFieldValue === "string" &&
       !isUUID(initialFieldValue) &&
       // Don't add the preview option if a database with the name already exists
-      !loadedOptions.some(
+      !loadedOptions?.some(
         (option) => option.label === `${initialFieldValue} - Private`,
       )
     ) {

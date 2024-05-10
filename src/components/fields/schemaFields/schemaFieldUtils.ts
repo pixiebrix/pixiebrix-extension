@@ -57,7 +57,7 @@ type FieldConfig = {
  */
 export function sortedFields(
   schema: Schema,
-  uiSchema: UiSchema | null,
+  uiSchema?: UiSchema,
   {
     preserveSchemaOrder = false,
     includePipelines = false,

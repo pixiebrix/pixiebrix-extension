@@ -33,7 +33,10 @@ const EMPTY_TRACE = freeze<TraceRecord[]>([]);
 export const selectActiveElementTraces: EditorSelector<TraceRecord[]> = ({
   runtime,
   editor,
-}) => runtime.extensionTraces[editor.activeElementId] ?? EMPTY_TRACE;
+}) =>
+  editor.activeElementId
+    ? runtime.extensionTraces[editor.activeElementId] ?? EMPTY_TRACE
+    : EMPTY_TRACE;
 
 const activeElementTraceForBlockSelector = createSelector(
   selectActiveElementTraces,
@@ -63,9 +66,11 @@ export const selectTraceErrors = createSelector(
 
 export function makeSelectBlockTrace(
   blockInstanceId: UUID,
-): EditorSelector<{ record: TraceRecord | null }> {
+): EditorSelector<{ record?: TraceRecord }> {
   return ({ runtime, editor }: RootState) => {
-    const records = runtime.extensionTraces[editor.activeElementId] ?? [];
+    const records = editor.activeElementId
+      ? runtime.extensionTraces[editor.activeElementId] ?? []
+      : [];
 
     return {
       record: getLatestBrickCall(records, blockInstanceId),

@@ -25,7 +25,7 @@ import { type ModViewItem } from "@/types/modTypes";
 type View = "list" | "grid";
 
 export type ActiveTab = {
-  key: string | null;
+  key?: string;
   tabTitle: string | null;
   filters: Filters<ModViewItem>;
   hideToolbar?: boolean;
@@ -44,7 +44,6 @@ const initialState: ModsPageState = {
   groupBy: [],
   sortBy: [],
   activeTab: {
-    key: null,
     tabTitle: null,
     filters: [],
   },

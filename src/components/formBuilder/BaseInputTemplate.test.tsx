@@ -36,8 +36,8 @@ describe("RJSF BaseInputTemplate Override", () => {
       onBlur: jest.fn(),
       onChange: jest.fn(),
       onFocus: jest.fn(),
-      // @ts-expect-error -- Required by type, not used by component
-      registry: undefined,
+      // Required by type, not used by component
+      registry: null as unknown as StrictBaseInputTemplateProps["registry"],
     } satisfies StrictBaseInputTemplateProps;
   }
 
@@ -159,7 +159,7 @@ describe("RJSF BaseInputTemplate Override", () => {
         <BaseInputTemplate
           {...getProps("number", schema)}
           onChange={onChange}
-          value={value}
+          value={value!}
         />,
       );
 

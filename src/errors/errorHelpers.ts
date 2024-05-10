@@ -30,7 +30,7 @@ import {
   isSchemaValidationError,
   type SchemaValidationError,
 } from "@/bricks/errors";
-import { type SetRequired } from "type-fest";
+import { type SetOptional, type SetRequired } from "type-fest";
 import {
   CONTEXT_INVALIDATED_ERROR,
   ERROR_TAB_DOES_NOT_EXIST,
@@ -191,7 +191,10 @@ function isBusinessError(error: unknown): boolean {
 }
 
 export function formatSchemaValidationMessage(
-  error: SchemaValidationError["errors"][number],
+  error: SetOptional<
+    SchemaValidationError["errors"][number],
+    "keywordLocation"
+  >,
 ) {
   const { keywordLocation, error: validationError } = error;
   return `${keywordLocation ? `${keywordLocation}: ` : ""}${

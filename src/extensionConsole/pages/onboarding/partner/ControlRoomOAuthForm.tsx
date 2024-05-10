@@ -31,7 +31,7 @@ import integrationsSlice from "@/integrations/store/integrationsSlice";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import { type FormikHelpers } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isEmpty, isEqual } from "lodash";
+import { isEqual } from "lodash";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
 import { useHistory, useLocation } from "react-router";
 import { collectIntegrationOriginPermissions } from "@/integrations/util/permissionsHelpers";
@@ -92,9 +92,8 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
     useSelector(selectSettings);
 
   // `authServiceIdOverride` can be null/empty, so defaulting in the settings destructuring doesn't work
-  const authIntegrationId = isEmpty(authIntegrationIdOverride)
-    ? CONTROL_ROOM_OAUTH_INTEGRATION_ID
-    : authIntegrationIdOverride;
+  const authIntegrationId =
+    authIntegrationIdOverride || CONTROL_ROOM_OAUTH_INTEGRATION_ID;
 
   const connect = useCallback(
     async (

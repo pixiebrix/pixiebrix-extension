@@ -26,7 +26,7 @@ let createOffscreenDocumentPromise: Promise<void> | null = null;
 
 // Use optional chaining in case the chrome runtime is not available:
 // https://github.com/pixiebrix/pixiebrix-extension/issues/8397
-chrome.runtime?.onMessage.addListener(handleMessages);
+chrome.runtime?.onMessage?.addListener(handleMessages);
 
 export type RecordErrorMessage = {
   target: "offscreen-doc";

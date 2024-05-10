@@ -37,7 +37,7 @@ async function collectDiagnostics({
   permissions,
 }: {
   extensions: UnresolvedModComponent[];
-  permissions: DetailedPermissions;
+  permissions?: DetailedPermissions;
 }) {
   const { version_name } = browser.runtime.getManifest();
   const version = getExtensionVersion();

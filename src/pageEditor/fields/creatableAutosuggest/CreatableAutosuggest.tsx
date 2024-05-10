@@ -32,6 +32,7 @@ import cx from "classnames";
 import { noop } from "lodash";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export interface SuggestionTypeBase {
   value: string;
@@ -65,7 +66,7 @@ export interface Props<SuggestionType extends SuggestionTypeBase> {
   filterSuggestionsByValue?: boolean;
 
   // Text value of the input
-  inputValue?: string;
+  inputValue: Nullishable<string>;
 
   // Placeholder for the input field
   inputPlaceholder?: string;

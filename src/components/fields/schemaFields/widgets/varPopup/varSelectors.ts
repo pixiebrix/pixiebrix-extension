@@ -26,12 +26,12 @@ export const selectKnownVarsForActiveNode = createSelector(
   selectActiveModComponentId,
   selectActiveNodeInfo,
   selectKnownVars,
-  (activeElementId, activeNodeInfo, knownVars) => {
-    if (activeNodeInfo == null) {
+  (activeModComponentId, activeNodeInfo, knownVars) => {
+    if (activeNodeInfo == null || activeModComponentId == null) {
       return null;
     }
 
     // eslint-disable-next-line security/detect-object-injection -- is a UUID
-    return knownVars[activeElementId]?.get(activeNodeInfo.path);
+    return knownVars[activeModComponentId]?.get(activeNodeInfo.path);
   },
 );

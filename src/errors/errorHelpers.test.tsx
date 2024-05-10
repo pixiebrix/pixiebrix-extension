@@ -77,7 +77,7 @@ function testStore() {
 
 const TEST_MESSAGE = "Test message";
 
-function createUncaughtRejection(reason: string | Error) {
+function createUncaughtRejection(reason: string | Error | null) {
   // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- We want to test both
   const promise = Promise.reject(reason);
   // eslint-disable-next-line promise/prefer-await-to-then -- Test only
@@ -447,10 +447,10 @@ describe("selectErrorFromErrorEvent", () => {
     expect(selectErrorFromErrorEvent(errorEvent)).toBe(error);
   });
 
-  it("handles ErrorEvent with null message and error", () => {
+  it("handles ErrorEvent with undefined message and error", () => {
     const errorEvent = new ErrorEvent("error", {
-      error: null,
-      message: null,
+      error: undefined,
+      message: undefined,
     });
 
     const selectedError = selectErrorFromErrorEvent(errorEvent);
@@ -603,7 +603,7 @@ describe("serialization", () => {
   test("serializes error cause", () => {
     const inputValidationError = new InputValidationError(
       "test input validation error",
-      null,
+      {},
       null,
       [],
     );

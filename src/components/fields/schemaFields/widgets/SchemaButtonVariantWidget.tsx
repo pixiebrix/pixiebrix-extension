@@ -18,7 +18,6 @@
 import React, { useMemo } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
-import { type Option } from "@/components/form/widgets/SelectWidget";
 import Select, {
   type OptionProps,
   type ValueContainerProps,
@@ -35,7 +34,7 @@ const OptionComponent = ({
   innerRef,
   data,
   isSelected,
-}: OptionProps<Option>) => (
+}: OptionProps<StringOption>) => (
   <div
     ref={innerRef}
     {...innerProps}
@@ -45,7 +44,6 @@ const OptionComponent = ({
   >
     <Button
       data-testid="variant-option"
-      type={null}
       variant={data.value}
       size="sm"
       className={styles.exampleButton}
@@ -55,10 +53,9 @@ const OptionComponent = ({
   </div>
 );
 
-const ValueComponent = ({ data }: SingleValueProps<Option>) => (
+const ValueComponent = ({ data }: SingleValueProps<StringOption>) => (
   <Button
     data-testid="selected-variant"
-    type={null}
     variant={data.value}
     size="sm"
     className={styles.exampleButton}
@@ -70,7 +67,7 @@ const ValueComponent = ({ data }: SingleValueProps<Option>) => (
 const ContainerComponent = ({
   innerProps,
   children,
-}: ValueContainerProps<Option>) => (
+}: ValueContainerProps<StringOption>) => (
   <div {...innerProps} className={styles.selectContainer}>
     {children}
   </div>
@@ -80,15 +77,15 @@ const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,
   schema,
 }) => {
-  const [{ value }, , { setValue }] = useField<string>(name);
+  const [{ value }, , { setValue }] = useField<string | undefined>(name);
   const { options } = useMemo(
     () => mapSchemaToOptions({ schema, value }),
     [schema, value],
   );
 
   const selectedValue = options.find((x) => x.value === value) ?? {
-    label: null,
-    value: null,
+    label: undefined,
+    value: undefined,
   };
 
   return (

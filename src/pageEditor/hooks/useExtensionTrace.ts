@@ -61,6 +61,7 @@ function useExtensionTrace() {
       const lastRun = await getLatestRunByExtensionId(activeModComponentId);
       // Keep the Redux log clean. Don't setExtensionTrace unless we have to
       if (
+        activeModComponentId &&
         !isEqual(
           lastRun.map((x) => selectTraceMetadata(x)),
           extensionTrace.map((x) => selectTraceMetadata(x)),

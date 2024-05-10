@@ -63,7 +63,7 @@ describe("RemoteServiceError", () => {
 
     const error = new RemoteServiceError(
       "You Must Construct Additional Pylons",
-      { cause },
+      { cause: cause! },
     );
 
     const serialized = serializeError(error, { useToJSON: false });

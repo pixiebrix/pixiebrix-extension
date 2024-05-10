@@ -19,7 +19,6 @@ import React, { useCallback, useState } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { isEmpty } from "lodash";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import {
   SPREADSHEET_FIELD_DESCRIPTION,
@@ -69,7 +68,10 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
 
         const spreadsheetFileList = await getAllSpreadsheets(googleAccount);
 
-        if (isEmpty(spreadsheetFileList.files)) {
+        if (
+          !spreadsheetFileList.files ||
+          spreadsheetFileList.files.length === 0
+        ) {
           return baseSchema;
         }
 
@@ -79,7 +81,7 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
             title: file.name,
           }),
         );
-        if (!isEmpty(baseSchema.oneOf)) {
+        if (baseSchema.oneOf && Array.isArray(baseSchema.oneOf)) {
           // Currently there would only be one item here, the loop makes type narrowing easier
           for (const item of baseSchema.oneOf) {
             if (
