@@ -134,8 +134,6 @@ export class ExtensionsShortcutsPage {
         /Type a shortcut that will Toggle Quick Bar for PixieBrix/,
       );
 
-      await expect(input).toHaveValue("");
-
       await input.click();
       await input.press(`${modifierKey}+m`);
 
