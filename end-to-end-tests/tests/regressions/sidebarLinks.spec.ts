@@ -24,7 +24,7 @@ import {
   // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
   test as base,
 } from "@playwright/test";
-import { getSidebarPage } from "../../utils";
+import { ensureVisibility, getSidebarPage } from "../../utils";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
 
 async function openSidebar(page: Page, extensionId: string) {
@@ -68,7 +68,7 @@ async function clickLinkInSidebarAndWaitForPage(
   return pagePromise;
 }
 
-test("8206: clicking links doesn't crash browser", async ({
+test("#8206: clicking links doesn't crash browser", async ({
   page,
   context,
   extensionId,
@@ -88,7 +88,7 @@ test("8206: clicking links doesn't crash browser", async ({
   await test.step("Clicking extension console link", async () => {
     const extensionConsolePage = await clickLinkInSidebarAndWaitForPage(
       context,
-      sideBarPage.getByLabel("Open Extension Console"),
+      sideBarPage.getByRole("link", { name: "Open Extension Console" }),
       chromiumChannel,
     );
 
@@ -103,9 +103,11 @@ test("8206: clicking links doesn't crash browser", async ({
       await extensionConsolePage.reload();
     }
 
-    await expect(
-      extensionConsolePage.getByText("Extension Console"),
-    ).toBeVisible();
+    const activeModsHeading = extensionConsolePage.getByRole("heading", {
+      name: "Active Mods",
+    });
+    // `activeModsHeading` may be initially be detached and hidden, so toBeVisible() would immediately fail
+    await ensureVisibility(activeModsHeading, { timeout: 10_000 });
   });
 
   await test.step("Clicking markdown text link", async () => {
