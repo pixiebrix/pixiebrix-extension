@@ -432,7 +432,6 @@
     "./contentScript/focusCaptureDialog.ts",
     "./contentScript/integrations/LoginBanners.tsx",
     "./contentScript/integrations/bannerDomController.tsx",
-    "./contentScript/integrations/deferredLoginController",
     "./contentScript/integrations/deferredLoginController.ts",
     "./contentScript/integrations/deferredLoginTypes.ts",
     "./contentScript/loadActivationEnhancements.ts",
