@@ -133,7 +133,7 @@ export interface Brick extends Metadata {
    *
    * @since 1.3.2
    */
-  defaultOutputKey?: string;
+  defaultOutputKey?: string | null;
 
   /**
    * Run the brick.
