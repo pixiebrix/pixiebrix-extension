@@ -33,7 +33,7 @@ function useReportTraceError(): void {
   const traceErrors = useSelector(selectTraceErrors);
 
   const traceError = traceErrors.find((x) => x.runId);
-  const runId: UUID | null = traceError?.runId;
+  const runId: UUID | undefined = traceError?.runId;
   const prevRunId = usePreviousValue(runId);
   if (traceError && runId && runId !== prevRunId) {
     reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_ERROR, {

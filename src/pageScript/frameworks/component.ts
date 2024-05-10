@@ -63,7 +63,7 @@ export interface ReadAdapter<
   /**
    * Returns the data defined for the component.
    */
-  getData: (component: TComponent) => TData;
+  getData: (component: TComponent | null) => TData;
 
   /**
    * Returns true if there is data defined for the component
