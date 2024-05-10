@@ -24,7 +24,7 @@ import {
   // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
   test as base,
 } from "@playwright/test";
-import { ensureVisibility, getSidebarPage } from "../../utils";
+import { ensureVisibility, getBrowserOs, getSidebarPage } from "../../utils";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
 
 async function openSidebar(page: Page, extensionId: string) {
@@ -40,9 +40,9 @@ async function openSidebar(page: Page, extensionId: string) {
   return sideBarPage;
 }
 
-async function reopenSidebarForMSEdge(page: Page, extensionId: string) {
+async function reopenSidebar(page: Page, extensionId: string) {
   await page.bringToFront();
-  // eslint-disable-next-line playwright/no-wait-for-timeout -- msedge bug
+  // eslint-disable-next-line playwright/no-wait-for-timeout -- if we try to reopen to quickly, the sidebar does not respond in time since it was just closed
   await page.waitForTimeout(500);
   return openSidebar(page, extensionId);
 }
@@ -75,13 +75,15 @@ test("#8206: clicking links doesn't crash browser", async ({
   chromiumChannel,
   baseURL,
 }) => {
+  const browserOSName = await getBrowserOs(page);
   const modId = "@pixies/test/sidebar-links";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
   await page.goto("/");
-  // On MS Edge, opening a new tab closes the sidebar, so we have to re-open it on the page after clicking each link
+  // On MS Edge, and in Linux (both chrome and Edge) opening a new tab closes the sidebar,
+  // so we have to re-open it on the page after clicking each link
   // See https://github.com/w3c/webextensions/issues/588.
   let sideBarPage = await openSidebar(page, extensionId);
 
@@ -112,8 +114,8 @@ test("#8206: clicking links doesn't crash browser", async ({
 
   await test.step("Clicking markdown text link", async () => {
     // eslint-disable-next-line playwright/no-conditional-in-test -- msedge bug
-    if (chromiumChannel === "msedge") {
-      sideBarPage = await reopenSidebarForMSEdge(page, extensionId);
+    if (chromiumChannel === "msedge" || browserOSName !== "MacOS") {
+      sideBarPage = await reopenSidebar(page, extensionId);
     }
 
     const markdownTextLinkPage = await clickLinkInSidebarAndWaitForPage(
@@ -126,8 +128,8 @@ test("#8206: clicking links doesn't crash browser", async ({
 
   await test.step("Clicking react bootstrap link", async () => {
     // eslint-disable-next-line playwright/no-conditional-in-test -- msedge bug
-    if (chromiumChannel === "msedge") {
-      sideBarPage = await reopenSidebarForMSEdge(page, extensionId);
+    if (chromiumChannel === "msedge" || browserOSName !== "MacOS") {
+      sideBarPage = await reopenSidebar(page, extensionId);
     }
 
     const reactBootstrapLinkPage = await clickLinkInSidebarAndWaitForPage(
@@ -140,8 +142,8 @@ test("#8206: clicking links doesn't crash browser", async ({
 
   await test.step("Clicking html renderer link", async () => {
     // eslint-disable-next-line playwright/no-conditional-in-test -- msedge bug
-    if (chromiumChannel === "msedge") {
-      sideBarPage = await reopenSidebarForMSEdge(page, extensionId);
+    if (chromiumChannel === "msedge" || browserOSName !== "MacOS") {
+      sideBarPage = await reopenSidebar(page, extensionId);
     }
 
     const htmlRendererLinkPage = await clickLinkInSidebarAndWaitForPage(
@@ -154,8 +156,8 @@ test("#8206: clicking links doesn't crash browser", async ({
 
   await test.step("Clicking embedded form link", async () => {
     // eslint-disable-next-line playwright/no-conditional-in-test -- msedge bug
-    if (chromiumChannel === "msedge") {
-      sideBarPage = await reopenSidebarForMSEdge(page, extensionId);
+    if (chromiumChannel === "msedge" || browserOSName !== "MacOS") {
+      sideBarPage = await reopenSidebar(page, extensionId);
     }
 
     const embeddedFormLinkPage = await clickLinkInSidebarAndWaitForPage(

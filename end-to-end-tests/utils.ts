@@ -182,3 +182,28 @@ export async function conditionallyHoverOverMV2Sidebar(page: Page) {
     await sidebarFrame.dispatchEvent("mouseenter");
   }
 }
+
+type OSName = "Windows" | "MacOS" | "Unix" | "Linux" | "Unknown";
+export async function getBrowserOs(page: Page): Promise<OSName> {
+  let OSName: OSName = "Unknown";
+
+  const response = String(await page.evaluate(() => navigator.userAgent));
+
+  if (response.includes("Win")) {
+    OSName = "Windows";
+  }
+
+  if (response.includes("Mac")) {
+    OSName = "MacOS";
+  }
+
+  if (response.includes("X11")) {
+    OSName = "Unix";
+  }
+
+  if (response.includes("Linux")) {
+    OSName = "Linux";
+  }
+
+  return OSName;
+}
