@@ -103,7 +103,7 @@ export type BrickDefinition = {
    * The default output key to use for the brick
    * @since 1.7.34
    */
-  defaultOutputKey?: string;
+  defaultOutputKey?: OutputKey | null;
 };
 
 /**
@@ -134,7 +134,7 @@ class UserDefinedBrick extends BrickABC {
 
   readonly inputSchema: Schema;
 
-  readonly version: SemVerString;
+  readonly version?: SemVerString;
 
   constructor(
     private readonly registry: BrickRegistryProtocol,
@@ -152,7 +152,9 @@ class UserDefinedBrick extends BrickABC {
     this.defaultOutputKey = UserDefinedBrick.parseDefaultOutputKey(component);
   }
 
-  private static parseDefaultOutputKey(definition: BrickDefinition): OutputKey {
+  private static parseDefaultOutputKey(
+    definition: BrickDefinition,
+  ): OutputKey | null {
     if (!definition.defaultOutputKey) {
       return null;
     }
@@ -211,7 +213,7 @@ class UserDefinedBrick extends BrickABC {
     const awareness = await Promise.all(
       pipeline.map(async (blockConfig) => {
         const resolvedBlock = await this.registry.lookup(blockConfig.id);
-        return resolvedBlock.isPageStateAware();
+        return resolvedBlock?.isPageStateAware();
       }),
     );
 

@@ -182,9 +182,10 @@ export async function requestRunInAllFrames(
 
   const subRequest = { ...request, sourceTabId };
 
-  const frames = await browser.webNavigation.getAllFrames({
-    tabId: sourceTabId,
-  });
+  const frames =
+    (await browser.webNavigation.getAllFrames({
+      tabId: sourceTabId,
+    })) ?? [];
 
   const promises = frames.map(async ({ frameId }) =>
     safelyRunBrick({ tabId: sourceTabId, frameId }, subRequest),

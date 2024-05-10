@@ -157,7 +157,7 @@ export abstract class BrickABC implements Brick {
 
   uiSchema?: UiSchema = undefined;
 
-  defaultOutputKey?: string = undefined;
+  defaultOutputKey?: string | null = undefined;
 
   outputSchema?: Schema = undefined;
 
