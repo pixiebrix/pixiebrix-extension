@@ -66,9 +66,9 @@ export class ExtensionsShortcutsPage {
     const shortcut = `${modifierSymbol}M`;
 
     if (this.chromiumChannel === "chrome") {
-      await expect(
-        this.page.getByPlaceholder(`Shortcut set: ${shortcut}`),
-      ).toHaveValue(shortcut);
+      await expect(this.page.getByPlaceholder(/shortcut set: /i)).toHaveValue(
+        shortcut,
+      );
 
       // Clear the shortcut
       await this.page.getByLabel("Edit shortcut Toggle Quick").click();
