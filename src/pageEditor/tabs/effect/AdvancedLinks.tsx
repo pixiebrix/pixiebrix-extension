@@ -33,7 +33,7 @@ export const DEFAULT_WINDOW_VALUE: BrickWindow = "self";
 
 type AdvancedLinksProps = {
   name: string;
-  scrollToRef: MutableRefObject<HTMLElement>;
+  scrollToRef: MutableRefObject<HTMLElement | null>;
 };
 
 /**

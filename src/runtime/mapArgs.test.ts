@@ -58,7 +58,7 @@ describe("renderExplicit", () => {
     "doesn't fail on empty %s template",
     async (templateType: TemplateEngine, expectedValue) => {
       const rendered = await renderExplicit(
-        { foo: toExpression(templateType, undefined) },
+        { foo: toExpression(templateType, null) },
         {},
         apiVersionOptions("v3"),
       );
@@ -84,7 +84,7 @@ describe("exclude null", () => {
 
   test("convert null nunjucks template to string", async () => {
     const rendered = await renderExplicit(
-      { foo: toExpression("nunjucks", undefined) },
+      { foo: toExpression("nunjucks", null) },
       {},
       apiVersionOptions("v3"),
     );
@@ -94,7 +94,7 @@ describe("exclude null", () => {
 
   test("remove null var value", async () => {
     const rendered = await renderExplicit(
-      { foo: toExpression("var", undefined) },
+      { foo: toExpression("var", null) },
       {},
       apiVersionOptions("v3"),
     );

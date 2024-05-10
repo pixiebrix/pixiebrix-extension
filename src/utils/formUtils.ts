@@ -60,7 +60,9 @@ export function joinName(
  * the parts contain already joined paths rather than individual property names
  * @see joinName
  */
-export function joinPathParts(...nameParts: Array<string | number>): string {
+export function joinPathParts(
+  ...nameParts: Array<string | number | null>
+): string {
   // Don't use lodash.compact and lodash.isEmpty because they treat 0 as falsy
   return nameParts.filter((x) => x != null && x !== "").join(".");
 }
