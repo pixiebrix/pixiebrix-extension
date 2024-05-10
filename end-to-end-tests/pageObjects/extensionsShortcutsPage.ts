@@ -39,7 +39,7 @@ async function getShortcut(page: Page): Promise<string> {
   const modifierKey = await getModifierKey(page);
   const modifierSymbol = await getModifierSymbol(page);
 
-  return modifierKey === "Meta" ? `${modifierSymbol}M` : `${modifierKey} + M`;
+  return modifierKey === "Meta" ? `${modifierSymbol}M` : "Ctrl + M";
 }
 
 export class ExtensionsShortcutsPage {
