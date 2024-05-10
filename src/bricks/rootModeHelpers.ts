@@ -53,7 +53,7 @@ export function $safeFindElementsWithRootMode({
   blockId,
 }: {
   selector?: string;
-  root: SelectorRoot;
+  root: SelectorRoot | null;
   isRootAware?: boolean;
   blockId: RegistryId;
   selectorProp?: string;

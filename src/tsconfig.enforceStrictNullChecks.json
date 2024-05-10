@@ -221,7 +221,6 @@
     "./contentScript/pageEditor/dynamic/updateDynamicElement.ts",
     "./contentScript/pageEditor/resetTab.ts",
     "./contentScript/pageEditor/runBlockPreview.ts",
-    "./contentScript/pipelineProtocol/runHeadlessPipeline.ts",
     "./contentScript/pipelineProtocol/runRendererPipeline.ts",
     "./contentScript/sidebarActivation.ts",
     "./contrib/automationanywhere/ApiTaskOptions.tsx",

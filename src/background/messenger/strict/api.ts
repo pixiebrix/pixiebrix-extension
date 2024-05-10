@@ -24,7 +24,6 @@ import {
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type Nullishable } from "@/utils/nullishUtils";
 
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 
@@ -104,7 +103,7 @@ export const performConfiguredRequestInBackground = getMethod(
   "CONFIGURED_REQUEST",
   bg,
 ) as <TData>(
-  integrationConfig: Nullishable<SanitizedIntegrationConfig>,
+  integrationConfig: SanitizedIntegrationConfig,
   requestConfig: NetworkRequestConfig,
   options: { interactiveLogin: boolean },
 ) => Promise<RemoteResponse<TData>>;

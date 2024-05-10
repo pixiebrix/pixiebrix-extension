@@ -90,7 +90,7 @@ export type ApiVersionOptions = {
  * Return runtime options based on the PixieBrix brick definition API version
  * @see ApiVersionOptions
  */
-function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
+function apiVersionOptions(version?: ApiVersion): ApiVersionOptions {
   switch (version) {
     case "v3": {
       return {

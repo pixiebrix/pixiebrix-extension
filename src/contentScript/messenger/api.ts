@@ -57,4 +57,3 @@ export const getInstalledExtensionPoints = getMethod(
 export const checkAvailable = getMethod("CHECK_AVAILABLE");
 
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
-export const runHeadlessPipeline = getMethod("RUN_HEADLESS_PIPELINE");

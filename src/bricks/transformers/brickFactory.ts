@@ -48,13 +48,13 @@ import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/bricks/errors";
-import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import {
   inputProperties,
   unionSchemaDefinitionTypes,
 } from "@/utils/schemaUtils";
 import type BaseRegistry from "@/registry/memoryRegistry";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { runHeadlessPipeline } from "@/contentScript/messenger/strict/api";
 
 // Interface to avoid circular dependency with the implementation
 type BrickRegistryProtocol = BaseRegistry<RegistryId, Brick>;

@@ -138,12 +138,12 @@ export type InitialValues = {
    * Option values provided by the user during activation of an extension
    * @see ModComponentBase.optionsArgs
    */
-  optionsArgs: OptionsArgs;
+  optionsArgs?: OptionsArgs;
   /**
    * Service credentials provided by the user during activation of an extension
    * @see ModComponentBase.services
    */
-  serviceContext: IntegrationsContext;
+  serviceContext?: IntegrationsContext;
   /**
    * The document root for root-aware bricks, including readers
    * @see Brick.isRootAware
@@ -201,7 +201,7 @@ type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
    * The previous output
    * @deprecated ignored since v2
    */
-  previousOutput: unknown;
+  previousOutput: UnknownObject;
 
   /**
    * The root for root-aware bricks
@@ -1017,7 +1017,7 @@ export async function reducePipeline(
 async function reducePipelineExpression(
   pipeline: BrickPipeline,
   context: UnknownObject,
-  root: SelectorRoot,
+  root: SelectorRoot | null,
   options: ReduceOptions,
 ): Promise<unknown> {
   const { explicitDataFlow, logger: pipelineLogger } = options;

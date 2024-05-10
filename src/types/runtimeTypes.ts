@@ -315,7 +315,7 @@ export interface RunMetadata {
    * The extension that's running the brick. Used to correlate trace records across all runs/branches.
    * @since 1.7.0
    */
-  extensionId: UUID;
+  extensionId: UUID | null;
   /**
    * A unique run id to correlate trace records across branches for a run, or null to disable tracing.
    */
@@ -354,7 +354,7 @@ export type BrickOptions<
   /**
    * Implicit root element (or document) for calls the select/read from the DOM
    */
-  root: SelectorRoot;
+  root: SelectorRoot | null;
 
   /**
    * True if the brick is executing in headless mode.
@@ -375,7 +375,7 @@ export type BrickOptions<
     pipeline: PipelineExpression,
     branch: TraceBranch,
     extraContext?: UnknownObject,
-    root?: SelectorRoot,
+    root?: SelectorRoot | null,
   ) => Promise<unknown>;
 
   /**

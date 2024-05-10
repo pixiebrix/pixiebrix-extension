@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./contentScript/pipelineProtocol/runHeadlessPipeline.ts",
     "./contentScript/executor.ts",
     "./runtime/reducePipeline.ts",
     "./contentScript/pageEditor/runBlockPreview.ts",

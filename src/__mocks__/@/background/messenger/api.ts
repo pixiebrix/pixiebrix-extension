@@ -51,6 +51,6 @@ export const performConfiguredRequestInBackground = getMethod(
   "CONFIGURED_REQUEST",
   bg,
 ) as <TData>(
-  integrationConfig: SanitizedIntegrationConfig | null,
+  integrationConfig: SanitizedIntegrationConfig,
   requestConfig: NetworkRequestConfig,
 ) => Promise<RemoteResponse<TData>>;

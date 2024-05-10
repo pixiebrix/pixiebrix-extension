@@ -72,7 +72,7 @@ class CustomEventEffect extends EffectABC {
     { root }: BrickOptions,
   ): Promise<void> {
     const event = new CustomEvent(eventName, { detail: data, bubbles: true });
-    root.dispatchEvent(event);
+    root?.dispatchEvent(event);
   }
 }
 

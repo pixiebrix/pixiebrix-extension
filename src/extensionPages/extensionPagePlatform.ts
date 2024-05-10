@@ -26,7 +26,7 @@ import {
   performConfiguredRequestInBackground,
 } from "@/background/messenger/strict/api";
 import { PlatformBase } from "@/platform/platformBase";
-import type { Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
@@ -93,6 +93,10 @@ class ExtensionPagePlatform extends PlatformBase {
     integrationConfig: Nullishable<SanitizedIntegrationConfig>,
     requestConfig: NetworkRequestConfig,
   ): Promise<RemoteResponse<TData>> {
+    assertNotNullish(
+      integrationConfig,
+      "expected configured integration for integrationConfig",
+    );
     const integration = await integrationRegistry.lookup(
       integrationConfig?.serviceId,
     );

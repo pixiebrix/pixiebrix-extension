@@ -37,7 +37,6 @@ import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runSta
 import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateDynamicElement"; // Depends on contentScript/lifecycle to pass strictNullCheck
 import { resetTab } from "@/contentScript/pageEditor/resetTab"; // Depends on contentScript/lifecycle to pass strictNullCheck
 import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock"; // Depends on background/messenger
-import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadlessPipeline"; // Depends on background/messenger
 import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline"; // Depends on background/messenger
 
 expectContext("contentScript");
@@ -60,7 +59,6 @@ declare global {
     ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
-    RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
   }
 }
 
@@ -82,6 +80,5 @@ export default function registerMessenger(): void {
     ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,
-    RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
   });
 }

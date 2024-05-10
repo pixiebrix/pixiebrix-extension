@@ -27,7 +27,7 @@ export interface RemoteBrickOptions {
   /**
    * Available variables for the brick execution.
    */
-  ctxt: unknown;
+  ctxt: UnknownObject;
   /**
    * Run metadata for the brick execution.
    */
