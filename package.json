@@ -182,7 +182,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.9.0",
     "@fortawesome/fontawesome-common-types": "^0.2.36",
-    "@playwright/test": "^1.43.1",
+    "@playwright/test": "^1.44.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.13",
     "@shopify/jest-dom-mocks": "^5.0.1",
     "@sindresorhus/tsconfig": "^5.0.0",
