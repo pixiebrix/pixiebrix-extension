@@ -51,6 +51,6 @@ export class JSONPathTransformer extends TransformerABC {
     );
 
     // eslint-disable-next-line new-cap -- export from a library
-    return JSONPath({ preventEval: true, path, json: ctxt });
+    return JSONPath({ eval: false, path, json: ctxt });
   }
 }
