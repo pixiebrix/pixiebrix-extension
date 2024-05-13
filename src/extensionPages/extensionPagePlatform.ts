@@ -32,6 +32,7 @@ import type { RemoteResponse } from "@/types/contract";
 import integrationRegistry from "@/integrations/registry";
 import { performConfiguredRequest } from "@/background/requests";
 import { getExtensionVersion } from "@/utils/extensionUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * The extension page platform.
@@ -89,7 +90,7 @@ class ExtensionPagePlatform extends PlatformBase {
   }
 
   override async request<TData>(
-    integrationConfig: SanitizedIntegrationConfig,
+    integrationConfig: Nullishable<SanitizedIntegrationConfig>,
     requestConfig: NetworkRequestConfig,
   ): Promise<RemoteResponse<TData>> {
     const integration = await integrationRegistry.lookup(
