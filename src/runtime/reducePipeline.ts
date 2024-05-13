@@ -300,9 +300,9 @@ async function executeBlockWithValidatedProps(
     // if the previous brick output an array, the array would be passed as the context to the next brick.
     // See the corresponding hack/condition in renderBlockArg
     ctxt:
-      options.explicitArg || !isObject(previousOutput)
+      options.explicitArg || isObject(previousOutput)
         ? context
-        : previousOutput,
+        : (previousOutput as UnknownObject),
     messageContext: options.logger.context,
   };
 
