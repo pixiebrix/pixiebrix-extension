@@ -26,7 +26,6 @@ import {
   performConfiguredRequestInBackground,
 } from "@/background/messenger/strict/api";
 import { PlatformBase } from "@/platform/platformBase";
-import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
