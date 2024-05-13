@@ -35,9 +35,9 @@ export class ModsPage {
     // To ensure the table is fully loaded, we wait for the registry request to finish before interacting with the table.
     const registryPromise = this.page
       .context()
-      .waitForEvent("requestfinished", (request) => {
-        return request.url().includes("/api/registry/bricks/");
-      });
+      .waitForEvent("requestfinished", (request) =>
+        request.url().includes("/api/registry/bricks/"),
+      );
     await this.page.goto(this.extensionConsoleUrl);
     await expect(this.page.getByText("Extension Console")).toBeVisible();
     await registryPromise;
