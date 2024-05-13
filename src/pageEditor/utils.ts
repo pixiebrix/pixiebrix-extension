@@ -56,7 +56,7 @@ export function getIdForElement(
 
 export function getModIdForElement(
   element: ModComponentBase | ModComponentFormState,
-): RegistryId {
+): RegistryId | undefined {
   return isModComponentBase(element) ? element._recipe?.id : element.recipe?.id;
 }
 
@@ -139,7 +139,7 @@ export function getVariableKeyForSubPipeline(
   pipelinePropName: string,
   // NOTE: does not return an OutputKey because a user-entered value may not be a valid OutputKey at this point
 ): string | null {
-  let keyPropName: string = null;
+  let keyPropName: string | null = null;
 
   if (
     [ForEach.BRICK_ID, ForEachElement.BRICK_ID, MapValues.BRICK_ID].includes(
@@ -214,7 +214,7 @@ function getElementsPipelinePropNames(
           element.config.element.__value__,
         ),
       );
-    } else if (element.children?.length > 0) {
+    } else if (element.children?.length) {
       propNames.push(
         ...getElementsPipelinePropNames(
           joinPathParts(parentPath, index, "children"),

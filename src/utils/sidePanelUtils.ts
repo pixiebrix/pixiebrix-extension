@@ -58,6 +58,7 @@ async function openSidePanelMv3(tabId: number): Promise<void> {
   void chrome.sidePanel.setOptions({
     tabId,
     enabled: true,
+    path: getSidebarPath(tabId), // Very seldom, the side panel will not open if this is not set again here
   });
 
   try {

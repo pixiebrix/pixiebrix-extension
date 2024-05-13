@@ -395,7 +395,7 @@ export const selectAddBlockLocation = ({ editor }: EditorRootState) =>
 const activeModComponentAnalysisAnnotationsForPath = createSelector(
   selectActiveModComponentId,
   ({ analysis }: AnalysisRootState) => analysis.extensionAnnotations,
-  (state: RootState, path: string) => path,
+  (state: RootState, path?: string) => path,
   ({ editor }: EditorRootState) => editor.isVariablePopoverVisible,
   (activeElementId, annotations, path, isVariablePopoverVisible) => {
     if (activeElementId == null) {
@@ -438,7 +438,7 @@ const activeModComponentAnalysisAnnotationsForPath = createSelector(
  * @note This should NOT be used outside the page editor, it is tightly coupled with editorSlice
  */
 export const selectActiveModComponentAnalysisAnnotationsForPath =
-  (path: string) => (state: RootState) =>
+  (path?: string) => (state: RootState) =>
     activeModComponentAnalysisAnnotationsForPath(state, path);
 
 export const selectCopiedBlock = ({ editor }: EditorRootState) =>

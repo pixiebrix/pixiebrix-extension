@@ -27,7 +27,7 @@ import { useSelector } from "react-redux";
 const AnalysisResult: React.FunctionComponent<{ className?: string }> = ({
   className,
 }) => {
-  const { path } = useSelector(selectActiveNodeInfo);
+  const { path } = useSelector(selectActiveNodeInfo) ?? {};
   const annotations = useSelector(
     selectActiveModComponentAnalysisAnnotationsForPath(path),
   );

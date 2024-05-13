@@ -57,7 +57,12 @@ describe("FieldTemplate", () => {
       label: testLabel,
       value: testValue,
       as: (({ id, value }) => (
-        <input type="text" id={id} value={value} onChange={jest.fn()} />
+        <input
+          type="text"
+          id={id}
+          value={value ?? undefined}
+          onChange={jest.fn()}
+        />
       )) as CustomFieldWidget,
     });
 

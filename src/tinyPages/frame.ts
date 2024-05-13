@@ -23,8 +23,8 @@ import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtoc
 
 const params = new URLSearchParams(window.location.search);
 
-const frameUrl = params.get("url");
-const name = params.get("name");
+const frameUrl = params.get("url") ?? "";
+const name = params.get("name") ?? "";
 
 const iframe = document.createElement("iframe");
 iframe.src = frameUrl;
