@@ -71,7 +71,7 @@ export type TraceRecordMeta = {
 };
 
 type Output = {
-  outputKey: OutputKey | null;
+  outputKey: Nullishable<OutputKey>;
 
   /**
    * Output of the block
@@ -83,7 +83,7 @@ type ErrorOutput = {
   /**
    * Serialized error from running the block
    */
-  error: ErrorObject;
+  error: ErrorObject | null;
 };
 
 export type TraceEntryData = TraceRecordMeta & {
@@ -97,7 +97,7 @@ export type TraceEntryData = TraceRecordMeta & {
   /**
    * The rendered args, or null if there was an error rendering the args
    */
-  renderedArgs: RenderedArgs | null;
+  renderedArgs: Nullishable<RenderedArgs>;
 
   /**
    * The error rendering the arguments

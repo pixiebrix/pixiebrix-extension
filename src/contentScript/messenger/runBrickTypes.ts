@@ -27,7 +27,7 @@ export interface RemoteBrickOptions {
   /**
    * Available variables for the brick execution.
    */
-  ctxt: UnknownObject;
+  ctxt: unknown;
   /**
    * Run metadata for the brick execution.
    */
@@ -44,6 +44,6 @@ export interface RunBrickRequest {
   sourceTabId?: number;
   nonce?: string;
   blockId: RegistryId;
-  blockArgs: BrickArgs;
+  blockArgs?: BrickArgs;
   options: RemoteBrickOptions;
 }

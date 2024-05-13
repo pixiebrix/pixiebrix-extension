@@ -23,6 +23,7 @@ import { type Logger } from "@/types/loggerTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { type PanelPayload } from "./sidebarTypes";
 import { type PlatformProtocol } from "@/platform/platformProtocol";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.
@@ -315,11 +316,11 @@ export interface RunMetadata {
    * The extension that's running the brick. Used to correlate trace records across all runs/branches.
    * @since 1.7.0
    */
-  extensionId: UUID | null;
+  extensionId: Nullishable<UUID>;
   /**
    * A unique run id to correlate trace records across branches for a run, or null to disable tracing.
    */
-  runId: UUID | null;
+  runId: Nullishable<UUID>;
   /**
    * The control flow branch to correlate trace records for a brick.
    * @since 1.7.0

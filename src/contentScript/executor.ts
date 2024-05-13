@@ -34,7 +34,7 @@ export async function runBrick(request: RunBrickRequest): Promise<unknown> {
   try {
     return await block.run(blockArgs, {
       platform: contentScriptPlatform,
-      ctxt: options.ctxt,
+      ctxt: options.ctxt as UnknownObject,
       meta: options.meta,
       logger,
       root: document,

@@ -168,7 +168,7 @@ export type IntermediateState = {
    * The document root for root-aware bricks
    * @see Brick.isRootAware
    */
-  root: SelectorRoot | null;
+  root?: SelectorRoot;
   /**
    * The stage's position in the BrickPipeline. Used to improve logging and error messages
    * @see BrickPipeline
@@ -190,7 +190,7 @@ type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
    * The rendered args for the brick, which may or may not have been already validated against the inputSchema depending
    * on the static type.
    */
-  args: TArgs;
+  args?: TArgs;
 
   /**
    * The available context (The context used to render the args.)
@@ -201,13 +201,13 @@ type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
    * The previous output
    * @deprecated ignored since v2
    */
-  previousOutput: UnknownObject;
+  previousOutput: unknown;
 
   /**
    * The root for root-aware bricks
    * @see Brick.isRootAware
    */
-  root: SelectorRoot | null;
+  root?: SelectorRoot;
 };
 
 type BlockOutput = {
@@ -261,7 +261,7 @@ function getPipelineLexicalEnvironment({
 }: {
   pipeline: PipelineExpression;
   ctxt: UnknownObject;
-  extraContext: UnknownObject | null;
+  extraContext?: UnknownObject;
 }): UnknownObject {
   if (isPipelineClosureExpression(pipeline)) {
     return {
@@ -300,7 +300,7 @@ async function executeBlockWithValidatedProps(
     // if the previous brick output an array, the array would be passed as the context to the next brick.
     // See the corresponding hack/condition in renderBlockArg
     ctxt:
-      options.explicitArg || isPlainObject(previousOutput)
+      options.explicitArg || isObject(previousOutput)
         ? context
         : previousOutput,
     messageContext: options.logger.context,
@@ -338,11 +338,13 @@ async function executeBlockWithValidatedProps(
 
     case "self": {
       const { runId, extensionId, branches } = options.trace;
+      const ctxt = options;
 
       return block.run(args, {
         platform: getPlatform(),
         ...commonOptions,
         ...options,
+        ctxt: isObject(ctxt) ? ctxt : {},
         meta: {
           extensionId,
           runId,
@@ -488,9 +490,10 @@ async function renderBlockArg(
   }
 
   // Match the override behavior in v1, where the output from previous brick would override anything in the context
-  const ctxt = explicitDataFlow
-    ? state.context
-    : { ...state.context, ...(state.previousOutput as UnknownObject) };
+  const ctxt =
+    explicitDataFlow || !isObject(state.previousOutput)
+      ? state.context
+      : { ...state.context, ...state.previousOutput };
 
   const implicitRender = explicitRender
     ? null
@@ -556,7 +559,7 @@ async function runBlock(
     await throwIfInvalidInput(block, props.args);
   }
 
-  let notification: string;
+  let notification: string | undefined;
 
   if (stage.notifyProgress) {
     notification = showNotification({
@@ -597,7 +600,7 @@ async function runBlock(
       options,
     );
   } finally {
-    if (stage.notifyProgress) {
+    if (stage.notifyProgress && notification) {
       hideNotification(notification);
     }
   }
@@ -649,13 +652,13 @@ export async function blockReducer(
 
   // Match the override behavior in v1, where the output from previous brick would override anything in the context
   const contextWithPreviousOutput =
-    explicitDataFlow || !isPlainObject(previousOutput)
+    explicitDataFlow || !isObject(previousOutput)
       ? context
-      : { ...context, ...(previousOutput as UnknownObject) };
+      : { ...context, ...previousOutput };
 
   const resolvedConfig = await resolveBlockConfig(brickConfig);
 
-  const optionsWithTraceRef = {
+  const optionsWithTraceRef: RunBlockOptions = {
     ...options,
     trace: {
       runId,
@@ -676,7 +679,7 @@ export async function blockReducer(
     options,
   );
 
-  let renderedArgs: RenderedArgs;
+  let renderedArgs: RenderedArgs | undefined;
   let renderError: unknown;
 
   // Only renders the args if we need them
@@ -1017,7 +1020,7 @@ export async function reducePipeline(
 async function reducePipelineExpression(
   pipeline: BrickPipeline,
   context: UnknownObject,
-  root: SelectorRoot | null,
+  root: SelectorRoot | undefined,
   options: ReduceOptions,
 ): Promise<unknown> {
   const { explicitDataFlow, logger: pipelineLogger } = options;

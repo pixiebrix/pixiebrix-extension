@@ -21,6 +21,7 @@ import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { type UUID } from "@/types/stringTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 type ModMetadata = {
   id: string;
@@ -29,7 +30,7 @@ type ModMetadata = {
 
 type RunMetadata = {
   modComponentId: UUID | null;
-  runId: UUID | null;
+  runId: Nullishable<UUID>;
   mod: ModMetadata | null;
   deploymentId: UUID | null;
 };

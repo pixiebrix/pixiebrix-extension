@@ -49,7 +49,6 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import * as sidebarController from "@/contentScript/sidebarController";
 import type { UUID } from "@/types/stringTypes";
 import { PlatformBase } from "@/platform/platformBase";
-import { assertNotNullish } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";

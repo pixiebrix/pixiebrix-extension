@@ -59,7 +59,7 @@ import { $safeFind } from "@/utils/domUtils";
 // Can't use TypeScript's assert return type for promises: https://github.com/microsoft/TypeScript/issues/34636
 export async function throwIfInvalidInput(
   brick: Brick,
-  brickArgs: RenderedArgs,
+  brickArgs?: RenderedArgs,
 ): Promise<void> {
   const validationResult = await validateBrickInputOutput(
     castSchema(brick.inputSchema),
@@ -90,7 +90,7 @@ export async function logIfInvalidOutput(
   brick: Brick,
   output: unknown,
   logger: Logger,
-  { window }: { window: BrickWindow },
+  { window }: { window?: BrickWindow },
 ): Promise<void> {
   if (!isEmpty(brick.outputSchema)) {
     const baseSchema = castSchema(brick.outputSchema);

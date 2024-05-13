@@ -140,7 +140,10 @@ export interface Brick extends Metadata {
    * @param value the rendered input values
    * @param options the runtime options for the brick.
    */
-  run: (value: BrickArgs, options: BrickOptions) => Promise<unknown>;
+  run: (
+    value: BrickArgs | undefined,
+    options: BrickOptions,
+  ) => Promise<unknown>;
 }
 
 /**

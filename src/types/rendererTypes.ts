@@ -17,22 +17,23 @@
 
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { type Except } from "type-fest";
 
 type BaseRendererPayload = {
   /**
    * A unique id for the content, used control re-rendering (similar to `key` in React)
    */
-  key: string;
+  key: Nullishable<string>;
   /**
    * The ModComponent that produced the payload.
    */
-  extensionId: UUID;
+  extensionId: Nullishable<UUID>;
   /**
    * The ModComponent run that produced the payload
    * @since 1.7.0
    */
-  runId: UUID;
+  runId: Nullishable<UUID>;
 };
 
 export type RendererLoadingPayload = Except<BaseRendererPayload, "runId"> & {
