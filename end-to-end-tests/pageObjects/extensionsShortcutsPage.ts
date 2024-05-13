@@ -130,8 +130,7 @@ export class ExtensionsShortcutsPage {
         shortcut,
       );
     } else {
-      const shortcutLabel =
-        /Type a shortcut that will Toggle Quick Bar for PixieBrix/;
+      const shortcutLabel = /type a shortcut that will toggle quick bar/i;
 
       await this.page.getByLabel(shortcutLabel).click();
       await this.page.getByLabel(shortcutLabel).press(`${modifierKey}+m`);
