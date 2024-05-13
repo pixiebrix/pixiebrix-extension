@@ -134,11 +134,6 @@ class ContentScriptPlatform extends PlatformBase {
     integrationConfig: SanitizedIntegrationConfig,
     requestConfig: NetworkRequestConfig,
   ): Promise<RemoteResponse<TData>> => {
-    assertNotNullish(
-      integrationConfig,
-      "expected configured integration for integrationConfig",
-    );
-
     const requestGenerator = async (options: { interactiveLogin: boolean }) =>
       performConfiguredRequestInBackground<TData>(
         integrationConfig,

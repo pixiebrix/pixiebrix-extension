@@ -90,13 +90,9 @@ class ExtensionPagePlatform extends PlatformBase {
   }
 
   override async request<TData>(
-    integrationConfig: Nullishable<SanitizedIntegrationConfig>,
+    integrationConfig: SanitizedIntegrationConfig,
     requestConfig: NetworkRequestConfig,
   ): Promise<RemoteResponse<TData>> {
-    assertNotNullish(
-      integrationConfig,
-      "expected configured integration for integrationConfig",
-    );
     const integration = await integrationRegistry.lookup(
       integrationConfig?.serviceId,
     );
