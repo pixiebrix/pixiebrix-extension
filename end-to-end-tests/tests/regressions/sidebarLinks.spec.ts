@@ -68,7 +68,7 @@ async function clickLinkInSidebarAndWaitForPage(
   return pagePromise;
 }
 
-test("#8206: clicking links doesn't crash browser", async ({
+test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   page,
   context,
   extensionId,
