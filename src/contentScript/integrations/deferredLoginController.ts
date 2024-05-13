@@ -29,7 +29,7 @@ import {
 import integrationRegistry from "@/integrations/registry";
 import { onContextInvalidated } from "webext-events";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import * as messengerApi from "@/contentScript/messenger/api";
+import { showLoginBanner as messengerApiShowLoginBanner } from "@/contentScript/messenger/strict/api";
 import { getTopLevelFrame } from "webext-messenger";
 
 /**
@@ -86,7 +86,7 @@ export async function deferLogin(
   // Safe to call even if we're already in the top-level frame
   const target = await getTopLevelFrame();
   // Await to ensure the banner successfully shows
-  await messengerApi.showLoginBanner(target, config);
+  await messengerApiShowLoginBanner(target, config);
 
   return deferredPromise.promise;
 }
