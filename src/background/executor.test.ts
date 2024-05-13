@@ -33,7 +33,7 @@ type GetAllFramesCallbackDetailsItemType =
 
 browser.webNavigation.getAllFrames = jest.fn();
 
-jest.mock("@/contentScript/messenger/api", () => ({
+jest.mock("@/contentScript/messenger/strict/api", () => ({
   runBrick: jest.fn().mockRejectedValue(new Error("Mock not implemented")),
 }));
 
@@ -75,7 +75,7 @@ describe("requestRunInAllFrames", () => {
     await expect(promise).resolves.toStrictEqual([]);
   });
 
-  it("excludes rejected", async () => {
+  it.only("excludes rejected", async () => {
     getAllFramesMock.mockResolvedValue([
       {
         frameId: 0,

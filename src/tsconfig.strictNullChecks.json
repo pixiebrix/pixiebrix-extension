@@ -85,6 +85,7 @@
     "./background/contextMenus/makeMenuId.ts",
     "./background/contextMenus/uninstallContextMenu.ts",
     "./background/dataStore.ts",
+    "./background/executor.ts",
     "./background/externalProtocol.ts",
     "./background/getBuiltInIntegrationConfigs.ts",
     "./background/initTheme.ts",
