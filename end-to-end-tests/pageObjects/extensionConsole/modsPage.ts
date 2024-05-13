@@ -30,9 +30,10 @@ export class ModsPage {
   }
 
   async goto() {
-    // When loading the mods table a second time, the cached version of the table is shown, but interacting
-    // with the table is inconsistent because once the registry request finishes, the table is re-rendered, and any row dropdowns are closed.
+    // Interacting with the table is inconsistent after loading it because once the registry request finishes,
+    // the table is re-rendered, and any row action dropdowns are closed.
     // To ensure the table is fully loaded, we wait for the registry request to finish before interacting with the table.
+    // TODO: remove once fixed: https://github.com/pixiebrix/pixiebrix-extension/issues/8458
     const registryPromise = this.page
       .context()
       .waitForEvent("requestfinished", (request) =>
