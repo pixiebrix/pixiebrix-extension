@@ -18,6 +18,11 @@ updates:
     assignees:
       - grahamlangford
     groups:
+      patch:
+        patterns:
+          - "*"
+        update-types:
+          - patch
       rjsf:
         patterns:
           - "@rjsf/*"
