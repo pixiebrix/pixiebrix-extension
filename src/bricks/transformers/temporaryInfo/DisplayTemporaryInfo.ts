@@ -104,7 +104,7 @@ class DisplayTemporaryInfo extends TransformerABC {
       logger: {
         context: { extensionId, blueprintId },
       },
-      root,
+      root = document,
       platform,
       runRendererPipeline,
       abortSignal,

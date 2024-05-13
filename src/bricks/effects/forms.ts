@@ -39,7 +39,7 @@ import {
 
 type FindAndSetValueData = RequireExactlyOne<
   {
-    form?: HTMLElement | Document | null;
+    form?: HTMLElement | Document;
     value: unknown;
     selector: string;
     name: string;

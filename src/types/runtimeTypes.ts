@@ -354,7 +354,7 @@ export type BrickOptions<
   /**
    * Implicit root element (or document) for calls the select/read from the DOM
    */
-  root: SelectorRoot | null;
+  root?: SelectorRoot;
 
   /**
    * True if the brick is executing in headless mode.

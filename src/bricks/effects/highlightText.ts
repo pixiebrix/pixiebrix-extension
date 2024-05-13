@@ -139,7 +139,7 @@ class HighlightText extends EffectABC {
       isRegex?: boolean;
       selector?: string;
     }>,
-    { root }: BrickOptions,
+    { root = document }: BrickOptions,
   ): Promise<void> {
     // Don't make replacements outside the `body`, like in `title`
     const { body } = root.ownerDocument ?? (root as Document);

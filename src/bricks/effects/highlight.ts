@@ -130,7 +130,7 @@ export class HighlightEffect extends EffectABC {
       rootSelector: string | undefined;
       elements: ColorRule[];
     }>,
-    { root }: BrickOptions,
+    { root = document.body }: BrickOptions,
   ): Promise<void> {
     if (condition !== undefined && !boolean(condition)) {
       return;

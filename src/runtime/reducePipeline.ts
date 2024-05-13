@@ -148,7 +148,7 @@ export type InitialValues = {
    * The document root for root-aware bricks, including readers
    * @see Brick.isRootAware
    */
-  root: SelectorRoot | null;
+  root?: SelectorRoot;
 };
 
 export type IntermediateState = {
