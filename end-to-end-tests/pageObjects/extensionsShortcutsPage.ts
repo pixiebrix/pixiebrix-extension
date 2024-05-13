@@ -131,13 +131,16 @@ export class ExtensionsShortcutsPage {
       );
     } else {
       const shortcutLabel = /type a shortcut that will toggle quick bar/i;
+      const input = this.page.getByLabel(shortcutLabel);
 
-      await this.page.getByLabel(shortcutLabel).click();
-      await this.page.getByLabel(shortcutLabel).press(`${modifierKey}+m`);
+      await expect(input).toBeEmpty();
+
+      await input.click();
+      await input.press(`${modifierKey}+m`);
 
       await this.page.getByText("Keyboard ShortcutsPixieBrix").click();
 
-      await expect(this.page.getByLabel(shortcutLabel)).toHaveValue(shortcut);
+      await expect(input).toHaveValue(shortcut);
     }
   }
 }
