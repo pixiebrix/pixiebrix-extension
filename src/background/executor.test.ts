@@ -75,7 +75,7 @@ describe("requestRunInAllFrames", () => {
     await expect(promise).resolves.toStrictEqual([]);
   });
 
-  it.only("excludes rejected", async () => {
+  it("excludes rejected", async () => {
     getAllFramesMock.mockResolvedValue([
       {
         frameId: 0,
