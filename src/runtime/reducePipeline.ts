@@ -300,7 +300,7 @@ async function executeBlockWithValidatedProps(
     // if the previous brick output an array, the array would be passed as the context to the next brick.
     // See the corresponding hack/condition in renderBlockArg
     ctxt:
-      options.explicitArg || isObject(previousOutput)
+      options.explicitArg || !isObject(previousOutput)
         ? context
         : previousOutput,
     messageContext: options.logger.context,
@@ -338,13 +338,11 @@ async function executeBlockWithValidatedProps(
 
     case "self": {
       const { runId, extensionId, branches } = options.trace;
-      const ctxt = options;
 
       return block.run(args, {
         platform: getPlatform(),
         ...commonOptions,
         ...options,
-        ctxt: isObject(ctxt) ? ctxt : {},
         meta: {
           extensionId,
           runId,
