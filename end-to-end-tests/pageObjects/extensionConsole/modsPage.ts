@@ -30,13 +30,28 @@ export class ModsPage {
   }
 
   async goto() {
+    // When loading the mods table a second time, the cached version of the table is shown, but interacting
+    // with the table is inconsistent because once the registry request finishes, the table is re-rendered, and any row dropdowns are closed.
+    // To ensure the table is fully loaded, we wait for the registry request to finish before interacting with the table.
+    const registryPromise = this.page
+      .context()
+      .waitForEvent("requestfinished", (request) => {
+        return request.url().includes("/api/registry/bricks/");
+      });
     await this.page.goto(this.extensionConsoleUrl);
     await expect(this.page.getByText("Extension Console")).toBeVisible();
+    await registryPromise;
+
+    // Check that the page is stable, and that the content has finished loading
     const activeModsHeading = this.page.getByRole("heading", {
       name: "Active Mods",
     });
-    // `activeModsHeading` may be initially be detached and hidden, so toBeVisible() would immediately fail
     await ensureVisibility(activeModsHeading, { timeout: 10_000 });
+    const modTableItems = this.modTableItems();
+    const contentLoadedLocator = this.page
+      .getByText("Welcome to PixieBrix!")
+      .or(modTableItems.nth(0));
+    await expect(contentLoadedLocator).toBeVisible();
   }
 
   async viewAllMods() {
@@ -61,43 +76,38 @@ export class ModsPage {
    * @param modName the name of the standalone mod to delete (must be a standalone mod, not a packaged mod)
    */
   async deleteModByName(modName: string) {
+    await this.page.bringToFront();
     await this.searchModsInput().fill(modName);
+    await expect(this.page.getByText(`results for "${modName}`)).toBeVisible();
     const modToDelete = this.page.locator(".list-group-item", {
       hasText: modName,
     });
     await expect(modToDelete).toBeVisible();
 
-    // There is a race condition in the Page Editor where the action dropdown menu will disappear when
-    // certain network requests resolve, so we need to add handling to retry clicking the dropdown menu if it
-    // disappears.
-    await expect(async () => {
-      await modToDelete.locator(".dropdown").click();
-      const deactivateOption = modToDelete.getByRole("button", {
-        name: "Deactivate",
-      });
-      if (await deactivateOption.isVisible()) {
-        await deactivateOption.click({
-          timeout: 500,
-        });
-      }
+    // Open the dropdown action menu for the specified mod in the table
+    await modToDelete.locator(".dropdown").click();
 
-      await modToDelete.locator(".dropdown").click();
-      const deleteOption = modToDelete.getByRole("button", { name: "Delete" });
-      await expect(deleteOption).toBeVisible({
-        timeout: 500,
+    // Conditionally deactivate the mod
+    const deactivateOption = modToDelete.getByRole("button", {
+      name: "Deactivate",
+    });
+    if (await deactivateOption.isVisible()) {
+      await deactivateOption.click({
+        timeout: 3000,
       });
-    }).toPass({
-      timeout: 5000,
+      await expect(
+        this.page.getByText(`Deactivated mod: ${modName}`),
+      ).toBeVisible();
+      // Re-open the dropdown action menu to stay in the same state
+      await modToDelete.locator(".dropdown").click();
+    }
+
+    // Click the delete button in the dropdown action menu
+    await modToDelete.getByRole("button", { name: "Delete" }).click({
+      timeout: 3000,
     });
 
-    await expect(async () => {
-      await modToDelete.locator(".dropdown").click();
-      await this.page.getByRole("button", { name: "Delete" }).click({
-        timeout: 500,
-      });
-    }).toPass({
-      timeout: 2000,
-    });
+    // Click the delete button in the delete confirmation modal
     await this.page.getByRole("button", { name: "Delete" }).click();
     await expect(
       this.page.getByText(`Deleted mod ${modName} from your account`),
