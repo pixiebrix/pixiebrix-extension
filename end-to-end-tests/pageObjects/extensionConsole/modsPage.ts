@@ -134,6 +134,16 @@ export class ActivateModPage {
     return this.page.getByRole("button", { name: "Activate" });
   }
 
+  configureQuickbarShortcutLink() {
+    return this.page.getByRole("link", { name: "configured your Quick Bar" });
+  }
+
+  keyboardShortcutDocumentationLink() {
+    return this.page.getByRole("link", {
+      name: "configuring keyboard shortcuts",
+    });
+  }
+
   /** Successfully activating the mod will navigate to the "All Mods" page. */
   async clickActivateAndWaitForModsPageRedirect() {
     await this.activateButton().click();
