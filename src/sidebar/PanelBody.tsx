@@ -51,14 +51,14 @@ import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
 import { getPlatform } from "@/platform/platformContext";
 
 type BodyProps = {
-  blockId: RegistryId;
-  body: RendererOutput;
-  meta: PanelRunMeta;
+  blockId?: RegistryId;
+  body?: RendererOutput;
+  meta?: PanelRunMeta;
 };
 
 const BodyContainer: React.FC<
   // In the future, may want to support providing isFetching to show a loading indicator/badge over the previous content
-  BodyProps & { onAction: (action: SubmitPanelAction) => void }
+  BodyProps & { onAction?: (action: SubmitPanelAction) => void }
 > = ({ blockId, body, onAction, meta }) => (
   // Use a shadow dom to prevent the webpage styles from affecting the sidebar
   <EmotionShadowRoot className="full-height" data-testid={blockId}>
@@ -130,7 +130,7 @@ const slice = createSlice({
 
 const PanelBody: React.FunctionComponent<{
   isRootPanel?: boolean;
-  payload: PanelPayload;
+  payload: PanelPayload | null;
   /**
    * The current path to the panel inside a document builder tree. Used for distinguishing traces from
    * branches with the same name, but different locations in the rendered tree.
@@ -138,7 +138,7 @@ const PanelBody: React.FunctionComponent<{
    */
   tracePath?: DynamicPath;
   context: PanelContext;
-  onAction: (action: SubmitPanelAction) => void;
+  onAction?: (action: SubmitPanelAction) => void;
 }> = ({ payload, context, isRootPanel = false, onAction, tracePath }) => {
   const [state, dispatch] = useReducer(slice.reducer, INITIAL_PANEL_STATE);
 
@@ -189,8 +189,7 @@ const PanelBody: React.FunctionComponent<{
 
         const body = await block.run(unsafeAssumeValidArg(args), {
           platform,
-          ctxt: brickArgsContext,
-          root: null,
+          ctxt: brickArgsContext as UnknownObject,
           meta: {
             runId,
             extensionId,

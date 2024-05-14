@@ -74,7 +74,11 @@ export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
 
   const componentDefinition = getComponentDefinition(root, tracePath);
 
-  if (root.children?.length > 0) {
+  if (
+    root.children?.length &&
+    root.children.length > 0 &&
+    componentDefinition.props
+  ) {
     componentDefinition.props.children = root.children.map((child, index) => {
       const branch = buildDocumentBranch(child, {
         staticId: joinPathParts(staticId, root.type, "children"),
@@ -98,7 +102,7 @@ export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
 export function getComponentDefinition(
   element: DocumentElement,
   tracePath: DynamicPath,
-): DocumentComponent | null {
+): DocumentComponent {
   const componentType = element.type;
   // Destructure hidden from config, so we don't spread it onto components
   const { hidden, ...config } = get(element, "config", {} as UnknownObject);

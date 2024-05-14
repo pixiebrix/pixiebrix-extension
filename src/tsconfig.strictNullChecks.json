@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./contentScript/pageEditor/dynamic/runStarterBrickReader.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/envSetup.ts",
@@ -463,6 +464,7 @@
     "./contentScript/performanceMonitoring.ts",
     "./contentScript/pipelineProtocol/runHeadlessPipeline.ts",
     "./contentScript/pipelineProtocol/runMapArgs.ts",
+    "./contentScript/pipelineProtocol/runRendererPipeline.ts",
     "./contentScript/pipelineProtocol/types.ts",
     "./contentScript/popoverDom.ts",
     "./contentScript/ready.ts",

@@ -73,3 +73,6 @@ export const showLoginBanner = getMethod("SHOW_LOGIN_BANNER");
 export const runBlock = getMethod("RUN_SINGLE_BLOCK");
 export const runBrick = getMethod("RUN_BRICK");
 export const runHeadlessPipeline = getMethod("RUN_HEADLESS_PIPELINE");
+export const runRendererBlock = getMethod("RUN_RENDERER_BLOCK");
+export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
+export const runExtensionPointReader = getMethod("RUN_EXTENSION_POINT_READER");

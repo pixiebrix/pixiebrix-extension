@@ -61,6 +61,9 @@ import { showBannerFromConfig } from "@/contentScript/integrations/deferredLogin
 import { runBlockPreview } from "@/contentScript/pageEditor/runBlockPreview";
 import { runBrick } from "@/contentScript/executor";
 import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadlessPipeline";
+import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock";
+import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline";
+import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader";
 
 declare global {
   interface MessengerMethods {
@@ -103,6 +106,9 @@ declare global {
     RUN_SINGLE_BLOCK: typeof runBlockPreview;
     RUN_BRICK: typeof runBrick;
     RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
+    RUN_RENDERER_BLOCK: typeof runRendererBlock;
+    RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
+    RUN_EXTENSION_POINT_READER: typeof runStarterBrickReader;
   }
 }
 export default function registerMessenger(): void {
@@ -146,5 +152,8 @@ export default function registerMessenger(): void {
     RUN_SINGLE_BLOCK: runBlockPreview,
     RUN_BRICK: runBrick,
     RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
+    RUN_RENDERER_BLOCK: runRendererBlock,
+    RUN_RENDERER_PIPELINE: runRendererPipeline,
+    RUN_EXTENSION_POINT_READER: runStarterBrickReader,
   });
 }

@@ -31,13 +31,10 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 196 strictNullCheck errors
+} from "@/contentScript/lifecycle";
 import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements"; // Depends on contentScript/lifecycle to pass strictNullCheck
-import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader"; // Depends on contentScript/messenger to pass strictNullCheck
 import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateDynamicElement"; // Depends on contentScript/lifecycle to pass strictNullCheck
 import { resetTab } from "@/contentScript/pageEditor/resetTab"; // Depends on contentScript/lifecycle to pass strictNullCheck
-import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock"; // Depends on background/messenger
-import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline"; // Depends on background/messenger
 
 expectContext("contentScript");
 
@@ -49,16 +46,11 @@ declare global {
     RESET_TAB: typeof resetTab;
     ACTIVATE_PRERENDERED_TAB: typeof activatePrerenderedTab;
 
-    RUN_RENDERER_BLOCK: typeof runRendererBlock;
-
     CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
     UPDATE_DYNAMIC_ELEMENT: typeof updateDynamicElement;
-    RUN_EXTENSION_POINT_READER: typeof runStarterBrickReader;
 
     INSTALLED_EXTENSION_POINTS: typeof getActiveExtensionPoints;
     ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
-
-    RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
   }
 }
 
@@ -70,15 +62,10 @@ export default function registerMessenger(): void {
     RESET_TAB: resetTab,
     ACTIVATE_PRERENDERED_TAB: activatePrerenderedTab,
 
-    RUN_RENDERER_BLOCK: runRendererBlock,
-
     CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
     UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
-    RUN_EXTENSION_POINT_READER: runStarterBrickReader,
 
     INSTALLED_EXTENSION_POINTS: getActiveExtensionPoints,
     ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
-
-    RUN_RENDERER_PIPELINE: runRendererPipeline,
   });
 }

@@ -19,7 +19,7 @@ import React, { useContext } from "react";
 import { type BrickPipeline } from "@/bricks/types";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
-import { runRendererPipeline } from "@/contentScript/messenger/api";
+import { runRendererPipeline } from "@/contentScript/messenger/strict/api";
 import { uuidv4 } from "@/types/helpers";
 import PanelBody from "@/sidebar/PanelBody";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
@@ -100,7 +100,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   return (
     <PanelBody
       context={panelContext}
-      payload={payload}
+      payload={payload ?? null}
       tracePath={tracePath}
       onAction={onAction}
     />

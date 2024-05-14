@@ -89,6 +89,7 @@ import {
   type MenuItemDefinition,
   type MenuTargetMode,
 } from "@/starterBricks/menuItem/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DATA_ATTR = "data-pb-uuid";
 
@@ -532,6 +533,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     }
 
     const renderMustache = engineRenderer("mustache", versionOptions);
+    assertNotNullish(renderMustache, "Failed to find mustache renderer");
 
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
@@ -560,7 +562,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     const $menuItem = this.makeItem(html, extension);
 
     $menuItem.on("click", async (event) => {
-      let runningElements: WeakSet<HTMLElement> =
+      let runningElements: WeakSet<HTMLElement> | undefined =
         this.runningExtensionElements.get(extension.id);
       if (runningElements == null) {
         runningElements = new WeakSet([event.target]);

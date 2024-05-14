@@ -97,7 +97,7 @@ const groupRegistrationErrorNotification = (platform: PlatformProtocol) =>
 /**
  * The element the user right-clicked on to trigger the context menu
  */
-let clickedElement: HTMLElement = null;
+let clickedElement: HTMLElement | null = null;
 
 function setActiveElement(event: MouseEvent): void {
   // This method can't throw, otherwise I think it breaks event dispatching because we're passing
