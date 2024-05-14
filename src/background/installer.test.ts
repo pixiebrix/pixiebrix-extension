@@ -19,6 +19,8 @@ import {
   requirePartnerAuth,
   openInstallPage,
   showInstallPage,
+  getAvailableVersion,
+  setAvailableVersion,
 } from "@/background/installer";
 import * as auth from "@/auth/authStorage";
 import { locator } from "@/background/locator";
@@ -258,4 +260,18 @@ describe("handleInstall", () => {
       expect(createTabMock).not.toHaveBeenCalled();
     },
   );
+});
+
+describe("getAvailableVersion", () => {
+  test("returns the set version", () => {
+    setAvailableVersion({ version: "1.2.3" });
+
+    expect(getAvailableVersion()).toBe("1.2.3");
+  });
+
+  test("returns the version coerced to a semver string", () => {
+    setAvailableVersion({ version: "1.2.3.4000" });
+
+    expect(getAvailableVersion()).toBe("1.2.3");
+  });
 });
