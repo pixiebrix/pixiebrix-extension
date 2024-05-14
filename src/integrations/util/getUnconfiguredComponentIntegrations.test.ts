@@ -98,7 +98,7 @@ describe("getUnconfiguredComponentIntegrations", () => {
     const modComponentDefinition2 = modComponentDefinitionFactory({
       services: {
         properties: {
-          // Same output key as above for service1
+          // Same outputKey as above for service1
           service1: {
             $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
           },
