@@ -274,4 +274,11 @@ describe("getAvailableVersion", () => {
 
     expect(getAvailableVersion()).toBe("1.2.3");
   });
+
+  test("returns null if no version set", () => {
+    // Override type to allow for testing null _availableVersion
+    setAvailableVersion({ version: null as unknown as string });
+
+    expect(getAvailableVersion()).toBeNull();
+  });
 });

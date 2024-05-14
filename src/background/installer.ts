@@ -43,6 +43,7 @@ import {
 import { oncePerSession } from "@/mv3/SessionStorage";
 import { resetFeatureFlagsCache } from "@/auth/featureFlagStorage";
 import { normalizeSemVerString } from "@/types/helpers";
+import { type SemVerString } from "@/types/registryTypes";
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
@@ -306,7 +307,11 @@ export function setAvailableVersion({
   _availableVersion = version;
 }
 
-export function getAvailableVersion(): typeof _availableVersion {
+export function getAvailableVersion(): SemVerString | null {
+  if (!_availableVersion) {
+    return null;
+  }
+
   return normalizeSemVerString(_availableVersion, { coerce: true });
 }
 
