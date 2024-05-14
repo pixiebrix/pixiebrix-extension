@@ -234,3 +234,19 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
     await expect(firstTab.getByText("Quick Bar Action ran")).toBeVisible();
   });
 });
+
+test("activating a mod via url", async ({ page, extensionId }) => {
+  const modId = "@e2e-testing/show-alert";
+  const activationLink =
+    "https://app.pixiebrix.com/activate?id=%40e2e-testing%2Fshow-alert";
+
+  await page.goto(activationLink);
+
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
+  await page.goto("/");
+
+  await runModViaQuickBar(page, "Show Alert");
+  await expect(page.getByText("Quick Bar Action ran")).toBeVisible();
+});
