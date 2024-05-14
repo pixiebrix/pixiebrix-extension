@@ -214,7 +214,6 @@ type OSName = "Windows" | "MacOS" | "Unix" | "Linux" | "Unknown";
 // See: https://github.com/microsoft/playwright/pull/30572
 export async function getBrowserOs(page: Page): Promise<OSName> {
   let OSName: OSName = "Unknown";
-  let OSName = "";
 
   const response = String(await page.evaluate(() => navigator.userAgent));
 
