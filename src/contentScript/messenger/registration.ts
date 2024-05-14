@@ -33,7 +33,6 @@ import {
   removePersistedExtension,
 } from "@/contentScript/lifecycle"; // 196 strictNullCheck errors
 import { runBrick } from "@/contentScript/executor"; // Depends on background/messenger to pass strictNullCheck
-import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Depends on background/messenger to pass strictNullCheck
 import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements"; // Depends on contentScript/lifecycle to pass strictNullCheck
 import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader"; // Depends on contentScript/messenger to pass strictNullCheck
 import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateDynamicElement"; // Depends on contentScript/lifecycle to pass strictNullCheck
@@ -67,8 +66,6 @@ declare global {
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
-
-    SHOW_LOGIN_BANNER: typeof showBannerFromConfig;
   }
 }
 
@@ -94,7 +91,5 @@ export default function registerMessenger(): void {
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,
     RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
-
-    SHOW_LOGIN_BANNER: showBannerFromConfig,
   });
 }

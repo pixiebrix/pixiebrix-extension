@@ -54,8 +54,6 @@ test("can activate a mod with built-in integration", async ({
 }) => {
   test.skip(MV === "2", "Service worker request mocking only available in MV3");
 
-  const modId = "@pixies/giphy/giphy-search";
-
   let giphyRequestPostData: Serializable;
   // The giphy search request is proxied through the PixieBrix server, which is kicked off in the background/service
   // worker. Playwright experimentally supports mocking service worker requests, see
@@ -74,6 +72,7 @@ test("can activate a mod with built-in integration", async ({
     return route.continue();
   });
 
+  const modId = "@pixies/giphy/giphy-search";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();
 

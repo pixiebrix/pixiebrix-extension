@@ -185,6 +185,7 @@ module.exports = {
               "CallExpression[callee.property.name='toPass'][arguments.length=0]",
           },
         ],
+        "local-rules/preferUsingStepsForLongTests": "error",
       },
     },
     {
