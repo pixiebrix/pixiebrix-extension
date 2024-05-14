@@ -16,7 +16,13 @@
  */
 
 import type AxeBuilder from "@axe-core/playwright";
-import { type Locator, expect, type Page, type Frame } from "@playwright/test";
+import {
+  type Locator,
+  expect,
+  type Page,
+  type Frame,
+  type BrowserContext,
+} from "@playwright/test";
 import { MV } from "./env";
 
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
@@ -71,8 +77,10 @@ export async function ensureVisibility(
 export async function runModViaQuickBar(page: Page, modName: string) {
   await waitForQuickBarReadiness(page);
   await page.locator("html").focus(); // Ensure the page is focused before running the keyboard shortcut
-  await page.keyboard.press("Meta+M"); // MacOS
-  await page.keyboard.press("Control+M"); // Windows and Linux
+
+  const modifierKey = await getModifierKey(page);
+  await page.keyboard.press(`${modifierKey}+M`);
+
   // Short delay to allow the quickbar to finish opening
   // eslint-disable-next-line playwright/no-wait-for-timeout -- TODO: Find a better way to detect when the quickbar is done loading opening
   await page.waitForTimeout(500);
@@ -183,9 +191,30 @@ export async function conditionallyHoverOverMV2Sidebar(page: Page) {
   }
 }
 
+/**
+ * Returns a reference to the new page that was opened.
+ * @param locator The anchor or button that opens the new page (must be clickable)
+ * @param context The browser context
+ */
+export async function clickAndWaitForNewPage(
+  locator: Locator,
+  context: BrowserContext,
+): Promise<Page> {
+  const pagePromise = context.waitForEvent("page");
+
+  await locator.click();
+
+  return pagePromise;
+}
+
 type OSName = "Windows" | "MacOS" | "Unix" | "Linux" | "Unknown";
+
+// Temporary workaround for determining which modifiers to use for keyboard shortcuts
+// A permanent fix has been merged but not released
+// See: https://github.com/microsoft/playwright/pull/30572
 export async function getBrowserOs(page: Page): Promise<OSName> {
   let OSName: OSName = "Unknown";
+  let OSName = "";
 
   const response = String(await page.evaluate(() => navigator.userAgent));
 
@@ -206,4 +235,14 @@ export async function getBrowserOs(page: Page): Promise<OSName> {
   }
 
   return OSName;
+}
+
+export async function getModifierKey(page: Page): Promise<string> {
+  const OSName = await getBrowserOs(page);
+  return OSName === "MacOS" ? "Meta" : "Control";
+}
+
+export async function getModifierSymbol(page: Page): Promise<string> {
+  const OSName = await getBrowserOs(page);
+  return OSName === "MacOS" ? "⌘" : "⌃";
 }

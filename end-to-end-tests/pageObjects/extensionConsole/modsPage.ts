@@ -30,14 +30,15 @@ export class ModsPage {
   }
 
   async goto() {
-    // When loading the mods table a second time, the cached version of the table is shown, but interacting
-    // with the table is inconsistent because once the registry request finishes, the table is re-rendered, and any row dropdowns are closed.
+    // Interacting with the table is inconsistent after loading it because once the registry request finishes,
+    // the table is re-rendered, and any row action dropdowns are closed.
     // To ensure the table is fully loaded, we wait for the registry request to finish before interacting with the table.
+    // TODO: remove once fixed: https://github.com/pixiebrix/pixiebrix-extension/issues/8458
     const registryPromise = this.page
       .context()
-      .waitForEvent("requestfinished", (request) => {
-        return request.url().includes("/api/registry/bricks/");
-      });
+      .waitForEvent("requestfinished", (request) =>
+        request.url().includes("/api/registry/bricks/"),
+      );
     await this.page.goto(this.extensionConsoleUrl);
     await expect(this.page.getByText("Extension Console")).toBeVisible();
     await registryPromise;
@@ -142,6 +143,16 @@ export class ActivateModPage {
 
   activateButton() {
     return this.page.getByRole("button", { name: "Activate" });
+  }
+
+  configureQuickbarShortcutLink() {
+    return this.page.getByRole("link", { name: "configured your Quick Bar" });
+  }
+
+  keyboardShortcutDocumentationLink() {
+    return this.page.getByRole("link", {
+      name: "configuring keyboard shortcuts",
+    });
   }
 
   /** Successfully activating the mod will navigate to the "All Mods" page. */

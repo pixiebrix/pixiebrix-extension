@@ -19,11 +19,17 @@ import { test, expect } from "../fixtures/extensionBase";
 import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base, type Frame } from "@playwright/test";
-import { getSidebarPage, runModViaQuickBar } from "../utils";
+import {
+  getSidebarPage,
+  clickAndWaitForNewPage,
+  runModViaQuickBar,
+  getBrowserOs,
+} from "../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
 import { MV } from "../env";
+import { ExtensionsShortcutsPage } from "end-to-end-tests/pageObjects/extensionsShortcutsPage";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -162,4 +168,69 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
   sideBarPage = await reloadSidebar(page, sideBarPage, extensionId);
 
   await expect(sideBarPage.getByTestId("card").getByText(note)).toBeHidden();
+});
+
+test("activating a mod when the quickbar shortcut is not configured", async ({
+  context,
+  page: firstTab,
+  extensionId,
+  chromiumChannel,
+}) => {
+  const shortcutsPage = new ExtensionsShortcutsPage(firstTab, chromiumChannel);
+  await shortcutsPage.goto();
+
+  await test.step("Clear the quickbar shortcut before activing a quickbar mod", async () => {
+    const os = await getBrowserOs(firstTab);
+    // See https://github.com/pixiebrix/pixiebrix-extension/issues/6268
+    // eslint-disable-next-line playwright/no-conditional-in-test -- Existing bug where shortcut isn't set on Edge in Windows/Linux
+    if (os === "MacOS" || chromiumChannel === "chrome") {
+      await shortcutsPage.clearQuickbarShortcut();
+    }
+  });
+
+  let modActivationPage: ActivateModPage;
+  const secondTab = await context.newPage();
+  await test.step("Begin activation of a mod with a quickbar shortcut", async () => {
+    const modId = "@e2e-testing/show-alert";
+    modActivationPage = new ActivateModPage(secondTab, extensionId, modId);
+    await modActivationPage.goto();
+  });
+
+  await test.step("Verify the mod activation page has links for setting the shortcut", async () => {
+    await expect(
+      modActivationPage.keyboardShortcutDocumentationLink(),
+    ).toBeVisible();
+    await modActivationPage.keyboardShortcutDocumentationLink().click();
+
+    await expect(
+      secondTab.getByRole("heading", { name: "Changing the Quick Bar" }),
+    ).toBeVisible();
+    await secondTab.goBack();
+
+    await expect(
+      modActivationPage.configureQuickbarShortcutLink(),
+    ).toBeVisible();
+
+    const configureShortcutPage = await clickAndWaitForNewPage(
+      modActivationPage.configureQuickbarShortcutLink(),
+      context,
+    );
+
+    await expect(configureShortcutPage).toHaveURL(shortcutsPage.getPageUrl());
+    await configureShortcutPage.close();
+  });
+
+  await test.step("Restore the shortcut and activate the mod", async () => {
+    await shortcutsPage.setQuickbarShortcut();
+
+    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+  });
+
+  await test.step("Verify the mod is activated and works as expected", async () => {
+    await firstTab.bringToFront();
+    await firstTab.goto("/");
+
+    await runModViaQuickBar(firstTab, "Show Alert");
+    await expect(firstTab.getByText("Quick Bar Action ran")).toBeVisible();
+  });
 });
