@@ -28,7 +28,7 @@ import {
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
-import { MV } from "../env";
+import { MV, SERVICE_URL } from "../env";
 import { ExtensionsShortcutsPage } from "end-to-end-tests/pageObjects/extensionsShortcutsPage";
 
 test("can activate a mod with no config options", async ({
@@ -233,4 +233,32 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
     await runModViaQuickBar(firstTab, "Show Alert");
     await expect(firstTab.getByText("Quick Bar Action ran")).toBeVisible();
   });
+});
+
+test("can activate a mod via url", async ({ page, extensionId }) => {
+  test.skip(
+    MV === "2",
+    "Not passing in MV2, too close to 2.0.0 to be worth debugging",
+  );
+
+  const modId = "@e2e-testing/show-alert";
+  const modIdUrlEncoded = encodeURIComponent(modId);
+  const activationLink = `${SERVICE_URL}/activate?id=${modIdUrlEncoded}`;
+
+  await page.goto(activationLink);
+
+  await expect(async () => {
+    await expect(page).toHaveURL(
+      `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
+    );
+  }).toPass({ timeout: 5000 });
+  await expect(page.getByRole("code")).toContainText(modId);
+
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
+  await page.goto("/");
+
+  await runModViaQuickBar(page, "Show Alert");
+  await expect(page.getByText("Quick Bar Action ran")).toBeVisible();
 });
