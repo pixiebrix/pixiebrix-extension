@@ -65,6 +65,12 @@ export class PageEditorPage {
     await this.page.bringToFront();
   }
 
+  async waitForReduxUpdate() {
+    // See EditorPane.tsx:REDUX_SYNC_WAIT_MILLIS
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- Wait for Redux to update
+    await this.page.waitForTimeout(500);
+  }
+
   getPage() {
     return this.page;
   }

@@ -19,11 +19,13 @@ import { expect, test } from "../fixtures/extensionBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
+import { clickAndWaitForNewPage } from "end-to-end-tests/utils";
 
 test("create, run, package, and update mod", async ({
   page,
   extensionId,
   newPageEditorPage,
+  context,
 }) => {
   await page.goto("/create-react-app/table");
   const pageEditorPage = await newPageEditorPage(page.url());
@@ -34,6 +36,9 @@ test("create, run, package, and update mod", async ({
     await page.getByRole("button", { name: "Action #3" }).click();
 
     await pageEditorPage.bringToFront();
+
+    await pageEditorPageRef.getByLabel("Button text").click();
+    await pageEditorPageRef.getByLabel("Button text").fill("Search Youtube");
   });
 
   await test.step("Add the Extract from Page brick and configure it", async () => {
@@ -48,7 +53,6 @@ test("create, run, package, and update mod", async ({
     ).toHaveValue("searchText");
 
     await pageEditorPageRef.getByLabel("Select element").focus();
-    await page.pause();
     await pageEditorPageRef.getByLabel("Select element").click();
 
     await page.bringToFront();
@@ -59,6 +63,8 @@ test("create, run, package, and update mod", async ({
     await expect(
       pageEditorPageRef.getByPlaceholder("Select an element"),
     ).toHaveValue("#root h1");
+
+    await pageEditorPage.waitForReduxUpdate();
   });
 
   await test.step("Add the YouTube search brick and configure it", async () => {
@@ -69,10 +75,26 @@ test("create, run, package, and update mod", async ({
     await pageEditorPageRef.getByLabel("Query").click();
     await pageEditorPageRef
       .getByLabel("Query")
-      .fill("{{ @data.searchText}} + Finance");
+      .fill("{{ @data.searchText}} + Foo");
 
-    await page.pause();
+    await pageEditorPage.waitForReduxUpdate();
   });
+
+  await test.step("Save the mod", async () => {
+    // TODO
+  });
+
+  await test.step("Run the mod", async () => {
+    const youtubePage = await clickAndWaitForNewPage(
+      page.getByRole("button", { name: "Search Youtube" }),
+      context,
+    );
+    await expect(youtubePage).toHaveURL(
+      "https://www.youtube.com/results?search_query=Transaction+Table+%2B+Foo",
+    );
+  });
+
+  expect(true).toBeFalsy();
 
   const modsPage = new ModsPage(page, extensionId);
   await modsPage.goto();
