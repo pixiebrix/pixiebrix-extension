@@ -205,8 +205,6 @@ jobs:
             PUBLIC_NAME: "-mv3"
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.44.0-jammy
     env:
       SHADOW_DOM: open
       SERVICE_URL: https://app.pixiebrix.com
