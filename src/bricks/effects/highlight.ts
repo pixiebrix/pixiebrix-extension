@@ -130,7 +130,9 @@ export class HighlightEffect extends EffectABC {
       rootSelector: string | undefined;
       elements: ColorRule[];
     }>,
-    { root }: BrickOptions,
+    // Default to document.body for uniformity with the ternary below
+    // If you don't include the body, we were running into issues where certain bricks mutated head elements, eg the title
+    { root = document.body }: BrickOptions,
   ): Promise<void> {
     if (condition !== undefined && !boolean(condition)) {
       return;

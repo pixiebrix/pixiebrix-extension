@@ -17,7 +17,10 @@
 
 import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
-import { requestRun } from "@/background/messenger/api";
+import {
+  requestRun,
+  sendDeploymentAlert,
+} from "@/background/messenger/strict/api";
 import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/bricks/errors";
@@ -69,11 +72,15 @@ import {
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { isObject } from "@/utils/objectUtils";
-import type { RegistryId, RegistryProtocol } from "@/types/registryTypes";
+import type {
+  RegistryId,
+  RegistryProtocol,
+  SemVerString,
+} from "@/types/registryTypes";
 import type { Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 import { getPlatform } from "@/platform/platformContext";
-import { sendDeploymentAlert } from "@/background/messenger/strict/api";
+import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -135,17 +142,17 @@ export type InitialValues = {
    * Option values provided by the user during activation of an extension
    * @see ModComponentBase.optionsArgs
    */
-  optionsArgs: OptionsArgs;
+  optionsArgs?: OptionsArgs;
   /**
    * Service credentials provided by the user during activation of an extension
    * @see ModComponentBase.services
    */
-  serviceContext: IntegrationsContext;
+  serviceContext?: IntegrationsContext;
   /**
    * The document root for root-aware bricks, including readers
    * @see Brick.isRootAware
    */
-  root: SelectorRoot | null;
+  root?: SelectorRoot;
 };
 
 export type IntermediateState = {
@@ -165,7 +172,7 @@ export type IntermediateState = {
    * The document root for root-aware bricks
    * @see Brick.isRootAware
    */
-  root: SelectorRoot | null;
+  root?: SelectorRoot;
   /**
    * The stage's position in the BrickPipeline. Used to improve logging and error messages
    * @see BrickPipeline
@@ -187,7 +194,7 @@ type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
    * The rendered args for the brick, which may or may not have been already validated against the inputSchema depending
    * on the static type.
    */
-  args: TArgs;
+  args?: TArgs;
 
   /**
    * The available context (The context used to render the args.)
@@ -204,7 +211,7 @@ type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
    * The root for root-aware bricks
    * @see Brick.isRootAware
    */
-  root: SelectorRoot | null;
+  root?: SelectorRoot;
 };
 
 type BlockOutput = {
@@ -235,7 +242,7 @@ interface TraceMetadata extends RunMetadata {
    *
    * @see BrickConfig.instanceId
    */
-  blockInstanceId: UUID | null;
+  blockInstanceId: Nullishable<UUID>;
 }
 
 type RunBlockOptions = CommonOptions & {
@@ -258,7 +265,7 @@ function getPipelineLexicalEnvironment({
 }: {
   pipeline: PipelineExpression;
   ctxt: UnknownObject;
-  extraContext: UnknownObject | null;
+  extraContext?: UnknownObject;
 }): UnknownObject {
   if (isPipelineClosureExpression(pipeline)) {
     return {
@@ -299,7 +306,7 @@ async function executeBlockWithValidatedProps(
     ctxt:
       options.explicitArg || isPlainObject(previousOutput)
         ? context
-        : previousOutput,
+        : (previousOutput as UnknownObject),
     messageContext: options.logger.context,
   };
 
@@ -485,9 +492,10 @@ async function renderBlockArg(
   }
 
   // Match the override behavior in v1, where the output from previous brick would override anything in the context
-  const ctxt = explicitDataFlow
-    ? state.context
-    : { ...state.context, ...(state.previousOutput as UnknownObject) };
+  const ctxt =
+    explicitDataFlow || !isObject(state.previousOutput)
+      ? state.context
+      : { ...state.context, ...state.previousOutput };
 
   const implicitRender = explicitRender
     ? null
@@ -553,7 +561,7 @@ async function runBlock(
     await throwIfInvalidInput(block, props.args);
   }
 
-  let notification: string;
+  let notification: string | undefined;
 
   if (stage.notifyProgress) {
     notification = showNotification({
@@ -594,7 +602,7 @@ async function runBlock(
       options,
     );
   } finally {
-    if (stage.notifyProgress) {
+    if (stage.notifyProgress && notification) {
       hideNotification(notification);
     }
   }
@@ -646,13 +654,13 @@ export async function blockReducer(
 
   // Match the override behavior in v1, where the output from previous brick would override anything in the context
   const contextWithPreviousOutput =
-    explicitDataFlow || !isPlainObject(previousOutput)
+    explicitDataFlow || !isObject(previousOutput)
       ? context
-      : { ...context, ...(previousOutput as UnknownObject) };
+      : { ...context, ...previousOutput };
 
   const resolvedConfig = await resolveBlockConfig(brickConfig);
 
-  const optionsWithTraceRef = {
+  const optionsWithTraceRef: RunBlockOptions = {
     ...options,
     trace: {
       runId,
@@ -673,7 +681,7 @@ export async function blockReducer(
     options,
   );
 
-  let renderedArgs: RenderedArgs;
+  let renderedArgs: RenderedArgs | undefined;
   let renderError: unknown;
 
   // Only renders the args if we need them
@@ -869,20 +877,18 @@ async function getStepLogger(
   blockConfig: BrickConfig,
   pipelineLogger: Logger,
 ): Promise<Logger> {
-  let resolvedConfig: ResolvedBrickConfig;
+  let resolvedConfig: ResolvedBrickConfig | null = null;
+  let version: SemVerString | undefined;
 
   try {
     resolvedConfig = await resolveBlockConfig(blockConfig);
-  } catch {
-    // NOP
-  }
+    version = resolvedConfig.block.version;
 
-  let version = resolvedConfig?.block.version;
-
-  if (resolvedConfig && !version) {
     // Built-in bricks don't have a version number. Use the browser extension version to identify bugs introduced
     // during browser extension releases
-    version = getPlatform().version;
+    version ??= getPlatform().version;
+  } catch {
+    // NOP
   }
 
   return pipelineLogger.childLogger({
@@ -907,8 +913,12 @@ export async function reduceExtensionPipeline(
 
   if (platform.capabilities.includes("debugger")) {
     try {
-      // `await` promise to avoid race condition where the calls here delete entries from this call to reducePipeline
-      await platform.debugger.clear(pipelineLogger.context.extensionId);
+      const { extensionId } = pipelineLogger.context;
+
+      if (extensionId) {
+        // `await` promise to avoid race condition where the calls here delete entries from this call to reducePipeline
+        await platform.debugger.clear(extensionId);
+      }
     } catch {
       // NOP
     }
@@ -960,7 +970,7 @@ export async function reducePipeline(
       }),
     };
 
-    let nextValues: BlockOutput;
+    let nextValues: BlockOutput | null = null;
 
     const stepOptions = {
       ...options,
@@ -985,6 +995,9 @@ export async function reducePipeline(
       throwBlockError(blockConfig, state, error, stepOptions);
     }
 
+    // Must be set because throwBlockError will throw if it's not
+    assertNotNullish(nextValues, "nextValues must be set after running brick");
+
     output = nextValues.output;
     localVariableContext = nextValues.context;
   }
@@ -1000,7 +1013,7 @@ export async function reducePipeline(
 async function reducePipelineExpression(
   pipeline: BrickPipeline,
   context: UnknownObject,
-  root: SelectorRoot,
+  root: SelectorRoot | undefined,
   options: ReduceOptions,
 ): Promise<unknown> {
   const { explicitDataFlow, logger: pipelineLogger } = options;
@@ -1030,7 +1043,7 @@ async function reducePipelineExpression(
       }),
     };
 
-    let nextValues: BlockOutput;
+    let nextValues: BlockOutput | null = null;
 
     const stepOptions = {
       ...options,
@@ -1045,6 +1058,9 @@ async function reducePipelineExpression(
     } catch (error) {
       throwBlockError(blockConfig, state, error, stepOptions);
     }
+
+    // Must be set because throwBlockError will throw if it's not
+    assertNotNullish(nextValues, "nextValues must be set after running brick");
 
     legacyOutput = nextValues.output;
     lastBlockOutput = nextValues.blockOutput;

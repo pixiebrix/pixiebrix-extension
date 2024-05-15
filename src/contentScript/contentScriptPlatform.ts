@@ -49,7 +49,6 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import * as sidebarController from "@/contentScript/sidebarController";
 import type { UUID } from "@/types/stringTypes";
 import { PlatformBase } from "@/platform/platformBase";
-import type { Nullishable } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
@@ -131,7 +130,7 @@ class ContentScriptPlatform extends PlatformBase {
   // Perform requests via the background so 1/ the host pages CSP doesn't conflict, and 2/ credentials aren't
   // passed to the content script
   override request = async <TData>(
-    integrationConfig: Nullishable<SanitizedIntegrationConfig>,
+    integrationConfig: SanitizedIntegrationConfig,
     requestConfig: NetworkRequestConfig,
   ): Promise<RemoteResponse<TData>> => {
     const requestGenerator = async (options: { interactiveLogin: boolean }) =>

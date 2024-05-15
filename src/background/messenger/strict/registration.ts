@@ -67,6 +67,13 @@ import {
 import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
 import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
 import { setCopilotProcessData } from "@/background/partnerHandlers";
+import {
+  requestRunInAllFrames,
+  requestRunInOtherTabs,
+  requestRunInOpener,
+  requestRunInTarget,
+  requestRunInTop,
+} from "@/background/executor";
 
 expectContext("background");
 
@@ -130,6 +137,12 @@ declare global {
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
+
+    REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
+    REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
+    REQUEST_RUN_IN_TOP: typeof requestRunInTop;
+    REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInOtherTabs;
+    REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
   }
 }
 
@@ -193,5 +206,11 @@ export default function registerMessenger(): void {
     ENSURE_CONTEXT_MENU: ensureContextMenu,
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
     SET_PARTNER_COPILOT_DATA: setCopilotProcessData,
+
+    REQUEST_RUN_IN_OPENER: requestRunInOpener,
+    REQUEST_RUN_IN_TARGET: requestRunInTarget,
+    REQUEST_RUN_IN_TOP: requestRunInTop,
+    REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
+    REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
   });
 }

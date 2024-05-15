@@ -94,12 +94,14 @@ export async function initCopilotMessenger(): Promise<void> {
       const data = hostData.get(event.data.processId) ?? {};
 
       console.debug("Received AARI data request", {
+        location: window.location.href,
         event,
         currentProcessData: data,
       });
 
       // @ts-expect-error -- incorrect types https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#examples
-      event.source.postMessage({ data }, event.origin);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access -- See above
+      event.source.parent?.postMessage({ data }, event.origin);
     }
   });
 
