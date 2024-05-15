@@ -34,10 +34,10 @@ export const launchPersistentContextWithExtension = async (
       `--load-extension=${pathToExtension}`,
       // Chrome extensions are not supported in the traditional headless mode,
       // but we can use the "new" flag to enable headless mode.
-      // This mode is not officially supported by Playwright and might result in unexpected behavior,
-      // so only use in local development for now.
+      // This mode is not officially supported by Playwright and might result in unexpected behavior.
+      // If needed, we can switch back to removing this flag, and using `xvfb-run` to run the tests in CI
       // https://playwright.dev/docs/chrome-extensions#headless-mode
-      ...(CI || SLOWMO || PWDEBUG ? [] : ["--headless=new"]),
+      ...(SLOWMO || PWDEBUG ? [] : ["--headless=new"]),
     ],
     slowMo: SLOWMO ? 3000 : undefined,
     permissions: ["clipboard-read", "clipboard-write", "accessibility-events"],
