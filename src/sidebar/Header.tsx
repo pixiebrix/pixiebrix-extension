@@ -103,6 +103,7 @@ const Header: React.FunctionComponent = () => {
         size="sm"
         variant="link"
         className={headerButtonClassName}
+        title="Open Extension Console"
       >
         <FontAwesomeIcon icon={faCog} />
       </Button>
