@@ -175,7 +175,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   // https://github.com/microsoft/MicrosoftEdge-Extensions/issues/145
   // For some reason this also happens in Chrome/Linux in the CI github workflow.
   // eslint-disable-next-line playwright/no-conditional-in-test -- see above comment
-  if (browserOSName === "Linux" || chromiumChannel !== "msedge") {
+  if (browserOSName !== "Linux" || chromiumChannel !== "msedge") {
     await test.step("Clicking link in IFrame", async () => {
       // PixieBrix uses 2 layers of frames to get around the host page CSP. Test page has 2 layers
       const pixiebrixFrame = sideBarPage.frameLocator("iframe").first();
