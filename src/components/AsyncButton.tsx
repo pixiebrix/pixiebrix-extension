@@ -25,9 +25,11 @@ export type AsyncButtonProps = ButtonProps & {
   | ((event: React.MouseEvent) => Promise<void>)
     | ((event: React.MouseEvent) => void);
   autoFocus?: boolean;
+  ariaLabel?: string;
 };
 
 const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
+  ariaLabel,
   onClick,
   children,
   disabled: manualDisabled = false,
@@ -60,6 +62,7 @@ const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
 
   return (
     <Button
+      aria-label={ariaLabel}
       disabled={manualDisabled || pending}
       {...buttonProps}
       onClick={(event) => {

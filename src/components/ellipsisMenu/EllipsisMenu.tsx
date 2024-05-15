@@ -55,6 +55,8 @@ export type EllipsisMenuItem = RequireExactlyOne<
 >;
 
 type EllipsisMenuProps = {
+  ariaLabel?: string;
+
   className?: string;
 
   /**
@@ -93,6 +95,7 @@ type EllipsisMenuProps = {
 };
 
 const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
+  ariaLabel,
   className,
   toggleClassName,
   variant = "light",
@@ -145,6 +148,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
         className={cx(styles.toggle, toggleClassName)}
         variant={variant}
         size={size === "md" ? undefined : size}
+        aria-label={ariaLabel}
       >
         <FontAwesomeIcon icon={faEllipsisV} />
       </Dropdown.Toggle>

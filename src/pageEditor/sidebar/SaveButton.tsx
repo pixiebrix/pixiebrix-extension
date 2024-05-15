@@ -24,10 +24,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 
 const SaveButton: React.FC<{
+  ariaLabel?: string;
   onClick: () => void;
   disabled?: boolean;
-}> = ({ onClick, disabled }) => (
+}> = ({ ariaLabel, onClick, disabled }) => (
   <AsyncButton
+    ariaLabel={ariaLabel}
     onClick={onClick}
     disabled={disabled}
     className={cx(rootStyles.button, styles.save)}
