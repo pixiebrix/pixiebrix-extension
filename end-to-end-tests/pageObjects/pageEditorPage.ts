@@ -40,6 +40,7 @@ export type StarterBrickName =
 export class PageEditorPage {
   private readonly pageEditorUrl: string;
   private readonly savedStandaloneModNames: string[] = [];
+  private modName: string;
 
   constructor(
     private readonly page: Page,
@@ -60,6 +61,14 @@ export class PageEditorPage {
     await expect(heading).toBeVisible();
   }
 
+  async bringToFront() {
+    await this.page.bringToFront();
+  }
+
+  getPage() {
+    return this.page;
+  }
+
   getTemplateGalleryButton() {
     return this.page.getByRole("button", { name: "Launch Template Gallery" });
   }
@@ -72,20 +81,43 @@ export class PageEditorPage {
    * not the underlying type
    * @returns modName the generated mod name
    */
-  async addStarterBrick(starterBrickName: StarterBrickName) {
-    const modName = `Test ${starterBrickName} ${uuidv4()}`;
+  async addStarterBrick(
+    starterBrickName: StarterBrickName,
+    callback?: () => Promise<void>,
+  ) {
+    this.modName = `Test ${starterBrickName} ${uuidv4()}`;
     await this.page.getByRole("button", { name: "Add", exact: true }).click();
     await this.page
       .locator("[role=button].dropdown-item", {
         hasText: starterBrickName,
       })
       .click();
-    await this.fillInBrickField("Name", modName);
-    return modName;
+
+    if (starterBrickName === "Button" && callback) {
+      await callback();
+    }
+
+    await this.fillInBrickField("Name", this.modName);
+    return this.modName;
   }
 
   async fillInBrickField(fieldLabel: string, value: string) {
     await this.page.getByLabel(fieldLabel).fill(value);
+  }
+
+  async addBrickToModComponent(
+    brickName: string,
+    { index = 0 }: { index?: number } = {},
+  ) {
+    await this.page
+      .getByTestId(/icon-button-.*-add-brick/)
+      .nth(index)
+      .click();
+
+    await this.page.getByTestId("tag-search-input").fill(brickName);
+    await this.page.getByRole("button", { name: brickName }).click();
+
+    await this.page.getByRole("button", { name: "Add brick" }).click();
   }
 
   getModListItemByName(modName: string) {
