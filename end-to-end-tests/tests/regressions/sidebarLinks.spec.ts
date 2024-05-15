@@ -26,6 +26,7 @@ import {
 } from "@playwright/test";
 import { ensureVisibility, getBrowserOs, getSidebarPage } from "../../utils";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
+import { MV } from "../../env";
 
 async function openSidebar(page: Page, extensionId: string) {
   // The mod contains a trigger to open the sidebar on h1. If the sidePanel is already open, it's a NOP
@@ -75,6 +76,8 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   chromiumChannel,
   baseURL,
 }) => {
+  test.skip(MV === "2", "MV3 specific test");
+
   const browserOSName = await getBrowserOs(page);
   const modId = "@pixies/test/sidebar-links";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -113,7 +116,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   });
 
   await test.step("Clicking markdown text link", async () => {
-    // eslint-disable-next-line playwright/no-conditional-in-test -- msedge bug
+    // eslint-disable-next-line playwright/no-conditional-in-test -- msedge and linux bug that causes the sidebar to close on clicking a link
     if (chromiumChannel === "msedge" || browserOSName !== "MacOS") {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
@@ -127,7 +130,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   });
 
   await test.step("Clicking react bootstrap link", async () => {
-    // eslint-disable-next-line playwright/no-conditional-in-test -- msedge bug
+    // eslint-disable-next-line playwright/no-conditional-in-test -- msedge/linux bug
     if (chromiumChannel === "msedge" || browserOSName !== "MacOS") {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
@@ -141,7 +144,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   });
 
   await test.step("Clicking html renderer link", async () => {
-    // eslint-disable-next-line playwright/no-conditional-in-test -- msedge bug
+    // eslint-disable-next-line playwright/no-conditional-in-test -- msedge/linux bug
     if (chromiumChannel === "msedge" || browserOSName !== "MacOS") {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
@@ -155,7 +158,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   });
 
   await test.step("Clicking embedded form link", async () => {
-    // eslint-disable-next-line playwright/no-conditional-in-test -- msedge bug
+    // eslint-disable-next-line playwright/no-conditional-in-test -- msedge/linux bug
     if (chromiumChannel === "msedge" || browserOSName !== "MacOS") {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
@@ -170,8 +173,9 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
 
   // Clicking link in IFrame will crash MS Edge until the issue is fixed
   // https://github.com/microsoft/MicrosoftEdge-Extensions/issues/145
+  // For some reason this also happens in Chrome/Linux in the CI github workflow.
   // eslint-disable-next-line playwright/no-conditional-in-test -- see above comment
-  if (chromiumChannel !== "msedge") {
+  if (chromiumChannel !== "msedge" || browserOSName !== "MacOS") {
     await test.step("Clicking link in IFrame", async () => {
       // PixieBrix uses 2 layers of frames to get around the host page CSP. Test page has 2 layers
       const pixiebrixFrame = sideBarPage.frameLocator("iframe").first();
