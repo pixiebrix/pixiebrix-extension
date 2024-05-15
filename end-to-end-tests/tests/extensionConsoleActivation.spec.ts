@@ -28,7 +28,7 @@ import {
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
-import { MV } from "../env";
+import { MV, SERVICE_URL } from "../env";
 import { ExtensionsShortcutsPage } from "end-to-end-tests/pageObjects/extensionsShortcutsPage";
 
 test("can activate a mod with no config options", async ({
@@ -237,8 +237,7 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
 
 test("activating a mod via url", async ({ page, extensionId }) => {
   const modId = "@e2e-testing/show-alert";
-  const activationLink =
-    "https://app.pixiebrix.com/activate?id=%40e2e-testing%2Fshow-alert";
+  const activationLink = `${SERVICE_URL}/activate?id=%40e2e-testing%2Fshow-alert`;
 
   await page.goto(activationLink);
 
