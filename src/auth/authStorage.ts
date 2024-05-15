@@ -30,6 +30,7 @@ import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { StorageItem } from "webext-storage";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { ReusableAbortController } from "abort-utils";
+import chromeP from "webext-polyfill-kinda";
 
 const extensionKeyStorage = new StorageItem("extensionKey", {
   defaultValue: {} as Partial<TokenAuthData>,
@@ -118,6 +119,14 @@ export async function setPartnerAuth(data: PartnerAuthData): Promise<void> {
  */
 export async function clearPartnerAuth(): Promise<void> {
   return partnerTokenStorage.set({});
+}
+
+export async function clearOAuth2Tokens(): Promise<void> {
+  // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
+  await chromeP.identity.clearAllCachedAuthTokens();
+
+  // Force reset of all queries, and partner bearer JWT will no longer be present.
+  await clearPartnerAuth();
 }
 
 /**

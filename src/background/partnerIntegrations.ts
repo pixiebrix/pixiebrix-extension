@@ -283,6 +283,7 @@ async function safeTokenRefresh(): Promise<void> {
  * NOTE: this assumes the background script is always running
  * TODO: re-architect to refresh the token in @/background/refreshToken.ts
  */
+// TODO: Do we still want this now that we're refreshing the partner token on failed requests
 export function initPartnerTokenRefresh(): void {
   setInterval(async () => {
     await safeTokenRefresh();

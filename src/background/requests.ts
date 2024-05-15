@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios, { type AxiosError, type AxiosResponse, type Method } from "axios";
+import axios, { type AxiosResponse, type Method } from "axios";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import serviceRegistry from "@/integrations/registry";
 import { getExtensionToken } from "@/auth/authStorage";
@@ -23,7 +23,10 @@ import { locator } from "@/background/locator";
 import { isEmpty } from "lodash";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { expectContext } from "@/utils/expectContext";
-import { absoluteApiUrl } from "@/data/service/apiClient";
+import {
+  absoluteApiUrl,
+  isAuthenticationError,
+} from "@/data/service/apiClient";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
   isProxiedErrorResponse,
@@ -52,7 +55,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import refreshPKCEToken from "@/background/refreshToken";
 import reportError from "@/telemetry/reportError";
 import { assertProtocolUrl, isUrlRelative } from "@/utils/urlUtils";
-import { ensureJsonObject, isObject } from "@/utils/objectUtils";
+import { ensureJsonObject } from "@/utils/objectUtils";
 import {
   deleteCachedAuthData,
   getCachedAuthData,
@@ -74,8 +77,6 @@ type SanitizedResponse<T = unknown> = Pick<
 > & {
   _sanitizedResponseBrand: null;
 };
-
-const UNAUTHORIZED_STATUS_CODES = new Set([401, 403]);
 
 function sanitizeResponse<T>(response: AxiosResponse<T>): SanitizedResponse<T> {
   const { data, status, statusText } = response;
@@ -251,31 +252,6 @@ async function proxyRequest<T>(
     statusText: safeGuessStatusText(remoteResponse.status_code),
     $$proxied: true,
   };
-}
-
-function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
-  // Response should be an object
-  if (!isObject(error.response)) {
-    return false;
-  }
-
-  // Technically 403 is an authorization error and re-authenticating as the same user won't help. However, there is
-  // a case where the user just needs an updated JWT that contains the most up-to-date entitlements
-  if (UNAUTHORIZED_STATUS_CODES.has(error.response.status)) {
-    return true;
-  }
-
-  // Handle Automation Anywhere's Control Room expired JWT response. They'll return this from any endpoint instead
-  // of a proper error code.
-  if (
-    error.response.status === 400 &&
-    isObject(error.response.data) &&
-    error.response.data.message === "Access Token has expired"
-  ) {
-    return true;
-  }
-
-  return false;
 }
 
 async function _performConfiguredRequest(
