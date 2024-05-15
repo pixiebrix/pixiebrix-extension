@@ -29,7 +29,7 @@ import { allSettled } from "@/utils/promiseUtils";
  */
 export type TypedBrickPair = {
   block: Brick;
-  type: BrickType;
+  type: BrickType | null;
 };
 
 export type TypedBrickMap = Map<RegistryId, TypedBrickPair>;
@@ -49,7 +49,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
   }
 
   // Write as single promise vs. promise + cache to avoid race conditions in invalidation logic
-  private typeCachePromise: Promise<TypedBrickMap> = null;
+  private typeCachePromise: Promise<TypedBrickMap> | null = null;
 
   /**
    * Infer the type of all blocks in the registry. Uses the brick cache if available.

@@ -24,7 +24,7 @@ import DocumentView from "@/bricks/renderers/documentView/DocumentView";
 import { screen } from "shadow-dom-testing-library";
 import { SubmitPanelAction } from "@/bricks/errors";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { runHeadlessPipeline } from "@/contentScript/messenger/api";
+import { runHeadlessPipeline } from "@/contentScript/messenger/strict/api";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { toExpression } from "@/utils/expressionUtils";
 

@@ -128,7 +128,7 @@ export class TourEffect extends EffectABC {
       steps?: Step[];
       isRootAware?: boolean;
     }>,
-    { root, abortSignal: blockAbortSignal, logger }: BrickOptions,
+    { root = document, abortSignal: blockAbortSignal, logger }: BrickOptions,
   ): Promise<void> {
     if (steps.length === 0) {
       throw new PropError(

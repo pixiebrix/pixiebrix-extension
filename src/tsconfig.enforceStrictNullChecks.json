@@ -95,7 +95,6 @@
     "./bricks/transformers/RunBrickByIdTransformer.test.ts",
     "./bricks/transformers/RunMetadataTransformer.test.ts",
     "./bricks/transformers/brickFactory.test.ts",
-    "./bricks/transformers/brickFactory.ts",
     "./bricks/transformers/component/TableReader.test.ts",
     "./bricks/transformers/controlFlow/ForEach.test.ts",
     "./bricks/transformers/controlFlow/ForEachElement.test.ts",
@@ -210,8 +209,6 @@
     "./components/integrations/IntegrationConfigEditorModal.test.tsx",
     "./components/integrations/IntegrationConfigEditorModal.tsx",
     "./contentScript/contentScriptCore.ts",
-    "./contentScript/contentScriptPlatform.ts",
-    "./contentScript/executor.ts",
     "./contentScript/lifecycle.test.ts",
     "./contentScript/lifecycle.ts",
     "./contentScript/loadActivationEnhancementsCore.test.ts",
@@ -220,8 +217,6 @@
     "./contentScript/pageEditor/dynamic/runStarterBrickReader.ts",
     "./contentScript/pageEditor/dynamic/updateDynamicElement.ts",
     "./contentScript/pageEditor/resetTab.ts",
-    "./contentScript/pageEditor/runBlockPreview.ts",
-    "./contentScript/pipelineProtocol/runHeadlessPipeline.ts",
     "./contentScript/pipelineProtocol/runRendererPipeline.ts",
     "./contentScript/sidebarActivation.ts",
     "./contrib/automationanywhere/ApiTaskOptions.tsx",
@@ -454,7 +449,6 @@
     "./runtime/pipelineTests/templateEngine.test.ts",
     "./runtime/pipelineTests/trace.test.ts",
     "./runtime/pipelineTests/validateInput.test.ts",
-    "./runtime/reducePipeline.ts",
     "./sidebar/ConnectedSidebar.test.tsx",
     "./sidebar/ConnectedSidebar.tsx",
     "./sidebar/DefaultContent.test.tsx",
@@ -505,7 +499,6 @@
     "./testUtils/factories/deploymentFactories.ts",
     "./testUtils/factories/pageEditorFactories.ts",
     "./testUtils/factories/runtimeFactories.ts",
-    "./testUtils/injectRegistries.ts",
     "./utils/deploymentUtils.test.ts"
   ]
 }

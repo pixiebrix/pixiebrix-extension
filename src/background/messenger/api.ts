@@ -29,14 +29,6 @@ export const removeExtensionForEveryTab = getNotifier(
 
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 
-export const requestRun = {
-  inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
-  inTarget: getMethod("REQUEST_RUN_IN_TARGET", bg),
-  inTop: getMethod("REQUEST_RUN_IN_TOP", bg),
-  inOtherTabs: getMethod("REQUEST_RUN_IN_OTHER_TABS", bg),
-  inAllFrames: getMethod("REQUEST_RUN_IN_ALL_FRAMES", bg),
-};
-
 export const contextMenus = {
   preload: getMethod("PRELOAD_CONTEXT_MENUS", bg),
 };

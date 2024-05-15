@@ -18,39 +18,8 @@
 // This mock file provides reasonable defaults for the methods in the background messenger API
 
 /* Do not use `registerMethod` in this file */
-import { backgroundTarget as bg, getMethod } from "webext-messenger";
-import type { NetworkRequestConfig } from "@/types/networkTypes";
-import type { RemoteResponse } from "@/types/contract";
-import { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 // Use relative path to bypass auto-mocks
 export * from "../../../../background/messenger/api";
 
-export const pong = jest.fn(() => ({
-  timestamp: Date.now(),
-}));
-
 export const clearServiceCache = jest.fn();
-
-export const dataStore = {
-  get: jest.fn().mockRejectedValue(new Error("Not implemented in mock")),
-  set: getMethod("SET_DATA_STORE", bg),
-};
-
-export const services = {
-  locateAllForId: jest.fn().mockResolvedValue([]),
-  locate: jest
-    .fn()
-    .mockRejectedValue(new Error("Locate not implemented in mock")),
-  refresh: jest.fn(),
-  refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
-};
-
-// `getMethod` currently strips generics, so we must copy the function signature here
-export const performConfiguredRequestInBackground = getMethod(
-  "CONFIGURED_REQUEST",
-  bg,
-) as <TData>(
-  integrationConfig: SanitizedIntegrationConfig | null,
-  requestConfig: NetworkRequestConfig,
-) => Promise<RemoteResponse<TData>>;
