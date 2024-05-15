@@ -235,11 +235,17 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
   });
 });
 
-test("activating a mod via url", async ({ page, extensionId }) => {
+test("can activate a mod via url", async ({ page, extensionId }) => {
   const modId = "@e2e-testing/show-alert";
-  const activationLink = `${SERVICE_URL}/activate?id=%40e2e-testing%2Fshow-alert`;
+  const modIdUrlEncoded = encodeURIComponent(modId);
+  const activationLink = `${SERVICE_URL}/activate?id=${modIdUrlEncoded}`;
 
   await page.goto(activationLink);
+
+  await expect(page).toHaveURL(
+    `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
+  );
+  await expect(page.getByRole("code")).toContainText(modId);
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
