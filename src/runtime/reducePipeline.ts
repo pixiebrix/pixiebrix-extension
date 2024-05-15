@@ -72,7 +72,11 @@ import {
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { isObject } from "@/utils/objectUtils";
-import type { RegistryId, RegistryProtocol } from "@/types/registryTypes";
+import type {
+  RegistryId,
+  RegistryProtocol,
+  SemVerString,
+} from "@/types/registryTypes";
 import type { Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 import { getPlatform } from "@/platform/platformContext";
@@ -874,24 +878,17 @@ async function getStepLogger(
   pipelineLogger: Logger,
 ): Promise<Logger> {
   let resolvedConfig: ResolvedBrickConfig | null = null;
+  let version: SemVerString | undefined;
 
   try {
     resolvedConfig = await resolveBlockConfig(blockConfig);
-  } catch {
-    // NOP
-  }
+    version = resolvedConfig.block.version;
 
-  assertNotNullish(
-    resolvedConfig,
-    "resolvedConfig should be set by resolveBlockConfig",
-  );
-
-  let { version } = resolvedConfig.block;
-
-  if (resolvedConfig && !version) {
     // Built-in bricks don't have a version number. Use the browser extension version to identify bugs introduced
     // during browser extension releases
-    version = getPlatform().version;
+    version ??= getPlatform().version;
+  } catch {
+    // NOP
   }
 
   return pipelineLogger.childLogger({
@@ -998,10 +995,8 @@ export async function reducePipeline(
       throwBlockError(blockConfig, state, error, stepOptions);
     }
 
-    assertNotNullish(
-      nextValues,
-      "nextValues should be set after running brick",
-    );
+    // Must be set because throwBlockError will throw if it's not
+    assertNotNullish(nextValues, "nextValues must be set after running brick");
 
     output = nextValues.output;
     localVariableContext = nextValues.context;
@@ -1064,10 +1059,8 @@ async function reducePipelineExpression(
       throwBlockError(blockConfig, state, error, stepOptions);
     }
 
-    assertNotNullish(
-      nextValues,
-      "nextValues should be set after running brick",
-    );
+    // Must be set because throwBlockError will throw if it's not
+    assertNotNullish(nextValues, "nextValues must be set after running brick");
 
     legacyOutput = nextValues.output;
     lastBlockOutput = nextValues.blockOutput;

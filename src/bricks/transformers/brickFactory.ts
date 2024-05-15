@@ -213,7 +213,7 @@ class UserDefinedBrick extends BrickABC {
     const awareness = await Promise.all(
       pipeline.map(async (blockConfig) => {
         const resolvedBlock = await this.registry.lookup(blockConfig.id);
-        return resolvedBlock?.isPageStateAware?.();
+        return resolvedBlock.isPageStateAware();
       }),
     );
 
@@ -257,7 +257,7 @@ class UserDefinedBrick extends BrickABC {
     const pipeline = castArray(this.component.pipeline);
     const last = pipeline.at(-1);
 
-    if (!last?.id || this.id === last.id) {
+    if (!last || this.id === last.id) {
       // Guard against infinite recursion
       return null;
     }

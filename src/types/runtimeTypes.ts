@@ -315,6 +315,8 @@ export interface RunMetadata {
   /**
    * The extension that's running the brick. Used to correlate trace records across all runs/branches.
    * @since 1.7.0
+   * Marked Nullishable as part of the StrictNullChecks migration.
+   * TODO: Revisit and determine if this should be required.
    */
   extensionId: Nullishable<UUID>;
   /**
