@@ -39,10 +39,7 @@ function isGroupedOption<TValue = string>(
 }
 
 // Type passed as target in onChange event
-export type SelectLike<
-  TOption extends Option<TOption["value"]> = Option,
-  // TGroup extends GroupBase<TOption> = GroupBase<TOption>,
-> = {
+export type SelectLike<TOption extends Option<TOption["value"]> = Option> = {
   value: TOption["value"];
   name: string;
   options: TOption[];
