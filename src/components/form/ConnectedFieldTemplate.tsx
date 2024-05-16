@@ -69,7 +69,7 @@ function FormikFieldTemplate<Values>({
         actions: documentationLink
           ? [
               {
-                caption: documentationLink[1],
+                caption: documentationLink[1] || "Read more",
                 async action() {
                   window.open(documentationLink[2], "_blank");
                 },
