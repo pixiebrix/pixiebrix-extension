@@ -117,7 +117,7 @@ export async function setPartnerAuth(data: PartnerAuthData): Promise<void> {
  *
  * @see setPartnerAuth
  */
-export async function clearPartnerAuth(): Promise<void> {
+async function clearPartnerAuth(): Promise<void> {
   return partnerTokenStorage.set({});
 }
 

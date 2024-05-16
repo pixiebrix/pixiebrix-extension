@@ -281,8 +281,7 @@ async function _performConfiguredRequest(
         integrationConfig.serviceId,
       );
       if (integration.isOAuth2 || integration.isToken) {
-        // Don't refresh the Automation Anywhere OAuth2 token here because it has its own unique refresh call
-        // that is called on a schedule (see initPartnerTokenRefresh).
+        // Don't refresh the Automation Anywhere OAuth2 token here because we do it somewhere else, see getApiClient
         if (
           integration.isOAuth2PKCE &&
           integration.id !== CONTROL_ROOM_OAUTH_INTEGRATION_ID

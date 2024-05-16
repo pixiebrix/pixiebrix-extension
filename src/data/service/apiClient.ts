@@ -141,7 +141,7 @@ export async function getApiClient(): Promise<AxiosInstance> {
     {
       shouldRefresh(error: AxiosError) {
         const axiosError = selectAxiosError(error);
-        return axiosError && isAuthenticationError(axiosError);
+        return (axiosError && isAuthenticationError(axiosError)) ?? false;
       },
     },
   );

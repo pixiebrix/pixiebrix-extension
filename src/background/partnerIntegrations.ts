@@ -36,8 +36,6 @@ import { stringToBase64 } from "uint8array-extras";
 import { canParseUrl } from "@/utils/urlUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-const TEN_HOURS = 1000 * 60 * 60 * 10;
-
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.
  */
@@ -266,26 +264,4 @@ export async function _refreshPartnerToken(): Promise<void> {
 
     console.debug("Successfully refreshed partner token");
   }
-}
-
-async function safeTokenRefresh(): Promise<void> {
-  try {
-    await _refreshPartnerToken();
-  } catch (error) {
-    console.warn("Failed to refresh partner token", error);
-  }
-}
-
-/**
- * The Automation Anywhere JWT access token expires every 24 hours
- * The refresh token expires every 30 days, with an inactivity expiry of 15 days
- * Refresh the JWT every 10 hours to ensure the token is always valid
- * NOTE: this assumes the background script is always running
- * TODO: re-architect to refresh the token in @/background/refreshToken.ts
- */
-// TODO: Do we still want this now that we're refreshing the partner token on failed requests
-export function initPartnerTokenRefresh(): void {
-  setInterval(async () => {
-    await safeTokenRefresh();
-  }, TEN_HOURS);
 }
