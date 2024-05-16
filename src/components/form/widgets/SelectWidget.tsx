@@ -35,7 +35,7 @@ export type Option<TValue = string> = {
 function isGroupedOption<TValue = string>(
   option: Option<TValue> | GroupBase<Option<TValue>>,
 ): option is GroupBase<Option<TValue>> {
-  return (option as GroupBase<Option<TValue>>).options !== undefined;
+  return "options" in option;
 }
 
 // Type passed as target in onChange event
