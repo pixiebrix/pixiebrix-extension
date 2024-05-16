@@ -16,6 +16,7 @@
  */
 
 import {
+  extractMarkdownLink,
   matchesAnyPattern,
   smartAppendPeriod,
   splitStartingEmoji,
@@ -152,5 +153,52 @@ describe("smartAppendPeriod", () => {
         }
       }
     }
+  });
+});
+
+describe("extractMarkdownLink", () => {
+  it("extracts a Markdown link from a string", () => {
+    const text =
+      "This is a test string with a [Markdown link](https://example.com)";
+    const result = extractMarkdownLink(text);
+    expect(result).toEqual({
+      rest: "This is a test string with a",
+      label: "Markdown link",
+      url: "https://example.com",
+    });
+  });
+
+  it("extracts a Markdown link with no label or url", () => {
+    const text = "This is a test string with a []()";
+    const result = extractMarkdownLink(text);
+    expect(result).toEqual({
+      rest: "This is a test string with a",
+      label: "",
+      url: "",
+    });
+  });
+
+  it("only extracts the last Markdown link in the string", () => {
+    const text =
+      "This is a test string with two links [one](oneUrl) [two](twoUrl)";
+    const result = extractMarkdownLink(text);
+    expect(result).toEqual({
+      rest: "This is a test string with two links [one](oneUrl)",
+      label: "two",
+      url: "twoUrl",
+    });
+  });
+
+  it("returns null if the string does not contain a Markdown link", () => {
+    const text = "This is a test string without a Markdown link";
+    const result = extractMarkdownLink(text);
+    expect(result).toBeNull();
+  });
+
+  it("returns null if the Markdown link is not at the end of the string", () => {
+    const text =
+      "This is a [Markdown link](https://example.com) in the middle of a test string";
+    const result = extractMarkdownLink(text);
+    expect(result).toBeNull();
   });
 });
