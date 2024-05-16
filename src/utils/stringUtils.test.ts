@@ -178,6 +178,17 @@ describe("extractMarkdownLink", () => {
     });
   });
 
+  it("only extracts the last Markdown link in the string", () => {
+    const text =
+      "This is a test string with two links [one](oneUrl) [two](twoUrl)";
+    const result = extractMarkdownLink(text);
+    expect(result).toEqual({
+      rest: "This is a test string with two links [one](oneUrl)",
+      label: "two",
+      url: "twoUrl",
+    });
+  });
+
   it("returns null if the string does not contain a Markdown link", () => {
     const text = "This is a test string without a Markdown link";
     const result = extractMarkdownLink(text);
