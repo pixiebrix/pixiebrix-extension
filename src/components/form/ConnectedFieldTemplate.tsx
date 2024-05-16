@@ -64,7 +64,9 @@ function FormikFieldTemplate<Values>({
       const markdownLinkRegex = /\[([^\]]+)]\(([^)]+)\)$/;
       const documentationLink = markdownLinkRegex.exec(error);
       const annotation: FieldAnnotation = {
-        message: error.replace(markdownLinkRegex, ""),
+        message: documentationLink
+          ? error.replace(markdownLinkRegex, "")
+          : error,
         type: AnnotationType.Error,
         actions: documentationLink
           ? [
