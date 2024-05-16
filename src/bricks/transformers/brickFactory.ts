@@ -48,13 +48,13 @@ import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/bricks/errors";
-import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import {
   inputProperties,
   unionSchemaDefinitionTypes,
 } from "@/utils/schemaUtils";
 import type BaseRegistry from "@/registry/memoryRegistry";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { runHeadlessPipeline } from "@/contentScript/messenger/strict/api";
 
 // Interface to avoid circular dependency with the implementation
 type BrickRegistryProtocol = BaseRegistry<RegistryId, Brick>;
@@ -103,7 +103,7 @@ export type BrickDefinition = {
    * The default output key to use for the brick
    * @since 1.7.34
    */
-  defaultOutputKey?: string;
+  defaultOutputKey?: OutputKey | null;
 };
 
 /**
@@ -134,7 +134,7 @@ class UserDefinedBrick extends BrickABC {
 
   readonly inputSchema: Schema;
 
-  readonly version: SemVerString;
+  readonly version?: SemVerString;
 
   constructor(
     private readonly registry: BrickRegistryProtocol,
@@ -152,7 +152,9 @@ class UserDefinedBrick extends BrickABC {
     this.defaultOutputKey = UserDefinedBrick.parseDefaultOutputKey(component);
   }
 
-  private static parseDefaultOutputKey(definition: BrickDefinition): OutputKey {
+  private static parseDefaultOutputKey(
+    definition: BrickDefinition,
+  ): OutputKey | null {
     if (!definition.defaultOutputKey) {
       return null;
     }
@@ -255,7 +257,7 @@ class UserDefinedBrick extends BrickABC {
     const pipeline = castArray(this.component.pipeline);
     const last = pipeline.at(-1);
 
-    if (this.id === last?.id) {
+    if (!last || this.id === last.id) {
       // Guard against infinite recursion
       return null;
     }

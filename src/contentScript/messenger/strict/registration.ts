@@ -57,6 +57,10 @@ import {
 } from "@/contentScript/pageEditor/dynamic/overlay";
 import { runMapArgs } from "@/contentScript/pipelineProtocol/runMapArgs";
 import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
+import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController";
+import { runBlockPreview } from "@/contentScript/pageEditor/runBlockPreview";
+import { runBrick } from "@/contentScript/executor";
+import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadlessPipeline";
 
 declare global {
   interface MessengerMethods {
@@ -95,6 +99,10 @@ declare global {
     DISABLE_OVERLAY: typeof disableOverlay;
     RUN_MAP_ARGS: typeof runMapArgs;
     GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
+    SHOW_LOGIN_BANNER: typeof showBannerFromConfig;
+    RUN_SINGLE_BLOCK: typeof runBlockPreview;
+    RUN_BRICK: typeof runBrick;
+    RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
   }
 }
 export default function registerMessenger(): void {
@@ -134,5 +142,9 @@ export default function registerMessenger(): void {
     DISABLE_OVERLAY: disableOverlay,
     RUN_MAP_ARGS: runMapArgs,
     GET_COPILOT_HOST_DATA: getCopilotHostData,
+    SHOW_LOGIN_BANNER: showBannerFromConfig,
+    RUN_SINGLE_BLOCK: runBlockPreview,
+    RUN_BRICK: runBrick,
+    RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
   });
 }

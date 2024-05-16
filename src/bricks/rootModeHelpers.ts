@@ -48,12 +48,12 @@ export const IS_ROOT_AWARE_BRICK_PROPS = Object.freeze({
 export function $safeFindElementsWithRootMode({
   selector,
   selectorProp = "selector",
-  root,
+  root = document,
   isRootAware = false,
   blockId,
 }: {
   selector?: string;
-  root: SelectorRoot;
+  root?: SelectorRoot;
   isRootAware?: boolean;
   blockId: RegistryId;
   selectorProp?: string;

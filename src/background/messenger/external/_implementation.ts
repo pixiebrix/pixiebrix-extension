@@ -24,7 +24,6 @@ import { type TokenAuthData } from "@/auth/authTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { installStarterBlueprints as installStarterBlueprintsInBackground } from "@/background/messenger/api";
-import { type RegistryId } from "@/types/registryTypes";
 import reportError from "@/telemetry/reportError";
 import { validateRegistryId } from "@/types/helpers";
 import { StorageItem } from "webext-storage";
@@ -34,12 +33,6 @@ import type { ModActivationConfig } from "@/types/modTypes";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
-type ModActivation =
-  | ModActivationConfig[]
-  // Types preserving backwards compatibility -- remove once app changes go live
-  | RegistryId
-  | RegistryId[];
-
 /**
  * Chrome Storage key for tracking the mod id(s) that PixieBrix should start activation for.
  */
@@ -47,44 +40,6 @@ const activationStorage = new StorageItem<ModActivationConfig[]>(
   // Keeping key for backwards compatibility
   "activatingBlueprintId",
 );
-
-/**
- * Migrate activation state to latest format. Does not validate the mod ids or options.
- * @param value mod activation state
- */
-function migrateActivatingModsShape(
-  value: Nullishable<ModActivation>,
-): ModActivationConfig[] {
-  if (!value) {
-    return [];
-  }
-
-  if (typeof value === "string") {
-    // Legacy support for single mod activation
-    return [{ modId: value, initialOptions: {} }];
-  }
-
-  if (!Array.isArray(value) || value.length === 0) {
-    return [];
-  }
-
-  // Remove nullish values that might have crept into storage. (Seen while making changes in local environment,
-  // should never occur in the wild)
-  const valid: RegistryId[] | ModActivationConfig[] = value.filter(
-    // @ts-expect-error -- ts doesn't understand the filter over sum type of RegistryId[] | ModActivationConfig[]
-    (x) => x != null,
-  );
-
-  if (typeof valid[0] === "string") {
-    // Legacy support for multiple mod activation
-    return (valid as RegistryId[]).map((modId) => ({
-      modId,
-      initialOptions: {},
-    }));
-  }
-
-  return valid as ModActivationConfig[];
-}
 
 /**
  * Set the user's credentials for the PixieBrix extension. Returns true if the data was updated.
@@ -140,20 +95,6 @@ export async function openMarketplace({
 }
 
 /**
- * The mod(s) to activate.
- * @deprecated superseded by ActivationPartial - will be removed in 1.8.9 or later after app changes go live
- * @see ActivationPartial
- */
-type LegacyModActivationPartial = {
-  /**
-   * The mods(s) to activate.
-   *
-   * As of 1.7.35, this can be a single mod or list of mods. But we're keeping the name for backwards compatibility.
-   */
-  blueprintId: RegistryId | RegistryId[];
-};
-
-/**
  * Array of mods to activate.
  * @since 1.8.8
  */
@@ -168,18 +109,14 @@ type ModActivationPartial = {
  * @see getActivatingMods
  */
 export async function setActivatingMods(
-  args: Nullishable<LegacyModActivationPartial | ModActivationPartial>,
+  args: Nullishable<ModActivationPartial>,
 ): Promise<void> {
   if (args == null) {
     await activationStorage.remove();
     return;
   }
 
-  const modIdsOrMods =
-    (args as ModActivationPartial).mods ??
-    (args as LegacyModActivationPartial).blueprintId;
-
-  const mods = migrateActivatingModsShape(modIdsOrMods);
+  const { mods } = args;
 
   if (mods.length === 0) {
     await activationStorage.remove();
@@ -200,14 +137,10 @@ export async function setActivatingMods(
  * @see setActivatingMods
  */
 export async function getActivatingMods(): Promise<ModActivationConfig[]> {
-  const value = await activationStorage.get();
-  return migrateActivatingModsShape(value);
+  return activationStorage.get();
 }
 
-type ActivateModsOptions = (
-  | LegacyModActivationPartial
-  | ModActivationPartial
-) & {
+type ActivateModsOptions = ModActivationPartial & {
   /**
    * True to open the extension in a new tab, false to replace the current tab (default=True)
    */
@@ -239,10 +172,7 @@ export async function openActivateModPage({
   redirectUrl,
   ...options
 }: ActivateModsOptions): Promise<boolean> {
-  const mods = migrateActivatingModsShape(
-    (options as ModActivationPartial).mods ??
-      (options as LegacyModActivationPartial).blueprintId,
-  );
+  const { mods } = options;
 
   if (mods.length === 0) {
     throw new Error("No mods provided");

@@ -45,7 +45,6 @@ export const removeInstalledExtension = getNotifier(
 export const resetTab = getNotifier("RESET_TAB");
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 
-export const runBlock = getMethod("RUN_SINGLE_BLOCK");
 export const runRendererBlock = getMethod("RUN_RENDERER_BLOCK");
 
 export const clearDynamicElements = getNotifier("CLEAR_DYNAMIC_ELEMENTS");
@@ -56,9 +55,5 @@ export const getInstalledExtensionPoints = getMethod(
   "INSTALLED_EXTENSION_POINTS",
 );
 export const checkAvailable = getMethod("CHECK_AVAILABLE");
-export const runBrick = getMethod("RUN_BRICK");
 
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
-export const runHeadlessPipeline = getMethod("RUN_HEADLESS_PIPELINE");
-
-export const showLoginBanner = getMethod("SHOW_LOGIN_BANNER");

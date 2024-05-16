@@ -28,6 +28,7 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 type ConfigProps = {
   integrationFieldSchema: Schema;
@@ -38,7 +39,7 @@ type ConfigProps = {
 };
 
 function useAuthErrorAnnotation(
-  sanitizedConfig: SanitizedIntegrationConfig,
+  sanitizedConfig: Nullishable<SanitizedIntegrationConfig>,
 ): FieldAnnotation | null {
   const {
     data: isConfigValid = true,

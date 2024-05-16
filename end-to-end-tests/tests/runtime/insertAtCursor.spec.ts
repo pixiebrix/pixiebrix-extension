@@ -18,7 +18,7 @@
 import { test, expect } from "../../fixtures/extensionBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { test as base } from "@playwright/test";
+import { type Frame, type Page, test as base } from "@playwright/test";
 import {
   conditionallyHoverOverMV2Sidebar,
   ensureVisibility,
@@ -31,69 +31,84 @@ test.describe("Insert at Cursor", () => {
     page,
     extensionId,
   }) => {
-    const modId = "@pixies/test/insert-at-cursor";
+    await test.step("activate the insert at cursor mod and navigate to advanced fields", async () => {
+      const modId = "@pixies/test/insert-at-cursor";
+      const modActivationPage = new ActivateModPage(page, extensionId, modId);
+      await modActivationPage.goto();
+      await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
-    const modActivationPage = new ActivateModPage(page, extensionId, modId);
-    await modActivationPage.goto();
-    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
-
-    await page.goto("/advanced-fields/");
+      await page.goto("/advanced-fields/");
+    });
 
     // The mod contains a trigger to open the sidebar on h1
     await page.click("h1");
-
     const sideBarPage = await getSidebarPage(page, extensionId);
     await expect(
       sideBarPage.getByRole("heading", { name: "Insert at Cursor" }),
     ).toBeVisible();
 
-    // Normal text input field
-    const input = page.getByLabel("input", { exact: true });
-    await input.scrollIntoViewIfNeeded();
-    await input.click();
-    await input.pressSequentially("a");
+    await test.step("verify insert at normal text input field", async () => {
+      const input = page.getByLabel("input", { exact: true });
+      await input.scrollIntoViewIfNeeded();
+      await input.click();
+      await input.pressSequentially("a");
 
-    await sideBarPage.getByRole("button", { name: "Insert at Cursor" }).click();
-    await expect(input).toHaveValue("aHello world!");
+      await sideBarPage
+        .getByRole("button", { name: "Insert at Cursor" })
+        .click();
+      await expect(input).toHaveValue("aHello world!");
+    });
 
-    // Normal textarea
-    const textarea = page.getByLabel("textarea", { exact: true });
-    await textarea.scrollIntoViewIfNeeded();
-    await textarea.click();
-    await textarea.pressSequentially("ab");
-    await textarea.press("ArrowLeft");
+    await test.step("verify insert at normal text area", async () => {
+      const textarea = page.getByLabel("textarea", { exact: true });
+      await textarea.scrollIntoViewIfNeeded();
+      await textarea.click();
+      await textarea.pressSequentially("ab");
+      await textarea.press("ArrowLeft");
 
-    await sideBarPage.getByRole("button", { name: "Insert at Cursor" }).click();
-    await expect(textarea).toHaveValue("aHello world!b");
+      await sideBarPage
+        .getByRole("button", { name: "Insert at Cursor" })
+        .click();
+      await expect(textarea).toHaveValue("aHello world!b");
+    });
 
-    // Basic content editable
-    const editable = page.locator("div[contenteditable]").first();
-    await textarea.scrollIntoViewIfNeeded();
-    await editable.click();
-    await editable.pressSequentially("ab");
-    await editable.press("ArrowLeft");
+    await test.step("verify insert at basic content editable", async () => {
+      const editable = page.locator("div[contenteditable]").first();
+      await editable.scrollIntoViewIfNeeded();
+      await editable.click();
+      await editable.pressSequentially("ab");
+      await editable.press("ArrowLeft");
 
-    await sideBarPage.getByRole("button", { name: "Insert at Cursor" }).click();
-    await expect(editable).toHaveText("aHello world!b");
+      await sideBarPage
+        .getByRole("button", { name: "Insert at Cursor" })
+        .click();
+      await expect(editable).toHaveText("aHello world!b");
+    });
 
-    // Draft.js - target by aria-label
-    const editor = page.getByLabel("rdw-editor");
-    await editor.scrollIntoViewIfNeeded();
+    await test.step("verify insert at Draft.js", async () => {
+      // Target by aria-label
+      const editor = page.getByLabel("rdw-editor");
+      await editor.scrollIntoViewIfNeeded();
 
-    await editor.click();
+      await editor.click();
 
-    // Need to simulate the mouse entering the sidebar to track focus on MV2
-    await conditionallyHoverOverMV2Sidebar(page);
+      // Need to simulate the mouse entering the sidebar to track focus on MV2
+      await conditionallyHoverOverMV2Sidebar(page);
 
-    await sideBarPage.getByRole("button", { name: "Insert at Cursor" }).click();
+      await sideBarPage
+        .getByRole("button", { name: "Insert at Cursor" })
+        .click();
 
-    await expect(editor.getByText("Hello world!")).toBeVisible();
+      await expect(editor.getByText("Hello world!")).toBeVisible();
 
-    await editor.click();
-    await editor.press("ArrowLeft");
-    await sideBarPage.getByRole("button", { name: "Insert at Cursor" }).click();
+      await editor.click();
+      await editor.press("ArrowLeft");
+      await sideBarPage
+        .getByRole("button", { name: "Insert at Cursor" })
+        .click();
 
-    await expect(editor.getByText("Hello worldHello world!!")).toBeVisible();
+      await expect(editor.getByText("Hello worldHello world!!")).toBeVisible();
+    });
   });
 
   test("8154: can insert at cursor after opening sidebar from selection menu", async ({

@@ -57,7 +57,7 @@ describe("createModVariableProxy", () => {
       { blueprintId: null, options: apiVersionOptions("v3") },
     );
 
-    expect(ctxt["@mod"].foo).toBe(42);
+    expect(ctxt["@mod"]!.foo).toBe(42);
   });
 
   it.each(["v1", "v2"])(

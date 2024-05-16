@@ -77,7 +77,7 @@ export class ComponentReader extends TransformerABC {
 
   async transform(
     args: BrickArgs<FrameworkConfig>,
-    { root }: BrickOptions,
+    { root = document }: BrickOptions,
   ): Promise<unknown> {
     return frameworkReadFactory(args.framework)(
       args as unknown as FrameworkConfig,

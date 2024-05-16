@@ -22,7 +22,7 @@ import {
   errorTargetClosedEarly,
   type MessengerMeta,
 } from "webext-messenger";
-import { runBrick } from "@/contentScript/messenger/api";
+import { runBrick } from "@/contentScript/messenger/strict/api";
 import { type Target } from "@/types/messengerTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import type { RunBrickRequest } from "@/contentScript/messenger/runBrickTypes";
@@ -69,7 +69,11 @@ export async function requestRunInOpener(
   this: MessengerMeta,
   request: RunBrickRequest,
 ): Promise<unknown> {
-  let { id: sourceTabId, openerTabId } = this.trace[0].tab;
+  let { id: sourceTabId, openerTabId } = this.trace[0]?.tab ?? {};
+
+  if (sourceTabId == null) {
+    throw new Error("Sender tab id unavailable");
+  }
 
   // Chrome may have lost this data in the meanwhile
   // https://bugs.chromium.org/p/chromium/issues/detail?id=967150
@@ -95,7 +99,11 @@ export async function requestRunInTarget(
   this: MessengerMeta,
   request: RunBrickRequest,
 ): Promise<unknown> {
-  const sourceTabId = this.trace[0].tab.id;
+  const sourceTabId = this.trace[0]?.tab?.id;
+  if (!sourceTabId) {
+    throw new BusinessError("Sender tab has no id");
+  }
+
   const target = await tabToTarget.get(String(sourceTabId));
 
   if (!target) {
@@ -116,7 +124,10 @@ export async function requestRunInTop(
   this: MessengerMeta,
   request: RunBrickRequest,
 ): Promise<unknown> {
-  const sourceTabId = this.trace[0].tab.id;
+  const sourceTabId = this.trace[0]?.tab?.id;
+  if (!sourceTabId) {
+    throw new BusinessError("Sender tab has no id");
+  }
 
   const subRequest = { ...request, sourceTabId };
   return safelyRunBrick(
@@ -132,7 +143,11 @@ export async function requestRunInOtherTabs(
   this: MessengerMeta,
   request: RunBrickRequest,
 ): Promise<unknown[]> {
-  const sourceTabId = this.trace[0].tab.id;
+  const sourceTabId = this.trace[0]?.tab?.id;
+  if (!sourceTabId) {
+    throw new BusinessError("Sender tab has no id");
+  }
+
   const subRequest = { ...request, sourceTabId };
 
   const results = await forEachTab(
@@ -164,12 +179,17 @@ export async function requestRunInAllFrames(
   this: MessengerMeta,
   request: RunBrickRequest,
 ): Promise<unknown[]> {
-  const sourceTabId = this.trace[0].tab.id;
+  const sourceTabId = this.trace[0]?.tab?.id;
+  if (!sourceTabId) {
+    throw new BusinessError("Sender tab has no id");
+  }
+
   const subRequest = { ...request, sourceTabId };
 
-  const frames = await browser.webNavigation.getAllFrames({
-    tabId: sourceTabId,
-  });
+  const frames =
+    (await browser.webNavigation.getAllFrames({
+      tabId: sourceTabId,
+    })) ?? [];
 
   const promises = frames.map(async ({ frameId }) =>
     safelyRunBrick({ tabId: sourceTabId, frameId }, subRequest),

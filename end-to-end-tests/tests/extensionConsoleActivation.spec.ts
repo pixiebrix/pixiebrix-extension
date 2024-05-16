@@ -19,11 +19,17 @@ import { test, expect } from "../fixtures/extensionBase";
 import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base, type Frame } from "@playwright/test";
-import { getSidebarPage, runModViaQuickBar } from "../utils";
+import {
+  getSidebarPage,
+  clickAndWaitForNewPage,
+  runModViaQuickBar,
+  getBrowserOs,
+} from "../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
-import { MV } from "../env";
+import { MV, SERVICE_URL } from "../env";
+import { ExtensionsShortcutsPage } from "end-to-end-tests/pageObjects/extensionsShortcutsPage";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -54,8 +60,6 @@ test("can activate a mod with built-in integration", async ({
 }) => {
   test.skip(MV === "2", "Service worker request mocking only available in MV3");
 
-  const modId = "@pixies/giphy/giphy-search";
-
   let giphyRequestPostData: Serializable;
   // The giphy search request is proxied through the PixieBrix server, which is kicked off in the background/service
   // worker. Playwright experimentally supports mocking service worker requests, see
@@ -74,6 +78,7 @@ test("can activate a mod with built-in integration", async ({
     return route.continue();
   });
 
+  const modId = "@pixies/giphy/giphy-search";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();
 
@@ -163,4 +168,97 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
   sideBarPage = await reloadSidebar(page, sideBarPage, extensionId);
 
   await expect(sideBarPage.getByTestId("card").getByText(note)).toBeHidden();
+});
+
+test("activating a mod when the quickbar shortcut is not configured", async ({
+  context,
+  page: firstTab,
+  extensionId,
+  chromiumChannel,
+}) => {
+  const shortcutsPage = new ExtensionsShortcutsPage(firstTab, chromiumChannel);
+  await shortcutsPage.goto();
+
+  await test.step("Clear the quickbar shortcut before activing a quickbar mod", async () => {
+    const os = await getBrowserOs(firstTab);
+    // See https://github.com/pixiebrix/pixiebrix-extension/issues/6268
+    // eslint-disable-next-line playwright/no-conditional-in-test -- Existing bug where shortcut isn't set on Edge in Windows/Linux
+    if (os === "MacOS" || chromiumChannel === "chrome") {
+      await shortcutsPage.clearQuickbarShortcut();
+    }
+  });
+
+  let modActivationPage: ActivateModPage;
+  const secondTab = await context.newPage();
+  await test.step("Begin activation of a mod with a quickbar shortcut", async () => {
+    const modId = "@e2e-testing/show-alert";
+    modActivationPage = new ActivateModPage(secondTab, extensionId, modId);
+    await modActivationPage.goto();
+  });
+
+  await test.step("Verify the mod activation page has links for setting the shortcut", async () => {
+    await expect(
+      modActivationPage.keyboardShortcutDocumentationLink(),
+    ).toBeVisible();
+    await modActivationPage.keyboardShortcutDocumentationLink().click();
+
+    await expect(
+      secondTab.getByRole("heading", { name: "Changing the Quick Bar" }),
+    ).toBeVisible();
+    await secondTab.goBack();
+
+    await expect(
+      modActivationPage.configureQuickbarShortcutLink(),
+    ).toBeVisible();
+
+    const configureShortcutPage = await clickAndWaitForNewPage(
+      modActivationPage.configureQuickbarShortcutLink(),
+      context,
+    );
+
+    await expect(configureShortcutPage).toHaveURL(shortcutsPage.getPageUrl());
+    await configureShortcutPage.close();
+  });
+
+  await test.step("Restore the shortcut and activate the mod", async () => {
+    await shortcutsPage.setQuickbarShortcut();
+
+    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+  });
+
+  await test.step("Verify the mod is activated and works as expected", async () => {
+    await firstTab.bringToFront();
+    await firstTab.goto("/");
+
+    await runModViaQuickBar(firstTab, "Show Alert");
+    await expect(firstTab.getByText("Quick Bar Action ran")).toBeVisible();
+  });
+});
+
+test("can activate a mod via url", async ({ page, extensionId }) => {
+  test.skip(
+    MV === "2",
+    "Not passing in MV2, too close to 2.0.0 to be worth debugging",
+  );
+
+  const modId = "@e2e-testing/show-alert";
+  const modIdUrlEncoded = encodeURIComponent(modId);
+  const activationLink = `${SERVICE_URL}/activate?id=${modIdUrlEncoded}`;
+
+  await page.goto(activationLink);
+
+  await expect(async () => {
+    await expect(page).toHaveURL(
+      `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
+    );
+  }).toPass({ timeout: 5000 });
+  await expect(page.getByRole("code")).toContainText(modId);
+
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
+  await page.goto("/");
+
+  await runModViaQuickBar(page, "Show Alert");
+  await expect(page.getByText("Quick Bar Action ran")).toBeVisible();
 });

@@ -42,7 +42,7 @@ import {
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { isEmpty } from "lodash";
 import DelayedRender from "@/components/DelayedRender";
-import { runHeadlessPipeline } from "@/contentScript/messenger/api";
+import { runHeadlessPipeline } from "@/contentScript/messenger/strict/api";
 import { uuidv4 } from "@/types/helpers";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";

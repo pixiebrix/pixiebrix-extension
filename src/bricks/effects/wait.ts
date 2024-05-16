@@ -142,7 +142,7 @@ export class WaitElementEffect extends EffectABC {
       maxWaitMillis: number;
       isRootAware: boolean;
     }>,
-    { logger, root, abortSignal }: BrickOptions,
+    { logger, root = document, abortSignal }: BrickOptions,
   ): Promise<void> {
     // Single string for logging, the exact format isn't that important
     const combinedSelector = Array.isArray(selector)

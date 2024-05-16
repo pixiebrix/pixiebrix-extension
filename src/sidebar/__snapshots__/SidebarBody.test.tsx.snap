@@ -38,6 +38,7 @@ exports[`SidebarBody it renders error when URL is restricted 1`] = `
     <a
       class="button themeColorOverride btn btn-link btn-sm"
       href="chrome-extension://abcxyz/options.html"
+      title="Open Extension Console"
     >
       <svg
         aria-hidden="true"
@@ -141,6 +142,7 @@ exports[`SidebarBody it renders with anonymous user 1`] = `
     <a
       class="button themeColorOverride btn btn-link btn-sm"
       href="chrome-extension://abcxyz/options.html"
+      title="Open Extension Console"
     >
       <svg
         aria-hidden="true"
@@ -250,6 +252,7 @@ exports[`SidebarBody it renders with authenticated user 1`] = `
     <a
       class="button themeColorOverride btn btn-link btn-sm"
       href="chrome-extension://abcxyz/options.html"
+      title="Open Extension Console"
     >
       <svg
         aria-hidden="true"

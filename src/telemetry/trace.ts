@@ -29,6 +29,7 @@ import {
   type RenderedArgs,
 } from "@/types/runtimeTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const DATABASE_NAME = "TRACE";
 const ENTRY_OBJECT_STORE = "traces";
@@ -39,13 +40,15 @@ export type TraceRecordMeta = {
    * Extension id, to correlate across extension runs.
    *
    * `null` for ad-hoc block execution.
+   * Marked Nullishable as part of the StrictNullChecks migration.
+   * TODO: Revisit and determine if this should be required.
    */
-  extensionId: UUID | null;
+  extensionId: Nullishable<UUID>;
 
   /**
    * Extension run id. Unique run id to correlate trace elements from the same extension run.
    */
-  runId: UUID;
+  runId: Nullishable<UUID>;
 
   /**
    * Branches to the brick execution
@@ -61,7 +64,7 @@ export type TraceRecordMeta = {
   /**
    * Unique id to identify the block in the Page Editor across runs.
    */
-  blockInstanceId: UUID;
+  blockInstanceId: Nullishable<UUID>;
 
   /**
    * The registry id of the block.
@@ -70,7 +73,7 @@ export type TraceRecordMeta = {
 };
 
 type Output = {
-  outputKey: OutputKey | null;
+  outputKey: Nullishable<OutputKey>;
 
   /**
    * Output of the block
@@ -82,7 +85,7 @@ type ErrorOutput = {
   /**
    * Serialized error from running the block
    */
-  error: ErrorObject;
+  error: ErrorObject | null;
 };
 
 export type TraceEntryData = TraceRecordMeta & {
@@ -94,9 +97,9 @@ export type TraceEntryData = TraceRecordMeta & {
   templateContext: JsonObject;
 
   /**
-   * The rendered args, or null if there was an error rendering the args
+   * The rendered args, or undefined if there was an error rendering the args
    */
-  renderedArgs: RenderedArgs | null;
+  renderedArgs?: RenderedArgs;
 
   /**
    * The error rendering the arguments

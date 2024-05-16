@@ -68,3 +68,8 @@ export const enableOverlay = getMethod("ENABLE_OVERLAY");
 export const disableOverlay = getMethod("DISABLE_OVERLAY");
 export const runMapArgs = getMethod("RUN_MAP_ARGS");
 export const getCopilotHostData = getMethod("GET_COPILOT_HOST_DATA");
+
+export const showLoginBanner = getMethod("SHOW_LOGIN_BANNER");
+export const runBlock = getMethod("RUN_SINGLE_BLOCK");
+export const runBrick = getMethod("RUN_BRICK");
+export const runHeadlessPipeline = getMethod("RUN_HEADLESS_PIPELINE");
