@@ -22,7 +22,7 @@ import FieldTemplate, {
 } from "@/components/form/FieldTemplate";
 import { useSelector } from "react-redux";
 import type { FieldAnnotation } from "@/components/form/FieldAnnotation";
-import { isNullOrBlank } from "@/utils/stringUtils";
+import { extractMarkdownLink, isNullOrBlank } from "@/utils/stringUtils";
 import { AnnotationType } from "@/types/annotationTypes";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { makeFieldAnnotationsForValue } from "@/components/form/makeFieldAnnotationsForValue";
@@ -61,19 +61,16 @@ function FormikFieldTemplate<Values>({
 
     if (showFormikError) {
       // The error message could end in a Markdown link [label](url), which is extracted and shown as a button link.
-      const markdownLinkRegex = /\[([^\]]+)]\(([^)]+)\)$/;
-      const documentationLink = markdownLinkRegex.exec(error);
+      const documentationLink = extractMarkdownLink(error);
       const annotation: FieldAnnotation = {
-        message: documentationLink
-          ? error.replace(markdownLinkRegex, "")
-          : error,
+        message: documentationLink?.rest || error,
         type: AnnotationType.Error,
         actions: documentationLink
           ? [
               {
-                caption: documentationLink[1] || "Read more",
+                caption: documentationLink.label || "Read more",
                 async action() {
-                  window.open(documentationLink[2], "_blank");
+                  window.open(documentationLink.url, "_blank");
                 },
               },
             ]
