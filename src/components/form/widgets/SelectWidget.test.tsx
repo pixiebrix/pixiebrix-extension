@@ -19,6 +19,8 @@ import { render, screen } from "@testing-library/react";
 import React from "react";
 import selectEvent from "react-select-event";
 import SelectWidget, { type Option } from "./SelectWidget";
+import { type GroupBase } from "react-select";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 const options: Option[] = [
   {
@@ -31,18 +33,45 @@ const options: Option[] = [
   },
 ];
 
+const groupedOptions: Array<GroupBase<Option>> = [
+  {
+    label: "Group 1",
+    options: [
+      {
+        label: "Test label 1",
+        value: "value1",
+      },
+    ],
+  },
+  {
+    label: "Group 2",
+    options: [
+      {
+        label: "Test label 2",
+        value: "value2",
+      },
+    ],
+  },
+];
+
 test("renders value", () => {
   const name = "Name for Test";
+  const selectedOption = options[1];
   const { asFragment } = render(
     <SelectWidget
       id="idForTest"
       name={name}
       options={options}
-      value={options[1]!.value}
+      value={selectedOption.value}
       onChange={jest.fn()}
     />,
   );
   expect(asFragment()).toMatchSnapshot();
+  expect(screen.getByText(selectedOption.label)).toBeInTheDocument();
+  // eslint-disable-next-line testing-library/no-node-access -- react-select works via hidden input element that can't be accessed via getByRole
+  const hiddenInput = document.querySelector("input[type=hidden]");
+  expect(hiddenInput).toHaveAttribute("name", name);
+  expect(hiddenInput).toHaveAttribute("value", selectedOption.value);
 });
 
 test("calls onChange", async () => {
@@ -69,4 +98,26 @@ test("calls onChange", async () => {
       name,
     },
   });
+});
+
+test("renders grouped options", async () => {
+  const name = "Test field";
+  const selectedOption = groupedOptions[1].options[0];
+  render(
+    <SelectWidget
+      id="testField"
+      name={name}
+      options={groupedOptions}
+      value={selectedOption.value}
+      onChange={jest.fn()}
+    />,
+  );
+
+  await waitForEffect();
+  expect(screen.getByText(selectedOption.label)).toBeInTheDocument();
+
+  // eslint-disable-next-line testing-library/no-node-access -- react-select works via hidden input element that can't be accessed via getByRole
+  const hiddenInput = document.querySelector("input[type=hidden]");
+  expect(hiddenInput).toHaveAttribute("name", name);
+  expect(hiddenInput).toHaveAttribute("value", selectedOption.value);
 });
