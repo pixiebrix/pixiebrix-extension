@@ -62,7 +62,7 @@ async function init(): Promise<void> {
   ReactDOM.render(<App />, document.querySelector("#container"));
 
   // XXX: Do we really want to delay the `init`? Maybe this should be last or use `getConnectedTarget().then`
-  // sidebarWasLoaded(await getConnectedTarget());
+  sidebarWasLoaded(await getConnectedTarget());
 
   initSidePanel();
   markDocumentAsFocusableByUser();

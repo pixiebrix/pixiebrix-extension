@@ -122,6 +122,10 @@ export function sidebarWasLoaded(): void {
 export async function showSidebarInTopFrame() {
   reportEvent(Events.SIDEBAR_SHOW);
 
+  // We do not await the promise here since we want to show the sidebar as soon as possible to avoid the possibility
+  // of the user needing to provide another user gesture to open the sidebar.
+  const sidebarInitiallyOpenPromise = isSidePanelOpenMv3();
+
   if (isLoadedInIframe()) {
     console.warn("showSidebarInTopFrame should not be called in an iframe");
   }
@@ -152,7 +156,13 @@ export async function showSidebarInTopFrame() {
     throw new Error("The sidebar did not respond in time", { cause: error });
   }
 
-  sidebarShowEvents.emit({ reason: RunReason.MANUAL });
+  // If the sidebar was already open, we need to trigger the sidebarShowEvent to rerun
+  // the panel modComponents. This ensures that the "Show Sidebar brick" also refreshes the panel contents
+  // if already open. Note that the sidebar itself already triggers this event when it's first opened, so
+  // this check also ensures that we don't trigger the event twice in this situation.
+  if (await sidebarInitiallyOpenPromise) {
+    sidebarWasLoaded();
+  }
 }
 
 /**
