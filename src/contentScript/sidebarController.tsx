@@ -151,6 +151,8 @@ export async function showSidebarInTopFrame() {
   } catch (error) {
     throw new Error("The sidebar did not respond in time", { cause: error });
   }
+
+  sidebarShowEvents.emit({ reason: RunReason.MANUAL });
 }
 
 /**
