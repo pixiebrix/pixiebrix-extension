@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ChangeEvent, useState } from "react";
+import React, { type ChangeEvent, useState, useMemo } from "react";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import Select, {
   type GroupBase,
@@ -32,13 +32,17 @@ export type Option<TValue = string> = {
   value: TValue;
 };
 
-export type GroupedOption<TValue = string> = {
-  label: string;
-  options: Array<Option<TValue>>;
-};
+function isGroupedOption<TValue = string>(
+  option: Option<TValue> | GroupBase<Option<TValue>>,
+): option is GroupBase<Option<TValue>> {
+  return (option as GroupBase<Option<TValue>>).options !== undefined;
+}
 
 // Type passed as target in onChange event
-export type SelectLike<TOption extends Option<TOption["value"]> = Option> = {
+export type SelectLike<
+  TOption extends Option<TOption["value"]> = Option,
+  // TGroup extends GroupBase<TOption> = GroupBase<TOption>,
+> = {
   value: TOption["value"];
   name: string;
   options: TOption[];
@@ -62,7 +66,7 @@ export type SelectWidgetOnChange<
 export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
   CustomFieldWidgetProps<TOption["value"], SelectLike<TOption>> & {
     isClearable?: boolean;
-    options?: TOption[];
+    options?: TOption[] | Array<GroupBase<TOption>>;
     isLoading?: boolean;
     loadingMessage?: string;
     disabled?: boolean;
@@ -74,7 +78,7 @@ export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
      * True if the user can create new options. Default is false.
      */
     creatable?: boolean;
-    placeholder?: placeholder;
+    placeholder?: string;
   };
 
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
@@ -96,7 +100,9 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
 }: SelectWidgetProps<TOption>) => {
   const [textInputValue, setTextInputValue] = useState("");
 
-  const optionsWithPlaceholder = useAddCreatablePlaceholder({
+  const optionsWithPlaceholder = useAddCreatablePlaceholder<
+    NonNullable<SelectWidgetProps<TOption>["options"]>[number]
+  >({
     creatable,
     options,
     textInputValue,
@@ -109,9 +115,18 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
     } as ChangeEvent<SelectLike<TOption>>);
   };
 
-  const flatOptions = options?.some((option) => "options" in option)
-    ? options.flatMap((option) => option.options)
-    : options;
+  const flatOptions = useMemo(
+    () =>
+      options?.flatMap<TOption>((option) => {
+        if (isGroupedOption(option)) {
+          return option.options;
+        }
+
+        return option;
+      }),
+    [options],
+  );
+
   // Pass null instead of undefined if options is not defined
   const selectedOption =
     flatOptions?.find((option: TOption) => value === option.value) ?? null;
