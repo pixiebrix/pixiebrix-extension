@@ -59,11 +59,24 @@ function FormikFieldTemplate<Values>({
       typeof error === "string" &&
       !isNullOrBlank(error);
 
-    const annotation: FieldAnnotation = {
-      message: error as string,
-      type: AnnotationType.Error,
-    };
     if (showFormikError) {
+      // The error message could end in a Markdown link [label](url), which is extracted and shown as a button link.
+      const markdownLinkRegex = /\[([^\]]+)]\(([^)]+)\)$/;
+      const documentationLink = markdownLinkRegex.exec(error);
+      const annotation: FieldAnnotation = {
+        message: error.replace(markdownLinkRegex, ""),
+        type: AnnotationType.Error,
+        actions: documentationLink
+          ? [
+              {
+                caption: documentationLink[1],
+                async action() {
+                  window.open(documentationLink[2], "_blank");
+                },
+              },
+            ]
+          : undefined,
+      };
       annotations.push(annotation);
     }
 
