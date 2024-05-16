@@ -56,7 +56,7 @@ const groupedOptions: Array<GroupBase<Option>> = [
 
 test("renders value", () => {
   const name = "Name for Test";
-  const selectedOption = options[1];
+  const selectedOption = options[1]!;
   const { asFragment } = render(
     <SelectWidget
       id="idForTest"
@@ -78,23 +78,24 @@ test("calls onChange", async () => {
   const id = "idForTest";
   const name = "Name for Test";
   const onChangeMock = jest.fn();
+  const selectedOption = options[1]!;
   render(
     <SelectWidget
       id={id}
       name={name}
       options={options}
-      value={options[1]!.value}
+      value={selectedOption.value}
       onChange={onChangeMock}
     />,
   );
 
-  const optionToSelect = options[0];
-  await selectEvent.select(screen.getByRole("combobox"), optionToSelect!.label);
+  const optionToSelect = options[0]!;
+  await selectEvent.select(screen.getByRole("combobox"), optionToSelect.label);
 
   expect(onChangeMock).toHaveBeenCalledWith({
     target: {
       options,
-      value: optionToSelect!.value,
+      value: optionToSelect.value,
       name,
     },
   });
@@ -102,7 +103,7 @@ test("calls onChange", async () => {
 
 test("renders grouped options", async () => {
   const name = "Test field";
-  const selectedOption = groupedOptions[1].options[0];
+  const selectedOption = groupedOptions[1]!.options[0]!;
   render(
     <SelectWidget
       id="testField"
