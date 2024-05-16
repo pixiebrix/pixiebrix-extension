@@ -29,12 +29,17 @@ import useAddCreatablePlaceholder from "@/components/form/widgets/useAddCreatabl
 // Type of the Select options
 export type Option<TValue = string> = {
   label: string;
-  value: TValue | null;
+  value: TValue;
+};
+
+export type GroupedOption<TValue = string> = {
+  label: string;
+  options: Array<Option<TValue>>;
 };
 
 // Type passed as target in onChange event
 export type SelectLike<TOption extends Option<TOption["value"]> = Option> = {
-  value?: TOption["value"];
+  value: TOption["value"];
   name: string;
   options: TOption[];
 };
@@ -69,6 +74,7 @@ export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
      * True if the user can create new options. Default is false.
      */
     creatable?: boolean;
+    placeholder?: placeholder;
   };
 
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
@@ -86,6 +92,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   styles,
   creatable = false,
   isSearchable = true,
+  placeholder,
 }: SelectWidgetProps<TOption>) => {
   const [textInputValue, setTextInputValue] = useState("");
 
@@ -102,9 +109,12 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
     } as ChangeEvent<SelectLike<TOption>>);
   };
 
+  const flatOptions = options?.some((option) => "options" in option)
+    ? options.flatMap((option) => option.options)
+    : options;
   // Pass null instead of undefined if options is not defined
   const selectedOption =
-    options?.find((option: TOption) => value === option.value) ?? null;
+    flatOptions?.find((option: TOption) => value === option.value) ?? null;
 
   const Component = creatable ? Creatable : Select;
 
@@ -129,6 +139,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
       }
       styles={styles}
       isSearchable={isSearchable}
+      placeholder={placeholder}
     />
   );
 };
