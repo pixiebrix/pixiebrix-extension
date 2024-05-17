@@ -113,13 +113,16 @@ const pingSidebar = memoizeUntilSettled(
                 message:
                   "The Sidebar is taking longer than expected to load. Retrying...",
                 dismissable: false,
-                autoDismissTimeMs: 12_000,
+                // Should timeout and be removed long before this time
+                autoDismissTimeMs: 30_000,
               });
             }
           },
         },
       );
     } catch (error) {
+      // Hide the slow loading warning before showing the error
+      hideNotification(notificationId);
       // TODO: Use TimeoutError after https://github.com/sindresorhus/p-timeout/issues/41
       throw new Error(
         "The Sidebar took too long to load. Retry your last action or reopen the Sidebar",
