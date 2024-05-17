@@ -27,12 +27,12 @@ import Creatable from "react-select/creatable";
 import useAddCreatablePlaceholder from "@/components/form/widgets/useAddCreatablePlaceholder";
 
 // Type of the Select options
-export type Option<TValue = string> = {
+export type Option<TValue = string | null> = {
   label: string;
   value: TValue;
 };
 
-function isGroupedOption<TValue = string>(
+function isGroupedOption<TValue = string | null>(
   option: Option<TValue> | GroupBase<Option<TValue>>,
 ): option is GroupBase<Option<TValue>> {
   return "options" in option;
