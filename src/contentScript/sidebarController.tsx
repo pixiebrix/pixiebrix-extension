@@ -53,6 +53,8 @@ import {
   getSidebarTargetForCurrentTab,
   isUserGestureRequiredError,
 } from "@/utils/sidePanelUtils";
+import pRetry from "p-retry";
+import notify from "@/utils/notify";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -93,10 +95,27 @@ export const isSidePanelOpen = isMV3()
 const pingSidebar = memoizeUntilSettled(
   throttle(async () => {
     try {
-      await sidebarInThisTab.pingSidebar();
+      await pRetry(
+        async () => {
+          await sidebarInThisTab.pingSidebar();
+        },
+        {
+          retries: 3,
+          onFailedAttempt({ attemptNumber }) {
+            if (attemptNumber === 1) {
+              notify.info(
+                "The Sidebar is taking longer than expected to load. Retrying...",
+              );
+            }
+          },
+        },
+      );
     } catch (error) {
       // TODO: Use TimeoutError after https://github.com/sindresorhus/p-timeout/issues/41
-      throw new Error("The sidebar did not respond in time", { cause: error });
+      throw new Error(
+        "The Sidebar took too long to load. Retry your last action or reopen the Sidebar",
+        { cause: error },
+      );
     }
   }, 1000) as () => Promise<void>,
 );
@@ -150,11 +169,7 @@ export async function showSidebarInTopFrame() {
     sidebarMv2.insertSidebarFrame();
   }
 
-  try {
-    await pingSidebar();
-  } catch (error) {
-    throw new Error("The sidebar did not respond in time", { cause: error });
-  }
+  await pingSidebar();
 
   // If the sidebar was already open, we need to trigger the sidebarShowEvent to rerun
   // the panel modComponents. This ensures that the "Show Sidebar brick" also refreshes the panel contents
