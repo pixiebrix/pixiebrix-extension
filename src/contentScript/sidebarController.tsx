@@ -54,7 +54,7 @@ import {
   isUserGestureRequiredError,
 } from "@/utils/sidePanelUtils";
 import pRetry from "p-retry";
-import notify from "@/utils/notify";
+import notify, { hideNotification } from "@/utils/notify";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -94,16 +94,20 @@ export const isSidePanelOpen = isMV3()
 // - Throw custom error if the sidebar doesn't respond in time
 const pingSidebar = memoizeUntilSettled(
   throttle(async () => {
+    let notificationId: string;
     try {
       await pRetry(
         async () => {
           await sidebarInThisTab.pingSidebar();
+          if (notificationId) {
+            hideNotification(notificationId);
+          }
         },
         {
           retries: 3,
           onFailedAttempt({ attemptNumber }) {
             if (attemptNumber === 1) {
-              notify.info(
+              notificationId = notify.info(
                 "The Sidebar is taking longer than expected to load. Retrying...",
               );
             }
