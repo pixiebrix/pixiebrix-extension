@@ -23,7 +23,18 @@ import {
 } from "webext-detect-page";
 
 export function isBrowserSidebar(): boolean {
-  return isExtensionContext() && location.pathname === "/sidebar.html";
+  // return isExtensionContext() && location.pathname === "/sidebar.html";
+  const isExtension = isExtensionContext();
+  const pathname = location.pathname;
+  const result = isExtension && pathname === "/sidebar.html";
+  if (!result) {
+    console.log("*** isBrowserSidebar returned false", {
+      isExtension,
+      pathname,
+    });
+  }
+
+  return result;
 }
 
 export function isPageEditor(): boolean {

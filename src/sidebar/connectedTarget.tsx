@@ -19,8 +19,8 @@ import { isMV3 } from "@/mv3/api";
 import { expectContext, isBrowserSidebar } from "@/utils/expectContext";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { once } from "lodash";
-import { type TopLevelFrame, getTopLevelFrame } from "webext-messenger";
-import { getTabUrl } from "webext-tools";
+import { getTopLevelFrame } from "webext-messenger";
+import { getTabUrl, Target } from "webext-tools";
 
 export function getConnectedTabIdMv3(): number {
   expectContext("sidebar");
@@ -47,10 +47,21 @@ export const getConnectedTabId = once(
  */
 // TODO: Drop support for "content script iframes" because it doesn't belong to `@/sidebar/connectedTarget`
 // https://github.com/pixiebrix/pixiebrix-extension/pull/7354#discussion_r1461563961
-export const getConnectedTarget =
-  isMV3() && isBrowserSidebar()
-    ? (): TopLevelFrame => ({ tabId: getConnectedTabIdMv3(), frameId: 0 })
-    : getTopLevelFrame;
+// export const getConnectedTarget =
+//   isMV3() && isBrowserSidebar()
+//     ? (): TopLevelFrame => ({ tabId: getConnectedTabIdMv3(), frameId: 0 })
+//     : getTopLevelFrame;
+
+export async function getConnectedTarget(): Promise<Target> {
+  const isMv3 = isMV3();
+  const isBrowserSidebarContext = isBrowserSidebar();
+  if (isMv3 && isBrowserSidebarContext) {
+    const tabId = getConnectedTabIdMv3();
+    return { tabId, frameId: 0 };
+  }
+
+  return getTopLevelFrame();
+}
 
 export async function getConnectedTargetUrl(): Promise<string | undefined> {
   return getTabUrl(await getConnectedTarget());
