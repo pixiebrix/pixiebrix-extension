@@ -26,7 +26,7 @@ import {
 import { isUrlRelative } from "@/utils/urlUtils";
 import { isObject } from "@/utils/objectUtils";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
-import { _refreshPartnerToken } from "@/background/partnerIntegrations";
+import _refreshPartnerToken from "@/background/partnerIntegrations/refreshPartnerToken";
 
 /**
  * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL
@@ -122,8 +122,9 @@ export async function getApiClient(): Promise<AxiosInstance> {
     baseURL: await getBaseURL(),
     headers: {
       ...authHeaders,
-      // Version 2.0 is paginated. Explicitly pass version so we can switch the default version on the server when
-      // once clients are all passing an explicit version number
+      // Version 2.0 is paginated. Explicitly pass version here, so we can
+      // switch the default version on the server once clients are all passing
+      // an explicit version number.
       Accept: "application/json; version=1.0",
     },
   });

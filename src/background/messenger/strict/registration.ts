@@ -52,10 +52,6 @@ import { locator, refreshServices } from "@/background/locator";
 import { closeTab, focusTab, openTab } from "@/background/tabs";
 import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow";
 import { performConfiguredRequest } from "@/background/requests";
-import {
-  getPartnerPrincipals,
-  launchAuthIntegration,
-} from "@/background/partnerIntegrations";
 import { getAvailableVersion } from "@/background/installer";
 import {
   collectPerformanceDiagnostics,
@@ -74,6 +70,8 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor";
+import getPartnerPrincipals from "@/background/partnerIntegrations/getPartnerPrincipals";
+import launchAuthIntegration from "@/background/partnerIntegrations/launchAuthIntegration";
 
 expectContext("background");
 

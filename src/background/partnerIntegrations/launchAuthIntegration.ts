@@ -15,80 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { locator as serviceLocator } from "@/background/locator";
-import { compact, flatten } from "lodash";
+import type { RegistryId } from "@/types/registryTypes";
 import { expectContext } from "@/utils/expectContext";
-import { type RegistryId } from "@/types/registryTypes";
-import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
-import { readPartnerAuthData, setPartnerAuth } from "@/auth/authStorage";
 import serviceRegistry from "@/integrations/registry";
-import axios from "axios";
+import { locator as serviceLocator } from "@/background/locator";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
+import { canParseUrl } from "@/utils/urlUtils";
 import { getBaseURL } from "@/data/service/baseService";
+import axios from "axios";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import chromeP from "webext-polyfill-kinda";
-import { setCachedAuthData } from "@/background/auth/authStorage";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import {
-  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "@/integrations/constants";
-import { stringToBase64 } from "uint8array-extras";
-import { canParseUrl } from "@/utils/urlUtils";
-import { assertNotNullish } from "@/utils/nullishUtils";
-
-/**
- * A principal on a remote service, e.g., an Automation Anywhere Control Room.
- */
-type PartnerPrincipal = {
-  /**
-   * The hostname of the remote service, e.g., the Automation Anywhere Control Room.
-   */
-  hostname: string;
-
-  /**
-   * The principal unique id, or null for OAuth-based integrations.
-   */
-  principalId: string | null;
-};
-
-/**
- * Return principals for configured remote partner integrations.
- */
-export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
-  expectContext("background");
-
-  const partnerIds = [
-    CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-    CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-  ];
-
-  const auths = flatten(
-    await Promise.all(
-      partnerIds.map(async (id) => {
-        try {
-          return await serviceLocator.locateAllForService(id);
-        } catch {
-          // `serviceLocator` throws if the user doesn't have the service definition. Handle case where the brick
-          // definition for CONTROL_ROOM_OAUTH_SERVICE_ID hasn't been made available on the server yet
-          return [];
-        }
-      }),
-    ),
-  );
-
-  return compact(
-    auths.map((auth) => {
-      if (canParseUrl(auth.config.controlRoomUrl)) {
-        return {
-          hostname: new URL(auth.config.controlRoomUrl).hostname,
-          principalId: auth.config.username ?? null,
-        } as PartnerPrincipal;
-      }
-
-      return null;
-    }),
-  );
-}
+import { setPartnerAuth } from "@/auth/authStorage";
 
 /**
  * Launch the browser's web auth flow get a partner token for communicating with the PixieBrix server.
@@ -96,7 +36,7 @@ export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
  * WARNING: PixieBrix should already have the required permissions (e.g., to authorize and token endpoints) before
  * calling this method.
  */
-export async function launchAuthIntegration({
+export default async function launchAuthIntegration({
   integrationId,
 }: {
   integrationId: RegistryId;
@@ -193,75 +133,5 @@ export async function launchAuthIntegration({
     throw new Error(
       `Support for login with integration not implemented: ${integrationId}`,
     );
-  }
-}
-
-/**
- * Refresh an Automation Anywhere JWT. NOOP if a JWT refresh token is not available.
- */
-export async function _refreshPartnerToken(): Promise<void> {
-  expectContext("background");
-
-  const authData = await readPartnerAuthData();
-
-  if (authData.authId && authData.refreshToken) {
-    console.debug("Refreshing partner JWT");
-
-    const service = await serviceRegistry.lookup(
-      CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-    );
-    const integrationConfig = await serviceLocator.findIntegrationConfig(
-      authData.authId,
-    );
-    assertNotNullish(
-      integrationConfig,
-      `Integration config not found for authId: ${authData.authId}`,
-    );
-
-    const { controlRoomUrl } = integrationConfig.config;
-    if (!canParseUrl(controlRoomUrl)) {
-      // Fine to dump to console for debugging because CONTROL_ROOM_OAUTH_SERVICE_ID doesn't have any secret props.
-      console.warn(
-        "controlRoomUrl is missing on configuration",
-        integrationConfig,
-      );
-      throw new Error("controlRoomUrl is missing on configuration");
-    }
-
-    const context = service.getOAuth2Context(integrationConfig.config);
-    assertNotNullish(context, "Service did not return an OAuth2 context");
-    assertNotNullish(
-      context.tokenUrl,
-      `OAuth2 context for service ${integrationConfig.integrationId} does not include a token URL`,
-    );
-
-    // https://axios-http.com/docs/urlencoded
-    const params = new URLSearchParams();
-    params.append("grant_type", "refresh_token");
-    params.append("client_id", context.client_id);
-    params.append("refresh_token", authData.refreshToken);
-    params.append("hosturl", controlRoomUrl);
-
-    // On 401, throw the error. In the future, we might consider clearing the partnerAuth. However, currently that
-    // would trigger a re-login, which may not be desirable at arbitrary times.
-    const { data } = await axios.post(context.tokenUrl, params, {
-      headers: { Authorization: `Basic ${stringToBase64(context.client_id)} ` },
-    });
-
-    // Store for use direct calls to the partner API
-    await setCachedAuthData(integrationConfig.id, data);
-
-    // Store for use with the PixieBrix API
-    await setPartnerAuth({
-      authId: integrationConfig.id,
-      token: data.access_token,
-      // `refresh_token` only returned if offline_access scope is requested
-      refreshToken: data.refresh_token,
-      extraHeaders: {
-        "X-Control-Room": controlRoomUrl,
-      },
-    });
-
-    console.debug("Successfully refreshed partner token");
   }
 }

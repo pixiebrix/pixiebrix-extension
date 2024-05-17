@@ -15,30 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  _refreshPartnerToken,
-  getPartnerPrincipals,
-} from "@/background/partnerIntegrations";
-import { readRawConfigurations } from "@/integrations/registry";
-import tokenIntegrationDefinition from "@contrib/integrations/automation-anywhere.yaml";
-import oauthIntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
-import { locator as serviceLocator } from "@/background/locator";
-import { uuidv4 } from "@/types/helpers";
-import { readPartnerAuthData, setPartnerAuth } from "@/auth/authStorage";
-import { syncRemotePackages } from "@/registry/memoryRegistry";
-import { type RegistryId } from "@/types/registryTypes";
-import { type IntegrationConfig } from "@/integrations/integrationTypes";
-import {
-  integrationConfigFactory,
-  secretsConfigFactory,
-} from "@/testUtils/factories/integrationFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { registry } from "@/background/messenger/strict/api";
-import { setCachedAuthData } from "@/background/auth/authStorage";
+import _refreshPartnerToken from "@/background/partnerIntegrations/refreshPartnerToken";
+import { uuidv4 } from "@/types/helpers";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
+import { secretsConfigFactory } from "@/testUtils/factories/integrationFactories";
+import type { IntegrationConfig } from "@/integrations/integrationTypes";
+import { locator as serviceLocator } from "@/background/locator";
+import tokenIntegrationDefinition from "@contrib/integrations/automation-anywhere.yaml";
+import oauthIntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
+import { registry } from "@/background/messenger/strict/api";
+import type { RegistryId } from "@/types/registryTypes";
+import { readRawConfigurations } from "@/integrations/registry";
+import { readPartnerAuthData, setPartnerAuth } from "@/auth/authStorage";
+import { setCachedAuthData } from "@/background/auth/authStorage";
 
 const integrationDefinitionMap = new Map([
   [CONTROL_ROOM_TOKEN_INTEGRATION_ID, tokenIntegrationDefinition],
@@ -76,58 +69,7 @@ const setPartnerAuthMock = jest.mocked(setPartnerAuth);
 const readPartnerAuthDataMock = jest.mocked(readPartnerAuthData);
 const setCachedAuthDataMock = jest.mocked(setCachedAuthData);
 
-describe("getPartnerPrincipals", () => {
-  beforeEach(() => {
-    appApiMock.reset();
-
-    appApiMock
-      .onGet("/api/registry/bricks/")
-      .reply(200, [tokenIntegrationDefinition, oauthIntegrationDefinition]);
-
-    appApiMock.onGet("/api/services/shared/").reply(200, []);
-
-    readRawConfigurationsMock.mockReset();
-  });
-
-  test("get empty principals", async () => {
-    // No local integration configurations
-    readRawConfigurationsMock.mockResolvedValue([]);
-
-    await syncRemotePackages();
-    await serviceLocator.refresh();
-
-    const principals = await getPartnerPrincipals();
-
-    expect(principals).toStrictEqual([]);
-  });
-
-  test("get configured principal", async () => {
-    // Local configuration
-    readRawConfigurationsMock.mockResolvedValue([
-      integrationConfigFactory({
-        integrationId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-        config: secretsConfigFactory({
-          controlRoomUrl: "https://control-room.example.com",
-          username: "bot_creator",
-        }),
-      }),
-    ]);
-
-    await serviceLocator.refresh();
-    await syncRemotePackages();
-
-    const principals = await getPartnerPrincipals();
-
-    expect(principals).toStrictEqual([
-      {
-        hostname: "control-room.example.com",
-        principalId: "bot_creator",
-      },
-    ]);
-  });
-});
-
-describe("refresh partner token", () => {
+describe("refreshPartnerToken", () => {
   beforeEach(() => {
     appApiMock.reset();
     appApiMock.resetHistory();
