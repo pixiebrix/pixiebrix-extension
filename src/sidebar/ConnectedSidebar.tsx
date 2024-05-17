@@ -41,7 +41,7 @@ import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { ensureExtensionPointsInstalled } from "@/contentScript/messenger/api";
 import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api";
 import {
-  getConnectedTabIdMv3,
+  getConnectedTabIdForMV3SidebarTopFrame,
   getConnectedTarget,
 } from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
@@ -112,7 +112,7 @@ const ConnectedSidebar: React.VFC = () => {
       details: chrome.webNavigation.WebNavigationFramedCallbackDetails,
     ) => {
       const { frameId, tabId, documentLifecycle } = details;
-      const connectedTabId = getConnectedTabIdMv3();
+      const connectedTabId = getConnectedTabIdForMV3SidebarTopFrame();
       if (
         documentLifecycle === "active" &&
         tabId === connectedTabId &&

@@ -16,14 +16,21 @@
  */
 
 import { isMV3 } from "@/mv3/api";
-import { expectContext, isBrowserSidebar } from "@/utils/expectContext";
+import { expectContext, isBrowserSidebarTopFrame } from "@/utils/expectContext";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { once } from "lodash";
-import { getTopLevelFrame } from "webext-messenger";
-import { getTabUrl, Target } from "webext-tools";
+import { getTopLevelFrame, type TopLevelFrame } from "webext-messenger";
+import { getTabUrl } from "webext-tools";
 
-export function getConnectedTabIdMv3(): number {
+export function getConnectedTabIdForMV3SidebarTopFrame(): number {
   expectContext("sidebar");
+
+  if (location.pathname !== "/sidebar.html") {
+    throw new Error(
+      `getConnectedTabIdForMV3SidebarTopFrame can only be called from the MV3 sidebar's top frame. The current location is ${location.href}.`,
+    );
+  }
+
   const tabId = new URLSearchParams(window.location.search).get("tabId");
   assertNotNullish(
     tabId,
@@ -38,7 +45,7 @@ async function getConnectedTabIdMv2() {
 }
 
 export const getConnectedTabId = once(
-  isMV3() ? getConnectedTabIdMv3 : getConnectedTabIdMv2,
+  isMV3() ? getConnectedTabIdForMV3SidebarTopFrame : getConnectedTabIdMv2,
 );
 
 /**
@@ -47,21 +54,13 @@ export const getConnectedTabId = once(
  */
 // TODO: Drop support for "content script iframes" because it doesn't belong to `@/sidebar/connectedTarget`
 // https://github.com/pixiebrix/pixiebrix-extension/pull/7354#discussion_r1461563961
-// export const getConnectedTarget =
-//   isMV3() && isBrowserSidebar()
-//     ? (): TopLevelFrame => ({ tabId: getConnectedTabIdMv3(), frameId: 0 })
-//     : getTopLevelFrame;
-
-export async function getConnectedTarget(): Promise<Target> {
-  const isMv3 = isMV3();
-  const isBrowserSidebarContext = isBrowserSidebar();
-  if (isMv3 && isBrowserSidebarContext) {
-    const tabId = getConnectedTabIdMv3();
-    return { tabId, frameId: 0 };
-  }
-
-  return getTopLevelFrame();
-}
+export const getConnectedTarget: () => Promise<TopLevelFrame> =
+  isMV3() && isBrowserSidebarTopFrame()
+    ? async () => ({
+        tabId: getConnectedTabIdForMV3SidebarTopFrame(),
+        frameId: 0,
+      })
+    : getTopLevelFrame;
 
 export async function getConnectedTargetUrl(): Promise<string | undefined> {
   return getTabUrl(await getConnectedTarget());

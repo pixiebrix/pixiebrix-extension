@@ -121,14 +121,26 @@ export async function initCopilotMessenger(): Promise<void> {
     // necessary to pass to the Co-Pilot frame.
   });
 
-  // Note: This code can be run either in the sidebar or in a modal
-  const frame = await getConnectedTarget();
-
-  // Fetch the current data from the content script when the frame loads
-  const data = await getCopilotHostData(frame);
-  console.debug("Setting initial Co-Pilot data", {
-    location: window.location.href,
-    data,
-  });
-  setHostData(data);
+  try {
+    // Note: This code can be run either in the sidebar or in a modal. Currently,
+    // it sometimes also runs in nested frames in the MV3 sidebar, in which case
+    // the webext-messenger getTopLevelFrame() function currently cannot return
+    // a frameId/tabId, due to how it's implemented. It will throw an error, and
+    // in this specific case we don't want to be running the CoPilot Data
+    // initialization on a nested frame anyway, so we'll just eat the error and
+    // warn to console for now.
+    const connectedTarget = await getConnectedTarget();
+    // Fetch the current data from the content script when the target frame loads
+    const data = await getCopilotHostData(connectedTarget);
+    console.debug("Setting initial Co-Pilot data", {
+      location: window.location.href,
+      data,
+    });
+    setHostData(data);
+  } catch (error) {
+    console.warn(
+      "Error getting connected target, aborting co-pilot messenger initialization",
+      error,
+    );
+  }
 }
