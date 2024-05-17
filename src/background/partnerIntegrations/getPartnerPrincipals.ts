@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PartnerPrincipal } from "@/background/partnerIntegrations/types";
+import { type PartnerPrincipal } from "@/background/partnerIntegrations/types";
 import { expectContext } from "@/utils/expectContext";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
