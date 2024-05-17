@@ -94,7 +94,7 @@ export const isSidePanelOpen = isMV3()
 // - Throw custom error if the sidebar doesn't respond in time
 const pingSidebar = memoizeUntilSettled(
   throttle(async () => {
-    let notificationId: string;
+    let notificationId = "";
     try {
       await pRetry(
         async () => {
