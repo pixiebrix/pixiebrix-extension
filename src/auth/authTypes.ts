@@ -25,11 +25,12 @@ import { type OrganizationTheme } from "@/data/model/OrganizationTheme";
 import { type ControlRoom } from "@/data/model/ControlRoom";
 import { type UserRole } from "@/types/contract";
 import { type UserMilestone } from "@/data/model/UserMilestone";
+import { type Option } from "@/components/form/widgets/SelectWidget";
 
 export type AuthSharing = "private" | "shared" | "built-in";
-export interface AuthOption {
+export interface AuthOption extends Option {
   label: string;
-  value: UUID;
+  value: UUID | null;
   serviceId: RegistryId;
   local: boolean;
   sharingType: AuthSharing;
