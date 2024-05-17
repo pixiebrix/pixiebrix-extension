@@ -74,7 +74,10 @@ export default function getUnconfiguredComponentIntegrations({
 
   const dedupedIntegrationDependencies: IntegrationDependency[] = [];
   for (const group of Object.values(
-    groupBy(integrationDependencies, "integrationId"),
+    groupBy(
+      integrationDependencies,
+      ({ integrationId, outputKey }) => `${integrationId}:${outputKey}`,
+    ),
   )) {
     const notOptional = group.find(({ isOptional }) => !isOptional);
     if (notOptional) {
