@@ -28,7 +28,7 @@ if (typeof chrome.devtools.inspectedWindow.tabId === "number") {
   });
 
   chrome.devtools.panels.create(
-    "PixieBrix",
+    process.env.IS_BETA ? "PixieBrix BETA" : "PixieBrix",
     "",
     `pageEditor.html?tabId=${chrome.devtools.inspectedWindow.tabId}`,
   );

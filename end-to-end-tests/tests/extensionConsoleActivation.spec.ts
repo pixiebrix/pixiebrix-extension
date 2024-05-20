@@ -18,7 +18,7 @@
 import { test, expect } from "../fixtures/extensionBase";
 import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { type Page, test as base, type Frame } from "@playwright/test";
+import { test as base } from "@playwright/test";
 import {
   getSidebarPage,
   clickAndWaitForNewPage,
@@ -28,7 +28,7 @@ import {
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
-import { MV } from "../env";
+import { MV, SERVICE_URL } from "../env";
 import { ExtensionsShortcutsPage } from "end-to-end-tests/pageObjects/extensionsShortcutsPage";
 
 test("can activate a mod with no config options", async ({
@@ -112,22 +112,6 @@ test("can activate a mod with built-in integration", async ({
   });
 });
 
-// Temporary hack until https://github.com/pixiebrix/pixiebrix-extension/issues/8376 is resolved
-async function reloadSidebar(
-  page: Page,
-  sideBarPage: Page | Frame,
-  extensionId: string,
-) {
-  if (MV === "3") {
-    await (sideBarPage as Page).reload();
-  } else {
-    await page.reload();
-    await runModViaQuickBar(page, "Open Sidebar");
-  }
-
-  return getSidebarPage(page, extensionId);
-}
-
 test("can activate a mod with a database", async ({ page, extensionId }) => {
   const modId = "@e2e-testing/shared-notes-sidebar";
   const note = `This is a test note ${Date.now()}`;
@@ -140,7 +124,7 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
   await page.goto("/");
 
   await runModViaQuickBar(page, "Open Sidebar");
-  let sideBarPage = await getSidebarPage(page, extensionId);
+  const sideBarPage = await getSidebarPage(page, extensionId);
 
   await sideBarPage.getByRole("button", { name: "Add note" }).click();
 
@@ -151,10 +135,6 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
     .getByRole("button", { name: "Submit" })
     .click();
 
-  // TODO: Remove when the sidebar is reloaded automatically
-  // See: https://github.com/pixiebrix/pixiebrix-extension/issues/8376
-  sideBarPage = await reloadSidebar(page, sideBarPage, extensionId);
-
   await expect(sideBarPage.getByTestId("card").getByText(note)).toBeVisible();
 
   // Get the correct container element, as the note text and delete button are wrapped in a div
@@ -162,10 +142,6 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
     .getByText(`${note} Delete Note`)
     .getByRole("button", { name: "Delete Note" })
     .click();
-
-  // TODO: Remove when the sidebar is reloaded automatically
-  // See: https://github.com/pixiebrix/pixiebrix-extension/issues/8376
-  sideBarPage = await reloadSidebar(page, sideBarPage, extensionId);
 
   await expect(sideBarPage.getByTestId("card").getByText(note)).toBeHidden();
 });
@@ -233,4 +209,32 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
     await runModViaQuickBar(firstTab, "Show Alert");
     await expect(firstTab.getByText("Quick Bar Action ran")).toBeVisible();
   });
+});
+
+test("can activate a mod via url", async ({ page, extensionId }) => {
+  test.skip(
+    MV === "2",
+    "Not passing in MV2, too close to 2.0.0 to be worth debugging",
+  );
+
+  const modId = "@e2e-testing/show-alert";
+  const modIdUrlEncoded = encodeURIComponent(modId);
+  const activationLink = `${SERVICE_URL}/activate?id=${modIdUrlEncoded}`;
+
+  await page.goto(activationLink);
+
+  await expect(async () => {
+    await expect(page).toHaveURL(
+      `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
+    );
+  }).toPass({ timeout: 5000 });
+  await expect(page.getByRole("code")).toContainText(modId);
+
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
+  await page.goto("/");
+
+  await runModViaQuickBar(page, "Show Alert");
+  await expect(page.getByText("Quick Bar Action ran")).toBeVisible();
 });

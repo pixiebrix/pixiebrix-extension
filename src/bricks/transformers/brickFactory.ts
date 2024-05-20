@@ -257,7 +257,7 @@ class UserDefinedBrick extends BrickABC {
     const pipeline = castArray(this.component.pipeline);
     const last = pipeline.at(-1);
 
-    if (!last?.id || this.id === last.id) {
+    if (!last || this.id === last.id) {
       // Guard against infinite recursion
       return null;
     }

@@ -78,7 +78,7 @@ describe("getUnconfiguredComponentIntegrations", () => {
     ]);
   });
 
-  it("dedupes integrations", () => {
+  it("dedupes integrations by integrationId and outputKey", () => {
     const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
     const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
     const modComponentDefinition1 = modComponentDefinitionFactory({
@@ -98,11 +98,16 @@ describe("getUnconfiguredComponentIntegrations", () => {
     const modComponentDefinition2 = modComponentDefinitionFactory({
       services: {
         properties: {
+          // Same outputKey as above for service1
           service1: {
             $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
           },
+          // Unique outputKey for service2
+          service3: {
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
+          },
         },
-        required: ["service1"],
+        required: ["service1", "service3"],
       },
     });
 
@@ -121,6 +126,12 @@ describe("getUnconfiguredComponentIntegrations", () => {
         {
           integrationId: serviceId2,
           outputKey: validateOutputKey("service2"),
+          isOptional: false,
+          apiVersion: "v2",
+        },
+        {
+          integrationId: serviceId2,
+          outputKey: validateOutputKey("service3"),
           isOptional: false,
           apiVersion: "v2",
         },

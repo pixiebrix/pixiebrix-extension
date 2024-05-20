@@ -40,6 +40,8 @@ export type TraceRecordMeta = {
    * Extension id, to correlate across extension runs.
    *
    * `null` for ad-hoc block execution.
+   * Marked Nullishable as part of the StrictNullChecks migration.
+   * TODO: Revisit and determine if this should be required.
    */
   extensionId: Nullishable<UUID>;
 
@@ -95,9 +97,9 @@ export type TraceEntryData = TraceRecordMeta & {
   templateContext: JsonObject;
 
   /**
-   * The rendered args, or null if there was an error rendering the args
+   * The rendered args, or undefined if there was an error rendering the args
    */
-  renderedArgs: Nullishable<RenderedArgs>;
+  renderedArgs?: RenderedArgs;
 
   /**
    * The error rendering the arguments

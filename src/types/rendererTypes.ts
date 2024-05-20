@@ -27,6 +27,8 @@ type BaseRendererPayload = {
   key: Nullishable<string>;
   /**
    * The ModComponent that produced the payload.
+   * Marked Nullishable as part of the StrictNullChecks migration.
+   * TODO: Revisit and determine if this should be required.
    */
   extensionId: Nullishable<UUID>;
   /**

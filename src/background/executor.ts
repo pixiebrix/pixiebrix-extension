@@ -71,6 +71,10 @@ export async function requestRunInOpener(
 ): Promise<unknown> {
   let { id: sourceTabId, openerTabId } = this.trace[0]?.tab ?? {};
 
+  if (sourceTabId == null) {
+    throw new Error("Sender tab id unavailable");
+  }
+
   // Chrome may have lost this data in the meanwhile
   // https://bugs.chromium.org/p/chromium/issues/detail?id=967150
   openerTabId ??= await tabToOpener.get(String(sourceTabId));

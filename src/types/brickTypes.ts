@@ -25,6 +25,7 @@ import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
 } from "@/platform/capabilities";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * An instance of a re-usable brick.
@@ -122,7 +123,7 @@ export interface Brick extends Metadata {
    * Returns `true` if the brick may read from or write to the page state.
    * @since 1.7.34
    */
-  isPageStateAware?: () => Promise<boolean>;
+  isPageStateAware: () => Promise<boolean>;
 
   /**
    * (Optional) default root output key to use when this brick is added in the page editor.
@@ -133,7 +134,7 @@ export interface Brick extends Metadata {
    *
    * @since 1.3.2
    */
-  defaultOutputKey?: string | null;
+  defaultOutputKey: Nullishable<string>;
 
   /**
    * Run the brick.
@@ -160,7 +161,7 @@ export abstract class BrickABC implements Brick {
 
   uiSchema?: UiSchema = undefined;
 
-  defaultOutputKey?: string | null = undefined;
+  defaultOutputKey: Nullishable<string> = undefined;
 
   outputSchema?: Schema = undefined;
 
