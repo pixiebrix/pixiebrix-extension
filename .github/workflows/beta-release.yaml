@@ -3,9 +3,9 @@ name: Upload and Publish Beta Listing
 on:
   workflow_dispatch:
     inputs:
-      # This is the branch that will trigger the workflow
-      branch:
-        description: "Branch to publish. Should be a release/* branch"
+      # This is the version that will trigger the workflow
+      version:
+        description: "Version to publish. For example, '1.0.0' or '2.0.0-beta.1'"
         required: true
       skip_tests:
         description: "Skip the end-to-end tests"
@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch }}
+          ref: release/${{ github.event.inputs.version }}
       - uses: actions/setup-node@v4
         with:
           node-version-file: package.json
@@ -83,6 +83,8 @@ jobs:
       DEV_EVENT_TELEMETRY: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: release/${{ github.event.inputs.version }}
       - uses: actions/setup-node@v4
         with:
           node-version-file: package.json
