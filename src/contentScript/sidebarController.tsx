@@ -53,6 +53,8 @@ import {
   getSidebarTargetForCurrentTab,
   isUserGestureRequiredError,
 } from "@/utils/sidePanelUtils";
+import pRetry from "p-retry";
+import { hideNotification, showNotification } from "@/utils/notify";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -92,11 +94,40 @@ export const isSidePanelOpen = isMV3()
 // - Throw custom error if the sidebar doesn't respond in time
 const pingSidebar = memoizeUntilSettled(
   throttle(async () => {
+    let notificationId = "";
     try {
-      await sidebarInThisTab.pingSidebar();
+      await pRetry(
+        async () => {
+          await sidebarInThisTab.pingSidebar();
+
+          if (notificationId) {
+            hideNotification(notificationId);
+          }
+        },
+        {
+          retries: 3,
+          onFailedAttempt({ attemptNumber }) {
+            if (attemptNumber === 1) {
+              notificationId = showNotification({
+                type: "info",
+                message:
+                  "The Sidebar is taking longer than expected to load. Retrying...",
+                dismissable: false,
+                // Should timeout and be removed long before this time
+                autoDismissTimeMs: 30_000,
+              });
+            }
+          },
+        },
+      );
     } catch (error) {
+      // Hide the slow loading warning before showing the error
+      hideNotification(notificationId);
       // TODO: Use TimeoutError after https://github.com/sindresorhus/p-timeout/issues/41
-      throw new Error("The sidebar did not respond in time", { cause: error });
+      throw new Error(
+        "The Sidebar took too long to load. Retry your last action or reopen the Sidebar",
+        { cause: error },
+      );
     }
   }, 1000) as () => Promise<void>,
 );
@@ -150,11 +181,7 @@ export async function showSidebarInTopFrame() {
     sidebarMv2.insertSidebarFrame();
   }
 
-  try {
-    await pingSidebar();
-  } catch (error) {
-    throw new Error("The sidebar did not respond in time", { cause: error });
-  }
+  await pingSidebar();
 
   // If the sidebar was already open, we need to trigger the sidebarShowEvent to rerun
   // the panel modComponents. This ensures that the "Show Sidebar brick" also refreshes the panel contents
