@@ -36,6 +36,7 @@ async function rawFocusCaptureDialog({
   // Dialog does not support shadow DOM, so we need to create a container
   const container = document.createElement("div");
   container.className = "pixiebrix-dialog-container";
+  container.setAttribute("style", "all: initial;");
 
   const style = document.createElement("style");
   style.textContent = cssText;
