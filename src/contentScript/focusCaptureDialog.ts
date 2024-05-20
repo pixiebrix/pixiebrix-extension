@@ -33,6 +33,7 @@ async function rawFocusCaptureDialog({
   buttonText = "OK",
   signal,
 }: FocusCaptureDialogOptions): Promise<void> {
+  // Dialog does not support shadow DOM, so we need to create a container
   const container = document.createElement("div");
   container.className = "pixiebrix-dialog-container";
 
@@ -45,7 +46,6 @@ async function rawFocusCaptureDialog({
   const dialog = document.createElement("dialog");
   dialog.className = "pixiebrix-dialog";
 
-  // Add text to the shadow root
   const text = document.createElement("span");
   text.textContent = message;
   dialog.append(text);
@@ -75,7 +75,6 @@ async function rawFocusCaptureDialog({
   container.remove();
 }
 
-/** The style for this component is currently in `contentScript.scss */
 export const focusCaptureDialog = memoizeUntilSettled(rawFocusCaptureDialog, {
   // We only need one focus event, so multiple requests will just wait for the
   // first request to resolve, even if the message is different. Without a static `cacheKey`,
