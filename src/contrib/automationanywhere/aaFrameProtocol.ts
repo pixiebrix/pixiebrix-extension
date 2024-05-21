@@ -22,6 +22,7 @@ import {
   SET_COPILOT_DATA_MESSAGE_TYPE,
   type ProcessDataMap,
 } from "@/contrib/automationanywhere/aaTypes";
+import { TopLevelFrame } from "webext-messenger";
 
 /**
  * `window.postMessage` data payload the Co-Pilot frame sends to the host application.
@@ -121,6 +122,7 @@ export async function initCopilotMessenger(): Promise<void> {
     // necessary to pass to the Co-Pilot frame.
   });
 
+  let connectedTarget: TopLevelFrame;
   try {
     // Note: This code can be run either in the sidebar or in a modal. Currently,
     // it sometimes also runs in nested frames in the MV3 sidebar, in which case
@@ -129,18 +131,23 @@ export async function initCopilotMessenger(): Promise<void> {
     // in this specific case we don't want to be running the CoPilot Data
     // initialization on a nested frame anyway, so we'll just eat the error and
     // warn to console for now.
-    const connectedTarget = await getConnectedTarget();
-    // Fetch the current data from the content script when the target frame loads
-    const data = await getCopilotHostData(connectedTarget);
-    console.debug("Setting initial Co-Pilot data", {
-      location: window.location.href,
-      data,
-    });
-    setHostData(data);
+    connectedTarget = await getConnectedTarget();
   } catch (error) {
     console.warn(
       "Error getting connected target, aborting co-pilot messenger initialization",
       error,
     );
   }
+
+  if (!connectedTarget) {
+    return;
+  }
+
+  // Fetch the current data from the content script when the target frame loads
+  const data = await getCopilotHostData(connectedTarget);
+  console.debug("Setting initial Co-Pilot data", {
+    location: window.location.href,
+    data,
+  });
+  setHostData(data);
 }
