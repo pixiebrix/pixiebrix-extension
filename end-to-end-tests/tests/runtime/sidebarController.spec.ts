@@ -20,7 +20,6 @@ import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
 import { getSidebarPage, isSidebarOpen } from "../../utils";
-import { MV } from "../../env";
 
 test.describe("sidebar controller", () => {
   test("can open sidebar immediately from iframe without focus dialog", async ({
@@ -48,8 +47,6 @@ test.describe("sidebar controller", () => {
     page,
     extensionId,
   }) => {
-    test.skip(MV === "2", "This test is only relevant for MV3");
-
     const modId = "@pixies/test/frame-sidebar-actions";
 
     const modActivationPage = new ActivateModPage(page, extensionId, modId);

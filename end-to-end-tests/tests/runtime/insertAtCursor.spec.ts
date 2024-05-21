@@ -20,7 +20,6 @@ import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Frame, type Page, test as base } from "@playwright/test";
 import {
-  conditionallyHoverOverMV2Sidebar,
   ensureVisibility,
   getSidebarPage,
   waitForSelectionMenuReadiness,
@@ -91,9 +90,6 @@ test.describe("Insert at Cursor", () => {
       await editor.scrollIntoViewIfNeeded();
 
       await editor.click();
-
-      // Need to simulate the mouse entering the sidebar to track focus on MV2
-      await conditionallyHoverOverMV2Sidebar(page);
 
       await sideBarPage
         .getByRole("button", { name: "Insert at Cursor" })

@@ -23,7 +23,6 @@ import {
   type Frame,
   type BrowserContext,
 } from "@playwright/test";
-import { MV } from "./env";
 
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
 
@@ -96,23 +95,12 @@ function findSidebarPage(page: Page, extensionId: string): Page | undefined {
     );
 }
 
-function findSidebarFrame(page: Page, extensionId: string): Frame | undefined {
-  return page
-    .frames()
-    .find((frame) =>
-      frame.url().startsWith(`chrome-extension://${extensionId}/sidebar.html`),
-    );
-}
-
 /**
- * Immediately returns whether the sidebar is open. Works on both MV2 and MV3.
+ * Immediately returns whether the sidebar is open.
  * @see getSidebarPage
  */
 export function isSidebarOpen(page: Page, extensionId: string): boolean {
-  const match =
-    MV === "3"
-      ? findSidebarPage(page, extensionId)
-      : findSidebarFrame(page, extensionId);
+  const match = findSidebarPage(page, extensionId);
 
   return match != null;
 }
@@ -120,47 +108,35 @@ export function isSidebarOpen(page: Page, extensionId: string): boolean {
 /**
  * Finds the Pixiebrix sidebar page/frame.
  *
- * For MV3, automatically clicks "OK" on the dialog that appears if the sidebar requires a user gesture to open
- *
- * - In MV3, this is a Page contained in the browser sidepanel window.
- * - In MV2, this is a Frame as it's contained in an iframe attached to the current page.
+ * Automatically clicks "OK" on the dialog that appears if the sidebar requires a user gesture to open
+ * This is a Page contained in the browser sidepanel window.
  *
  * @throws {Error} if the sidebar is not available
  */
 export async function getSidebarPage(
   page: Page,
   extensionId: string,
-): Promise<Page | Frame> {
-  if (MV === "3") {
-    let sidebarPage: Page | undefined;
+): Promise<Page> {
+  let sidebarPage: Page | undefined;
 
-    await page.bringToFront(); // Ensure the tab is active before interacting with the sidebar
+  await page.bringToFront(); // Ensure the tab is active before interacting with the sidebar
 
-    // In MV3, the sidebar sometimes requires the user to interact with modal to open the sidebar via a user gesture
-    const conditionallyPerformUserGesture = async () => {
-      await page.getByRole("button", { name: "Open Sidebar" }).click();
-      return findSidebarPage(page, extensionId);
-    };
+  // The sidebar sometimes requires the user to interact with modal to open the sidebar via a user gesture
+  const conditionallyPerformUserGesture = async () => {
+    await page.getByRole("button", { name: "Open Sidebar" }).click();
+    return findSidebarPage(page, extensionId);
+  };
 
-    await expect(async () => {
-      sidebarPage = await Promise.race([
-        conditionallyPerformUserGesture(),
-        findSidebarPage(page, extensionId),
-      ]);
-      expect(sidebarPage).toBeDefined();
-    }).toPass({ timeout: 5000 });
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion  -- checked above
-    return sidebarPage!;
-  }
-
-  let sidebarFrame: Frame | undefined;
-  await expect(() => {
-    sidebarFrame = findSidebarFrame(page, extensionId);
-    expect(sidebarFrame).toBeDefined();
+  await expect(async () => {
+    sidebarPage = await Promise.race([
+      conditionallyPerformUserGesture(),
+      findSidebarPage(page, extensionId),
+    ]);
+    expect(sidebarPage).toBeDefined();
   }).toPass({ timeout: 5000 });
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
-  return sidebarFrame!;
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion  -- checked above
+  return sidebarPage!;
 }
 
 // Waits for the selection menu to be ready to use (listeners are created and at least one action is registered).
@@ -180,15 +156,6 @@ async function waitForQuickBarReadiness(page: Page) {
       "data-pb-quick-bar-ready",
     );
   }).toPass({ timeout: 5000 });
-}
-
-// Simulates mouse entering the sidebar to track focus on MV2
-// https://github.com/pixiebrix/pixiebrix-extension/blob/1794863937f343fbc8e3a4434eace74191f8dfbd/src/contentScript/sidebarController.tsx#L563-L563
-export async function conditionallyHoverOverMV2Sidebar(page: Page) {
-  if (MV === "2") {
-    const sidebarFrame = page.locator("#pixiebrix-extension");
-    await sidebarFrame.dispatchEvent("mouseenter");
-  }
 }
 
 /**
