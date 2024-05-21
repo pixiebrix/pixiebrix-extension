@@ -21,6 +21,7 @@ import {
   type AbortSignalAsOptions,
   memoizeUntilSettled,
 } from "@/utils/promiseUtils";
+import cssText from "@/contentScript/focusCaptureDialog.scss?loadAsText";
 
 type FocusCaptureDialogOptions = {
   message: string;
@@ -32,16 +33,32 @@ async function rawFocusCaptureDialog({
   buttonText = "OK",
   signal,
 }: FocusCaptureDialogOptions): Promise<void> {
+  // Dialog does not support shadow DOM, so we need to create a container
+  const container = document.createElement("div");
+  container.className = "pixiebrix-dialog-container";
+  container.setAttribute("style", "all: initial;");
+  container.dataset.testid = "pixiebrix-dialog-container";
+
+  const style = document.createElement("style");
+  style.textContent = cssText;
+
+  const shadow = container.attachShadow({ mode: "open" });
+  shadow.append(style);
+
   const dialog = document.createElement("dialog");
   dialog.className = "pixiebrix-dialog";
-  dialog.textContent = message;
+
+  const text = document.createElement("span");
+  text.textContent = message;
+  dialog.append(text);
 
   const button = document.createElement("button");
   button.autofocus = true;
   button.textContent = buttonText;
-
   dialog.append(button);
-  document.body.append(dialog);
+
+  shadow.append(dialog);
+  document.body.append(container);
 
   dialog.showModal();
 
@@ -57,10 +74,9 @@ async function rawFocusCaptureDialog({
 
   await Promise.race(anyPromiseWillCloseTheDialog);
 
-  dialog.remove();
+  container.remove();
 }
 
-/** The style for this component is currently in `contentScript.scss */
 export const focusCaptureDialog = memoizeUntilSettled(rawFocusCaptureDialog, {
   // We only need one focus event, so multiple requests will just wait for the
   // first request to resolve, even if the message is different. Without a static `cacheKey`,
