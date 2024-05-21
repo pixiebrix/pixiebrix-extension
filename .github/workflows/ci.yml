@@ -61,20 +61,11 @@ jobs:
           attempt_limit: 40
 
   build:
-    name: build-mv${{ matrix.MV }}
+    name: build
     runs-on: ubuntu-latest
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
-      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/mv${{ matrix.MV }}
-
-    strategy:
-      matrix:
-        include:
-          - MV: 2
-            PUBLIC_NAME: ""
-          - MV: 3
-            PUBLIC_NAME: "-mv3"
-
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/mv3
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -84,7 +75,8 @@ jobs:
       - run: npm ci
       - run: npm run build:webpack
         env:
-          MV: ${{ matrix.MV }}
+          MV: 3
+          RELEASE_CHANNEL: stable
           ENVIRONMENT: staging
           EXTERNALLY_CONNECTABLE: "${{ env.SERVICE_URL }}*"
           MARKETPLACE_URL: ${{ secrets.STAGING_MARKETPLACE_URL }}
@@ -96,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         with:
-          name: build-staging${{ matrix.PUBLIC_NAME }}
+          name: build-staging
           path: |
             dist
             !dist/**/*.map
@@ -115,8 +107,6 @@ jobs:
         name: Detect webext-messenger unwanted bundles
 
       - uses: actions/upload-artifact@v4
-        # TODO: Eventually upload the MV3 report instead
-        if: matrix.MV == 2
         name: Save report.html
         with:
           name: build-staging-bundle-dependency-report
@@ -194,21 +184,16 @@ jobs:
       - uses: pre-commit/action@v3.0.1
 
   end-to-end-tests:
-    name: end-to-end-tests${{ matrix.PUBLIC_NAME }}
+    name: end-to-end-tests
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - MV: 2
-            PUBLIC_NAME: ""
-          - MV: 3
-            PUBLIC_NAME: "-mv3"
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
       SHADOW_DOM: open
       SERVICE_URL: https://app.pixiebrix.com
-      MV: ${{ matrix.MV }}
+      MV: 3
+      RELEASE_CHANNEL: stable
       CHROME_MANIFEST_KEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhYpgz6Nt3vv5n3d8jyrsWXjkvAxh7bz8WJW05RFrtJx9t0BiVVclO+WpAmhKanB2BiTDw4+Dnlf2lQfTo62LIBnkfTiGzukKqTu3plF0D/Tl/yG1st1xKaQ6dekeThcsgxrFD8+kIUwF4Vq0wPpQ5upl+vf6kX4t9eDev8Eg86mHzUEG/QoS/bu5evN3I1Z0HsiF84VWlrV0b/1GSqpn+dMrFFdcwo2Sn0Ec65nSNfzauDUm5n0NToQ8iYdHkuottREXKJ7/Uy4tO0eMmfokVixbm0i2m9aHEOior5CmNG9X/yGtR2CiM1N4DSEY5mTFu5hPOrALspJ+t7+Is7YnFwIDAQAB
       DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
       DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
@@ -245,13 +230,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: end-to-end-tests-report${{ matrix.PUBLIC_NAME }}
+          name: end-to-end-tests-report
           path: end-to-end-tests/.report
           retention-days: 5
       - uses: daun/playwright-report-summary@v3
         with:
-          comment-title: "Playwright test results - MV${{matrix.MV}}"
+          comment-title: "Playwright test results"
           report-file: end-to-end-tests/.report/report.json
-          report-tag: manifest-version-${{ matrix.MV }}
+          report-tag: manifest-version-3
           report-url: https://github.com/pixiebrix/pixiebrix-extension/actions/runs/${{ github.run_id }}
         if: (success() || failure()) && github.event_name == 'pull_request'

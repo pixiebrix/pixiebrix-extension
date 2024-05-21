@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isPageEditor } from "@/utils/expectContext";
+import { isPageEditorTopFrame } from "@/utils/expectContext";
 import { getErrorMessage, getRootCause } from "./errorHelpers";
 import { CONTEXT_INVALIDATED_ERROR } from "@/errors/knownErrorMessages";
 
@@ -31,7 +31,7 @@ const CONTEXT_INVALIDATED_NOTIFICATION_DURATION_MS = 20_000;
  * all communication becomes impossible.
  */
 export async function notifyContextInvalidated(): Promise<void> {
-  if (isPageEditor()) {
+  if (isPageEditorTopFrame()) {
     // It's one of the few contexts that stay open after invalidation, but it has its own InvalidatedContextGate
     return;
   }
