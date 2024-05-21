@@ -16,7 +16,6 @@
  */
 
 import Policy from "csp-parse";
-import { normalizeManifestPermissions } from "webext-permissions";
 import { excludeDuplicatePatterns } from "webext-patterns";
 
 function getVersion(env) {
@@ -46,73 +45,16 @@ function getVersion(env) {
 }
 
 function getVersionName(env, isProduction) {
-  const mv3 = env.MV === "3" ? "-mv3" : "";
   if (env.ENVIRONMENT === "staging") {
     // Staging builds (i.e., from CI) are production builds, so check ENVIRONMENT first
-    return `${getVersion(env)}${mv3}-alpha+${env.SOURCE_VERSION}`;
+    return `${getVersion(env)}-alpha+${env.SOURCE_VERSION}`;
   }
 
   if (isProduction) {
-    return `${env.npm_package_version}${mv3}`;
+    return `${env.npm_package_version}`;
   }
 
-  return `${env.npm_package_version}${mv3}-local+${new Date().toISOString()}`;
-}
-
-/**
- * @param manifestV2
- * @returns chrome.runtime.ManifestV3
- */
-function updateManifestToV3(manifestV2) {
-  const manifest = structuredClone(manifestV2);
-  manifest.manifest_version = 3;
-
-  // Extract host permissions
-  const { permissions, origins } = normalizeManifestPermissions(manifest);
-  manifest.permissions = [...permissions, "scripting", "offscreen"];
-  manifest.host_permissions = origins;
-  // Sidebar Panel open() is only available in Chrome 116+
-  // https://developer.chrome.com/docs/extensions/reference/api/sidePanel#method-open
-  manifest.minimum_chrome_version = "116.0";
-
-  // Add sidePanel
-  manifest.permissions.push("sidePanel");
-
-  manifest.side_panel = {
-    default_path: "sidebar.html",
-  };
-
-  // Update format
-  manifest.web_accessible_resources = [
-    {
-      resources: manifest.web_accessible_resources,
-      matches: ["*://*/*"],
-    },
-  ];
-
-  // Rename keys
-  manifest.action = manifest.browser_action;
-  delete manifest.browser_action;
-
-  // Update CSP format and drop invalid values
-  const policy = new Policy(manifest.content_security_policy);
-  policy.remove("script-src", "https://apis.google.com");
-  policy.remove("script-src", "'unsafe-eval'");
-  manifest.content_security_policy = {
-    extension_pages: policy.toString(),
-
-    // https://developer.chrome.com/docs/extensions/mv3/manifest/sandbox/
-    sandbox:
-      "sandbox allow-scripts allow-forms; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';",
-  };
-
-  // Replace background script
-  manifest.background = {
-    service_worker: "background.worker.js",
-    type: "module",
-  };
-
-  return manifest;
+  return `${env.npm_package_version}-local+${new Date().toISOString()}`;
 }
 
 /**
@@ -142,7 +84,7 @@ function addInternalUrlsToContentScripts(manifest, internal) {
  * @returns chrome.runtime.Manifest
  */
 function customizeManifest(manifestV2, options = {}) {
-  const { isProduction, manifestVersion, env = {}, isBeta } = options;
+  const { isProduction, env = {}, isBeta } = options;
   const manifest = structuredClone(manifestV2);
   manifest.version = getVersion(env);
   manifest.version_name = getVersionName(env, isProduction);
@@ -212,10 +154,6 @@ function customizeManifest(manifestV2, options = {}) {
   // to the manifest. This is only necessary for Playwright tests.
   if (env.REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST) {
     manifest.permissions.push(...manifest.optional_permissions);
-  }
-
-  if (manifestVersion === 3) {
-    return updateManifestToV3(manifest);
   }
 
   return manifest;
