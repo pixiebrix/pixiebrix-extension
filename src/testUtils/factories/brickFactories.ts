@@ -41,7 +41,9 @@ export const brickFactory = define<Brick>({
   run: jest.fn(),
   isPure: jest.fn(),
   isRootAware: jest.fn(),
+  isPageStateAware: jest.fn(),
   getRequiredCapabilities: jest.fn().mockResolvedValue([]),
+  defaultOutputKey: null,
 });
 
 export const readerBrickFactory = extend<Brick, Reader>(brickFactory, {

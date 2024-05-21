@@ -134,3 +134,11 @@ export const setPartnerCopilotData = getNotifier(
   "SET_PARTNER_COPILOT_DATA",
   bg,
 );
+
+export const requestRun = {
+  inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
+  inTarget: getMethod("REQUEST_RUN_IN_TARGET", bg),
+  inTop: getMethod("REQUEST_RUN_IN_TOP", bg),
+  inOtherTabs: getMethod("REQUEST_RUN_IN_OTHER_TABS", bg),
+  inAllFrames: getMethod("REQUEST_RUN_IN_ALL_FRAMES", bg),
+};

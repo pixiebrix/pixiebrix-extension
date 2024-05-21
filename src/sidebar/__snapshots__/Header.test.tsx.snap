@@ -38,6 +38,7 @@ exports[`Header renders 1`] = `
     <a
       class="button themeColorOverride btn btn-link btn-sm"
       href="chrome-extension://abcxyz/options.html"
+      title="Open Extension Console"
     >
       <svg
         aria-hidden="true"
@@ -97,6 +98,7 @@ exports[`Header renders sidebar header logo per organization theme 1`] = `
     <a
       class="button themeColorOverride btn btn-link btn-sm"
       href="chrome-extension://abcxyz/options.html"
+      title="Open Extension Console"
     >
       <svg
         aria-hidden="true"

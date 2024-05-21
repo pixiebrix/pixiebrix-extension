@@ -447,7 +447,7 @@ class TourStepTransformer extends TransformerABC {
       try {
         $elements = await awaitElement({
           selector: args.selector,
-          $root: $(options.root),
+          $root: $(options.root ?? document),
           maxWaitMillis: args.appearance.wait.maxWaitMillis,
           abortSignal: options.abortSignal,
         });

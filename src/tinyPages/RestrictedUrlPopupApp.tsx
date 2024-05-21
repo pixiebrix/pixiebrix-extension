@@ -22,7 +22,7 @@ import {
   DISPLAY_REASON_EXTENSION_CONSOLE,
   DISPLAY_REASON_UNKNOWN,
 } from "@/tinyPages/restrictedUrlPopupConstants";
-import { isBrowserSidebar } from "@/utils/expectContext";
+import { isBrowserSidebarTopFrame } from "@/utils/expectContext";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
 
@@ -39,7 +39,7 @@ async function openInActiveTab(event: React.MouseEvent<HTMLAnchorElement>) {
 
   // TODO: Drop conditon after we drop the browser action popover since this
   // component will only be shown in the sidebar
-  if (!isBrowserSidebar()) {
+  if (!isBrowserSidebarTopFrame()) {
     window.close();
   }
 }

@@ -20,7 +20,6 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useSelector } from "react-redux";
-import { type UUID } from "@/types/stringTypes";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 /**
@@ -33,7 +32,7 @@ function useReportTraceError(): void {
   const traceErrors = useSelector(selectTraceErrors);
 
   const traceError = traceErrors.find((x) => x.runId);
-  const runId: UUID | undefined = traceError?.runId;
+  const runId = traceError?.runId;
   const prevRunId = usePreviousValue(runId);
   if (traceError && runId && runId !== prevRunId) {
     reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_ERROR, {

@@ -19,7 +19,7 @@ import { isOptionsPage } from "webext-detect-page";
 import { useEffect } from "react";
 import notify from "@/utils/notify";
 import useAsyncState from "@/hooks/useAsyncState";
-import { isPageEditor } from "@/utils/expectContext";
+import { isPageEditorTopFrame } from "@/utils/expectContext";
 import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
@@ -42,7 +42,7 @@ function useCurrentOrigin(): Nullishable<string> {
       return browser.runtime.getURL("");
     }
 
-    if (isPageEditor()) {
+    if (isPageEditorTopFrame()) {
       return "devtools://devtools";
     }
 

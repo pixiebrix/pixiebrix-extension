@@ -22,11 +22,19 @@ import {
   isWebPage,
 } from "webext-detect-page";
 
-export function isBrowserSidebar(): boolean {
+/**
+ * Whether the current context is the top frame of the browser sidebar.
+ *
+ * Note: Returns false for nested frames in the MV3 sidebar, since generally their path won't match.
+ */
+export function isBrowserSidebarTopFrame(): boolean {
   return isExtensionContext() && location.pathname === "/sidebar.html";
 }
 
-export function isPageEditor(): boolean {
+/**
+ * Whether the current context is the top frame of the page editor.
+ */
+export function isPageEditorTopFrame(): boolean {
   return location.pathname === "/pageEditor.html";
 }
 
@@ -56,9 +64,9 @@ const contextMap = {
   web: isWebPage,
   extension: isExtensionContext,
   background: isBackground,
-  pageEditor: isPageEditor,
+  pageEditor: isPageEditorTopFrame,
   contentScript: isContentScript,
-  sidebar: isBrowserSidebar,
+  sidebar: isBrowserSidebarTopFrame,
 } as const;
 
 /**

@@ -91,7 +91,7 @@ export class TableReader extends TransformerABC {
       selector,
       orientation = "infer",
     }: BrickArgs<{ selector: string } & ParsingOptions>,
-    { root }: BrickOptions,
+    { root = document }: BrickOptions,
   ): Promise<unknown> {
     const table = selector ? findSingleElement(selector, root) : root;
 

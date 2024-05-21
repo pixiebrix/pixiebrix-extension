@@ -44,6 +44,6 @@ export interface RunBrickRequest {
   sourceTabId?: number;
   nonce?: string;
   blockId: RegistryId;
-  blockArgs: BrickArgs;
+  blockArgs?: BrickArgs;
   options: RemoteBrickOptions;
 }

@@ -207,11 +207,13 @@ export async function clickAndWaitForNewPage(
   return pagePromise;
 }
 
+type OSName = "Windows" | "MacOS" | "Unix" | "Linux" | "Unknown";
+
 // Temporary workaround for determining which modifiers to use for keyboard shortcuts
 // A permanent fix has been merged but not released
 // See: https://github.com/microsoft/playwright/pull/30572
-export async function getBrowserOs(page: Page): Promise<string> {
-  let OSName = "";
+export async function getBrowserOs(page: Page): Promise<OSName> {
+  let OSName: OSName = "Unknown";
 
   const response = String(await page.evaluate(() => navigator.userAgent));
 

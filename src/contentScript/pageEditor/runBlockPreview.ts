@@ -76,7 +76,8 @@ export async function runBlockPreview({
     // - For multi-menus (not currently available in the Page Editor), the below logic returns an arbitrary menu
     const rootElement = $safeFind(rootSelector);
     if (rootElement.length > 0) {
-      state.root = rootElement.get(0);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check
+      state.root = rootElement.get(0)!;
     }
   }
 

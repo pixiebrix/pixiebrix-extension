@@ -24,13 +24,7 @@
 
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-import {
-  requestRunInAllFrames,
-  requestRunInOtherTabs,
-  requestRunInOpener,
-  requestRunInTarget,
-  requestRunInTop,
-} from "@/background/executor"; // Depends on contentScript/messenger to pass strictNullCheck
+
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // Depends on contentScript/messenger to pass strictNullCheck
 import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // Depends on contentScript/messenger to pass strictNullCheck
 import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus"; // 193 strictNullCheck errors
@@ -44,12 +38,6 @@ declare global {
     INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
 
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
-
-    REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
-    REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
-    REQUEST_RUN_IN_TOP: typeof requestRunInTop;
-    REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInOtherTabs;
-    REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
   }
 }
 
@@ -60,11 +48,5 @@ export default function registerMessenger(): void {
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
 
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
-
-    REQUEST_RUN_IN_OPENER: requestRunInOpener,
-    REQUEST_RUN_IN_TARGET: requestRunInTarget,
-    REQUEST_RUN_IN_TOP: requestRunInTop,
-    REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
-    REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
   });
 }

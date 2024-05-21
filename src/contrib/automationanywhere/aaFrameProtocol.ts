@@ -19,9 +19,10 @@ import { expectContext } from "@/utils/expectContext";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { getCopilotHostData } from "@/contentScript/messenger/strict/api";
 import {
-  SET_COPILOT_DATA_MESSAGE_TYPE,
   type ProcessDataMap,
+  SET_COPILOT_DATA_MESSAGE_TYPE,
 } from "@/contrib/automationanywhere/aaTypes";
+import { type TopLevelFrame } from "webext-messenger";
 
 /**
  * `window.postMessage` data payload the Co-Pilot frame sends to the host application.
@@ -94,12 +95,14 @@ export async function initCopilotMessenger(): Promise<void> {
       const data = hostData.get(event.data.processId) ?? {};
 
       console.debug("Received AARI data request", {
+        location: window.location.href,
         event,
         currentProcessData: data,
       });
 
       // @ts-expect-error -- incorrect types https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#examples
-      event.source.postMessage({ data }, event.origin);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access -- See above
+      event.source.parent?.postMessage({ data }, event.origin);
     }
   });
 
@@ -119,11 +122,29 @@ export async function initCopilotMessenger(): Promise<void> {
     // necessary to pass to the Co-Pilot frame.
   });
 
-  // Note: This code can be run either in the sidebar or in a modal
-  const frame = await getConnectedTarget();
+  let connectedTarget: TopLevelFrame | null = null;
+  try {
+    // Note: This code can be run either in the sidebar or in a modal. Currently,
+    // it sometimes also runs in nested frames in the MV3 sidebar, in which case
+    // the webext-messenger getTopLevelFrame() function currently cannot return
+    // a frameId/tabId, due to how it's implemented. It will throw an error, and
+    // in this specific case we don't want to be running the CoPilot Data
+    // initialization on a nested frame anyway, so we'll just eat the error and
+    // warn to console for now.
+    connectedTarget = await getConnectedTarget();
+  } catch (error) {
+    console.warn(
+      "Error getting connected target, aborting co-pilot messenger initialization",
+      error,
+    );
+  }
 
-  // Fetch the current data from the content script when the frame loads
-  const data = await getCopilotHostData(frame);
+  if (!connectedTarget) {
+    return;
+  }
+
+  // Fetch the current data from the content script when the target frame loads
+  const data = await getCopilotHostData(connectedTarget);
   console.debug("Setting initial Co-Pilot data", {
     location: window.location.href,
     data,

@@ -107,3 +107,19 @@ export function escapeSingleQuotes(str: string): string {
   // https://gist.github.com/getify/3667624
   return str.replaceAll(/\\([\S\s])|(')/g, "\\$1$2");
 }
+
+/** Extracts a label and URL from a string ending with a Markdown link. It also returns the original text without the trailing link. */
+export function extractMarkdownLink(text: string) {
+  const markdownLinkRegex = /\[(?<label>[^\]]*)]\((?<url>[^)]*)\)$/;
+  const match = markdownLinkRegex.exec(text);
+
+  if (match?.groups) {
+    return {
+      rest: text.replace(markdownLinkRegex, "").trimEnd(),
+      label: match.groups.label,
+      url: match.groups.url,
+    };
+  }
+
+  return null;
+}

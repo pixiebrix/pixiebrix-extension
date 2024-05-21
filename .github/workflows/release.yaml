@@ -17,19 +17,13 @@ jobs:
 
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
-      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/mv${{ matrix.MV }}
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/mv3
 
     # Docs https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs#expanding-or-adding-matrix-configurations
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - MV: 2
-            PUBLIC_NAME: "-mv2"
-          - MV: 3
-            PUBLIC_NAME: "-mv3"
 
-    name: build${{ matrix.PUBLIC_NAME }}
+    name: build
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -39,8 +33,8 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          MV: ${{ matrix.MV }}
-          PUBLIC_NAME: ${{ matrix.PUBLIC_NAME }}
+          MV: 3
+          RELEASE_CHANNEL: stable
           DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
           DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
       - run: bash scripts/upload-sourcemaps.sh
@@ -54,7 +48,7 @@ jobs:
       - name: Save store extension
         uses: actions/upload-artifact@v4
         with:
-          name: build-for-store${{ matrix.PUBLIC_NAME }}
+          name: build-for-store
           path: dist
           retention-days: 30
           if-no-files-found: error
@@ -63,7 +57,7 @@ jobs:
       - name: Save production extension
         uses: actions/upload-artifact@v4
         with:
-          name: build-production${{ matrix.PUBLIC_NAME }}
+          name: build-production
           path: dist
           retention-days: 30
           if-no-files-found: error
@@ -76,7 +70,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: build-for-store-mv2
+          name: build-for-store
       - name: Upload to Chrome Web Store (without publishing)
         run: npx chrome-webstore-upload-cli@3 upload
         env:

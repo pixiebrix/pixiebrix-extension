@@ -23,6 +23,7 @@ import { type Logger } from "@/types/loggerTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { type PanelPayload } from "./sidebarTypes";
 import { type PlatformProtocol } from "@/platform/platformProtocol";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.
@@ -314,12 +315,14 @@ export interface RunMetadata {
   /**
    * The extension that's running the brick. Used to correlate trace records across all runs/branches.
    * @since 1.7.0
+   * Marked Nullishable as part of the StrictNullChecks migration.
+   * TODO: Revisit and determine if this should be required.
    */
-  extensionId: UUID;
+  extensionId: Nullishable<UUID>;
   /**
    * A unique run id to correlate trace records across branches for a run, or null to disable tracing.
    */
-  runId: UUID | null;
+  runId: Nullishable<UUID>;
   /**
    * The control flow branch to correlate trace records for a brick.
    * @since 1.7.0
@@ -354,7 +357,7 @@ export type BrickOptions<
   /**
    * Implicit root element (or document) for calls the select/read from the DOM
    */
-  root: SelectorRoot;
+  root?: SelectorRoot;
 
   /**
    * True if the brick is executing in headless mode.
@@ -375,7 +378,7 @@ export type BrickOptions<
     pipeline: PipelineExpression,
     branch: TraceBranch,
     extraContext?: UnknownObject,
-    root?: SelectorRoot,
+    root?: SelectorRoot | null,
   ) => Promise<unknown>;
 
   /**
