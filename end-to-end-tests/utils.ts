@@ -20,7 +20,6 @@ import {
   type Locator,
   expect,
   type Page,
-  type Frame,
   type BrowserContext,
 } from "@playwright/test";
 

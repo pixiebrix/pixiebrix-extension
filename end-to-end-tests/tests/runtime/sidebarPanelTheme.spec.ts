@@ -37,7 +37,7 @@ test("custom sidebar theme css file is applied to all levels of sidebar document
   await page.getByText("Index of  /").click();
   await runModViaQuickBar(page, "Show Sidebar");
 
-  const sidebarPage = (await getSidebarPage(page, extensionId)) as Page;
+  const sidebarPage = await getSidebarPage(page, extensionId);
   await expect(
     sidebarPage.getByText("#8347: Theme Inheritance", { exact: true }),
   ).toBeVisible();
