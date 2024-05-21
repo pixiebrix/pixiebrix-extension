@@ -52,7 +52,13 @@ const componentMeta: ComponentMeta<typeof Form> = {
 const SchemaShape = yup.object().shape({
   title: yup.string().optional().oneOf(["Mr.", "Ms.", "Mrs.", "other"]),
   name: yup.string().required(),
-  age: yup.number().required("What's your age again?").positive().integer(),
+  age: yup
+    .number()
+    .required(
+      "What's your age again? [Age calculator](https://www.calculator.net/age-calculator.html)",
+    )
+    .positive()
+    .integer(),
 });
 
 const initialValues = {
