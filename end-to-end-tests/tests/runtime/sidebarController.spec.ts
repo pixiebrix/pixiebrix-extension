@@ -19,7 +19,8 @@ import { test, expect } from "../../fixtures/extensionBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import { getSidebarPage, isSidebarOpen } from "../../utils";
+import { getSidebarPage, isSidebarOpen, runModViaQuickBar } from "../../utils";
+import { MV } from "../../env";
 
 test.describe("sidebar controller", () => {
   test("can open sidebar immediately from iframe without focus dialog", async ({
@@ -75,5 +76,39 @@ test.describe("sidebar controller", () => {
 
     // Will error if page/frame not available
     await getSidebarPage(page, extensionId);
+  });
+
+  test("prevents host page styles from leaking into dialog", async ({
+    extensionId,
+    page,
+  }) => {
+    test.skip(MV === "2", "This test is only relevant for MV3");
+
+    const modId = "@e2e-testing/show-sidebar-after-wait";
+
+    const modActivationPage = new ActivateModPage(page, extensionId, modId);
+    await modActivationPage.goto();
+    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
+    await page.goto("/style-conflicts/");
+
+    // Mod waits 7.5 seconds before running Show Sidebar brick to ensure the user gesture dialog is shown
+    await runModViaQuickBar(page, "Show Sidebar after wait");
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- match wait in the mod
+    await page.waitForTimeout(8000);
+
+    const focusDialog = page.getByText(
+      'Click "Open Sidebar" to open the mod sidebarOpen Sidebar',
+    );
+    await expect(focusDialog).toBeVisible();
+
+    // One of the styles that would leak on /style-conflicts
+    await expect(focusDialog).not.toHaveCSS("line-height", "5em");
+
+    const focusDialogContainer = page.getByTestId("pixiebrix-dialog-container");
+    await expect(focusDialogContainer).toHaveAttribute(
+      "style",
+      "all: initial;",
+    );
   });
 });
