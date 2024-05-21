@@ -37,6 +37,7 @@ async function rawFocusCaptureDialog({
   const container = document.createElement("div");
   container.className = "pixiebrix-dialog-container";
   container.setAttribute("style", "all: initial;");
+  container.dataset.testid = "pixiebrix-dialog-container";
 
   const style = document.createElement("style");
   style.textContent = cssText;
