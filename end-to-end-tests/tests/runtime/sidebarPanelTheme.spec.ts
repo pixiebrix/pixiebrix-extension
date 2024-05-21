@@ -18,7 +18,6 @@
 import { test, expect } from "../../fixtures/extensionBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { getSidebarPage, runModViaQuickBar } from "../../utils";
-import type { Page } from "@playwright/test";
 
 test("custom sidebar theme css file is applied to all levels of sidebar document", async ({
   page,
