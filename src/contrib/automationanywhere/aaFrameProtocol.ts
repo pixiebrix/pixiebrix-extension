@@ -122,7 +122,7 @@ export async function initCopilotMessenger(): Promise<void> {
     // necessary to pass to the Co-Pilot frame.
   });
 
-  let connectedTarget: TopLevelFrame;
+  let connectedTarget: TopLevelFrame | null = null;
   try {
     // Note: This code can be run either in the sidebar or in a modal. Currently,
     // it sometimes also runs in nested frames in the MV3 sidebar, in which case
