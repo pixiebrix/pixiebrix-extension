@@ -19,10 +19,10 @@ import { expectContext } from "@/utils/expectContext";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { getCopilotHostData } from "@/contentScript/messenger/strict/api";
 import {
-  SET_COPILOT_DATA_MESSAGE_TYPE,
   type ProcessDataMap,
+  SET_COPILOT_DATA_MESSAGE_TYPE,
 } from "@/contrib/automationanywhere/aaTypes";
-import { TopLevelFrame } from "webext-messenger";
+import { type TopLevelFrame } from "webext-messenger";
 
 /**
  * `window.postMessage` data payload the Co-Pilot frame sends to the host application.
