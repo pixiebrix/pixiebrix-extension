@@ -77,12 +77,14 @@ const RestrictedUrlContent: React.FC<{ extensionConsoleLink?: boolean }> = ({
   </div>
 );
 
-const RestrictedUrlPopupApp: React.FC<{ reason: string | null }> = ({
-  reason = DISPLAY_REASON_UNKNOWN,
-}) => {
+const RestrictedUrlPopupApp: React.FC<{
+  reason: string | null;
+  url: string;
+}> = ({ reason = DISPLAY_REASON_UNKNOWN, url }) => {
   useOnMountOnly(() => {
     reportEvent(Events.BROWSER_ACTION_RESTRICTED_URL, {
       reason,
+      url,
     });
   });
 
