@@ -17,7 +17,6 @@ One-time setup:
     - Uncomment `SHADOW_DOM=open`
     - Uncomment `DATADOG_CLIENT_TOKEN` (used for telemetry tests, can be set to a fake token, e.g. `secret123`)
     - Uncomment `DEV_EVENT_TELEMETRY` (used for telemetry tests, actual telemetry requests should be mocked during testing)
-  - `MV` will determine the manifest version for the both the extension and the tests (defaulted to 3 if not defined.)
 - Install browsers: Execute `npx playwright install chromium chrome msedge`.
 
 1. Install dependencies: Run `npm install`
@@ -89,7 +88,7 @@ to become visible, even if it's initially hidden or unmounted.
 
 ## Test Infrastructure
 
-The tests are configured to run the extension on both manifest V2 and V3 in Chrome and Edge.
+The tests are configured to run the extension on both Chrome and Edge.
 
 ### Fixtures
 
