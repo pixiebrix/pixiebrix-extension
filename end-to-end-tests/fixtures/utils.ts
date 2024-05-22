@@ -16,7 +16,7 @@
  */
 
 import { type BrowserContext, chromium } from "@playwright/test";
-import { CI, MV, PWDEBUG, SLOWMO } from "../env";
+import { CI, PWDEBUG, SLOWMO } from "../env";
 import path from "node:path";
 
 export const launchPersistentContextWithExtension = async (
@@ -48,20 +48,11 @@ export const launchPersistentContextWithExtension = async (
 };
 
 export const getExtensionId = async (context: BrowserContext) => {
-  let background;
-
-  if (MV === "3") {
-    background = context.serviceWorkers()[0];
-    background ||= await context.waitForEvent("serviceworker", {
+  const background =
+    context.serviceWorkers()[0] ||
+    (await context.waitForEvent("serviceworker", {
       timeout: 3000,
-    });
-  } else {
-    // For manifest v2:
-    background = context.backgroundPages()[0];
-    background ||= await context.waitForEvent("backgroundpage", {
-      timeout: 3000,
-    });
-  }
+    }));
 
   const extensionId = background.url().split("/")[2];
 
