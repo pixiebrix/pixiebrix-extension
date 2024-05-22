@@ -39,6 +39,7 @@ const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 const activationStorage = new StorageItem<ModActivationConfig[]>(
   // Keeping key for backwards compatibility
   "activatingBlueprintId",
+  { defaultValue: [] },
 );
 
 /**
