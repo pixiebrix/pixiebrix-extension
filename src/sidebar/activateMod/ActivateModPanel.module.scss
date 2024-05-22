@@ -48,6 +48,8 @@
   > button {
     text-wrap: none;
     flex-grow: 1;
+    // Styling tweak to fit the buttons on the same row
+    // See https://github.com/pixiebrix/pixiebrix-extension/pull/8495
     padding-left: 2rem;
     padding-right: 2rem;
 
