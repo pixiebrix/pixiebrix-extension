@@ -48,6 +48,8 @@
   > button {
     text-wrap: none;
     flex-grow: 1;
+    padding-left: 2rem;
+    padding-right: 2rem;
 
     &:not(:first-child) {
       margin-left: 1rem;
