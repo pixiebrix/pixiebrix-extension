@@ -217,7 +217,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
           // If the starter mod has been previously activated, we need to use the existing database ID
           // Otherwise, we create a new database
-          // See:
+          // See: https://github.com/pixiebrix/pixiebrix-extension/pull/8499
           const existingDatabases =
             await client.get<Database[]>("/api/databases/");
           const database = existingDatabases.data.find(
