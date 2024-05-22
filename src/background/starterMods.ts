@@ -214,6 +214,19 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
         optionsArgs,
         async (args) => {
           const client = await getLinkedApiClient();
+
+          // If the starter mod has been previously activated, we need to use the existing database ID
+          // Otherwise, we create a new database
+          // See:
+          const existingDatabases =
+            await client.get<Database[]>("/api/databases/");
+          const database = existingDatabases.data.find(
+            ({ name }) => name === args.name,
+          );
+          if (database) {
+            return database.id;
+          }
+
           const response = await client.post<Database>("/api/databases/", {
             name: args.name,
           });
