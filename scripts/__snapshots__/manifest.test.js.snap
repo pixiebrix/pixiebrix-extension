@@ -151,7 +151,7 @@ exports[`customizeManifest release builds beta 1`] = `
 }
 `;
 
-exports[`customizeManifest release builds mv3 1`] = `
+exports[`customizeManifest release builds stable 1`] = `
 {
   "action": {
     "default_icon": {

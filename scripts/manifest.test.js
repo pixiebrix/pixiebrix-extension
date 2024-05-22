@@ -26,7 +26,7 @@ const cleanCustomize = (...args) => omit(customizeManifest(...args), ["key"]);
 
 describe("customizeManifest", () => {
   describe("release builds", () => {
-    test("mv3", () => {
+    test("stable", () => {
       expect(
         cleanCustomize(manifest, {
           // eslint-disable-next-line camelcase -- auto-inserted
