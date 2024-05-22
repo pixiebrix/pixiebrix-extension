@@ -26,16 +26,6 @@ const cleanCustomize = (...args) => omit(customizeManifest(...args), ["key"]);
 
 describe("customizeManifest", () => {
   describe("release builds", () => {
-    test("mv2", () => {
-      expect(
-        cleanCustomize(manifest, {
-          // eslint-disable-next-line camelcase -- auto-inserted
-          env: { ...process.env, npm_package_version: "1.8.13" },
-          isProduction: true,
-        }),
-      ).toMatchSnapshot();
-    });
-
     test("mv3", () => {
       expect(
         cleanCustomize(manifest, {

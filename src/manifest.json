@@ -19,7 +19,7 @@
     "128": "icons/logo128.png"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self' http://localhost:8097; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https: ws://localhost:8097/ ws://127.0.0.1:8080/ ws://127.0.0.1/; object-src 'self'; img-src 'self' data: https: https://pixiebrix-marketplace-dev.s3.amazonaws.com; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:;",
+    "extension_pages": "script-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:",
     "sandbox": "sandbox allow-scripts allow-forms; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';"
   },
   "content_scripts": [
@@ -55,7 +55,6 @@
     "webNavigation",
     "contextMenus",
     "alarms",
-    "clipboardWrite",
     "devtools",
     "scripting",
     "offscreen",

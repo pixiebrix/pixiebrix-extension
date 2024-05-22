@@ -80,12 +80,12 @@ function addInternalUrlsToContentScripts(manifest, internal) {
 }
 
 /**
- * @param manifestV2
+ * @param manifestV3
  * @returns chrome.runtime.Manifest
  */
-function customizeManifest(manifestV2, options = {}) {
+function customizeManifest(manifestV3, options = {}) {
   const { isProduction, env = {}, isBeta } = options;
-  const manifest = structuredClone(manifestV2);
+  const manifest = structuredClone(manifestV3);
   manifest.version = getVersion(env);
   manifest.version_name = getVersionName(env, isProduction);
 
@@ -117,7 +117,7 @@ function customizeManifest(manifestV2, options = {}) {
         "http://localhost:8000/*",
       ];
 
-  const policy = new Policy(manifest.content_security_policy);
+  const policy = new Policy(manifest.content_security_policy.extension_pages);
 
   if (!isProduction) {
     policy.add("img-src", "https://pixiebrix-marketplace-dev.s3.amazonaws.com");
@@ -131,7 +131,7 @@ function customizeManifest(manifestV2, options = {}) {
     policy.add("connect-src", "ws://127.0.0.1/");
   }
 
-  manifest.content_security_policy = policy.toString();
+  manifest.content_security_policy.extension_pages = policy.toString();
 
   const externallyConnectable = [
     ...manifest.externally_connectable.matches,
