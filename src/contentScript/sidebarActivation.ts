@@ -104,6 +104,11 @@ export async function initSidebarActivation(): Promise<void> {
     return;
   }
 
+  // Don't run initial activation on hidden tabs
+  if (document.hidden) {
+    return;
+  }
+
   const mods = await getActivatingMods();
 
   // Do not try to show sidebar activation inside an iframe or in the Admin Console
