@@ -40,6 +40,7 @@ import {
   type ACTIVATE_EVENT_DETAIL,
   ACTIVATE_EVENT_TYPE,
 } from "@/contentScript/activationConstants";
+import { allSettled } from "@/utils/promiseUtils";
 
 let listener: EventListener | null;
 
@@ -100,26 +101,26 @@ function addActivateModsListener(): void {
 export async function initSidebarActivation(): Promise<void> {
   addActivateModsListener();
 
-  if (!(await isLinked())) {
-    return;
-  }
-
-  // Don't run initial activation on hidden tabs
-  if (document.hidden) {
-    return;
-  }
-
-  const mods = await getActivatingMods();
-
-  // Do not try to show sidebar activation inside an iframe or in the Admin Console
   if (
-    mods.length === 0 ||
+    // Do not attempt sidebar activation if the extension is not linked
+    !(await isLinked()) ||
+    // Do not show sidebar activation on hidden tabs/windows
+    document.hidden ||
+    // Do not show sidebar activation inside an iframe
     isLoadedInIframe() ||
+    // Do not show sidebar activation in the Admin Console
     document.location.href.includes(DEFAULT_SERVICE_URL)
   ) {
     return;
   }
 
-  await showSidebarActivationForMods(mods);
-  await setActivatingMods(null);
+  const mods = await getActivatingMods();
+  if (mods.length === 0) {
+    return;
+  }
+
+  await allSettled(
+    [setActivatingMods(null), showSidebarActivationForMods(mods)],
+    { catch: "ignore" },
+  );
 }
