@@ -147,7 +147,7 @@ function customizeManifest(manifestV3, options = {}) {
 
   // HMR support
   if (!isProduction) {
-    manifest.web_accessible_resources.push("*.json");
+    manifest.web_accessible_resources[0].resources.push("*.json");
   }
 
   // Playwright does not support dynamically accepting permissions for extensions, so we need to add all permissions
