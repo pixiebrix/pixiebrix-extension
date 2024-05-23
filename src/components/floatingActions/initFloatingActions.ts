@@ -49,7 +49,7 @@ export default async function initFloatingActions(): Promise<void> {
   const hasFeatureFlag = await flagOn("floating-quickbar-button-freemium");
 
   // Add floating action button if the feature flag and settings are enabled
-  // Need to wait until the user is linked to be certain that they are not an enterprise user
+  // Need to wait until the Extension is linked to be certain that the user is not an enterprise user
   // XXX: consider moving checks into React component, so we can use the Redux context
   if (
     isLinked &&
