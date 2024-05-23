@@ -1,11 +1,11 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "author": "PixieBrix, Inc.",
   "name": "PixieBrix",
   "short_name": "PixieBrix",
   "description": "Customize, extend, and integrate your favorite SaaS apps without writing a line of code!",
   "homepage_url": "https://www.pixiebrix.com",
-  "minimum_chrome_version": "105.0",
+  "minimum_chrome_version": "116.0",
   "browser_specific_settings": {
     "gecko": {
       "id": "extension@pixiebrix.com",
@@ -18,7 +18,10 @@
     "48": "icons/logo48.png",
     "128": "icons/logo128.png"
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:",
+    "sandbox": "sandbox allow-scripts allow-forms; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';"
+  },
   "content_scripts": [
     {
       "matches": ["*://*/*"],
@@ -51,9 +54,13 @@
     "tabs",
     "webNavigation",
     "contextMenus",
-    "<all_urls>",
-    "alarms"
+    "alarms",
+    "devtools",
+    "scripting",
+    "offscreen",
+    "sidePanel"
   ],
+  "host_permissions": ["<all_urls>"],
   "devtools_page": "devtools.html",
   "externally_connectable": {
     "matches": ["https://*.pixiebrix.com/*"]
@@ -62,21 +69,26 @@
     "managed_schema": "managedStorageSchema.json"
   },
   "web_accessible_resources": [
-    "css/*",
-    "bundles/*",
-    "sandbox.html",
-    "frame.html",
-    "sidebar.html",
-    "pageScript.js",
-    "ephemeralForm.html",
-    "walkthroughModal.html",
-    "ephemeralPanel.html",
-    "audio/*",
-    "user-icons/*",
-    "img/*",
-    "*.css"
+    {
+      "resources": [
+        "css/*",
+        "bundles/*",
+        "sandbox.html",
+        "frame.html",
+        "sidebar.html",
+        "pageScript.js",
+        "ephemeralForm.html",
+        "walkthroughModal.html",
+        "ephemeralPanel.html",
+        "audio/*",
+        "user-icons/*",
+        "img/*",
+        "*.css"
+      ],
+      "matches": ["*://*/*"]
+    }
   ],
-  "browser_action": {
+  "action": {
     "default_title": "PixieBrix",
     "default_icon": {
       "16": "icons/inactive/logo16.png",
@@ -95,10 +107,14 @@
     }
   },
   "background": {
-    "scripts": ["backgroundCanary.js", "background.js"]
+    "service_worker": "background.worker.js",
+    "type": "module"
   },
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
+  },
+  "side_panel": {
+    "default_path": "sidebar.html"
   }
 }
