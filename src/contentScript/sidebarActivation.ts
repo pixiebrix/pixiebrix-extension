@@ -101,25 +101,26 @@ function addActivateModsListener(): void {
 export async function initSidebarActivation(): Promise<void> {
   addActivateModsListener();
 
-  if (!(await isLinked())) {
+  if (
+    // Do not attempt sidebar activation if the extension is not linked
+    !(await isLinked()) ||
+    // Do not show sidebar activation on hidden tabs/windows
+    document.hidden ||
+    // Do not show sidebar activation inside an iframe
+    isLoadedInIframe() ||
+    // Do not show sidebar activation in the Admin Console
+    document.location.href.includes(DEFAULT_SERVICE_URL)
+  ) {
     return;
   }
 
   const mods = await getActivatingMods();
-
-  // Do not try to show sidebar activation inside an iframe or in the Admin Console
-  if (
-    mods.length > 0 &&
-    !isLoadedInIframe() &&
-    !document.location.href.includes(DEFAULT_SERVICE_URL)
-  ) {
-    await allSettled(
-      [
-        // Clear out local storage
-        setActivatingMods(null),
-        showSidebarActivationForMods(mods),
-      ],
-      { catch: "ignore" },
-    );
+  if (mods.length === 0) {
+    return;
   }
+
+  await allSettled(
+    [setActivatingMods(null), showSidebarActivationForMods(mods)],
+    { catch: "ignore" },
+  );
 }
