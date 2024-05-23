@@ -31,7 +31,6 @@ import { Events } from "@/telemetry/events";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
-import { allSettled } from "@/utils/promiseUtils";
 import type { ModActivationConfig } from "@/types/modTypes";
 import {
   getNextUrlFromActivateUrl,
@@ -109,17 +108,13 @@ export async function initSidebarActivation(): Promise<void> {
 
   // Do not try to show sidebar activation inside an iframe or in the Admin Console
   if (
-    mods.length > 0 &&
-    !isLoadedInIframe() &&
-    !document.location.href.includes(DEFAULT_SERVICE_URL)
+    mods.length === 0 ||
+    isLoadedInIframe() ||
+    document.location.href.includes(DEFAULT_SERVICE_URL)
   ) {
-    await allSettled(
-      [
-        // Clear out local storage
-        setActivatingMods(null),
-        showSidebarActivationForMods(mods),
-      ],
-      { catch: "ignore" },
-    );
+    return;
   }
+
+  await showSidebarActivationForMods(mods);
+  await setActivatingMods(null);
 }

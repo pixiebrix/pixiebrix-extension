@@ -22,7 +22,7 @@ import { getDocument } from "@/starterBricks/starterBrickTestUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { getActivatingMods } from "@/background/messenger/external/_implementation";
+import { getAndClearActivatingMods } from "@/background/messenger/external/_implementation";
 import {
   modComponentFactory,
   modMetadataFactory,
@@ -56,7 +56,7 @@ jest.mock("@/sidebar/store");
 
 const showSidebarMock = jest.mocked(showModActivationInSidebar);
 const getActivatedModIdsMock = jest.mocked(getActivatedModIds);
-const getActivatingModsMock = jest.mocked(getActivatingMods);
+const getActivatingModsMock = jest.mocked(getAndClearActivatingMods);
 
 const modId1 = validateRegistryId("@pixies/misc/comment-and-vote");
 const modId2 = validateRegistryId("@pixies/github/github-notifications");
