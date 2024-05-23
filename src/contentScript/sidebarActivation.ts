@@ -31,6 +31,7 @@ import { Events } from "@/telemetry/events";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { allSettled } from "@/utils/promiseUtils";
 import type { ModActivationConfig } from "@/types/modTypes";
 import {
   getNextUrlFromActivateUrl,
@@ -40,7 +41,6 @@ import {
   type ACTIVATE_EVENT_DETAIL,
   ACTIVATE_EVENT_TYPE,
 } from "@/contentScript/activationConstants";
-import { allSettled } from "@/utils/promiseUtils";
 
 let listener: EventListener | null;
 
