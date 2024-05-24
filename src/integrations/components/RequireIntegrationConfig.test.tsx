@@ -45,16 +45,21 @@ const checkIntegrationAuthMock = jest.mocked(checkIntegrationAuth);
 
 const integrationId = registryIdFactory();
 
-const config1 = sanitizedIntegrationConfigFactory({
+const localConfig1 = sanitizedIntegrationConfigFactory({
   serviceId: integrationId,
   label: "Test Config 1",
 });
-const config2 = sanitizedIntegrationConfigFactory({
+const localConfig2 = sanitizedIntegrationConfigFactory({
   serviceId: integrationId,
   label: "Test Config 2",
 });
+const remoteConfig = sanitizedIntegrationConfigFactory({
+  serviceId: integrationId,
+  label: "Remote Config",
+  proxy: true,
+});
 
-const authOptions = [config1, config2].map(
+const authOptions = [localConfig1, localConfig2].map(
   ({ id, label, serviceId, config }) =>
     ({
       label,
@@ -67,12 +72,16 @@ const authOptions = [config1, config2].map(
 useAuthOptionMock.mockReturnValue(valueToAsyncState(authOptions));
 
 serviceLocateMock.mockImplementation(async (integrationId, configId) => {
-  if (configId === config1.id) {
-    return config1;
+  if (configId === localConfig1.id) {
+    return localConfig1;
   }
 
-  if (configId === config2.id) {
-    return config2;
+  if (configId === localConfig2.id) {
+    return localConfig2;
+  }
+
+  if (configId === remoteConfig.id) {
+    return remoteConfig;
   }
 
   throw new Error("Invalid config id");
@@ -80,7 +89,7 @@ serviceLocateMock.mockImplementation(async (integrationId, configId) => {
 
 const integrationDependency1 = integrationDependencyFactory({
   integrationId,
-  configId: config1.id,
+  configId: localConfig1.id,
 });
 
 const integrationFieldSchema: Schema = {
@@ -134,7 +143,7 @@ describe("RequireIntegrationConfig", () => {
     ).not.toBeInTheDocument();
     // Select the first config
     await act(async () => {
-      await selectEvent.select(select, config1.label);
+      await selectEvent.select(select, localConfig1.label);
     });
     // Child 1 should now be visible
     await expect(
@@ -145,7 +154,7 @@ describe("RequireIntegrationConfig", () => {
     ).not.toBeInTheDocument();
     // Select the second config
     await act(async () => {
-      await selectEvent.select(select, config2.label);
+      await selectEvent.select(select, localConfig2.label);
     });
     // Child 2 should now be visible
     expect(
@@ -192,7 +201,7 @@ describe("RequireIntegrationConfig", () => {
     ).not.toBeInTheDocument();
     // Select the first config
     await act(async () => {
-      await selectEvent.select(select, config1.label);
+      await selectEvent.select(select, localConfig1.label);
     });
     // Error alert should be visible
     expect(
@@ -212,7 +221,7 @@ describe("RequireIntegrationConfig", () => {
     checkIntegrationAuthMock.mockResolvedValue(true);
     // Select the second config
     await act(async () => {
-      await selectEvent.select(select, config2.label);
+      await selectEvent.select(select, localConfig2.label);
     });
     // Error alert should not be visible
     expect(
@@ -274,5 +283,51 @@ describe("RequireIntegrationConfig", () => {
       ),
     ).toBeInTheDocument();
     expect(checkIntegrationAuthMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("#8504: link to admin console for remote config error", async () => {
+    checkIntegrationAuthMock.mockResolvedValue(false);
+
+    const remoteDependency = integrationDependencyFactory({
+      integrationId,
+      configId: remoteConfig.id,
+    });
+
+    const formState = formStateFactory(
+      {
+        integrationDependencies: [remoteDependency],
+      },
+      pipelineFactory({
+        config: {
+          integration: makeVariableExpression(remoteDependency.outputKey),
+        },
+      }),
+    );
+    render(
+      <RequireIntegrationConfig
+        integrationFieldSchema={integrationFieldSchema}
+        integrationFieldName="extension.blockPipeline[0].config.integration"
+      >
+        {({ sanitizedConfig }) => (
+          <ChildComponent sanitizedConfig={sanitizedConfig} />
+        )}
+      </RequireIntegrationConfig>,
+      {
+        initialValues: formState,
+      },
+    );
+
+    // Wait for field to be visible
+    await expect(
+      screen.findByLabelText("Integration"),
+    ).resolves.toBeInTheDocument();
+
+    const editLink = screen.getByRole("link", {
+      name: /edit the integration configuration here/i,
+    });
+    expect(editLink as HTMLAnchorElement).toHaveAttribute(
+      "href",
+      "https://app.pixiebrix.com",
+    );
   });
 });
