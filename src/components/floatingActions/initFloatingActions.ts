@@ -20,6 +20,7 @@ import { getSettingsState } from "@/store/settings/settingsStorage";
 import { getUserData } from "@/background/messenger/api";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { isLinked as getIsLinked } from "@/auth/authStorage";
 
 /**
  * Add the floating action button to the page if the user is not an enterprise/partner user.
@@ -32,9 +33,10 @@ export default async function initFloatingActions(): Promise<void> {
     return;
   }
 
-  const [settings, { telemetryOrganizationId }] = await Promise.all([
+  const [settings, { telemetryOrganizationId }, isLinked] = await Promise.all([
     getSettingsState(),
     getUserData(),
+    getIsLinked(),
   ]);
 
   // `telemetryOrganizationId` indicates user is part of an enterprise organization
@@ -47,8 +49,10 @@ export default async function initFloatingActions(): Promise<void> {
   const hasFeatureFlag = await flagOn("floating-quickbar-button-freemium");
 
   // Add floating action button if the feature flag and settings are enabled
+  // Need to wait until the Extension is linked to be certain that the user is not an enterprise user
   // XXX: consider moving checks into React component, so we can use the Redux context
   if (
+    isLinked &&
     settings.isFloatingActionButtonEnabled &&
     hasFeatureFlag &&
     !isEnterpriseOrPartnerUser
