@@ -33,7 +33,7 @@ async function setToolbarIcon(): Promise<void> {
   } else {
     // Default to manifest icons (This re-sets the colored manifest icons)
     const { icons: manifestPath } = browser.runtime.getManifest();
-    browserAction.setIcon({ path: manifestPath });
+    await browserAction.setIcon({ path: manifestPath });
   }
 
   const activeTheme = await getActiveTheme();

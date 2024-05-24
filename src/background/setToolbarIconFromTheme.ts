@@ -31,7 +31,7 @@ export default async function setToolbarIconFromTheme({
       // good on retina displays too. Also the scaling quality of drawImage() is not great
       // so we the use a larger size and let the browser scale it down with a better algo.
       const imageData = await loadImageData(toolbarIcon, 128, 128);
-      browserAction.setIcon({ imageData });
+      await browserAction.setIcon({ imageData });
       return;
     } catch (error) {
       console.error("Failed to load toolbar icon", error);
@@ -40,8 +40,8 @@ export default async function setToolbarIconFromTheme({
 
   if (themeName === DEFAULT_THEME) {
     const { icons: path } = browser.runtime.getManifest();
-    browserAction.setIcon({ path });
+    await browserAction.setIcon({ path });
   } else {
-    browserAction.setIcon({ path: logo.small });
+    await browserAction.setIcon({ path: logo.small });
   }
 }
