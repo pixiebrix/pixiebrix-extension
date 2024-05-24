@@ -21,7 +21,6 @@ import MockAdapter from "axios-mock-adapter";
 import { browserAction } from "@/mv3/api";
 
 jest.mock("@/mv3/api", () => ({
-  isMV3: jest.fn().mockReturnValue(false),
   browserAction: {
     setIcon: jest.fn(),
   },
