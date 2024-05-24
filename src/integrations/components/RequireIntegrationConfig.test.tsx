@@ -285,7 +285,7 @@ describe("RequireIntegrationConfig", () => {
     expect(checkIntegrationAuthMock).toHaveBeenCalledTimes(2);
   });
 
-  it("links to admin console for remote config error", async () => {
+  it("#8504: link to admin console for remote config error", async () => {
     checkIntegrationAuthMock.mockResolvedValue(false);
 
     const remoteDependency = integrationDependencyFactory({
