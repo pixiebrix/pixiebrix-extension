@@ -29,5 +29,8 @@ export const isMV3 = once((): boolean => {
   // https://github.com/pixiebrix/pixiebrix-extension/issues/8273
   return chrome.runtime.getManifest().manifest_version === 3;
 });
+
+// TODO: Remove fallback to browserAction when jest-sebextension-mock is updated
+// @see: https://github.com/RickyMarou/jest-webextension-mock/issues/4
 export const browserAction = globalThis.chrome?.action;
 export type Tab = Tabs.Tab | chrome.tabs.Tab;
