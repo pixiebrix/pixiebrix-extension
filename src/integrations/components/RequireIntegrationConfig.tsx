@@ -42,7 +42,8 @@ type ConfigProps = {
 function getEditConfigUrl(sanitizedConfig: SanitizedIntegrationConfig): string {
   if (sanitizedConfig.proxy) {
     // TODO: construct deeplink to the config. There are some gotchas, e.g., the config might be personal or team,
-    //  the user might not have edit access for the config, etc.
+    //  the user might not have edit access for the config, etc. We'd likely want to introduce handling on the admin
+    //  console to take a config id without knowing the parent resource.
     return DEFAULT_SERVICE_URL;
   }
 
