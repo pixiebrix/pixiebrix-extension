@@ -273,7 +273,7 @@
     "jest-webextension-mock": "^3.8.16",
     "jsdom": "^24.0.0",
     "jsdom-testing-mocks": "^1.13.0",
-    "knip": "^5.15.1",
+    "knip": "^5.16.0",
     "mini-css-extract-plugin": "^2.6.1",
     "mockdate": "^3.0.5",
     "msw": "^1.3.3",
