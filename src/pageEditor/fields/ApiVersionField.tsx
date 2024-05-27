@@ -23,8 +23,6 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
  * ever need to change the value.
  *
  * See https://docs.pixiebrix.com/developing-mods/developer-concepts/advanced-brick-runtime
- *
- * @constructor
  */
 const ApiVersionField: React.FC = () => (
   <ConnectedFieldTemplate

@@ -42,11 +42,6 @@ export type ApiVersion = "v1" | "v2" | "v3";
 export const VARIABLE_REFERENCE_PREFIX = "@";
 
 /**
- * Regular expression for a variable reference.
- */
-export const VARIABLE_REFERENCE_REGEX = /^@\S+$/;
-
-/**
  * The HTMLElement or Document that the brick is targeting, or that a selector is being evaluated against.
  */
 export type SelectorRoot = HTMLElement | Document;

@@ -36,7 +36,7 @@ const UnsupportedRuntimeVersion: React.FC = () => (
           target="_blank"
           rel="noreferrer"
         >
-          Read about brick runtime versions here.
+          Read more about runtime versions here.
         </a>
       </p>
     </Card.Body>
