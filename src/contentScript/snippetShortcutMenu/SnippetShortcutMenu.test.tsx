@@ -20,6 +20,7 @@ describe("Shortcut Snippet Menu", () => {
 
     registry.register({
       componentId: autoUUIDSequence(),
+      context: {},
       title: "Test",
       shortcut: "foo",
       preview: "foobar",
