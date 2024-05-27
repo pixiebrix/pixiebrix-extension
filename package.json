@@ -58,7 +58,7 @@
     "@vespaiach/axios-fetch-adapter": "^0.3.1",
     "@xobotyi/scrollbar-width": "^1.9.5",
     "abort-utils": "^1.2.0",
-    "ace-builds": "^1.33.2",
+    "ace-builds": "^1.34.1",
     "autocompleter": "^9.2.1",
     "axios": "^0.28.1",
     "batched-function": "^2.0.1",
