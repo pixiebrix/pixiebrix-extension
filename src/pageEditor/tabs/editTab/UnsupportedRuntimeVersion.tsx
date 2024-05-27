@@ -20,13 +20,13 @@ import React from "react";
 import { Alert, Card } from "react-bootstrap";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-const UnsupportedApiV1: React.FC = () => (
+const UnsupportedRuntimeVersion: React.FC = () => (
   <Card>
-    <Card.Header>Unsupported Extension Runtime Version</Card.Header>
+    <Card.Header>Unsupported PixieBrix Runtime Version</Card.Header>
     <Card.Body>
       <Alert variant="warning">
         <FontAwesomeIcon icon={faExclamationTriangle} />
-        {"  "}Bricks created with the runtime API v1 are no longer supported in
+        {"  "}Mods created with runtime API v1 and v2 are no longer supported in
         the Page Editor.
       </Alert>
       <p>
@@ -36,11 +36,11 @@ const UnsupportedApiV1: React.FC = () => (
           target="_blank"
           rel="noreferrer"
         >
-          Read more about this change here.
+          Read about brick runtime versions here.
         </a>
       </p>
     </Card.Body>
   </Card>
 );
 
-export default UnsupportedApiV1;
+export default UnsupportedRuntimeVersion;

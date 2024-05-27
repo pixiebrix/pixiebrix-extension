@@ -281,9 +281,6 @@ describe("removeElement", () => {
           activeNodeId: element.extension.blockPipeline[0].instanceId,
         },
       },
-      showV3UpgradeMessageByElement: {
-        [element.uuid]: true,
-      },
       availableDynamicIds: [element.uuid],
     };
 
@@ -296,9 +293,6 @@ describe("removeElement", () => {
     );
     expect(newState.dirty).not.toContainKey(element.uuid);
     expect(newState.elementUIStates).not.toContainKey(element.uuid);
-    expect(newState.showV3UpgradeMessageByElement).not.toContainKey(
-      element.uuid,
-    );
   });
 
   test("removes inactive and unavailable element", () => {
@@ -327,9 +321,6 @@ describe("removeElement", () => {
             unavailableElement.extension.blockPipeline[0].instanceId,
         },
       },
-      showV3UpgradeMessageByElement: {
-        [unavailableElement.uuid]: true,
-      },
       availableDynamicIds: [availableElement.uuid],
     };
 
@@ -344,9 +335,6 @@ describe("removeElement", () => {
     );
     expect(newState.dirty).not.toContainKey(unavailableElement.uuid);
     expect(newState.elementUIStates).not.toContainKey(unavailableElement.uuid);
-    expect(newState.showV3UpgradeMessageByElement).not.toContainKey(
-      unavailableElement.uuid,
-    );
   });
 });
 
@@ -381,9 +369,6 @@ describe("removeRecipeData", () => {
           pipelineMap: getPipelineMap(orphanElement.extension.blockPipeline),
           activeNodeId: orphanElement.extension.blockPipeline[0].instanceId,
         },
-      },
-      showV3UpgradeMessageByElement: {
-        [element1.uuid]: true,
       },
       availableDynamicIds: [element1.uuid, orphanElement.uuid],
       dirtyRecipeOptionsById: {
