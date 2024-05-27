@@ -54,6 +54,7 @@ describe("AddTextSnippets", () => {
           preview: "test text",
           handler: expect.toBeFunction(),
           componentId: options.logger.context.extensionId,
+          context: options.logger.context,
         },
       ]);
 
