@@ -20,14 +20,12 @@ import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
 import { getSidebarPage, runModViaQuickBar } from "../../utils";
-import { MV, SERVICE_URL } from "../../env";
+import { SERVICE_URL } from "../../env";
 
 test("sidebar mod panels are persistent during navigation", async ({
   page,
   extensionId,
 }) => {
-  test.skip(MV === "2", "Navigation is not supported for MV2 sidebar");
-
   const modId = "@e2e-testing/test-sidebar-navigation";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
 
@@ -38,7 +36,7 @@ test("sidebar mod panels are persistent during navigation", async ({
     await runModViaQuickBar(page, "Open Sidebar");
   });
 
-  const sideBarPage = (await getSidebarPage(page, extensionId)) as Page; // MV3 sidebar is a separate page
+  const sideBarPage = await getSidebarPage(page, extensionId); // Sidebar is a separate page
 
   // Define common locators
   const sidebar1Heading = sideBarPage.getByRole("heading", {
@@ -158,7 +156,7 @@ async function checkUnavailibilityForNavigationMethod(
   await page.goto("/advanced-fields");
   await runModViaQuickBar(page, "Open form");
 
-  const sideBarPage = (await getSidebarPage(page, extensionId)) as Page; // MV3 sidebar is a separate page
+  const sideBarPage = await getSidebarPage(page, extensionId); // Sidebar is a separate page
   // Set up close listener for sidebar page
   let sideBarPageClosed = false;
   sideBarPage.on("close", () => {
@@ -230,7 +228,6 @@ test("sidebar form and temporary panels are unavailable after navigation", async
   page,
   extensionId,
 }) => {
-  test.skip(MV === "2", "Navigation is not supported for MV2 sidebar");
   // This mod has two quickbar actions for opening a temporary panel and a form panel in the sidebar.
   const modId = "@e2e-testing/temp-panel-unavailable-on-navigation";
 

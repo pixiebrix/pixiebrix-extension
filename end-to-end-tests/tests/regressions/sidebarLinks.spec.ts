@@ -26,7 +26,6 @@ import {
 } from "@playwright/test";
 import { ensureVisibility, getBrowserOs, getSidebarPage } from "../../utils";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
-import { MV } from "../../env";
 
 async function openSidebar(page: Page, extensionId: string) {
   // The mod contains a trigger to open the sidebar on h1. If the sidePanel is already open, it's a NOP
@@ -76,8 +75,6 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   chromiumChannel,
   baseURL,
 }) => {
-  test.skip(MV === "2", "MV3 specific test");
-
   const browserOSName = await getBrowserOs(page);
   const modId = "@pixies/test/sidebar-links";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);

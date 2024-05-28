@@ -24,6 +24,7 @@ import React from "react";
 ReactDOM.render(
   <RestrictedUrlPopupApp
     reason={new URLSearchParams(location.search).get("reason")}
+    url={location.href}
   />,
   document.querySelector("#container"),
 );

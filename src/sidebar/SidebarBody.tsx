@@ -27,7 +27,7 @@ const SidebarReady: React.FC<{ url: string }> = ({ url }) => {
   const restricted = getRestrictedReasonByUrl(url);
 
   return restricted ? (
-    <RestrictedUrlPopupApp reason={restricted} />
+    <RestrictedUrlPopupApp reason={restricted} url={url} />
   ) : (
     <ConnectedSidebar />
   );

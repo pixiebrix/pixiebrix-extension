@@ -407,6 +407,7 @@ describe("debouncedActivateStarterMods", () => {
   describe("databases", () => {
     beforeEach(() => {
       isLinkedMock.mockResolvedValue(true);
+      axiosMock.resetHistory();
       axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
     });
 
@@ -443,22 +444,23 @@ describe("debouncedActivateStarterMods", () => {
 
     test("activate starter mod with required pixiebrix database", async () => {
       const modDefinition = modFactory();
+      const databaseId = autoUUIDSequence();
 
       axiosMock
         .onGet("/api/onboarding/starter-blueprints/")
-        .reply(200, [modDefinition]);
+        .reply(200, [modDefinition])
+        .onGet("/api/databases/")
+        .reply(200, [])
+        .onPost("/api/databases/")
+        .reply((args) => {
+          const data = JSON.parse(args.data) as UnknownObject;
+          expect(data).toStrictEqual({ name: "Test Mod - Test Database" });
 
-      const databaseId = autoUUIDSequence();
-
-      axiosMock.onPost("/api/databases/").reply((args) => {
-        const data = JSON.parse(args.data) as UnknownObject;
-        expect(data).toStrictEqual({ name: "Test Mod - Test Database" });
-
-        return [
-          201,
-          databaseFactory({ id: databaseId, name: data.name as string }),
-        ];
-      });
+          return [
+            201,
+            databaseFactory({ id: databaseId, name: data.name as string }),
+          ];
+        });
 
       await debouncedActivateStarterMods();
       const { extensions: activatedModComponents } =
@@ -489,6 +491,35 @@ describe("debouncedActivateStarterMods", () => {
 
       // Database should not be created
       expect(activatedModComponents[0].optionsArgs).toStrictEqual({});
+    });
+
+    test("database is not created if already exists", async () => {
+      const modDefinition = modFactory();
+      const databaseId = autoUUIDSequence();
+      const databaseName = "Test Mod - Test Database";
+      const database = databaseFactory({ id: databaseId, name: databaseName });
+
+      axiosMock
+        .onGet("/api/onboarding/starter-blueprints/")
+        .reply(200, [modDefinition])
+        .onGet("/api/databases/")
+        .reply(200, [database])
+        .onPost("/api/databases/")
+        // Should not be called
+        .reply(400);
+
+      await debouncedActivateStarterMods();
+      const { extensions: activatedModComponents } =
+        await getModComponentState();
+
+      expect(activatedModComponents).toBeArrayOfSize(1);
+
+      expect(activatedModComponents[0].optionsArgs).toStrictEqual({
+        // Activated with the ID of the database created
+        database: databaseId,
+      });
+
+      expect(axiosMock.history.post).toHaveLength(0);
     });
   });
 });
