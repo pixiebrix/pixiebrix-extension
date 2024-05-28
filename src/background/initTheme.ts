@@ -20,6 +20,7 @@ import { expectContext } from "@/utils/expectContext";
 import { getActiveTheme } from "@/themes/themeStore";
 import { browserAction } from "@/mv3/api";
 import { themeStorage } from "@/themes/themeUtils";
+import { allSettled } from "@/utils/promiseUtils";
 
 /**
  * Set the toolbar icon based on the current theme settings.
@@ -37,8 +38,10 @@ async function setToolbarIcon(): Promise<void> {
   }
 
   const activeTheme = await getActiveTheme();
-  void themeStorage.set(activeTheme);
-  void setToolbarIconFromTheme(activeTheme);
+  await allSettled(
+    [themeStorage.set(activeTheme), setToolbarIconFromTheme(activeTheme)],
+    { catch: "ignore" },
+  );
 }
 
 export default function initTheme() {
