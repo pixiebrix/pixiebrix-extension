@@ -31,6 +31,7 @@ export async function setToolbarBadge(
   text: string | null,
 ): Promise<void> {
   const tabId = this?.trace?.[0]?.tab?.id;
+  text ??= "";
 
   if (!tabId) {
     throw new Error("Unable to set toolbar badge: no tabId");

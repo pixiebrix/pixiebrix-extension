@@ -15,39 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browserAction, isMV3, type Tab } from "@/mv3/api";
-import { executeScript } from "webext-content-scripts";
-import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { browserAction } from "@/mv3/api";
 import { openSidePanel, getSidebarTarget } from "@/utils/sidePanelUtils";
-import { setActionPopup } from "webext-tools";
-import { getReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
 import { messenger } from "webext-messenger";
 
-/**
- * Show a popover on restricted URLs because we're unable to inject content into the page. Previously we'd open
- * the Extension Console, but that was confusing because the action was inconsistent with how the button behaves
- * other pages.
- * @param tabUrl the url of the tab, or undefined if not accessible
- */
-function getPopoverUrl(tabUrl: string | undefined): string | undefined {
-  const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
-  const reason = getReasonByUrl(tabUrl ?? "");
-
-  if (reason) {
-    return `${popoverUrl}?reason=${reason}`;
-  }
-
-  // The popup is disabled, and the extension will receive browserAction.onClicked events.
-  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
-  return undefined;
-}
-
 export default async function initBrowserAction(): Promise<void> {
-  if (!isMV3()) {
-    initBrowserActionMv2();
-    return;
-  }
-
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
 
   // Disable by default, so that it can be enabled on a per-tab basis.
@@ -80,50 +52,4 @@ export default async function initBrowserAction(): Promise<void> {
       );
     }
   });
-}
-
-const ERR_UNABLE_TO_OPEN =
-  "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
-
-// The sidebar is always injected to into the top level frame
-const TOP_LEVEL_FRAME_ID = 0;
-
-const toggleSidebar = memoizeUntilSettled(_toggleSidebar);
-
-// Don't accept objects here as they're not easily memoizable
-async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
-  console.debug("browserAction:toggleSidebar", tabId, tabUrl);
-
-  try {
-    await executeScript({
-      tabId,
-      frameId: TOP_LEVEL_FRAME_ID,
-      files: ["browserActionInstantHandler.js"],
-      matchAboutBlank: false,
-      allFrames: false,
-      // Run at start instead of idle to ensure immediate feedback to clicking the browser action icon
-      runAt: "document_start",
-    });
-  } catch (error) {
-    // eslint-disable-next-line no-alert -- Intentional usage, no alternative UI
-    alert(ERR_UNABLE_TO_OPEN);
-    throw error;
-  }
-}
-
-async function handleBrowserAction(tab: Tab): Promise<void> {
-  // The URL might not be available in certain circumstances. This silences these
-  // cases and just treats them as "not allowed on this page"
-  const url = String(tab.url);
-  if (tab.id) {
-    await toggleSidebar(tab.id, url);
-  }
-}
-
-function initBrowserActionMv2(): void {
-  browserAction.onClicked.addListener(handleBrowserAction);
-
-  // Track the active tab URL. We need to update the popover every time status the active tab/active URL changes.
-  // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
-  setActionPopup(getPopoverUrl);
 }

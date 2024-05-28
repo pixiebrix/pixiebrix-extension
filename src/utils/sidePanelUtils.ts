@@ -109,10 +109,6 @@ export function getSidebarTarget(tabId: number): PageTarget {
 export async function getSidebarTargetForCurrentTab(): Promise<PageTarget> {
   // Do not use `expectContext("contentScript")` here because other contexts import this file transitively.
 
-  if (!isMV3()) {
-    return { tabId: "this", page: "/sidebar.html" };
-  }
-
   if (!isContentScript()) {
     // The background imports the sidebar controller, which imports the API, which calls this function.
     // No messages are actually sent anywhere through this path.
