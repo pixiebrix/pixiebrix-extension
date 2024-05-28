@@ -36,7 +36,7 @@ async function onUpdated(
     // Exclude non-URL updates
     url &&
     // Exclude other tabs
-    tabId === (await getConnectedTabId()) &&
+    tabId === getConnectedTabId() &&
     // No URL updates
     lastKnownUrl !== url
   ) {
