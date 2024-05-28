@@ -40,7 +40,9 @@ export type StarterBrickName =
 export class PageEditorPage {
   private readonly pageEditorUrl: string;
   private readonly savedStandaloneModNames: string[] = [];
+  private readonly uuid: string;
   private modName: string;
+  private modComponentName: string;
 
   constructor(
     private readonly page: Page,
@@ -48,6 +50,7 @@ export class PageEditorPage {
     private readonly extensionId: string,
   ) {
     this.pageEditorUrl = getBasePageEditorUrl(extensionId);
+    this.uuid = uuidv4();
   }
 
   async goto() {
@@ -71,10 +74,6 @@ export class PageEditorPage {
     await this.page.waitForTimeout(500);
   }
 
-  getPage() {
-    return this.page;
-  }
-
   getTemplateGalleryButton() {
     return this.page.getByRole("button", { name: "Launch Template Gallery" });
   }
@@ -89,9 +88,9 @@ export class PageEditorPage {
    */
   async addStarterBrick(
     starterBrickName: StarterBrickName,
-    callback?: () => Promise<void>,
+    { callback }: { callback?: () => Promise<void> } = {},
   ) {
-    this.modName = `Test ${starterBrickName} ${uuidv4()}`;
+    this.modComponentName = `Test ${starterBrickName} ${this.uuid}`;
     await this.page.getByRole("button", { name: "Add", exact: true }).click();
     await this.page
       .locator("[role=button].dropdown-item", {
@@ -103,8 +102,9 @@ export class PageEditorPage {
       await callback();
     }
 
-    await this.fillInBrickField("Name", this.modName);
-    return this.modName;
+    await this.fillInBrickField("Name", this.modComponentName);
+    await this.waitForReduxUpdate();
+    return { modComponentName: this.modComponentName, modUuid: this.uuid };
   }
 
   async fillInBrickField(fieldLabel: string, value: string) {
@@ -148,6 +148,14 @@ export class PageEditorPage {
     return this.page.getByText(text);
   }
 
+  getByLabel(text: string) {
+    return this.page.getByLabel(text);
+  }
+
+  getByPlaceholder(text: string) {
+    return this.page.getByPlaceholder(text);
+  }
+
   getRenderPanelButton() {
     return this.page.getByRole("button", { name: "Render Panel" });
   }
@@ -170,6 +178,25 @@ export class PageEditorPage {
     await modListItem.locator("[data-icon=save]").click();
     await expect(this.page.getByText("Saved Mod")).toBeVisible();
     this.savedStandaloneModNames.push(modName);
+  }
+
+  async createModFromModComponent(modName: string) {
+    this.modName = `${modName} ${this.uuid}`;
+
+    await this.page.getByLabel(`${this.modComponentName} - Ellipsis`).click();
+    await this.page.getByRole("button", { name: "Add to mod" }).click();
+
+    await this.page.getByText("Select...Choose a mod").click();
+    await this.page.getByRole("option", { name: /Create new mod.../ }).click();
+    await this.page.getByRole("button", { name: "Move" }).click();
+
+    const modId = `${modName.split(" ").join("-").toLowerCase()}-${this.uuid}`;
+    await this.page.getByTestId("registryId-id-id").fill(modId);
+
+    await this.page.getByLabel("Name", { exact: true }).fill(modName);
+    await this.page.getByRole("button", { name: "Create" }).click();
+
+    return { modName: this.modName, modId };
   }
 
   /**

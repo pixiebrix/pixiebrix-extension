@@ -29,31 +29,30 @@ test("create, run, package, and update mod", async ({
 }) => {
   await page.goto("/create-react-app/table");
   const pageEditorPage = await newPageEditorPage(page.url());
-  const pageEditorPageRef = pageEditorPage.getPage();
 
-  const modName = await pageEditorPage.addStarterBrick("Button", async () => {
-    await page.bringToFront();
-    await page.getByRole("button", { name: "Action #3" }).click();
+  const { modName, modUuid } = await pageEditorPage.addStarterBrick("Button", {
+    async callback() {
+      await page.bringToFront();
+      await page.getByRole("button", { name: "Action #3" }).click();
 
-    await pageEditorPage.bringToFront();
+      await pageEditorPage.bringToFront();
 
-    await pageEditorPageRef.getByLabel("Button text").click();
-    await pageEditorPageRef.getByLabel("Button text").fill("Search Youtube");
+      await pageEditorPage.getByLabel("Button text").click();
+      await pageEditorPage.getByLabel("Button text").fill("Search Youtube");
+    },
   });
 
   await test.step("Add the Extract from Page brick and configure it", async () => {
     await pageEditorPage.addBrickToModComponent("extract from page");
 
-    await pageEditorPageRef.getByPlaceholder("Property name").click();
-    await pageEditorPageRef
-      .getByPlaceholder("Property name")
-      .fill("searchText");
-    await expect(
-      pageEditorPageRef.getByPlaceholder("Property name"),
-    ).toHaveValue("searchText");
+    await pageEditorPage.getByPlaceholder("Property name").click();
+    await pageEditorPage.getByPlaceholder("Property name").fill("searchText");
+    await expect(pageEditorPage.getByPlaceholder("Property name")).toHaveValue(
+      "searchText",
+    );
 
-    await pageEditorPageRef.getByLabel("Select element").focus();
-    await pageEditorPageRef.getByLabel("Select element").click();
+    await pageEditorPage.getByLabel("Select element").focus();
+    await pageEditorPage.getByLabel("Select element").click();
 
     await page.bringToFront();
     await expect(page.getByText("Selection Tool: 0 matching")).toBeVisible();
@@ -61,7 +60,7 @@ test("create, run, package, and update mod", async ({
 
     await pageEditorPage.bringToFront();
     await expect(
-      pageEditorPageRef.getByPlaceholder("Select an element"),
+      pageEditorPage.getByPlaceholder("Select an element"),
     ).toHaveValue("#root h1");
 
     await pageEditorPage.waitForReduxUpdate();
@@ -72,16 +71,17 @@ test("create, run, package, and update mod", async ({
       index: 1,
     });
 
-    await pageEditorPageRef.getByLabel("Query").click();
-    await pageEditorPageRef
+    await pageEditorPage.getByLabel("Query").click();
+    await pageEditorPage
       .getByLabel("Query")
-      .fill("{{ @data.searchText}} + Foo");
+      .fill("{{ @data.searchText }} + Foo");
 
     await pageEditorPage.waitForReduxUpdate();
   });
 
   await test.step("Save the mod", async () => {
-    // TODO
+    await pageEditorPage.createModFromModComponent("Lifecycle Test");
+    await page.pause();
   });
 
   await test.step("Run the mod", async () => {
