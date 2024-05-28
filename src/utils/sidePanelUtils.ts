@@ -18,11 +18,9 @@
 /** @file This file contains utilities to deal with the sidePanel from other contexts */
 
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isMV3 } from "@/mv3/api";
 import { forbidContext, isBrowserSidebarTopFrame } from "@/utils/expectContext";
 import { type PageTarget, messenger, getThisFrame } from "webext-messenger";
 import { isContentScript } from "webext-detect-page";
-import { showSidebar } from "@/contentScript/messenger/strict/api";
 
 /**
  * Returns true if an error showing sidebar is due to a missing user gesture.
@@ -44,14 +42,10 @@ export async function openSidePanel(tabId: number): Promise<void> {
     "The content script doesn't have direct access to the `sidePanel` API. Call `showMySidePanel` instead",
   );
 
-  if (isMV3()) {
-    await openSidePanelMv3(tabId);
-  } else {
-    await showSidebar({ tabId });
-  }
+  await _openSidePanel(tabId);
 }
 
-async function openSidePanelMv3(tabId: number): Promise<void> {
+async function _openSidePanel(tabId: number): Promise<void> {
   // Simultaneously enable and open the side panel.
   // If we wait too long before calling .open(), we will lose the "user gesture" permission
   // There is no way to know whether the side panel is open yet, so we call it regardless.
@@ -97,10 +91,6 @@ export function getSidebarPath(tabId: number): string {
 }
 
 export function getSidebarTarget(tabId: number): PageTarget {
-  if (!isMV3()) {
-    return { tabId, page: "/sidebar.html" };
-  }
-
   return {
     page: getSidebarPath(tabId),
   };

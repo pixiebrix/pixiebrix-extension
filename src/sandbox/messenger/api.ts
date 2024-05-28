@@ -20,11 +20,7 @@
 import injectIframe, { hiddenIframeStyle } from "@/utils/injectIframe";
 import postMessage from "@/utils/postMessage";
 import pMemoize from "p-memoize";
-import * as directApi from "@/sandbox/messenger/executor";
 import { type JsonObject } from "type-fest";
-import { getSettingsState } from "@/store/settings/settingsStorage";
-import { once } from "lodash";
-import { isMV3 } from "@/mv3/api";
 
 // Uses pMemoize to allow retries after a failure
 const loadSandbox = pMemoize(async () => {
@@ -33,15 +29,6 @@ const loadSandbox = pMemoize(async () => {
     hiddenIframeStyle,
   );
   return iframe.contentWindow;
-});
-
-const isSandboxed = once(async (): Promise<boolean> => {
-  if (isMV3()) {
-    return true;
-  }
-
-  const { sandboxedCode } = await getSettingsState();
-  return Boolean(sandboxedCode);
 });
 
 export type TemplateRenderPayload = {
@@ -55,37 +42,31 @@ export type TemplateValidatePayload = string;
 export async function renderNunjucksTemplate(
   payload: TemplateRenderPayload,
 ): Promise<string> {
-  return (await isSandboxed())
-    ? postMessage({
-        recipient: await loadSandbox(),
-        payload,
-        type: "RENDER_NUNJUCKS",
-      })
-    : directApi.renderNunjucksTemplate(payload);
+  return postMessage({
+    recipient: await loadSandbox(),
+    payload,
+    type: "RENDER_NUNJUCKS",
+  });
 }
 
 export async function validateNunjucksTemplate(
   payload: TemplateValidatePayload,
 ): Promise<void> {
-  return (await isSandboxed())
-    ? postMessage({
-        recipient: await loadSandbox(),
-        payload,
-        type: "VALIDATE_NUNJUCKS",
-      })
-    : directApi.validateNunjucksTemplate(payload);
+  return postMessage({
+    recipient: await loadSandbox(),
+    payload,
+    type: "VALIDATE_NUNJUCKS",
+  });
 }
 
 export async function renderHandlebarsTemplate(
   payload: TemplateRenderPayload,
 ): Promise<string> {
-  return (await isSandboxed())
-    ? postMessage({
-        recipient: await loadSandbox(),
-        payload,
-        type: "RENDER_HANDLEBARS",
-      })
-    : directApi.renderHandlebarsTemplate(payload);
+  return postMessage({
+    recipient: await loadSandbox(),
+    payload,
+    type: "RENDER_HANDLEBARS",
+  });
 }
 
 export type JavaScriptPayload = {

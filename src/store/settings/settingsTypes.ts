@@ -44,6 +44,7 @@ export type SkunkworksSettingsFlags = {
 
   /**
    * Experimental setting to run some code in a sandbox
+   * XXX: Is this still relevant in 2.0.0?
    */
   sandboxedCode?: boolean;
 };
