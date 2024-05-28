@@ -28,12 +28,6 @@ import { type ManualStorageKey } from "@/utils/storageUtils";
 import { once } from "lodash";
 import pMemoize from "p-memoize";
 
-// Just like chrome.storage.session, this must be "global"
-// eslint-disable-next-line local-rules/persistBackgroundData -- MV2-only
-const storage = new Map<ManualStorageKey, JsonValue>();
-
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const hasSession = "session" in chrome.storage;
 function validateContext(): void {
   expectContext(
     "background",
@@ -62,9 +56,6 @@ export class SessionMap<Value extends JsonValue> {
   async has(secondaryKey: string): Promise<boolean> {
     this.validateContext();
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
-    if (!hasSession) {
-      return storage.has(rawStorageKey);
-    }
 
     const result = await browser.storage.session.get(rawStorageKey);
     // OK to check for undefined because it's not a valid JsonValue. The `set` method calls `delete` if
@@ -76,11 +67,9 @@ export class SessionMap<Value extends JsonValue> {
   async get(secondaryKey: string): Promise<Value | undefined> {
     this.validateContext();
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
-    if (!hasSession) {
-      return storage.get(rawStorageKey) as Value | undefined;
-    }
 
     const result = await browser.storage.session.get(rawStorageKey);
+
     // eslint-disable-next-line security/detect-object-injection -- `getRawStorageKey` ensures the format
     return result[rawStorageKey] as Value | undefined;
   }
@@ -96,22 +85,14 @@ export class SessionMap<Value extends JsonValue> {
     }
 
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
-    if (hasSession) {
-      await browser.storage.session.set({ [rawStorageKey]: value });
-    } else {
-      storage.set(rawStorageKey, value);
-    }
+    await browser.storage.session.set({ [rawStorageKey]: value });
   }
 
   async delete(secondaryKey: string): Promise<void> {
     this.validateContext();
 
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
-    if (hasSession) {
-      await browser.storage.session.remove(rawStorageKey);
-    } else {
-      storage.delete(rawStorageKey);
-    }
+    await browser.storage.session.remove(rawStorageKey);
   }
 }
 

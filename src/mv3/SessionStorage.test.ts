@@ -17,6 +17,29 @@
 
 import { SessionMap, SessionValue } from "./SessionStorage";
 
+const _map = new Map();
+
+browser.storage.session = {
+  get: jest.fn(async (key: string) => ({ [key]: _map.get(key) })),
+  set: jest.fn(async (obj) => {
+    _map.set(...Object.entries(obj)[0]);
+  }),
+  remove: jest.fn(async (key) => {
+    _map.delete(key);
+  }),
+  clear: jest.fn(),
+  onChanged: {
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    hasListener: jest.fn(),
+    hasListeners: jest.fn(),
+  },
+};
+
+beforeEach(() => {
+  _map.clear();
+});
+
 test("SessionMap", async () => {
   const map = new SessionMap("jester", import.meta.url);
   await expect(map.get("alpha")).resolves.toBeUndefined();
