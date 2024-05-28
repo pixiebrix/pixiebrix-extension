@@ -77,7 +77,11 @@ test("can report application error to telemetry service", async ({
     expect.objectContaining({
       service: "pixiebrix-browser-extension",
       manifestVersion: 3,
-      error: expect.anything(),
+      error: expect.objectContaining({
+        stack: expect.any(String),
+        message: expect.any(String),
+        kind: expect.any(String),
+      }),
     }),
   );
 });

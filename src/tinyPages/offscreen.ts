@@ -18,6 +18,8 @@
 import type { MessageContext } from "@/types/loggerTypes";
 import { type TelemetryUser } from "@/telemetry/telemetryHelpers";
 import { type SemVerString } from "@/types/registryTypes";
+import { type SerializedError } from "@/types/messengerTypes";
+import { deserializeError } from "serialize-error";
 
 // Note that only one offscreen document can be active at a time, so it's unlikely that you'll want to create an
 // additional html document for that purpose.
@@ -32,7 +34,7 @@ export type RecordErrorMessage = {
   target: "offscreen-doc";
   type: "record-error";
   data: {
-    error: Error;
+    error: SerializedError;
     errorMessage: string;
     errorReporterInitInfo: {
       versionName: string;
@@ -111,7 +113,7 @@ export const sendErrorViaErrorReporter = async (
 
   reporter.error({
     message: errorMessage,
-    error,
+    error: deserializeError(error),
     messageContext,
   });
 };
