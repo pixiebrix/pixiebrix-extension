@@ -27,9 +27,6 @@ import { type FormDefinition } from "@/platform/forms/formTypes";
 import { type UUID, type TimedSequence } from "@/types/stringTypes";
 import { sortBy } from "lodash";
 import { getTimedSequence } from "@/types/helpers";
-import { getTopLevelFrame } from "webext-messenger";
-import { isMV3 } from "@/mv3/api";
-import { hideSidebar } from "@/contentScript/messenger/strict/api";
 
 let lastMessageSeen = getTimedSequence();
 // Track activate messages separately. The Sidebar App Redux state has special handling for these messages to account
@@ -222,13 +219,8 @@ export async function hideActivateMods(sequence: TimedSequence): Promise<void> {
   runListeners("onHideActivateRecipe", sequence);
 }
 
-export async function closeSelf(): Promise<void> {
-  if (isMV3()) {
-    window.close();
-  } else {
-    const topLevelFrame = await getTopLevelFrame();
-    await hideSidebar(topLevelFrame);
-  }
+export function closeSelf(): void {
+  window.close();
 }
 
 export async function navigationComplete(sequence: TimedSequence) {

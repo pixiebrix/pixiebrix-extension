@@ -52,7 +52,7 @@ export const useHideEmptySidebar = () => {
         visiblePanelCount === 0 &&
         openReservedPanels.length === 0
       ) {
-        await closeSelf();
+        closeSelf();
       }
     },
     [visiblePanelCount],

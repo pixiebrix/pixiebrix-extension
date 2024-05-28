@@ -38,6 +38,13 @@ jest.mock("@/contentScript/messenger/strict/api", () => ({
   }),
 }));
 
+browser.webNavigation.onBeforeNavigate = {
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  hasListener: jest.fn(),
+  hasListeners: jest.fn(),
+};
+
 describe("SidebarBody", () => {
   beforeEach(() => {
     jest
