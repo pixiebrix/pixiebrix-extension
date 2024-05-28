@@ -16,18 +16,10 @@
  */
 
 /** @file Temporary helpers useful for the MV3 transition */
+// TODO: Determine if we want to keep this file
 
 import { type Tabs } from "webextension-polyfill";
-import { once } from "lodash";
-
-export const isMV3 = once((): boolean => {
-  // https://github.com/pixiebrix/pixiebrix-extension/issues/8273
-  if (!chrome.runtime?.getManifest) {
-    return false;
-  }
-
-  return chrome.runtime.getManifest().manifest_version === 3;
-});
 
 export const browserAction = globalThis.chrome?.action;
+// XXX: Not sure if we still need both Tab types
 export type Tab = Tabs.Tab | chrome.tabs.Tab;
