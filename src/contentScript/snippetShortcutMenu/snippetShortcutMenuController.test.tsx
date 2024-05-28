@@ -65,6 +65,7 @@ describe("snippetShortcutMenuController", () => {
   it.skip("attach menu when user types command key", async () => {
     snippetRegistry.register({
       componentId: uuidv4(),
+      context: {},
       title: "Copy",
       shortcut: "copy",
       handler: jest.fn(),

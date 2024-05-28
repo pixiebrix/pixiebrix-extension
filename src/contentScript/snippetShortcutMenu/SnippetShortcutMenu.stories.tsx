@@ -62,6 +62,7 @@ const Template: ComponentStory<typeof SnippetShortcutMenu> = ({
 
 const emailSnippet = {
   componentId: uuidv4(),
+  context: {},
   shortcut: "email",
   title: "email",
   async handler() {
@@ -71,6 +72,7 @@ const emailSnippet = {
 
 const timestampSnippet = {
   componentId: uuidv4(),
+  context: {},
   shortcut: "timestamp",
   title: "timestamp",
   async handler() {
@@ -80,6 +82,7 @@ const timestampSnippet = {
 
 const emojiSnippet = {
   componentId: uuidv4(),
+  context: {},
   shortcut: "emoji",
   title: "emoji",
   async handler() {
@@ -89,6 +92,7 @@ const emojiSnippet = {
 
 const slowErrorSnippet = {
   componentId: uuidv4(),
+  context: {},
   shortcut: "error",
   title: "error",
   async handler() {

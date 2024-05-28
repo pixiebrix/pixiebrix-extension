@@ -23,6 +23,7 @@ describe("snippetShortcutMenuSlice", () => {
   it.each(["test", "TeSt"])("case matches query: %s", (query) => {
     const snippetShortcut: SnippetShortcut = {
       componentId: autoUUIDSequence(),
+      context: {},
       shortcut: "test",
       title: "Test",
       handler: jest.fn(),
