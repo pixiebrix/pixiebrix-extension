@@ -32,7 +32,7 @@ import {
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
-import UnsupportedApiV1 from "@/pageEditor/tabs/editTab/UnsupportedApiV1";
+import UnsupportedRuntimeVersion from "@/pageEditor/tabs/editTab/UnsupportedRuntimeVersion";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import {
   faAngleDoubleLeft,
@@ -54,7 +54,7 @@ const EditTab: React.FC<{
   useExtensionTrace();
   useReportTraceError();
 
-  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
+  const isRuntimeVersionSupported = useApiVersionAtLeast("v3");
   const activeNodeId = useSelector(selectActiveNodeId);
 
   const pipelineMap = useSelector(selectPipelineMap);
@@ -120,14 +120,14 @@ const EditTab: React.FC<{
               activeNodeId
             }
           >
-            {isApiAtLeastV2 ? (
+            {isRuntimeVersionSupported ? (
               activeNodeId === FOUNDATION_NODE_ID ? (
                 <FoundationNodeConfigPanel />
               ) : (
                 <EditorNodeConfigPanel />
               )
             ) : (
-              <UnsupportedApiV1 />
+              <UnsupportedRuntimeVersion />
             )}
           </ErrorBoundary>
         </div>

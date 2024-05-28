@@ -109,7 +109,6 @@ export function removeElement(state: Draft<EditorState>, uuid: UUID) {
 
   delete state.dirty[uuid];
   delete state.elementUIStates[uuid];
-  delete state.showV3UpgradeMessageByElement[uuid];
 
   const dynamicIndex = state.availableDynamicIds.indexOf(uuid);
   if (dynamicIndex > -1) {

@@ -99,7 +99,6 @@ export const initialState: EditorState = {
   dirty: {},
   isBetaUI: false,
   elementUIStates: {},
-  showV3UpgradeMessageByElement: {},
   dirtyRecipeOptionsById: {},
   dirtyRecipeMetadataById: {},
   visibleModalKey: null,
@@ -499,12 +498,6 @@ export const editorSlice = createSlice({
     },
     clearCopiedBlockConfig(state) {
       delete state.copiedBlock;
-    },
-    showV3UpgradeMessage(state) {
-      state.showV3UpgradeMessageByElement[state.activeElementId] = true;
-    },
-    hideV3UpgradeMessage(state) {
-      state.showV3UpgradeMessageByElement[state.activeElementId] = false;
     },
     editRecipeOptionsDefinitions(
       state,
