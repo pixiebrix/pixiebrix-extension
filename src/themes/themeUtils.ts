@@ -25,7 +25,7 @@ import betaLogoSmall from "@img/beta-logo-small.svg";
 import logo from "@img/logo.svg";
 import logoSmall from "@img/logo-small.svg";
 import aaLogo from "@img/aa-logo.svg";
-import aaLogoSmall from "@img/aa-logo-small.svg";
+import aaLogoSmall from "@img/aa-logo-small.png";
 import { StorageItem } from "webext-storage";
 import { type Nullishable } from "@/utils/nullishUtils";
 
@@ -74,6 +74,7 @@ export type ThemeAssets = {
 // Note: this function is re-used in the app. Should not reference
 // anything unavailable in the app environment, e.g. the background page
 export const getThemeLogo = (themeName: string): ThemeLogo => {
+  console.log("getThemeLogo:enter", themeName);
   if (isValidThemeName(themeName)) {
     // eslint-disable-next-line security/detect-object-injection -- themeName is type ThemeName, a union type of string literal
     return THEME_LOGOS[themeName];
