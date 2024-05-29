@@ -27,8 +27,6 @@ jest.mock("@/mv3/api", () => ({
     setBadgeBackgroundColor: jest.fn(),
     setBadgeText: jest.fn(),
   },
-  // TODO: Remove when MV2 code is dropped from src/contentScript
-  isMV3: jest.fn(() => true),
 }));
 
 describe("setToolbarBadge", () => {

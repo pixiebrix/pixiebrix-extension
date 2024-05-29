@@ -40,13 +40,6 @@ import initFloatingActions from "@/components/floatingActions/initFloatingAction
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
 import { initRuntime } from "@/runtime/reducePipeline";
-import { initSidebarFocusEvents } from "./sidebarController";
-import {
-  isSidebarFrameVisible,
-  removeSidebarFrame,
-} from "@/contentScript/sidebarDomControllerLite";
-import { isMV3 } from "@/mv3/api";
-import { onContextInvalidated } from "webext-events";
 import { setPlatform } from "@/platform/platformContext";
 import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
@@ -95,7 +88,6 @@ export async function init(): Promise<void> {
 
   void initNavigation();
 
-  initSidebarFocusEvents();
   void initSidebarActivation();
 
   // Let the partner page know
@@ -103,16 +95,4 @@ export async function init(): Promise<void> {
   void initFloatingActions();
 
   void initPerformanceMonitoring();
-
-  onContextInvalidated.addListener(() => {
-    // The sidebar breaks when the context is invalidated, so it's best to close it
-    // In MV3, this happens automatically
-    if (!isMV3() && isSidebarFrameVisible()) {
-      removeSidebarFrame();
-      // TODO: Also notify closure in MV3.
-      // There it's more complicated to show this message ONLY if the sidebar was open
-      // because the sidebar is closed before this listener is called.
-      void notifyContextInvalidated();
-    }
-  });
 }
