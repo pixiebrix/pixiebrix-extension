@@ -18,7 +18,6 @@
 import React, { useMemo } from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
-import UpgradedToApiV3 from "@/pageEditor/tabs/editTab/UpgradedToApiV3";
 import useFlags from "@/hooks/useFlags";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
@@ -84,7 +83,6 @@ const FoundationNodeConfigPanel: React.FC = () => {
       )}
       <ConnectedFieldTemplate name="label" label="Name" />
       {showVersionField && <ApiVersionField />}
-      <UpgradedToApiV3 />
       <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
         <AnalysisAnnotationsContext.Provider
           value={{

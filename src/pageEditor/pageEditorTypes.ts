@@ -133,12 +133,6 @@ export interface EditorState {
   copiedBlock?: BrickConfig;
 
   /**
-   * Are we currently showing the info message to users about upgrading from v2 to v3 of
-   * the runtime api for this extension?
-   */
-  showV3UpgradeMessageByElement: Record<UUID, boolean>;
-
-  /**
    * Unsaved, changed recipe options definitions
    */
   dirtyRecipeOptionsById: Record<RegistryId, ModOptionsDefinition>;

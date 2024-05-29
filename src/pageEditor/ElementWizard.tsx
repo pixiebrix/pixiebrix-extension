@@ -21,16 +21,12 @@ import React, { useState } from "react";
 import { useFormikContext } from "formik";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
-import { actions } from "@/pageEditor/slices/editorSlice";
 import ReloadToolbar from "@/pageEditor/toolbar/ReloadToolbar";
 import { type WizardStep } from "@/pageEditor/starterBricks/base";
 import PermissionsToolbar from "@/pageEditor/toolbar/PermissionsToolbar";
 import LogsTab, { LOGS_EVENT_KEY } from "@/pageEditor/tabs/logs/LogsTab";
 import EditTab from "@/pageEditor/tabs/editTab/EditTab";
 import { useDispatch } from "react-redux";
-import { produce } from "immer";
-import { useAsyncEffect } from "use-async-effect";
-import { upgradePipelineToV3 } from "@/pageEditor/starterBricks/upgrade";
 import cx from "classnames";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
@@ -84,27 +80,7 @@ const ElementWizard: React.FunctionComponent<{
     }
   };
 
-  const { values: formState, setValues: setFormState } =
-    useFormikContext<ModComponentFormState>();
-
   const wizardSteps = [...wizard];
-
-  useAsyncEffect(async (isMounted) => {
-    if (formState.apiVersion === "v2") {
-      const newState = await produce(formState, async (draft) => {
-        draft.extension.blockPipeline = await upgradePipelineToV3(
-          draft.extension.blockPipeline,
-        );
-        draft.apiVersion = "v3";
-      });
-      if (!isMounted()) {
-        return;
-      }
-
-      await setFormState(newState);
-      dispatch(actions.showV3UpgradeMessage());
-    }
-  }, []);
 
   return (
     <Tab.Container activeKey={step} key={element.uuid}>

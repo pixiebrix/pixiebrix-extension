@@ -189,7 +189,7 @@ const SnippetShortcutMenu: React.FunctionComponent<
         }),
       );
       try {
-        reportEvent(Events.SHORTCUT_SNIPPET_RUN);
+        reportEvent(Events.SHORTCUT_SNIPPET_RUN, snippetShortcut.context);
         const text = await snippetShortcut.handler(getElementText(element));
         await replaceAtCommandKey({ commandKey, query, element, text });
         onHide();
