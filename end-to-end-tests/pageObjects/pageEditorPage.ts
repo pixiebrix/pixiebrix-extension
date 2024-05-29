@@ -245,7 +245,7 @@ export class PageEditorPage {
     await workshopPage.goto();
     for (const packagedModId of this.savedPackageModIds) {
       // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
-      await workshopPage.deletePackageModByModId(packagedModId);
+      await workshopPage.deletePackagedModByModId(packagedModId);
     }
   }
 }

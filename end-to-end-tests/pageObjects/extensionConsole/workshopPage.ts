@@ -47,7 +47,7 @@ export class WorkshopPage {
     return new EditWorkshopModPage(this.page);
   }
 
-  async deletePackageModByModId(modId: string) {
+  async deletePackagedModByModId(modId: string) {
     await this.page.bringToFront();
     const editWorkshopModPage = await this.findAndSelectMod(modId);
     await editWorkshopModPage.deleteBrick();
