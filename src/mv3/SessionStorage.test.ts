@@ -22,7 +22,7 @@ const _map = new Map();
 browser.storage.session = {
   get: jest.fn(async (key: string) => ({ [key]: _map.get(key) })),
   set: jest.fn(async (obj) => {
-    _map.set(...Object.entries(obj)[0]);
+    _map.set(...Object.entries(obj)[0]!);
   }),
   remove: jest.fn(async (key) => {
     _map.delete(key);
