@@ -98,6 +98,7 @@ test("create, run, package, and update mod", async ({
     const workshopPage = new WorkshopPage(newPage, extensionId);
     await workshopPage.goto();
     await workshopPage.findAndSelectMod(modId);
+    await workshopPage.findAndReplaceText("version: 1.0.0", "version: 1.0.1");
     await workshopPage.findAndReplaceText(
       "description: Created with the PixieBrix Page Editor",
       "description: Created through Playwright Automation",
@@ -120,8 +121,12 @@ test("create, run, package, and update mod", async ({
     await expect(newPage.locator("form")).toContainText(
       "Created through Playwright Automation",
     );
+
     await expect(
       newPage.getByRole("button", { name: "Reactivate" }),
     ).toBeVisible();
+    await newPage.getByRole("button", { name: "Reactivate" }).click();
+
+    await expect(modListing).toContainText("version 1.0.1");
   });
 });

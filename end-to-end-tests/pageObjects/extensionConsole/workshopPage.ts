@@ -52,7 +52,7 @@ export class WorkshopPage {
       .nth(2)
       .click();
 
-    await this.page.getByRole("textbox").press("ControlOrMeta+f");
+    await this.page.getByRole("textbox").nth(0).press("ControlOrMeta+f");
     await this.page.getByPlaceholder("Search for").fill(text);
   }
 
