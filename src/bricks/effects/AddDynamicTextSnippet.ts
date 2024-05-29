@@ -123,6 +123,7 @@ class AddDynamicTextSnippet extends EffectABC {
 
     platform.snippetShortcutMenu.register({
       componentId: logger.context.extensionId,
+      context: logger.context,
       // Trim leading command key in shortcut to be resilient to user input
       shortcut: normalizeShortcut(shortcut),
       title,

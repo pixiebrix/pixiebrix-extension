@@ -29,6 +29,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
 const brick = new AddDynamicTextSnippet();
 const identity = new IdentityTransformer();
@@ -47,7 +48,10 @@ describe("AddDynamicTextSnippet", () => {
     "registers snippet: %s",
     async (shortcut) => {
       const extensionId = uuidv4();
-      const logger = new ConsoleLogger({ extensionId });
+      const logger = new ConsoleLogger({
+        extensionId,
+        blueprintId: registryIdFactory(),
+      });
 
       const pipeline = {
         id: brick.id,
@@ -75,6 +79,12 @@ describe("AddDynamicTextSnippet", () => {
           preview: undefined,
           handler: expect.toBeFunction(),
           componentId: extensionId,
+          context: {
+            ...logger.context,
+            blockId: brick.id,
+            blockVersion: expect.toBeString(),
+            label: brick.name,
+          },
         },
       ]);
 
@@ -115,6 +125,12 @@ describe("AddDynamicTextSnippet", () => {
           preview,
           handler: expect.toBeFunction(),
           componentId: extensionId,
+          context: {
+            ...logger.context,
+            blockId: brick.id,
+            blockVersion: expect.toBeString(),
+            label: brick.name,
+          },
         },
       ]);
 

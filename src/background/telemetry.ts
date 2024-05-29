@@ -41,7 +41,7 @@ const TELEMETRY_EVENT_OBJECT_STORE = "events";
 /**
  * Timestamp when the background worker was initialized.
  *
- * For MV3, this is the timestamp when the background worker was last initialized/restarted.
+ * This is the timestamp when the background worker was last initialized/restarted.
  */
 // eslint-disable-next-line local-rules/persistBackgroundData -- OK to reevaluate
 const initTimestamp = Date.now();

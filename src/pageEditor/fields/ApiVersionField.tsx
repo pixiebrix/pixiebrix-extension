@@ -18,6 +18,12 @@
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
+/**
+ * Developer-only component to select the brick runtime version for the mod. In general, developers should not
+ * ever need to change the value.
+ *
+ * See https://docs.pixiebrix.com/developing-mods/developer-concepts/advanced-brick-runtime
+ */
 const ApiVersionField: React.FC = () => (
   <ConnectedFieldTemplate
     name="apiVersion"
