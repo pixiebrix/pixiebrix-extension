@@ -39,35 +39,19 @@ test("create, run, package, and update mod", async ({
     await page.getByRole("button", { name: "Action #3" }).click();
 
     await pageEditorPage.bringToFront();
-
-    await pageEditorPage.getByLabel("Button text").click();
     await pageEditorPage.getByLabel("Button text").fill("Search Youtube");
-
     await pageEditorPage.setStarterBrickName(modComponentName);
   });
 
   await test.step("Add the Extract from Page brick and configure it", async () => {
     await pageEditorPage.addBrickToModComponent("extract from page");
 
-    await pageEditorPage.getByPlaceholder("Property name").click();
     await pageEditorPage.getByPlaceholder("Property name").fill("searchText");
     await expect(pageEditorPage.getByPlaceholder("Property name")).toHaveValue(
       "searchText",
     );
 
-    await pageEditorPage.getByLabel("Select element").focus();
-    await pageEditorPage.getByLabel("Select element").click();
-
-    await page.bringToFront();
-    await expect(page.getByText("Selection Tool: 0 matching")).toBeVisible();
-    await page.getByRole("heading", { name: "Transaction Table" }).click();
-
-    await pageEditorPage.bringToFront();
-    await expect(
-      pageEditorPage.getByPlaceholder("Select an element"),
-    ).toHaveValue("#root h1");
-
-    await pageEditorPage.waitForReduxUpdate();
+    await pageEditorPage.selectConnectedPageElement(page);
   });
 
   await test.step("Add the YouTube search brick and configure it", async () => {
@@ -76,9 +60,10 @@ test("create, run, package, and update mod", async ({
     });
 
     await pageEditorPage.getByLabel("Query").click();
-    await pageEditorPage
-      .getByLabel("Query")
-      .fill("{{ @data.searchText }} + Foo");
+    await pageEditorPage.fillInBrickField(
+      "Query",
+      "{{ @data.searchText }} + Foo",
+    );
 
     await pageEditorPage.waitForReduxUpdate();
   });

@@ -105,6 +105,7 @@ export class PageEditorPage {
 
   async fillInBrickField(fieldLabel: string, value: string) {
     await this.page.getByLabel(fieldLabel).fill(value);
+    await this.waitForReduxUpdate();
   }
 
   async addBrickToModComponent(
@@ -120,6 +121,27 @@ export class PageEditorPage {
     await this.page.getByRole("button", { name: brickName }).click();
 
     await this.page.getByRole("button", { name: "Add brick" }).click();
+  }
+
+  async selectConnectedPageElement(connectedPage: Page) {
+    // Without focusing first, the click doesn't enable selection tool ¯\_(ツ)_/¯
+    await this.page.getByLabel("Select element").focus();
+    await this.page.getByLabel("Select element").click();
+
+    await connectedPage.bringToFront();
+    await expect(
+      connectedPage.getByText("Selection Tool: 0 matching"),
+    ).toBeVisible();
+    await connectedPage
+      .getByRole("heading", { name: "Transaction Table" })
+      .click();
+
+    await this.page.bringToFront();
+    await expect(this.page.getByPlaceholder("Select an element")).toHaveValue(
+      "#root h1",
+    );
+
+    await this.waitForReduxUpdate();
   }
 
   getModListItemByName(modName: string) {
