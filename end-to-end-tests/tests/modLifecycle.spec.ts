@@ -31,20 +31,20 @@ test("create, run, package, and update mod", async ({
   await page.goto("/create-react-app/table");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  const { modComponentName, modUuid } = await pageEditorPage.addStarterBrick(
-    "Button",
-    {
-      async callback() {
-        await page.bringToFront();
-        await page.getByRole("button", { name: "Action #3" }).click();
+  const { modComponentName, modUuid } =
+    await pageEditorPage.addStarterBrick("Button");
 
-        await pageEditorPage.bringToFront();
+  await test.step("Configure the Button brick", async () => {
+    await page.bringToFront();
+    await page.getByRole("button", { name: "Action #3" }).click();
 
-        await pageEditorPage.getByLabel("Button text").click();
-        await pageEditorPage.getByLabel("Button text").fill("Search Youtube");
-      },
-    },
-  );
+    await pageEditorPage.bringToFront();
+
+    await pageEditorPage.getByLabel("Button text").click();
+    await pageEditorPage.getByLabel("Button text").fill("Search Youtube");
+
+    await pageEditorPage.setStarterBrickName(modComponentName);
+  });
 
   await test.step("Add the Extract from Page brick and configure it", async () => {
     await pageEditorPage.addBrickToModComponent("extract from page");

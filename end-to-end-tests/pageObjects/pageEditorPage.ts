@@ -85,10 +85,7 @@ export class PageEditorPage {
    * not the underlying type
    * @returns modName the generated mod name
    */
-  async addStarterBrick(
-    starterBrickName: StarterBrickName,
-    { callback }: { callback?: () => Promise<void> } = {},
-  ) {
+  async addStarterBrick(starterBrickName: StarterBrickName) {
     const modUuid = uuidv4();
     const modComponentName = `Test ${starterBrickName} ${modUuid}`;
     await this.page.getByRole("button", { name: "Add", exact: true }).click();
@@ -98,13 +95,12 @@ export class PageEditorPage {
       })
       .click();
 
-    if (starterBrickName === "Button" && callback) {
-      await callback();
-    }
+    return { modComponentName, modUuid };
+  }
 
+  async setStarterBrickName(modComponentName: string) {
     await this.fillInBrickField("Name", modComponentName);
     await this.waitForReduxUpdate();
-    return { modComponentName, modUuid };
   }
 
   async fillInBrickField(fieldLabel: string, value: string) {
