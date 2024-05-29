@@ -17,7 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { type Except, type JsonObject } from "type-fest";
-import { deserializeError } from "serialize-error";
+import { deserializeError, serializeError } from "serialize-error";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { isEmpty, once, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
@@ -46,7 +46,6 @@ import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
 import { readAuthData } from "@/auth/authStorage";
 import {
   type RecordErrorMessage,
-  sendErrorViaErrorReporter,
   setupOffscreenDocument,
 } from "@/tinyPages/offscreen";
 
@@ -374,14 +373,13 @@ export async function reportToApplicationErrorTelemetry(
     return;
   }
 
-  const { version_name: versionName, manifest_version: manifestVersion } =
-    chrome.runtime.getManifest();
+  const { version_name: versionName } = chrome.runtime.getManifest();
   const [telemetryUser, extraContext] = await Promise.all([
     mapAppUserToTelemetryUser(await readAuthData()),
     selectExtraContext(error),
   ]);
   const errorData: RecordErrorMessage["data"] = {
-    error,
+    error: serializeError(error),
     errorMessage,
     errorReporterInitInfo: {
       // It should never happen that versionName is undefined, but handle undefined just in case
@@ -394,24 +392,19 @@ export async function reportToApplicationErrorTelemetry(
     },
   };
 
-  if (manifestVersion === 3) {
-    // Due to service worker limitations with the Datadog SDK, which we currently use for Application error telemetry,
-    // we need to send the error from an offscreen document.
-    // See https://github.com/pixiebrix/pixiebrix-extension/issues/8268
-    // and offscreen.ts
-    await setupOffscreenDocument();
+  // Due to service worker limitations with the Datadog SDK, which we currently use for Application error telemetry,
+  // we need to send the error from an offscreen document.
+  // See https://github.com/pixiebrix/pixiebrix-extension/issues/8268
+  // and offscreen.ts
+  await setupOffscreenDocument();
 
-    const recordErrorMessage: RecordErrorMessage = {
-      type: "record-error",
-      target: "offscreen-doc",
-      data: errorData,
-    };
+  const recordErrorMessage: RecordErrorMessage = {
+    type: "record-error",
+    target: "offscreen-doc",
+    data: errorData,
+  };
 
-    await chrome.runtime.sendMessage(recordErrorMessage);
-    return;
-  }
-
-  await sendErrorViaErrorReporter(errorData);
+  await chrome.runtime.sendMessage(recordErrorMessage);
 }
 
 /** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */

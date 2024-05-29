@@ -35,6 +35,7 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 jest.mock("@/auth/useLinkState");
 
+// Needed until https://github.com/RickyMarou/jest-webextension-mock/issues/5 is implemented
 browser.webNavigation.onBeforeNavigate = {
   addListener: jest.fn(),
   removeListener: jest.fn(),

@@ -16,6 +16,7 @@
  */
 
 import type { UUID } from "@/types/stringTypes";
+import type { MessageContext } from "@/types/loggerTypes";
 
 export type SnippetShortcut = {
   /**
@@ -40,6 +41,16 @@ export type SnippetShortcut = {
    * @param currentText current text in the editor
    */
   handler: (currentText: string) => Promise<string>;
+  /**
+   * Message context for telemetry
+   *
+   * Added so deployment managers can track the usage of snippets in their deployed.
+   *
+   * @since 2.0.1
+   */
+  // Keeping componentId separate for now because it's required for SnippetShortcut, but optional on MessageContext.
+  // If we wanted to consolidate, could Require the field on MessageContext.
+  context: MessageContext;
 };
 
 /**

@@ -24,6 +24,8 @@ jest.mock("@/mv3/api", () => ({
   browserAction: {
     setIcon: jest.fn(),
   },
+  // TODO: Remove when MV2 code is dropped from src/contentScript
+  isMV3: jest.fn(() => true),
 }));
 
 describe("setToolbarIconFromTheme", () => {

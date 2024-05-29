@@ -72,19 +72,6 @@ export const selectActiveModComponentFormState = createSelector(
 export const selectActiveModId = ({ editor }: EditorRootState) =>
   editor.activeRecipeId;
 
-export const selectShowV3UpgradeMessageForActiveModComponent = createSelector(
-  selectActiveModComponentId,
-  ({ editor }: EditorRootState) => editor.showV3UpgradeMessageByElement,
-  (activeModComponentId, showV3UpgradeMessageByModComponentId) => {
-    if (activeModComponentId == null) {
-      return false;
-    }
-
-    // eslint-disable-next-line security/detect-object-injection -- using an internally-looked-up uuid
-    return showV3UpgradeMessageByModComponentId[activeModComponentId] ?? false;
-  },
-);
-
 export const selectIsInsertingNewStarterBrick = ({ editor }: EditorRootState) =>
   editor.inserting;
 

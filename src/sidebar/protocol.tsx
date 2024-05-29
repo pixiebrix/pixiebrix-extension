@@ -219,10 +219,6 @@ export async function hideActivateMods(sequence: TimedSequence): Promise<void> {
   runListeners("onHideActivateRecipe", sequence);
 }
 
-export function closeSelf(): void {
-  window.close();
-}
-
 export async function navigationComplete(sequence: TimedSequence) {
   runListeners("onNavigationComplete", sequence);
 }

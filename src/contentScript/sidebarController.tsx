@@ -212,9 +212,7 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
  * Hide the sidebar. Works from any frame.
  */
 export function hideSidebar(): void {
-  if (isLoadedInIframe()) {
-    sidebarInThisTab.close();
-  }
+  sidebarInThisTab.close();
 }
 
 /**
