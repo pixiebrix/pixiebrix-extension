@@ -19,6 +19,7 @@ import { SessionMap, SessionValue } from "./SessionStorage";
 
 const _map = new Map();
 
+// Workaround until https://github.com/RickyMarou/jest-webextension-mock/issues/6 is resolved
 browser.storage.session = {
   get: jest.fn(async (key: string) => ({ [key]: _map.get(key) })),
   set: jest.fn(async (obj) => {

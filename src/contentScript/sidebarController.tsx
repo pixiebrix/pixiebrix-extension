@@ -150,22 +150,19 @@ export async function showSidebarInTopFrame() {
     console.warn("showSidebarInTopFrame should not be called in an iframe");
   }
 
-  // Defensively handle accidental calls from iframes
-  if (isLoadedInIframe()) {
-    try {
-      await showMySidePanel();
-    } catch (error) {
-      if (!isUserGestureRequiredError(error)) {
-        throw error;
-      }
-
-      await focusCaptureDialog({
-        message: 'Click "Open Sidebar" to open the mod sidebar',
-        buttonText: "Open Sidebar",
-        signal: signalFromEvent(sidebarShowEvents, sidebarShowEvents.coreEvent),
-      });
-      await showMySidePanel();
+  try {
+    await showMySidePanel();
+  } catch (error) {
+    if (!isUserGestureRequiredError(error)) {
+      throw error;
     }
+
+    await focusCaptureDialog({
+      message: 'Click "Open Sidebar" to open the mod sidebar',
+      buttonText: "Open Sidebar",
+      signal: signalFromEvent(sidebarShowEvents, sidebarShowEvents.coreEvent),
+    });
+    await showMySidePanel();
   }
 
   await pingSidebar();

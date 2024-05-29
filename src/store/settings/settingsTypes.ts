@@ -41,12 +41,6 @@ export type SkunkworksSettingsFlags = {
    * Experimental setting to track runtime performance
    */
   performanceTracing?: boolean;
-
-  /**
-   * Experimental setting to run some code in a sandbox
-   * XXX: Is this still relevant in 2.0.0?
-   */
-  sandboxedCode?: boolean;
 };
 
 export type GeneralSettingsFlags = {
@@ -168,6 +162,9 @@ export type SettingsStateV3 = SettingsStateV2 & {
   varAutosuggest: boolean;
 };
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
 export type SettingsStateV4 = SettingsStateV3 & {
   /**
    * @since 1.8.11 SettingsStateV4 makes textSelectionMenu and snippetShortcutMenu required
