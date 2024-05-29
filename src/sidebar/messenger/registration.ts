@@ -58,7 +58,7 @@ export default function registerMessenger(): void {
     SIDEBAR_RENDER_PANELS: renderPanels,
     SIDEBAR_SHOW_FORM: showForm,
     SIDEBAR_HIDE_FORM: hideForm,
-    SIDEBAR_CLOSE: window.close,
+    SIDEBAR_CLOSE: window.close.bind(window),
     SIDEBAR_PING: noop,
     SIDEBAR_RELOAD: location.reload.bind(location),
     SIDEBAR_SHOW_TEMPORARY_PANEL: showTemporaryPanel,
