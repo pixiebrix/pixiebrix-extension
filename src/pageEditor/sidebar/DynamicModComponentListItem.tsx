@@ -200,6 +200,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
       )}
       {isActive && (
         <ActionMenu
+          labelRoot={`${getLabel(modComponentFormState)}`}
           onSave={onSave}
           onDelete={onDelete}
           onDeactivate={onDeactivate}
