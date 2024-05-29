@@ -36,6 +36,7 @@ exports[`DynamicModComponentListItem it renders active element 1`] = `
         class="root"
       >
         <button
+          aria-label="Element 3 - Save"
           class="button save btn btn-primary"
           type="button"
         >
@@ -61,6 +62,7 @@ exports[`DynamicModComponentListItem it renders active element 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="true"
+            aria-label="Element 3 - Ellipsis"
             class="toggle toggle dropdown-toggle btn btn-light btn-sm"
             type="button"
           >
