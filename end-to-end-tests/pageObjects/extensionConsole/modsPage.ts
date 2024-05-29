@@ -82,7 +82,7 @@ export class ModsPage {
    * Will fail if the mod is not found, or multiple mods are found for the same mod name.
    * @param modName the name of the standalone mod to delete (must be a standalone mod, not a packaged mod)
    */
-  async deleteModByName(modName: string) {
+  async deleteStandaloneModByName(modName: string) {
     await this.page.bringToFront();
     await this.searchModsInput().fill(modName);
     await expect(this.page.getByText(`results for "${modName}`)).toBeVisible();

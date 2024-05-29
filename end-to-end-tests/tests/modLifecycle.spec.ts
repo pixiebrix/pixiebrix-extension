@@ -80,7 +80,7 @@ test("create, run, package, and update mod", async ({
     await pageEditorPage.waitForReduxUpdate();
   });
 
-  const { modName, modId } =
+  const { modId } =
     await pageEditorPage.createModFromModComponent("Lifecycle Test");
 
   let newPage: Page | undefined;

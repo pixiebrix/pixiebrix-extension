@@ -19,6 +19,7 @@ import { getBasePageEditorUrl } from "./constants";
 import { type Page, expect } from "@playwright/test";
 import { uuidv4 } from "@/types/helpers";
 import { ModsPage } from "./extensionConsole/modsPage";
+import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshopPage";
 
 // Starter brick names as shown in the Page Editor UI
 export type StarterBrickName =
@@ -40,6 +41,7 @@ export type StarterBrickName =
 export class PageEditorPage {
   private readonly pageEditorUrl: string;
   private readonly savedStandaloneModNames: string[] = [];
+  private readonly savedPackageModIds: string[] = [];
   private readonly uuid: string;
   private modName: string;
   private modComponentName: string;
@@ -196,6 +198,8 @@ export class PageEditorPage {
     await this.page.getByLabel("Name", { exact: true }).fill(modName);
     await this.page.getByRole("button", { name: "Create" }).click();
 
+    this.savedPackageModIds.push(modId);
+
     return { modName: this.modName, modId };
   }
 
@@ -208,9 +212,16 @@ export class PageEditorPage {
   async cleanup() {
     const modsPage = new ModsPage(this.page, this.extensionId);
     await modsPage.goto();
-    for (const modName of this.savedStandaloneModNames) {
+    for (const standaloneModName of this.savedStandaloneModNames) {
       // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
-      await modsPage.deleteModByName(modName);
+      await modsPage.deleteStandaloneModByName(standaloneModName);
+    }
+
+    const workshopPage = new WorkshopPage(this.page, this.extensionId);
+    await workshopPage.goto();
+    for (const packagedModId of this.savedPackageModIds) {
+      // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
+      await workshopPage.deletePackageModByModId(packagedModId);
     }
   }
 }

@@ -66,4 +66,15 @@ export class WorkshopPage {
   async updateBrick() {
     await this.page.getByRole("button", { name: "Update Brick" }).click();
   }
+
+  async deleteBrick() {
+    await this.page.getByRole("button", { name: "Delete Brick" }).click();
+    await this.page.getByRole("button", { name: "Permanently Delete" }).click();
+  }
+
+  async deletePackageModByModId(modId: string) {
+    await this.page.bringToFront();
+    await this.findAndSelectMod(modId);
+    await this.deleteBrick();
+  }
 }
