@@ -36,4 +36,34 @@ export class WorkshopPage {
       })
       .click();
   }
+
+  async findAndSelectMod(modId: string) {
+    await this.page
+      .getByPlaceholder("Start typing to find results")
+      .fill(modId);
+    await this.page.getByRole("cell", { name: modId }).click();
+  }
+
+  async findText(text: string) {
+    await this.page
+      .getByLabel("Editor")
+      .locator("div")
+      .filter({ hasText: text })
+      .nth(2)
+      .click();
+
+    await this.page.getByRole("textbox").press("ControlOrMeta+f");
+    await this.page.getByPlaceholder("Search for").fill(text);
+  }
+
+  async findAndReplaceText(findText: string, replaceText: string) {
+    await this.findText(findText);
+    await this.page.getByText("+", { exact: true }).click();
+    await this.page.getByPlaceholder("Replace with").fill(replaceText);
+    await this.page.getByText("Replace").click();
+  }
+
+  async updateBrick() {
+    await this.page.getByRole("button", { name: "Update Brick" }).click();
+  }
 }

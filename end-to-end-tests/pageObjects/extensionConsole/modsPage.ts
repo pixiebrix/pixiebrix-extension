@@ -63,8 +63,14 @@ export class ModsPage {
     await this.page.getByTestId("active-mod-tab").click();
   }
 
+  async reactivateMod() {}
+
   modTableItems() {
     return this.page.getByRole("table").locator(".list-group-item");
+  }
+
+  modTableItemById(modId: string) {
+    return this.modTableItems().filter({ hasText: modId });
   }
 
   searchModsInput() {

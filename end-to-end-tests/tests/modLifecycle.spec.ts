@@ -17,9 +17,10 @@
 
 import { expect, test } from "../fixtures/extensionBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { test as base } from "@playwright/test";
+import { type Page, test as base } from "@playwright/test";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 import { clickAndWaitForNewPage } from "end-to-end-tests/utils";
+import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshopPage";
 
 test("create, run, package, and update mod", async ({
   page,
@@ -30,7 +31,7 @@ test("create, run, package, and update mod", async ({
   await page.goto("/create-react-app/table");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  const { modName, modUuid } = await pageEditorPage.addStarterBrick("Button", {
+  await pageEditorPage.addStarterBrick("Button", {
     async callback() {
       await page.bringToFront();
       await page.getByRole("button", { name: "Action #3" }).click();
@@ -79,26 +80,48 @@ test("create, run, package, and update mod", async ({
     await pageEditorPage.waitForReduxUpdate();
   });
 
-  await test.step("Save the mod", async () => {
+  const { modName, modId } =
     await pageEditorPage.createModFromModComponent("Lifecycle Test");
-    await page.pause();
-  });
 
+  let newPage: Page | undefined;
   await test.step("Run the mod", async () => {
-    const youtubePage = await clickAndWaitForNewPage(
+    newPage = await clickAndWaitForNewPage(
       page.getByRole("button", { name: "Search Youtube" }),
       context,
     );
-    await expect(youtubePage).toHaveURL(
+    await expect(newPage).toHaveURL(
       "https://www.youtube.com/results?search_query=Transaction+Table+%2B+Foo",
     );
   });
 
-  expect(true).toBeFalsy();
+  await test.step("View and update mod in the Workshop", async () => {
+    const workshopPage = new WorkshopPage(newPage, extensionId);
+    await workshopPage.goto();
+    await workshopPage.findAndSelectMod(modId);
+    await workshopPage.findAndReplaceText(
+      "description: Created with the PixieBrix Page Editor",
+      "description: Created through Playwright Automation",
+    );
+    await workshopPage.updateBrick();
+  });
 
-  const modsPage = new ModsPage(page, extensionId);
-  await modsPage.goto();
-  await expect(
-    page.locator(".list-group-item", { hasText: modName }),
-  ).toBeVisible();
+  await test.step("View the updated mod on the mods page", async () => {
+    const modsPage = new ModsPage(newPage, extensionId);
+    await modsPage.goto();
+
+    await modsPage.viewActiveMods();
+    const modListing = modsPage.modTableItemById(modId);
+
+    await expect(
+      modListing.getByRole("button", { name: "Update" }),
+    ).toBeVisible();
+    await modListing.getByRole("button", { name: "Update" }).click();
+
+    await expect(newPage.locator("form")).toContainText(
+      "Created through Playwright Automation",
+    );
+    await expect(
+      newPage.getByRole("button", { name: "Reactivate" }),
+    ).toBeVisible();
+  });
 });
