@@ -30,7 +30,12 @@ async function setToolbarIcon(): Promise<void> {
   const cachedTheme = await themeStorage.get();
   // Set initial icon before fetching the activeTheme which may take several seconds to resolve.
   if (cachedTheme) {
-    await setToolbarIconFromTheme(cachedTheme);
+    try {
+      await setToolbarIconFromTheme(cachedTheme);
+    } catch (error) {
+      // Likely due to the cached theme using an svg
+      console.error("Failed to set toolbar icon from cached theme", error);
+    }
   } else {
     // Default to manifest icons (This re-sets the colored manifest icons)
     const { icons: manifestPath } = browser.runtime.getManifest();

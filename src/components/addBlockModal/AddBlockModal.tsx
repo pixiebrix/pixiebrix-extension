@@ -61,7 +61,7 @@ import {
 import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
 import useAddBlock from "@/components/addBlockModal/useAddBlock";
 import useTheme from "@/hooks/useTheme";
-import aaLogo from "@img/aa-logo-small.svg";
+import aaLogo from "@img/aa-logo-small.png";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
