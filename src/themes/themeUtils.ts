@@ -74,7 +74,6 @@ export type ThemeAssets = {
 // Note: this function is re-used in the app. Should not reference
 // anything unavailable in the app environment, e.g. the background page
 export const getThemeLogo = (themeName: string): ThemeLogo => {
-  console.log("getThemeLogo:enter", themeName);
   if (isValidThemeName(themeName)) {
     // eslint-disable-next-line security/detect-object-injection -- themeName is type ThemeName, a union type of string literal
     return THEME_LOGOS[themeName];
