@@ -25,16 +25,13 @@ import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import * as messengerApi from "@/contentScript/messenger/strict/api";
-import * as sidebarController from "@/sidebar/protocol";
 import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
 
 mockAllApiEndpoints();
 
-jest.mock("@/sidebar/protocol");
-
 const cancelFormSpy = jest.spyOn(messengerApi, "cancelForm");
-const hideSidebarSpy = jest.spyOn(sidebarController, "closeSelf");
+const hideSidebarSpy = jest.spyOn(window, "close").mockImplementation(() => {});
 
 async function setupPanelsAndRender(options: {
   sidebarEntries?: Partial<SidebarEntries>;

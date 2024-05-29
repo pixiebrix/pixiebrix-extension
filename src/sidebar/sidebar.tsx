@@ -35,7 +35,6 @@ import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtocol";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
-import { initSidePanel } from "./sidePanel";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { sidebarWasLoaded } from "@/contentScript/messenger/strict/api";
 import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
@@ -64,7 +63,6 @@ async function init(): Promise<void> {
   // XXX: Do we really want to delay the `init`? Maybe this should be last or use `getConnectedTarget().then`
   sidebarWasLoaded(await getConnectedTarget());
 
-  initSidePanel();
   markDocumentAsFocusableByUser();
 
   // Handle an embedded AA business copilot frame

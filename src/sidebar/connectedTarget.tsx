@@ -15,19 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isMV3 } from "@/mv3/api";
 import { expectContext, isBrowserSidebarTopFrame } from "@/utils/expectContext";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { once } from "lodash";
 import { getTopLevelFrame, type TopLevelFrame } from "webext-messenger";
 import { getTabUrl } from "webext-tools";
 
-export function getConnectedTabIdForMV3SidebarTopFrame(): number {
+export function getConnectedTabIdForSidebarTopFrame(): number {
   expectContext("sidebar");
 
   if (location.pathname !== "/sidebar.html") {
     throw new Error(
-      `getConnectedTabIdForMV3SidebarTopFrame can only be called from the MV3 sidebar's top frame. The current location is ${location.href}.`,
+      `getConnectedTabIdForSidebarTopFrame can only be called from the sidebar's top frame. The current location is ${location.href}.`,
     );
   }
 
@@ -39,14 +38,7 @@ export function getConnectedTabIdForMV3SidebarTopFrame(): number {
   return Number(tabId);
 }
 
-async function getConnectedTabIdMv2() {
-  const { tabId } = await getTopLevelFrame();
-  return tabId;
-}
-
-export const getConnectedTabId = once(
-  isMV3() ? getConnectedTabIdForMV3SidebarTopFrame : getConnectedTabIdMv2,
-);
+export const getConnectedTabId = once(getConnectedTabIdForSidebarTopFrame);
 
 /**
  * @returns the Target for the top level frame for the current tab
@@ -55,9 +47,9 @@ export const getConnectedTabId = once(
 // TODO: Drop support for "content script iframes" because it doesn't belong to `@/sidebar/connectedTarget`
 // https://github.com/pixiebrix/pixiebrix-extension/pull/7354#discussion_r1461563961
 export const getConnectedTarget: () => Promise<TopLevelFrame> =
-  isMV3() && isBrowserSidebarTopFrame()
+  isBrowserSidebarTopFrame()
     ? async () => ({
-        tabId: getConnectedTabIdForMV3SidebarTopFrame(),
+        tabId: getConnectedTabIdForSidebarTopFrame(),
         frameId: 0,
       })
     : getTopLevelFrame;

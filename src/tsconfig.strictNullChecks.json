@@ -893,7 +893,6 @@
     "./sidebar/modLauncher/ActiveSidebarModsListItem.tsx",
     "./sidebar/modLauncher/ModLauncher.tsx",
     "./sidebar/protocol.tsx",
-    "./sidebar/sidePanel.tsx",
     "./sidebar/sidebarSelectors.ts",
     "./sidebar/staticPanelUtils.tsx",
     "./sidebar/useHideEmptySidebar.ts",
