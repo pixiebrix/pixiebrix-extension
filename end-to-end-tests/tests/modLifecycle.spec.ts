@@ -97,13 +97,16 @@ test("create, run, package, and update mod", async ({
   await test.step("View and update mod in the Workshop", async () => {
     const workshopPage = new WorkshopPage(newPage, extensionId);
     await workshopPage.goto();
-    await workshopPage.findAndSelectMod(modId);
-    await workshopPage.findAndReplaceText("version: 1.0.0", "version: 1.0.1");
-    await workshopPage.findAndReplaceText(
+    const editWorkshopModPage = await workshopPage.findAndSelectMod(modId);
+    await editWorkshopModPage.findAndReplaceText(
+      "version: 1.0.0",
+      "version: 1.0.1",
+    );
+    await editWorkshopModPage.findAndReplaceText(
       "description: Created with the PixieBrix Page Editor",
       "description: Created through Playwright Automation",
     );
-    await workshopPage.updateBrick();
+    await editWorkshopModPage.updateBrick();
   });
 
   await test.step("View the updated mod on the mods page", async () => {

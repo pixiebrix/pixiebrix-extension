@@ -16,10 +16,9 @@
  */
 
 import { type Page } from "@playwright/test";
-import { getBaseExtensionConsoleUrl } from "../constants";
-import { EditWorkshopModPage } from "end-to-end-tests/pageObjects/extensionConsole/editWorkshopModPage";
+import { getBaseExtensionConsoleUrl } from "end-to-end-tests/pageObjects/constants";
 
-export class WorkshopPage {
+export class EditWorkshopModPage {
   private readonly extensionConsoleUrl: string;
 
   constructor(
@@ -29,27 +28,31 @@ export class WorkshopPage {
     this.extensionConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
   }
 
-  async goto() {
-    await this.page.goto(this.extensionConsoleUrl);
+  async findText(text: string) {
     await this.page
-      .getByRole("link", {
-        name: "Workshop",
-      })
+      .getByLabel("Editor")
+      .locator("div")
+      .filter({ hasText: text })
+      .nth(2)
       .click();
+
+    await this.page.getByRole("textbox").nth(0).press("ControlOrMeta+f");
+    await this.page.getByPlaceholder("Search for").fill(text);
   }
 
-  async findAndSelectMod(modId: string) {
-    await this.page
-      .getByPlaceholder("Start typing to find results")
-      .fill(modId);
-    await this.page.getByRole("cell", { name: modId }).click();
-
-    return new EditWorkshopModPage(this.page, modId);
+  async findAndReplaceText(findText: string, replaceText: string) {
+    await this.findText(findText);
+    await this.page.getByText("+", { exact: true }).click();
+    await this.page.getByPlaceholder("Replace with").fill(replaceText);
+    await this.page.getByText("Replace").click();
   }
 
-  async deletePackageModByModId(modId: string) {
-    await this.page.bringToFront();
-    const editWorkshopModPage = await this.findAndSelectMod(modId);
-    await editWorkshopModPage.deleteBrick();
+  async updateBrick() {
+    await this.page.getByRole("button", { name: "Update Brick" }).click();
+  }
+
+  async deleteBrick() {
+    await this.page.getByRole("button", { name: "Delete Brick" }).click();
+    await this.page.getByRole("button", { name: "Permanently Delete" }).click();
   }
 }
