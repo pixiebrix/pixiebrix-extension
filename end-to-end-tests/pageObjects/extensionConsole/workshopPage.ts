@@ -44,7 +44,7 @@ export class WorkshopPage {
       .fill(modId);
     await this.page.getByRole("cell", { name: modId }).click();
 
-    return new EditWorkshopModPage(this.page, modId);
+    return new EditWorkshopModPage(this.page);
   }
 
   async deletePackageModByModId(modId: string) {

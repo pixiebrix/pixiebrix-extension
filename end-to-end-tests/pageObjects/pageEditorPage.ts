@@ -20,6 +20,7 @@ import { type Page, expect } from "@playwright/test";
 import { uuidv4 } from "@/types/helpers";
 import { ModsPage } from "./extensionConsole/modsPage";
 import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshopPage";
+import { type UUID } from "@/types/stringTypes";
 
 // Starter brick names as shown in the Page Editor UI
 export type StarterBrickName =
@@ -42,9 +43,6 @@ export class PageEditorPage {
   private readonly pageEditorUrl: string;
   private readonly savedStandaloneModNames: string[] = [];
   private readonly savedPackageModIds: string[] = [];
-  private readonly uuid: string;
-  private modName: string;
-  private modComponentName: string;
 
   constructor(
     private readonly page: Page,
@@ -52,7 +50,6 @@ export class PageEditorPage {
     private readonly extensionId: string,
   ) {
     this.pageEditorUrl = getBasePageEditorUrl(extensionId);
-    this.uuid = uuidv4();
   }
 
   async goto() {
@@ -92,7 +89,8 @@ export class PageEditorPage {
     starterBrickName: StarterBrickName,
     { callback }: { callback?: () => Promise<void> } = {},
   ) {
-    this.modComponentName = `Test ${starterBrickName} ${this.uuid}`;
+    const modUuid = uuidv4();
+    const modComponentName = `Test ${starterBrickName} ${modUuid}`;
     await this.page.getByRole("button", { name: "Add", exact: true }).click();
     await this.page
       .locator("[role=button].dropdown-item", {
@@ -104,9 +102,9 @@ export class PageEditorPage {
       await callback();
     }
 
-    await this.fillInBrickField("Name", this.modComponentName);
+    await this.fillInBrickField("Name", modComponentName);
     await this.waitForReduxUpdate();
-    return { modComponentName: this.modComponentName, modUuid: this.uuid };
+    return { modComponentName, modUuid };
   }
 
   async fillInBrickField(fieldLabel: string, value: string) {
@@ -182,17 +180,25 @@ export class PageEditorPage {
     this.savedStandaloneModNames.push(modName);
   }
 
-  async createModFromModComponent(modName: string) {
-    this.modName = `${modName} ${this.uuid}`;
+  async createModFromModComponent({
+    modNameRoot,
+    modComponentName,
+    modUuid,
+  }: {
+    modNameRoot: string;
+    modComponentName: string;
+    modUuid: UUID;
+  }) {
+    const modName = `${modNameRoot} ${modUuid}`;
 
-    await this.page.getByLabel(`${this.modComponentName} - Ellipsis`).click();
+    await this.page.getByLabel(`${modComponentName} - Ellipsis`).click();
     await this.page.getByRole("button", { name: "Add to mod" }).click();
 
     await this.page.getByText("Select...Choose a mod").click();
     await this.page.getByRole("option", { name: /Create new mod.../ }).click();
     await this.page.getByRole("button", { name: "Move" }).click();
 
-    const modId = `${modName.split(" ").join("-").toLowerCase()}-${this.uuid}`;
+    const modId = `${modName.split(" ").join("-").toLowerCase()}-${modUuid}`;
     await this.page.getByTestId("registryId-id-id").fill(modId);
 
     await this.page.getByLabel("Name", { exact: true }).fill(modName);
@@ -200,7 +206,7 @@ export class PageEditorPage {
 
     this.savedPackageModIds.push(modId);
 
-    return { modName: this.modName, modId };
+    return { modName, modId };
   }
 
   /**

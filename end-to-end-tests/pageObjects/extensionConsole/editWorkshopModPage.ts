@@ -16,17 +16,9 @@
  */
 
 import { type Page } from "@playwright/test";
-import { getBaseExtensionConsoleUrl } from "end-to-end-tests/pageObjects/constants";
 
 export class EditWorkshopModPage {
-  private readonly extensionConsoleUrl: string;
-
-  constructor(
-    private readonly page: Page,
-    extensionId: string,
-  ) {
-    this.extensionConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
-  }
+  constructor(private readonly page: Page) {}
 
   async findText(text: string) {
     await this.page

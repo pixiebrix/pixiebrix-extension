@@ -28,7 +28,8 @@ test("#8104: Do not automatically close the sidebar when saving in the Page Edit
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  const modName = await pageEditorPage.addStarterBrick("Sidebar Panel");
+  const { modComponentName } =
+    await pageEditorPage.addStarterBrick("Sidebar Panel");
 
   const sidebar = await getSidebarPage(page, extensionId);
   await expect(
@@ -42,7 +43,7 @@ test("#8104: Do not automatically close the sidebar when saving in the Page Edit
     sidebar.getByRole("tab", { name: updatedTabTitle }),
   ).toBeVisible();
 
-  await pageEditorPage.saveStandaloneMod(modName);
+  await pageEditorPage.saveStandaloneMod(modComponentName);
 
   await expect(
     sidebar.getByRole("tab", { name: updatedTabTitle }),

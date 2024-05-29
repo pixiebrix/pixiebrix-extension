@@ -31,17 +31,20 @@ test("create, run, package, and update mod", async ({
   await page.goto("/create-react-app/table");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  await pageEditorPage.addStarterBrick("Button", {
-    async callback() {
-      await page.bringToFront();
-      await page.getByRole("button", { name: "Action #3" }).click();
+  const { modComponentName, modUuid } = await pageEditorPage.addStarterBrick(
+    "Button",
+    {
+      async callback() {
+        await page.bringToFront();
+        await page.getByRole("button", { name: "Action #3" }).click();
 
-      await pageEditorPage.bringToFront();
+        await pageEditorPage.bringToFront();
 
-      await pageEditorPage.getByLabel("Button text").click();
-      await pageEditorPage.getByLabel("Button text").fill("Search Youtube");
+        await pageEditorPage.getByLabel("Button text").click();
+        await pageEditorPage.getByLabel("Button text").fill("Search Youtube");
+      },
     },
-  });
+  );
 
   await test.step("Add the Extract from Page brick and configure it", async () => {
     await pageEditorPage.addBrickToModComponent("extract from page");
@@ -80,8 +83,11 @@ test("create, run, package, and update mod", async ({
     await pageEditorPage.waitForReduxUpdate();
   });
 
-  const { modId } =
-    await pageEditorPage.createModFromModComponent("Lifecycle Test");
+  const { modId } = await pageEditorPage.createModFromModComponent({
+    modNameRoot: "Lifecycle Test",
+    modComponentName,
+    modUuid,
+  });
 
   let newPage: Page | undefined;
   await test.step("Run the mod", async () => {
