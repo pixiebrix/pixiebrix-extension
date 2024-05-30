@@ -59,7 +59,7 @@ import {
   type BaseFormState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
-import { NormalizedAvailability } from "@/types/availabilityTypes";
+import { type NormalizedAvailability } from "@/types/availabilityTypes";
 
 // ActionFormState
 type ActionExtensionState = BaseExtensionState &

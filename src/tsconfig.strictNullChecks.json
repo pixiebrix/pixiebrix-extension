@@ -913,7 +913,7 @@
     "./starterBricks/tour/types.ts",
     "./starterBricks/triggerEventReaders.ts",
     "./starterBricks/triggerExtensionTypes.ts",
-    "./starterBricks/starterBrickUtils.ts.ts",
+    "./starterBricks/starterBrickUtils.ts",
     "./starterBricks/types.ts",
     "./store/ReduxPersistenceContext.ts",
     "./store/StorageInterface.ts",

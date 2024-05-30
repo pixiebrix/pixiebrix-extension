@@ -61,7 +61,7 @@ export function isStarterBrickDefinitionPropEqual(
 /**
  * Return true if the two starter brick definitions are equal modulo normalization.
  */
-export function isStarterBrickDefinitionLikeEqual(
+function isStarterBrickDefinitionLikeEqual(
   lhs: StarterBrickDefinitionLike,
   rhs: StarterBrickDefinitionLike,
 ): boolean {

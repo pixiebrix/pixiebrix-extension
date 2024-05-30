@@ -18,7 +18,7 @@
 import { type MessageContext } from "@/types/loggerTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type BrickArgs, type RunMetadata } from "@/types/runtimeTypes";
-import { Availability } from "@/types/availabilityTypes";
+import { type Availability } from "@/types/availabilityTypes";
 
 /**
  * @see BrickOptions

@@ -29,7 +29,7 @@ import {
   type PlatformCapability,
 } from "@/platform/capabilities";
 import { validatePackageDefinition } from "@/validators/schemaValidator";
-import { Availability } from "@/types/availabilityTypes";
+import { type Availability } from "@/types/availabilityTypes";
 
 export interface ReaderTypeConfig {
   type: string;
