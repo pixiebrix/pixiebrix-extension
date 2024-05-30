@@ -59,6 +59,7 @@ import {
   type SidebarConfig,
   type Trigger,
 } from "@/starterBricks/sidebar/types";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConfig> {
   abstract get trigger(): Trigger;
@@ -66,7 +67,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   /**
    * Options for the `custom` trigger, if applicable.
    */
-  abstract get customTriggerOptions(): CustomEventOptions;
+  abstract get customTriggerOptions(): Nullishable<CustomEventOptions>;
 
   /**
    * Debounce options for the trigger.
@@ -74,7 +75,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    * Since 1.8.2, debounce is applied per Mod Component to account for page state change events only applying to a
    * subset of the ModComponents.
    */
-  abstract get debounceOptions(): DebounceOptions;
+  abstract get debounceOptions(): Nullishable<DebounceOptions>;
 
   /**
    * Map from ModComponent to debounce refresh function, so each ModComponent can be debounced independently.
@@ -82,7 +83,9 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   // Include ModComponent in the body so the method doesn't retain a reference to the ModComponent in the closure
   private readonly debouncedRefreshPanel = new Map<
     UUID,
-    (modComponent: ResolvedModComponent<SidebarConfig>) => Promise<void>
+    (
+      modComponent: ResolvedModComponent<SidebarConfig>,
+    ) => Promise<void> | undefined
   >();
 
   readonly permissions: Permissions.Permissions = {};
@@ -454,11 +457,11 @@ class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
     return mergeReaders(this.definition.reader);
   }
 
-  get debounceOptions(): DebounceOptions | null {
+  get debounceOptions(): Nullishable<DebounceOptions> {
     return this.definition.debounce;
   }
 
-  get customTriggerOptions(): CustomEventOptions | null {
+  get customTriggerOptions(): Nullishable<CustomEventOptions> {
     return this.definition.customEvent;
   }
 

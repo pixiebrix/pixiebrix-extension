@@ -16,11 +16,7 @@
  */
 
 import React from "react";
-import {
-  type Manifest,
-  type Menus,
-  type Permissions,
-} from "webextension-polyfill";
+import { type Manifest, type Permissions } from "webextension-polyfill";
 import {
   StarterBrickABC,
   type StarterBrickConfig,
@@ -66,6 +62,7 @@ import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
 } from "@/starterBricks/quickBarProvider/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<QuickBarProviderConfig> {
   static isQuickBarProviderExtensionPoint(
@@ -135,7 +132,10 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
    */
   clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     for (const extensionId of extensionIds) {
-      quickBarRegistry.removeGenerator(this.generators.get(extensionId));
+      const generator = this.generators.get(extensionId);
+      assertNotNullish(generator, `Generator not found for ${extensionId}`);
+
+      quickBarRegistry.removeGenerator(generator);
       this.generators.delete(extensionId);
     }
   }
@@ -228,7 +228,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       selectExtensionContext(extension),
     );
 
-    let rootActionId: string = null;
+    let rootActionId: string | null = null;
 
     if (rootAction) {
       const { title, icon: iconConfig } = rootAction;
@@ -259,7 +259,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       if (
         rootActionId &&
         rootActionId !== currentRootActionId &&
-        rootAction.requireActiveRoot
+        rootAction?.requireActiveRoot
       ) {
         // User is not drilled into the current action, so skip generation
         return;
@@ -303,7 +303,10 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     };
 
     // Remove previous generator (if any)
-    quickBarRegistry.removeGenerator(this.generators.get(extension.id));
+    const prevGenerator = this.generators.get(extension.id);
+    if (prevGenerator) {
+      quickBarRegistry.removeGenerator(prevGenerator);
+    }
 
     // Register new generator
     this.generators.set(extension.id, actionGenerator);
@@ -317,8 +320,6 @@ class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderStarterBrickA
   public readonly permissions: Permissions.Permissions;
 
   public readonly documentUrlPatterns: Manifest.MatchPattern[];
-
-  public readonly contexts: Menus.ContextType[];
 
   public readonly rawConfig: StarterBrickConfig<QuickBarProviderDefinition>;
 
@@ -364,7 +365,7 @@ class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderStarterBrickA
   }
 
   public override get defaultOptions(): QuickBarProviderDefaultOptions {
-    return this._definition.defaultOptions;
+    return this._definition.defaultOptions ?? {};
   }
 }
 

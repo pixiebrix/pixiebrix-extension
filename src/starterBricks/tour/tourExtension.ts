@@ -64,6 +64,7 @@ import {
   type TourConfig,
   type TourDefinition,
 } from "@/starterBricks/tour/types";
+import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 
 export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
   public get kind(): "tour" {
@@ -159,8 +160,13 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
   private async registerTour(
     extension: ResolvedModComponent<TourConfig>,
   ): Promise<void> {
+    assertNotNullish(
+      extension._recipe?.id,
+      "Blueprint ID is required to register tour",
+    );
+
     const tour = await registerTour({
-      blueprintId: extension._recipe?.id,
+      blueprintId: extension._recipe.id,
       extension,
       allowUserRun: this.allowUserRun,
       run: () => {
@@ -183,7 +189,9 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
    *
    * @see autoRunSchedule
    */
-  async decideAutoRunTour(): Promise<ResolvedModComponent<TourConfig>> {
+  async decideAutoRunTour(): Promise<
+    Nullishable<ResolvedModComponent<TourConfig>>
+  > {
     const extensionIds = new Set(this.modComponents.map((x) => x.id));
 
     const runs = await getAll();
@@ -216,7 +224,8 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     );
 
     if (neverRun.length > 0) {
-      return neverRun[0];
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check
+      return neverRun[0]!;
     }
 
     if (this.autoRunSchedule === "once") {

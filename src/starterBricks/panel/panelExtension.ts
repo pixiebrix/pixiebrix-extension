@@ -67,6 +67,7 @@ import {
   type PanelDefinition,
   type PanelConfig,
 } from "@/starterBricks/panel/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const RENDER_LOOP_THRESHOLD = 25;
 const RENDER_LOOP_WINDOW_MS = 500;
@@ -96,7 +97,7 @@ function detectLoop(timestamps: Date[]): void {
  * Extension point that adds a panel to a web page.
  */
 export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> {
-  protected $container: JQuery;
+  protected $container: JQuery | null;
 
   private readonly collapsedExtensions: Map<UUID, boolean>;
 
@@ -184,14 +185,14 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     this.uninstalled = true;
 
     for (const extension of this.modComponents) {
-      const $item = this.$container.find(
+      const $item = this.$container?.find(
         `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`,
       );
-      if ($item.length === 0) {
+      if ($item?.length === 0) {
         console.debug(`Panel for ${extension.id} was not in the menu`);
       }
 
-      $item.remove();
+      $item?.remove();
     }
 
     this.$container = null;
@@ -234,6 +235,11 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     const container = this.$container.get(0);
 
+    assertNotNullish(
+      container,
+      "Container for panel extension must be defined",
+    );
+
     const acquired = acquireElement(container, this.id);
 
     if (acquired) {
@@ -245,7 +251,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
               selector,
             )}`,
           );
-          this.$container = undefined;
+          this.$container = null;
         },
         this.cancelController.signal,
       );
@@ -255,6 +261,10 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   }
 
   addPanel($panel: JQuery): void {
+    assertNotNullish(
+      this.$container,
+      "Container must be defined to append panel",
+    );
     this.$container.append($panel);
   }
 
@@ -272,6 +282,8 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       this.renderTimestamps.set(extension.id, []);
       renderTimestamps = this.renderTimestamps.get(extension.id);
     }
+
+    assertNotNullish(renderTimestamps, "renderTimestamps cannot be null");
 
     renderTimestamps.push(new Date());
     const cnt = renderTimestamps.length;
@@ -306,6 +318,11 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     );
     const extensionContext = { ...readerOutput, ...serviceContext };
 
+    assertNotNullish(
+      heading,
+      "Heading must be defined for Mustache to render the template",
+    );
+
     const $panel = $(
       Mustache.render(this.getTemplate(), {
         heading: Mustache.render(heading, extensionContext),
@@ -317,6 +334,8 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     );
 
     $panel.attr(PIXIEBRIX_DATA_ATTR, extension.id);
+
+    assertNotNullish(this.$container, "Container must exist");
 
     const $existingPanel = this.$container.find(
       `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`,
@@ -364,6 +383,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     }
 
     const bodyContainer = $bodyContainers.get(0);
+    assertNotNullish(bodyContainer, "No body containers found");
 
     let isBodyInstalled = false;
 
@@ -518,6 +538,10 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
   }
 
   override addPanel($panel: JQuery): void {
+    assertNotNullish(
+      this.$container,
+      "Container must be defined to append or prepend panel",
+    );
     const { position = "append" } = this._definition;
 
     if (typeof position !== "string") {
