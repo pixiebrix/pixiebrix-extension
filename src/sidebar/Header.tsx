@@ -19,16 +19,9 @@ import React from "react";
 import styles from "./ConnectedSidebar.module.scss";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAngleDoubleRight,
-  faCog,
-  faSync,
-} from "@fortawesome/free-solid-svg-icons";
-import { hideSidebar } from "@/contentScript/messenger/strict/api";
+import { faCog, faSync } from "@fortawesome/free-solid-svg-icons";
 import useTheme from "@/hooks/useTheme";
 import cx from "classnames";
-import { getTopLevelFrame } from "webext-messenger";
-import { isMV3 } from "@/mv3/api";
 import useFlags from "@/hooks/useFlags";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
@@ -42,8 +35,6 @@ const Header: React.FunctionComponent = () => {
     activeTheme: { logo, showSidebarLogo, customSidebarLogo, themeName },
     isLoading,
   } = useTheme();
-  /* In MV3, Chrome offers a native Close button */
-  const showCloseButton = !isMV3();
 
   const { flagOn } = useFlags();
   const showDeveloperUI =
@@ -61,20 +52,6 @@ const Header: React.FunctionComponent = () => {
 
   return (
     <div className="d-flex py-2 pl-2 pr-0 align-items-center">
-      {showCloseButton && (
-        <Button
-          className={headerButtonClassName}
-          onClick={async () => {
-            // This piece of code is MV2-only, it only needs to handle being run in an iframe
-            const topLevelFrame = await getTopLevelFrame();
-            await hideSidebar(topLevelFrame);
-          }}
-          size="sm"
-          variant="link"
-        >
-          <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
-        </Button>
-      )}
       {showSidebarLogo && (
         // `mx-auto` centers the logo
         <div className="mx-auto">

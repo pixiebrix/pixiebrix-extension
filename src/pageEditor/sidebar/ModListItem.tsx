@@ -120,6 +120,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
         )}
         {isActive && (
           <ActionMenu
+            labelRoot={name}
             onSave={onSave}
             onReset={onReset}
             onDeactivate={onDeactivate}

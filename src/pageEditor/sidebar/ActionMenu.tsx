@@ -32,6 +32,7 @@ import EllipsisMenu, {
 } from "@/components/ellipsisMenu/EllipsisMenu";
 
 type ActionMenuProps = {
+  labelRoot?: string;
   onSave: () => Promise<void>;
   onDelete?: () => Promise<void>;
   onDeactivate?: () => Promise<void>;
@@ -44,6 +45,7 @@ type ActionMenuProps = {
 };
 
 const ActionMenu: React.FC<ActionMenuProps> = ({
+  labelRoot,
   onSave,
   onDelete,
   onDeactivate,
@@ -107,8 +109,16 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
 
   return (
     <div className={styles.root}>
-      <SaveButton onClick={onSave} disabled={!isDirty || disabled} />
-      <EllipsisMenu items={menuItems} toggleClassName={styles.toggle} />
+      <SaveButton
+        ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
+        onClick={onSave}
+        disabled={!isDirty || disabled}
+      />
+      <EllipsisMenu
+        ariaLabel={labelRoot ? `${labelRoot} - Ellipsis` : undefined}
+        items={menuItems}
+        toggleClassName={styles.toggle}
+      />
     </div>
   );
 };

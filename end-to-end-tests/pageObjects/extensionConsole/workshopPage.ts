@@ -17,6 +17,7 @@
 
 import { type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
+import { EditWorkshopModPage } from "end-to-end-tests/pageObjects/extensionConsole/editWorkshopModPage";
 
 export class WorkshopPage {
   private readonly extensionConsoleUrl: string;
@@ -35,5 +36,20 @@ export class WorkshopPage {
         name: "Workshop",
       })
       .click();
+  }
+
+  async findAndSelectMod(modId: string) {
+    await this.page
+      .getByPlaceholder("Start typing to find results")
+      .fill(modId);
+    await this.page.getByRole("cell", { name: modId }).click();
+
+    return new EditWorkshopModPage(this.page);
+  }
+
+  async deletePackagedModByModId(modId: string) {
+    await this.page.bringToFront();
+    const editWorkshopModPage = await this.findAndSelectMod(modId);
+    await editWorkshopModPage.deleteBrick();
   }
 }

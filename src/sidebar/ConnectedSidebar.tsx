@@ -41,7 +41,7 @@ import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { ensureExtensionPointsInstalled } from "@/contentScript/messenger/api";
 import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api";
 import {
-  getConnectedTabIdForMV3SidebarTopFrame,
+  getConnectedTabIdForSidebarTopFrame,
   getConnectedTarget,
 } from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
@@ -51,7 +51,6 @@ import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
 import useEventListener from "@/hooks/useEventListener";
-import { isMV3 } from "@/mv3/api";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -106,13 +105,12 @@ const ConnectedSidebar: React.VFC = () => {
   const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
 
   // Listen for navigation events to mark temporary panels as unavailable.
-  // Not used in MV2 because the sidebar closes automatically on navigation.
   useEffect(() => {
-    const navigationListenerMV3 = (
+    const navigationListener = (
       details: chrome.webNavigation.WebNavigationFramedCallbackDetails,
     ) => {
       const { frameId, tabId, documentLifecycle } = details;
-      const connectedTabId = getConnectedTabIdForMV3SidebarTopFrame();
+      const connectedTabId = getConnectedTabIdForSidebarTopFrame();
       if (
         documentLifecycle === "active" &&
         tabId === connectedTabId &&
@@ -123,14 +121,10 @@ const ConnectedSidebar: React.VFC = () => {
       }
     };
 
-    if (isMV3()) {
-      chrome.webNavigation.onBeforeNavigate.addListener(navigationListenerMV3);
-    }
+    chrome.webNavigation.onBeforeNavigate.addListener(navigationListener);
 
     return () => {
-      chrome.webNavigation.onBeforeNavigate.removeListener(
-        navigationListenerMV3,
-      );
+      chrome.webNavigation.onBeforeNavigate.removeListener(navigationListener);
     };
   }, [dispatch]);
 

@@ -31,10 +31,10 @@ import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import {
   getReservedPanelEntries,
   sidebarShowEvents,
+  isSidePanelOpen,
 } from "@/contentScript/sidebarController";
 import { setState } from "@/platform/state/stateController";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
-import { PANEL_FRAME_ID } from "@/domConstants";
 import brickRegistry from "@/bricks/registry";
 import { sleep } from "@/utils/timeUtils";
 import { getPlatform } from "@/platform/platformContext";
@@ -42,6 +42,12 @@ import {
   type SidebarDefinition,
   type SidebarConfig,
 } from "@/starterBricks/sidebar/types";
+
+jest.mock("@/contentScript/sidebarController", () => ({
+  ...jest.requireActual("@/contentScript/sidebarController"),
+  isSidePanelOpen: jest.fn(),
+}));
+const isSidePanelOpenMock = jest.mocked(isSidePanelOpen);
 
 const rootReader = new RootReader();
 
@@ -83,6 +89,7 @@ describe("sidebarExtension", () => {
     brickRegistry.clear();
     brickRegistry.register([rootReader]);
     rootReader.readCount = 0;
+    isSidePanelOpenMock.mockResolvedValue(false);
   });
 
   it("reserves panel on load", async () => {
@@ -189,7 +196,7 @@ describe("sidebarExtension", () => {
     expect(rootReader.readCount).toBe(0);
 
     // Fake the sidebar being added to the page
-    $(document.body).append(`<div id="${PANEL_FRAME_ID}"></div>`);
+    isSidePanelOpenMock.mockResolvedValue(true);
     sidebarShowEvents.emit({ reason: RunReason.MANUAL });
 
     await tick();
@@ -251,7 +258,7 @@ describe("sidebarExtension", () => {
     await extensionPoint.install();
 
     // Fake the sidebar being added to the page
-    $(document.body).append(`<div id="${PANEL_FRAME_ID}"></div>`);
+    isSidePanelOpenMock.mockResolvedValue(true);
     sidebarShowEvents.emit({ reason: RunReason.MANUAL });
 
     await tick();

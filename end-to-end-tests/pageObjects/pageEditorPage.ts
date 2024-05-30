@@ -19,6 +19,8 @@ import { getBasePageEditorUrl } from "./constants";
 import { type Page, expect } from "@playwright/test";
 import { uuidv4 } from "@/types/helpers";
 import { ModsPage } from "./extensionConsole/modsPage";
+import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshopPage";
+import { type UUID } from "@/types/stringTypes";
 
 // Starter brick names as shown in the Page Editor UI
 export type StarterBrickName =
@@ -40,6 +42,7 @@ export type StarterBrickName =
 export class PageEditorPage {
   private readonly pageEditorUrl: string;
   private readonly savedStandaloneModNames: string[] = [];
+  private readonly savedPackageModIds: string[] = [];
 
   constructor(
     private readonly page: Page,
@@ -60,6 +63,16 @@ export class PageEditorPage {
     await expect(heading).toBeVisible();
   }
 
+  async bringToFront() {
+    await this.page.bringToFront();
+  }
+
+  async waitForReduxUpdate() {
+    // See EditorPane.tsx:REDUX_SYNC_WAIT_MILLIS
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- Wait for Redux to update
+    await this.page.waitForTimeout(500);
+  }
+
   getTemplateGalleryButton() {
     return this.page.getByRole("button", { name: "Launch Template Gallery" });
   }
@@ -73,19 +86,62 @@ export class PageEditorPage {
    * @returns modName the generated mod name
    */
   async addStarterBrick(starterBrickName: StarterBrickName) {
-    const modName = `Test ${starterBrickName} ${uuidv4()}`;
+    const modUuid = uuidv4();
+    const modComponentName = `Test ${starterBrickName} ${modUuid}`;
     await this.page.getByRole("button", { name: "Add", exact: true }).click();
     await this.page
       .locator("[role=button].dropdown-item", {
         hasText: starterBrickName,
       })
       .click();
-    await this.fillInBrickField("Name", modName);
-    return modName;
+
+    return { modComponentName, modUuid };
+  }
+
+  async setStarterBrickName(modComponentName: string) {
+    await this.fillInBrickField("Name", modComponentName);
+    await this.waitForReduxUpdate();
   }
 
   async fillInBrickField(fieldLabel: string, value: string) {
     await this.page.getByLabel(fieldLabel).fill(value);
+    await this.waitForReduxUpdate();
+  }
+
+  async addBrickToModComponent(
+    brickName: string,
+    { index = 0 }: { index?: number } = {},
+  ) {
+    await this.page
+      .getByTestId(/icon-button-.*-add-brick/)
+      .nth(index)
+      .click();
+
+    await this.page.getByTestId("tag-search-input").fill(brickName);
+    await this.page.getByRole("button", { name: brickName }).click();
+
+    await this.page.getByRole("button", { name: "Add brick" }).click();
+  }
+
+  async selectConnectedPageElement(connectedPage: Page) {
+    // Without focusing first, the click doesn't enable selection tool ¯\_(ツ)_/¯
+    await this.page.getByLabel("Select element").focus();
+    await this.page.getByLabel("Select element").click();
+
+    await connectedPage.bringToFront();
+    await expect(
+      connectedPage.getByText("Selection Tool: 0 matching"),
+    ).toBeVisible();
+    await connectedPage
+      .getByRole("heading", { name: "Transaction Table" })
+      .click();
+
+    await this.page.bringToFront();
+    await expect(this.page.getByPlaceholder("Select an element")).toHaveValue(
+      "#root h1",
+    );
+
+    await this.waitForReduxUpdate();
   }
 
   getModListItemByName(modName: string) {
@@ -108,6 +164,14 @@ export class PageEditorPage {
 
   getByText(text: string) {
     return this.page.getByText(text);
+  }
+
+  getByLabel(text: string) {
+    return this.page.getByLabel(text);
+  }
+
+  getByPlaceholder(text: string) {
+    return this.page.getByPlaceholder(text);
   }
 
   getRenderPanelButton() {
@@ -134,6 +198,35 @@ export class PageEditorPage {
     this.savedStandaloneModNames.push(modName);
   }
 
+  async createModFromModComponent({
+    modNameRoot,
+    modComponentName,
+    modUuid,
+  }: {
+    modNameRoot: string;
+    modComponentName: string;
+    modUuid: UUID;
+  }) {
+    const modName = `${modNameRoot} ${modUuid}`;
+
+    await this.page.getByLabel(`${modComponentName} - Ellipsis`).click();
+    await this.page.getByRole("button", { name: "Add to mod" }).click();
+
+    await this.page.getByText("Select...Choose a mod").click();
+    await this.page.getByRole("option", { name: /Create new mod.../ }).click();
+    await this.page.getByRole("button", { name: "Move" }).click();
+
+    const modId = `${modName.split(" ").join("-").toLowerCase()}-${modUuid}`;
+    await this.page.getByTestId("registryId-id-id").fill(modId);
+
+    await this.page.getByLabel("Name", { exact: true }).fill(modName);
+    await this.page.getByRole("button", { name: "Create" }).click();
+
+    this.savedPackageModIds.push(modId);
+
+    return { modName, modId };
+  }
+
   /**
    * This method is meant to be called exactly once after the test is done to clean up any saved mods created during the
    * test.
@@ -143,9 +236,16 @@ export class PageEditorPage {
   async cleanup() {
     const modsPage = new ModsPage(this.page, this.extensionId);
     await modsPage.goto();
-    for (const modName of this.savedStandaloneModNames) {
+    for (const standaloneModName of this.savedStandaloneModNames) {
       // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
-      await modsPage.deleteModByName(modName);
+      await modsPage.deleteStandaloneModByName(standaloneModName);
+    }
+
+    const workshopPage = new WorkshopPage(this.page, this.extensionId);
+    await workshopPage.goto();
+    for (const packagedModId of this.savedPackageModIds) {
+      // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
+      await workshopPage.deletePackagedModByModId(packagedModId);
     }
   }
 }

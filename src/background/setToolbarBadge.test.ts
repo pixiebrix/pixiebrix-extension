@@ -22,6 +22,13 @@ import {
 } from "@/background/toolbarBadge";
 import { messengerMetaFactory } from "@/testUtils/factories/messengerFactories";
 
+jest.mock("@/mv3/api", () => ({
+  browserAction: {
+    setBadgeBackgroundColor: jest.fn(),
+    setBadgeText: jest.fn(),
+  },
+}));
+
 describe("setToolbarBadge", () => {
   it("calls browserAction.setBadgeText with given text", async () => {
     const expectedText = "test";

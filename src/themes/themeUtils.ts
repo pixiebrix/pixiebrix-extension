@@ -25,7 +25,7 @@ import betaLogoSmall from "@img/beta-logo-small.svg";
 import logo from "@img/logo.svg";
 import logoSmall from "@img/logo-small.svg";
 import aaLogo from "@img/aa-logo.svg";
-import aaLogoSmall from "@img/aa-logo-small.svg";
+import aaLogoSmall from "@img/aa-logo-small.png";
 import { StorageItem } from "webext-storage";
 import { type Nullishable } from "@/utils/nullishUtils";
 

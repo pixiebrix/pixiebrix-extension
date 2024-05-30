@@ -32,6 +32,7 @@ import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { flagOn } from "@/auth/featureFlagStorage";
 import Reason = chrome.offscreen.Reason;
 import ManifestV3 = chrome.runtime.ManifestV3;
+import { serializeError } from "serialize-error";
 
 // Disable automatic __mocks__ resolution
 jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
@@ -151,7 +152,7 @@ describe("logging", () => {
       expect.objectContaining({
         target: "offscreen-doc",
         data: expect.objectContaining({
-          error: reportedError,
+          error: serializeError(reportedError),
           errorMessage: "error message",
           messageContext: expect.objectContaining({
             cause: nestedError,

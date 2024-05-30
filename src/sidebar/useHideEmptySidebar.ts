@@ -17,7 +17,6 @@
 
 import useAsyncEffect from "use-async-effect";
 import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api";
-import { closeSelf } from "@/sidebar/protocol";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { useSelector } from "react-redux";
 import {
@@ -52,7 +51,7 @@ export const useHideEmptySidebar = () => {
         visiblePanelCount === 0 &&
         openReservedPanels.length === 0
       ) {
-        await closeSelf();
+        window.close();
       }
     },
     [visiblePanelCount],

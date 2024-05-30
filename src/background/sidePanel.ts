@@ -17,7 +17,6 @@
 
 import { openSidePanel, getSidebarPath } from "@/utils/sidePanelUtils";
 import type { MessengerMeta } from "webext-messenger";
-import { isMV3 } from "@/mv3/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 export async function showMySidePanel(this: MessengerMeta): Promise<void> {
@@ -28,10 +27,6 @@ export async function showMySidePanel(this: MessengerMeta): Promise<void> {
 
 // TODO: Drop if this is ever implemented: https://github.com/w3c/webextensions/issues/515
 export async function initSidePanel(): Promise<void> {
-  if (!isMV3()) {
-    return;
-  }
-
   chrome.tabs.onCreated.addListener(({ id: tabId }) => {
     if (tabId) {
       void chrome.sidePanel.setOptions({

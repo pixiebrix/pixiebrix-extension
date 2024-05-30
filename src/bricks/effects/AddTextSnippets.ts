@@ -116,12 +116,13 @@ class AddTextSnippets extends EffectABC {
     }
 
     if (logger.context.extensionId == null) {
-      throw new Error("Must be run in the context of a mod");
+      throw new Error("Must be run in the context of a mod component");
     }
 
     for (const { shortcut, title, text } of snippets) {
       platform.snippetShortcutMenu.register({
         componentId: logger.context.extensionId,
+        context: logger.context,
         shortcut: normalizeShortcut(shortcut),
         title,
         preview: text,

@@ -91,7 +91,7 @@ const ModsPageActions: React.FunctionComponent<{
     [actions, hasUpdate],
   );
 
-  return <EllipsisMenu items={actionItems} />;
+  return <EllipsisMenu ariaLabel="mods-page-actions" items={actionItems} />;
 };
 
 export default ModsPageActions;

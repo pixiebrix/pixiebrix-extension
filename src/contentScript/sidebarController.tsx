@@ -23,8 +23,6 @@ import * as contentScriptApi from "@/contentScript/messenger/strict/api";
 import { isEmpty, throttle } from "lodash";
 import { signalFromEvent } from "abort-utils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
-import * as sidebarMv2 from "@/contentScript/sidebarDomControllerLite";
-import { getSidebarElement } from "@/contentScript/sidebarDomControllerLite";
 import { type Except } from "type-fest";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -42,12 +40,9 @@ import { getTemporaryPanelSidebarEntries } from "@/platform/panels/panelControll
 import { getFormPanelSidebarEntries } from "@/platform/forms/formController";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
-import { isMV3 } from "@/mv3/api";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { showMySidePanel } from "@/background/messenger/strict/api";
-import focusController from "@/utils/focusController";
-import selectionController from "@/utils/selectionController";
 import { getTopLevelFrame, messenger } from "webext-messenger";
 import {
   getSidebarTargetForCurrentTab,
@@ -55,8 +50,6 @@ import {
 } from "@/utils/sidePanelUtils";
 import pRetry from "p-retry";
 import { hideNotification, showNotification } from "@/utils/notify";
-
-const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
 /**
  * Event listeners triggered when the sidebar shows and is ready to receive messages.
@@ -72,7 +65,7 @@ let modActivationPanelEntry: ModActivationPanelEntry | null = null;
  * Only one check at a time
  * Cannot throttle because subsequent checks need to be able to be made immediately
  */
-const isSidePanelOpenMv3 = memoizeUntilSettled(async () => {
+export const isSidePanelOpen = memoizeUntilSettled(async () => {
   try {
     await messenger(
       "SIDEBAR_PING",
@@ -84,10 +77,6 @@ const isSidePanelOpenMv3 = memoizeUntilSettled(async () => {
     return false;
   }
 });
-
-export const isSidePanelOpen = isMV3()
-  ? isSidePanelOpenMv3
-  : sidebarMv2.isSidebarFrameVisible;
 
 // - Only start one ping at a time
 // - Limit to one request every second (if the user closes the sidebar that quickly, we likely see those errors anyway)
@@ -155,30 +144,25 @@ export async function showSidebarInTopFrame() {
 
   // We do not await the promise here since we want to show the sidebar as soon as possible to avoid the possibility
   // of the user needing to provide another user gesture to open the sidebar.
-  const sidebarInitiallyOpenPromise = isSidePanelOpenMv3();
+  const sidebarInitiallyOpenPromise = isSidePanelOpen();
 
   if (isLoadedInIframe()) {
     console.warn("showSidebarInTopFrame should not be called in an iframe");
   }
 
-  // Defensively handle accidental calls from iframes
-  if (isMV3() || isLoadedInIframe()) {
-    try {
-      await showMySidePanel();
-    } catch (error) {
-      if (!isUserGestureRequiredError(error)) {
-        throw error;
-      }
-
-      await focusCaptureDialog({
-        message: 'Click "Open Sidebar" to open the mod sidebar',
-        buttonText: "Open Sidebar",
-        signal: signalFromEvent(sidebarShowEvents, sidebarShowEvents.coreEvent),
-      });
-      await showMySidePanel();
+  try {
+    await showMySidePanel();
+  } catch (error) {
+    if (!isUserGestureRequiredError(error)) {
+      throw error;
     }
-  } else if (!sidebarMv2.isSidebarFrameVisible()) {
-    sidebarMv2.insertSidebarFrame();
+
+    await focusCaptureDialog({
+      message: 'Click "Open Sidebar" to open the mod sidebar',
+      buttonText: "Open Sidebar",
+      signal: signalFromEvent(sidebarShowEvents, sidebarShowEvents.coreEvent),
+    });
+    await showMySidePanel();
   }
 
   await pingSidebar();
@@ -222,32 +206,10 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
 }
 
 /**
- * Content script handler for hiding the MV2 sidebar in the top-level frame. Regular callers should call
- * hideSidebar instead, which handles calls from MV3 and iframes.
- *
- * Dispatches HIDE_SIDEBAR_EVENT_NAME event even if the sidebar is not currently visible.
- * @see HIDE_SIDEBAR_EVENT_NAME
- * @see hideSidebar
- */
-export function hideMv2SidebarInTopFrame(): void {
-  if (isMV3()) {
-    console.warn("hideMv2SidebarInTopFrame should not be called in MV3");
-  }
-
-  reportEvent(Events.SIDEBAR_HIDE);
-  sidebarMv2.removeSidebarFrame();
-  window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
-}
-
-/**
  * Hide the sidebar. Works from any frame.
  */
 export function hideSidebar(): void {
-  if (isMV3() || isLoadedInIframe()) {
-    sidebarInThisTab.close();
-  } else {
-    hideMv2SidebarInTopFrame();
-  }
+  sidebarInThisTab.close();
 }
 
 /**
@@ -609,29 +571,17 @@ export function getReservedPanelEntries(): {
 function sidePanelOnCloseSignal(): AbortSignal {
   const controller = new AbortController();
   expectContext("contentScript");
-  if (isMV3()) {
-    window.addEventListener(
-      "resize",
-      async () => {
-        // TODO: Replace with official event when available
-        // Official event requested in https://github.com/w3c/webextensions/issues/517
-        if (!(await isSidePanelOpenMv3())) {
-          controller.abort();
-        }
-      },
-      { signal: controller.signal },
-    );
-  } else {
-    window.addEventListener(
-      HIDE_SIDEBAR_EVENT_NAME,
-      () => {
+  window.addEventListener(
+    "resize",
+    async () => {
+      // TODO: Replace with official event when available
+      // Official event requested in https://github.com/w3c/webextensions/issues/517
+      if (!(await isSidePanelOpen())) {
         controller.abort();
-      },
-      {
-        signal: controller.signal,
-      },
-    );
-  }
+      }
+    },
+    { signal: controller.signal },
+  );
 
   return controller.signal;
 }
@@ -639,55 +589,4 @@ function sidePanelOnCloseSignal(): AbortSignal {
 export function sidePanelOnClose(callback: () => void): void {
   const signal = sidePanelOnCloseSignal();
   signal.addEventListener("abort", callback, { once: true });
-}
-
-export function initSidebarFocusEvents(): void {
-  if (!isMV3()) {
-    // Add listeners to track keep track of focus with the MV2 sidebar. When the user interacts
-    // with the MV2 sidebar, the sidebar gets set as the document.activeElement. Required for brick
-    // functionality such as InsertAtCursorEffect
-    sidebarShowEvents.add(() => {
-      const sidebar = getSidebarElement();
-
-      if (!sidebar) {
-        // Should always exist because sidebarShowEvents is called on Sidebar App initialization
-        return;
-      }
-
-      // Save focus on initial load, because the user may have `mouseenter`ed the sidebar before the React App
-      // fired the sidebarShowEvent event. For example, if the user clicked the browserAction toolbar button and
-      // immediately `mouseenter`ed the sidebar (because the top of the sidebar is very close to the top browserAction)
-      if (document.activeElement !== sidebar) {
-        focusController.save();
-      }
-
-      const closeSignal = sidePanelOnCloseSignal();
-
-      // Can't detect clicks in the sidebar itself. So need to just watch for enter/leave the sidebar element
-      sidebar.addEventListener(
-        "mouseenter",
-        () => {
-          // If the user clicks into the sidebar and then leaves the sidebar, don't set the focus to the sidebar
-          // when they re-enter the sidebar
-          if (document.activeElement !== sidebar) {
-            // FIXME: If the user closes the sidebar when these two items are stored,
-            // both controllers will be stuck that way until some other .restore()/.clear() call resets it. It will need a "sidebar hide" listener to ensure it doesn't happen
-            // https://github.com/pixiebrix/pixiebrix-extension/pull/7842#discussion_r1516015396
-            focusController.save();
-            selectionController.save();
-          }
-        },
-        { passive: true, capture: true, signal: closeSignal },
-      );
-
-      sidebar.addEventListener(
-        "mouseleave",
-        () => {
-          focusController.clear();
-          selectionController.clear();
-        },
-        { passive: true, capture: true, signal: closeSignal },
-      );
-    });
-  }
 }

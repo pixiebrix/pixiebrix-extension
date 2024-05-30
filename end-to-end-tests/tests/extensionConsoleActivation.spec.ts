@@ -28,7 +28,7 @@ import {
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
-import { MV, SERVICE_URL } from "../env";
+import { SERVICE_URL } from "../env";
 import { ExtensionsShortcutsPage } from "end-to-end-tests/pageObjects/extensionsShortcutsPage";
 
 test("can activate a mod with no config options", async ({
@@ -58,8 +58,6 @@ test("can activate a mod with built-in integration", async ({
   extensionId,
   context,
 }) => {
-  test.skip(MV === "2", "Service worker request mocking only available in MV3");
-
   let giphyRequestPostData: Serializable;
   // The giphy search request is proxied through the PixieBrix server, which is kicked off in the background/service
   // worker. Playwright experimentally supports mocking service worker requests, see
@@ -212,11 +210,6 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
 });
 
 test("can activate a mod via url", async ({ page, extensionId }) => {
-  test.skip(
-    MV === "2",
-    "Not passing in MV2, too close to 2.0.0 to be worth debugging",
-  );
-
   const modId = "@e2e-testing/show-alert";
   const modIdUrlEncoded = encodeURIComponent(modId);
   const activationLink = `${SERVICE_URL}/activate?id=${modIdUrlEncoded}`;

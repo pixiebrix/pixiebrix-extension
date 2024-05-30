@@ -22,7 +22,7 @@ import "@/development/errorsBadge";
 // eslint-disable-next-line import/no-unassigned-import -- Automatic registration
 import "@/background/backgroundDomWatcher";
 
-// Required for MV3; Service Workers don't have XMLHttpRequest
+// Required -- Service Workers don't have XMLHttpRequest
 import "@/background/axiosFetch";
 
 import { initMessengerLogging } from "@/development/messengerLogging";

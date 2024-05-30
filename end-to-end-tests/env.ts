@@ -31,7 +31,6 @@ const requiredEnvVariables = [
 // "REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST" defined to avoid test failures due to missing permissions when activating certain mods.
 const optionalEnvVariables = [
   "CI",
-  "MV",
   "SLOWMO",
   "PWDEBUG",
   "REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST",
@@ -71,9 +70,4 @@ export const {
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
 } = process.env as RequiredEnvVariables;
 
-export const {
-  CI,
-  MV = "3",
-  SLOWMO,
-  PWDEBUG,
-} = process.env as OptionalEnvVariables;
+export const { CI, SLOWMO, PWDEBUG } = process.env as OptionalEnvVariables;

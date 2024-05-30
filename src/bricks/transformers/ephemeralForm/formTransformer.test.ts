@@ -27,7 +27,6 @@ import { showModal } from "@/contentScript/modalDom";
 
 jest.mock("@/utils/iframeUtils");
 jest.mock("@/contentScript/modalDom");
-jest.mock("@/contentScript/sidebarDomControllerLite");
 
 const showModalMock = jest.mocked(showModal);
 

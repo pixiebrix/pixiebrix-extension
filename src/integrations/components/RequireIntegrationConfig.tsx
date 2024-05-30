@@ -29,6 +29,7 @@ import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 type ConfigProps = {
   integrationFieldSchema: Schema;
@@ -37,6 +38,19 @@ type ConfigProps = {
     sanitizedConfig: SanitizedIntegrationConfig;
   }) => React.ReactElement;
 };
+
+function getEditConfigUrl(sanitizedConfig: SanitizedIntegrationConfig): string {
+  if (sanitizedConfig.proxy) {
+    // TODO: construct deeplink to the config. There are some gotchas, e.g., the config might be personal or team,
+    //  the user might not have edit access for the config, etc. We'd likely want to introduce handling on the admin
+    //  console to take a config id without knowing the parent resource.
+    return DEFAULT_SERVICE_URL;
+  }
+
+  return `${getExtensionConsoleUrl("services")}/${encodeURIComponent(
+    sanitizedConfig.id,
+  )}`;
+}
 
 function useAuthErrorAnnotation(
   sanitizedConfig: Nullishable<SanitizedIntegrationConfig>,
@@ -58,9 +72,6 @@ function useAuthErrorAnnotation(
     return null;
   }
 
-  const editConfigUrl = `${getExtensionConsoleUrl(
-    "services",
-  )}/${encodeURIComponent(sanitizedConfig.id)}`;
   return {
     type: AnnotationType.Error,
     message: (
@@ -72,7 +83,11 @@ function useAuthErrorAnnotation(
           </span>
         </div>
         <div>
-          <a href={editConfigUrl} target="_blank" rel="noopener noreferrer">
+          <a
+            href={getEditConfigUrl(sanitizedConfig)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <FontAwesomeIcon icon={faEdit} />
             &nbsp;Edit the integration configuration here.
           </a>

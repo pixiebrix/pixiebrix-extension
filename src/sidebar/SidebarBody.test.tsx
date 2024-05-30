@@ -38,6 +38,14 @@ jest.mock("@/contentScript/messenger/strict/api", () => ({
   }),
 }));
 
+// Needed until https://github.com/RickyMarou/jest-webextension-mock/issues/5 is implemented
+browser.webNavigation.onBeforeNavigate = {
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  hasListener: jest.fn(),
+  hasListeners: jest.fn(),
+};
+
 describe("SidebarBody", () => {
   beforeEach(() => {
     jest
