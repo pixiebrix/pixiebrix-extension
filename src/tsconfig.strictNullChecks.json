@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./contentScript/pageEditor/dynamic/runStarterBrickReader.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/envSetup.ts",
@@ -303,6 +302,7 @@
     "./components/documentBuilder/preview/AddElementAction.tsx",
     "./components/documentBuilder/preview/elementsPreview/Unknown.tsx",
     "./components/documentBuilder/preview/flaps/HoveredFlap.tsx",
+    "./components/documentBuilder/render/BlockElement.tsx",
     "./components/documentBuilder/render/ButtonElement.tsx",
     "./components/documentBuilder/render/CardElement.tsx",
     "./components/documentBuilder/render/DocumentContext.tsx",
@@ -449,6 +449,7 @@
     "./contentScript/modalDom.tsx",
     "./contentScript/pageEditor/beautify.ts",
     "./contentScript/pageEditor/dynamic/overlay.ts",
+    "./contentScript/pageEditor/dynamic/runStarterBrickReader.ts",
     "./contentScript/pageEditor/elementInformation.ts",
     "./contentScript/pageEditor/elementPicker.test.ts",
     "./contentScript/pageEditor/elementPicker.ts",
@@ -880,6 +881,7 @@
     "./sidebar/FormBody.tsx",
     "./sidebar/Header.tsx",
     "./sidebar/LoginPanel.tsx",
+    "./sidebar/PanelBody.tsx",
     "./sidebar/RendererComponent.tsx",
     "./sidebar/SidebarErrorBoundary.tsx",
     "./sidebar/UnavailableOverlay.tsx",
