@@ -91,7 +91,7 @@ const SetupPage: React.FunctionComponent = () => {
       }
     }
 
-    return { baseURL: getBaseURL(), controlRoomError };
+    return { baseURL: await getBaseURL(), controlRoomError };
   }, []);
 
   useReportError(error);
