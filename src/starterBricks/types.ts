@@ -65,7 +65,8 @@ export type CustomEventOptions = {
   eventName: string;
 };
 
-export interface StarterBrickDefinition {
+// Not a registry definition `Definition`
+export interface StarterBrickDefinitionProp {
   type: StarterBrickType;
   isAvailable: Availability;
   reader: ReaderConfig;
@@ -73,9 +74,10 @@ export interface StarterBrickDefinition {
 
 /**
  * A starter brick defined in a registry package or mod inner definition.
+ * @see Definition
  */
-export interface StarterBrickPackageLike<
-  T extends StarterBrickDefinition = StarterBrickDefinition,
+export interface StarterBrickDefinitionLike<
+  T extends StarterBrickDefinitionProp = StarterBrickDefinitionProp,
 > {
   apiVersion?: ApiVersion;
   // Metadata won't be present for inner definitions
@@ -84,14 +86,14 @@ export interface StarterBrickPackageLike<
   kind: "extensionPoint";
 }
 
-export function isStarterBrickDefinition(
+export function isStarterBrickDefinitionProp(
   value: unknown,
-): value is StarterBrickDefinition {
+): value is StarterBrickDefinitionProp {
   if (value == null || typeof value !== "object") {
     return false;
   }
 
-  const definition = value as StarterBrickDefinition;
+  const definition = value as StarterBrickDefinitionProp;
 
   return (
     definition.type !== undefined &&
@@ -101,13 +103,13 @@ export function isStarterBrickDefinition(
 }
 
 /**
- * @see assertStarterBrickPackageLike
+ * @see assertStarterBrickDefinitionLike
  */
-export function isStarterBrickPackageLike(
+export function isStarterBrickDefinitionLike(
   value: unknown,
-): value is StarterBrickPackageLike {
+): value is StarterBrickDefinitionLike {
   try {
-    assertStarterBrickPackageLike(value);
+    assertStarterBrickDefinitionLike(value);
     return true;
   } catch (error) {
     if (error instanceof TypeError) {
@@ -119,34 +121,36 @@ export function isStarterBrickPackageLike(
 }
 
 /**
- * @see assertStarterBrickPackageLike
+ * @see isStarterBrickDefinitionLike
  */
-export function assertStarterBrickPackageLike(
-  maybeStarterBrickConfig: unknown,
-): asserts maybeStarterBrickConfig is StarterBrickPackageLike {
-  const errorContext = { value: maybeStarterBrickConfig };
+export function assertStarterBrickDefinitionLike(
+  value: unknown,
+): asserts value is StarterBrickDefinitionLike {
+  const errorContext = { value };
 
-  if (typeof maybeStarterBrickConfig !== "object") {
+  if (typeof value !== "object") {
     console.warn("Expected extension point", errorContext);
-    throw new TypeError("Expected object for StarterBrickConfig");
+    throw new TypeError("Expected object for StarterBrickDefinitionLike");
   }
 
-  const config = maybeStarterBrickConfig as UnknownObject;
+  const config = value as UnknownObject;
 
   if (config.kind !== "extensionPoint") {
     console.warn("Expected extension point", errorContext);
     throw new TypeError(
-      "Expected kind 'extensionPoint' for StarterBrickConfig",
+      "Expected kind 'extensionPoint' for StarterBrickDefinitionLike",
     );
   }
 
   if (typeof config.definition !== "object") {
     console.warn("Expected extension point", errorContext);
-    throw new TypeError("Expected object for definition in StarterBrickConfig");
+    throw new TypeError(
+      "Expected object for definition in StarterBrickDefinitionLike",
+    );
   }
 
-  if (!isStarterBrickDefinition(config.definition)) {
-    throw new TypeError("Invalid definition in StarterBrickConfig");
+  if (!isStarterBrickDefinitionProp(config.definition)) {
+    throw new TypeError("Invalid definition in StarterBrickDefinitionLike");
   }
 }
 

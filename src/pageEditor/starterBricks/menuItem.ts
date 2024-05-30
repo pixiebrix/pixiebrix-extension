@@ -33,7 +33,7 @@ import {
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemExtension";
-import { type StarterBrickPackageLike } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
@@ -87,7 +87,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: ActionFormState,
-): StarterBrickPackageLike<MenuItemDefinition> {
+): StarterBrickDefinitionLike<MenuItemDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {

@@ -16,7 +16,7 @@
  */
 
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import { type StarterBrickDefinition } from "@/starterBricks/types";
+import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type IconConfig } from "@/types/iconTypes";
 
 export type PanelConfig = {
@@ -40,7 +40,7 @@ interface PanelDefaultOptions {
   [key: string]: string | boolean | number | undefined;
 }
 
-export interface PanelDefinition extends StarterBrickDefinition {
+export interface PanelDefinition extends StarterBrickDefinitionProp {
   template: string;
   position?: PanelPosition;
   containerSelector: string;

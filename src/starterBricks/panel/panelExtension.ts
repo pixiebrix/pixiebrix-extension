@@ -33,7 +33,7 @@ import {
 import { type Metadata } from "@/types/registryTypes";
 import {
   StarterBrickABC,
-  type StarterBrickPackageLike,
+  type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import { render } from "@/starterBricks/dom";
 import { type Permissions } from "webextension-polyfill";
@@ -484,11 +484,11 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
 
   public readonly permissions: Permissions.Permissions;
 
-  public readonly rawConfig: StarterBrickPackageLike<PanelDefinition>;
+  public readonly rawConfig: StarterBrickDefinitionLike<PanelDefinition>;
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickPackageLike<PanelDefinition>,
+    config: StarterBrickDefinitionLike<PanelDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -556,7 +556,7 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickPackageLike<PanelDefinition>,
+  config: StarterBrickDefinitionLike<PanelDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "panel") {

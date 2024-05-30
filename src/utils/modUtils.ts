@@ -52,8 +52,8 @@ import {
   type UiSchema,
 } from "@/types/schemaTypes";
 import { produce } from "immer";
-import { isStarterBrickPackageLike } from "@/starterBricks/types";
-import { normalizeStarterBrickDefinition } from "@/starterBricks/starterBrickUtils";
+import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
+import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBrickUtils";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -443,10 +443,10 @@ export function normalizeModDefinition<
     draft.definitions = mapValues(
       draft.definitions ?? {},
       (innerDefinition) => {
-        if (isStarterBrickPackageLike(innerDefinition)) {
+        if (isStarterBrickDefinitionLike(innerDefinition)) {
           return {
             ...innerDefinition,
-            definition: normalizeStarterBrickDefinition(
+            definition: normalizeStarterBrickDefinitionProp(
               innerDefinition.definition,
             ),
           };

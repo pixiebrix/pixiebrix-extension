@@ -18,7 +18,7 @@
 import type React from "react";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Metadata } from "@/types/registryTypes";
-import { type StarterBrickPackageLike } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
@@ -39,7 +39,7 @@ export interface ElementConfig<
 
   /**
    * The StarterBrickConfig class corresponding to the extension point
-   * @see StarterBrickPackageLike
+   * @see StarterBrickDefinitionLike
    */
   // eslint-disable-next-line @typescript-eslint/ban-types -- we want to Ctor here for the extension point
   readonly baseClass: Function;
@@ -106,7 +106,7 @@ export interface ElementConfig<
    */
   readonly selectExtensionPointConfig: (
     element: TState,
-  ) => StarterBrickPackageLike;
+  ) => StarterBrickDefinitionLike;
 
   /**
    * Returns the extension configuration corresponding to the FormState.

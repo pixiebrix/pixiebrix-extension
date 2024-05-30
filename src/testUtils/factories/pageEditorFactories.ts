@@ -31,7 +31,7 @@ import {
 } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { type StarterBrickPackageLike } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
@@ -57,7 +57,7 @@ const internalFormStateFactory = define<
   ModComponentFormState & {
     extensionPoint: DerivedFunction<
       ModComponentFormState,
-      StarterBrickPackageLike
+      StarterBrickDefinitionLike
     >;
   }
 >({
@@ -73,7 +73,7 @@ const internalFormStateFactory = define<
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   // @ts-expect-error -- TODO: verify typings
-  extensionPoint: derive<ModComponentFormState, StarterBrickPackageLike>(
+  extensionPoint: derive<ModComponentFormState, StarterBrickDefinitionLike>(
     ({ type }) => {
       const starterBrick = starterBrickConfigFactory();
       starterBrick.definition.type = type;

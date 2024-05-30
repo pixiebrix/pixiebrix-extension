@@ -32,8 +32,8 @@ import { type BrickPipeline } from "@/bricks/types";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { validateRegistryId, validateTimestamp } from "@/types/helpers";
 import {
-  type StarterBrickPackageLike,
-  type StarterBrickDefinition,
+  type StarterBrickDefinitionLike,
+  type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
@@ -70,7 +70,7 @@ export const modDefinitionFactory = define<ModDefinition>({
   extensionPoints: array(modComponentDefinitionFactory, 1),
 });
 
-export const starterBrickConfigFactory = define<StarterBrickPackageLike>({
+export const starterBrickConfigFactory = define<StarterBrickDefinitionLike>({
   kind: "extensionPoint",
   apiVersion: "v3",
   metadata: (n: number) =>
@@ -79,7 +79,7 @@ export const starterBrickConfigFactory = define<StarterBrickPackageLike>({
       name: `Starter Brick ${n}`,
     }),
   definition(n: number) {
-    const definition: StarterBrickDefinition = {
+    const definition: StarterBrickDefinitionProp = {
       type: "menuItem" as StarterBrickType,
       isAvailable: {
         matchPatterns: [`https://www.mySite${n}.com/*`],

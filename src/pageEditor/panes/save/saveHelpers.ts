@@ -61,7 +61,7 @@ import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 import {
   isInnerDefinitionEqual,
-  isStarterBrickDefinitionEqual,
+  isStarterBrickDefinitionPropEqual,
 } from "@/starterBricks/starterBrickUtils";
 
 /**
@@ -285,7 +285,7 @@ export function replaceModComponent(
         // definition was functionally modified, the behavior we want (at least for now) is to create new extensionPoint
         // entry instead of modifying the shared entry. If it wasn't modified, we don't have to make any changes.
         if (
-          !isStarterBrickDefinitionEqual(
+          !isStarterBrickDefinitionPropEqual(
             // eslint-disable-next-line security/detect-object-injection -- existing id
             draft.definitions[originalInnerId].definition,
             extensionPointConfig.definition,

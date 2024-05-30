@@ -19,7 +19,7 @@ import { fromJS } from "@/starterBricks/menuItem/menuItemExtension";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
-import { type StarterBrickPackageLike } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import blockRegistry from "@/bricks/registry";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import {
@@ -56,7 +56,7 @@ globalThis.requestAnimationFrame = jest.fn((callback) => {
 const rootReaderId = validateRegistryId("test/root-reader");
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<StarterBrickPackageLike<MenuItemDefinition>>({
+  define<StarterBrickDefinitionLike<MenuItemDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>

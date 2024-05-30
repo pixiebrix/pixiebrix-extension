@@ -27,7 +27,7 @@ import {
 import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import {
   StarterBrickABC,
-  type StarterBrickPackageLike,
+  type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
 import { checkAvailable } from "@/bricks/available";
@@ -418,11 +418,11 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
 
   public readonly contexts: Menus.ContextType[];
 
-  public readonly rawConfig: StarterBrickPackageLike<ContextMenuDefinition>;
+  public readonly rawConfig: StarterBrickDefinitionLike<ContextMenuDefinition>;
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickPackageLike<ContextMenuDefinition>,
+    config: StarterBrickDefinitionLike<ContextMenuDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -475,7 +475,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickPackageLike<ContextMenuDefinition>,
+  config: StarterBrickDefinitionLike<ContextMenuDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "contextMenu") {

@@ -16,10 +16,10 @@
  */
 
 import {
-  isStarterBrickDefinition,
-  isStarterBrickPackageLike,
-  type StarterBrickDefinition,
-  type StarterBrickPackageLike,
+  isStarterBrickDefinitionProp,
+  isStarterBrickDefinitionLike,
+  type StarterBrickDefinitionProp,
+  type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import deepEquals from "fast-deep-equal";
 import { normalizeAvailability } from "@/bricks/available";
@@ -31,9 +31,9 @@ import { omit } from "lodash";
  * Some Page Editor adapters may perform additional normalization steps as field/configuration affordances are added
  * to the starter brick.
  */
-export function normalizeStarterBrickDefinition(
-  definition: StarterBrickDefinition,
-): StarterBrickDefinition {
+export function normalizeStarterBrickDefinitionProp(
+  definition: StarterBrickDefinitionProp,
+): StarterBrickDefinitionProp {
   return {
     ...definition,
     isAvailable: normalizeAvailability(definition.isAvailable),
@@ -43,14 +43,14 @@ export function normalizeStarterBrickDefinition(
 /**
  * Return true if the two starter brick definitions are equal modulo normalization.
  */
-export function isStarterBrickDefinitionEqual(
+export function isStarterBrickDefinitionPropEqual(
   lhs: unknown,
   rhs: unknown,
 ): boolean {
-  if (isStarterBrickDefinition(lhs) && isStarterBrickDefinition(rhs)) {
+  if (isStarterBrickDefinitionProp(lhs) && isStarterBrickDefinitionProp(rhs)) {
     return deepEquals(
-      normalizeStarterBrickDefinition(lhs),
-      normalizeStarterBrickDefinition(rhs),
+      normalizeStarterBrickDefinitionProp(lhs),
+      normalizeStarterBrickDefinitionProp(rhs),
     );
   }
 
@@ -61,13 +61,13 @@ export function isStarterBrickDefinitionEqual(
 /**
  * Return true if the two starter brick definitions are equal modulo normalization.
  */
-export function isStarterBrickPackageLikeEqual(
-  lhs: StarterBrickPackageLike,
-  rhs: StarterBrickPackageLike,
+export function isStarterBrickDefinitionLikeEqual(
+  lhs: StarterBrickDefinitionLike,
+  rhs: StarterBrickDefinitionLike,
 ): boolean {
   return (
     deepEquals(omit(lhs, ["definition"]), omit(rhs, ["definition"])) &&
-    isStarterBrickDefinitionEqual(lhs.definition, rhs.definition)
+    isStarterBrickDefinitionPropEqual(lhs.definition, rhs.definition)
   );
 }
 
@@ -79,8 +79,8 @@ export function isInnerDefinitionEqual(
   rhs: UnknownObject,
 ): boolean {
   // Starter Bricks are currently the only definitions produced by the Page Editor
-  if (isStarterBrickPackageLike(lhs) && isStarterBrickPackageLike(rhs)) {
-    return isStarterBrickPackageLikeEqual(lhs, rhs);
+  if (isStarterBrickDefinitionLike(lhs) && isStarterBrickDefinitionLike(rhs)) {
+    return isStarterBrickDefinitionLikeEqual(lhs, rhs);
   }
 
   return deepEquals(lhs, rhs);

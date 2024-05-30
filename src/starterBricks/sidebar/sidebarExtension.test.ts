@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { define } from "cooky-cutter";
-import { type StarterBrickPackageLike } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
@@ -52,7 +52,7 @@ const isSidePanelOpenMock = jest.mocked(isSidePanelOpen);
 const rootReader = new RootReader();
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<StarterBrickPackageLike<SidebarDefinition>>({
+  define<StarterBrickDefinitionLike<SidebarDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>

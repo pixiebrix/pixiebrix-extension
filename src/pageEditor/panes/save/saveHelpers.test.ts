@@ -35,8 +35,8 @@ import { cloneDeep, range, uniq } from "lodash";
 import { type MenuItemDefinition } from "@/starterBricks/menuItem/types";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
-  type StarterBrickPackageLike,
-  type StarterBrickDefinition,
+  type StarterBrickDefinitionLike,
+  type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -548,10 +548,10 @@ describe("mod options", () => {
 
 function selectExtensionPoints(
   modDefinition: UnsavedModDefinition,
-): StarterBrickPackageLike[] {
+): StarterBrickDefinitionLike[] {
   return modDefinition.extensionPoints.map(({ id }) => {
     const definition = modDefinition.definitions[id]
-      .definition as StarterBrickDefinition;
+      .definition as StarterBrickDefinitionProp;
     return {
       apiVersion: modDefinition.apiVersion,
       metadata: internalStarterBrickMetaFactory(),

@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickPackageLike } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
@@ -81,7 +81,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
 
 function selectExtensionPointConfig(
   formState: SidebarFormState,
-): StarterBrickPackageLike {
+): StarterBrickDefinitionLike {
   const { extensionPoint } = formState;
   const {
     definition: { isAvailable, reader, trigger, debounce, customEvent },

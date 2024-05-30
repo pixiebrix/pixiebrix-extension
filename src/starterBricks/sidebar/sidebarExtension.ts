@@ -23,7 +23,7 @@ import {
   type CustomEventOptions,
   type DebounceOptions,
   StarterBrickABC,
-  type StarterBrickPackageLike,
+  type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/bricks/available";
@@ -434,9 +434,9 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
   private readonly definition: SidebarDefinition;
 
-  public readonly rawConfig: StarterBrickPackageLike;
+  public readonly rawConfig: StarterBrickDefinitionLike;
 
-  constructor(platform: PlatformProtocol, config: StarterBrickPackageLike) {
+  constructor(platform: PlatformProtocol, config: StarterBrickDefinitionLike) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
     super(platform, cloned.metadata);
@@ -475,7 +475,7 @@ class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickPackageLike,
+  config: StarterBrickDefinitionLike,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "actionPanel") {

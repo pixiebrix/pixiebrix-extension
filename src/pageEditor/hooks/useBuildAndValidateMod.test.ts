@@ -24,8 +24,8 @@ import {
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { hookAct, renderHook } from "@/pageEditor/testHelpers";
 import {
-  type StarterBrickPackageLike,
-  type StarterBrickDefinition,
+  type StarterBrickDefinitionLike,
+  type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
 import extensionsSlice, {
   actions as extensionsActions,
@@ -52,10 +52,10 @@ jest.mock("@/pageEditor/starterBricks/base", () => ({
 describe("useBuildAndValidateMod", () => {
   function selectExtensionPoints(
     modDefinition: UnsavedModDefinition,
-  ): StarterBrickPackageLike[] {
+  ): StarterBrickDefinitionLike[] {
     return modDefinition.extensionPoints.map(({ id }) => {
       const definition = modDefinition.definitions[id]
-        .definition as StarterBrickDefinition;
+        .definition as StarterBrickDefinitionProp;
       return {
         apiVersion: modDefinition.apiVersion,
         metadata: internalStarterBrickMetaFactory(),
