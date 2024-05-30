@@ -279,7 +279,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     $buttonElement,
   }: {
     $containerElement: JQuery;
-    $buttonElement: JQuery;
+    $buttonElement: JQuery | null;
   }): SelectorRoot;
 
   abstract getTemplate(): string;
@@ -452,7 +452,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
   private async runExtension(
     menu: HTMLElement,
-    ctxtPromise: Promise<JsonObject>,
+    ctxtPromise: Promise<JsonObject> | undefined,
     extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
   ) {
     if (!extension.id) {
@@ -654,9 +654,12 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       this.addMenuItem($menu, $menuItem);
     }
 
+    const element = $menuItem.get(0);
+    assertNotNullish(element, "Failed to get menu item node");
+
     if (process.env.DEBUG) {
       onNodeRemoved(
-        $menuItem.get(0),
+        element,
         () => {
           // Don't re-install here. We're reinstalling the entire menu
           console.debug(
@@ -693,7 +696,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       // eslint-disable-next-line no-await-in-loop -- TODO: Make it run in parallel if possible while maintaining the order
       const reader = await this.defaultReader();
 
-      let ctxtPromise: Promise<JsonObject>;
+      let ctxtPromise: Promise<JsonObject> | undefined;
 
       for (const extension of this.modComponents) {
         // Run in order so that the order stays the same for where they get rendered. The service
@@ -863,7 +866,8 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
         );
       }
 
-      return $elements.get(0);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+      return $elements.get(0)!;
     }
 
     if (this.targetMode === "eventTarget") {
@@ -873,7 +877,11 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
         );
       }
 
-      return $buttonElement.get()[0];
+      const selectorRoot = $buttonElement.get(0);
+
+      assertNotNullish(selectorRoot, "Failed to get button node");
+
+      return selectorRoot;
     }
 
     return document;
@@ -881,7 +889,9 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
 
   override getPipelineRoot($buttonElement: JQuery): SelectorRoot {
     if (this.targetMode === "eventTarget") {
-      return $buttonElement.get()[0];
+      const selectorRoot = $buttonElement.get(0);
+      assertNotNullish(selectorRoot, "Failed to get button node");
+      return selectorRoot;
     }
 
     return document;
@@ -916,7 +926,9 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
     let $root: JQuery;
 
     if (this._definition.shadowDOM) {
-      const root = document.createElement(this._definition.shadowDOM.tag);
+      const tagName = this._definition.shadowDOM.tag;
+      assertNotNullish(tagName, "Expected shadowDOM.tag to be defined");
+      const root = document.createElement(tagName);
       const shadowRoot = root.attachShadow({ mode: "closed" });
       shadowRoot.innerHTML = sanitizedHTML;
       $root = $(root);
