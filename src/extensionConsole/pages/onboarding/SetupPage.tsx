@@ -35,6 +35,7 @@ import {
 } from "@/integrations/constants";
 import integrationsRegistry from "@/integrations/registry";
 import reportError from "@/telemetry/reportError";
+import useReportError from "@/hooks/useReportError";
 
 const Layout: React.FunctionComponent = ({ children }) => (
   <div className="mt-5 w-100 max-550 mx-auto">{children}</div>
@@ -64,7 +65,7 @@ const SetupPage: React.FunctionComponent = () => {
 
   // Fetch service definitions which are required for partner JWT login in parallel with useRequiredPartnerAuth
   // useAsyncState with ignored output to track loading state
-  const { data, isLoading } = useAsyncState(async () => {
+  const { data, isLoading, error } = useAsyncState(async () => {
     let controlRoomError: undefined | unknown;
     try {
       await syncRemotePackages();
@@ -92,6 +93,8 @@ const SetupPage: React.FunctionComponent = () => {
 
     return { baseURL: getBaseURL(), controlRoomError };
   }, []);
+
+  useReportError(error);
 
   const { baseURL, controlRoomError } = data || {};
 
