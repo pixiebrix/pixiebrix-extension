@@ -31,7 +31,18 @@ describe("normalizeAvailability", () => {
       matchPatterns: [],
       urlPatterns: [],
       selectors: [],
+      allFrames: true,
     });
+  });
+
+  test("normalize single match URL", () => {
+    expect(
+      normalizeAvailability({ matchPatterns: "https://*/*" }).matchPatterns,
+    ).toStrictEqual(["https://*/*"]);
+  });
+
+  test.each([true, false])("pass through allFrames: %s", (allFrames) => {
+    expect(normalizeAvailability({ allFrames }).allFrames).toBe(allFrames);
   });
 });
 
