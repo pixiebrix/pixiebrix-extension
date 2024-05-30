@@ -21,6 +21,7 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
+  cleanIsAvailable,
   extensionWithNormalizedPipeline,
   getImplicitReader,
   lookupExtensionPoint,
@@ -32,8 +33,7 @@ import {
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemExtension";
-import { type StarterBrickConfig } from "@/starterBricks/types";
-import { identity, pickBy } from "lodash";
+import { type StarterBrickPackageLike } from "@/starterBricks/types";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
@@ -87,7 +87,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: ActionFormState,
-): StarterBrickConfig<MenuItemDefinition> {
+): StarterBrickPackageLike<MenuItemDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {
@@ -105,7 +105,7 @@ function selectExtensionPointConfig(
     definition: {
       type: "menuItem",
       reader,
-      isAvailable: pickBy(isAvailable, identity),
+      isAvailable: cleanIsAvailable(isAvailable),
       containerSelector,
       targetMode,
       attachMode,

@@ -32,7 +32,7 @@ import {
 } from "@/starterBricks/helpers";
 import {
   StarterBrickABC,
-  type StarterBrickConfig,
+  type StarterBrickPackageLike,
 } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import { type Permissions } from "webextension-polyfill";
@@ -760,7 +760,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
 
   public readonly permissions: Permissions.Permissions;
 
-  public readonly rawConfig: StarterBrickConfig<MenuItemDefinition>;
+  public readonly rawConfig: StarterBrickPackageLike<MenuItemDefinition>;
 
   public override get defaultOptions(): {
     caption: string;
@@ -775,7 +775,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickConfig<MenuItemDefinition>,
+    config: StarterBrickPackageLike<MenuItemDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -934,7 +934,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickConfig<MenuItemDefinition>,
+  config: StarterBrickPackageLike<MenuItemDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "menuItem") {

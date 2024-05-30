@@ -17,7 +17,7 @@
 
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { registry } from "@/background/messenger/strict/api";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickPackageLike } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import menuItemExtension from "@/pageEditor/starterBricks/menuItem";
 import quickBarExtension from "@/pageEditor/starterBricks/quickBar";
@@ -50,7 +50,7 @@ export async function selectType(
     return (
       extension.definitions[
         extension.extensionPointId
-      ] as unknown as StarterBrickConfig
+      ] as unknown as StarterBrickPackageLike
     ).definition.type;
   }
 
@@ -63,7 +63,7 @@ export async function selectType(
     throw new Error("Cannot find starter brick");
   }
 
-  const extensionPoint = brick.config as unknown as StarterBrickConfig;
+  const extensionPoint = brick.config as unknown as StarterBrickPackageLike;
   return extensionPoint.definition.type;
 }
 

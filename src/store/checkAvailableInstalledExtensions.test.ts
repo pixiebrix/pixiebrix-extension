@@ -24,7 +24,7 @@ import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelect
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { RemoteMenuItemExtensionPoint } from "@/starterBricks/menuItem/menuItemExtension";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickPackageLike } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import { RemoteQuickBarExtensionPoint } from "@/starterBricks/quickBar/quickBarExtension";
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
@@ -80,7 +80,7 @@ describe("checkAvailableInstalledExtensions", () => {
           reader: validateRegistryId("@pixiebrix/document-context"),
         };
       },
-    }) as StarterBrickConfig<MenuItemDefinition>;
+    }) as StarterBrickPackageLike<MenuItemDefinition>;
     const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
       getPlatform(),
       availableButtonStarterBrickConfig,
@@ -104,7 +104,7 @@ describe("checkAvailableInstalledExtensions", () => {
           targetMode: "document",
         };
       },
-    }) as StarterBrickConfig<QuickBarDefinition>;
+    }) as StarterBrickPackageLike<QuickBarDefinition>;
     const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
       getPlatform(),
       availableQuickbarStarterBrickConfig,

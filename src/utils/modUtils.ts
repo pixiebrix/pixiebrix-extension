@@ -18,6 +18,7 @@
 import {
   type ModDefinition,
   type ModOptionsDefinition,
+  type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import * as semver from "semver";
 import { type Organization } from "@/types/contract";
@@ -43,13 +44,16 @@ import {
   minimalUiSchemaFactory,
   propertiesToSchema,
 } from "@/utils/schemaUtils";
-import { isEmpty, sortBy } from "lodash";
+import { isEmpty, mapValues, sortBy } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import {
   type Schema,
   type SchemaProperties,
   type UiSchema,
 } from "@/types/schemaTypes";
+import { produce } from "immer";
+import { isStarterBrickPackageLike } from "@/starterBricks/types";
+import { normalizeStarterBrickDefinition } from "@/starterBricks/starterBrickUtils";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -425,4 +429,31 @@ export function getModActivationInstructions(
   }
 
   return isNullOrBlank(description) ? null : description.trim();
+}
+
+/**
+ * Normalize the shape of a mod definition (e.g., for test assertions).
+ */
+export function normalizeModDefinition<
+  T extends UnsavedModDefinition = UnsavedModDefinition,
+>(definition: T): T {
+  return produce(definition, (draft) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- type error due to nested readonly string array
+    draft.options = normalizeModOptionsDefinition(draft.options) as any;
+    draft.definitions = mapValues(
+      draft.definitions ?? {},
+      (innerDefinition) => {
+        if (isStarterBrickPackageLike(innerDefinition)) {
+          return {
+            ...innerDefinition,
+            definition: normalizeStarterBrickDefinition(
+              innerDefinition.definition,
+            ),
+          };
+        }
+
+        return innerDefinition;
+      },
+    );
+  });
 }

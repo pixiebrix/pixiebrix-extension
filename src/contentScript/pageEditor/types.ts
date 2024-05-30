@@ -16,7 +16,7 @@
  */
 
 import {
-  type StarterBrickConfig,
+  type StarterBrickPackageLike,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
@@ -40,7 +40,7 @@ export interface DynamicDefinition<
   TExtension extends UnknownObject = UnknownObject,
 > {
   type: StarterBrickType;
-  extensionPointConfig: StarterBrickConfig<TExtensionPoint>;
+  extensionPointConfig: StarterBrickPackageLike<TExtensionPoint>;
   extension: ModComponentBase<TExtension>;
 }
 

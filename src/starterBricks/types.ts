@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Availability, type ReaderConfig } from "@/bricks/types";
+import { type ReaderConfig } from "@/bricks/types";
 import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion, type RunArgs } from "@/types/runtimeTypes";
@@ -32,6 +32,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type PlatformCapability } from "@/platform/capabilities";
 import { type PlatformProtocol } from "@/platform/platformProtocol";
+import { type Availability } from "@/types/availabilityTypes";
 
 /**
  * Follows the semantics of lodash's debounce: https://lodash.com/docs/4.17.15#debounce
@@ -70,18 +71,59 @@ export interface StarterBrickDefinition {
   reader: ReaderConfig;
 }
 
-export interface StarterBrickConfig<
+/**
+ * A starter brick defined in a registry package or mod inner definition.
+ */
+export interface StarterBrickPackageLike<
   T extends StarterBrickDefinition = StarterBrickDefinition,
 > {
   apiVersion?: ApiVersion;
-  metadata: Metadata;
+  // Metadata won't be present for inner definitions
+  metadata?: Metadata;
   definition: T;
   kind: "extensionPoint";
 }
 
-export function assertStarterBrickConfig(
+export function isStarterBrickDefinition(
+  value: unknown,
+): value is StarterBrickDefinition {
+  if (value == null || typeof value !== "object") {
+    return false;
+  }
+
+  const definition = value as StarterBrickDefinition;
+
+  return (
+    definition.type !== undefined &&
+    definition.reader !== undefined &&
+    typeof definition.isAvailable === "object"
+  );
+}
+
+/**
+ * @see assertStarterBrickPackageLike
+ */
+export function isStarterBrickPackageLike(
+  value: unknown,
+): value is StarterBrickPackageLike {
+  try {
+    assertStarterBrickPackageLike(value);
+    return true;
+  } catch (error) {
+    if (error instanceof TypeError) {
+      return false;
+    }
+
+    throw error;
+  }
+}
+
+/**
+ * @see assertStarterBrickPackageLike
+ */
+export function assertStarterBrickPackageLike(
   maybeStarterBrickConfig: unknown,
-): asserts maybeStarterBrickConfig is StarterBrickConfig {
+): asserts maybeStarterBrickConfig is StarterBrickPackageLike {
   const errorContext = { value: maybeStarterBrickConfig };
 
   if (typeof maybeStarterBrickConfig !== "object") {
@@ -103,10 +145,7 @@ export function assertStarterBrickConfig(
     throw new TypeError("Expected object for definition in StarterBrickConfig");
   }
 
-  const definition = config.definition as StarterBrickDefinition;
-
-  if (typeof definition.isAvailable !== "object") {
-    console.warn("Expected object for definition.isAvailable", errorContext);
+  if (!isStarterBrickDefinition(config.definition)) {
     throw new TypeError("Invalid definition in StarterBrickConfig");
   }
 }

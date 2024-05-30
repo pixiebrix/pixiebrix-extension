@@ -75,18 +75,21 @@ describe("removeEmptyValues()", () => {
 describe("selectIsAvailable", () => {
   it("normalizes matchPatterns", () => {
     const extensionPoint = starterBrickConfigFactory();
-    extensionPoint.definition.isAvailable.matchPatterns =
-      "https://www.example.com";
-    delete extensionPoint.definition.isAvailable.selectors;
-    delete extensionPoint.definition.isAvailable.urlPatterns;
+
+    const { isAvailable } = extensionPoint.definition;
+
+    isAvailable.matchPatterns = "https://www.example.com";
+    delete isAvailable.selectors;
+    delete isAvailable.urlPatterns;
 
     const normalized = selectIsAvailable(extensionPoint);
 
-    expect(normalized.matchPatterns).toStrictEqual(["https://www.example.com"]);
-
-    // Don't add properties that were undefined as part of normalization
-    expect(normalized.selectors).toBeUndefined();
-    expect(normalized.urlPatterns).toBeUndefined();
+    expect(normalized).toStrictEqual({
+      matchPatterns: ["https://www.example.com"],
+      // As of 2.0.2, properties are added during normalization
+      selectors: [],
+      urlPatterns: [],
+    });
   });
 });
 

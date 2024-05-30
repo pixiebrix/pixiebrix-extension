@@ -20,6 +20,7 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
+  cleanIsAvailable,
   extensionWithNormalizedPipeline,
   getImplicitReader,
   lookupExtensionPoint,
@@ -36,8 +37,7 @@ import {
   type TriggerDefinition,
   TriggerStarterBrickABC,
 } from "@/starterBricks/triggerExtension";
-import { type StarterBrickConfig } from "@/starterBricks/types";
-import { identity, pickBy } from "lodash";
+import { type StarterBrickPackageLike } from "@/starterBricks/types";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
@@ -85,7 +85,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: TriggerFormState,
-): StarterBrickConfig<TriggerDefinition> {
+): StarterBrickPackageLike<TriggerDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {
@@ -108,7 +108,7 @@ function selectExtensionPointConfig(
     definition: {
       type: "trigger",
       reader,
-      isAvailable: pickBy(isAvailable, identity),
+      isAvailable: cleanIsAvailable(isAvailable),
       trigger,
       debounce,
       customEvent,

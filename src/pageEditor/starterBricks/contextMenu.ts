@@ -30,7 +30,7 @@ import {
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickPackageLike } from "@/starterBricks/types";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
@@ -81,7 +81,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: ContextMenuFormState,
-): StarterBrickConfig<ContextMenuDefinition> {
+): StarterBrickPackageLike<ContextMenuDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {

@@ -16,7 +16,7 @@
  */
 
 import { define } from "cooky-cutter";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickPackageLike } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
@@ -42,7 +42,7 @@ const ensureContextMenuMock = jest.mocked(ensureContextMenu);
 const rootReader = new RootReader();
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<StarterBrickConfig<ContextMenuDefinition>>({
+  define<StarterBrickPackageLike<ContextMenuDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>

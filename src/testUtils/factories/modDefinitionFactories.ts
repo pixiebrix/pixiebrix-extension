@@ -32,7 +32,7 @@ import { type BrickPipeline } from "@/bricks/types";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { validateRegistryId, validateTimestamp } from "@/types/helpers";
 import {
-  type StarterBrickConfig,
+  type StarterBrickPackageLike,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
@@ -70,7 +70,7 @@ export const modDefinitionFactory = define<ModDefinition>({
   extensionPoints: array(modComponentDefinitionFactory, 1),
 });
 
-export const starterBrickConfigFactory = define<StarterBrickConfig>({
+export const starterBrickConfigFactory = define<StarterBrickPackageLike>({
   kind: "extensionPoint",
   apiVersion: "v3",
   metadata: (n: number) =>

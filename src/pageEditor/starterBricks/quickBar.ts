@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickPackageLike } from "@/starterBricks/types";
 import { faThLarge } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
@@ -77,7 +77,7 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
 
 function selectExtensionPointConfig(
   formState: QuickBarFormState,
-): StarterBrickConfig<QuickBarDefinition> {
+): StarterBrickPackageLike<QuickBarDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {

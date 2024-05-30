@@ -16,7 +16,7 @@
  */
 
 import { checkAvailable } from "@/bricks/available";
-import type { Availability, BrickConfig } from "@/bricks/types";
+import type { BrickConfig } from "@/bricks/types";
 import { cloneDeep } from "lodash";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 import { type ApiVersion, type SelectorRoot } from "@/types/runtimeTypes";
@@ -29,6 +29,7 @@ import {
   type PlatformCapability,
 } from "@/platform/capabilities";
 import { validatePackageDefinition } from "@/validators/schemaValidator";
+import { Availability } from "@/types/availabilityTypes";
 
 export interface ReaderTypeConfig {
   type: string;

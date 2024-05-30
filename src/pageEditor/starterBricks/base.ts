@@ -22,8 +22,8 @@ import {
 } from "@/types/registryTypes";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
-  assertStarterBrickConfig,
-  type StarterBrickConfig,
+  assertStarterBrickPackageLike,
+  type StarterBrickPackageLike,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
@@ -36,11 +36,7 @@ import {
   validateRegistryId,
   normalizeSemVerString,
 } from "@/types/helpers";
-import {
-  type BrickPipeline,
-  type NormalizedAvailability,
-  type ReaderConfig,
-} from "@/bricks/types";
+import { type BrickPipeline, type ReaderConfig } from "@/bricks/types";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
@@ -60,6 +56,11 @@ import {
 } from "@/pageEditor/baseFormStateTypes";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { registry } from "@/background/messenger/strict/api";
+import { normalizeAvailability } from "@/bricks/available";
+import type {
+  Availability,
+  NormalizedAvailability,
+} from "@/types/availabilityTypes";
 
 export interface WizardStep {
   step: string;
@@ -209,45 +210,31 @@ export function internalStarterBrickMetaFactory(): Metadata {
  * Map availability from extension point configuration to state for the page editor.
  */
 export function selectIsAvailable(
-  extensionPoint: StarterBrickConfig,
+  extensionPoint: StarterBrickPackageLike,
 ): NormalizedAvailability {
-  assertStarterBrickConfig(extensionPoint);
-
-  const availability: NormalizedAvailability = {};
-
-  // All 3 fields in NormalizedAvailability are optional, so we should only set each one if
-  // the StarterBrickConfig has a value set for that field. Normalizing here makes testing
-  // harder because we then have to account for the normalized value in assertions.
-  const { isAvailable } = extensionPoint.definition;
-
-  if (isAvailable.matchPatterns) {
-    availability.matchPatterns = castArray(isAvailable.matchPatterns);
-  }
-
-  if (isAvailable.urlPatterns) {
-    availability.urlPatterns = castArray(isAvailable.urlPatterns);
-  }
-
-  if (isAvailable.selectors) {
-    availability.selectors = castArray(isAvailable.selectors);
-  }
-
-  return availability;
+  assertStarterBrickPackageLike(extensionPoint);
+  return normalizeAvailability(extensionPoint.definition.isAvailable);
 }
 
 /**
- * Exclude malformed matchPatterns and selectors from an isAvailable section that may have found their way over from the
- * Page Editor.
+ * Exclude malformed rules from an isAvailable section that may have found their way over from the Page Editor.
  *
  * Currently, excludes:
  * - Null values
  * - Blank values
+ *
+ * The filtering logic is not part of normalizeAvailability because removing items can technically change the semantics
+ * of the rule. E.g., a rule with an invalid URL pattern would match no sites, but an empty URL pattern array would
+ * match all sites.
+ *
+ * @see normalizeAvailability
  */
-export function cleanIsAvailable({
-  matchPatterns = [],
-  urlPatterns = [],
-  selectors = [],
-}: NormalizedAvailability): NormalizedAvailability {
+export function cleanIsAvailable(
+  availability: Availability,
+): NormalizedAvailability {
+  const { matchPatterns, urlPatterns, selectors } =
+    normalizeAvailability(availability);
+
   return {
     matchPatterns: matchPatterns.filter((x) => !isNullOrBlank(x)),
     urlPatterns: urlPatterns.filter((x) => isEmpty(x)),
@@ -262,7 +249,9 @@ export async function lookupExtensionPoint<
 >(
   config: ModComponentBase<TConfig>,
   type: TType,
-): Promise<StarterBrickConfig<TDefinition> & { definition: { type: TType } }> {
+): Promise<
+  StarterBrickPackageLike<TDefinition> & { definition: { type: TType } }
+> {
   if (!config) {
     throw new Error("config is required");
   }
@@ -278,11 +267,11 @@ export async function lookupExtensionPoint<
       kind: "extensionPoint",
       metadata: internalStarterBrickMetaFactory(),
       ...definition,
-    } as unknown as StarterBrickConfig<TDefinition> & {
+    } as unknown as StarterBrickPackageLike<TDefinition> & {
       definition: { type: TType };
     };
 
-    assertStarterBrickConfig(innerExtensionPoint);
+    assertStarterBrickPackageLike(innerExtensionPoint);
     return innerExtensionPoint;
   }
 
@@ -294,19 +283,19 @@ export async function lookupExtensionPoint<
   }
 
   const extensionPoint =
-    brick.config as unknown as StarterBrickConfig<TDefinition>;
+    brick.config as unknown as StarterBrickPackageLike<TDefinition>;
   if (extensionPoint.definition.type !== type) {
     throw new Error(`Expected ${type} starter brick type`);
   }
 
-  return extensionPoint as StarterBrickConfig<TDefinition> & {
+  return extensionPoint as StarterBrickPackageLike<TDefinition> & {
     definition: { type: TType };
   };
 }
 
 export function baseSelectExtensionPoint(
   formState: BaseFormState,
-): Except<StarterBrickConfig, "definition"> {
+): Except<StarterBrickPackageLike, "definition"> {
   const { metadata } = formState.extensionPoint;
 
   return {

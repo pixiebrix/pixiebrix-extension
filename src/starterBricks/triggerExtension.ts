@@ -24,7 +24,7 @@ import {
   type CustomEventOptions,
   type DebounceOptions,
   StarterBrickABC,
-  type StarterBrickConfig,
+  type StarterBrickPackageLike,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
@@ -946,7 +946,7 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
 
   public readonly permissions: Permissions.Permissions;
 
-  public readonly rawConfig: StarterBrickConfig<TriggerDefinition>;
+  public readonly rawConfig: StarterBrickPackageLike<TriggerDefinition>;
 
   public override get defaultOptions(): Record<string, string> {
     return this._definition.defaultOptions ?? {};
@@ -954,7 +954,7 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickConfig<TriggerDefinition>,
+    config: StarterBrickPackageLike<TriggerDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -1029,7 +1029,7 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickConfig<TriggerDefinition>,
+  config: StarterBrickPackageLike<TriggerDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "trigger") {

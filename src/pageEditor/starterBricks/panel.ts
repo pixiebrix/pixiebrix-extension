@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickPackageLike } from "@/starterBricks/types";
 import { PanelStarterBrickABC } from "@/starterBricks/panel/panelExtension";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
@@ -84,7 +84,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: PanelFormState,
-): StarterBrickConfig<PanelDefinition> {
+): StarterBrickPackageLike<PanelDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: { isAvailable, position, template, reader, containerSelector },

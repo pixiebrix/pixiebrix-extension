@@ -27,7 +27,7 @@ import {
 } from "webextension-polyfill";
 import {
   StarterBrickABC,
-  type StarterBrickConfig,
+  type StarterBrickPackageLike,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/bricks/available";
@@ -292,11 +292,11 @@ export class RemoteQuickBarExtensionPoint extends QuickBarStarterBrickABC {
 
   public readonly contexts: Menus.ContextType[];
 
-  public readonly rawConfig: StarterBrickConfig<QuickBarDefinition>;
+  public readonly rawConfig: StarterBrickPackageLike<QuickBarDefinition>;
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickConfig<QuickBarDefinition>,
+    config: StarterBrickPackageLike<QuickBarDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -353,7 +353,7 @@ export class RemoteQuickBarExtensionPoint extends QuickBarStarterBrickABC {
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickConfig<QuickBarDefinition>,
+  config: StarterBrickPackageLike<QuickBarDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "quickBar") {

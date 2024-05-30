@@ -16,7 +16,7 @@
  */
 
 import { define } from "cooky-cutter";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickPackageLike } from "@/starterBricks/types";
 import {
   fromJS,
   type TriggerConfig,
@@ -44,7 +44,7 @@ let getModComponentStateMock: jest.MockedFunctionDeep<
 const rootReader = new RootReader();
 
 const starterBrickConfigFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<StarterBrickConfig<TriggerDefinition>>({
+  define<StarterBrickPackageLike<TriggerDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>

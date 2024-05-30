@@ -18,7 +18,7 @@
 import extensionPointRegistry from "@/starterBricks/registry";
 import { fromJS } from "@/starterBricks/contextMenu/contextMenu";
 import * as backgroundApi from "@/background/messenger/strict/api";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickPackageLike } from "@/starterBricks/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";
 import { TEST_setContext } from "webext-detect-page";
@@ -69,7 +69,7 @@ describe("contextMenus", () => {
 
   it("preload context menu", async () => {
     const extensionPoint =
-      starterBrickConfigFactory() as unknown as StarterBrickConfig<ContextMenuDefinition>;
+      starterBrickConfigFactory() as unknown as StarterBrickPackageLike<ContextMenuDefinition>;
     extensionPoint.definition.type = "contextMenu";
     extensionPoint.definition.contexts = ["all"];
 

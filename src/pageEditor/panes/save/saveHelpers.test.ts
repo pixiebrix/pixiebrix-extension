@@ -35,7 +35,7 @@ import { cloneDeep, range, uniq } from "lodash";
 import { type MenuItemDefinition } from "@/starterBricks/menuItem/types";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
-  type StarterBrickConfig,
+  type StarterBrickPackageLike,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
@@ -62,7 +62,10 @@ import {
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
-import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import {
+  emptyModOptionsDefinitionFactory,
+  normalizeModDefinition,
+} from "@/utils/modUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
@@ -545,7 +548,7 @@ describe("mod options", () => {
 
 function selectExtensionPoints(
   modDefinition: UnsavedModDefinition,
-): StarterBrickConfig[] {
+): StarterBrickPackageLike[] {
   return modDefinition.extensionPoints.map(({ id }) => {
     const definition = modDefinition.definitions[id]
       .definition as StarterBrickDefinition;
@@ -766,7 +769,7 @@ describe("buildNewMod", () => {
         dirtyModComponentFormStates: modComponentFormStates,
       });
 
-      // Update the source mod with the expected label changes
+      // Update the source mod with the expected label changes and expected normalization
       const updatedMod = produce(modDefinition, (draft) => {
         for (const [index, extensionPoint] of draft.extensionPoints
           .slice(0, dirtyModComponentCount)
@@ -776,7 +779,9 @@ describe("buildNewMod", () => {
       });
 
       // Compare results
-      expect(newMod).toStrictEqual(updatedMod);
+      expect(normalizeModDefinition(newMod)).toStrictEqual(
+        normalizeModDefinition(updatedMod),
+      );
     },
   );
 });

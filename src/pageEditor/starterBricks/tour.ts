@@ -20,6 +20,7 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
+  cleanIsAvailable,
   extensionWithNormalizedPipeline,
   getImplicitReader,
   lookupExtensionPoint,
@@ -30,8 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickConfig } from "@/starterBricks/types";
-import { identity, pickBy } from "lodash";
+import { type StarterBrickPackageLike } from "@/starterBricks/types";
 import { getDomain } from "@/permissions/patterns";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
@@ -72,7 +72,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: TourFormState,
-): StarterBrickConfig<TourDefinition> {
+): StarterBrickPackageLike<TourDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: { isAvailable, reader },
@@ -82,7 +82,7 @@ function selectExtensionPointConfig(
     definition: {
       type: "tour",
       reader,
-      isAvailable: pickBy(isAvailable, identity),
+      isAvailable: cleanIsAvailable(isAvailable),
     },
   });
 }

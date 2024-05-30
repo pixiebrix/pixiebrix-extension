@@ -24,7 +24,7 @@ import {
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { hookAct, renderHook } from "@/pageEditor/testHelpers";
 import {
-  type StarterBrickConfig,
+  type StarterBrickPackageLike,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import extensionsSlice, {
@@ -42,6 +42,7 @@ import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories"
 import { array } from "cooky-cutter";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { normalizeModDefinition } from "@/utils/modUtils";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
@@ -51,7 +52,7 @@ jest.mock("@/pageEditor/starterBricks/base", () => ({
 describe("useBuildAndValidateMod", () => {
   function selectExtensionPoints(
     modDefinition: UnsavedModDefinition,
-  ): StarterBrickConfig[] {
+  ): StarterBrickPackageLike[] {
     return modDefinition.extensionPoints.map(({ id }) => {
       const definition = modDefinition.definitions[id]
         .definition as StarterBrickDefinition;
@@ -163,7 +164,9 @@ describe("useBuildAndValidateMod", () => {
         });
 
         // Compare results
-        expect(newMod).toStrictEqual(updatedMod);
+        expect(normalizeModDefinition(newMod)).toStrictEqual(
+          normalizeModDefinition(updatedMod),
+        );
       });
     },
   );
