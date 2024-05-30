@@ -41,6 +41,7 @@ import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type Brick } from "@/types/brickTypes";
 import { resolveObj } from "@/utils/promiseUtils";
 import { isObject } from "@/utils/objectUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type InnerExtensionPoint = Pick<StarterBrickConfig, "definition" | "kind">;
 type InnerBlock<K extends "component" | "reader" = "component" | "reader"> =
@@ -99,7 +100,7 @@ async function resolveReaderDefinition(
     if (Object.hasOwn(definitions, reader)) {
       // eslint-disable-next-line security/detect-object-injection -- checked hasOwn
       const definition = definitions[reader];
-      if (definition.kind !== "reader") {
+      if (definition?.kind !== "reader") {
         throw new TypeError(
           "extensionPoint references definition that is not a reader",
         );
@@ -219,22 +220,25 @@ export async function resolveExtensionInnerDefinitions<
   }
 
   return produce(extension, async (draft) => {
+    const { definitions } = draft;
+    assertNotNullish(definitions, "definitions must be defined");
     // The ModComponentBase has definitions for all extensionPoints from the mod, even ones it doesn't use
     const relevantDefinitions = pickBy(
-      draft.definitions,
+      definitions,
       (definition, name) =>
         definition.kind !== "extensionPoint" || draft.extensionPointId === name,
     );
 
     const resolvedDefinitions = await resolveObj(
       mapValues(relevantDefinitions, async (definition) =>
-        resolveInnerDefinition(draft.definitions, definition),
+        resolveInnerDefinition(definitions, definition),
       ),
     );
 
     delete draft.definitions;
     if (resolvedDefinitions[draft.extensionPointId] != null) {
-      draft.extensionPointId = resolvedDefinitions[draft.extensionPointId].id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
+      draft.extensionPointId = resolvedDefinitions[draft.extensionPointId]!.id;
     }
   }) as Promise<ResolvedModComponent<T>>;
 }
@@ -274,7 +278,8 @@ export async function resolveRecipeInnerDefinitions(
   return extensionDefinitions.map(
     (definition) =>
       (definition.id in resolvedDefinitions
-        ? { ...definition, id: resolvedDefinitions[definition.id].id }
+        ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
+          { ...definition, id: resolvedDefinitions[definition.id]!.id }
         : definition) as ResolvedModComponentDefinition,
   );
 }

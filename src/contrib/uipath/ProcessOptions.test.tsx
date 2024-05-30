@@ -46,7 +46,7 @@ const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
 jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
-jest.mock("@/contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/strict/api");
 
 jest.mock("@/contrib/uipath/uipathHooks");
 const useSelectedReleaseMock = jest.mocked(useSelectedRelease);

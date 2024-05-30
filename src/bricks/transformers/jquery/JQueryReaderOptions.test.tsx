@@ -35,7 +35,7 @@ import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import userEvent from "@testing-library/user-event";
 import { toExpression } from "@/utils/expressionUtils";
 
-jest.mock("@/contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/strict/api");
 
 const getAttributeExamplesMock = jest.mocked(getAttributeExamples);
 

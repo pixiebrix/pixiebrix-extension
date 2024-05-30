@@ -62,10 +62,7 @@ import {
 import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import {
-  checkAvailable,
-  getInstalledExtensionPoints,
-} from "@/contentScript/messenger/api";
+import { getInstalledExtensionPoints } from "@/contentScript/messenger/strict/api";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
 import { testMatchPatterns } from "@/bricks/available";
@@ -86,6 +83,7 @@ import {
   getCurrentInspectedURL,
   inspectedTab,
 } from "@/pageEditor/context/connection";
+import { checkAvailable } from "@/contentScript/messenger/strict/api";
 
 export const initialState: EditorState = {
   selectionSeq: 0,

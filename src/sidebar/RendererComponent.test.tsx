@@ -28,7 +28,7 @@ import { runHeadlessPipeline } from "@/contentScript/messenger/strict/api";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { toExpression } from "@/utils/expressionUtils";
 
-jest.mock("@/contentScript/messenger/api", () => ({
+jest.mock("@/contentScript/messenger/strict/api", () => ({
   runHeadlessPipeline: jest
     .fn()
     .mockRejectedValue(new Error("not implemented")),

@@ -51,6 +51,7 @@ import { ReusableAbortController } from "abort-utils";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { notifyNavigationComplete } from "@/contentScript/sidebarController";
 import pDefer from "p-defer";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * True if handling the initial page load.
@@ -286,6 +287,7 @@ export function clearEditorExtension(
       // extension points
       console.debug(`lifecycle:clearEditorExtension: ${extensionId}`);
       const extensionPoint = _editorExtensions.get(extensionId);
+      assertNotNullish(extensionPoint, "extensionPoint must be defined");
 
       if (extensionPoint.kind === "actionPanel" && preserveSidebar) {
         const sidebar = extensionPoint as SidebarStarterBrickABC;
@@ -414,7 +416,7 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
       const editorExtension = _editorExtensions.get(extension.id);
       // Include sidebar (i.e. "actionPanel") starterbrick kind as those are replaced
       // by the sidebar itself, automatically replacing old panels keyed by extension id
-      return editorExtension.kind === "actionPanel";
+      return editorExtension?.kind === "actionPanel";
     }
 
     // Exclude disabled deployments
@@ -545,7 +547,7 @@ async function waitDocumentLoad(abortSignal: AbortSignal): Promise<void> {
   }
 }
 
-function decideRunReason({ force }: { force: boolean }): RunReason {
+function decideRunReason({ force }: { force?: boolean }): RunReason {
   if (force) {
     return RunReason.MANUAL;
   }

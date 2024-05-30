@@ -28,7 +28,7 @@ import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
-import { clearDynamicElements } from "@/contentScript/messenger/api";
+import { clearDynamicElements } from "@/contentScript/messenger/strict/api";
 import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 

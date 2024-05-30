@@ -40,7 +40,7 @@ jest.mock("react-shadow/emotion", () => ({
   },
 }));
 
-jest.mock("@/contentScript/messenger/api", () => ({
+jest.mock("@/contentScript/messenger/strict/api", () => ({
   showLoginBanner: jest.fn(),
 }));
 

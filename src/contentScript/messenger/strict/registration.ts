@@ -63,6 +63,17 @@ import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadles
 import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock";
 import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline";
 import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader";
+import {
+  activatePrerenderedTab,
+  ensureInstalled,
+  getActiveExtensionPoints,
+  queueReactivateTab,
+  reactivateTab,
+  removePersistedExtension,
+} from "@/contentScript/lifecycle";
+import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements";
+import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateDynamicElement";
+import { resetTab } from "@/contentScript/pageEditor/resetTab";
 
 declare global {
   interface MessengerMethods {
@@ -107,6 +118,15 @@ declare global {
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_EXTENSION_POINT_READER: typeof runStarterBrickReader;
+    QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
+    REACTIVATE_TAB: typeof reactivateTab;
+    REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
+    ACTIVATE_PRERENDERED_TAB: typeof activatePrerenderedTab;
+    INSTALLED_EXTENSION_POINTS: typeof getActiveExtensionPoints;
+    ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
+    RESET_TAB: typeof resetTab;
+    CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
+    UPDATE_DYNAMIC_ELEMENT: typeof updateDynamicElement;
   }
 }
 export default function registerMessenger(): void {
@@ -152,5 +172,14 @@ export default function registerMessenger(): void {
     RUN_RENDERER_BLOCK: runRendererBlock,
     RUN_RENDERER_PIPELINE: runRendererPipeline,
     RUN_EXTENSION_POINT_READER: runStarterBrickReader,
+    QUEUE_REACTIVATE_TAB: queueReactivateTab,
+    REACTIVATE_TAB: reactivateTab,
+    REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
+    ACTIVATE_PRERENDERED_TAB: activatePrerenderedTab,
+    INSTALLED_EXTENSION_POINTS: getActiveExtensionPoints,
+    ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
+    RESET_TAB: resetTab,
+    CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
+    UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
   });
 }

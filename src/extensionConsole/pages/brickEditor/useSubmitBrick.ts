@@ -40,7 +40,7 @@ import { type Definition } from "@/types/registryTypes";
 import useUserAction from "@/hooks/useUserAction";
 import { useModals } from "@/components/ConfirmationModal";
 import { CancelError } from "@/errors/businessErrors";
-import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { reactivateEveryTab } from "@/contentScript/messenger/strict/api";
 
 type SubmitOptions = {
   create: boolean;

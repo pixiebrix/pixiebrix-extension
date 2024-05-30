@@ -32,7 +32,7 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { revertAll } from "@/store/commonActions";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import { allSettled } from "@/utils/promiseUtils";
-import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { reactivateEveryTab } from "@/contentScript/messenger/strict/api";
 
 async function revokeAllAdditionalPermissions() {
   const permissions: Permissions.AnyPermissions =

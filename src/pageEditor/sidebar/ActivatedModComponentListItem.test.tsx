@@ -36,7 +36,7 @@ jest.mock("@/pageEditor/starterBricks/adapter", () => {
   };
 });
 
-jest.mock("@/contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/strict/api");
 
 const enableOverlayMock = jest.mocked(enableOverlay);
 const disableOverlayMock = jest.mocked(disableOverlay);
