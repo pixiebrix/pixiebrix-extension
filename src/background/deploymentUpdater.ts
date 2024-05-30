@@ -522,6 +522,10 @@ export async function syncDeployments(): Promise<void> {
     restricted: meApiResponse.flags.includes("restricted-uninstall"),
   });
 
+  reportEvent(Events.DEPLOYMENT_UPDATE_LIST, {
+    deployments: updatedDeployments.map((deployment) => deployment.id),
+  });
+
   if (
     isSnoozed &&
     meData.enforceUpdateMillis &&

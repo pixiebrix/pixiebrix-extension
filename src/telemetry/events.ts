@@ -38,6 +38,7 @@ export const Events = {
   DEPLOYMENT_REJECT_PERMISSIONS: "DeploymentRejectPermissions",
   DEPLOYMENT_SYNC: "DeploymentSync",
   DEPLOYMENT_LIST: "DeploymentList",
+  DEPLOYMENT_UPDATE_LIST: "DeploymentUpdateList",
 
   DEVTOOLS_OPEN: "DevToolsOpen",
   DEVTOOLS_CLOSE: "DevToolsClose",
