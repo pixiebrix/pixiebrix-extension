@@ -16,24 +16,7 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import {
-  backgroundTarget as bg,
-  getMethod,
-  getNotifier,
-} from "webext-messenger";
-
-export const removeExtensionForEveryTab = getNotifier(
-  "REMOVE_EXTENSION_EVERY_TAB",
-  bg,
-);
-
-export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
-
-export const contextMenus = {
-  preload: getMethod("PRELOAD_CONTEXT_MENUS", bg),
-};
-
-export const getUserData = getMethod("GET_USER_DATA", bg);
+import { backgroundTarget as bg, getMethod } from "webext-messenger";
 
 export const installStarterBlueprints = getMethod(
   "INSTALL_STARTER_BLUEPRINTS",

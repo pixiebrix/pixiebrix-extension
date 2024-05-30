@@ -74,6 +74,8 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor";
+import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
 
 expectContext("background");
 
@@ -143,6 +145,8 @@ declare global {
     REQUEST_RUN_IN_TOP: typeof requestRunInTop;
     REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInOtherTabs;
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
+    PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
+    REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
   }
 }
 
@@ -212,5 +216,7 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_TOP: requestRunInTop,
     REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
+    PRELOAD_CONTEXT_MENUS: preloadContextMenus,
+    REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
   });
 }

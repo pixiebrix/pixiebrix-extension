@@ -25,28 +25,18 @@
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // Depends on contentScript/lifecycle to pass strictNullCheck
-import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // Depends on contentScript/lifecycle to pass strictNullCheck
-import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus"; // Depends on contentScript/lifecycle to pass strictNullCheck
+import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods";
 
 expectContext("background");
 
 declare global {
   interface MessengerMethods {
-    PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
-
     INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
-
-    REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
   }
 }
 
 export default function registerMessenger(): void {
   registerMethods({
     INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
-
-    PRELOAD_CONTEXT_MENUS: preloadContextMenus,
-
-    REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
   });
 }

@@ -18,8 +18,8 @@
 import { RunBot } from "@/contrib/automationanywhere/RunBot";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { uuidv4 } from "@/types/helpers";
-import { getUserData } from "@/background/messenger/api";
 import {
+  getUserData,
   getCachedAuthData,
   performConfiguredRequestInBackground,
 } from "@/background/messenger/strict/api";

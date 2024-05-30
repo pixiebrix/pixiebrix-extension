@@ -142,3 +142,14 @@ export const requestRun = {
   inOtherTabs: getMethod("REQUEST_RUN_IN_OTHER_TABS", bg),
   inAllFrames: getMethod("REQUEST_RUN_IN_ALL_FRAMES", bg),
 };
+
+export const contextMenus = {
+  preload: getMethod("PRELOAD_CONTEXT_MENUS", bg),
+};
+
+export const removeExtensionForEveryTab = getNotifier(
+  "REMOVE_EXTENSION_EVERY_TAB",
+  bg,
+);
+export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
+export const getUserData = getMethod("GET_USER_DATA", bg);

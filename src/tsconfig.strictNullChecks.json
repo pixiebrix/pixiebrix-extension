@@ -4,6 +4,8 @@
     "strictNullChecks": true
   },
   "files": [
+    "./background/contextMenus/preloadContextMenus.ts",
+    "./background/removeExtensionForEveryTab.ts",
     "./contentScript/pageEditor/dynamic/updateDynamicElement.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
