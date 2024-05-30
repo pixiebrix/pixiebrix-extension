@@ -29,6 +29,12 @@ import { clearServiceCache } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import useAsyncState from "@/hooks/useAsyncState";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+} from "@/integrations/constants";
+import integrationsRegistry from "@/integrations/registry";
+import reportError from "@/telemetry/reportError";
 
 const Layout: React.FunctionComponent = ({ children }) => (
   <div className="mt-5 w-100 max-550 mx-auto">{children}</div>
@@ -58,22 +64,38 @@ const SetupPage: React.FunctionComponent = () => {
 
   // Fetch service definitions which are required for partner JWT login in parallel with useRequiredPartnerAuth
   // useAsyncState with ignored output to track loading state
-  const { data: baseURL, isLoading } = useAsyncState(async () => {
+  const asyncState = useAsyncState(async () => {
+    let controlRoomError: undefined | unknown;
     try {
       await syncRemotePackages();
       // Must happen after the call to fetch service definitions
       await clearServiceCache();
     } catch (error) {
-      notify.warning({
-        message:
-          "Failed to latest load integration definitions. Login via partner may not be available",
-        error,
-        reportError: true,
-      });
+      reportError(error);
+      // If an error was thrown, check if the control room integration definitions are available to determine if we should
+      // show an error toast in the partner setup card case.
+      try {
+        const controlRoomTokenIntegrationPromise = integrationsRegistry.lookup(
+          CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+        );
+        const controlRoomOauthIntegrationPromise = integrationsRegistry.lookup(
+          CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        );
+        await Promise.all([
+          controlRoomTokenIntegrationPromise,
+          controlRoomOauthIntegrationPromise,
+        ]);
+      } catch {
+        controlRoomError = error;
+      }
     }
 
-    return getBaseURL();
+    return { baseURL: getBaseURL(), controlRoomError };
   }, []);
+
+  const { isLoading, data } = asyncState;
+
+  const { baseURL, controlRoomError } = data || {};
 
   if (isLoading || isPartnerLoading) {
     return <Loader />;
@@ -92,6 +114,13 @@ const SetupPage: React.FunctionComponent = () => {
     authMethod === "partner-token" ||
     authMethod === "partner-oauth2"
   ) {
+    if (controlRoomError) {
+      notify.warning({
+        message:
+          "Error retrieving partner integration definition. Reload the page. If the problem persists, restart your browser",
+      });
+    }
+
     setupCard = <PartnerSetupCard />;
   }
 
