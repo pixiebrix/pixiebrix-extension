@@ -36,9 +36,10 @@ async function getStarterBrickType(
 ): Promise<StarterBrickType | null> {
   // Look up the extension point in recipe inner definitions first
   if (modDefinition.definitions?.[modComponentDefinition.id]) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
     const definition: StarterBrickDefinition = modDefinition.definitions[
       modComponentDefinition.id
-    ].definition as StarterBrickDefinition;
+    ]!.definition as StarterBrickDefinition;
     const extensionPointType = definition?.type;
 
     if (extensionPointType) {
@@ -85,7 +86,7 @@ export async function includesQuickBarStarterBrick(
   modDefinition?: ModDefinition,
 ): Promise<boolean> {
   const resolvedExtensionDefinitions =
-    await resolveRecipeInnerDefinitions(modDefinition);
+    (await resolveRecipeInnerDefinitions(modDefinition)) ?? [];
 
   for (const { id } of resolvedExtensionDefinitions) {
     // eslint-disable-next-line no-await-in-loop -- can break when we find one

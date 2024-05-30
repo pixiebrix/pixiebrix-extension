@@ -248,11 +248,11 @@ export async function resolveExtensionInnerDefinitions<
  * TODO: resolve other definitions (brick, service, etc.) within the extensions
  */
 export async function resolveRecipeInnerDefinitions(
-  recipe: Pick<ModDefinition, "extensionPoints" | "definitions">,
-): Promise<ResolvedModComponentDefinition[]> {
-  const extensionDefinitions = recipe.extensionPoints;
+  recipe: Pick<ModDefinition, "extensionPoints" | "definitions"> | undefined,
+): Promise<ResolvedModComponentDefinition[] | undefined> {
+  const extensionDefinitions = recipe?.extensionPoints;
 
-  if (isEmpty(recipe.definitions)) {
+  if (isEmpty(recipe?.definitions)) {
     return extensionDefinitions as ResolvedModComponentDefinition[];
   }
 
@@ -275,7 +275,7 @@ export async function resolveRecipeInnerDefinitions(
     ),
   );
 
-  return extensionDefinitions.map(
+  return extensionDefinitions?.map(
     (definition) =>
       (definition.id in resolvedDefinitions
         ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above

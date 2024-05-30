@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./background/starterMods.ts",
     "./background/contextMenus/preloadContextMenus.ts",
     "./background/removeExtensionForEveryTab.ts",
     "./contentScript/pageEditor/dynamic/updateDynamicElement.ts",
