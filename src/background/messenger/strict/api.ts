@@ -153,3 +153,7 @@ export const removeExtensionForEveryTab = getNotifier(
 );
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 export const getUserData = getMethod("GET_USER_DATA", bg);
+export const installStarterBlueprints = getMethod(
+  "INSTALL_STARTER_BLUEPRINTS",
+  bg,
+);
