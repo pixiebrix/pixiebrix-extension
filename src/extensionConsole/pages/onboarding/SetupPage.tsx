@@ -64,7 +64,7 @@ const SetupPage: React.FunctionComponent = () => {
 
   // Fetch service definitions which are required for partner JWT login in parallel with useRequiredPartnerAuth
   // useAsyncState with ignored output to track loading state
-  const asyncState = useAsyncState(async () => {
+  const { data, isLoading } = useAsyncState(async () => {
     let controlRoomError: undefined | unknown;
     try {
       await syncRemotePackages();
@@ -92,8 +92,6 @@ const SetupPage: React.FunctionComponent = () => {
 
     return { baseURL: getBaseURL(), controlRoomError };
   }, []);
-
-  const { isLoading, data } = asyncState;
 
   const { baseURL, controlRoomError } = data || {};
 
