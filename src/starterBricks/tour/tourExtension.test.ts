@@ -28,10 +28,16 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import defaultActions, {
   pageEditorAction,
 } from "@/components/quickBar/defaultActions";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import {
+  type ModMetadata,
+  type ResolvedModComponent,
+} from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  registryIdFactory,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 import { getPlatform } from "@/platform/platformContext";
 import {
@@ -70,7 +76,9 @@ const extensionFactory = define<ResolvedModComponent<TourConfig>>({
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: null,
+  _recipe: {
+    id: registryIdFactory(),
+  } as ModMetadata,
   label: "Test Extension",
   config: define<TourConfig>({
     tour: () => [] as BrickPipeline,
