@@ -253,7 +253,8 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     if (reason === RunReason.PAGE_EDITOR) {
       cancelAllTours();
       const extensionPool = extensionIds ?? this.modComponents.map((x) => x.id);
-      this.extensionTours.get(extensionPool[0])?.run();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- this.modComponents.length > 0
+      this.extensionTours.get(extensionPool[0]!)?.run();
       return;
     }
 
@@ -271,7 +272,9 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     // returning from decideAutoRunTour
     const extension = await this.decideAutoRunTour();
     if (extension && !isTourInProgress()) {
-      this.extensionTours.get(extension.id).run();
+      const registeredTour = this.extensionTours.get(extension.id);
+      assertNotNullish(registeredTour, "Tour not registered");
+      registeredTour.run();
     }
   }
 }
