@@ -75,9 +75,10 @@ export const makeUpdatedFilter =
 
     if (restricted) {
       return (
-        !deploymentMatch ||
-        new Date(deploymentMatch._deployment?.timestamp ?? "") <
-          new Date(deployment.updated_at ?? "")
+        !deploymentMatch?._deployment ||
+        !deployment.updated_at ||
+        new Date(deploymentMatch._deployment.timestamp) <
+          new Date(deployment.updated_at)
       );
     }
 
@@ -95,7 +96,7 @@ export const makeUpdatedFilter =
     if (
       modMatch &&
       gte(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- blueprintMatch is checked above
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- modMatch is checked above
         modMatch._recipe!.version!,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- deployment package is checked above
         deployment.package.version!,
@@ -110,8 +111,10 @@ export const makeUpdatedFilter =
     }
 
     return (
-      new Date(deploymentMatch._deployment?.timestamp ?? "") <
-      new Date(deployment.updated_at ?? "")
+      !deploymentMatch?._deployment ||
+      !deployment.updated_at ||
+      new Date(deploymentMatch._deployment?.timestamp) <
+        new Date(deployment.updated_at)
     );
   };
 

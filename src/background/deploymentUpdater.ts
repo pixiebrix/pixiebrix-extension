@@ -476,14 +476,21 @@ export async function syncDeployments(): Promise<void> {
   const meApiResponse = await getMe();
   const meData = transformMeResponse(meApiResponse);
 
-  const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } =
+  const { isSnoozed, isUpdateOverdue, updatePromptTimestamp, timeRemaining } =
     selectUpdatePromptState(
       { settings },
       {
         now,
-        enforceUpdateMillis: meApiResponse.enforce_update_millis,
+        enforceUpdateMillis: meData.enforceUpdateMillis,
       },
     );
+
+  reportEvent(Events.DEPLOYMENT_SYNC, {
+    isSnoozed,
+    isUpdateOverdue,
+    updatePromptTimestamp,
+    timeRemaining,
+  });
 
   // Ensure the user's flags and telemetry information is up-to-date
   void updateUserData(selectUserDataUpdate(meData));
@@ -501,6 +508,10 @@ export async function syncDeployments(): Promise<void> {
       headers: getRequestHeadersByAPIVersion("1.1"),
     },
   );
+
+  reportEvent(Events.DEPLOYMENT_LIST, {
+    deployments: deployments.map((deployment) => deployment.id),
+  });
 
   // Always deactivate unassigned deployments
   await deactivateUnassignedDeployments(deployments);
