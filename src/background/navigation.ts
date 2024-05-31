@@ -22,7 +22,7 @@ import { debounce } from "lodash";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
 import { isTargetReady } from "@/contentScript/ready";
 import { flagOn } from "@/auth/featureFlagStorage";
-import { activatePrerenderedTab } from "@/contentScript/messenger/api";
+import { activatePrerenderedTab } from "@/contentScript/messenger/strict/api";
 
 /**
  * Log details about a navigation to the console for debugging content script/navigation bugs.

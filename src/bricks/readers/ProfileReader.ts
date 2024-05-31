@@ -16,7 +16,7 @@
  */
 
 import { ReaderABC } from "@/types/bricks/readerTypes";
-import { getUserData } from "@/background/messenger/api";
+import { getUserData } from "@/background/messenger/strict/api";
 import { type Schema } from "@/types/schemaTypes";
 import { type UserData } from "@/auth/authTypes";
 import { BusinessError } from "@/errors/businessErrors";

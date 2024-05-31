@@ -38,8 +38,10 @@ import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
-import { ensureExtensionPointsInstalled } from "@/contentScript/messenger/api";
-import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api";
+import {
+  ensureExtensionPointsInstalled,
+  getReservedSidebarEntries,
+} from "@/contentScript/messenger/strict/api";
 import {
   getConnectedTabIdForSidebarTopFrame,
   getConnectedTarget,

@@ -41,7 +41,7 @@ import type { EditablePackageMetadata } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { reactivateEveryTab } from "@/contentScript/messenger/strict/api";
 
 const { actions: optionsActions } = extensionsSlice;
 

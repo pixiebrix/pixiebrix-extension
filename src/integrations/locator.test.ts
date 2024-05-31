@@ -25,8 +25,8 @@ import serviceRegistry from "@/integrations/registry";
 const integration = fromJS(controlRoomTokenService as any);
 const locator = new LazyLocatorFactory();
 
-jest.mock("@/background/messenger/api", () => {
-  const actual = jest.requireActual("@/background/messenger/api");
+jest.mock("@/background/messenger/strict/api", () => {
+  const actual = jest.requireActual("@/background/messenger/strict/api");
   return {
     ...actual,
     registry: {

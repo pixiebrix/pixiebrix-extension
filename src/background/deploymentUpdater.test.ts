@@ -76,7 +76,7 @@ jest.mock("@/utils/extensionUtils", () => ({
 jest.mock("@/telemetry/reportEvent");
 
 jest.mock("@/sidebar/messenger/api", () => {});
-jest.mock("@/contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/strict/api");
 
 jest.mock("@/auth/authStorage", () => ({
   getExtensionToken: async () => "TESTTOKEN",

@@ -25,7 +25,7 @@ import Loader from "@/components/Loader";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import PartnerSetupCard from "@/extensionConsole/pages/onboarding/partner/PartnerSetupCard";
 import { useLocation } from "react-router";
-import { clearServiceCache } from "@/background/messenger/api";
+import { clearServiceCache } from "@/background/messenger/strict/api";
 import notify from "@/utils/notify";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import useAsyncState from "@/hooks/useAsyncState";

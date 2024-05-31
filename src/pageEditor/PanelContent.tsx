@@ -29,9 +29,9 @@ import EditorLayout from "@/pageEditor/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
 import {
-  removeInstalledExtension,
   updateDynamicElement,
-} from "@/contentScript/messenger/api";
+  removeInstalledExtension,
+} from "@/contentScript/messenger/strict/api";
 import { selectActiveModComponentFormState } from "./slices/editorSelectors";
 import { formStateToDynamicElement } from "./starterBricks/adapter";
 import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";

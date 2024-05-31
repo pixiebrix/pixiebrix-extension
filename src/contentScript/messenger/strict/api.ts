@@ -17,6 +17,21 @@
 
 /* Do not use `registerMethod` in this file */
 import { getMethod, getNotifier } from "webext-messenger";
+import { forEachTab } from "@/utils/extensionUtils";
+
+export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
+
+// Not exported because currently only used by reactivateEveryTab
+const reactivateTab = getNotifier("REACTIVATE_TAB");
+
+/**
+ * Convenience method to reactivate mods in every/all tabs.
+ * @see reactivateTab
+ */
+export function reactivateEveryTab(): void {
+  console.debug("Reactivate all tabs");
+  void forEachTab(reactivateTab);
+}
 
 export const showSidebar = getMethod("SHOW_SIDEBAR");
 export const getFormDefinition = getMethod("FORM_GET_DEFINITION");
@@ -75,3 +90,19 @@ export const runHeadlessPipeline = getMethod("RUN_HEADLESS_PIPELINE");
 export const runRendererBlock = getMethod("RUN_RENDERER_BLOCK");
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
 export const runExtensionPointReader = getMethod("RUN_EXTENSION_POINT_READER");
+export const ensureExtensionPointsInstalled = getMethod(
+  "ENSURE_EXTENSION_POINTS_INSTALLED",
+);
+export const removeInstalledExtension = getNotifier(
+  "REMOVE_INSTALLED_EXTENSION",
+);
+// Notifies the content script that it can activate mods for a prerendered tab (no-op if the tab is already active)
+export const activatePrerenderedTab = getNotifier("ACTIVATE_PRERENDERED_TAB");
+export const getInstalledExtensionPoints = getMethod(
+  "INSTALLED_EXTENSION_POINTS",
+);
+export const resetTab = getNotifier("RESET_TAB");
+export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
+export const clearDynamicElements = getNotifier("CLEAR_DYNAMIC_ELEMENTS");
+export const updateDynamicElement = getNotifier("UPDATE_DYNAMIC_ELEMENT");
+export const checkAvailable = getMethod("CHECK_AVAILABLE");

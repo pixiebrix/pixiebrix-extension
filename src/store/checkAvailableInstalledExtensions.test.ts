@@ -21,7 +21,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
-import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
+import { getInstalledExtensionPoints } from "@/contentScript/messenger/strict/api";
 import { validateRegistryId } from "@/types/helpers";
 import { RemoteMenuItemExtensionPoint } from "@/starterBricks/menuItem/menuItemExtension";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
@@ -35,7 +35,7 @@ import { getPlatform } from "@/platform/platformContext";
 import { type MenuItemDefinition } from "@/starterBricks/menuItem/types";
 import { type QuickBarDefinition } from "@/starterBricks/quickBar/types";
 
-jest.mock("@/contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/strict/api");
 
 jest.mock("@/pageEditor/context/connection");
 

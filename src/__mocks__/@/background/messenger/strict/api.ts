@@ -57,3 +57,5 @@ export const dataStore = {
   get: jest.fn().mockRejectedValue(new Error("Not implemented in mock")),
   set: getMethod("SET_DATA_STORE", bg),
 };
+
+export const clearServiceCache = jest.fn();

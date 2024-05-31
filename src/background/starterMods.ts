@@ -27,7 +27,7 @@ import {
 } from "@/store/extensionsStorage";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { forEachTab } from "@/utils/extensionUtils";
-import { queueReactivateTab } from "@/contentScript/messenger/api";
+import { queueReactivateTab } from "@/contentScript/messenger/strict/api";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
@@ -137,12 +137,14 @@ function closeStarterModTabs({
 }
 
 function initialOptionsArgs(modDefinition: ModDefinition): OptionsArgs {
+  const schema = modDefinition.options?.schema;
   return Object.fromEntries(
-    Object.entries(modDefinition.options?.schema?.properties ?? {})
+    Object.entries(schema?.properties ?? {})
       .filter(
         ([name, fieldSchema]) =>
           isDatabasePreviewField(fieldSchema) &&
-          isRequired(modDefinition.options.schema, name),
+          schema &&
+          isRequired(schema, name),
       )
       .map(([name, fieldSchema]) => [
         name,
