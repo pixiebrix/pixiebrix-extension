@@ -21,12 +21,11 @@ import {
 } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
-import { isEqual } from "lodash";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { StarterBrickDefinitionLike } from "@/starterBricks/types";
+import type { StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
 
 type SourceModParts = {
