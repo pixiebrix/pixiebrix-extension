@@ -268,7 +268,6 @@
     "./extensionConsole/pages/mods/utils/useReinstall.test.ts",
     "./extensionConsole/pages/mods/utils/useReinstall.ts",
     "./extensionConsole/pages/onboarding/SetupPage.tsx",
-    "./extensionConsole/pages/onboarding/partner/PartnerSetupCard.stories.tsx",
     "./hooks/useBrickOptions.ts",
     "./integrations/components/RequireIntegrationConfig.test.tsx",
     "./layout/EnvironmentBanner.tsx",
