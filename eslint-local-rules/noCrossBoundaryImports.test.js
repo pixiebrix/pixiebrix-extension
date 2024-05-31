@@ -85,7 +85,7 @@ ruleTester.run("noCrossBoundaryImports", noCrossBoundaryImports, {
     },
     {
       // Cross-boundary allowlisted import
-      code: 'import "@/background/messenger/api";',
+      code: 'import "@/background/messenger/strict/api";',
       filename: "src/sidebar/bar.ts",
       options,
     },

@@ -37,7 +37,7 @@ import { platformMock as platform } from "@/testUtils/platformMock";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 
-jest.mock("@/background/messenger/api", () => ({
+jest.mock("@/background/messenger/strict/api", () => ({
   getUserData: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 
