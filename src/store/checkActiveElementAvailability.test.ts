@@ -30,7 +30,7 @@ import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelect
 import { produce } from "immer";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
-import { Availability } from "@/types/availabilityTypes";
+import { type Availability } from "@/types/availabilityTypes";
 
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/pageEditor/context/connection");

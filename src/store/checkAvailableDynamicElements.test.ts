@@ -29,7 +29,7 @@ import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
-import { Availability } from "@/types/availabilityTypes";
+import { type Availability } from "@/types/availabilityTypes";
 
 jest.mock("@/contentScript/messenger/api");
 
