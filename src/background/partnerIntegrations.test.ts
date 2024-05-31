@@ -62,7 +62,7 @@ jest.mock("@/integrations/registry", () => {
   };
 });
 
-// Module mocked via __mocks__/@/background/messenger/strict/api
+// Module mocked via __mocks__/@/background/messenger/api
 jest.mocked(registry.find).mockImplementation(async (id: RegistryId) => {
   const config = integrationDefinitionMap.get(id);
   return {
