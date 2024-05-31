@@ -41,6 +41,7 @@
     "./activation/activateLinkClickHandler.test.tsx",
     "./activation/activateLinkClickHandler.ts",
     "./activation/activationLinkUtils.test.ts",
+    "./activation/activationLinkUtils.test.ts",
     "./activation/activationLinkUtils.ts",
     "./activation/getActivatedModComponentFromDefinition.ts",
     "./activation/modOptionsHelpers.ts",
