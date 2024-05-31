@@ -1171,7 +1171,6 @@
     "./types/starterBrickTypes.ts",
     "./types/stringTypes.ts",
     "./types/swagger.ts",
-    "./types/typeOnlyMessengerRegistration.ts",
     "./urlConstants.ts",
     "./utils/ConsoleLogger.ts",
     "./utils/SimpleEventTarget.ts",

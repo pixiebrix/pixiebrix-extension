@@ -18,13 +18,13 @@
 import {
   removeInstalledExtension,
   removeSidebars,
+  clearDynamicElements,
 } from "@/contentScript/messenger/strict/api";
 import { forEachTab } from "@/utils/extensionUtils";
 import { type UUID } from "@/types/stringTypes";
 import { uninstallContextMenu } from "./contextMenus/uninstallContextMenu";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { clearLog } from "@/telemetry/logging";
-import { clearDynamicElements } from "@/contentScript/messenger/strict/api";
 
 export async function removeExtensionForEveryTab(
   extensionId: UUID,
