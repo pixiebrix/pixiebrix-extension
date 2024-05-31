@@ -17,7 +17,7 @@
 
 import { CachedFunction } from "webext-storage-cache";
 import { expectContext } from "@/utils/expectContext";
-import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
+import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
 import { getMe } from "@/data/service/backgroundApi";
 import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 

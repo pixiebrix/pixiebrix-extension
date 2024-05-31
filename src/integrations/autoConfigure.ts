@@ -23,7 +23,7 @@ import { type UUID } from "@/types/stringTypes";
 import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { GOOGLE_OAUTH2_PKCE_INTEGRATION_ID } from "@/contrib/google/sheets/core/schemas";
-import { services } from "@/background/messenger/strict/api";
+import { services } from "@/background/messenger/api";
 import { getGoogleUserEmail } from "@/contrib/google/sheets/core/sheetsApi";
 
 /**

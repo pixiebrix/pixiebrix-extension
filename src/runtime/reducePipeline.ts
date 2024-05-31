@@ -17,10 +17,7 @@
 
 import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
-import {
-  requestRun,
-  sendDeploymentAlert,
-} from "@/background/messenger/strict/api";
+import { requestRun, sendDeploymentAlert } from "@/background/messenger/api";
 import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/bricks/errors";
@@ -137,7 +134,7 @@ export type InitialValues = {
    * The inputs to the BrickPipeline, e.g., from the foundation's readers. Are placed under the `@input` key
    * @see StarterBrick.defaultReader
    */
-  input: UnknownObject;
+  input: UnknownObject | undefined;
   /**
    * Option values provided by the user during activation of an extension
    * @see ModComponentBase.optionsArgs

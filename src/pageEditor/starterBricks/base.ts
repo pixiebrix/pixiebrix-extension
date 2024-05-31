@@ -56,10 +56,7 @@ import {
 } from "@/pageEditor/baseFormStateTypes";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { registry } from "@/background/messenger/strict/api";
-import {
-  type Availability,
-  type NormalizedAvailability,
-} from "@/types/availabilityTypes";
+import { type NormalizedAvailability } from "@/types/availabilityTypes";
 import { normalizeAvailability } from "@/bricks/available";
 
 export interface WizardStep {

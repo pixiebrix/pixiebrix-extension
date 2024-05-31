@@ -34,9 +34,9 @@ export async function runRendererPipeline({
       {
         input: context["@input"] ?? {},
         optionsArgs: context["@options"] ?? {},
-        // Pass null here to force the runtime to handle correctly. Passing `document` here wouldn't make sense because
+        // Pass undefined here to force the runtime to handle correctly. Passing `document` here wouldn't make sense because
         // it would be the page that contains the React tree (i.e., the frame of the sidebar)
-        root: null,
+        root: undefined,
         // `reducePipeline` just spreads the serviceContext. If we needed to pick out the actual services we could do the
         // following. However, we actually want to pass through the rest of the context and we don't have an affordance
         // for that in the InitialValues type

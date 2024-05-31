@@ -25,7 +25,7 @@ import {
   throwBrick,
 } from "./pipelineTestHelpers";
 import { uuidv4 } from "@/types/helpers";
-import { traces } from "@/background/messenger/strict/api";
+import { traces } from "@/background/messenger/api";
 import {
   type TraceEntryData,
   type TraceExitData,

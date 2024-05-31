@@ -48,7 +48,7 @@ export function makeDatabasePreviewName(
 export async function autoCreateDatabaseOptionsArgsInPlace(
   modDefinition: ModDefinition,
   optionsArgs: OptionsArgs,
-  databaseFactory: (args: { name: string }) => Promise<UUID>,
+  databaseFactory: (args: { name: string }) => Promise<UUID | undefined>,
 ): Promise<OptionsArgs> {
   const optionsProperties = Object.entries(
     modDefinition.options?.schema?.properties ?? {},

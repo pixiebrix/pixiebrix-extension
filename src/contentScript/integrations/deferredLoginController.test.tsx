@@ -24,7 +24,7 @@ import {
 } from "@/contentScript/integrations/deferredLoginController";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { RequestSupersededError } from "@/errors/businessErrors";
-import { showLoginBanner } from "@/contentScript/messenger/strict/api";
+import { showLoginBanner } from "@/contentScript/messenger/api";
 import type { Target } from "@/types/messengerTypes";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import integrationRegistry from "@/integrations/registry";

@@ -63,8 +63,8 @@ import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
-  checkAvailable,
   getInstalledExtensionPoints,
+  checkAvailable,
 } from "@/contentScript/messenger/api";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";

@@ -22,7 +22,7 @@ import {
 } from "@/modDefinitions/modDefinitionHooks";
 import { validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
-import { registry } from "@/background/messenger/strict/api";
+import { registry } from "@/background/messenger/api";
 
 registry.syncRemote = jest.fn();
 

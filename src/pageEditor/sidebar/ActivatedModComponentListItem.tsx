@@ -34,7 +34,7 @@ import {
   disableOverlay,
   enableOverlay,
   updateSidebar,
-} from "@/contentScript/messenger/strict/api";
+} from "@/contentScript/messenger/api";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import cx from "classnames";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";

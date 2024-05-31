@@ -43,7 +43,7 @@ browser.webNavigation.onBeforeNavigate = {
   hasListeners: jest.fn(),
 };
 
-jest.mock("@/contentScript/messenger/strict/api", () => ({
+jest.mock("@/contentScript/messenger/api", () => ({
   ensureExtensionPointsInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({
     panels: [],

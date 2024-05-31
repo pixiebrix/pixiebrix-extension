@@ -24,7 +24,7 @@ import {
   traces,
   clearExtensionDebugLogs,
   performConfiguredRequestInBackground,
-} from "@/background/messenger/strict/api";
+} from "@/background/messenger/api";
 import { PlatformBase } from "@/platform/platformBase";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";

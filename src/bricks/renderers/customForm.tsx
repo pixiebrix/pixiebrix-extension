@@ -17,13 +17,10 @@
 
 import React from "react";
 import { type JsonObject } from "type-fest";
-import { dataStore } from "@/background/messenger/strict/api";
+import { dataStore } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
-import {
-  getPageState,
-  setPageState,
-} from "@/contentScript/messenger/strict/api";
+import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import { isEmpty, isPlainObject, set } from "lodash";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type UUID } from "@/types/stringTypes";

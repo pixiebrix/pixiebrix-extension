@@ -24,7 +24,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
 import useAutoInsert from "@/pageEditor/panes/insert/useAutoInsert";
 import { inspectedTab } from "@/pageEditor/context/connection";
-import { cancelSelect } from "@/contentScript/messenger/strict/api";
+import { cancelSelect } from "@/contentScript/messenger/api";
 
 const InsertPane: React.FC<{ inserting: StarterBrickType }> = ({
   inserting,

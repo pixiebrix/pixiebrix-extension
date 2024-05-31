@@ -23,7 +23,7 @@ import {
   type SanitizedIntegrationConfig,
 } from "@/integrations/integrationTypes";
 import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
-import * as backgroundApi from "@/background/messenger/strict/api";
+import * as backgroundApi from "@/background/messenger/api";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,

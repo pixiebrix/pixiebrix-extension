@@ -23,7 +23,7 @@ import bootstrapUrl from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import stylesUrl from "./LoginBanners.scss?loadAsUrl";
 import { Stylesheets } from "@/components/Stylesheets";
 import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTypes";
-import { launchInteractiveOAuthFlow } from "@/background/messenger/strict/api";
+import { launchInteractiveOAuthFlow } from "@/background/messenger/api";
 import { type UUID } from "@/types/stringTypes";
 
 const LoginBanner: React.FC<DeferredLogin & { dismissLogin: () => void }> = ({

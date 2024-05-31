@@ -22,7 +22,7 @@ import {
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { performConfiguredRequest as realProxyService } from "@/background/requests";
-import { performConfiguredRequestInBackground as apiProxyService } from "@/background/messenger/strict/api";
+import { performConfiguredRequestInBackground as apiProxyService } from "@/background/messenger/api";
 import { integrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { locator } from "@/background/locator";
 import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";

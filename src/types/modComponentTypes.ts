@@ -34,6 +34,7 @@ import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
 } from "@/integrations/integrationTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * ModMetadata that includes sharing information.
@@ -289,5 +290,5 @@ export type ModComponentRef = {
   /**
    * Mod the ModComponent is from.
    */
-  blueprintId: RegistryId | null;
+  blueprintId: Nullishable<RegistryId>;
 };

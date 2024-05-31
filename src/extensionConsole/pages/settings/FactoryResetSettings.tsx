@@ -20,7 +20,7 @@ import React, { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import notify from "@/utils/notify";
 import { clearPackages } from "@/registry/memoryRegistry";
-import { clearLogs } from "@/background/messenger/strict/api";
+import { clearLogs } from "@/background/messenger/api";
 import { sessionChangesActions } from "@/store/sessionChanges/sessionChangesSlice";
 import AsyncButton from "@/components/AsyncButton";
 import reportEvent from "@/telemetry/reportEvent";

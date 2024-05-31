@@ -25,7 +25,7 @@ import {
   performConfiguredRequestInBackground,
   ensureContextMenu,
   uninstallContextMenu,
-} from "@/background/messenger/strict/api";
+} from "@/background/messenger/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";

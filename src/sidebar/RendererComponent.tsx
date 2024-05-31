@@ -10,11 +10,15 @@ import { type RendererOutput } from "@/types/runtimeTypes";
  */
 const RendererComponent: React.FunctionComponent<{
   onAction?: (action: SubmitPanelAction) => void;
-  blockId: RegistryId;
-  body: RendererOutput;
-  meta: PanelRunMeta;
+  blockId?: RegistryId;
+  body?: RendererOutput;
+  meta?: PanelRunMeta;
 }> = ({ body, meta, blockId, onAction }) =>
   useMemo(() => {
+    if (!body) {
+      return null;
+    }
+
     if (typeof body === "string") {
       // This is safe because if body is a string it's a SafeHTML value
       return (

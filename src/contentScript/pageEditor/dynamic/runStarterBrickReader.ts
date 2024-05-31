@@ -29,7 +29,7 @@ export async function runStarterBrickReader(
   expectContext("contentScript");
 
   const { activeElement } = document;
-  let root: SelectorRoot = null;
+  let root: SelectorRoot | undefined;
 
   // Handle element-based reader context for triggers
   if (rootSelector) {

@@ -29,7 +29,7 @@ import {
 
 jest.mock("@/sidebar/hooks/useConnectedTargetUrl");
 jest.mock("@/hooks/useTheme");
-jest.mock("@/contentScript/messenger/strict/api", () => ({
+jest.mock("@/contentScript/messenger/api", () => ({
   ensureExtensionPointsInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({
     panels: [],

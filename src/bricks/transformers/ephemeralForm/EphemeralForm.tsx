@@ -16,10 +16,7 @@
  */
 
 import React from "react";
-import {
-  cancelForm,
-  getFormDefinition,
-} from "@/contentScript/messenger/strict/api";
+import { cancelForm, getFormDefinition } from "@/contentScript/messenger/api";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type Target } from "@/types/messengerTypes";

@@ -40,7 +40,7 @@ import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSel
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
-import { getPageState } from "@/contentScript/messenger/strict/api";
+import { getPageState } from "@/contentScript/messenger/api";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
 import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import { inspectedTab } from "@/pageEditor/context/connection";

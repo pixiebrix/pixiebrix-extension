@@ -15,11 +15,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// This mock file provides reasonable defaults for the methods in the background messenger API
+import { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { RemoteResponse } from "@/types/contract";
+import { NetworkRequestConfig } from "@/types/networkTypes";
+import { RegistryId } from "@/types/registryTypes";
+import { Nullishable } from "@/utils/nullishUtils";
+import { getMethod, backgroundTarget as bg } from "webext-messenger";
 
-/* Do not use `registerMethod` in this file */
-
-// Use relative path to bypass auto-mocks
 export * from "../../../../background/messenger/api";
+
+export const registry = {
+  syncRemote: jest.fn(),
+  getByKinds: jest.fn().mockResolvedValue([]),
+  find: jest.fn().mockImplementation(async (id: RegistryId) => {
+    throw new Error(
+      `Find not implemented in registry mock (looking up "${id}"). See __mocks__/background/messenger/api for more information.`,
+    );
+  }),
+  clear: getMethod("REGISTRY_CLEAR", bg),
+};
+
+export const services = {
+  locateAllForId: jest.fn().mockResolvedValue([]),
+  locate: jest
+    .fn()
+    .mockRejectedValue(new Error("Locate not implemented in mock")),
+  refresh: jest.fn(),
+  refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
+};
+
+// `getMethod` currently strips generics, so we must copy the function signature here
+export const performConfiguredRequestInBackground = getMethod(
+  "CONFIGURED_REQUEST",
+  bg,
+) as <TData>(
+  integrationConfig: Nullishable<SanitizedIntegrationConfig>,
+  requestConfig: NetworkRequestConfig,
+) => Promise<RemoteResponse<TData>>;
+
+export const dataStore = {
+  get: jest.fn().mockRejectedValue(new Error("Not implemented in mock")),
+  set: getMethod("SET_DATA_STORE", bg),
+};
 
 export const clearServiceCache = jest.fn();

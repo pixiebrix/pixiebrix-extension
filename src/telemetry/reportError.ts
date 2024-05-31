@@ -24,7 +24,7 @@ import { getContextName } from "webext-detect-page";
 
 expectContext(
   "extension",
-  "reportError requires access background messenger API",
+  "reportError requires access to the background messenger API",
 );
 
 // Private method. Do not move to api.ts

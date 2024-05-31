@@ -100,7 +100,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   return (
     <PanelBody
       context={panelContext}
-      payload={payload}
+      payload={payload ?? null}
       tracePath={tracePath}
       onAction={onAction}
     />
