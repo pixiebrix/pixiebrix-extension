@@ -16,7 +16,7 @@
  */
 
 import { define } from "cooky-cutter";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import {
   fromJS,
   type TriggerConfig,
@@ -43,8 +43,10 @@ let getModComponentStateMock: jest.MockedFunctionDeep<
 
 const rootReader = new RootReader();
 
-const starterBrickConfigFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<StarterBrickConfig<TriggerDefinition>>({
+const starterBrickDefinitionFactory = (
+  definitionOverrides: UnknownObject = {},
+) =>
+  define<StarterBrickDefinitionLike<TriggerDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>
@@ -126,7 +128,7 @@ describe("lifecycle", () => {
   it("installs persisted trigger on first run", async () => {
     const starterBrick = fromJS(
       getPlatform(),
-      starterBrickConfigFactory({
+      starterBrickDefinitionFactory({
         trigger: "load",
       })(),
     );
@@ -150,7 +152,7 @@ describe("lifecycle", () => {
   it("runEditorExtension", async () => {
     const starterBrick = fromJS(
       getPlatform(),
-      starterBrickConfigFactory({
+      starterBrickDefinitionFactory({
         trigger: "load",
       })(),
     );
@@ -173,7 +175,7 @@ describe("lifecycle", () => {
   it("runEditorExtension removes existing", async () => {
     const starterBrick = fromJS(
       getPlatform(),
-      starterBrickConfigFactory({
+      starterBrickDefinitionFactory({
         trigger: "load",
       })(),
     );
@@ -219,7 +221,7 @@ describe("lifecycle", () => {
   it("Removes starter bricks from deactivated mods", async () => {
     const starterBrick = fromJS(
       getPlatform(),
-      starterBrickConfigFactory({
+      starterBrickDefinitionFactory({
         trigger: "load",
       })(),
     );
@@ -240,7 +242,7 @@ describe("lifecycle", () => {
 
     const updatedStarterBrick = fromJS(
       getPlatform(),
-      starterBrickConfigFactory({
+      starterBrickDefinitionFactory({
         trigger: "initialize",
       })(),
     );

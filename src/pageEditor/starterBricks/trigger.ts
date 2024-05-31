@@ -36,7 +36,7 @@ import {
   type TriggerDefinition,
   TriggerStarterBrickABC,
 } from "@/starterBricks/triggerExtension";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
@@ -83,9 +83,9 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPointConfig(
+function selectStarterBrickDefinition(
   formState: TriggerFormState,
-): StarterBrickConfig<TriggerDefinition> {
+): StarterBrickDefinitionLike<TriggerDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {
@@ -144,7 +144,7 @@ function asDynamicElement(element: TriggerFormState): DynamicDefinition {
   return {
     type: "trigger",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectExtensionPointConfig(element),
+    extensionPointConfig: selectStarterBrickDefinition(element),
   };
 }
 
@@ -213,7 +213,7 @@ const config: ElementConfig<undefined, TriggerFormState> = {
   icon: faBolt,
   fromNativeElement,
   asDynamicElement,
-  selectExtensionPointConfig,
+  selectStarterBrickDefinition,
   selectExtension,
   fromExtension,
 };

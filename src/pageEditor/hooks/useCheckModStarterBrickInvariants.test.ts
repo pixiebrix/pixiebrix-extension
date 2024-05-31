@@ -19,7 +19,7 @@ import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories"
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
-  starterBrickConfigFactory,
+  starterBrickDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import {
   type ModComponentDefinition,
@@ -113,7 +113,7 @@ describe("useCheckModStarterBrickInvariants", () => {
           cleanModComponentDefinitions.push(modComponentDefinition);
           cleanModInnerDefinitions[extensionPointId] = {
             kind: "extensionPoint",
-            definition: starterBrickConfigFactory().definition,
+            definition: starterBrickDefinitionFactory().definition,
           };
         }
 
@@ -125,7 +125,7 @@ describe("useCheckModStarterBrickInvariants", () => {
           dirtyModComponentDefinitions.push(modComponentDefinition);
           dirtyModInnerDefinitions[extensionPointId] = {
             kind: "extensionPoint",
-            definition: starterBrickConfigFactory().definition,
+            definition: starterBrickDefinitionFactory().definition,
           };
         }
 
@@ -162,7 +162,7 @@ describe("useCheckModStarterBrickInvariants", () => {
         newModComponentDefinitions.push(modComponentDefinition);
         newModInnerDefinitions[extensionPointId] = {
           kind: "extensionPoint",
-          definition: starterBrickConfigFactory().definition,
+          definition: starterBrickDefinitionFactory().definition,
         };
       }
 
@@ -246,7 +246,7 @@ describe("useCheckModStarterBrickInvariants", () => {
     });
     modInnerDefinitions[extensionPointId] = {
       kind: "extensionPoint",
-      definition: starterBrickConfigFactory().definition,
+      definition: starterBrickDefinitionFactory().definition,
     };
 
     const resultModDefinition = modDefinitionFactory({
@@ -286,7 +286,7 @@ describe("useCheckModStarterBrickInvariants", () => {
     });
     modInnerDefinitions[extensionPointId] = {
       kind: "extensionPoint",
-      definition: starterBrickConfigFactory().definition,
+      definition: starterBrickDefinitionFactory().definition,
     };
     const modForComponent = modDefinitionFactory({
       metadata: modMetadata,

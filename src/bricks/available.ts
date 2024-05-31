@@ -17,10 +17,10 @@
 
 import { doesUrlMatchPatterns, isValidPattern } from "webext-patterns";
 import { castArray } from "lodash";
-import { type Availability } from "@/bricks/types";
 import { type Entries } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { $safeFind } from "@/utils/domUtils";
+import { type Availability } from "@/types/availabilityTypes";
 
 export function testMatchPatterns(
   patterns: string[],

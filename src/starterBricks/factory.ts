@@ -24,7 +24,7 @@ import { fromJS as deserializeQuickBar } from "@/starterBricks/quickBar/quickBar
 import { fromJS as deserializeQuickBarProvider } from "@/starterBricks/quickBarProvider/quickBarProviderExtension";
 import { fromJS as deserializeTour } from "@/starterBricks/tour/tourExtension";
 import { type StarterBrick } from "@/types/starterBrickTypes";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getPlatform } from "@/platform/platformContext";
 
 const TYPE_MAP = {
@@ -38,7 +38,7 @@ const TYPE_MAP = {
   tour: deserializeTour,
 };
 
-export function fromJS(config: StarterBrickConfig): StarterBrick {
+export function fromJS(config: StarterBrickDefinitionLike): StarterBrick {
   if (config.kind !== "extensionPoint") {
     // Is `never` due to check, but needed because this method is called dynamically
     const exhaustiveCheck: never = config.kind;

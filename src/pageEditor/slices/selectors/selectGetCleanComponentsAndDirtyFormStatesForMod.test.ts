@@ -28,7 +28,7 @@ import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import type { InnerDefinitionRef } from "@/types/registryTypes";
-import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 let extensionPointCount = 0;
 function newExtensionPointId(): InnerDefinitionRef {
@@ -104,7 +104,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
           definitions: {
             [extensionPointId]: {
               kind: "extensionPoint",
-              definition: starterBrickConfigFactory().definition,
+              definition: starterBrickDefinitionFactory().definition,
             },
           },
         });
@@ -122,7 +122,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
           definitions: {
             [extensionPointId]: {
               kind: "extensionPoint",
-              definition: starterBrickConfigFactory().definition,
+              definition: starterBrickDefinitionFactory().definition,
             },
           },
         });
@@ -142,7 +142,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
           definitions: {
             [extensionPointId]: {
               kind: "extensionPoint",
-              definition: starterBrickConfigFactory().definition,
+              definition: starterBrickDefinitionFactory().definition,
             },
           },
         });
@@ -162,7 +162,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
           definitions: {
             [extensionPointId]: {
               kind: "extensionPoint",
-              definition: starterBrickConfigFactory().definition,
+              definition: starterBrickDefinitionFactory().definition,
             },
           },
         });
@@ -200,7 +200,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
           definitions: {
             [extensionPointId]: {
               kind: "extensionPoint",
-              definition: starterBrickConfigFactory().definition,
+              definition: starterBrickDefinitionFactory().definition,
             },
           },
         });

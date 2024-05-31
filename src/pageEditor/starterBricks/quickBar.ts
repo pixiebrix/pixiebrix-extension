@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { faThLarge } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
@@ -75,9 +75,9 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   };
 }
 
-function selectExtensionPointConfig(
+function selectStarterBrickDefinition(
   formState: QuickBarFormState,
-): StarterBrickConfig<QuickBarDefinition> {
+): StarterBrickDefinitionLike<QuickBarDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {
@@ -162,7 +162,7 @@ function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
   return {
     type: "quickBar",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectExtensionPointConfig(element),
+    extensionPointConfig: selectStarterBrickDefinition(element),
   };
 }
 
@@ -176,7 +176,7 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
   icon: faThLarge,
   fromNativeElement,
   asDynamicElement,
-  selectExtensionPointConfig,
+  selectStarterBrickDefinition,
   selectExtension,
   fromExtension,
 };

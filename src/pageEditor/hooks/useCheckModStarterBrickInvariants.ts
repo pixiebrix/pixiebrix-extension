@@ -78,10 +78,10 @@ function useCheckModStarterBrickInvariants(): (
           continue;
         }
 
-        const { selectExtensionPointConfig } = ADAPTERS.get(formState.type);
+        const { selectStarterBrickDefinition } = ADAPTERS.get(formState.type);
         const definitionFromComponent = {
           kind: "extensionPoint",
-          definition: selectExtensionPointConfig(formState).definition,
+          definition: selectStarterBrickDefinition(formState).definition,
         };
         if (
           !definitionsFromMod.some((definitionFromMod) =>

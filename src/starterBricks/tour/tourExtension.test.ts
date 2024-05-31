@@ -16,7 +16,7 @@
  */
 
 import { define } from "cooky-cutter";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
@@ -46,7 +46,7 @@ jest.mock("@/auth/featureFlagStorage", () => ({
 }));
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<StarterBrickConfig<TourDefinition>>({
+  define<StarterBrickDefinitionLike<TourDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>

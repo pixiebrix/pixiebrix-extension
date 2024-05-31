@@ -17,7 +17,7 @@
 
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import {
-  type StarterBrickDefinition,
+  type StarterBrickDefinitionProp,
   type CustomEventOptions,
   type DebounceOptions,
 } from "@/starterBricks/types";
@@ -39,7 +39,7 @@ export type Trigger =
   // A custom event configured by the user
   | "custom";
 
-export interface SidebarDefinition extends StarterBrickDefinition {
+export interface SidebarDefinition extends StarterBrickDefinitionProp {
   /**
    * The trigger to refresh the panel
    *
