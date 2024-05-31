@@ -36,7 +36,7 @@ import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtocol";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { sidebarWasLoaded } from "@/contentScript/messenger/strict/api";
+import { sidebarWasLoaded } from "@/contentScript/messenger/api";
 import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 import { setPlatform } from "@/platform/platformContext";
 import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";

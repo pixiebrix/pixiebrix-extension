@@ -19,7 +19,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
-import * as contentScriptApi from "@/contentScript/messenger/strict/api";
+import * as contentScriptApi from "@/contentScript/messenger/api";
 import { isEmpty, throttle } from "lodash";
 import { signalFromEvent } from "abort-utils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
@@ -42,7 +42,7 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { showMySidePanel } from "@/background/messenger/strict/api";
+import { showMySidePanel } from "@/background/messenger/api";
 import { getTopLevelFrame, messenger } from "webext-messenger";
 import {
   getSidebarTargetForCurrentTab,

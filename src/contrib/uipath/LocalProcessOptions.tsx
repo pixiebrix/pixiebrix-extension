@@ -25,7 +25,7 @@ import RequireIntegrationConfig from "@/integrations/components/RequireIntegrati
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 // TODO: Fix `no-restricted-paths`: Look into a standardized way to mark this whole as pageEditor-only
-import { getProcesses, initRobot } from "@/contentScript/messenger/strict/api";
+import { getProcesses, initRobot } from "@/contentScript/messenger/api";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import { expectContext } from "@/utils/expectContext";
 import { type Schema } from "@/types/schemaTypes";

@@ -17,7 +17,7 @@
 
 import React from "react";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
-import * as contentScriptApi from "@/contentScript/messenger/strict/api";
+import * as contentScriptApi from "@/contentScript/messenger/api";
 import RunLocalProcess from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
@@ -44,7 +44,7 @@ const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
 jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
-jest.mock("@/contentScript/messenger/strict/api");
+jest.mock("@/contentScript/messenger/api");
 jest.mock("@/contrib/uipath/uipathHooks");
 const useSelectedReleaseMock = jest.mocked(useSelectedRelease);
 

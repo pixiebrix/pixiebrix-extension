@@ -21,7 +21,7 @@ import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
-import { checkAvailable } from "@/contentScript/messenger/strict/api";
+import { checkAvailable } from "@/contentScript/messenger/api";
 import { checkAvailable as backgroundCheckAvailable } from "@/bricks/available";
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
@@ -31,7 +31,7 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";
 
-jest.mock("@/contentScript/messenger/strict/api");
+jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/pageEditor/context/connection");
 

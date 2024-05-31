@@ -26,7 +26,7 @@ import "@/background/backgroundDomWatcher";
 import "@/background/axiosFetch";
 
 import { initMessengerLogging } from "@/development/messengerLogging";
-import registerMessenger from "@/background/messenger/strict/registration";
+import registerMessenger from "@/background/messenger/registration";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import initLocator from "@/background/locator";
 import initContextMenus from "@/background/contextMenus/initContextMenus";

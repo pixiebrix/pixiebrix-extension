@@ -23,7 +23,7 @@ import { linkExtension } from "@/auth/authStorage";
 import { type TokenAuthData } from "@/auth/authTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { installStarterBlueprints as installStarterBlueprintsInBackground } from "@/background/messenger/strict/api";
+import { installStarterBlueprints as installStarterBlueprintsInBackground } from "@/background/messenger/api";
 import reportError from "@/telemetry/reportError";
 import { validateRegistryId } from "@/types/helpers";
 import { StorageItem } from "webext-storage";

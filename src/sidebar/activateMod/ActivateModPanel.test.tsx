@@ -41,7 +41,7 @@ import ActivateMultipleModsPanel from "@/sidebar/activateMod/ActivateMultipleMod
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integrationFactories";
-import { services, registry } from "@/background/messenger/strict/api";
+import { services, registry } from "@/background/messenger/api";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { refreshServices } from "@/background/locator";

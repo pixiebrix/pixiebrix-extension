@@ -21,7 +21,7 @@ import "@/bricks/renderers/customForm.css";
 import React from "react";
 import validator from "@/validators/formValidator";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import { cancelForm, resolveForm } from "@/contentScript/messenger/strict/api";
+import { cancelForm, resolveForm } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
 import { cloneDeep } from "lodash";
 import { type FormDefinition } from "@/platform/forms/formTypes";

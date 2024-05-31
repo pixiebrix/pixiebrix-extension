@@ -21,12 +21,12 @@ import { render } from "./testHelpers";
 import { navigationEvent } from "@/pageEditor/events";
 import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { updateDynamicElement } from "@/contentScript/messenger/strict/api";
+import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
-jest.mock("@/contentScript/messenger/strict/api");
+jest.mock("@/contentScript/messenger/api");
 
 jest.mock("redux-persist/integration/react", () => ({
   __esModule: true,

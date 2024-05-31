@@ -33,7 +33,7 @@ import {
   secretsConfigFactory,
 } from "@/testUtils/factories/integrationFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { registry } from "@/background/messenger/strict/api";
+import { registry } from "@/background/messenger/api";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
@@ -62,7 +62,7 @@ jest.mock("@/integrations/registry", () => {
   };
 });
 
-// Module mocked via __mocks__/@/background/messenger/strict/api
+// Module mocked via __mocks__/@/background/messenger/api
 jest.mocked(registry.find).mockImplementation(async (id: RegistryId) => {
   const config = integrationDefinitionMap.get(id);
   return {

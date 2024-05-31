@@ -25,7 +25,7 @@ import {
   testOptions,
 } from "./pipelineTestHelpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { services } from "@/background/messenger/strict/api";
+import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion, type TemplateEngine } from "@/types/runtimeTypes";
 import {

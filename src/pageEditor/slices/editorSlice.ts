@@ -65,7 +65,7 @@ import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
   getInstalledExtensionPoints,
   checkAvailable,
-} from "@/contentScript/messenger/strict/api";
+} from "@/contentScript/messenger/api";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
 import { testMatchPatterns } from "@/bricks/available";
