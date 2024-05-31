@@ -310,10 +310,11 @@ export function getToggleOptions({
     handleVarOption();
   }
 
-  // Select fields will match the basic string check also
+  // Select fields will match the basic string check also, but we don't want to show the text option
+  // unless variables are also allowed
   if (
     (fieldSchema.type === "string" || anyType) &&
-    !isSelectField(fieldSchema)
+    (!isSelectField(fieldSchema) || allowExpressions)
   ) {
     pushOptions(textOption);
     handleVarOption();

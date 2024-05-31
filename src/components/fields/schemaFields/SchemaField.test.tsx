@@ -476,7 +476,7 @@ describe("SchemaField", () => {
       { initialValues: { apiVersion: "v3", testField: "foo" } },
     );
 
-    await expectToggleOptions("toggle-testField", ["select", "var"]);
+    await expectToggleOptions("toggle-testField", ["select", "string", "var"]);
 
     expect(screen.queryByRole("textbox")).toBeNull();
     expect(screen.getByText("Foo")).toBeInTheDocument();

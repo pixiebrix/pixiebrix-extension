@@ -71,7 +71,7 @@ describe("option mode switching", () => {
   });
 
   // TODO: Determine whether this is correct behavior
-  test("does not switch from variable when @ removed - enum field", async () => {
+  test("switches from variable when @ removed - enum field", async () => {
     const { container } = renderSchemaField(
       "test",
       { type: "string", enum: ["option 1", "option 2"] },
@@ -86,7 +86,7 @@ describe("option mode switching", () => {
     fireTextInput(inputElement, "text");
     await waitForEffect();
 
-    expectToggleMode(container, "Variable");
+    expectToggleMode(container, "Text");
   });
 
   test("automatically switches to var when @ is typed", async () => {
