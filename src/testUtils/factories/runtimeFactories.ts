@@ -29,7 +29,7 @@ import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
  * @see unsafeAssumeValidArg
  */
 export const brickOptionsFactory = define<BrickOptions>({
-  ctxt: null,
+  ctxt: {},
   platform: () => contentScriptPlatform,
   logger: (i: number) =>
     new ConsoleLogger({
@@ -45,7 +45,7 @@ export const brickOptionsFactory = define<BrickOptions>({
   meta: derive<BrickOptions, RunMetadata>(
     (options) => ({
       runId: null,
-      extensionId: options.logger.context.extensionId,
+      extensionId: options.logger?.context.extensionId,
       branches: [],
     }),
     "logger",
