@@ -703,6 +703,8 @@
     "./extensionConsole/pages/brickEditor/useLogContext.ts",
     "./extensionConsole/pages/brickEditor/validate.test.ts",
     "./extensionConsole/pages/brickEditor/validate.ts",
+    "./extensionConsole/pages/deployments/activateDeployments.ts",
+    "./extensionConsole/pages/deployments/useDeactivateUnassignedDeploymentsEffect.ts",
     "./extensionConsole/pages/integrations/ConnectExtensionCard.tsx",
     "./extensionConsole/pages/integrations/ZapierIntegrationModal.tsx",
     "./extensionConsole/pages/mods/GetStartedView.stories.tsx",

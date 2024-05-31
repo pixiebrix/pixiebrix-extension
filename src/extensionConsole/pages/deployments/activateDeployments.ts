@@ -136,7 +136,7 @@ export function deactivateUnassignedModComponents({
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
     auto: true,
     deployments: deactivatedModComponents.map(
-      (modComponent) => modComponent._deployment.id,
+      (modComponent) => modComponent._deployment?.id,
     ),
   });
 }
