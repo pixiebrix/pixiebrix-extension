@@ -39,7 +39,7 @@ import { type Timestamp, type UUID } from "@/types/stringTypes";
 
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import type { RegistryId } from "@/types/registryTypes";
-import { reactivateEveryTab } from "@/contentScript/messenger/strict/api";
+import { reactivateEveryTab } from "@/contentScript/messenger/api";
 
 const { saveModComponent } = extensionsSlice.actions;
 const { markClean } = editorSlice.actions;

@@ -34,7 +34,7 @@ import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAl
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { SHEET_FIELD_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import { getSpreadsheet } from "@/contrib/google/sheets/core/sheetsApi";
-import { hasCachedAuthData } from "@/background/messenger/strict/api";
+import { hasCachedAuthData } from "@/background/messenger/api";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
 import { ReusableAbortController } from "abort-utils";
 

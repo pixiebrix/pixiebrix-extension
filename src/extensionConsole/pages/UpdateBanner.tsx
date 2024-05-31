@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import { getAvailableVersion } from "@/background/messenger/strict/api";
+import { getAvailableVersion } from "@/background/messenger/api";
 import reportError from "@/telemetry/reportError";
 import Banner from "@/components/banner/Banner";
 import { gt } from "semver";

@@ -31,7 +31,7 @@ import { logActions } from "@/components/logViewer/logSlice";
 import {
   updateDynamicElement,
   removeInstalledExtension,
-} from "@/contentScript/messenger/strict/api";
+} from "@/contentScript/messenger/api";
 import { selectActiveModComponentFormState } from "./slices/editorSelectors";
 import { formStateToDynamicElement } from "./starterBricks/adapter";
 import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";

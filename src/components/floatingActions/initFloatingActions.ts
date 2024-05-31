@@ -17,7 +17,7 @@
 
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getSettingsState } from "@/store/settings/settingsStorage";
-import { getUserData } from "@/background/messenger/strict/api";
+import { getUserData } from "@/background/messenger/api";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { isLinked as getIsLinked } from "@/auth/authStorage";

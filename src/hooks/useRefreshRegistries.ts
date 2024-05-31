@@ -22,7 +22,7 @@ import notify from "@/utils/notify";
 import {
   clearServiceCache,
   services as serviceAuthRegistry,
-} from "@/background/messenger/strict/api";
+} from "@/background/messenger/api";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 
 const syncServiceAuths = async () => {

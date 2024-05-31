@@ -85,7 +85,7 @@ ruleTester.run("noCrossBoundaryImports", noCrossBoundaryImports, {
     },
     {
       // Cross-boundary allowlisted import
-      code: 'import "@/background/messenger/strict/api";',
+      code: 'import "@/background/messenger/api";',
       filename: "src/sidebar/bar.ts",
       options,
     },
@@ -102,8 +102,7 @@ ruleTester.run("noCrossBoundaryImports", noCrossBoundaryImports, {
       options,
     },
     {
-      // Dynamic import expressions are ignored
-      // eslint-disable-next-line no-template-curly-in-string
+      // eslint-disable-next-line no-template-curly-in-string -- Dynamic import expressions are ignored
       code: "import(`@/dynamic/${'import'}`);",
       filename: "src/background/bar.ts",
       options,

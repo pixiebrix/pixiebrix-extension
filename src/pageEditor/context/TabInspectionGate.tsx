@@ -21,7 +21,7 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 import useAsyncState from "@/hooks/useAsyncState";
-import { queryTabs } from "@/background/messenger/strict/api";
+import { queryTabs } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
 import { getErrorMessage } from "@/errors/errorHelpers";
 

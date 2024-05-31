@@ -24,11 +24,11 @@ import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
 import pDefer from "p-defer";
-import { performConfiguredRequestInBackground } from "@/background/messenger/strict/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 
 jest.mock("@/contentScript/integrations/deferredLoginController");
 
-jest.mock("@/background/messenger/strict/api", () => ({
+jest.mock("@/background/messenger/api", () => ({
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({}),
 }));
 

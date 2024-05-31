@@ -23,7 +23,7 @@ import { act, screen } from "@testing-library/react";
 import { validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
 import { render } from "@/pageEditor/testHelpers";
-import { services, hasCachedAuthData } from "@/background/messenger/strict/api";
+import { services, hasCachedAuthData } from "@/background/messenger/api";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,

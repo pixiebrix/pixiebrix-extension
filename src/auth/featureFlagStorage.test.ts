@@ -32,7 +32,7 @@ import {
   TEST_triggerListeners,
 } from "@/auth/authStorage";
 import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
-import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
+import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
 
 describe("featureFlags", () => {
   beforeEach(async () => {

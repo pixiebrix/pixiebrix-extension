@@ -39,7 +39,7 @@ import {
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ActionFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { parsePackage } from "@/registry/packageRegistry";
-import { registry } from "@/background/messenger/strict/api";
+import { registry } from "@/background/messenger/api";
 import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
@@ -76,7 +76,7 @@ jest.mock("@/utils/extensionUtils", () => ({
 jest.mock("@/telemetry/reportEvent");
 
 jest.mock("@/sidebar/messenger/api", () => {});
-jest.mock("@/contentScript/messenger/strict/api");
+jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/auth/authStorage", () => ({
   getExtensionToken: async () => "TESTTOKEN",
@@ -113,6 +113,10 @@ beforeEach(async () => {
   jest.resetModules();
   jest.clearAllMocks();
   appApiMock.reset();
+
+  appApiMock.onGet("/api/me/").reply(200, {
+    flags: [],
+  });
 
   // Reset local states
   await Promise.all([
@@ -227,10 +231,6 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    appApiMock.onGet("/api/me/").reply(200, {
-      flags: [],
-    });
-
     appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
     appApiMock
@@ -273,10 +273,6 @@ describe("syncDeployments", () => {
       },
     });
     const registryId = deployment.package.package_id;
-
-    appApiMock.onGet("/api/me/").reply(200, {
-      flags: [],
-    });
 
     appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
@@ -344,10 +340,6 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    appApiMock.onGet("/api/me/").reply(200, {
-      flags: [],
-    });
-
     appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
     appApiMock
@@ -389,10 +381,6 @@ describe("syncDeployments", () => {
 
     await saveModComponentState({
       extensions: [modComponent],
-    });
-
-    appApiMock.onGet("/api/me/").reply(200, {
-      flags: [],
     });
 
     appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
@@ -459,10 +447,6 @@ describe("syncDeployments", () => {
     );
     await saveEditorState(editorState);
 
-    appApiMock.onGet("/api/me/").reply(200, {
-      flags: [],
-    });
-
     appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
     appApiMock
@@ -496,10 +480,6 @@ describe("syncDeployments", () => {
 
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
-
-    appApiMock.onGet("/api/me/").reply(200, {
-      flags: [],
-    });
 
     appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
@@ -601,10 +581,6 @@ describe("syncDeployments", () => {
   test("do not open options page on update if restricted-version flag not set", async () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);
-
-    appApiMock.onGet("/api/me/").reply(200, {
-      flags: [],
-    });
 
     appApiMock.onPost("/api/deployments/").reply(201, []);
 
@@ -802,10 +778,6 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { deployment, modDefinition } = activatableDeploymentFactory();
-
-    appApiMock.onGet("/api/me/").reply(200, {
-      flags: [],
-    });
 
     appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 

@@ -32,7 +32,7 @@ import objectHash from "object-hash";
 import { isEmpty } from "lodash";
 import { type TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
-import { runBlock } from "@/contentScript/messenger/strict/api";
+import { runBlock } from "@/contentScript/messenger/api";
 import { useField, useFormikContext } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import getType from "@/runtime/getType";

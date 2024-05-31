@@ -17,10 +17,7 @@
 
 import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
-import {
-  requestRun,
-  sendDeploymentAlert,
-} from "@/background/messenger/strict/api";
+import { requestRun, sendDeploymentAlert } from "@/background/messenger/api";
 import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/bricks/errors";

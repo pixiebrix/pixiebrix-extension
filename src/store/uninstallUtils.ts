@@ -21,7 +21,7 @@ import {
   removeDynamicElementsForRecipe,
 } from "@/store/editorStorage";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { removeExtensionForEveryTab } from "@/background/messenger/strict/api";
+import { removeExtensionForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";

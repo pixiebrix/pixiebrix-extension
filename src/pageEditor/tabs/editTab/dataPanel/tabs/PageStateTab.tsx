@@ -17,7 +17,7 @@
 
 import React from "react";
 import JsonTree from "@/components/jsonTree/JsonTree";
-import { getPageState } from "@/contentScript/messenger/strict/api";
+import { getPageState } from "@/contentScript/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
 import { faExternalLinkAlt, faSync } from "@fortawesome/free-solid-svg-icons";

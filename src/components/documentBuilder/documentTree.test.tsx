@@ -21,7 +21,7 @@ import { render, screen, within } from "@testing-library/react";
 import React from "react";
 import blockRegistry from "@/bricks/registry";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
-import * as contentScriptAPI from "@/contentScript/messenger/strict/api";
+import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import { buildDocumentBranch } from "./documentTree";
 import {
@@ -35,7 +35,7 @@ import { toExpression } from "@/utils/expressionUtils";
 
 // Mock the recordX trace methods. Otherwise, they'll fail and Jest will have unhandled rejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
-jest.mock("@/contentScript/messenger/strict/api");
+jest.mock("@/contentScript/messenger/api");
 
 const markdownBlock = new MarkdownRenderer();
 

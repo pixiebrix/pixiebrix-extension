@@ -20,7 +20,7 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import React from "react";
 import EditorContent from "@/pageEditor/EditorContent";
-import { getInstalledExtensionPoints } from "@/contentScript/messenger/strict/api";
+import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 
@@ -41,7 +41,7 @@ jest.mock("@/pageEditor/context/connection", () => {
 
 jest.mock("@/pageEditor/hooks/useCurrentInspectedUrl");
 
-jest.mock("@/contentScript/messenger/strict/api");
+jest.mock("@/contentScript/messenger/api");
 
 describe("error alerting in the UI", () => {
   test("shows error when checkAvailableDynamicElements fails", async () => {

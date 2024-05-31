@@ -28,7 +28,7 @@ import styles from "./ActivateModPanel.module.scss";
 import AsyncButton from "@/components/AsyncButton";
 import { useDispatch } from "react-redux";
 import sidebarSlice from "@/store/sidebar/sidebarSlice";
-import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript } from "@/contentScript/messenger/strict/api";
+import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript } from "@/contentScript/messenger/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import cx from "classnames";
 import { isEmpty } from "lodash";
