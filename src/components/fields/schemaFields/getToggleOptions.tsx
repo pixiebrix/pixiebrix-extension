@@ -310,7 +310,10 @@ export function getToggleOptions({
   }
 
   // Select fields will match the basic string check also
-  if (fieldSchema.type === "string" || anyType) {
+  if (
+    (fieldSchema.type === "string" || anyType) &&
+    !isSelectField(fieldSchema)
+  ) {
     pushOptions(textOption);
     handleVarOption();
   }
