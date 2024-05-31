@@ -35,8 +35,8 @@ import { cloneDeep, range, uniq } from "lodash";
 import { type MenuItemDefinition } from "@/starterBricks/menuItem/types";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
-  type StarterBrickConfig,
-  type StarterBrickDefinition,
+  type StarterBrickDefinitionLike,
+  type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -56,7 +56,7 @@ import {
   innerStarterBrickModDefinitionFactory,
   modComponentDefinitionFactory,
   modDefinitionWithVersionedStarterBrickFactory,
-  starterBrickConfigFactory,
+  starterBrickDefinitionFactory,
   versionedModDefinitionWithResolvedModComponents,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
@@ -89,7 +89,7 @@ describe("generatePersonalBrickId", () => {
 
 describe("replaceModComponent round trip", () => {
   test("single mod component with versioned extensionPoint", async () => {
-    const starterBrick = starterBrickConfigFactory();
+    const starterBrick = starterBrickDefinitionFactory();
     const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
       extensionPointId: starterBrick.metadata.id,
     })();
@@ -127,7 +127,7 @@ describe("replaceModComponent round trip", () => {
   });
 
   test("does not modify other starter brick", async () => {
-    const starterBrick = starterBrickConfigFactory();
+    const starterBrick = starterBrickDefinitionFactory();
 
     const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
       extensionPointId: starterBrick.metadata.id,
@@ -326,7 +326,7 @@ describe("replaceModComponent round trip", () => {
   });
 
   test("updates Mod API version with single mod component", async () => {
-    const starterBrick = starterBrickConfigFactory({
+    const starterBrick = starterBrickDefinitionFactory({
       apiVersion: "v2",
     });
 
@@ -376,7 +376,7 @@ describe("replaceModComponent round trip", () => {
   });
 
   test("throws when API version mismatch and cannot update mod", async () => {
-    const starterBrick = starterBrickConfigFactory();
+    const starterBrick = starterBrickDefinitionFactory();
     const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
       extensionPointId: starterBrick.metadata.id,
     })({
@@ -545,10 +545,10 @@ describe("mod options", () => {
 
 function selectExtensionPoints(
   modDefinition: UnsavedModDefinition,
-): StarterBrickConfig[] {
+): StarterBrickDefinitionLike[] {
   return modDefinition.extensionPoints.map(({ id }) => {
     const definition = modDefinition.definitions[id]
-      .definition as StarterBrickDefinition;
+      .definition as StarterBrickDefinitionProp;
     return {
       apiVersion: modDefinition.apiVersion,
       metadata: internalStarterBrickMetaFactory(),
@@ -580,7 +580,7 @@ describe("buildNewMod", () => {
     const outputKey = validateOutputKey("pixiebrix");
 
     // Load the adapter for this mod component
-    const starterBrick = starterBrickConfigFactory();
+    const starterBrick = starterBrickDefinitionFactory();
 
     const modComponent = modComponentFactory({
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
@@ -617,8 +617,8 @@ describe("buildNewMod", () => {
   test("Preserve distinct starter brick definitions", async () => {
     // Load the adapter for this mod component
     const starterBricks = [
-      starterBrickConfigFactory().definition,
-      starterBrickConfigFactory().definition,
+      starterBrickDefinitionFactory().definition,
+      starterBrickDefinitionFactory().definition,
     ];
 
     const modComponents = starterBricks.map((extensionPoint) => {
@@ -656,7 +656,7 @@ describe("buildNewMod", () => {
 
   test("Coalesce duplicate starter brick definitions", async () => {
     // Load the adapter for this mod component
-    const starterBrick = starterBrickConfigFactory().definition;
+    const starterBrick = starterBrickDefinitionFactory().definition;
 
     const modComponents = range(0, 2).map(() => {
       const modComponent = modComponentFactory({

@@ -16,7 +16,7 @@
  */
 
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import { type StarterBrickDefinition } from "@/starterBricks/types";
+import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Manifest } from "webextension-polyfill";
 
@@ -49,7 +49,7 @@ export type QuickBarProviderConfig = {
 
 export type QuickBarProviderDefaultOptions = Record<string, string | string[]>;
 
-export interface QuickBarProviderDefinition extends StarterBrickDefinition {
+export interface QuickBarProviderDefinition extends StarterBrickDefinitionProp {
   documentUrlPatterns?: Manifest.MatchPattern[];
   defaultOptions?: QuickBarProviderDefaultOptions;
 }

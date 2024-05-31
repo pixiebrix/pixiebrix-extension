@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
@@ -76,9 +76,9 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPointConfig(
+function selectStarterBrickDefinition(
   formState: QuickBarProviderFormState,
-): StarterBrickConfig<QuickBarProviderDefinition> {
+): StarterBrickDefinitionLike<QuickBarProviderDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: { isAvailable, documentUrlPatterns, reader },
@@ -154,7 +154,7 @@ function asDynamicElement(
   return {
     type: "quickBarProvider",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectExtensionPointConfig(element),
+    extensionPointConfig: selectStarterBrickDefinition(element),
   };
 }
 
@@ -169,7 +169,7 @@ const config: ElementConfig<undefined, QuickBarProviderFormState> = {
   flag: "pageeditor-quickbar-provider",
   fromNativeElement,
   asDynamicElement,
-  selectExtensionPointConfig,
+  selectStarterBrickDefinition,
   selectExtension,
   fromExtension,
 };

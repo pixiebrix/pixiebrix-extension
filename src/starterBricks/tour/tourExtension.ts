@@ -17,7 +17,7 @@
 
 import {
   StarterBrickABC,
-  type StarterBrickConfig,
+  type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
 import {
@@ -272,7 +272,7 @@ class RemoteTourExtensionPoint extends TourStarterBrickABC {
 
   public readonly permissions: Permissions.Permissions;
 
-  public readonly rawConfig: StarterBrickConfig<TourDefinition>;
+  public readonly rawConfig: StarterBrickDefinitionLike<TourDefinition>;
 
   public override get defaultOptions(): UnknownObject {
     return this._definition.defaultOptions ?? { allowUserRun: true };
@@ -280,7 +280,7 @@ class RemoteTourExtensionPoint extends TourStarterBrickABC {
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickConfig<TourDefinition>,
+    config: StarterBrickDefinitionLike<TourDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -313,7 +313,7 @@ class RemoteTourExtensionPoint extends TourStarterBrickABC {
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickConfig<TourDefinition>,
+  config: StarterBrickDefinitionLike<TourDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "tour") {

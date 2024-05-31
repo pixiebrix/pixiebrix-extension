@@ -32,8 +32,8 @@ import { type BrickPipeline } from "@/bricks/types";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { validateRegistryId, validateTimestamp } from "@/types/helpers";
 import {
-  type StarterBrickConfig,
-  type StarterBrickDefinition,
+  type StarterBrickDefinitionLike,
+  type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
@@ -70,25 +70,27 @@ export const modDefinitionFactory = define<ModDefinition>({
   extensionPoints: array(modComponentDefinitionFactory, 1),
 });
 
-export const starterBrickConfigFactory = define<StarterBrickConfig>({
-  kind: "extensionPoint",
-  apiVersion: "v3",
-  metadata: (n: number) =>
-    metadataFactory({
-      id: validateRegistryId(`test/starter-brick-${n}`),
-      name: `Starter Brick ${n}`,
-    }),
-  definition(n: number) {
-    const definition: StarterBrickDefinition = {
-      type: "menuItem" as StarterBrickType,
-      isAvailable: {
-        matchPatterns: [`https://www.mySite${n}.com/*`],
-      },
-      reader: validateRegistryId("@pixiebrix/document-context"),
-    };
-    return definition;
+export const starterBrickDefinitionFactory = define<StarterBrickDefinitionLike>(
+  {
+    kind: "extensionPoint",
+    apiVersion: "v3",
+    metadata: (n: number) =>
+      metadataFactory({
+        id: validateRegistryId(`test/starter-brick-${n}`),
+        name: `Starter Brick ${n}`,
+      }),
+    definition(n: number) {
+      const definition: StarterBrickDefinitionProp = {
+        type: "menuItem" as StarterBrickType,
+        isAvailable: {
+          matchPatterns: [`https://www.mySite${n}.com/*`],
+        },
+        reader: validateRegistryId("@pixiebrix/document-context"),
+      };
+      return definition;
+    },
   },
-});
+);
 
 type ExternalStarterBrickParams = {
   extensionPointId?: RegistryId;
@@ -142,8 +144,8 @@ export const versionedModDefinitionWithResolvedModComponents = (
   for (const modComponentDefinition of modComponentDefinitions) {
     definitions[modComponentDefinition.id] = {
       kind: "extensionPoint",
-      definition: starterBrickConfigFactory().definition,
-    };
+      definition: starterBrickDefinitionFactory().definition,
+    } satisfies StarterBrickDefinitionLike;
   }
 
   return extend<ModDefinition, ModDefinition>(modDefinitionFactory, {

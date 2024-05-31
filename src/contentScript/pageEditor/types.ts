@@ -16,8 +16,8 @@
  */
 
 import {
-  type StarterBrickConfig,
-  type StarterBrickDefinition,
+  type StarterBrickDefinitionLike,
+  type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
@@ -36,11 +36,12 @@ import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type BrickConfig } from "@/bricks/types";
 
 export interface DynamicDefinition<
-  TExtensionPoint extends StarterBrickDefinition = StarterBrickDefinition,
+  TExtensionPoint extends
+    StarterBrickDefinitionProp = StarterBrickDefinitionProp,
   TExtension extends UnknownObject = UnknownObject,
 > {
   type: StarterBrickType;
-  extensionPointConfig: StarterBrickConfig<TExtensionPoint>;
+  extensionPointConfig: StarterBrickDefinitionLike<TExtensionPoint>;
   extension: ModComponentBase<TExtension>;
 }
 

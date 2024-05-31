@@ -27,11 +27,9 @@ import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Permissions } from "webextension-polyfill";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
-import {
-  type BrickPipeline,
-  type NormalizedAvailability,
-} from "@/bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
+import { NormalizedAvailability } from "@/types/availabilityTypes";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation

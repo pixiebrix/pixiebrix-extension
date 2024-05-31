@@ -16,7 +16,7 @@
  */
 
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import { type StarterBrickDefinition } from "@/starterBricks/types";
+import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type IconConfig } from "@/types/iconTypes";
 import { type MessageConfig } from "@/utils/notify";
 
@@ -99,7 +99,7 @@ interface MenuDefaultOptions {
 /**
  * @since 1.7.16
  */
-export interface MenuItemDefinition extends StarterBrickDefinition {
+export interface MenuItemDefinition extends StarterBrickDefinitionProp {
   type: "menuItem";
   /**
    * The HTML template to render the button/menu item.
