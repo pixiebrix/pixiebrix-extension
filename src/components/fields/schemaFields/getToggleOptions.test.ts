@@ -70,6 +70,23 @@ describe("Database field", () => {
 });
 
 describe("select field", () => {
+  it("excludes the text input", () => {
+    const options = getToggleOptions({
+      fieldSchema: {
+        type: "string",
+        enum: ["foo", "bar"],
+      },
+      isRequired: true,
+      allowExpressions: false,
+      customToggleModes: [],
+      isObjectProperty: false,
+      isArrayItem: false,
+    });
+
+    expect(options).toHaveLength(1);
+    expect(options[0].label).toBe("Select...");
+  });
+
   it("handles labelled enum field", () => {
     const options = getToggleOptions({
       fieldSchema: {
@@ -83,10 +100,9 @@ describe("select field", () => {
       isArrayItem: false,
     });
 
-    expect(options).toHaveLength(4);
+    expect(options).toHaveLength(3);
     expect(options[0].label).toBe("Select...");
-    expect(options[1].label).toBe("Text");
-    expect(options[2].label).toBe("Variable");
-    expect(options[3].label).toBe("Exclude");
+    expect(options[1].label).toBe("Variable");
+    expect(options[2].label).toBe("Exclude");
   });
 });

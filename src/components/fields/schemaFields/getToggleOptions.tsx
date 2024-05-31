@@ -307,6 +307,7 @@ export function getToggleOptions({
           ? String(fieldSchema.default)
           : null,
     });
+    handleVarOption();
   }
 
   // Select fields will match the basic string check also
