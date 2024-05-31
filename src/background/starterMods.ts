@@ -61,7 +61,6 @@ import { isDatabasePreviewField } from "@/components/fields/schemaFields/fieldTy
 import { isRequired } from "@/utils/schemaUtils";
 import type { Schema } from "@/types/schemaTypes";
 import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: extensionsReducer, actions: extensionsActions } =
@@ -139,12 +138,13 @@ function closeStarterModTabs({
 
 function initialOptionsArgs(modDefinition: ModDefinition): OptionsArgs {
   const schema = modDefinition.options?.schema;
-  assertNotNullish(schema, "Mod schema is required");
   return Object.fromEntries(
     Object.entries(schema?.properties ?? {})
       .filter(
         ([name, fieldSchema]) =>
-          isDatabasePreviewField(fieldSchema) && isRequired(schema, name),
+          isDatabasePreviewField(fieldSchema) &&
+          schema &&
+          isRequired(schema, name),
       )
       .map(([name, fieldSchema]) => [
         name,
