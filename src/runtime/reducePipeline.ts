@@ -149,7 +149,7 @@ export type InitialValues = {
    * The document root for root-aware bricks, including readers
    * @see Brick.isRootAware
    */
-  root?: SelectorRoot;
+  root: Nullishable<SelectorRoot>;
 };
 
 export type IntermediateState = {
@@ -169,7 +169,7 @@ export type IntermediateState = {
    * The document root for root-aware bricks
    * @see Brick.isRootAware
    */
-  root?: SelectorRoot;
+  root: Nullishable<SelectorRoot>;
   /**
    * The stage's position in the BrickPipeline. Used to improve logging and error messages
    * @see BrickPipeline
