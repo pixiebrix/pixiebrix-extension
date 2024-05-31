@@ -44,7 +44,7 @@ import {
   minimalUiSchemaFactory,
   propertiesToSchema,
 } from "@/utils/schemaUtils";
-import { isEmpty, mapValues, sortBy } from "lodash";
+import { mapValues, sortBy } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import {
   type Schema,
@@ -398,20 +398,6 @@ export function normalizeModOptionsDefinition(
     schema,
     uiSchema,
   };
-}
-
-/**
- * Returns true if the options form state does not define any options/activation instructions
- * @param options options definition
- * @since 1.8.5
- */
-export function isModOptionsSchemaEmpty(
-  options: ModDefinition["options"] | undefined,
-): boolean {
-  return (
-    isEmpty(options?.schema?.properties) &&
-    isNullOrBlank(options?.schema?.description)
-  );
 }
 
 /**

@@ -55,9 +55,12 @@ import {
   type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
-import { registry } from "@/background/messenger/strict/api";
-import { type NormalizedAvailability } from "@/types/availabilityTypes";
+import {
+  type Availability,
+  type NormalizedAvailability,
+} from "@/types/availabilityTypes";
 import { normalizeAvailability } from "@/bricks/available";
+import { registry } from "@/background/messenger/api";
 
 export interface WizardStep {
   step: string;

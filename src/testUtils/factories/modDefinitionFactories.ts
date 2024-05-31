@@ -45,7 +45,6 @@ import {
 } from "@/testUtils/factories/integrationFactories";
 import { freshIdentifier } from "@/utils/variableUtils";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-import { UnknownObject } from "@/globals";
 
 export const modComponentDefinitionFactory = define<ModComponentDefinition>({
   id: "extensionPoint" as InnerDefinitionRef,
