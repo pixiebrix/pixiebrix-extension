@@ -25,9 +25,9 @@
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // Depends on contentScript/messenger to pass strictNullCheck
-import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // Depends on contentScript/messenger to pass strictNullCheck
-import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus"; // 193 strictNullCheck errors
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // Depends on contentScript/lifecycle to pass strictNullCheck
+import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // Depends on contentScript/lifecycle to pass strictNullCheck
+import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus"; // Depends on contentScript/lifecycle to pass strictNullCheck
 
 expectContext("background");
 

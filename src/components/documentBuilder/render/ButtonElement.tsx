@@ -87,7 +87,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
         },
       });
     } catch (error) {
-      if (hasSpecificErrorCause(error, SubmitPanelAction)) {
+      if (hasSpecificErrorCause(error, SubmitPanelAction) && onAction) {
         // The error was created by the SubmitPanelEffect brick
         const rootCause = getRootCause(error) as SubmitPanelAction;
         onAction({ type: rootCause.type, detail: rootCause.detail });

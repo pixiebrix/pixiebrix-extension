@@ -71,6 +71,7 @@ import {
   type ContextMenuConfig,
   type ContextMenuDefinition,
 } from "@/starterBricks/contextMenu/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
@@ -97,7 +98,7 @@ const groupRegistrationErrorNotification = (platform: PlatformProtocol) =>
 /**
  * The element the user right-clicked on to trigger the context menu
  */
-let clickedElement: HTMLElement = null;
+let clickedElement: HTMLElement | null = null;
 
 function setActiveElement(event: MouseEvent): void {
   // This method can't throw, otherwise I think it breaks event dispatching because we're passing
@@ -426,6 +427,11 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
+    assertNotNullish(
+      cloned.metadata,
+      "metadata is required to create a starter brick",
+    );
+
     super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;

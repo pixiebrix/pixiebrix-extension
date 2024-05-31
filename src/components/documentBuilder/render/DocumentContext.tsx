@@ -29,7 +29,7 @@ import { UNSET_UUID } from "@/types/helpers";
 import { uninitializedPlatform } from "@/platform/platformContext";
 
 type DocumentState = {
-  onAction: (action: { type: string; detail: JsonObject }) => void;
+  onAction?: (action: { type: string; detail: JsonObject }) => void;
   options: BrickOptions<BrickArgsContext>;
 };
 

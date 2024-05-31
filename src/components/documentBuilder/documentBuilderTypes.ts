@@ -132,7 +132,7 @@ export type DynamicPath = {
 export type BuildDocumentBranch = (
   root: DocumentElement,
   tracePath: DynamicPath,
-) => DocumentComponent;
+) => DocumentComponent | null;
 
 export type PreviewComponentProps = {
   className?: string;

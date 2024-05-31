@@ -45,15 +45,10 @@ export const removeInstalledExtension = getNotifier(
 export const resetTab = getNotifier("RESET_TAB");
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 
-export const runRendererBlock = getMethod("RUN_RENDERER_BLOCK");
-
 export const clearDynamicElements = getNotifier("CLEAR_DYNAMIC_ELEMENTS");
 export const updateDynamicElement = getNotifier("UPDATE_DYNAMIC_ELEMENT");
-export const runExtensionPointReader = getMethod("RUN_EXTENSION_POINT_READER");
 
 export const getInstalledExtensionPoints = getMethod(
   "INSTALLED_EXTENSION_POINTS",
 );
 export const checkAvailable = getMethod("CHECK_AVAILABLE");
-
-export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");

@@ -111,11 +111,11 @@ export function isInnerDefinitionRegistryId(id: string): id is RegistryId {
   return id.startsWith(INNER_SCOPE + "/");
 }
 
-export function validateRegistryId(id: string): RegistryId {
+export function validateRegistryId(id: string | undefined): RegistryId {
   if (id == null) {
     // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
     // we can remove this check as strictNullChecks will check the call site
-    return id as RegistryId;
+    return null as unknown as RegistryId;
   }
 
   if (isRegistryId(id)) {

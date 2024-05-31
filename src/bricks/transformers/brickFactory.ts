@@ -213,7 +213,7 @@ class UserDefinedBrick extends BrickABC {
     const awareness = await Promise.all(
       pipeline.map(async (blockConfig) => {
         const resolvedBlock = await this.registry.lookup(blockConfig.id);
-        return resolvedBlock.isPageStateAware();
+        return resolvedBlock?.isPageStateAware();
       }),
     );
 

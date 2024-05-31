@@ -28,7 +28,7 @@ import {
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
-import { castArray, cloneDeep, compact, debounce, isEmpty, noop } from "lodash";
+import { castArray, cloneDeep, compact, debounce, noop } from "lodash";
 import { checkAvailable } from "@/bricks/available";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -85,6 +85,7 @@ import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type TriggerTarget = Document | HTMLElement;
 
@@ -176,9 +177,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   abstract get debounceOptions(): DebounceOptions;
 
-  abstract get customTriggerOptions(): CustomEventOptions;
+  abstract get customTriggerOptions(): CustomEventOptions | undefined;
 
-  abstract get triggerSelector(): string | null;
+  abstract get triggerSelector(): string | undefined;
 
   abstract getBaseReader(): Promise<Reader>;
 
@@ -276,7 +277,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         this._runTriggersAndNotify,
         waitMillis,
         options,
-      );
+      ) as typeof this.debouncedRunTriggersAndNotify;
     } else if (this.trigger !== "interval" && !this.allowInactiveFrames) {
       // Since 1.8.7, respect the `background` flag for non-interval triggers.
       // @ts-expect-error -- Promise<Promise<void>> is same as Promise<void> when awaited b/c await is recursive
@@ -315,11 +316,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     // NOTE: you might think we could use a WeakSet of HTMLElement to track which elements we've actually attached
     // DOM events too. However, we can't because WeakSet is not an enumerable collection
     // https://esdiscuss.org/topic/removal-of-weakmap-weakset-clear
-    const $currentElements: JQuery<TriggerTarget> = isEmpty(
-      this.triggerSelector,
-    )
-      ? $(document)
-      : $safeFind(this.triggerSelector);
+    const $currentElements: JQuery<TriggerTarget> = this.triggerSelector
+      ? $safeFind(this.triggerSelector)
+      : $(document);
 
     console.debug("TriggerExtensionPoint:uninstall", {
       id: this.id,
@@ -404,7 +403,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    * Shared event handler for DOM event triggers
    * It's bound to this instance so that it can be removed when the mod is deactivated.
    */
-  private readonly eventHandler = async (event: Event) => {
+  private readonly eventHandler = async (event: Event | undefined) => {
+    assertNotNullish(event, "Event is required");
+
     let element = event.target as HTMLElement | Document;
     console.debug("TriggerExtensionPoint:eventHandler", {
       id: this.id,
@@ -418,7 +419,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
 
     if (this.targetMode === "root") {
-      element = $(element).closest(this.triggerSelector).get(0);
+      assertNotNullish(this.triggerSelector, "Trigger selector is required");
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- some element will match
+      element = $(element).closest(this.triggerSelector).get(0)!;
       console.debug(
         "Locating closest element for target: %s",
         this.triggerSelector,
@@ -438,7 +441,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    */
   private markRun(modComponentId: UUID, element: TriggerTarget): void {
     if (this.runningModComponentElements.has(modComponentId)) {
-      this.runningModComponentElements.get(modComponentId).add(element);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- .has() check
+      this.runningModComponentElements.get(modComponentId)!.add(element);
     } else {
       this.runningModComponentElements.set(modComponentId, new Set([element]));
     }
@@ -511,7 +515,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         } finally {
           // NOTE: if the extension is not running with synchronous behavior, there's a race condition where
           // the `delete` could be called while another extension run is still in progress
-          this.runningModComponentElements.get(extension.id).delete(root);
+          this.runningModComponentElements.get(extension.id)?.delete(root);
         }
 
         if (this.shouldReportEvent(extension.id)) {
@@ -576,13 +580,13 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     });
   }
 
-  private async getRoot(): Promise<JQuery<TriggerTarget>> {
+  private async getRoot(): Promise<JQuery<TriggerTarget> | undefined> {
     const rootSelector = this.triggerSelector;
 
     // Await for the element(s) to appear on the page so that we can
-    const rootPromise = isEmpty(rootSelector)
-      ? document
-      : awaitElementOnce(rootSelector, this.observersController.signal);
+    const rootPromise = rootSelector
+      ? awaitElementOnce(rootSelector, this.observersController.signal)
+      : document;
 
     try {
       await rootPromise;
@@ -595,7 +599,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
 
     // AwaitElementOnce doesn't work with multiple elements. Get everything that's on the current page
-    const $root = isEmpty(rootSelector) ? $(document) : $safeFind(rootSelector);
+    const $root = rootSelector ? $safeFind(rootSelector) : $(document);
 
     if ($root.length === 0) {
       console.warn("No elements found for trigger selector: %s", rootSelector);
@@ -612,6 +616,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
       const intervalEffect = async () => {
         const $root = await this.getRoot();
+        assertNotNullish($root, "Root is required");
         await this.debouncedRunTriggersAndNotify([...$root], {
           nativeEvent: null,
         });
@@ -646,6 +651,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       });
       return;
     }
+
+    assertNotNullish(this.triggerSelector, "Trigger selector is required");
 
     const observer = initialize(
       this.triggerSelector,
@@ -686,13 +693,13 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
 
     if (this.attachMode === "watch") {
-      const selector = this.triggerSelector;
+      assertNotNullish(this.triggerSelector, "Trigger selector is required");
 
-      console.debug("Watching selector: %s", selector);
+      console.debug("Watching selector: %s", this.triggerSelector);
       const mutationObserver = initialize(
-        selector,
+        this.triggerSelector,
         (_index, element) => {
-          console.debug("initialize: %s", selector);
+          console.debug("initialize: %s", this.triggerSelector);
           appearObserver.observe(element);
         },
         // `target` is a required option
@@ -774,6 +781,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       // On mutation events, this watch branch is not executed because the mutation handler below passes `watch: false`
       this.cancelObservers();
 
+      assertNotNullish(this.triggerSelector, "Trigger selector is required");
+
       // Watch for new elements on the page
       const mutationObserver = initialize(
         this.triggerSelector,
@@ -803,6 +812,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
     switch (this.trigger) {
       case "load": {
+        assertNotNullish($root, "Root is required");
         await this.debouncedRunTriggersAndNotify([...$root], {
           nativeEvent: null,
         });
@@ -815,11 +825,13 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       }
 
       case "initialize": {
+        assertNotNullish($root, "Root is required");
         this.attachInitializeTrigger($root);
         break;
       }
 
       case "appear": {
+        assertNotNullish($root, "Root is required");
         this.assertElement($root);
         this.attachAppearTrigger($root);
         break;
@@ -836,12 +848,14 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       }
 
       case "custom": {
+        assertNotNullish($root, "Root is required");
         this.attachDOMTrigger($root, { watch: false });
         break;
       }
 
       default: {
         if (this.trigger) {
+          assertNotNullish($root, "Root is required");
           this.assertElement($root);
           this.attachDOMTrigger($root, { watch: this.attachMode === "watch" });
         } else {
@@ -958,6 +972,10 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
+    assertNotNullish(
+      cloned.metadata,
+      "metadata is required to create a starter brick",
+    );
     super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
@@ -968,11 +986,11 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
     };
   }
 
-  get debounceOptions(): DebounceOptions | null {
-    return this._definition.debounce;
+  get debounceOptions(): DebounceOptions {
+    return this._definition.debounce ?? {};
   }
 
-  get customTriggerOptions(): CustomEventOptions | null {
+  get customTriggerOptions(): CustomEventOptions | undefined {
     return this._definition.customEvent;
   }
 
@@ -1007,7 +1025,7 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
     return this._definition.intervalMillis ?? 0;
   }
 
-  get triggerSelector(): string | null {
+  get triggerSelector(): string | undefined {
     return this._definition.rootSelector;
   }
 
