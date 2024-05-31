@@ -39,9 +39,6 @@ import type { NetworkRequestConfig } from "@/types/networkTypes";
 
 jest.mock("@/background/messenger/strict/api", () => ({
   getUserData: jest.fn().mockRejectedValue(new Error("Not mocked")),
-}));
-
-jest.mock("@/background/messenger/strict/api", () => ({
   getCachedAuthData: jest.fn().mockRejectedValue(new Error("Not mocked")),
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({
     status: 201,
