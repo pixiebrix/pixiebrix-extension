@@ -1,7 +1,7 @@
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import {
   modDefinitionFactory,
-  starterBrickConfigFactory,
+  starterBrickDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import starterBrickRegistry from "@/starterBricks/registry";
 import { fromJS } from "@/starterBricks/factory";
@@ -22,7 +22,7 @@ describe("checkModDefinitionPermissions", () => {
     modDefinition.extensionPoints[0].permissions.permissions = [
       "clipboardWrite",
     ];
-    const starterBrick = fromJS(starterBrickConfigFactory());
+    const starterBrick = fromJS(starterBrickDefinitionFactory());
     starterBrickRegistry.register([starterBrick]);
     modDefinition.extensionPoints[0].id = starterBrick.id;
 
@@ -50,7 +50,7 @@ describe("checkModDefinitionPermissions", () => {
     modDefinition.extensionPoints[0].permissions.permissions = [
       "clipboardWrite",
     ];
-    const starterBrick = fromJS(starterBrickConfigFactory());
+    const starterBrick = fromJS(starterBrickDefinitionFactory());
     starterBrickRegistry.register([starterBrick]);
     modDefinition.extensionPoints[0].id = starterBrick.id;
 

@@ -15,11 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Availability, type ReaderConfig } from "@/bricks/types";
+import { type ReaderConfig } from "@/bricks/types";
 import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type ApiVersion, type RunArgs } from "@/types/runtimeTypes";
-import { type RegistryId, type Metadata } from "@/types/registryTypes";
+import { type RunArgs } from "@/types/runtimeTypes";
+import {
+  type RegistryId,
+  type Metadata,
+  type Definition,
+} from "@/types/registryTypes";
 import {
   type StarterBrickType,
   type StarterBrick,
@@ -32,6 +36,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type PlatformCapability } from "@/platform/capabilities";
 import { type PlatformProtocol } from "@/platform/platformProtocol";
+import { type Availability } from "@/types/availabilityTypes";
 
 /**
  * Follows the semantics of lodash's debounce: https://lodash.com/docs/4.17.15#debounce
@@ -64,50 +69,65 @@ export type CustomEventOptions = {
   eventName: string;
 };
 
-export interface StarterBrickDefinition {
+/**
+ * `definition` property of a starter brick definition.
+ * @see StarterBrickDefinitionLike
+ */
+export type StarterBrickDefinitionProp = {
   type: StarterBrickType;
   isAvailable: Availability;
   reader: ReaderConfig;
-}
+};
 
-export interface StarterBrickConfig<
-  T extends StarterBrickDefinition = StarterBrickDefinition,
+/**
+ * A registry package or inner definition of a starter brick.
+ *
+ * Does not extend `Definition` because apiVersion and metadata fields are not provided for inner definitions.
+ *
+ * @see Definition
+ */
+export interface StarterBrickDefinitionLike<
+  T extends StarterBrickDefinitionProp = StarterBrickDefinitionProp,
 > {
-  apiVersion?: ApiVersion;
-  metadata: Metadata;
+  apiVersion?: Definition["apiVersion"];
+  metadata?: Definition["metadata"];
   definition: T;
   kind: "extensionPoint";
 }
 
-export function assertStarterBrickConfig(
-  maybeStarterBrickConfig: unknown,
-): asserts maybeStarterBrickConfig is StarterBrickConfig {
-  const errorContext = { value: maybeStarterBrickConfig };
+export function assertStarterBrickDefinitionLike(
+  value: unknown,
+): asserts value is StarterBrickDefinitionLike {
+  const errorContext = { value };
 
-  if (typeof maybeStarterBrickConfig !== "object") {
+  if (typeof value !== "object") {
     console.warn("Expected extension point", errorContext);
-    throw new TypeError("Expected object for StarterBrickConfig");
+    throw new TypeError("Expected object for StarterBrickDefinitionLike");
   }
 
-  const config = maybeStarterBrickConfig as UnknownObject;
+  const config = value as UnknownObject;
 
   if (config.kind !== "extensionPoint") {
     console.warn("Expected extension point", errorContext);
     throw new TypeError(
-      "Expected kind 'extensionPoint' for StarterBrickConfig",
+      "Expected kind 'extensionPoint' for StarterBrickDefinitionLike",
     );
   }
 
   if (typeof config.definition !== "object") {
     console.warn("Expected extension point", errorContext);
-    throw new TypeError("Expected object for definition in StarterBrickConfig");
+    throw new TypeError(
+      "Expected object for definition in StarterBrickDefinitionLike",
+    );
   }
 
-  const definition = config.definition as StarterBrickDefinition;
+  const definition = config.definition as StarterBrickDefinitionProp;
 
   if (typeof definition.isAvailable !== "object") {
     console.warn("Expected object for definition.isAvailable", errorContext);
-    throw new TypeError("Invalid definition in StarterBrickConfig");
+    throw new TypeError(
+      "Invalid definition prop in StarterBrickDefinitionLike",
+    );
   }
 }
 
@@ -164,11 +184,11 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   // 2) contexts like the PageEditor to inspect the starter brick as if it were running on another platform
   protected constructor(
     public readonly platform: PlatformProtocol,
-    metadata: Metadata,
+    metadata: Metadata | undefined,
   ) {
-    this.id = validateRegistryId(metadata.id);
-    this.name = metadata.name;
-    this.description = metadata.description;
+    this.id = validateRegistryId(metadata?.id);
+    this.name = metadata?.name ?? "";
+    this.description = metadata?.description;
     this.instanceNonce = uuidv4();
     this.logger = this.platform.logger.childLogger({
       extensionPointId: this.id,

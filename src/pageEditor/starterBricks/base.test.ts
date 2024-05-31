@@ -23,7 +23,7 @@ import {
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type ReaderConfig } from "@/bricks/types";
 import { validateRegistryId } from "@/types/helpers";
-import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { toExpression } from "@/utils/expressionUtils";
 
 describe("removeEmptyValues()", () => {
@@ -74,7 +74,7 @@ describe("removeEmptyValues()", () => {
 
 describe("selectIsAvailable", () => {
   it("normalizes matchPatterns", () => {
-    const extensionPoint = starterBrickConfigFactory();
+    const extensionPoint = starterBrickDefinitionFactory();
     extensionPoint.definition.isAvailable.matchPatterns =
       "https://www.example.com";
     delete extensionPoint.definition.isAvailable.selectors;

@@ -34,7 +34,7 @@ import {
 } from "@/testUtils/factories/modComponentFactories";
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import {
-  starterBrickConfigFactory,
+  starterBrickDefinitionFactory,
   modDefinitionWithVersionedStarterBrickFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { getEditorState } from "@/store/editorStorage";
@@ -277,7 +277,7 @@ describe("deactivateMod function", () => {
   });
 
   it("should do nothing if mod id does not have any activated mod components", async () => {
-    const extensionPoint = starterBrickConfigFactory();
+    const extensionPoint = starterBrickDefinitionFactory();
     const extension = activatedModComponentFactory({
       extensionPointId: extensionPoint.metadata.id,
       _recipe: modMetadataFactory({}),

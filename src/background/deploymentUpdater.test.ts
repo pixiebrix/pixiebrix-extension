@@ -52,7 +52,7 @@ import {
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import {
   modComponentDefinitionFactory,
-  starterBrickConfigFactory,
+  starterBrickDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 
 import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
@@ -313,7 +313,7 @@ describe("syncDeployments", () => {
   test("ignore other mod components", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const starterBrick = starterBrickConfigFactory();
+    const starterBrick = starterBrickDefinitionFactory();
     const brick = {
       ...parsePackage(starterBrick as unknown as RegistryPackage),
       timestamp: new Date(),
@@ -425,7 +425,7 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    const starterBrick = starterBrickConfigFactory();
+    const starterBrick = starterBrickDefinitionFactory();
     const brick = {
       ...parsePackage(starterBrick as unknown as RegistryPackage),
       timestamp: new Date(),
@@ -719,7 +719,7 @@ describe("syncDeployments", () => {
   });
 
   test("can deactivate all deployed mods", async () => {
-    const personalStarterBrick = starterBrickConfigFactory();
+    const personalStarterBrick = starterBrickDefinitionFactory();
     const personalBrick = {
       ...parsePackage(personalStarterBrick as unknown as RegistryPackage),
       timestamp: new Date(),
@@ -733,7 +733,7 @@ describe("syncDeployments", () => {
       _recipe: modMetadataFactory(),
     }) as ActivatedModComponent;
 
-    const deploymentStarterBrick = starterBrickConfigFactory();
+    const deploymentStarterBrick = starterBrickDefinitionFactory();
     const deploymentsBrick = {
       ...parsePackage(deploymentStarterBrick as unknown as RegistryPackage),
       timestamp: new Date(),

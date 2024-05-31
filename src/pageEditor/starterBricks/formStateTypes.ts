@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type NormalizedAvailability } from "@/bricks/types";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import {
   type ContextMenuConfig,
@@ -60,6 +59,7 @@ import {
   type BaseFormState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
+import { type NormalizedAvailability } from "@/types/availabilityTypes";
 
 // ActionFormState
 type ActionExtensionState = BaseExtensionState &

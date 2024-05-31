@@ -25,11 +25,11 @@ import { checkAvailable } from "@/contentScript/messenger/strict/api";
 import { checkAvailable as backgroundCheckAvailable } from "@/bricks/available";
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
-import { type Availability } from "@/bricks/types";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
+import { type Availability } from "@/types/availabilityTypes";
 
 jest.mock("@/contentScript/messenger/strict/api");
 

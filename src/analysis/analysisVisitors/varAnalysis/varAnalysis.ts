@@ -135,7 +135,7 @@ async function setInputVars(
   contextVars: VarMap,
 ): Promise<void> {
   const adapter = ADAPTERS.get(extension.extensionPoint.definition.type);
-  const config = adapter.selectExtensionPointConfig(extension);
+  const config = adapter.selectStarterBrickDefinition(extension);
 
   const extensionPoint = fromJS(config);
 

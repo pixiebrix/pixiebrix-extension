@@ -30,7 +30,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
@@ -70,9 +70,9 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPointConfig(
+function selectStarterBrickDefinition(
   formState: TourFormState,
-): StarterBrickConfig<TourDefinition> {
+): StarterBrickDefinitionLike<TourDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: { isAvailable, reader },
@@ -107,7 +107,7 @@ function asDynamicElement(element: TourFormState): DynamicDefinition {
   return {
     type: "tour",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectExtensionPointConfig(element),
+    extensionPointConfig: selectStarterBrickDefinition(element),
   };
 }
 
@@ -155,7 +155,7 @@ const config: ElementConfig<undefined, TourFormState> = {
   icon: faMapSigns,
   fromNativeElement,
   asDynamicElement,
-  selectExtensionPointConfig,
+  selectStarterBrickDefinition,
   selectExtension,
   fromExtension,
 };

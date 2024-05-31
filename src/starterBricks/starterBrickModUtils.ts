@@ -19,7 +19,7 @@ import {
   type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type StarterBrickDefinition } from "@/starterBricks/types";
+import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import starterBrickRegistry from "@/starterBricks/registry";
 import { type RegistryId } from "@/types/registryTypes";
@@ -37,9 +37,9 @@ async function getStarterBrickType(
   // Look up the extension point in recipe inner definitions first
   if (modDefinition.definitions?.[modComponentDefinition.id]) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
-    const definition: StarterBrickDefinition = modDefinition.definitions[
+    const definition: StarterBrickDefinitionProp = modDefinition.definitions[
       modComponentDefinition.id
-    ]!.definition as StarterBrickDefinition;
+    ]!.definition as StarterBrickDefinitionProp;
     const extensionPointType = definition?.type;
 
     if (extensionPointType) {
@@ -60,9 +60,9 @@ export function getAllModComponentDefinitionsWithType(
   type: StarterBrickType,
 ): ModComponentDefinition[] {
   return modDefinition.extensionPoints.filter((extensionPoint) => {
-    const definition: StarterBrickDefinition = modDefinition.definitions?.[
+    const definition: StarterBrickDefinitionProp = modDefinition.definitions?.[
       extensionPoint.id
-    ]?.definition as StarterBrickDefinition;
+    ]?.definition as StarterBrickDefinitionProp;
     return definition?.type === type;
   });
 }

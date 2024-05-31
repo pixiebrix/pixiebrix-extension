@@ -31,9 +31,9 @@ import {
 } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type BrickPipeline } from "@/bricks/types";
 import contextMenu from "@/pageEditor/starterBricks/contextMenu";
@@ -55,7 +55,10 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
 });
 const internalFormStateFactory = define<
   ModComponentFormState & {
-    extensionPoint: DerivedFunction<ModComponentFormState, StarterBrickConfig>;
+    extensionPoint: DerivedFunction<
+      ModComponentFormState,
+      StarterBrickDefinitionLike
+    >;
   }
 >({
   apiVersion: "v3" as ApiVersion,
@@ -70,9 +73,9 @@ const internalFormStateFactory = define<
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   // @ts-expect-error -- TODO: verify typings
-  extensionPoint: derive<ModComponentFormState, StarterBrickConfig>(
+  extensionPoint: derive<ModComponentFormState, StarterBrickDefinitionLike>(
     ({ type }) => {
-      const starterBrick = starterBrickConfigFactory();
+      const starterBrick = starterBrickDefinitionFactory();
       starterBrick.definition.type = type;
       return starterBrick;
     },

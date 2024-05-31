@@ -19,7 +19,7 @@ import { type WizardValues } from "@/activation/wizardTypes";
 import { renderHook } from "@/pageEditor/testHelpers";
 import useActivateRecipe from "./useActivateRecipe";
 import { validateRegistryId } from "@/types/helpers";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/types";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -31,7 +31,7 @@ import databaseSchema from "@schemas/database.json";
 import { set } from "lodash";
 import {
   modComponentDefinitionFactory,
-  starterBrickConfigFactory,
+  starterBrickDefinitionFactory,
   defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
@@ -60,7 +60,7 @@ function setupInputs(): {
   const modComponentDefinition = modComponentDefinitionFactory({
     id: extensionPointId,
   });
-  const starterBrickConfig = starterBrickConfigFactory({
+  const starterBrickDefinition = starterBrickDefinitionFactory({
     metadata: metadataFactory({
       id: extensionPointId,
       name: "Text Starter Brick 1",
@@ -74,15 +74,15 @@ function setupInputs(): {
       },
       reader: [validateRegistryId("@pixiebrix/document-metadata")],
     },
-  }) as StarterBrickConfig<ContextMenuDefinition>;
-  starterBrickConfig.definition.targetMode = "eventTarget";
-  starterBrickConfig.definition.contexts = ["all"];
-  starterBrickConfig.definition.documentUrlPatterns = ["*://*/*"];
+  }) as StarterBrickDefinitionLike<ContextMenuDefinition>;
+  starterBrickDefinition.definition.targetMode = "eventTarget";
+  starterBrickDefinition.definition.contexts = ["all"];
+  starterBrickDefinition.definition.documentUrlPatterns = ["*://*/*"];
 
   const modDefinition = defaultModDefinitionFactory({
     extensionPoints: [modComponentDefinition],
     definitions: {
-      [extensionPointId]: starterBrickConfig,
+      [extensionPointId]: starterBrickDefinition,
     } as unknown as InnerDefinitions,
   });
 

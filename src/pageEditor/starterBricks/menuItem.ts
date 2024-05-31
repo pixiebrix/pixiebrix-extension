@@ -32,7 +32,7 @@ import {
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemExtension";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
@@ -85,9 +85,9 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPointConfig(
+function selectStarterBrickDefinition(
   formState: ActionFormState,
-): StarterBrickConfig<MenuItemDefinition> {
+): StarterBrickDefinitionLike<MenuItemDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {
@@ -174,7 +174,7 @@ function asDynamicElement(element: ActionFormState): ButtonDefinition {
   return {
     type: "menuItem",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectExtensionPointConfig(element),
+    extensionPointConfig: selectStarterBrickDefinition(element),
   };
 }
 
@@ -188,7 +188,7 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   selectNativeElement: insertButton,
   fromNativeElement,
   asDynamicElement,
-  selectExtensionPointConfig,
+  selectStarterBrickDefinition,
   selectExtension,
   fromExtension,
 };

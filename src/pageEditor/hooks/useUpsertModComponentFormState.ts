@@ -158,7 +158,7 @@ function useUpsertModComponentFormState(): SaveCallback {
         if (!isLocked) {
           try {
             const extensionPointConfig =
-              adapter.selectExtensionPointConfig(element);
+              adapter.selectStarterBrickDefinition(element);
             const packageId = element.installed
               ? editablePackages.find(
                   // Bricks endpoint uses "name" instead of id
@@ -190,7 +190,7 @@ function useUpsertModComponentFormState(): SaveCallback {
 
         if (hasInnerExtensionPoint) {
           const extensionPointConfig =
-            adapter.selectExtensionPointConfig(element);
+            adapter.selectStarterBrickDefinition(element);
           modComponent = extensionWithInnerDefinitions(
             modComponent,
             extensionPointConfig.definition,
