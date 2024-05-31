@@ -105,7 +105,7 @@ export interface Definition<K extends Kind = Kind> {
 export type InnerDefinitions = Record<string, UnknownObject>;
 
 /**
- * A reference to an entry in the recipe's `definitions` map. _Not a valid RegistryId_.
+ * A reference to an entry in the mod's `definitions` map. _Not a valid RegistryId_.
  * @see InnerDefinitions
  */
 export type InnerDefinitionRef = string & {
