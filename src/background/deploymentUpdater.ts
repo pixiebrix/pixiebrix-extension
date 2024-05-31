@@ -76,6 +76,7 @@ import { isAxiosError } from "@/errors/networkErrorHelpers";
 import type { components } from "@/types/swagger";
 import { transformMeResponse } from "@/data/model/Me";
 import { getMe } from "@/data/service/backgroundApi";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
@@ -387,13 +388,19 @@ export async function syncDeployments(): Promise<void> {
 
   const now = Date.now();
 
-  const [linked, { organizationId }, settings, managedStorage] =
-    await Promise.all([
-      isLinked(),
-      readAuthData(),
-      getSettingsState(),
-      readManagedStorage(),
-    ]);
+  const [
+    linked,
+    { organizationId },
+    settings,
+    managedStorage,
+    shouldReportDeployments,
+  ] = await Promise.all([
+    isLinked(),
+    readAuthData(),
+    getSettingsState(),
+    readManagedStorage(),
+    flagOn("report-background-deployments"),
+  ]);
 
   const {
     campaignIds = [],
@@ -485,12 +492,14 @@ export async function syncDeployments(): Promise<void> {
       },
     );
 
-  reportEvent(Events.DEPLOYMENT_SYNC, {
-    isSnoozed,
-    isUpdateOverdue,
-    updatePromptTimestamp,
-    timeRemaining,
-  });
+  if (shouldReportDeployments) {
+    reportEvent(Events.DEPLOYMENT_SYNC, {
+      isSnoozed,
+      isUpdateOverdue,
+      updatePromptTimestamp,
+      timeRemaining,
+    });
+  }
 
   // Ensure the user's flags and telemetry information is up-to-date
   void updateUserData(selectUserDataUpdate(meData));
@@ -509,9 +518,11 @@ export async function syncDeployments(): Promise<void> {
     },
   );
 
-  reportEvent(Events.DEPLOYMENT_LIST, {
-    deployments: deployments.map((deployment) => deployment.id),
-  });
+  if (shouldReportDeployments) {
+    reportEvent(Events.DEPLOYMENT_LIST, {
+      deployments: deployments.map((deployment) => deployment.id),
+    });
+  }
 
   // Always deactivate unassigned deployments
   await deactivateUnassignedDeployments(deployments);
@@ -522,9 +533,11 @@ export async function syncDeployments(): Promise<void> {
     restricted: meApiResponse.flags.includes("restricted-uninstall"),
   });
 
-  reportEvent(Events.DEPLOYMENT_UPDATE_LIST, {
-    deployments: updatedDeployments.map((deployment) => deployment.id),
-  });
+  if (shouldReportDeployments) {
+    reportEvent(Events.DEPLOYMENT_UPDATE_LIST, {
+      deployments: updatedDeployments.map((deployment) => deployment.id),
+    });
+  }
 
   if (
     isSnoozed &&
