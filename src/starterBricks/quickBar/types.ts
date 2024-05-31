@@ -16,7 +16,7 @@
  */
 
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import { type StarterBrickDefinition } from "@/starterBricks/types";
+import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Manifest, type Menus } from "webextension-polyfill";
 
@@ -41,7 +41,7 @@ export type QuickBarDefaultOptions = {
   [key: string]: string | string[] | undefined;
 };
 
-export interface QuickBarDefinition extends StarterBrickDefinition {
+export interface QuickBarDefinition extends StarterBrickDefinitionProp {
   documentUrlPatterns?: Manifest.MatchPattern[];
   contexts: Menus.ContextType[];
   targetMode: QuickBarTargetMode;

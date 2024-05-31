@@ -30,7 +30,7 @@ import {
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
@@ -79,9 +79,9 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPointConfig(
+function selectStarterBrickDefinition(
   formState: ContextMenuFormState,
-): StarterBrickConfig<ContextMenuDefinition> {
+): StarterBrickDefinitionLike<ContextMenuDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {
@@ -165,7 +165,7 @@ function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
   return {
     type: "contextMenu",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectExtensionPointConfig(element),
+    extensionPointConfig: selectStarterBrickDefinition(element),
   };
 }
 
@@ -179,7 +179,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   icon: faBars,
   fromNativeElement,
   asDynamicElement,
-  selectExtensionPointConfig,
+  selectStarterBrickDefinition,
   selectExtension,
   fromExtension,
 };

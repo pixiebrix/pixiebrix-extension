@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { PanelStarterBrickABC } from "@/starterBricks/panel/panelExtension";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
@@ -82,9 +82,9 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPointConfig(
+function selectStarterBrickDefinition(
   formState: PanelFormState,
-): StarterBrickConfig<PanelDefinition> {
+): StarterBrickDefinitionLike<PanelDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: { isAvailable, position, template, reader, containerSelector },
@@ -126,7 +126,7 @@ function asDynamicElement(element: PanelFormState): DynamicDefinition {
   return {
     type: "panel",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectExtensionPointConfig(element),
+    extensionPointConfig: selectStarterBrickDefinition(element),
   };
 }
 
@@ -181,7 +181,7 @@ const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
   EditorNode: PanelConfiguration,
   fromNativeElement,
   asDynamicElement,
-  selectExtensionPointConfig,
+  selectStarterBrickDefinition,
   selectExtension,
   fromExtension,
 };

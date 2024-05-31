@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
@@ -79,9 +79,9 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   };
 }
 
-function selectExtensionPointConfig(
+function selectStarterBrickDefinition(
   formState: SidebarFormState,
-): StarterBrickConfig {
+): StarterBrickDefinitionLike {
   const { extensionPoint } = formState;
   const {
     definition: { isAvailable, reader, trigger, debounce, customEvent },
@@ -120,7 +120,7 @@ function asDynamicElement(element: SidebarFormState): DynamicDefinition {
   return {
     type: "actionPanel",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectExtensionPointConfig(element),
+    extensionPointConfig: selectStarterBrickDefinition(element),
   };
 }
 
@@ -174,7 +174,7 @@ const config: ElementConfig<never, SidebarFormState> = {
   icon: faColumns,
   fromNativeElement,
   asDynamicElement,
-  selectExtensionPointConfig,
+  selectStarterBrickDefinition,
   selectExtension,
   fromExtension,
   EditorNode: SidebarConfiguration,

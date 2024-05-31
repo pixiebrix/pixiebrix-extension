@@ -46,7 +46,7 @@ import {
   getEventKeyForPanel,
 } from "@/store/sidebar/eventKeyUtils";
 import produce from "immer";
-import { type StarterBrickDefinition } from "@/starterBricks/types";
+import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import {
@@ -97,7 +97,8 @@ describe("debouncedActivateStarterMods", () => {
   ) {
     return produce(modDefinition, (draft) => {
       (
-        draft.definitions.extensionPoint.definition as StarterBrickDefinition
+        draft.definitions.extensionPoint
+          .definition as StarterBrickDefinitionProp
       ).type = type;
     });
   }

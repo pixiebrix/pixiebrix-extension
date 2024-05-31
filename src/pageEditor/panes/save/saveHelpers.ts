@@ -58,6 +58,7 @@ import {
   normalizeModOptionsDefinition,
 } from "@/utils/modUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -240,7 +241,7 @@ export function replaceModComponent(
       activatedModComponent,
     );
 
-    const { selectExtension, selectExtensionPointConfig } = ADAPTERS.get(
+    const { selectExtension, selectStarterBrickDefinition } = ADAPTERS.get(
       newModComponent.type,
     );
     const rawModComponent = selectExtension(newModComponent);
@@ -266,7 +267,8 @@ export function replaceModComponent(
     }
 
     if (hasInnerExtensionPoint) {
-      const extensionPointConfig = selectExtensionPointConfig(newModComponent);
+      const extensionPointConfig =
+        selectStarterBrickDefinition(newModComponent);
 
       const originalInnerId =
         sourceMod.extensionPoints.at(modComponentIndex).id;
@@ -300,7 +302,7 @@ export function replaceModComponent(
           draft.definitions[freshId] = {
             kind: "extensionPoint",
             definition: extensionPointConfig.definition,
-          };
+          } satisfies StarterBrickDefinitionLike;
         }
       } else {
         // There's only one, can re-use without breaking the other definition
@@ -308,7 +310,7 @@ export function replaceModComponent(
         draft.definitions[originalInnerId] = {
           kind: "extensionPoint",
           definition: extensionPointConfig.definition,
-        };
+        } satisfies StarterBrickDefinitionLike;
       }
 
       // eslint-disable-next-line security/detect-object-injection -- false positive for number
@@ -432,20 +434,20 @@ export function buildNewMod({
 
     const unsavedModComponents: ModComponentBase[] =
       dirtyModComponentFormStates.map((modComponentFormState) => {
-        const { selectExtension, selectExtensionPointConfig } = ADAPTERS.get(
+        const { selectExtension, selectStarterBrickDefinition } = ADAPTERS.get(
           modComponentFormState.type,
         );
         const unsavedModComponent = selectExtension(modComponentFormState);
 
         if (isInnerDefinitionRegistryId(unsavedModComponent.extensionPointId)) {
-          const extensionPointConfig = selectExtensionPointConfig(
+          const extensionPointConfig = selectStarterBrickDefinition(
             modComponentFormState,
           );
           unsavedModComponent.definitions = {
             [unsavedModComponent.extensionPointId]: {
               kind: "extensionPoint",
               definition: extensionPointConfig.definition,
-            },
+            } satisfies StarterBrickDefinitionLike,
           };
         }
 
