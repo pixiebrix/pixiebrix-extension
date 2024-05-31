@@ -184,11 +184,11 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   // 2) contexts like the PageEditor to inspect the starter brick as if it were running on another platform
   protected constructor(
     public readonly platform: PlatformProtocol,
-    metadata: Metadata | undefined,
+    metadata: Metadata,
   ) {
-    this.id = validateRegistryId(metadata?.id);
-    this.name = metadata?.name ?? "";
-    this.description = metadata?.description;
+    this.id = validateRegistryId(metadata.id);
+    this.name = metadata.name;
+    this.description = metadata.description;
     this.instanceNonce = uuidv4();
     this.logger = this.platform.logger.childLogger({
       extensionPointId: this.id,

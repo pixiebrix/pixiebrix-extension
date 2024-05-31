@@ -59,7 +59,7 @@ import {
   type SidebarConfig,
   type Trigger,
 } from "@/starterBricks/sidebar/types";
-import { type Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConfig> {
   abstract get trigger(): Trigger;
@@ -442,6 +442,10 @@ class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
   constructor(platform: PlatformProtocol, config: StarterBrickDefinitionLike) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
+    assertNotNullish(
+      cloned.metadata,
+      "metadata is required to create a starter brick",
+    );
     super(platform, cloned.metadata);
     this.rawConfig = cloned;
     this.definition = cloned.definition;

@@ -71,6 +71,7 @@ import {
   type ContextMenuConfig,
   type ContextMenuDefinition,
 } from "@/starterBricks/contextMenu/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
@@ -426,6 +427,11 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
+    assertNotNullish(
+      cloned.metadata,
+      "metadata is required to create a starter brick",
+    );
+
     super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
