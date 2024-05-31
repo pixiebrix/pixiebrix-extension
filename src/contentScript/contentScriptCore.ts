@@ -22,7 +22,7 @@ import "@/extensionContext";
 // Normal imports
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerExternalMessenger from "@/background/messenger/external/registration";
-import registerMessengerStrict from "@/contentScript/messenger/strict/registration";
+import registerMessenger from "@/contentScript/messenger/strict/registration";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import brickRegistry from "@/bricks/registry";
@@ -71,7 +71,7 @@ export async function init(): Promise<void> {
   console.debug(`contentScriptCore: init, location: ${location.href}`);
 
   void initMessengerLogging();
-  registerMessengerStrict();
+  registerMessenger();
   registerExternalMessenger();
   registerBuiltinBricks();
   registerContribBlocks();
