@@ -17,7 +17,7 @@
 
 import { expectContext } from "@/utils/expectContext";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { getCopilotHostData } from "@/contentScript/messenger/strict/api";
+import { getCopilotHostData } from "@/contentScript/messenger/api";
 import {
   type ProcessDataMap,
   SET_COPILOT_DATA_MESSAGE_TYPE,

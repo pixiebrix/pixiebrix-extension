@@ -41,7 +41,7 @@ import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import {
   ensureExtensionPointsInstalled,
   getReservedSidebarEntries,
-} from "@/contentScript/messenger/strict/api";
+} from "@/contentScript/messenger/api";
 import {
   getConnectedTabIdForSidebarTopFrame,
   getConnectedTarget,

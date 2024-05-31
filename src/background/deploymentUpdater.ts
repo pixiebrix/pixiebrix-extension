@@ -27,7 +27,7 @@ import {
   selectModComponentsForMod,
 } from "@/store/extensionsSelectors";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
-import { queueReactivateTab } from "@/contentScript/messenger/strict/api";
+import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab, getExtensionVersion } from "@/utils/extensionUtils";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
 import { type ModComponentState } from "@/store/extensionsTypes";
@@ -70,7 +70,7 @@ import { allSettled } from "@/utils/promiseUtils";
 import type { Manifest } from "webextension-polyfill";
 import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
 import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
-import { services } from "@/background/messenger/strict/api";
+import { services } from "@/background/messenger/api";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import type { components } from "@/types/swagger";

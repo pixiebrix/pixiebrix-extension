@@ -24,7 +24,7 @@ import {
   testOptions,
   throwBrick,
 } from "./pipelineTestHelpers";
-import { sendDeploymentAlert } from "@/background/messenger/strict/api";
+import { sendDeploymentAlert } from "@/background/messenger/api";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";

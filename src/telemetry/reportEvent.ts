@@ -17,6 +17,12 @@
 
 import { backgroundTarget as bg, getNotifier } from "webext-messenger";
 import { type Event } from "@/telemetry/events";
+import { expectContext } from "@/utils/expectContext";
+
+expectContext(
+  "extension",
+  "reportEvent requires access to the background messenger API",
+);
 
 // Private method. Do not move to api.ts
 const _record = getNotifier("RECORD_EVENT", bg);

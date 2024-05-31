@@ -17,7 +17,7 @@
 
 import extensionPointRegistry from "@/starterBricks/registry";
 import { fromJS } from "@/starterBricks/contextMenu/contextMenu";
-import * as backgroundApi from "@/background/messenger/strict/api";
+import * as backgroundApi from "@/background/messenger/api";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";

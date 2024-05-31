@@ -23,7 +23,7 @@ import {
   cancelForm,
   cancelTemporaryPanel,
   closeTemporaryPanel,
-} from "@/contentScript/messenger/strict/api";
+} from "@/contentScript/messenger/api";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import type { SidebarState } from "@/types/sidebarTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
@@ -36,7 +36,7 @@ import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 
 jest.mock("@/sidebar/messenger/api");
-jest.mock("@/contentScript/messenger/strict/api");
+jest.mock("@/contentScript/messenger/api");
 jest.mock("@/bricks/transformers/temporaryInfo/messenger/api");
 
 const cancelTemporaryPanelMock = jest.mocked(cancelTemporaryPanel);

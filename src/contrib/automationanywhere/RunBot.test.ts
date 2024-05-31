@@ -22,7 +22,7 @@ import {
   getUserData,
   getCachedAuthData,
   performConfiguredRequestInBackground,
-} from "@/background/messenger/strict/api";
+} from "@/background/messenger/api";
 import {
   type AuthData,
   type SanitizedIntegrationConfig,
@@ -41,7 +41,7 @@ jest.mock("@/background/messenger/api", () => ({
   getUserData: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 
-jest.mock("@/background/messenger/strict/api", () => ({
+jest.mock("@/background/messenger/api", () => ({
   getCachedAuthData: jest.fn().mockRejectedValue(new Error("Not mocked")),
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({
     status: 201,

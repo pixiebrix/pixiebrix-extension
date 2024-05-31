@@ -23,7 +23,7 @@ import {
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { contextMenus } from "@/background/messenger/strict/api";
+import { contextMenus } from "@/background/messenger/api";
 import { cloneDeep, partition } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { type Except } from "type-fest";

@@ -24,7 +24,7 @@ import {
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { once } from "lodash";
 import { onContextInvalidated } from "webext-events";
-import { documentReceivedFocus } from "@/background/messenger/strict/api";
+import { documentReceivedFocus } from "@/background/messenger/api";
 import { nonInteractivelyWriteToClipboard } from "./clipboardUtils";
 
 declare global {

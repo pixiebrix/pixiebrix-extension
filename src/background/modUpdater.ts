@@ -28,7 +28,7 @@ import { selectModComponentsForMod } from "@/store/extensionsSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
 import { groupBy, isEmpty, uniq } from "lodash";
 import { forEachTab } from "@/utils/extensionUtils";
-import { queueReactivateTab } from "@/contentScript/messenger/strict/api";
+import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";

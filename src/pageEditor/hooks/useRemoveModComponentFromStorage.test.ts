@@ -20,7 +20,7 @@ import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
 import { useRemoveModComponentFromStorage } from "./useRemoveModComponentFromStorage";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
-import { clearDynamicElements } from "@/contentScript/messenger/strict/api";
+import { clearDynamicElements } from "@/contentScript/messenger/api";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 

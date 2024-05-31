@@ -29,7 +29,7 @@ import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import { revertAll } from "@/store/commonActions";
-import { activateTheme } from "@/background/messenger/strict/api";
+import { activateTheme } from "@/background/messenger/api";
 
 export const initialSettingsState: SettingsState = {
   nextUpdate: null,

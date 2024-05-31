@@ -22,7 +22,7 @@ import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { validateRegistryId } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
-import { checkAvailable } from "@/contentScript/messenger/strict/api";
+import { checkAvailable } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
 import { checkAvailable as backgroundCheckAvailable } from "@/bricks/available";
@@ -32,7 +32,7 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";
 
-jest.mock("@/contentScript/messenger/strict/api");
+jest.mock("@/contentScript/messenger/api");
 jest.mock("@/pageEditor/context/connection");
 
 const { reducer: extensionsReducer } = extensionsSlice;

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { services } from "@/background/messenger/strict/api";
+import { services } from "@/background/messenger/api";
 import { useAuthOptions } from "@/hooks/auth";
 import {
   integrationDependencyFactory,

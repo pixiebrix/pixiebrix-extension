@@ -21,7 +21,7 @@ import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import { initialTheme } from "@/themes/themeStore";
 import { type AsyncState } from "@/types/sliceTypes";
 import { themeStorage } from "@/themes/themeUtils";
-import { activateTheme } from "@/background/messenger/strict/api";
+import { activateTheme } from "@/background/messenger/api";
 
 afterEach(() => {
   jest.clearAllMocks();

@@ -54,7 +54,7 @@ import {
 } from "@/utils/schemaUtils";
 import type BaseRegistry from "@/registry/memoryRegistry";
 import type { PlatformCapability } from "@/platform/capabilities";
-import { runHeadlessPipeline } from "@/contentScript/messenger/strict/api";
+import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 
 // Interface to avoid circular dependency with the implementation
 type BrickRegistryProtocol = BaseRegistry<RegistryId, Brick>;

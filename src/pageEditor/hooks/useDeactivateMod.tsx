@@ -28,7 +28,7 @@ import { uniq } from "lodash";
 import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { getIdForElement, getModIdForElement } from "@/pageEditor/utils";
-import { clearLog } from "@/background/messenger/strict/api";
+import { clearLog } from "@/background/messenger/api";
 
 type Config = {
   modId: RegistryId;
