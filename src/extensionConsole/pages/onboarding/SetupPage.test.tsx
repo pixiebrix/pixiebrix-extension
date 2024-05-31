@@ -36,11 +36,15 @@ import {
 import { meWithPartnerApiResponseFactory } from "@/testUtils/factories/authFactories";
 import notify from "@/utils/notify";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
+import { registry as backgroundRegistry } from "@/background/messenger/strict/api";
+import reportError from "@/telemetry/reportError";
 
 // Mock notify to assert success/failure because I was having issues writing assertions over the history.
 jest.mock("@/utils/notify");
+jest.mock("@/telemetry/reportError");
 
 const notifySuccessMock = jest.mocked(notify.success);
+const notifyWarnMock = jest.mocked(notify.warning);
 
 jest.mock("lodash", () => {
   const lodash = jest.requireActual("lodash");
@@ -64,7 +68,7 @@ jest.mock("p-memoize", () => {
 });
 
 jest.mock("@/data/service/baseService", () => ({
-  getInstallURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
+  getBaseURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));
 
 beforeEach(async () => {
@@ -117,6 +121,43 @@ describe("SetupPage", () => {
     expect(
       screen.getByText("Connect your Automation Co-Pilot account"),
     ).not.toBeNull();
+  });
+
+  test("shows error toast if fetching service defitions fails for OAuth2 partner user with required service id in settings", async () => {
+    await mockAuthenticatedMeApiResponse(meWithPartnerApiResponseFactory());
+    jest
+      .mocked(backgroundRegistry.syncRemote)
+      .mockRejectedValue(new Error("sdf"));
+
+    render(
+      <MemoryRouter>
+        <SetupPage />
+      </MemoryRouter>,
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            settingsSlice.actions.setAuthIntegrationId({
+              integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            }),
+          );
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("loader")).toBeNull();
+    });
+
+    expect(
+      screen.getByText("Connect your Automation Co-Pilot account"),
+    ).not.toBeNull();
+
+    expect(reportError).toHaveBeenCalledWith(new Error("sdf"));
+
+    expect(notifyWarnMock).toHaveBeenCalledWith({
+      message:
+        "Error retrieving partner integration definition. Reload the page. If the problem persists, restart your browser",
+    });
   });
 
   test("Start URL for OAuth2 flow", async () => {

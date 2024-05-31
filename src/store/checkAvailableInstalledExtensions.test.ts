@@ -24,10 +24,10 @@ import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelect
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { RemoteMenuItemExtensionPoint } from "@/starterBricks/menuItem/menuItemExtension";
-import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import { RemoteQuickBarExtensionPoint } from "@/starterBricks/quickBar/quickBarExtension";
-import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
@@ -63,51 +63,54 @@ describe("checkAvailableInstalledExtensions", () => {
       extensionPointId: unavailableQbId,
     });
 
-    const availableButtonStarterBrickConfig = starterBrickConfigFactory({
-      metadata(): Metadata {
-        return metadataFactory({
-          id: availableButtonId,
-        });
+    const availableButtonStarterBrickDefinition = starterBrickDefinitionFactory(
+      {
+        metadata(): Metadata {
+          return metadataFactory({
+            id: availableButtonId,
+          });
+        },
+        definition(): MenuItemDefinition {
+          return {
+            type: "menuItem",
+            containerSelector: "",
+            template: "",
+            isAvailable: {
+              matchPatterns: [testUrl],
+            },
+            reader: validateRegistryId("@pixiebrix/document-context"),
+          };
+        },
       },
-      definition(): MenuItemDefinition {
-        return {
-          type: "menuItem",
-          containerSelector: "",
-          template: "",
-          isAvailable: {
-            matchPatterns: [testUrl],
-          },
-          reader: validateRegistryId("@pixiebrix/document-context"),
-        };
-      },
-    }) as StarterBrickConfig<MenuItemDefinition>;
+    ) as StarterBrickDefinitionLike<MenuItemDefinition>;
     const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
       getPlatform(),
-      availableButtonStarterBrickConfig,
+      availableButtonStarterBrickDefinition,
     );
 
-    const availableQuickbarStarterBrickConfig = starterBrickConfigFactory({
-      metadata(): Metadata {
-        return metadataFactory({
-          id: availableQbId,
-        });
-      },
-      definition(): QuickBarDefinition {
-        return {
-          type: "quickBar",
-          contexts: ["all"],
-          documentUrlPatterns: [testUrl],
-          isAvailable: {
-            matchPatterns: [testUrl],
-          },
-          reader: validateRegistryId("@pixiebrix/document-context"),
-          targetMode: "document",
-        };
-      },
-    }) as StarterBrickConfig<QuickBarDefinition>;
+    const availableQuickbarStarterBrickDefinition =
+      starterBrickDefinitionFactory({
+        metadata(): Metadata {
+          return metadataFactory({
+            id: availableQbId,
+          });
+        },
+        definition(): QuickBarDefinition {
+          return {
+            type: "quickBar",
+            contexts: ["all"],
+            documentUrlPatterns: [testUrl],
+            isAvailable: {
+              matchPatterns: [testUrl],
+            },
+            reader: validateRegistryId("@pixiebrix/document-context"),
+            targetMode: "document",
+          };
+        },
+      }) as StarterBrickDefinitionLike<QuickBarDefinition>;
     const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
       getPlatform(),
-      availableQuickbarStarterBrickConfig,
+      availableQuickbarStarterBrickDefinition,
     );
     jest
       .mocked(getInstalledExtensionPoints)

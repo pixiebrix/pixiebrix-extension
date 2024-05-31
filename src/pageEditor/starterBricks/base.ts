@@ -22,9 +22,9 @@ import {
 } from "@/types/registryTypes";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
-  assertStarterBrickConfig,
-  type StarterBrickConfig,
-  type StarterBrickDefinition,
+  assertStarterBrickDefinitionLike,
+  type StarterBrickDefinitionLike,
+  type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import type React from "react";
@@ -36,11 +36,7 @@ import {
   validateRegistryId,
   normalizeSemVerString,
 } from "@/types/helpers";
-import {
-  type BrickPipeline,
-  type NormalizedAvailability,
-  type ReaderConfig,
-} from "@/bricks/types";
+import { type BrickPipeline, type ReaderConfig } from "@/bricks/types";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
@@ -60,6 +56,7 @@ import {
 } from "@/pageEditor/baseFormStateTypes";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { registry } from "@/background/messenger/strict/api";
+import { type NormalizedAvailability } from "@/types/availabilityTypes";
 
 export interface WizardStep {
   step: string;
@@ -209,9 +206,9 @@ export function internalStarterBrickMetaFactory(): Metadata {
  * Map availability from extension point configuration to state for the page editor.
  */
 export function selectIsAvailable(
-  extensionPoint: StarterBrickConfig,
+  extensionPoint: StarterBrickDefinitionLike,
 ): NormalizedAvailability {
-  assertStarterBrickConfig(extensionPoint);
+  assertStarterBrickDefinitionLike(extensionPoint);
 
   const availability: NormalizedAvailability = {};
 
@@ -256,13 +253,15 @@ export function cleanIsAvailable({
 }
 
 export async function lookupExtensionPoint<
-  TDefinition extends StarterBrickDefinition,
+  TDefinition extends StarterBrickDefinitionProp,
   TConfig extends UnknownObject,
   TType extends string,
 >(
   config: ModComponentBase<TConfig>,
   type: TType,
-): Promise<StarterBrickConfig<TDefinition> & { definition: { type: TType } }> {
+): Promise<
+  StarterBrickDefinitionLike<TDefinition> & { definition: { type: TType } }
+> {
   if (!config) {
     throw new Error("config is required");
   }
@@ -278,11 +277,11 @@ export async function lookupExtensionPoint<
       kind: "extensionPoint",
       metadata: internalStarterBrickMetaFactory(),
       ...definition,
-    } as unknown as StarterBrickConfig<TDefinition> & {
+    } as unknown as StarterBrickDefinitionLike<TDefinition> & {
       definition: { type: TType };
     };
 
-    assertStarterBrickConfig(innerExtensionPoint);
+    assertStarterBrickDefinitionLike(innerExtensionPoint);
     return innerExtensionPoint;
   }
 
@@ -294,19 +293,19 @@ export async function lookupExtensionPoint<
   }
 
   const extensionPoint =
-    brick.config as unknown as StarterBrickConfig<TDefinition>;
+    brick.config as unknown as StarterBrickDefinitionLike<TDefinition>;
   if (extensionPoint.definition.type !== type) {
     throw new Error(`Expected ${type} starter brick type`);
   }
 
-  return extensionPoint as StarterBrickConfig<TDefinition> & {
+  return extensionPoint as StarterBrickDefinitionLike<TDefinition> & {
     definition: { type: TType };
   };
 }
 
 export function baseSelectExtensionPoint(
   formState: BaseFormState,
-): Except<StarterBrickConfig, "definition"> {
+): Except<StarterBrickDefinitionLike, "definition"> {
   const { metadata } = formState.extensionPoint;
 
   return {
@@ -327,7 +326,7 @@ export function baseSelectExtensionPoint(
 
 export function extensionWithInnerDefinitions(
   extension: ModComponentBase,
-  extensionPointDefinition: StarterBrickDefinition,
+  extensionPointDefinition: StarterBrickDefinitionProp,
 ): ModComponentBase {
   if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
     const extensionPointId = freshIdentifier(

@@ -24,8 +24,8 @@ import {
   type CustomEventOptions,
   type DebounceOptions,
   StarterBrickABC,
-  type StarterBrickConfig,
-  type StarterBrickDefinition,
+  type StarterBrickDefinitionLike,
+  type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, debounce, noop } from "lodash";
@@ -870,7 +870,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
 type TriggerDefinitionOptions = Record<string, string>;
 
-export interface TriggerDefinition extends StarterBrickDefinition {
+export interface TriggerDefinition extends StarterBrickDefinitionProp {
   defaultOptions?: TriggerDefinitionOptions;
 
   /**
@@ -960,7 +960,7 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
 
   public readonly permissions: Permissions.Permissions;
 
-  public readonly rawConfig: StarterBrickConfig<TriggerDefinition>;
+  public readonly rawConfig: StarterBrickDefinitionLike<TriggerDefinition>;
 
   public override get defaultOptions(): Record<string, string> {
     return this._definition.defaultOptions ?? {};
@@ -968,7 +968,7 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickConfig<TriggerDefinition>,
+    config: StarterBrickDefinitionLike<TriggerDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -1043,7 +1043,7 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickConfig<TriggerDefinition>,
+  config: StarterBrickDefinitionLike<TriggerDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "trigger") {

@@ -16,7 +16,7 @@
  */
 
 import { type BrickPipeline, type BrickConfig } from "@/bricks/types";
-import { type StarterBrickDefinition } from "@/starterBricks/types";
+import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 
 export type TourConfig = {
   /**
@@ -26,7 +26,7 @@ export type TourConfig = {
   tour: BrickPipeline | BrickConfig;
 };
 
-export interface TourDefinition extends StarterBrickDefinition {
+export interface TourDefinition extends StarterBrickDefinitionProp {
   defaultOptions?: UnknownObject;
 
   /**

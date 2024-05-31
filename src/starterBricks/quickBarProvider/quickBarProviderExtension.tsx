@@ -19,7 +19,7 @@ import React from "react";
 import { type Manifest, type Permissions } from "webextension-polyfill";
 import {
   StarterBrickABC,
-  type StarterBrickConfig,
+  type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/bricks/available";
@@ -321,11 +321,11 @@ class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderStarterBrickA
 
   public readonly documentUrlPatterns: Manifest.MatchPattern[];
 
-  public readonly rawConfig: StarterBrickConfig<QuickBarProviderDefinition>;
+  public readonly rawConfig: StarterBrickDefinitionLike<QuickBarProviderDefinition>;
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickConfig<QuickBarProviderDefinition>,
+    config: StarterBrickDefinitionLike<QuickBarProviderDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -371,7 +371,7 @@ class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderStarterBrickA
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickConfig<QuickBarProviderDefinition>,
+  config: StarterBrickDefinitionLike<QuickBarProviderDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "quickBarProvider") {

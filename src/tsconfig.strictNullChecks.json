@@ -1017,6 +1017,7 @@
     "./tours/tourRunDatabase.test.ts",
     "./tours/tourRunDatabase.ts",
     "./types/annotationTypes.ts",
+    "./types/availabilityTypes.ts",
     "./types/brickTypes.ts",
     "./types/bricks/effectTypes.ts",
     "./types/bricks/readerTypes.ts",
