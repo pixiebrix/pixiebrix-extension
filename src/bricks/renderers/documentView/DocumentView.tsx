@@ -30,7 +30,7 @@ import StylesheetsContext, {
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,
   stylesheets: newStylesheets,
-  disableParentStyles,
+  disableParentStyles = false,
   options,
   meta,
   onAction,

@@ -27,7 +27,7 @@ import {
 import { produce } from "immer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { runMapArgs } from "@/contentScript/messenger/strict/api";
+import { runMapArgs } from "@/contentScript/messenger/api";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import useAsyncState from "@/hooks/useAsyncState";
 import DelayedRender from "@/components/DelayedRender";
@@ -137,13 +137,16 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
   return (
     <>
       {rootDefinitions?.map(({ documentElement, elementContext }, index) => {
-        const { Component, props } = buildDocumentBranch(
-          documentElement as DocumentElement,
-          {
+        const { Component, props } =
+          buildDocumentBranch(documentElement as DocumentElement, {
             staticId: joinPathParts(staticId, "list", "children"),
             branches: [...branches, { staticId, index }],
-          },
-        );
+          }) ?? {};
+
+        if (!Component) {
+          return null;
+        }
+
         return (
           // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
           <DocumentContext.Provider key={index} value={elementContext}>

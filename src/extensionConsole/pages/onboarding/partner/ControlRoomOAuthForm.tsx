@@ -17,7 +17,7 @@
 
 import React, { useCallback, useContext } from "react";
 import { uuidv4 } from "@/types/helpers";
-import { launchAuthIntegration } from "@/background/messenger/strict/api";
+import { launchAuthIntegration } from "@/background/messenger/api";
 import Form, {
   type RenderBody,
   type RenderSubmit,

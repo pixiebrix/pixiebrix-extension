@@ -29,7 +29,7 @@ import {
 import integrationRegistry from "@/integrations/registry";
 import { onContextInvalidated } from "webext-events";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { showLoginBanner as messengerApiShowLoginBanner } from "@/contentScript/messenger/strict/api";
+import { showLoginBanner as messengerApiShowLoginBanner } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 
 /**

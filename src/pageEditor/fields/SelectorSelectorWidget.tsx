@@ -34,7 +34,7 @@ import {
   enableOverlay,
   cancelSelect,
   selectElement,
-} from "@/contentScript/messenger/strict/api";
+} from "@/contentScript/messenger/api";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
 import { useSelector } from "react-redux";
 import { type SettingsState } from "@/store/settings/settingsTypes";

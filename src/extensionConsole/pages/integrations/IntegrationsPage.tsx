@@ -27,7 +27,7 @@ import IntegrationConfigEditorModal from "@/components/integrations/IntegrationC
 import PrivateIntegrationsCard from "./PrivateIntegrationsCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import { faCloud, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { services } from "@/background/messenger/strict/api";
+import { services } from "@/background/messenger/api";
 import ZapierIntegrationModal from "@/extensionConsole/pages/integrations/ZapierIntegrationModal";
 import notify from "@/utils/notify";
 import { useLocation } from "react-router";

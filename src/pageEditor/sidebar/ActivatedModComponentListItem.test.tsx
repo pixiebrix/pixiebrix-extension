@@ -22,10 +22,7 @@ import ActivatedModComponentListItem from "@/pageEditor/sidebar/ActivatedModComp
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { screen, waitFor } from "@testing-library/react";
-import {
-  disableOverlay,
-  enableOverlay,
-} from "@/contentScript/messenger/strict/api";
+import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("@/pageEditor/starterBricks/adapter", () => {

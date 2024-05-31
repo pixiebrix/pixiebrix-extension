@@ -21,20 +21,138 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
+import type { RemoteResponse } from "@/types/contract";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
-export const removeExtensionForEveryTab = getNotifier(
-  "REMOVE_EXTENSION_EVERY_TAB",
+export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
+
+export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL", bg);
+export const waitForContentScript = getMethod("WAIT_FOR_CONTENT_SCRIPT", bg);
+
+export const dataStore = {
+  get: getMethod("GET_DATA_STORE", bg),
+  set: getMethod("SET_DATA_STORE", bg),
+};
+export const activateTheme = getMethod("ACTIVATE_THEME", bg);
+
+export const traces = {
+  addEntry: getNotifier("ADD_TRACE_ENTRY", bg),
+  addExit: getNotifier("ADD_TRACE_EXIT", bg),
+  clear: getMethod("CLEAR_TRACES", bg),
+  clearAll: getNotifier("CLEAR_ALL_TRACES", bg),
+};
+
+export const captureTab = getMethod("CAPTURE_TAB", bg);
+export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
+export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
+
+export const hasCachedAuthData = getMethod("HAS_CACHED_AUTH", bg);
+
+export const setToolbarBadge = getMethod("SET_TOOLBAR_BADGE", bg);
+export const documentReceivedFocus = getNotifier("DOCUMENT_RECEIVED_FOCUS", bg);
+
+export const writeToClipboardInFocusedDocument = getMethod(
+  "WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT",
   bg,
 );
 
-export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
+export const registry = {
+  syncRemote: getMethod("REGISTRY_SYNC", bg),
+  getByKinds: getMethod("REGISTRY_GET_BY_KINDS", bg),
+  find: getMethod("REGISTRY_FIND", bg),
+  clear: getMethod("REGISTRY_CLEAR", bg),
+};
+
+export const queryTabs = getMethod("QUERY_TABS", bg);
+
+// Use this instead: `import reportEvent from "@/telemetry/reportEvent"`
+// export const recordEvent = getNotifier("RECORD_EVENT", bg);
+
+export const recordLog = getNotifier("RECORD_LOG", bg);
+export const clearLogs = getMethod("CLEAR_LOGS", bg);
+export const clearLog = getMethod("CLEAR_LOG", bg);
+export const clearExtensionDebugLogs = getMethod(
+  "CLEAR_EXTENSION_DEBUG_LOGS",
+  bg,
+);
+
+export const fetchFeatureFlagsInBackground = getMethod(
+  "FETCH_FEATURE_FLAGS",
+  bg,
+);
+
+export const services = {
+  locateAllForId: getMethod("LOCATE_SERVICES_FOR_ID", bg),
+  locate: getMethod("LOCATE_SERVICE", bg),
+  refresh: getMethod("REFRESH_SERVICES", bg),
+  refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
+};
+
+export const openTab = getMethod("OPEN_TAB", bg);
+export const closeTab = getMethod("CLOSE_TAB", bg);
+export const focusTab = getMethod("FOCUS_TAB", bg);
+
+export const launchInteractiveOAuthFlow = getMethod(
+  "LAUNCH_INTERACTIVE_OAUTH_FLOW",
+  bg,
+);
+
+// `getMethod` currently strips generics, so we must copy the function signature here
+export const performConfiguredRequestInBackground = getMethod(
+  "CONFIGURED_REQUEST",
+  bg,
+) as <TData>(
+  integrationConfig: Nullishable<SanitizedIntegrationConfig>,
+  requestConfig: NetworkRequestConfig,
+  options: { interactiveLogin: boolean },
+) => Promise<RemoteResponse<TData>>;
+
+export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
+export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
+
+export const ping = getMethod("PING", bg);
+export const collectPerformanceDiagnostics = getMethod(
+  "COLLECT_PERFORMANCE_DIAGNOSTICS",
+  bg,
+);
+
+// Use this instead: `import reportError from "@/telemetry/reportError"`
+// export const recordError = getNotifier("RECORD_ERROR", bg);
+
+export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
+export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
+
+export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
+/**
+ * Uninstall context menu and return whether the context menu was uninstalled.
+ */
+export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
+
+export const setPartnerCopilotData = getNotifier(
+  "SET_PARTNER_COPILOT_DATA",
+  bg,
+);
+
+export const requestRun = {
+  inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
+  inTarget: getMethod("REQUEST_RUN_IN_TARGET", bg),
+  inTop: getMethod("REQUEST_RUN_IN_TOP", bg),
+  inOtherTabs: getMethod("REQUEST_RUN_IN_OTHER_TABS", bg),
+  inAllFrames: getMethod("REQUEST_RUN_IN_ALL_FRAMES", bg),
+};
 
 export const contextMenus = {
   preload: getMethod("PRELOAD_CONTEXT_MENUS", bg),
 };
 
+export const removeExtensionForEveryTab = getNotifier(
+  "REMOVE_EXTENSION_EVERY_TAB",
+  bg,
+);
+export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 export const getUserData = getMethod("GET_USER_DATA", bg);
-
 export const installStarterBlueprints = getMethod(
   "INSTALL_STARTER_BLUEPRINTS",
   bg,

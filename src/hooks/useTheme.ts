@@ -24,7 +24,7 @@ import {
 } from "@/themes/themeUtils";
 import { initialTheme } from "@/themes/themeStore";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
-import { activateTheme } from "@/background/messenger/strict/api";
+import { activateTheme } from "@/background/messenger/api";
 
 const themeStorageSubscribe = (callback: () => void) => {
   const abortController = new AbortController();

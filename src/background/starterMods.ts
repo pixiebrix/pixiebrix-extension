@@ -137,12 +137,14 @@ function closeStarterModTabs({
 }
 
 function initialOptionsArgs(modDefinition: ModDefinition): OptionsArgs {
+  const schema = modDefinition.options?.schema;
   return Object.fromEntries(
-    Object.entries(modDefinition.options?.schema?.properties ?? {})
+    Object.entries(schema?.properties ?? {})
       .filter(
         ([name, fieldSchema]) =>
           isDatabasePreviewField(fieldSchema) &&
-          isRequired(modDefinition.options.schema, name),
+          schema &&
+          isRequired(schema, name),
       )
       .map(([name, fieldSchema]) => [
         name,

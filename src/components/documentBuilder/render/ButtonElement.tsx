@@ -18,7 +18,7 @@
 import React, { useContext, useState } from "react";
 import { type BrickPipeline } from "@/bricks/types";
 import AsyncButton, { type AsyncButtonProps } from "@/components/AsyncButton";
-import { runHeadlessPipeline } from "@/contentScript/messenger/strict/api";
+import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { type Except } from "type-fest";
@@ -87,7 +87,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
         },
       });
     } catch (error) {
-      if (hasSpecificErrorCause(error, SubmitPanelAction)) {
+      if (hasSpecificErrorCause(error, SubmitPanelAction) && onAction) {
         // The error was created by the SubmitPanelEffect brick
         const rootCause = getRootCause(error) as SubmitPanelAction;
         onAction({ type: rootCause.type, detail: rootCause.detail });

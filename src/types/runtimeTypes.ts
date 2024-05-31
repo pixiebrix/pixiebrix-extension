@@ -212,7 +212,7 @@ export type RunArgs = {
   /**
    * If provided, only run the specified ModComponents.
    */
-  extensionIds?: UUID[];
+  extensionIds?: UUID[] | null;
 };
 
 /**

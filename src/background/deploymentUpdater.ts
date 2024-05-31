@@ -70,7 +70,7 @@ import { allSettled } from "@/utils/promiseUtils";
 import type { Manifest } from "webextension-polyfill";
 import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
 import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
-import { services } from "@/background/messenger/strict/api";
+import { services } from "@/background/messenger/api";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import type { components } from "@/types/swagger";

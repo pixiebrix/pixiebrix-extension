@@ -28,7 +28,7 @@ import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOpti
 import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import { render } from "@/pageEditor/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
-import { hasCachedAuthData, services } from "@/background/messenger/strict/api";
+import { hasCachedAuthData, services } from "@/background/messenger/api";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,

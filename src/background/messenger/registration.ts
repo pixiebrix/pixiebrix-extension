@@ -15,38 +15,211 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file
- * Do not use `getMethod` in this file; Keep only registrations here, not implementations
- *
- * `strictNullCheck errors` context: https://github.com/pixiebrix/pixiebrix-extension/issues/6526
- */
-
+/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // Depends on contentScript/messenger to pass strictNullCheck
-import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // Depends on contentScript/messenger to pass strictNullCheck
-import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus"; // 193 strictNullCheck errors
+import { showMySidePanel } from "@/background/sidePanel";
+import { waitForContentScript } from "@/background/contentScript";
+import { getRecord, setRecord } from "@/background/dataStore";
+import initTheme from "@/background/initTheme";
+import {
+  addTraceEntry,
+  addTraceExit,
+  clearExtensionTraces,
+  clearTraces,
+} from "@/telemetry/trace";
+import { captureTab } from "@/background/capture";
+import {
+  deleteCachedAuthData,
+  getCachedAuthData,
+  hasCachedAuthData,
+} from "@/background/auth/authStorage";
+import { setToolbarBadge } from "@/background/toolbarBadge";
+import { rememberFocus } from "@/utils/focusTracker";
+import writeToClipboardInFocusedContext from "@/background/clipboard";
+import * as registry from "@/registry/packageRegistry";
+import serviceRegistry from "@/integrations/registry";
+import { getUserData } from "@/auth/authStorage";
+import {
+  clearExtensionDebugLogs,
+  clearLog,
+  clearLogs,
+  recordError,
+  recordLog,
+} from "@/telemetry/logging";
+import { fetchFeatureFlags } from "@/auth/featureFlagStorage";
+import { locator, refreshServices } from "@/background/locator";
+import { closeTab, focusTab, openTab } from "@/background/tabs";
+import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow";
+import { performConfiguredRequest } from "@/background/requests";
+import {
+  getPartnerPrincipals,
+  launchAuthIntegration,
+} from "@/background/partnerIntegrations";
+import { getAvailableVersion } from "@/background/installer";
+import {
+  collectPerformanceDiagnostics,
+  initTelemetry,
+  pong,
+  recordEvent,
+  sendDeploymentAlert,
+} from "@/background/telemetry";
+import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
+import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
+import { setCopilotProcessData } from "@/background/partnerHandlers";
+import {
+  requestRunInAllFrames,
+  requestRunInOtherTabs,
+  requestRunInOpener,
+  requestRunInTarget,
+  requestRunInTop,
+} from "@/background/executor";
+import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
+import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods";
 
 expectContext("background");
 
 declare global {
   interface MessengerMethods {
+    SHOW_MY_SIDE_PANEL: typeof showMySidePanel;
+    WAIT_FOR_CONTENT_SCRIPT: typeof waitForContentScript;
+    GET_DATA_STORE: typeof getRecord;
+    SET_DATA_STORE: typeof setRecord;
+    ACTIVATE_THEME: typeof initTheme;
+    ADD_TRACE_ENTRY: typeof addTraceEntry;
+    ADD_TRACE_EXIT: typeof addTraceExit;
+    CLEAR_TRACES: typeof clearExtensionTraces;
+    CLEAR_ALL_TRACES: typeof clearTraces;
+    CAPTURE_TAB: typeof captureTab;
+    DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
+    GET_CACHED_AUTH: typeof getCachedAuthData;
+    HAS_CACHED_AUTH: typeof hasCachedAuthData;
+    SET_TOOLBAR_BADGE: typeof setToolbarBadge;
+    DOCUMENT_RECEIVED_FOCUS: typeof rememberFocus;
+    WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT: typeof writeToClipboardInFocusedContext;
+    REGISTRY_SYNC: typeof registry.syncPackages;
+    REGISTRY_CLEAR: typeof registry.clear;
+    REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
+    REGISTRY_FIND: typeof registry.find;
+    QUERY_TABS: typeof browser.tabs.query;
+    FETCH_FEATURE_FLAGS: typeof fetchFeatureFlags;
+
+    CLEAR_SERVICE_CACHE: typeof serviceRegistry.clear;
+    GET_USER_DATA: typeof getUserData;
+    RECORD_LOG: typeof recordLog;
+    RECORD_ERROR: typeof recordError;
+    CLEAR_LOGS: typeof clearLogs;
+    CLEAR_LOG: typeof clearLog;
+    CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
+
+    LOCATE_SERVICES_FOR_ID: typeof locator.locateAllForService;
+    LOCATE_SERVICE: typeof locator.locate;
+    REFRESH_SERVICES: typeof refreshServices;
+    LOCATOR_REFRESH_LOCAL: typeof locator.refreshLocal;
+
+    OPEN_TAB: typeof openTab;
+    CLOSE_TAB: typeof closeTab;
+    FOCUS_TAB: typeof focusTab;
+
+    LAUNCH_INTERACTIVE_OAUTH_FLOW: typeof launchInteractiveOAuth2Flow;
+
+    CONFIGURED_REQUEST: typeof performConfiguredRequest;
+
+    GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
+    LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
+
+    GET_AVAILABLE_VERSION: typeof getAvailableVersion;
+
+    PING: typeof pong;
+    COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
+    RECORD_EVENT: typeof recordEvent;
+    INIT_TELEMETRY: typeof initTelemetry;
+    SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
+
+    ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
+    UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
+    SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
+
+    REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
+    REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
+    REQUEST_RUN_IN_TOP: typeof requestRunInTop;
+    REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInOtherTabs;
+    REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
-
-    INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
-
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
+    INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
   }
 }
 
 export default function registerMessenger(): void {
   registerMethods({
-    INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
+    SHOW_MY_SIDE_PANEL: showMySidePanel,
+    WAIT_FOR_CONTENT_SCRIPT: waitForContentScript,
+    GET_DATA_STORE: getRecord,
+    SET_DATA_STORE: setRecord,
+    ACTIVATE_THEME: initTheme,
+    ADD_TRACE_ENTRY: addTraceEntry,
+    ADD_TRACE_EXIT: addTraceExit,
+    CLEAR_TRACES: clearExtensionTraces,
+    CLEAR_ALL_TRACES: clearTraces,
+    CAPTURE_TAB: captureTab,
+    DELETE_CACHED_AUTH: deleteCachedAuthData,
+    GET_CACHED_AUTH: getCachedAuthData,
+    HAS_CACHED_AUTH: hasCachedAuthData,
+    SET_TOOLBAR_BADGE: setToolbarBadge,
+    DOCUMENT_RECEIVED_FOCUS: rememberFocus,
+    WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT: writeToClipboardInFocusedContext,
+    REGISTRY_SYNC: registry.syncPackages,
+    REGISTRY_CLEAR: registry.clear,
+    REGISTRY_GET_BY_KINDS: registry.getByKinds,
+    REGISTRY_FIND: registry.find,
+    QUERY_TABS: browser.tabs.query,
+    FETCH_FEATURE_FLAGS: fetchFeatureFlags,
 
+    CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
+    GET_USER_DATA: getUserData,
+    RECORD_LOG: recordLog,
+    RECORD_ERROR: recordError,
+    CLEAR_LOGS: clearLogs,
+    CLEAR_LOG: clearLog,
+    CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
+
+    LOCATE_SERVICES_FOR_ID: locator.locateAllForService.bind(locator),
+    LOCATE_SERVICE: locator.locate.bind(locator),
+    LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),
+    REFRESH_SERVICES: refreshServices,
+
+    OPEN_TAB: openTab,
+    CLOSE_TAB: closeTab,
+    FOCUS_TAB: focusTab,
+
+    LAUNCH_INTERACTIVE_OAUTH_FLOW: launchInteractiveOAuth2Flow,
+
+    CONFIGURED_REQUEST: performConfiguredRequest,
+
+    GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
+    LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
+
+    GET_AVAILABLE_VERSION: getAvailableVersion,
+
+    PING: pong,
+    COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
+    RECORD_EVENT: recordEvent,
+    INIT_TELEMETRY: initTelemetry,
+    SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
+
+    ENSURE_CONTEXT_MENU: ensureContextMenu,
+    UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
+    SET_PARTNER_COPILOT_DATA: setCopilotProcessData,
+
+    REQUEST_RUN_IN_OPENER: requestRunInOpener,
+    REQUEST_RUN_IN_TARGET: requestRunInTarget,
+    REQUEST_RUN_IN_TOP: requestRunInTop,
+    REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
+    REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
-
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
+    INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
   });
 }

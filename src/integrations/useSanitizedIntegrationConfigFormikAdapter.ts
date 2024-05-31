@@ -20,7 +20,7 @@ import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
 } from "@/integrations/integrationTypes";
-import { services } from "@/background/messenger/strict/api";
+import { services } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";

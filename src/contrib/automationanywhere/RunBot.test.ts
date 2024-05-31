@@ -18,11 +18,11 @@
 import { RunBot } from "@/contrib/automationanywhere/RunBot";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { uuidv4 } from "@/types/helpers";
-import { getUserData } from "@/background/messenger/api";
 import {
+  getUserData,
   getCachedAuthData,
   performConfiguredRequestInBackground,
-} from "@/background/messenger/strict/api";
+} from "@/background/messenger/api";
 import {
   type AuthData,
   type SanitizedIntegrationConfig,
@@ -39,9 +39,6 @@ import type { NetworkRequestConfig } from "@/types/networkTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   getUserData: jest.fn().mockRejectedValue(new Error("Not mocked")),
-}));
-
-jest.mock("@/background/messenger/strict/api", () => ({
   getCachedAuthData: jest.fn().mockRejectedValue(new Error("Not mocked")),
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({
     status: 201,
