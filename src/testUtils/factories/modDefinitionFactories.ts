@@ -38,7 +38,6 @@ import {
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
 import { type SafeString } from "@/types/stringTypes";
-
 import {
   remoteIntegrationConfigurationFactory,
   remoteIntegrationServiceFactory,

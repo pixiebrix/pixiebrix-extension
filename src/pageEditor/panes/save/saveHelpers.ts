@@ -530,9 +530,9 @@ function buildModComponents(
         needsFreshStarterBrickId = true;
 
         if (
-          // eslint-disable-next-line security/detect-object-injection -- extensionPointId is coming from the modComponent definition entries
           isInnerDefinitionEqual(
             componentInnerDefinition,
+            // eslint-disable-next-line security/detect-object-injection -- extensionPointId is coming from the modComponent definition entries
             definitionsResult[componentInnerDefinitionId],
           )
         ) {
