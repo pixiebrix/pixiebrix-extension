@@ -62,7 +62,10 @@ import {
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
-import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import {
+  emptyModOptionsDefinitionFactory,
+  normalizeModDefinition,
+} from "@/utils/modUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
@@ -776,7 +779,9 @@ describe("buildNewMod", () => {
       });
 
       // Compare results
-      expect(newMod).toStrictEqual(updatedMod);
+      expect(normalizeModDefinition(newMod)).toStrictEqual(
+        normalizeModDefinition(updatedMod),
+      );
     },
   );
 });

@@ -26,7 +26,7 @@ import {
   PACKAGE_REGEX,
   validateRegistryId,
 } from "@/types/helpers";
-import { compact, isEqual, pick, sortBy } from "lodash";
+import { compact, pick, sortBy } from "lodash";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -59,6 +59,10 @@ import {
 } from "@/utils/modUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
+import {
+  isInnerDefinitionEqual,
+  isStarterBrickDefinitionPropEqual,
+} from "@/starterBricks/starterBrickUtils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -282,12 +286,8 @@ export function replaceModComponent(
         // definition was modified, the behavior we want (at least for now) is to create new extensionPoint entry
         // instead of modifying the shared entry. If it wasn't modified, we don't have to make any changes.
 
-        // NOTE: there are some non-functional changes (e.g., services being normalized from undefined to {}) that will
-        // cause the definitions to not be equal. This is OK for now -- in practice it won't happen for mods
-        // originally built using the Page Editor since it produces configs that include the explicit {} and [] objects
-        // instead of undefined.
         if (
-          !isEqual(
+          !isStarterBrickDefinitionPropEqual(
             // eslint-disable-next-line security/detect-object-injection -- existing id
             draft.definitions[originalInnerId].definition,
             extensionPointConfig.definition,
@@ -400,9 +400,7 @@ export function buildNewMod({
 
   return produce(unsavedModDefinition, (draft: UnsavedModDefinition): void => {
     if (dirtyModOptions) {
-      draft.options = isModOptionsSchemaEmpty(dirtyModOptions)
-        ? undefined
-        : normalizeModOptionsDefinition(dirtyModOptions);
+      draft.options = normalizeModOptionsDefinition(dirtyModOptions);
     }
 
     if (dirtyModMetadata) {
@@ -500,7 +498,7 @@ function buildExtensionPoints(
 
         // Check to see if the definition has already been added under a different id
         for (const [id, innerDefinition] of Object.entries(innerDefinitions)) {
-          if (isEqual(definition, innerDefinition)) {
+          if (isInnerDefinitionEqual(definition, innerDefinition)) {
             // We found a match in the definitions we've already built
             isDefinitionAlreadyAdded = true;
 
@@ -518,8 +516,10 @@ function buildExtensionPoints(
         // We already used this extensionPointId, need to generate a fresh one
         needsFreshExtensionPointId = true;
 
-        // eslint-disable-next-line security/detect-object-injection -- extensionPointId is coming from the modComponent definition entries
-        if (isEqual(definition, innerDefinitions[extensionPointId])) {
+        if (
+          // eslint-disable-next-line security/detect-object-injection -- extensionPointId is coming from the modComponent definition entries
+          isInnerDefinitionEqual(definition, innerDefinitions[extensionPointId])
+        ) {
           // Not only has the id been used before, but the definition deeply matches
           // the one being added as well
           isDefinitionAlreadyAdded = true;

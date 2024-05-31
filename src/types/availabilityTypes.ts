@@ -53,7 +53,7 @@ export type Availability = {
 };
 
 /**
- * Availability with consistent shape (i.e., all fields are arrays if provided)
+ * Availability with consistent shape (i.e., all fields provided arrays).
  * @see Availability
  */
 export type NormalizedAvailability = {
@@ -62,7 +62,7 @@ export type NormalizedAvailability = {
    *
    * See https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns for valid match patterns.
    */
-  matchPatterns?: string[];
+  matchPatterns: string[];
   /**
    * NOTE: the urlPatterns must be a subset of matchPatterns (i.e., more restrictive). If not, PixieBrix may not have
    * access to the page
@@ -70,12 +70,12 @@ export type NormalizedAvailability = {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
    * @since 1.4.10
    */
-  urlPatterns?: URLPattern[];
+  urlPatterns: URLPattern[];
   /**
    * A selector that must be available on the page in order for the extension to be run.
    *
    * NOTE: the selector must be available at the time the contentScript is installed. While the contentScript is loaded
    * on document_idle, for SPAs this may lead to races between the selector check and rendering of the front-end.
    */
-  selectors?: string[];
+  selectors: string[];
 };

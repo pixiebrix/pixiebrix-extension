@@ -20,7 +20,22 @@ import { castArray } from "lodash";
 import { type Entries } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { $safeFind } from "@/utils/domUtils";
-import { type Availability } from "@/types/availabilityTypes";
+import {
+  type Availability,
+  type NormalizedAvailability,
+} from "@/types/availabilityTypes";
+
+export function normalizeAvailability(
+  availability: Availability,
+): NormalizedAvailability {
+  const { matchPatterns = [], urlPatterns = [], selectors = [] } = availability;
+
+  return {
+    matchPatterns: castArray(matchPatterns),
+    urlPatterns: castArray(urlPatterns),
+    selectors: castArray(selectors),
+  };
+}
 
 export function testMatchPatterns(
   patterns: string[],
@@ -79,27 +94,25 @@ function testSelector(selector: string): boolean {
   return $safeFind(selector).length > 0;
 }
 
+/**
+ * Returns true if the availability rules match the given document/URL.
+ * @param availability availability rules
+ * @param url the URL to check match and URL patterns against, defaults to the document's URL
+ */
 export async function checkAvailable(
   availability: Availability,
   url?: string,
 ): Promise<boolean> {
-  const {
-    matchPatterns: rawMatchPatterns = [],
-    urlPatterns: rawUrlPatterns = [],
-    selectors: rawSelectors = [],
-  } = availability;
-
-  const matchPatterns = rawMatchPatterns ? castArray(rawMatchPatterns) : [];
-  const urlPatterns = rawUrlPatterns ? castArray(rawUrlPatterns) : [];
-  const selectors = rawSelectors ? castArray(rawSelectors) : [];
+  const { matchPatterns, urlPatterns, selectors } =
+    normalizeAvailability(availability);
 
   if (process.env.DEBUG) {
     const result = {
       matchPatterns:
-        matchPatterns.length === 0 || testMatchPatterns(matchPatterns),
+        matchPatterns.length === 0 || testMatchPatterns(matchPatterns, url),
       urlPatterns:
         urlPatterns.length === 0 ||
-        urlPatterns.some((pattern) => testUrlPattern(pattern)),
+        urlPatterns.some((pattern) => testUrlPattern(pattern, url)),
       selectors:
         selectors.length === 0 ||
         selectors.some((selector) => testSelector(selector)),
@@ -123,7 +136,7 @@ export async function checkAvailable(
 
   if (
     urlPatterns.length > 0 &&
-    !urlPatterns.some((pattern) => testUrlPattern(pattern))
+    !urlPatterns.some((pattern) => testUrlPattern(pattern, url))
   ) {
     return false;
   }
