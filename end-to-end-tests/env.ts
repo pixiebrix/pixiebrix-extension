@@ -24,6 +24,8 @@ const requiredEnvVariables = [
   "SERVICE_URL",
   "E2E_TEST_USER_EMAIL_UNAFFILIATED",
   "E2E_TEST_USER_PASSWORD_UNAFFILIATED",
+  "E2E_GOOGLE_TEST_USER_EMAIL",
+  "E2E_GOOGLE_TEST_USER_PASSWORD",
   "SHADOW_DOM",
 ] as const;
 
@@ -68,6 +70,8 @@ export const {
   SERVICE_URL,
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
+  E2E_GOOGLE_TEST_USER_EMAIL,
+  E2E_GOOGLE_TEST_USER_PASSWORD,
 } = process.env as RequiredEnvVariables;
 
 export const { CI, SLOWMO, PWDEBUG } = process.env as OptionalEnvVariables;
