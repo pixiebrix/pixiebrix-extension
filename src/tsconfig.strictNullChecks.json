@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./layout/EnvironmentBanner.tsx",
     "./contentScript/sidebarActivation.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
