@@ -738,6 +738,8 @@
     "./extensionConsole/pages/mods/utils/exportBlueprint.ts",
     "./extensionConsole/pages/onboarding/DefaultSetupCard.stories.tsx",
     "./extensionConsole/pages/onboarding/DefaultSetupCard.tsx",
+    "./extensionConsole/pages/onboarding/SetupPage.test.tsx",
+    "./extensionConsole/pages/onboarding/SetupPage.tsx",
     "./extensionConsole/pages/onboarding/partner/ControlRoomOAuthForm.tsx",
     "./extensionConsole/pages/onboarding/partner/PartnerSetupCard.stories.tsx",
     "./extensionConsole/pages/onboarding/partner/PartnerSetupCard.tsx",
