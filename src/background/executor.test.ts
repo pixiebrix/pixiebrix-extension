@@ -47,7 +47,7 @@ const optionsFactory = define<RemoteBrickOptions>({
   }),
   meta: derive<RemoteBrickOptions, RemoteBrickOptions["meta"]>(
     (options) => ({
-      extensionId: options.messageContext.extensionId,
+      extensionId: options.messageContext!.extensionId,
       runId: null,
       branches: [],
     }),

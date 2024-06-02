@@ -4,6 +4,14 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/effects/forms.test.ts",
+    "./bricks/effects/event.test.ts",
+    "./bricks/effects/enable.test.ts",
+    "./bricks/effects/disable.test.ts",
+    "./bricks/effects/customEvent.test.ts",
+    "./bricks/effects/clipboard.test.ts",
+    "./bricks/effects/attachAutocomplete.test.ts",
+    "./background/executor.test.ts",
     "./layout/EnvironmentBanner.tsx",
     "./contentScript/sidebarActivation.ts",
     "../end-to-end-tests/auth.setup.ts",

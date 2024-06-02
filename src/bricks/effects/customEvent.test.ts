@@ -46,12 +46,12 @@ describe("CustomEventEffect", () => {
 
   test("it fires custom event", async () => {
     const eventHandler = jest.fn();
-    document.querySelector("button").addEventListener("foo", eventHandler);
+    document.querySelector("button")!.addEventListener("foo", eventHandler);
 
     await brick.run(
       unsafeAssumeValidArg({ eventName: "foo" }),
       brickOptionsFactory({
-        root: document.querySelector("button"),
+        root: document.querySelector("button")!,
         logger,
       }),
     );
@@ -61,12 +61,12 @@ describe("CustomEventEffect", () => {
 
   test("it bubbles custom event", async () => {
     const eventHandler = jest.fn();
-    document.querySelector("div").addEventListener("foo", eventHandler);
+    document.querySelector("div")!.addEventListener("foo", eventHandler);
 
     await brick.run(
       unsafeAssumeValidArg({ eventName: "foo" }),
       brickOptionsFactory({
-        root: document.querySelector("button"),
+        root: document.querySelector("button")!,
         logger,
       }),
     );

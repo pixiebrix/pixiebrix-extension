@@ -63,7 +63,7 @@ class BlobFake implements Blob {
   ) {}
 
   get type(): string {
-    return this.options.type;
+    return this.options.type!;
   }
 }
 
