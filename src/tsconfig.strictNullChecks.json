@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./contrib/automationanywhere/RunBot.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/envSetup.ts",
@@ -98,6 +97,9 @@
     "./background/installer.ts",
     "./background/locator.ts",
     "./background/messenger/api.ts",
+    "./background/messenger/external/_implementation.ts",
+    "./background/messenger/external/api.ts",
+    "./background/messenger/external/registration.ts",
     "./background/messenger/registration.ts",
     "./background/navigation.ts",
     "./background/partnerHandlers.ts",
@@ -587,6 +589,7 @@
     "./contentScript/walkthroughModalProtocol.tsx",
     "./contrib/automationanywhere/FolderIdConfigAlert.tsx",
     "./contrib/automationanywhere/RunApiTask.ts",
+    "./contrib/automationanywhere/RunBot.ts",
     "./contrib/automationanywhere/SetCopilotDataEffect.ts",
     "./contrib/automationanywhere/aaApi.test.ts",
     "./contrib/automationanywhere/aaApi.ts",
