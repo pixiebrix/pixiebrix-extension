@@ -56,7 +56,7 @@ test("can activate a google spreadsheet mod with no config options", async ({
   // Provide Pixiebrix access to drive resources
   await popup.getByRole("button", { name: "Allow" }).click();
 
-  await page.locator(".css-13cymwt-control").click(); // TODO: add a test id for better selector
+  await page.getByLabel("testSheet").click();
   await page.getByRole("option", { name: "Test sheet" }).click();
 
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
