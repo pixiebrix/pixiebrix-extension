@@ -39,7 +39,6 @@ test("8527: availability allFrames declaration", async ({
   const markLocators = await page.locator("mark").all();
 
   expect(markLocators).toHaveLength(2);
-  expect(markLocators).toHaveLength(2);
 
   for (const markLocator of markLocators) {
     // Expect yellow

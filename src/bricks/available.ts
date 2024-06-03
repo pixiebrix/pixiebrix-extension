@@ -30,7 +30,12 @@ import { type Nullishable } from "@/utils/nullishUtils";
 export function normalizeAvailability(
   availability: Availability,
 ): NormalizedAvailability {
-  const { matchPatterns = [], urlPatterns = [], selectors = [], allFrames = true } = availability;
+  const {
+    matchPatterns = [],
+    urlPatterns = [],
+    selectors = [],
+    allFrames = true,
+  } = availability;
 
   return {
     matchPatterns: castArray(matchPatterns),
