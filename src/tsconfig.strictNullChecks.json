@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./pageEditor/starterBricks/adapter.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/envSetup.ts",
@@ -1047,7 +1046,10 @@
     "./pageEditor/protocol.ts",
     "./pageEditor/sidebar/ActionMenu.stories.tsx",
     "./pageEditor/sidebar/ActionMenu.tsx",
+    "./pageEditor/sidebar/ExtensionIcons.test.tsx",
+    "./pageEditor/sidebar/ExtensionIcons.tsx",
     "./pageEditor/sidebar/HomeButton.tsx",
+    "./pageEditor/sidebar/ModListItem.tsx",
     "./pageEditor/sidebar/ReloadButton.tsx",
     "./pageEditor/sidebar/SaveButton.stories.tsx",
     "./pageEditor/sidebar/SaveButton.tsx",
@@ -1064,6 +1066,7 @@
     "./pageEditor/slices/sessionSelectors.ts",
     "./pageEditor/slices/sessionSlice.ts",
     "./pageEditor/slices/sessionSliceTypes.ts",
+    "./pageEditor/starterBricks/adapter.ts",
     "./pageEditor/starterBricks/base.ts",
     "./pageEditor/starterBricks/contextMenu.test.ts",
     "./pageEditor/starterBricks/contextMenu.ts",
