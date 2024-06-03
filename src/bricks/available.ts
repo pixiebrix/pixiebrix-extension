@@ -24,6 +24,7 @@ import {
   type Availability,
   type NormalizedAvailability,
 } from "@/types/availabilityTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export function normalizeAvailability(
   availability: Availability,
@@ -39,15 +40,17 @@ export function normalizeAvailability(
 
 export function testMatchPatterns(
   patterns: string[],
-  url: string = document.location.href,
+  url: Nullishable<string>,
 ): boolean {
-  if (url === "about:srcdoc") {
+  const targetURL = url ?? document.location.href;
+
+  if (targetURL === "about:srcdoc") {
     // <all_urls> doesn't officially include about:srcdoc, but it works in some cases
     return patterns.includes("<all_urls>");
   }
 
   try {
-    return doesUrlMatchPatterns(url, ...patterns);
+    return doesUrlMatchPatterns(targetURL, ...patterns);
   } catch {
     const invalidPattern = patterns.find((pattern) => !isValidPattern(pattern));
     throw new BusinessError(
@@ -58,8 +61,10 @@ export function testMatchPatterns(
 
 function testUrlPattern(
   pattern: string | URLPatternInit,
-  url: string = document.location.href,
+  url: Nullishable<string>,
 ): boolean {
+  const targetURL = url ?? document.location.href;
+
   let compiled;
 
   try {
@@ -87,7 +92,7 @@ function testUrlPattern(
     );
   }
 
-  return compiled.test(url);
+  return compiled.test(targetURL);
 }
 
 function testSelector(selector: string): boolean {
