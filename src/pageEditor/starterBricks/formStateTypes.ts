@@ -91,7 +91,7 @@ type ActionExtensionPointState = BaseExtensionPointState & {
 export interface ActionFormState
   extends BaseFormState<ActionExtensionState, ActionExtensionPointState> {
   type: "menuItem";
-  containerInfo: ElementInfo;
+  containerInfo: ElementInfo | null;
 }
 
 // SidebarFormState
