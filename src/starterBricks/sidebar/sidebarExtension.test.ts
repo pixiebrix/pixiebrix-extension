@@ -72,11 +72,11 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
 
 const extensionFactory = define<ResolvedModComponent<SidebarConfig>>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined,
+  _resolvedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: null,
+  _recipe: undefined,
   label: "Test Extension",
   config: define<SidebarConfig>({
     heading: "Test Action",
@@ -189,7 +189,7 @@ describe("sidebarExtension", () => {
       data: {},
       mergeStrategy: "replace",
       extensionId: extension.id,
-      blueprintId: extension._recipe.id,
+      blueprintId: extension._recipe!.id,
     });
 
     // Doesn't run because sidebar is not visible
@@ -210,7 +210,7 @@ describe("sidebarExtension", () => {
       data: { foo: 42 },
       mergeStrategy: "replace",
       extensionId: extension.id,
-      blueprintId: extension._recipe.id,
+      blueprintId: extension._recipe!.id,
     });
 
     await tick();
@@ -272,7 +272,7 @@ describe("sidebarExtension", () => {
         data: { foo: i },
         mergeStrategy: "replace",
         extensionId: extension.id,
-        blueprintId: extension._recipe.id,
+        blueprintId: extension._recipe!.id,
       });
     }
 
