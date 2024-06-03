@@ -70,7 +70,6 @@ describe("option mode switching", () => {
     expectToggleMode(container, "Text");
   });
 
-  // TODO: Determine whether this is correct behavior
   test("switches from variable when @ removed - enum field", async () => {
     const { container } = renderSchemaField(
       "test",
