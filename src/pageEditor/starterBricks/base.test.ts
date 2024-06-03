@@ -87,6 +87,7 @@ describe("selectIsAvailable", () => {
       // As of 2.0.2, properties are added during normalization
       selectors: [],
       urlPatterns: [],
+      allFrames: true,
     });
   });
 });
