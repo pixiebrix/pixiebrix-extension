@@ -110,10 +110,10 @@ describe("FormTransformer", () => {
       url: expect.anything(),
     });
 
-    const opener = new URL(showModalMock.mock.calls[0][0].url).searchParams.get(
-      "opener",
-    );
-    expect(JSON.parse(opener)).toStrictEqual({ tabId: 1, frameId: 0 });
+    const opener = new URL(
+      showModalMock.mock.calls[0]![0].url,
+    ).searchParams.get("opener");
+    expect(JSON.parse(opener!)).toStrictEqual({ tabId: 1, frameId: 0 });
   });
 
   it("shows modal in sub-frame", async () => {
@@ -141,11 +141,11 @@ describe("FormTransformer", () => {
       url: expect.anything(),
     });
 
-    const opener = new URL(showModalMock.mock.calls[0][0].url).searchParams.get(
-      "opener",
-    );
+    const opener = new URL(
+      showModalMock.mock.calls[0]![0].url,
+    ).searchParams.get("opener");
 
-    expect(JSON.parse(opener)).toStrictEqual({ tabId: 1, frameId: 1 });
+    expect(JSON.parse(opener!)).toStrictEqual({ tabId: 1, frameId: 1 });
   });
 
   it("cancels form if form already showing", async () => {

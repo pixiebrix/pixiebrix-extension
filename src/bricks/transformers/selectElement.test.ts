@@ -46,7 +46,7 @@ describe("selectElement", () => {
     );
 
     expect(result).toEqual({
-      elements: [getReferenceForElement(elements[0])],
+      elements: [getReferenceForElement(elements[0]!)],
     });
   });
 

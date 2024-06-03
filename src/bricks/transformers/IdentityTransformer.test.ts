@@ -21,6 +21,7 @@ import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
 import { toExpression } from "@/utils/expressionUtils";
+import { type RenderedArgs } from "@/types/runtimeTypes";
 
 const brick = new IdentityTransformer();
 
@@ -41,7 +42,7 @@ describe("IdentityTransformer.schema", () => {
     "allow throwIfInvalidInput: %s",
     async (value) => {
       await expect(
-        throwIfInvalidInput(brick, unsafeAssumeValidArg(value)),
+        throwIfInvalidInput(brick, unsafeAssumeValidArg<RenderedArgs>(value)),
       ).resolves.toBeUndefined();
     },
   );

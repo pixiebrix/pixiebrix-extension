@@ -48,7 +48,9 @@ export async function getModComponentState(): Promise<ModComponentState> {
 /**
  * Returns the set of currently activated mod ids. Reads current activated mods from storage.
  */
-export async function getActivatedModIds(): Promise<Set<RegistryId>> {
+export async function getActivatedModIds(): Promise<
+  Set<RegistryId | undefined>
+> {
   const modComponentState = await getModComponentState();
 
   if (isEmpty(modComponentState?.extensions)) {

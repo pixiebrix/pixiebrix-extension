@@ -58,7 +58,7 @@ describe("DetectElement", () => {
     const result = await brick.run(
       unsafeAssumeValidArg({ selector: "button", isRootAware: true }),
       brickOptionsFactory({
-        root: document.querySelector<HTMLElement>("#noButton"),
+        root: document.querySelector<HTMLElement>("#noButton")!,
       }),
     );
 

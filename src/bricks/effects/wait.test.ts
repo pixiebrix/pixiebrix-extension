@@ -63,7 +63,7 @@ describe("WaitElementEffect", () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: "button", isRootAware: true }),
       brickOptionsFactory({
-        root: document.querySelector<HTMLElement>("#hasButton"),
+        root: document.querySelector<HTMLElement>("#hasButton")!,
       }),
     );
   });
@@ -76,7 +76,7 @@ describe("WaitElementEffect", () => {
         isRootAware: true,
       }),
       brickOptionsFactory({
-        root: document.querySelector<HTMLElement>("#noButton"),
+        root: document.querySelector<HTMLElement>("#noButton")!,
       }),
     );
 
