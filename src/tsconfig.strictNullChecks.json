@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./utils/deploymentUtils.test.ts",
     "./pageEditor/slices/editorSliceHelpers.ts",
     "./runtime/pipelineTests/root.test.ts",
     "./extensionConsole/pages/brickEditor/BrickHistory.test.tsx",
