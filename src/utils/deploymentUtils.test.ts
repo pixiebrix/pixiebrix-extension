@@ -64,7 +64,7 @@ describe("makeUpdatedFilter", () => {
         modComponentFactory({
           _deployment: {
             id: deployment.id,
-            timestamp: deployment.updated_at,
+            timestamp: deployment.updated_at!,
             active: true,
           },
         }),
@@ -103,9 +103,9 @@ describe("makeUpdatedFilter", () => {
         _deployment: undefined,
         _recipe: {
           ...modDefinition.metadata,
-          updated_at: validateTimestamp(deployment.updated_at),
+          updated_at: validateTimestamp(deployment.updated_at!),
           // `sharing` doesn't impact the predicate. Pass an arbitrary value
-          sharing: undefined,
+          sharing: null,
         },
       }),
     ];
@@ -124,9 +124,9 @@ describe("makeUpdatedFilter", () => {
           ...modDefinition.metadata,
           // The factory produces version "1.0.1"
           version: normalizeSemVerString("1.0.1"),
-          updated_at: validateTimestamp(deployment.updated_at),
+          updated_at: validateTimestamp(deployment.updated_at!),
           // `sharing` doesn't impact the predicate. Pass an arbitrary value
-          sharing: undefined,
+          sharing: null,
         },
       }),
     ];
@@ -172,7 +172,7 @@ describe("isDeploymentActive", () => {
     const modComponent = modComponentFactory({
       _deployment: {
         id: deployment.id,
-        timestamp: deployment.updated_at,
+        timestamp: deployment.updated_at!,
         // Legacy deployments don't have an `active` field
       },
     });
@@ -188,7 +188,7 @@ describe("isDeploymentActive", () => {
       const modComponent = modComponentFactory({
         _deployment: {
           id: deployment.id,
-          timestamp: deployment.updated_at,
+          timestamp: deployment.updated_at!,
           active,
         },
       });

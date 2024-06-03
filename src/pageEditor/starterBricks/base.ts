@@ -125,7 +125,7 @@ export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
   recipes: ModDefinition[],
 ) {
   if (element.recipe?.id) {
-    const recipe = recipes?.find((x) => x.metadata.id === element.recipe.id);
+    const recipe = recipes?.find((x) => x.metadata.id === element.recipe?.id);
 
     if (recipe?.options == null) {
       element.optionsDefinition = emptyModOptionsDefinitionFactory();
@@ -255,7 +255,8 @@ export async function lookupExtensionPoint<
   }
 
   if (hasInnerExtensionPointRef(config)) {
-    const definition = config.definitions[config.extensionPointId];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerExtensionPointRef
+    const definition = config.definitions![config.extensionPointId];
     console.debug(
       "Converting extension definition to temporary extension point",
       definition,
