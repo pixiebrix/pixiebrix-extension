@@ -43,7 +43,17 @@ test("can activate a google spreadsheet mod with no config options", async ({
     .getByLabel("Enter your password")
     .fill(E2E_GOOGLE_TEST_USER_PASSWORD);
   await popup.getByLabel("Enter your password").press("Enter");
-  await popup.getByRole("button", { name: "Continue" }).click();
+
+  // Conditionally click on Continue button if present
+  try {
+    const continueButton = popup.getByRole("button", { name: "Continue" });
+    await continueButton.waitFor({ state: "visible", timeout: 2000 });
+    await continueButton.click();
+  } catch {
+    // Continue button not present, do nothing
+  }
+
+  // Provide Pixiebrix access to drive resources
   await popup.getByRole("button", { name: "Allow" }).click();
 
   await page.locator(".css-13cymwt-control").click(); // TODO: add a test id for better selector

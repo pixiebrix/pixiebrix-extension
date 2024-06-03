@@ -64,6 +64,7 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
   await ensureVisibility(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above
     extensionConsolePage!.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
-    { timeout: 12_000 },
+    // The first time the extension console is opened after logging in, it sometimes takes a while to load the extension console
+    { timeout: 16_000 },
   );
 });
