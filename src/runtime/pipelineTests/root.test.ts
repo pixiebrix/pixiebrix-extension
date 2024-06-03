@@ -83,7 +83,7 @@ beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([rootBlock, rootReader, echoBrick]);
   // https://stackoverflow.com/questions/42805128/does-jest-reset-the-jsdom-document-after-every-suite-or-test
-  document.querySelectorAll("html")[0].innerHTML = "";
+  document.querySelectorAll("html")[0]!.innerHTML = "";
 });
 
 describe.each([["v1"], ["v2"], ["v3"]])(

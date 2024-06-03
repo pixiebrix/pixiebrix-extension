@@ -203,8 +203,10 @@ export class RunBot extends TransformerABC {
 
       const { partnerPrincipals = [] } = await getUserData();
 
-      const principal = partnerPrincipals.find(({ controlRoomUrl }) =>
-        urlsMatch(controlRoomUrl, service.config.controlRoomUrl),
+      const principal = partnerPrincipals.find(
+        ({ controlRoomUrl }) =>
+          service.config.controlRoomUrl &&
+          urlsMatch(controlRoomUrl, service.config.controlRoomUrl),
       );
       if (!principal) {
         throw new PropError(

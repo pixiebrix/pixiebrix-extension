@@ -36,6 +36,7 @@ import {
 import integrationsRegistry from "@/integrations/registry";
 import reportError from "@/telemetry/reportError";
 import useReportError from "@/hooks/useReportError";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const Layout: React.FunctionComponent = ({ children }) => (
   <div className="mt-5 w-100 max-550 mx-auto">{children}</div>
@@ -96,11 +97,13 @@ const SetupPage: React.FunctionComponent = () => {
 
   useReportError(error);
 
-  const { baseURL, controlRoomError } = data || {};
-
   if (isLoading || isPartnerLoading) {
     return <Loader />;
   }
+
+  assertNotNullish(data, "baseUrl should be defined after loading");
+
+  const { baseURL, controlRoomError } = data;
 
   let setupCard = <DefaultSetupCard installURL={baseURL} />;
 

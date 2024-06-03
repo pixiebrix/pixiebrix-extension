@@ -30,7 +30,7 @@ describe("postMessage", () => {
     const frame = document.createElement("iframe");
     document.body.append(frame);
 
-    frame.contentWindow.postMessage = jest.fn();
+    frame.contentWindow!.postMessage = jest.fn();
 
     await brick.run(
       unsafeAssumeValidArg({
@@ -40,7 +40,7 @@ describe("postMessage", () => {
       brickOptionsFactory(),
     );
 
-    expect(frame.contentWindow.postMessage).toHaveBeenCalledWith(
+    expect(frame.contentWindow!.postMessage).toHaveBeenCalledWith(
       { text: "Hello, frame!" },
       "*",
     );

@@ -120,7 +120,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      brickOptionsFactory({ root: span }),
+      brickOptionsFactory({ root: span! }),
     );
     expect(document.body.innerHTML).toBe("<div>foo <span>bar</span></div>");
   });

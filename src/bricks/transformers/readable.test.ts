@@ -45,7 +45,7 @@ describe("readable", () => {
 
     const article = brick.run(
       unsafeAssumeValidArg({}),
-      brickOptionsFactory({ root: element }),
+      brickOptionsFactory({ root: element! }),
     );
 
     await expect(article).rejects.toThrow();

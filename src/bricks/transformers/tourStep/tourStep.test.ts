@@ -69,7 +69,6 @@ function startTour() {
     {
       id: extensionId,
       label: "Test Tour",
-      _recipe: null,
     },
     { abortController, context: { extensionId } },
   );
@@ -183,14 +182,14 @@ describe("tourStep", () => {
         appearance: { highlight: { backgroundColor: "yellow" } },
       }),
       makeOptions({
-        root: document.querySelector("div"),
+        root: document.querySelector("div")!,
         signal: abortController.signal,
       }),
     );
 
     await tick();
 
-    expect(document.querySelector("div").style.backgroundColor).toBe("yellow");
+    expect(document.querySelector("div")!.style.backgroundColor).toBe("yellow");
 
     await tick();
     expect(showPopoverMock).toHaveBeenCalled();
@@ -200,7 +199,7 @@ describe("tourStep", () => {
 
     await tick();
 
-    expect(document.querySelector("div").style.backgroundColor).not.toBe(
+    expect(document.querySelector("div")!.style.backgroundColor).not.toBe(
       "yellow",
     );
   });
@@ -213,7 +212,7 @@ describe("tourStep", () => {
     const promise = brick.run(
       unsafeAssumeValidArg({ title: "Test", body: "**markdown**" }),
       makeOptions({
-        root: document.querySelector("div"),
+        root: document.querySelector("div")!,
         signal: abortController.signal,
       }),
     );
@@ -238,7 +237,7 @@ describe("tourStep", () => {
         appearance: { scroll: {} },
       }),
       makeOptions({
-        root: document.querySelector("div"),
+        root: document.querySelector("div")!,
         signal: abortController.signal,
       }),
     );

@@ -61,7 +61,7 @@ describe("SetInputValue", () => {
         isRootAware: true,
       }),
       brickOptionsFactory({
-        root: document.querySelector<HTMLElement>("#noForm"),
+        root: document.querySelector<HTMLElement>("#noForm")!,
       }),
     );
 
@@ -74,7 +74,7 @@ describe("SetInputValue", () => {
         isRootAware: true,
       }),
       brickOptionsFactory({
-        root: document.querySelector<HTMLElement>("#hasForm"),
+        root: document.querySelector<HTMLElement>("#hasForm")!,
       }),
     );
 
@@ -87,7 +87,7 @@ describe("SetInputValue", () => {
         inputs: [{ value: "Bob Smith" }],
         isRootAware: true,
       }),
-      brickOptionsFactory({ root: document.querySelector("input") }),
+      brickOptionsFactory({ root: document.querySelector("input")! }),
     );
 
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
@@ -111,7 +111,7 @@ describe("SetInputValue", () => {
         inputs: [{ value: "Bob Smith" }],
         isRootAware: true,
       }),
-      brickOptionsFactory({ root: document.querySelector("div") }),
+      brickOptionsFactory({ root: document.querySelector("div")! }),
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
@@ -158,7 +158,7 @@ describe("FormFill", () => {
         isRootAware: true,
       }),
       brickOptionsFactory({
-        root: document.querySelector<HTMLElement>("#noForm"),
+        root: document.querySelector<HTMLElement>("#noForm")!,
       }),
     );
 
@@ -171,7 +171,7 @@ describe("FormFill", () => {
         isRootAware: true,
       }),
       brickOptionsFactory({
-        root: document.querySelector<HTMLElement>("#hasForm"),
+        root: document.querySelector<HTMLElement>("#hasForm")!,
       }),
     );
 

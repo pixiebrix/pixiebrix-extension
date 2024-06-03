@@ -117,7 +117,7 @@ describe("TableReader", () => {
 
     const result = await tableReaderBlock.run(
       unsafeAssumeValidArg(blockConfig.config),
-      brickOptionsFactory({ root: document.querySelector("table") }),
+      brickOptionsFactory({ root: document.querySelector("table")! }),
     );
 
     expect(result).toStrictEqual(expected);
