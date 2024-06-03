@@ -20,6 +20,7 @@ import { type DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPa
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export type BlockInfo = {
   blockId: RegistryId;
@@ -49,7 +50,7 @@ export type BlockInfo = {
   /**
    * Instance id of parent node
    */
-  parentNodeId: UUID | null;
+  parentNodeId: Nullishable<UUID>;
 };
 
 /**
