@@ -4,6 +4,12 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/starterBricks/tour.ts",
+    "./pageEditor/starterBricks/quickBarProvider.ts",
+    "./pageEditor/starterBricks/panel.ts",
+    "./pageEditor/starterBricks/trigger.ts",
+    "./pageEditor/starterBricks/sidebar.ts",
+    "./pageEditor/starterBricks/quickBar.ts",
     "./pageEditor/starterBricks/menuItem.ts",
     "./pageEditor/starterBricks/contextMenu.ts",
     "../end-to-end-tests/auth.setup.ts",

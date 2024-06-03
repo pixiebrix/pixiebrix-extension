@@ -44,6 +44,7 @@ import {
   type TourDefinition,
   type TourConfig,
 } from "@/starterBricks/tour/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(
   url: string,
@@ -128,11 +129,14 @@ async function fromExtension(
     "tour",
   );
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
