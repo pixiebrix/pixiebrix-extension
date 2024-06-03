@@ -70,9 +70,10 @@
   padding: 1rem;
 }
 
+// Overriding the default padding from Bootstrap
 .optionsBody {
-  margin-left: -20px;
-  margin-right: -20px;
+  padding-left: 0px;
+  padding-right: 0px;
 }
 
 .permissionsBold {
