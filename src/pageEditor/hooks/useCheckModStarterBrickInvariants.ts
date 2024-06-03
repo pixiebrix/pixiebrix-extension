@@ -21,11 +21,12 @@ import {
 } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
-import { isEqual } from "lodash";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import type { StarterBrickDefinitionLike } from "@/starterBricks/types";
+import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
 
 type SourceModParts = {
   sourceModDefinition?: ModDefinition;
@@ -82,10 +83,10 @@ function useCheckModStarterBrickInvariants(): (
         const definitionFromComponent = {
           kind: "extensionPoint",
           definition: selectStarterBrickDefinition(formState).definition,
-        };
+        } satisfies StarterBrickDefinitionLike;
         if (
           !definitionsFromMod.some((definitionFromMod) =>
-            isEqual(definitionFromComponent, definitionFromMod),
+            isInnerDefinitionEqual(definitionFromComponent, definitionFromMod),
           )
         ) {
           return false;
@@ -97,7 +98,10 @@ function useCheckModStarterBrickInvariants(): (
           Object.values(cleanModComponent.definitions).some(
             (definitionFromComponent) =>
               !definitionsFromMod.some((definitionFromMod) =>
-                isEqual(definitionFromComponent, definitionFromMod),
+                isInnerDefinitionEqual(
+                  definitionFromComponent,
+                  definitionFromMod,
+                ),
               ),
           )
         ) {

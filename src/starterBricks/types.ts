@@ -95,6 +95,43 @@ export interface StarterBrickDefinitionLike<
   kind: "extensionPoint";
 }
 
+export function isStarterBrickDefinitionProp(
+  value: unknown,
+): value is StarterBrickDefinitionProp {
+  if (value == null || typeof value !== "object") {
+    return false;
+  }
+
+  const definition = value as StarterBrickDefinitionProp;
+
+  return (
+    definition.type !== undefined &&
+    definition.reader !== undefined &&
+    typeof definition.isAvailable === "object"
+  );
+}
+
+/**
+ * @see assertStarterBrickDefinitionLike
+ */
+export function isStarterBrickDefinitionLike(
+  value: unknown,
+): value is StarterBrickDefinitionLike {
+  try {
+    assertStarterBrickDefinitionLike(value);
+    return true;
+  } catch (error) {
+    if (error instanceof TypeError) {
+      return false;
+    }
+
+    throw error;
+  }
+}
+
+/**
+ * @see isStarterBrickDefinitionLike
+ */
 export function assertStarterBrickDefinitionLike(
   value: unknown,
 ): asserts value is StarterBrickDefinitionLike {
@@ -121,10 +158,7 @@ export function assertStarterBrickDefinitionLike(
     );
   }
 
-  const definition = config.definition as StarterBrickDefinitionProp;
-
-  if (typeof definition.isAvailable !== "object") {
-    console.warn("Expected object for definition.isAvailable", errorContext);
+  if (!isStarterBrickDefinitionProp(config.definition)) {
     throw new TypeError(
       "Invalid definition prop in StarterBrickDefinitionLike",
     );

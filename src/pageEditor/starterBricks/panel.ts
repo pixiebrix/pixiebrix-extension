@@ -25,10 +25,10 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeIsAvailable,
+  makeDefaultAvailability,
   readerTypeHack,
   removeEmptyValues,
-  selectIsAvailable,
+  selectStarterBrickAvailability,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
@@ -69,7 +69,7 @@ function fromNativeElement(
       definition: {
         ...panel.foundation,
         reader: getImplicitReader("panel"),
-        isAvailable: makeIsAvailable(url),
+        isAvailable: makeDefaultAvailability(url),
       },
       traits: DEFAULT_TRAITS,
     },
@@ -164,7 +164,7 @@ async function fromExtension(
       definition: {
         ...extensionPoint.definition,
         reader: readerTypeHack(extensionPoint.definition.reader),
-        isAvailable: selectIsAvailable(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(extensionPoint),
       },
     },
   };

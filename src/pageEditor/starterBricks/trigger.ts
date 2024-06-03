@@ -24,10 +24,11 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeIsAvailable,
+  makeDefaultAvailability,
   readerTypeHack,
   removeEmptyValues,
-  selectIsAvailable,
+  selectStarterBrickAvailability,
+  cleanIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import {
@@ -37,7 +38,6 @@ import {
   TriggerStarterBrickABC,
 } from "@/starterBricks/triggerExtension";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
@@ -74,7 +74,7 @@ function fromNativeElement(
         debounce: null,
         customEvent: null,
         reader: getImplicitReader("trigger"),
-        isAvailable: makeIsAvailable(url),
+        isAvailable: makeDefaultAvailability(url),
       },
     },
     extension: {
@@ -108,7 +108,7 @@ function selectStarterBrickDefinition(
     definition: {
       type: "trigger",
       reader,
-      isAvailable: pickBy(isAvailable, identity),
+      isAvailable: cleanIsAvailable(isAvailable),
       trigger,
       debounce,
       customEvent,
@@ -197,7 +197,7 @@ async function fromExtension(
         background,
         intervalMillis,
         reader: readerTypeHack(reader),
-        isAvailable: selectIsAvailable(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(extensionPoint),
       },
     },
   };

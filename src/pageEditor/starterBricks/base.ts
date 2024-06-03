@@ -55,8 +55,12 @@ import {
   type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import {
+  type Availability,
+  type NormalizedAvailability,
+} from "@/types/availabilityTypes";
+import { normalizeAvailability } from "@/bricks/available";
 import { registry } from "@/background/messenger/api";
-import { type NormalizedAvailability } from "@/types/availabilityTypes";
 
 export interface WizardStep {
   step: string;
@@ -76,12 +80,10 @@ export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v3";
  */
 export const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
 
-export function makeIsAvailable(url: string): NormalizedAvailability {
-  return {
+export function makeDefaultAvailability(url: string): NormalizedAvailability {
+  return normalizeAvailability({
     matchPatterns: [createSitePattern(url)],
-    urlPatterns: [],
-    selectors: [],
-  };
+  });
 }
 
 /**
@@ -198,53 +200,39 @@ export function makeInitialBaseState(
 export function internalStarterBrickMetaFactory(): Metadata {
   return {
     id: validateRegistryId(`${INNER_SCOPE}/${uuidv4()}`),
-    name: "Temporary extension point",
+    name: "Temporary starter brick",
   };
 }
 
 /**
- * Map availability from extension point configuration to state for the page editor.
+ * Map availability from starter brick definition to state for the page editor.
  */
-export function selectIsAvailable(
-  extensionPoint: StarterBrickDefinitionLike,
+export function selectStarterBrickAvailability(
+  starterBrickDefinition: StarterBrickDefinitionLike,
 ): NormalizedAvailability {
-  assertStarterBrickDefinitionLike(extensionPoint);
-
-  const availability: NormalizedAvailability = {};
-
-  // All 3 fields in NormalizedAvailability are optional, so we should only set each one if
-  // the StarterBrickConfig has a value set for that field. Normalizing here makes testing
-  // harder because we then have to account for the normalized value in assertions.
-  const { isAvailable } = extensionPoint.definition;
-
-  if (isAvailable.matchPatterns) {
-    availability.matchPatterns = castArray(isAvailable.matchPatterns);
-  }
-
-  if (isAvailable.urlPatterns) {
-    availability.urlPatterns = castArray(isAvailable.urlPatterns);
-  }
-
-  if (isAvailable.selectors) {
-    availability.selectors = castArray(isAvailable.selectors);
-  }
-
-  return availability;
+  assertStarterBrickDefinitionLike(starterBrickDefinition);
+  return normalizeAvailability(starterBrickDefinition.definition.isAvailable);
 }
 
 /**
- * Exclude malformed matchPatterns and selectors from an isAvailable section that may have found their way over from the
- * Page Editor.
+ * Exclude malformed rules from an isAvailable section that may have found their way over from the Page Editor.
  *
  * Currently, excludes:
  * - Null values
  * - Blank values
+ *
+ * The filtering logic is not part of normalizeAvailability because removing items can technically change the semantics
+ * of the rule. E.g., a rule with an invalid URL pattern would match no sites, but an empty URL pattern array would
+ * match all sites.
+ *
+ * @see normalizeAvailability
  */
-export function cleanIsAvailable({
-  matchPatterns = [],
-  urlPatterns = [],
-  selectors = [],
-}: NormalizedAvailability): NormalizedAvailability {
+export function cleanIsAvailable(
+  availability: Availability,
+): NormalizedAvailability {
+  const { matchPatterns, urlPatterns, selectors } =
+    normalizeAvailability(availability);
+
   return {
     matchPatterns: matchPatterns.filter((x) => !isNullOrBlank(x)),
     urlPatterns: urlPatterns.filter((x) => isEmpty(x)),

@@ -1026,6 +1026,7 @@
     "./starterBricks/sidebar/types.ts",
     "./starterBricks/starterBrickConstants.ts",
     "./starterBricks/starterBrickTestUtils.ts",
+    "./starterBricks/starterBrickUtils.ts",
     "./starterBricks/tour/tourActionIcon.tsx",
     "./starterBricks/tour/tourController.test.ts",
     "./starterBricks/tour/tourController.ts",

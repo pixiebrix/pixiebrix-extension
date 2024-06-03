@@ -26,9 +26,9 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeIsAvailable,
+  makeDefaultAvailability,
   removeEmptyValues,
-  selectIsAvailable,
+  selectStarterBrickAvailability,
 } from "@/pageEditor/starterBricks/base";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
@@ -50,7 +50,7 @@ function fromNativeElement(
 ): ContextMenuFormState {
   const base = makeInitialBaseState();
 
-  const isAvailable = makeIsAvailable(url);
+  const isAvailable = makeDefaultAvailability(url);
 
   const title = "Context menu item";
 
@@ -155,7 +155,7 @@ async function fromExtension(
         contexts,
         // See comment on SingleLayerReaderConfig
         reader: reader as SingleLayerReaderConfig,
-        isAvailable: selectIsAvailable(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(extensionPoint),
       },
     },
   };
