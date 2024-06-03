@@ -78,11 +78,11 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
 
 const modComponentFactory = define<ResolvedModComponent>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined,
+  _resolvedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: null,
+  _recipe: undefined,
   label: "Test Extension",
   config: define<MenuItemStarterBrickConfig>({
     caption: "Hello World",
@@ -100,7 +100,7 @@ beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([rootReader]);
   rootReader.readCount = 0;
-  rootReader.ref = undefined;
+  rootReader.ref = null;
 });
 
 describe("menuItemExtension", () => {
@@ -180,12 +180,12 @@ describe("menuItemExtension", () => {
 
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
-    document.querySelector("button").click();
+    document.querySelector("button")!.click();
 
     await tick();
 
     expect(rootReader.readCount).toBe(1);
-    const buttonRef = getReferenceForElement(document.querySelector("button"));
+    const buttonRef = getReferenceForElement(document.querySelector("button")!);
     expect(rootReader.ref).toEqual(buttonRef);
 
     expect(reduceExtensionPipelineMock).toHaveBeenCalledWith(
@@ -222,13 +222,13 @@ describe("menuItemExtension", () => {
 
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
-    document.querySelector("button").click();
+    document.querySelector("button")!.click();
 
     await tick();
 
     expect(rootReader.readCount).toBe(1);
     const outerRef = getReferenceForElement(
-      document.querySelector<HTMLElement>("#outer"),
+      document.querySelector<HTMLElement>("#outer")!,
     );
     expect(rootReader.ref).toEqual(outerRef);
 
@@ -268,7 +268,7 @@ describe("menuItemExtension", () => {
 
       expect(reduceExtensionPipelineMock).not.toHaveBeenCalled();
 
-      document.querySelector("button").click();
+      document.querySelector("button")!.click();
       await tick();
 
       expect(rootReader.readCount).toBe(1);
@@ -332,7 +332,7 @@ describe("menuItemExtension", () => {
 
     expect(document.querySelectorAll("button")).toHaveLength(0);
 
-    document.querySelector("#root").classList.add("newClass");
+    document.querySelector("#root")!.classList.add("newClass");
 
     await installPromise;
 

@@ -4,6 +4,12 @@
     "strictNullChecks": true
   },
   "files": [
+    "./starterBricks/contextMenu/contextMenu.test.ts",
+    "./starterBricks/menuItem/menuItemExtension.test.ts",
+    "./starterBricks/quickBar/quickBarExtension.test.ts",
+    "./starterBricks/triggerExtension.test.ts",
+    "./starterBricks/quickBarProvider/quickbarProviderExtension.test.ts",
+    "./starterBricks/sidebar/sidebarExtension.test.ts",
     "./utils/deploymentUtils.test.ts",
     "./pageEditor/slices/editorSliceHelpers.ts",
     "./runtime/pipelineTests/root.test.ts",
