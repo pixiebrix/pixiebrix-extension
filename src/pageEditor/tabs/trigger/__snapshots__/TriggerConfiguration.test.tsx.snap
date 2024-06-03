@@ -346,6 +346,55 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
       <label
         class="label form-label"
+        for="extensionPoint.definition.isAvailable.allFrames"
+      >
+        Run in All Frames
+      </label>
+      <div
+        class="formField"
+      >
+        <div
+          class="switch btn on btn-primary"
+        >
+          <div
+            class="switch-group"
+          >
+            <span
+              class="switch-on btn btn-primary"
+            >
+               
+            </span>
+            <span
+              class="switch-off btn btn-light"
+            >
+               
+            </span>
+            <span
+              class="switch-handle btn btn-light"
+            />
+          </div>
+        </div>
+        <small
+          class="text-muted form-text"
+        >
+          <span>
+            Run the trigger in all frames. If toggled off, the trigger will only run in the top-level frame.
+          </span>
+        </small>
+      </div>
+    </div>
+    <div
+      class="formGroup form-group"
+    >
+      <div
+        class="mb-2 w-100 collapse"
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
+      <label
+        class="label form-label"
         for="extensionPoint.definition.rootSelector"
       >
         Element Selector

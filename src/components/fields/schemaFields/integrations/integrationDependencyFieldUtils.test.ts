@@ -29,6 +29,7 @@ import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { normalizeAvailability } from "@/bricks/available";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
@@ -271,11 +272,9 @@ describe("selectVariables", () => {
         definition: {
           type: "actionPanel",
           reader: [validateRegistryId("@pixiebrix/document-metadata")],
-          isAvailable: {
+          isAvailable: normalizeAvailability({
             matchPatterns: ["https://pbx.vercel.app/*"],
-            urlPatterns: [],
-            selectors: [],
-          },
+          }),
           trigger: "load",
           debounce: {
             waitMillis: 250,

@@ -80,6 +80,9 @@ export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v3";
  */
 export const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
 
+/**
+ * Returns default availability for the given URL.
+ */
 export function makeDefaultAvailability(url: string): NormalizedAvailability {
   return normalizeAvailability({
     matchPatterns: [createSitePattern(url)],
@@ -230,13 +233,14 @@ export function selectStarterBrickAvailability(
 export function cleanIsAvailable(
   availability: Availability,
 ): NormalizedAvailability {
-  const { matchPatterns, urlPatterns, selectors } =
+  const { matchPatterns, urlPatterns, selectors, allFrames } =
     normalizeAvailability(availability);
 
   return {
     matchPatterns: matchPatterns.filter((x) => !isNullOrBlank(x)),
     urlPatterns: urlPatterns.filter((x) => isEmpty(x)),
     selectors: selectors.filter((x) => !isNullOrBlank(x)),
+    allFrames,
   };
 }
 

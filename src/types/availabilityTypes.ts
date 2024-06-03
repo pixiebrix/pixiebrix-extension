@@ -50,6 +50,18 @@ export type Availability = {
    * on document_idle, for SPAs this may lead to races between the selector check and rendering of the front-end.
    */
   selectors?: string | string[];
+  /**
+   * True to run in all frames vs. only the top-level frame if the starter brick supports frames. Defaults to true for
+   * backward compatability.
+   *
+   * Ignored for starter bricks that can only run in the top-level frame (e.g., Quick Bar and Sidebar Panel).
+   *
+   * Similar to all_frames in https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts, but
+   * the mod component does not to be running in the top-level frame for it to run in a sub-frame.
+   *
+   * @since 2.0.2
+   */
+  allFrames?: boolean;
 };
 
 /**
@@ -78,4 +90,15 @@ export type NormalizedAvailability = {
    * on document_idle, for SPAs this may lead to races between the selector check and rendering of the front-end.
    */
   selectors: string[];
+  /**
+   * True to run in all frames vs. only the top-level frame if the starter brick supports frames.
+   *
+   * Ignored for starter bricks that can only run in the top-level frame (e.g., Quick Bar and Sidebar Panel).
+   *
+   * Similar to all_frames in https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts, but
+   * the mod component does not to be running in the top-level frame for it to run in a sub-frame.
+   *
+   * @since 2.0.2
+   */
+  allFrames: boolean;
 };
