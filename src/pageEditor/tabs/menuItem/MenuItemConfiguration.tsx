@@ -32,6 +32,7 @@ import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField } from "formik";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 
 const menuSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },
@@ -66,6 +67,14 @@ const MenuItemConfiguration: React.FC<{
       <UrlMatchPatternField
         name="extensionPoint.definition.isAvailable.matchPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
+      />
+
+      <ConnectedFieldTemplate
+        name="extensionPoint.definition.isAvailable.allFrames"
+        title="Show in All Frames"
+        as={BooleanWidget}
+        description="Show button in all matching frames. If toggled off, the button will only be added in the top-level frame."
+        {...makeLockableFieldProps("Show in All Frames", isLocked)}
       />
 
       <ConnectedCollapsibleFieldSection title="Advanced: Item Options">

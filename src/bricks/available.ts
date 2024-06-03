@@ -20,6 +20,7 @@ import { castArray } from "lodash";
 import { type Entries } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { $safeFind } from "@/utils/domUtils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 import {
   type Availability,
   type NormalizedAvailability,
@@ -29,12 +30,18 @@ import { type Nullishable } from "@/utils/nullishUtils";
 export function normalizeAvailability(
   availability: Availability,
 ): NormalizedAvailability {
-  const { matchPatterns = [], urlPatterns = [], selectors = [] } = availability;
+  const {
+    matchPatterns = [],
+    urlPatterns = [],
+    selectors = [],
+    allFrames = true,
+  } = availability;
 
   return {
     matchPatterns: castArray(matchPatterns),
     urlPatterns: castArray(urlPatterns),
     selectors: castArray(selectors),
+    allFrames,
   };
 }
 
@@ -108,7 +115,7 @@ export async function checkAvailable(
   availability: Availability,
   url?: string,
 ): Promise<boolean> {
-  const { matchPatterns, urlPatterns, selectors } =
+  const { matchPatterns, urlPatterns, selectors, allFrames } =
     normalizeAvailability(availability);
 
   if (process.env.DEBUG) {
@@ -121,6 +128,7 @@ export async function checkAvailable(
       selectors:
         selectors.length === 0 ||
         selectors.some((selector) => testSelector(selector)),
+      allFrames: allFrames || !isLoadedInIframe(),
     };
 
     console.debug(
@@ -131,6 +139,10 @@ export async function checkAvailable(
       "had result",
       result,
     );
+  }
+
+  if (!allFrames && isLoadedInIframe()) {
+    return false;
   }
 
   // Check matchPatterns and urlPatterns first b/c they're faster than searching selectors
