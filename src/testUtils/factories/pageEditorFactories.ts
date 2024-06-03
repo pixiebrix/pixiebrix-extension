@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { define, derive, type FactoryConfig } from "cooky-cutter";
+import { type Config, define, derive, type FactoryConfig } from "cooky-cutter";
 import {
   type ActionFormState,
   type ContextMenuFormState,
@@ -35,7 +35,7 @@ import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-import { type BrickPipeline } from "@/bricks/types";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import contextMenu from "@/pageEditor/starterBricks/contextMenu";
 import { validateRegistryId } from "@/types/helpers";
 import menuItem from "@/pageEditor/starterBricks/menuItem";
