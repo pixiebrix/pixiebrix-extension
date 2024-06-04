@@ -41,7 +41,7 @@ function useAddElement(): AddElement {
   const dispatch = useDispatch();
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
-    (x) => x.settings.suggestElements,
+    (x) => x.settings.suggestElements ?? false,
   );
 
   return useCallback(

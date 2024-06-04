@@ -28,11 +28,12 @@ import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
 function isPanelElement(element: ModComponentFormState | null): boolean {
-  return ["panel", "actionPanel"].includes(element?.type);
+  return ["panel", "actionPanel"].includes(element?.type ?? "");
 }
 
 /**
@@ -42,7 +43,7 @@ function isAutomaticTrigger(element: ModComponentFormState): boolean {
   const automatic = ["load", "appear", "initialize", "interval"];
   return (
     element?.type === "trigger" &&
-    automatic.includes(element?.extensionPoint.definition.trigger)
+    automatic.includes(element?.extensionPoint.definition.trigger ?? "")
   );
 }
 
@@ -75,7 +76,7 @@ export function shouldAutoRun(element: ModComponentFormState): boolean {
   const isTour = element.type === "tour";
   const automaticUpdate = !(isTrigger || isPanel || isTour);
 
-  return automaticUpdate || element.autoReload;
+  return automaticUpdate || (element.autoReload ?? false);
 }
 
 /**
@@ -96,7 +97,10 @@ const ReloadToolbar: React.FunctionComponent<{
   const sessionId = useSelector(selectSessionId);
 
   const run = useCallback(async () => {
-    const { asDynamicElement: factory } = ADAPTERS.get(element.type);
+    const adapter = ADAPTERS.get(element.type);
+    assertNotNullish(adapter, `Adapter not found for ${element.type}`);
+    const { asDynamicElement: factory } = adapter;
+
     updateDynamicElement(allFramesInInspectedTab, factory(element));
   }, [element]);
 

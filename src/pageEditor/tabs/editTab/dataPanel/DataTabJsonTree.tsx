@@ -43,9 +43,10 @@ const DataTabJsonTree: React.FunctionComponent<DataTabJsonTreeProps> = ({
 }) => {
   const dispatch = useDispatch();
 
-  const { query, treeExpandedState } = useSelector((state: RootState) =>
-    selectNodeDataPanelTabState(state, tabKey),
-  );
+  const { query, treeExpandedState } =
+    useSelector((state: RootState) =>
+      selectNodeDataPanelTabState(state, tabKey),
+    ) ?? {};
 
   const setQuery = useCallback(
     (query: string) => {

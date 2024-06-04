@@ -17,7 +17,7 @@
 
 import styles from "./Form.module.scss";
 
-import React, { type ReactElement } from "react";
+import React, { type ReactNode, type ReactElement } from "react";
 // eslint-disable-next-line no-restricted-imports -- importing the original file for our custom component
 import { Alert, Button, Form as BootstrapForm } from "react-bootstrap";
 import {
@@ -48,7 +48,7 @@ export type RenderSubmit = (state: {
   isSubmitting: boolean;
   isValid: boolean;
   values: FormikValues;
-}) => ReactElement;
+}) => ReactNode;
 
 type RenderStatus = (state: { status: string }) => ReactElement;
 

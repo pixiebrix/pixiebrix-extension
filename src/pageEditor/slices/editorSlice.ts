@@ -304,7 +304,7 @@ export const editorSlice = createSlice({
     resetEditor() {
       return initialState;
     },
-    toggleInsert(state, action: PayloadAction<StarterBrickType>) {
+    toggleInsert(state, action: PayloadAction<StarterBrickType | null>) {
       state.inserting = action.payload;
       state.beta = false;
       state.error = null;

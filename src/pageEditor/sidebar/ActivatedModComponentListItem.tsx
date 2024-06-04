@@ -164,7 +164,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           [styles.nested ?? ""]: isNested,
         })}
       >
-        <ExtensionIcon type={type} />
+        {type ? <ExtensionIcon type={type} /> : null}
       </span>
       <span className={styles.name}>
         {modComponent.label ?? modComponent.id}

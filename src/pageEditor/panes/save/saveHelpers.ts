@@ -63,6 +63,7 @@ import {
   isInnerDefinitionEqual,
   isStarterBrickDefinitionPropEqual,
 } from "@/starterBricks/starterBrickUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -75,7 +76,9 @@ export function generateScopeBrickId(
 ): RegistryId {
   const match = PACKAGE_REGEX.exec(sourceId);
   return validateRegistryId(
-    compact([newScope, match.groups?.collection, match.groups?.name]).join("/"),
+    compact([newScope, match?.groups?.collection, match?.groups?.name]).join(
+      "/",
+    ),
   );
 }
 
@@ -92,12 +95,12 @@ function findModComponentIndex(
   modDefinition: ModDefinition,
   modComponent: ModComponentBase,
 ): number {
-  if (modDefinition.metadata.version !== modComponent._recipe.version) {
+  if (modDefinition.metadata.version !== modComponent._recipe?.version) {
     console.warn(
       "Mod component was installed using a different version of the mod",
       {
         modDefinitionVersion: modDefinition.metadata.version,
-        mocComponentModVersion: modComponent._recipe.version,
+        modComponentModVersion: modComponent._recipe?.version,
       },
     );
   }
@@ -119,11 +122,9 @@ function findModComponentIndex(
     );
   }
 
-  if (labelMatches.length === 1) {
-    return modDefinition.extensionPoints.findIndex(
-      (x) => x.label === modComponent.label,
-    );
-  }
+  return modDefinition.extensionPoints.findIndex(
+    (x) => x.label === modComponent.label,
+  );
 }
 
 /**
@@ -137,8 +138,9 @@ export function findMaxIntegrationDependencyApiVersion(
 ): ModDependencyAPIVersion {
   let maxApiVersion: ModDependencyAPIVersion = "v1";
   for (const integrationDependency of integrationDependencies) {
-    if (integrationDependency.apiVersion > maxApiVersion) {
-      maxApiVersion = integrationDependency.apiVersion;
+    const { apiVersion } = integrationDependency;
+    if (apiVersion && apiVersion > maxApiVersion) {
+      maxApiVersion = apiVersion;
     }
   }
 
@@ -151,12 +153,13 @@ export function selectModComponentIntegrations({
   ModComponentBase,
   "integrationDependencies"
 >): ModComponentDefinition["services"] {
+  const _integrationDependencies = compact(integrationDependencies);
   const apiVersion = findMaxIntegrationDependencyApiVersion(
-    integrationDependencies,
+    _integrationDependencies,
   );
   if (apiVersion === "v1") {
     return Object.fromEntries(
-      integrationDependencies.map((x) => [x.outputKey, x.integrationId]),
+      _integrationDependencies.map((x) => [x.outputKey, x.integrationId]),
     );
   }
 
@@ -167,7 +170,7 @@ export function selectModComponentIntegrations({
       outputKey,
       integrationId,
       isOptional,
-    } of integrationDependencies) {
+    } of _integrationDependencies) {
       properties[outputKey] = {
         $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationId}`,
       };
@@ -199,8 +202,8 @@ function deleteUnusedStarterBrickDefinitions(
   for (const [id, definition] of Object.entries(innerDefinitions ?? {})) {
     // Only delete starter brick definitions. In the future, we may complete support for internal brick definitions
     if (isStarterBrickDefinitionLike(definition) && !referencedIds.has(id)) {
-      // eslint-disable-next-line security/detect-object-injection -- from Object.entries
-      delete innerDefinitions[id];
+      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- from Object.entries
+      delete innerDefinitions![id];
     }
   }
 }
@@ -237,14 +240,22 @@ export function replaceModComponent(
     draft.metadata = modMetadata;
     draft.options = newModComponent.optionsDefinition;
 
+    assertNotNullish(draft.definitions, "Mod definition has no definitions");
+
     if (sourceMod.apiVersion !== newModComponent.apiVersion) {
       const canUpdateModApiVersion = sourceMod.extensionPoints.length <= 1;
       if (canUpdateModApiVersion) {
         draft.apiVersion = newModComponent.apiVersion;
 
         const starterBrickId = sourceMod.extensionPoints[0]?.id;
+
+        assertNotNullish(
+          starterBrickId,
+          "First mod compnent in mod definition has no starter brick",
+        );
+
         // eslint-disable-next-line security/detect-object-injection -- getting a property by extension id
-        const starterBrickDefinition = draft.definitions?.[starterBrickId];
+        const starterBrickDefinition = draft.definitions[starterBrickId];
 
         if (starterBrickDefinition?.apiVersion != null) {
           starterBrickDefinition.apiVersion = newModComponent.apiVersion;
@@ -261,9 +272,9 @@ export function replaceModComponent(
       activatedModComponent,
     );
 
-    const { selectExtension, selectStarterBrickDefinition } = ADAPTERS.get(
-      newModComponent.type,
-    );
+    const adapter = ADAPTERS.get(newModComponent.type);
+    assertNotNullish(adapter, `No adapter found for ${newModComponent.type}`);
+    const { selectExtension, selectStarterBrickDefinition } = adapter;
     const rawModComponent = selectExtension(newModComponent);
     const starterBrickId = newModComponent.extensionPoint.metadata.id;
     const hasInnerDefinition = isInnerDefinitionRegistryId(starterBrickId);
@@ -283,7 +294,8 @@ export function replaceModComponent(
         selectStarterBrickDefinition(newModComponent);
 
       const originalInnerId =
-        sourceMod.extensionPoints.at(modComponentIndex).id;
+        sourceMod.extensionPoints.at(modComponentIndex)?.id;
+      assertNotNullish(originalInnerId, "Original inner id not found");
       let newInnerId = originalInnerId;
 
       if (
@@ -296,13 +308,13 @@ export function replaceModComponent(
         if (
           !isStarterBrickDefinitionPropEqual(
             // eslint-disable-next-line security/detect-object-injection -- existing id
-            draft.definitions[originalInnerId].definition,
+            draft.definitions[originalInnerId]?.definition,
             starterBrickDefinition.definition,
           )
         ) {
           newInnerId = freshIdentifier(
             "extensionPoint" as SafeString,
-            Object.keys(sourceMod.definitions),
+            Object.keys(sourceMod?.definitions ?? {}),
           ) as InnerDefinitionRef;
           // eslint-disable-next-line security/detect-object-injection -- generated with freshIdentifier
           draft.definitions[newInnerId] = {
@@ -437,9 +449,13 @@ export function buildNewMod({
 
     const unsavedModComponents: ModComponentBase[] =
       dirtyModComponentFormStates.map((modComponentFormState) => {
-        const { selectExtension, selectStarterBrickDefinition } = ADAPTERS.get(
-          modComponentFormState.type,
+        const adapter = ADAPTERS.get(modComponentFormState.type);
+        assertNotNullish(
+          adapter,
+          `No adapter found for ${modComponentFormState.type}`,
         );
+        const { selectExtension, selectStarterBrickDefinition } = adapter;
+
         const unsavedModComponent = selectExtension(modComponentFormState);
 
         if (isInnerDefinitionRegistryId(unsavedModComponent.extensionPointId)) {
@@ -492,7 +508,7 @@ function buildModComponents(
     // we need to generate a new starter brick id to use instead. If we are changing the starter brick id
     // of the current modComponent, then we need to keep track of this change so that we can build the
     // mod component definition with the correct id
-    let newStarterBrickId: RegistryId | InnerDefinitionRef = null;
+    let newStarterBrickId: RegistryId | InnerDefinitionRef | null = null;
 
     for (const [
       componentInnerDefinitionId,
@@ -533,7 +549,7 @@ function buildModComponents(
           isInnerDefinitionEqual(
             componentInnerDefinition,
             // eslint-disable-next-line security/detect-object-injection -- extensionPointId is coming from the modComponent definition entries
-            definitionsResult[componentInnerDefinitionId],
+            definitionsResult[componentInnerDefinitionId] ?? {},
           )
         ) {
           // Not only has the id been used before, but the definition deeply matches

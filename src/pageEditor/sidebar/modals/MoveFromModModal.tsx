@@ -38,6 +38,7 @@ import Form, {
 } from "@/components/form/Form";
 import { type RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type FormState = {
   moveOrRemove: "move" | "remove";
@@ -67,7 +68,8 @@ const MoveFromModModal: React.FC = () => {
       const keepLocalCopy = moveOrRemove === "move";
 
       try {
-        const elementId = activeElement.uuid;
+        const elementId = activeElement?.uuid;
+        assertNotNullish(elementId, "elementId not found for active element");
         dispatch(actions.removeElementFromRecipe({ elementId, keepLocalCopy }));
         hideModal();
       } catch (error) {

@@ -45,7 +45,7 @@ import pluralize from "@/utils/pluralize";
  * @see useAllModDefinitions
  */
 export function useOptionalModDefinition(
-  id: RegistryId,
+  id: RegistryId | null,
 ): FetchableAsyncState<ModDefinition | null> {
   const state = useAllModDefinitions();
 
