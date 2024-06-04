@@ -22,6 +22,7 @@ import {
   type Page,
   type BrowserContext,
 } from "@playwright/test";
+import { TOTP } from "otpauth";
 
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
 
@@ -210,4 +211,15 @@ export async function getModifierKey(page: Page): Promise<string> {
 export async function getModifierSymbol(page: Page): Promise<string> {
   const OSName = await getBrowserOs(page);
   return OSName === "MacOS" ? "⌘" : "⌃";
+}
+
+export function generateOTP(secret: string) {
+  const totp = new TOTP({
+    secret,
+    digits: 6,
+    algorithm: "sha1",
+    period: 30,
+  });
+
+  return totp.generate();
 }

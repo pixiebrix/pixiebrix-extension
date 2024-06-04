@@ -26,6 +26,7 @@ const requiredEnvVariables = [
   "E2E_TEST_USER_PASSWORD_UNAFFILIATED",
   "E2E_GOOGLE_TEST_USER_EMAIL",
   "E2E_GOOGLE_TEST_USER_PASSWORD",
+  "E2E_GOOGLE_TEST_USER_OTP_KEY",
   "SHADOW_DOM",
 ] as const;
 
@@ -72,6 +73,7 @@ export const {
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
   E2E_GOOGLE_TEST_USER_EMAIL,
   E2E_GOOGLE_TEST_USER_PASSWORD,
+  E2E_GOOGLE_TEST_USER_OTP_KEY,
 } = process.env as RequiredEnvVariables;
 
 export const { CI, SLOWMO, PWDEBUG } = process.env as OptionalEnvVariables;

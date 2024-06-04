@@ -23,6 +23,7 @@ import {
   E2E_GOOGLE_TEST_USER_EMAIL,
   E2E_GOOGLE_TEST_USER_PASSWORD,
 } from "../../env";
+import { generateOTP } from "../../utils";
 
 test("can activate a google spreadsheet mod with no config options", async ({
   context,
@@ -35,26 +36,43 @@ test("can activate a google spreadsheet mod with no config options", async ({
   await modActivationPage.goto();
 
   // Handle Google Authentication Popup
-  const popup = await popupPromise;
-  await popup.waitForSelector("#identifierId");
-  await popup.getByLabel("Email or Phone").fill(E2E_GOOGLE_TEST_USER_EMAIL);
-  await popup.getByRole("button", { name: "Next" }).click();
-  await popup
+  const googleAuthPopup = await popupPromise;
+  await googleAuthPopup.waitForSelector("#identifierId");
+  await googleAuthPopup
+    .getByLabel("Email or Phone")
+    .fill(E2E_GOOGLE_TEST_USER_EMAIL);
+  await googleAuthPopup.getByRole("button", { name: "Next" }).click();
+  await googleAuthPopup
     .getByLabel("Enter your password")
     .fill(E2E_GOOGLE_TEST_USER_PASSWORD);
-  await popup.getByLabel("Enter your password").press("Enter");
+  await googleAuthPopup.getByLabel("Enter your password").press("Enter");
 
   // Conditionally click on Continue button if present
   try {
-    const continueButton = popup.getByRole("button", { name: "Continue" });
-    await continueButton.waitFor({ state: "visible", timeout: 2000 });
+    const code = googleAuthPopup.getByLabel("Enter code");
+    await code.waitFor({ state: "visible", timeout: 5000 });
+
+    const twoFACode = generateOTP(process.env.GOOGLE_OTP_SECRET);
+    const totpNext = googleAuthPopup.getByRole("button", { name: "Next" });
+    await code.fill(twoFACode);
+    await totpNext.click();
+  } catch {
+    // OTP not required present, do nothing
+  }
+
+  // Conditionally click on Continue button if present
+  try {
+    const continueButton = googleAuthPopup.getByRole("button", {
+      name: "Continue",
+    });
+    await continueButton.waitFor({ state: "visible", timeout: 5000 });
     await continueButton.click();
   } catch {
     // Continue button not present, do nothing
   }
 
   // Provide Pixiebrix access to drive resources
-  await popup.getByRole("button", { name: "Allow" }).click();
+  await googleAuthPopup.getByRole("button", { name: "Allow" }).click();
 
   await page.getByLabel("testSheet").click();
   await page.getByRole("option", { name: "Test sheet" }).click();
