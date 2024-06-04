@@ -36,4 +36,20 @@ describe("launchWebAuthFlow", () => {
       }),
     ).rejects.toThrow(InteractiveLoginRequiredError);
   });
+
+  it("replaces 'Authorization page could not be loaded.' error with informative error message", async () => {
+    jest
+      .mocked(browser.identity.launchWebAuthFlow)
+      .mockRejectedValue(new Error("Authorization page could not be loaded."));
+
+    await expect(
+      launchWebAuthFlow({
+        url: "https://www.example.com",
+        interactive: false,
+      }),
+    ).rejects.toThrowWithMessage(
+      InteractiveLoginRequiredError,
+      "Unable to load the login page. Try again, or contact your team admin if the problem persists",
+    );
+  });
 });
