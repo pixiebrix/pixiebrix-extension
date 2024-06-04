@@ -32,6 +32,7 @@ import {
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 
 type PreviewState = {
   isRunning: boolean;
@@ -77,11 +78,13 @@ const ExtensionPointPreview: React.FunctionComponent<{
   const run = useCallback(async (element: ModComponentFormState) => {
     dispatch(previewSlice.actions.startRun());
     try {
-      const { asDynamicElement: factory } = ADAPTERS.get(element.type);
+      const adapter = ADAPTERS.get(element.type);
+      assertNotNullish(adapter, `Adapter not found for ${element.type}`);
+      const { asDynamicElement: factory } = adapter;
 
       // Handle click/blur/etc.-based triggers which expect to be run a subset of elements on the page and pass through
       // data about the element that caused the trigger
-      let rootSelector: string = null;
+      let rootSelector: Nullishable<string> = null;
       if (
         (element as TriggerFormState).extensionPoint.definition.rootSelector
       ) {

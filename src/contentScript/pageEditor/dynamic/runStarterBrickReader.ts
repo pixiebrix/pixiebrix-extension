@@ -21,10 +21,11 @@ import { $safeFind } from "@/utils/domUtils";
 import { type DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { expectContext } from "@/utils/expectContext";
 import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export async function runStarterBrickReader(
   { extensionPointConfig }: Pick<DynamicDefinition, "extensionPointConfig">,
-  rootSelector: string | undefined,
+  rootSelector: Nullishable<string>,
 ): Promise<JsonObject> {
   expectContext("contentScript");
 

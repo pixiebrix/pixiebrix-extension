@@ -21,6 +21,7 @@ import { uuidv4 } from "@/types/helpers";
 import { type BrickConfig } from "@/bricks/types";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function usePasteBlock():
   | ((pipelinePath: string, pipelineIndex: number) => Promise<void>)
@@ -34,16 +35,17 @@ function usePasteBlock():
   return async (pipelinePath: string, pipelineIndex: number) => {
     // Give the block a new instanceId
     const newInstanceId = uuidv4();
-    const newBlock: BrickConfig = {
+    const newBrick: BrickConfig = {
       ...copiedBlock,
       instanceId: newInstanceId,
     };
     // Give all the bricks new instance ids
-    const normalizedPipeline = await normalizePipelineForEditor([newBlock]);
-    const normalizedBlock = normalizedPipeline.at(0);
+    const normalizedPipeline = await normalizePipelineForEditor([newBrick]);
+    const normalizedBrick = normalizedPipeline.at(0);
+    assertNotNullish(normalizedBrick, "Brick not found in pipeline");
     // Insert the block
     dispatch(
-      actions.addNode({ block: normalizedBlock, pipelinePath, pipelineIndex }),
+      actions.addNode({ block: normalizedBrick, pipelinePath, pipelineIndex }),
     );
     dispatch(actions.clearCopiedBlockConfig());
   };

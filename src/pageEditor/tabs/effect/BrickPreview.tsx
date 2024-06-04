@@ -49,6 +49,7 @@ import makeIntegrationsContextFromDependencies from "@/integrations/util/makeInt
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -60,14 +61,14 @@ const HACK_TRACE_OPTIONAL = new Set([
 
 function isTraceOptional(
   blockId: RegistryId,
-  { type }: { type: BrickType },
+  { type }: { type: BrickType | null },
 ): boolean {
   return type === "reader" || HACK_TRACE_OPTIONAL.has(blockId);
 }
 
 type PreviewInfo = {
   block: Brick;
-  type: BrickType;
+  type: BrickType | null;
   isPure: boolean;
   isRootAware: boolean;
   traceOptional: boolean;
@@ -104,7 +105,7 @@ const traceWarning = (
 type PreviewState = {
   isRunning: boolean;
   output: unknown;
-  outputKey: string;
+  outputKey: Nullishable<string>;
 };
 
 const initialState: PreviewState = {
@@ -122,7 +123,7 @@ const previewSlice = createSlice({
     },
     setSuccess(
       state,
-      action: PayloadAction<{ output: unknown; outputKey: string }>,
+      action: PayloadAction<{ output: unknown; outputKey?: string }>,
     ) {
       const { output, outputKey } = action.payload;
       state.outputKey = outputKey;

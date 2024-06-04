@@ -36,6 +36,7 @@ import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
   const { isConfigured } = useQuickbarShortcut();
@@ -64,8 +65,11 @@ const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
 const FoundationNodeConfigPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showVersionField = flagOn("page-editor-developer");
-  const { extensionPoint: starterBrick } = useSelector(
-    selectActiveModComponentFormState,
+  const { extensionPoint: starterBrick } =
+    useSelector(selectActiveModComponentFormState) ?? {};
+  assertNotNullish(
+    starterBrick,
+    "starterBrick not found in active mod component form state",
   );
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
@@ -74,7 +78,12 @@ const FoundationNodeConfigPanel: React.FC = () => {
     [starterBrick.metadata.id],
   );
 
-  const { EditorNode } = ADAPTERS.get(starterBrick.definition.type);
+  const adapter = ADAPTERS.get(starterBrick.definition.type);
+  assertNotNullish(
+    adapter,
+    `Adapter not found for ${starterBrick.definition.type}`,
+  );
+  const { EditorNode } = adapter;
 
   return (
     <>
@@ -90,7 +99,7 @@ const FoundationNodeConfigPanel: React.FC = () => {
               selectActiveModComponentAnalysisAnnotationsForPath,
           }}
         >
-          <EditorNode isLocked={isLocked} />
+          {EditorNode ? <EditorNode isLocked={isLocked} /> : null}
         </AnalysisAnnotationsContext.Provider>
       </SchemaFieldContext.Provider>
     </>

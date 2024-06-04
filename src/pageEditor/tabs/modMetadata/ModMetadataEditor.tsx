@@ -41,6 +41,7 @@ import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import cx from "classnames";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -66,6 +67,9 @@ const selectFirstModComponent = createSelector(
 
 const ModMetadataEditor: React.VoidFunctionComponent = () => {
   const modId = useSelector(selectActiveModId);
+
+  assertNotNullish(modId, "No active mod id");
+
   const {
     data: modDefinition,
     isFetching,
@@ -76,7 +80,7 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
   // We rely on the assumption that every component in the mod has the same version.
   const modDefinitionComponent = useSelector(selectFirstModComponent);
 
-  const installedModVersion = modDefinitionComponent?._recipe.version;
+  const installedModVersion = modDefinitionComponent?._recipe?.version;
   const latestModVersion = modDefinition?.metadata?.version;
   const showOldModVersionWarning =
     installedModVersion &&
@@ -87,7 +91,7 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
   const savedMetadata = modDefinition?.metadata;
   const metadata = dirtyMetadata ?? savedMetadata;
 
-  const initialFormState: ModMetadataFormState = {
+  const initialFormState: Partial<ModMetadataFormState> = {
     id: metadata?.id,
     name: metadata?.name,
     version: metadata?.version,

@@ -27,6 +27,7 @@ import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/s
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import type { StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type SourceModParts = {
   sourceModDefinition?: ModDefinition;
@@ -62,7 +63,7 @@ function useCheckModStarterBrickInvariants(): (
         : // See useCreateModFromModComponent.ts for an example where there is no sourceModDefinition
           unsavedModDefinition.metadata.id;
       const definitionsFromMod = Object.values(
-        unsavedModDefinition.definitions,
+        unsavedModDefinition.definitions ?? {},
       );
 
       const { cleanModComponents, dirtyModComponentFormStates } =
@@ -79,7 +80,10 @@ function useCheckModStarterBrickInvariants(): (
           continue;
         }
 
-        const { selectStarterBrickDefinition } = ADAPTERS.get(formState.type);
+        const adapter = ADAPTERS.get(formState.type);
+        assertNotNullish(adapter, `Adapter not found for ${formState.type}`);
+        const { selectStarterBrickDefinition } = adapter;
+
         const definitionFromComponent = {
           kind: "extensionPoint",
           definition: selectStarterBrickDefinition(formState).definition,
@@ -95,7 +99,7 @@ function useCheckModStarterBrickInvariants(): (
 
       for (const cleanModComponent of cleanModComponents) {
         if (
-          Object.values(cleanModComponent.definitions).some(
+          Object.values(cleanModComponent.definitions ?? {}).some(
             (definitionFromComponent) =>
               !definitionsFromMod.some((definitionFromMod) =>
                 isInnerDefinitionEqual(
