@@ -32,6 +32,7 @@ import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { guessUsefulness } from "@/utils/detectRandomString";
 import type { Schema } from "@/types/schemaTypes";
 import { isObject } from "@/utils/objectUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 // `jQuery` selector extension: https://api.jquery.com/category/selectors/jquery-selector-extensions/
 const jQueryExtensions = new Set([
@@ -155,7 +156,7 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
       path: "extensionPoint.definition.rootSelector",
     };
 
-    if (!isEmpty(selector)) {
+    if (selector) {
       this.visitSelector({
         position,
         selector,
@@ -232,6 +233,8 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     } catch {
       return;
     }
+
+    assertNotNullish(selector, "Selector is null.");
 
     this.visitSelector({
       position,
@@ -314,7 +317,8 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     let brick;
 
     try {
-      brick = this.allBlocks.get(brickConfig.id).block;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- wrapped in try/catch
+      brick = this.allBlocks.get(brickConfig.id)!.block;
     } catch {
       return;
     }

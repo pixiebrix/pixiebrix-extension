@@ -4,6 +4,14 @@
     "strictNullChecks": true
   },
   "files": [
+    "./analysis/analysisVisitors/traceAnalysis.ts",
+    "./analysis/analysisVisitors/selectorAnalysis.ts",
+    "./analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor.ts",
+    "./analysis/analysisVisitors/outputKeyAnalysis.ts",
+    "./analysis/analysisVisitors/httpRequestAnalysis.ts",
+    "./analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis.ts",
+    "./analysis/analysisVisitors/renderersAnalysis.ts",
+    "./analysis/analysisVisitors/varAnalysis/varAnalysis.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/envSetup.ts",
