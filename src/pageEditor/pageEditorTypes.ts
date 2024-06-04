@@ -145,7 +145,7 @@ export interface EditorState {
   /**
    * Which modal are we showing, if any?
    */
-  visibleModalKey?: ModalKey;
+  visibleModalKey: ModalKey | null;
 
   /**
    * The pipeline location where a new brick will be added.

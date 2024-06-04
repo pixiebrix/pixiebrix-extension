@@ -24,6 +24,7 @@ import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Target } from "@/types/messengerTypes";
 import { type BaseFormState } from "@/pageEditor/baseFormStateTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * ExtensionPoint configuration for use with the Page Editor.
@@ -88,7 +89,7 @@ export interface ElementConfig<
   readonly fromNativeElement: (
     url: string,
     metadata: Metadata,
-    element: TResult,
+    element: Nullishable<TResult>,
   ) => TState;
 
   /**

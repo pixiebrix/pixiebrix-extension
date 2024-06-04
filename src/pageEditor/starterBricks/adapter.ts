@@ -31,6 +31,7 @@ import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type DynamicDefinition } from "@/contentScript/pageEditor/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const ADAPTERS = new Map<StarterBrickType, ElementConfig>([
   ["trigger", triggerExtension],
@@ -47,11 +48,12 @@ export async function selectType(
   extension: ModComponentBase,
 ): Promise<StarterBrickType> {
   if (hasInnerExtensionPointRef(extension)) {
+    const { extensionPointId, definitions } = extension;
     return (
-      extension.definitions[
-        extension.extensionPointId
-      ] as unknown as StarterBrickDefinitionLike
-    ).definition.type;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerExtensionPointRef
+      (definitions![extensionPointId] as unknown as StarterBrickDefinitionLike)
+        .definition.type
+    );
   }
 
   const brick = await registry.find(extension.extensionPointId);
@@ -71,7 +73,7 @@ export async function modComponentToFormState(
   modComponent: ModComponentBase,
 ): Promise<ModComponentFormState> {
   const starterBrickType = await selectType(modComponent);
-  const { fromExtension } = ADAPTERS.get(starterBrickType);
+  const { fromExtension } = ADAPTERS.get(starterBrickType) ?? {};
   if (!fromExtension) {
     throw new Error(
       `Editing existing mod components not implemented for starter brick type: '${starterBrickType}'`,
@@ -86,5 +88,9 @@ export function formStateToDynamicElement(
   formState: ModComponentFormState,
 ): DynamicDefinition {
   const elementConfig = ADAPTERS.get(formState.type);
+  assertNotNullish(
+    elementConfig,
+    `No adapter found for starter brick type: ${formState.type}`,
+  );
   return elementConfig.asDynamicElement(formState);
 }

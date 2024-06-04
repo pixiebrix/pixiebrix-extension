@@ -48,6 +48,7 @@ import {
   type MenuItemDefinition,
   type MenuItemStarterBrickConfig,
 } from "@/starterBricks/menuItem/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(
   url: string,
@@ -151,14 +152,16 @@ async function fromExtension(
     "action",
   );
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     // `containerInfo` only populated on initial creation session
     containerInfo: null,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {

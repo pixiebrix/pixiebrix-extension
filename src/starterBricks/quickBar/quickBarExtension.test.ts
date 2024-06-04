@@ -79,11 +79,11 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
 
 const extensionFactory = define<ResolvedModComponent<QuickBarConfig>>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined,
+  _resolvedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: null,
+  _recipe: undefined,
   label: "Test Extension",
   config: define<QuickBarConfig>({
     title: "Test Action",
@@ -99,7 +99,7 @@ beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([rootReader]);
   rootReader.readCount = 0;
-  rootReader.ref = undefined;
+  rootReader.ref = null;
 });
 
 const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]

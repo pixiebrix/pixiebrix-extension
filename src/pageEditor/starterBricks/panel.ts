@@ -47,6 +47,7 @@ import {
   type PanelDefinition,
   type PanelConfig,
 } from "@/starterBricks/panel/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DEFAULT_TRAITS: PanelTraits = {
   style: {
@@ -148,13 +149,15 @@ async function fromExtension(
     },
   );
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     containerInfo: null,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       traits: {

@@ -64,11 +64,11 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
 
 const extensionFactory = define<ResolvedModComponent<ContextMenuConfig>>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined,
+  _resolvedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: null,
+  _recipe: undefined,
   label: "Test Extension",
   config: define<ContextMenuConfig>({
     title: "Test Menu Item",
@@ -82,7 +82,7 @@ beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([rootReader]);
   rootReader.readCount = 0;
-  rootReader.ref = undefined;
+  rootReader.ref = null;
   jest.resetAllMocks();
 });
 

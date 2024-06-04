@@ -43,6 +43,7 @@ import {
   type QuickBarProviderDefinition,
   type QuickBarProviderConfig,
 } from "@/starterBricks/quickBarProvider/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(
   url: string,
@@ -120,8 +121,11 @@ async function fromExtension(
     "quickBarProvider"
   >(config, "quickBarProvider");
 
-  const { documentUrlPatterns, defaultOptions, reader } =
-    extensionPoint.definition;
+  const {
+    documentUrlPatterns = [],
+    defaultOptions = {},
+    reader,
+  } = extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
@@ -129,11 +133,14 @@ async function fromExtension(
     "generator",
   );
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {

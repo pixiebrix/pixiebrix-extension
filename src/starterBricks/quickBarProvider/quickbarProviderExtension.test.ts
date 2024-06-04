@@ -69,11 +69,11 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
 
 const extensionFactory = define<ResolvedModComponent<QuickBarProviderConfig>>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined,
+  _resolvedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: null,
+  _recipe: undefined,
   label: "Test Extension",
   config: define<QuickBarProviderConfig>({
     rootAction: {
@@ -100,7 +100,7 @@ describe("quickBarProviderExtension", () => {
     blockRegistry.clear();
     blockRegistry.register([rootReader]);
     rootReader.readCount = 0;
-    rootReader.ref = undefined;
+    rootReader.ref = null;
   });
 
   it("quick bar provider adds root action instantly", async () => {
@@ -209,7 +209,7 @@ describe("quickBarProviderExtension", () => {
     await act(async () => {
       await quickBarRegistry.generateActions({
         query: "foo",
-        rootActionId: undefined,
+        rootActionId: null,
       });
     });
 

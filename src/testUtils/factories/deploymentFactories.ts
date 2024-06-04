@@ -45,7 +45,8 @@ export const deploymentFactory = define<Deployment>({
   bindings: () => [] as Deployment["bindings"],
   services: () => [] as Deployment["services"],
   package_version: derive<Deployment, string>(
-    ({ package: deploymentPackage }) => deploymentPackage.version,
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- test utility
+    ({ package: deploymentPackage }) => deploymentPackage!.version!,
     "package",
   ),
   package: deploymentPackageFactory,

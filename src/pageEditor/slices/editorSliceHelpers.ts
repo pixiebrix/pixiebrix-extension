@@ -32,6 +32,7 @@ import { type ModComponentUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
@@ -41,9 +42,15 @@ export function ensureElementUIState(
 ) {
   if (!state.elementUIStates[elementId]) {
     state.elementUIStates[elementId] = makeInitialElementUIState();
-    const pipeline = state.elements.find((x) => x.uuid === elementId).extension
+    const pipeline = state.elements.find((x) => x.uuid === elementId)?.extension
       .blockPipeline;
-    state.elementUIStates[elementId].pipelineMap = getPipelineMap(pipeline);
+
+    assertNotNullish(
+      pipeline,
+      `Pipeline not found for elementId: ${elementId}`,
+    );
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
+    state.elementUIStates[elementId]!.pipelineMap = getPipelineMap(pipeline);
   }
 }
 
@@ -59,6 +66,11 @@ export function syncElementNodeUIStates(
   element: ModComponentFormState,
 ) {
   const elementUIState = state.elementUIStates[element.uuid];
+
+  assertNotNullish(
+    elementUIState,
+    `Element UI state not found for ${element.uuid}`,
+  );
 
   const pipelineMap = getPipelineMap(element.extension.blockPipeline);
 
@@ -84,7 +96,13 @@ export function syncElementNodeUIStates(
 }
 
 export function setActiveNodeId(state: Draft<EditorState>, nodeId: UUID) {
+  assertNotNullish(state.activeElementId, "No active element id set");
   const elementUIState = state.elementUIStates[state.activeElementId];
+
+  assertNotNullish(
+    elementUIState,
+    `No element UI state found for active element: ${state.activeElementId}`,
+  );
   ensureNodeUIState(elementUIState, nodeId);
   elementUIState.activeNodeId = nodeId;
 }
