@@ -52,7 +52,7 @@ export async function launchWebAuthFlow(
 
     if (message === "Authorization page could not be loaded.") {
       throw new InteractiveLoginRequiredError(
-        "Unable to load the page. Try again later or contact support for more assistance.",
+        "Unable to load the login page. Try again, or contact your team admin if the problem persists",
       );
     }
   }
