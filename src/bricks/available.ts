@@ -20,19 +20,44 @@ import { castArray } from "lodash";
 import { type Entries } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { $safeFind } from "@/utils/domUtils";
-import { type Availability } from "@/types/availabilityTypes";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import {
+  type Availability,
+  type NormalizedAvailability,
+} from "@/types/availabilityTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
+
+export function normalizeAvailability(
+  availability: Availability,
+): NormalizedAvailability {
+  const {
+    matchPatterns = [],
+    urlPatterns = [],
+    selectors = [],
+    allFrames = true,
+  } = availability;
+
+  return {
+    matchPatterns: castArray(matchPatterns),
+    urlPatterns: castArray(urlPatterns),
+    selectors: castArray(selectors),
+    allFrames,
+  };
+}
 
 export function testMatchPatterns(
   patterns: string[],
-  url: string = document.location.href,
+  url: Nullishable<string>,
 ): boolean {
-  if (url === "about:srcdoc") {
+  const targetURL = url ?? document.location.href;
+
+  if (targetURL === "about:srcdoc") {
     // <all_urls> doesn't officially include about:srcdoc, but it works in some cases
     return patterns.includes("<all_urls>");
   }
 
   try {
-    return doesUrlMatchPatterns(url, ...patterns);
+    return doesUrlMatchPatterns(targetURL, ...patterns);
   } catch {
     const invalidPattern = patterns.find((pattern) => !isValidPattern(pattern));
     throw new BusinessError(
@@ -43,8 +68,10 @@ export function testMatchPatterns(
 
 function testUrlPattern(
   pattern: string | URLPatternInit,
-  url: string = document.location.href,
+  url: Nullishable<string>,
 ): boolean {
+  const targetURL = url ?? document.location.href;
+
   let compiled;
 
   try {
@@ -72,37 +99,36 @@ function testUrlPattern(
     );
   }
 
-  return compiled.test(url);
+  return compiled.test(targetURL);
 }
 
 function testSelector(selector: string): boolean {
   return $safeFind(selector).length > 0;
 }
 
+/**
+ * Returns true if the availability rules match the given document/URL.
+ * @param availability availability rules
+ * @param url the URL to check match and URL patterns against, defaults to the document's URL
+ */
 export async function checkAvailable(
   availability: Availability,
   url?: string,
 ): Promise<boolean> {
-  const {
-    matchPatterns: rawMatchPatterns = [],
-    urlPatterns: rawUrlPatterns = [],
-    selectors: rawSelectors = [],
-  } = availability;
-
-  const matchPatterns = rawMatchPatterns ? castArray(rawMatchPatterns) : [];
-  const urlPatterns = rawUrlPatterns ? castArray(rawUrlPatterns) : [];
-  const selectors = rawSelectors ? castArray(rawSelectors) : [];
+  const { matchPatterns, urlPatterns, selectors, allFrames } =
+    normalizeAvailability(availability);
 
   if (process.env.DEBUG) {
     const result = {
       matchPatterns:
-        matchPatterns.length === 0 || testMatchPatterns(matchPatterns),
+        matchPatterns.length === 0 || testMatchPatterns(matchPatterns, url),
       urlPatterns:
         urlPatterns.length === 0 ||
-        urlPatterns.some((pattern) => testUrlPattern(pattern)),
+        urlPatterns.some((pattern) => testUrlPattern(pattern, url)),
       selectors:
         selectors.length === 0 ||
         selectors.some((selector) => testSelector(selector)),
+      allFrames: allFrames || !isLoadedInIframe(),
     };
 
     console.debug(
@@ -115,6 +141,10 @@ export async function checkAvailable(
     );
   }
 
+  if (!allFrames && isLoadedInIframe()) {
+    return false;
+  }
+
   // Check matchPatterns and urlPatterns first b/c they're faster than searching selectors
 
   if (matchPatterns.length > 0 && !testMatchPatterns(matchPatterns, url)) {
@@ -123,7 +153,7 @@ export async function checkAvailable(
 
   if (
     urlPatterns.length > 0 &&
-    !urlPatterns.some((pattern) => testUrlPattern(pattern))
+    !urlPatterns.some((pattern) => testUrlPattern(pattern, url))
   ) {
     return false;
   }

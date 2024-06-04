@@ -24,10 +24,11 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeIsAvailable,
+  makeDefaultAvailability,
   readerTypeHack,
   removeEmptyValues,
-  selectIsAvailable,
+  selectStarterBrickAvailability,
+  cleanIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import {
@@ -37,7 +38,6 @@ import {
   TriggerStarterBrickABC,
 } from "@/starterBricks/triggerExtension";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
@@ -45,6 +45,7 @@ import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(
   url: string,
@@ -60,21 +61,21 @@ function fromNativeElement(
       definition: {
         type: "trigger",
         trigger: "load",
-        rootSelector: null,
-        attachMode: null,
-        targetMode: null,
+        rootSelector: undefined,
+        attachMode: undefined,
+        targetMode: undefined,
         // Use "once" for reportMode, because the default is "load"
         reportMode: "once",
         // Show error notifications by default, to assist with development
         showErrors: true,
-        intervalMillis: null,
+        intervalMillis: undefined,
         // Use `background: true` for the default for "load" trigger to 1) match the pre-1.8.7 behavior, and 2)
         // cause the trigger to run by default when the mod component is installed
         background: true,
-        debounce: null,
-        customEvent: null,
+        debounce: undefined,
+        customEvent: undefined,
         reader: getImplicitReader("trigger"),
-        isAvailable: makeIsAvailable(url),
+        isAvailable: makeDefaultAvailability(url),
       },
     },
     extension: {
@@ -108,7 +109,7 @@ function selectStarterBrickDefinition(
     definition: {
       type: "trigger",
       reader,
-      isAvailable: pickBy(isAvailable, identity),
+      isAvailable: cleanIsAvailable(isAvailable),
       trigger,
       debounce,
       customEvent,
@@ -177,11 +178,14 @@ async function fromExtension(
     "action",
   );
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
@@ -197,7 +201,7 @@ async function fromExtension(
         background,
         intervalMillis,
         reader: readerTypeHack(reader),
-        isAvailable: selectIsAvailable(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(extensionPoint),
       },
     },
   };

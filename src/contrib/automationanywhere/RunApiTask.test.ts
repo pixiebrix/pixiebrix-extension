@@ -110,7 +110,7 @@ describe("Automation Anywhere - Run API Task", () => {
     const response = await runApiTaskBrick.run(
       unsafeAssumeValidArg({
         integrationConfig: sanitizedIntegrationConfigFactory({
-          id: configId,
+          id: configId!,
           serviceId: oauth2Integration.id,
         }),
         botId: BOT_ID,
@@ -183,7 +183,7 @@ describe("Automation Anywhere - Run API Task", () => {
     const response = await runApiTaskBrick.run(
       unsafeAssumeValidArg({
         integrationConfig: sanitizedIntegrationConfigFactory({
-          id: configId,
+          id: configId!,
           serviceId: oauth2Integration.id,
         }),
         botId: BOT_ID,
@@ -241,7 +241,7 @@ describe("Automation Anywhere - Run API Task", () => {
       runApiTaskBrick.run(
         unsafeAssumeValidArg({
           integrationConfig: sanitizedIntegrationConfigFactory({
-            id: configId,
+            id: configId!,
             serviceId: oauth2Integration.id,
           }),
           botId: BOT_ID,

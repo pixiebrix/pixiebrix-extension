@@ -9,6 +9,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import CustomEventEffect from "@/bricks/effects/customEvent";
+import { uuidv4 } from "@/types/helpers";
 
 beforeAll(() => {
   registerBuiltinBricks();
@@ -18,7 +19,11 @@ beforeAll(() => {
 describe("TriggerConfiguration", () => {
   it("renders custom event field with known event names", async () => {
     const formState = triggerFormStateFactory({}, [
-      { id: CustomEventEffect.BRICK_ID, config: { eventName: "otherevent" } },
+      {
+        id: CustomEventEffect.BRICK_ID,
+        config: { eventName: "otherevent" },
+        instanceId: uuidv4(),
+      },
     ]);
     formState.extensionPoint.definition.trigger = "custom";
     formState.extensionPoint.definition.customEvent = { eventName: null };

@@ -25,10 +25,10 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeIsAvailable,
+  makeDefaultAvailability,
   readerTypeHack,
   removeEmptyValues,
-  selectIsAvailable,
+  selectStarterBrickAvailability,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
@@ -47,6 +47,7 @@ import {
   type PanelDefinition,
   type PanelConfig,
 } from "@/starterBricks/panel/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DEFAULT_TRAITS: PanelTraits = {
   style: {
@@ -69,7 +70,7 @@ function fromNativeElement(
       definition: {
         ...panel.foundation,
         reader: getImplicitReader("panel"),
-        isAvailable: makeIsAvailable(url),
+        isAvailable: makeDefaultAvailability(url),
       },
       traits: DEFAULT_TRAITS,
     },
@@ -148,13 +149,15 @@ async function fromExtension(
     },
   );
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     containerInfo: null,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       traits: {
@@ -164,7 +167,7 @@ async function fromExtension(
       definition: {
         ...extensionPoint.definition,
         reader: readerTypeHack(extensionPoint.definition.reader),
-        isAvailable: selectIsAvailable(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(extensionPoint),
       },
     },
   };

@@ -19,7 +19,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { checkAvailable, testMatchPatterns } from "@/bricks/available";
+import {
+  checkAvailable,
+  normalizeAvailability,
+  testMatchPatterns,
+} from "@/bricks/available";
+
+describe("normalizeAvailability", () => {
+  it("adds missing", () => {
+    expect(normalizeAvailability({})).toStrictEqual({
+      matchPatterns: [],
+      urlPatterns: [],
+      selectors: [],
+      allFrames: true,
+    });
+  });
+
+  test("normalize single match URL", () => {
+    expect(
+      normalizeAvailability({ matchPatterns: "https://*/*" }).matchPatterns,
+    ).toStrictEqual(["https://*/*"]);
+  });
+
+  test.each([true, false])("pass through allFrames: %s", (allFrames) => {
+    expect(normalizeAvailability({ allFrames }).allFrames).toBe(allFrames);
+  });
+});
 
 describe("isAvailable.urlPatterns", () => {
   test("can match hash", async () => {

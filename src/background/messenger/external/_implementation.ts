@@ -188,7 +188,8 @@ export async function openActivateModPage({
     // For extension console activation, only support a single mod id
     // TODO: support passing options to the Extension Console activation page
     getExtensionConsoleUrl(
-      `marketplace/activate/${encodeURIComponent(mods[0].modId)}`,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+      `marketplace/activate/${encodeURIComponent(mods[0]!.modId)}`,
     );
 
   if (newTab) {
@@ -212,6 +213,6 @@ export async function openExtensionConsole(): Promise<true> {
  * Activate starter mods via the background page.
  * @see installStarterBlueprintsInBackground
  */
-export async function activateStarterMods(): Promise<boolean> {
+export async function activateStarterMods(): Promise<boolean | undefined> {
   return installStarterBlueprintsInBackground();
 }

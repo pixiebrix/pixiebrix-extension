@@ -25,7 +25,10 @@ import { type RegistryId } from "@/types/registryTypes";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
-import { checkAvailable as backgroundCheckAvailable } from "@/bricks/available";
+import {
+  checkAvailable as backgroundCheckAvailable,
+  normalizeAvailability,
+} from "@/bricks/available";
 import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
 import { produce } from "immer";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -58,9 +61,9 @@ describe("checkActiveElementAvailability", () => {
         definition: {
           type: "menuItem",
           reader: [] as RegistryId[],
-          isAvailable: {
+          isAvailable: normalizeAvailability({
             matchPatterns: ["https://www.otherUrl.com/"],
-          },
+          }),
           containerSelector: "",
           template: "",
         },
@@ -76,9 +79,9 @@ describe("checkActiveElementAvailability", () => {
         definition: {
           type: "menuItem",
           reader: [] as RegistryId[],
-          isAvailable: {
+          isAvailable: normalizeAvailability({
             matchPatterns: ["https://www.otherUrl.com/"],
-          },
+          }),
           containerSelector: "",
           template: "",
         },

@@ -53,7 +53,7 @@ describe("ShowEffect", () => {
   test("it shows element for isRootAware: true", async () => {
     await brick.run(
       unsafeAssumeValidArg({ isRootAware: true }),
-      brickOptionsFactory({ root: document.querySelector("button") }),
+      brickOptionsFactory({ root: document.querySelector("button")! }),
     );
 
     expect(document.querySelector("button")).toBeVisible();

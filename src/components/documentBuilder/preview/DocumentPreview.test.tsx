@@ -35,6 +35,7 @@ import { type PipelineExpression } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { toExpression } from "@/utils/expressionUtils";
+import { uuidv4 } from "@/types/helpers";
 
 function renderDocumentPreview(documentElement: DocumentElement) {
   const formState = formStateFactory(undefined, [
@@ -43,6 +44,7 @@ function renderDocumentPreview(documentElement: DocumentElement) {
       config: {
         body: [documentElement],
       },
+      instanceId: uuidv4(),
     },
   ]);
 

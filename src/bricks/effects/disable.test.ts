@@ -54,7 +54,7 @@ describe("DisableEffect", () => {
     await brick.run(
       unsafeAssumeValidArg({ isRootAware: true }),
       brickOptionsFactory({
-        root: document.querySelector("button"),
+        root: document.querySelector("button")!,
       }),
     );
 

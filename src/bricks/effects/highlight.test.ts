@@ -60,7 +60,7 @@ describe("highlight", () => {
         rootMode: "inherit",
       }),
       brickOptionsFactory({
-        root: document.querySelector<HTMLElement>("#tree"),
+        root: document.querySelector<HTMLElement>("#tree")!,
       }),
     );
 
@@ -87,7 +87,7 @@ describe("highlight", () => {
           rootMode,
         }),
         brickOptionsFactory({
-          root: document.querySelector<HTMLElement>("#tree"),
+          root: document.querySelector<HTMLElement>("#tree")!,
         }),
       );
 

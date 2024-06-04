@@ -99,7 +99,7 @@ describe("BrickHistory", () => {
 
     // Open the second select
     await act(async () => {
-      selectEvent.openMenu(selectInputs[1]);
+      selectEvent.openMenu(selectInputs[1]!);
     });
 
     // The expected options are displayed
@@ -112,7 +112,7 @@ describe("BrickHistory", () => {
     expect(olderVersion).toBeVisible();
 
     // Selecting another version should then display the diff editor
-    await selectEvent.select(selectInputs[1], "1.0.0");
+    await selectEvent.select(selectInputs[1]!, "1.0.0");
     await waitForEffect();
     expect(findDiffEditor(container)).toBeInTheDocument();
   });

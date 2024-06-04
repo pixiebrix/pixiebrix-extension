@@ -70,6 +70,42 @@ describe("Database field", () => {
 });
 
 describe("select field", () => {
+  it("excludes the text input if allowExpressions is false", () => {
+    const options = getToggleOptions({
+      fieldSchema: {
+        type: "string",
+        enum: ["foo", "bar"],
+      },
+      isRequired: true,
+      allowExpressions: false,
+      customToggleModes: [],
+      isObjectProperty: false,
+      isArrayItem: false,
+    });
+
+    expect(options).toHaveLength(1);
+    expect(options[0].label).toBe("Select...");
+  });
+
+  it("includes the text input if allowExpressions is true", () => {
+    const options = getToggleOptions({
+      fieldSchema: {
+        type: "string",
+        enum: ["foo", "bar"],
+      },
+      isRequired: true,
+      allowExpressions: true,
+      customToggleModes: [],
+      isObjectProperty: false,
+      isArrayItem: false,
+    });
+
+    expect(options).toHaveLength(3);
+    expect(options[0].label).toBe("Select...");
+    expect(options[1].label).toBe("Text");
+    expect(options[2].label).toBe("Variable");
+  });
+
   it("handles labelled enum field", () => {
     const options = getToggleOptions({
       fieldSchema: {

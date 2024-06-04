@@ -266,7 +266,8 @@ describe("ReplaceTextEffect", () => {
 
   test("sanitize HTML", async () => {
     document.body.innerHTML = "<div>foobar</div>";
-    document.querySelector("div").textContent = "<script>alert('xss')</script>";
+    document.querySelector("div")!.textContent =
+      "<script>alert('xss')</script>";
 
     const brick = new HighlightText();
 
@@ -286,7 +287,7 @@ describe("ReplaceTextEffect", () => {
 
   test("is root aware", async () => {
     document.body.innerHTML = "<div><h1>foobar</h1><h2>foobaz</h2></div>";
-    const root: HTMLElement = document.querySelector("h1");
+    const root: HTMLElement = document.querySelector("h1")!;
 
     const brick = new HighlightText();
 

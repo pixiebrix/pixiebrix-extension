@@ -38,7 +38,6 @@ import {
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
 import { type SafeString } from "@/types/stringTypes";
-
 import {
   remoteIntegrationConfigurationFactory,
   remoteIntegrationServiceFactory,
@@ -91,6 +90,22 @@ export const starterBrickDefinitionFactory = define<StarterBrickDefinitionLike>(
     },
   },
 );
+
+// Return as UnknownObject to match InnerDefinitions type. Otherwise, Typescript complains about a missing string
+// index signature when assigning the value to InnerDefinitions.
+export const starterBrickInnerDefinitionFactory = define<UnknownObject>({
+  kind: "extensionPoint",
+  definition(n: number) {
+    const definition: StarterBrickDefinitionProp = {
+      type: "menuItem" as StarterBrickType,
+      isAvailable: {
+        matchPatterns: [`https://www.mySite${n}.com/*`],
+      },
+      reader: validateRegistryId("@pixiebrix/document-context"),
+    };
+    return definition;
+  },
+});
 
 type ExternalStarterBrickParams = {
   extensionPointId?: RegistryId;
@@ -167,18 +182,8 @@ export const innerStarterBrickModDefinitionFactory = ({
 }: InnerStarterBrickParams = {}) =>
   extend<ModDefinition, ModDefinition>(modDefinitionFactory, {
     definitions: (): InnerDefinitions => ({
-      [extensionPointRef]: {
-        kind: "extensionPoint",
-        definition: {
-          type: "menuItem",
-          isAvailable: {
-            matchPatterns: ["https://*/*"],
-            urlPatterns: [],
-            selectors: [],
-          },
-          reader: validateRegistryId("@pixiebrix/document-context"),
-        },
-      },
+      [extensionPointRef]:
+        starterBrickInnerDefinitionFactory() as unknown as UnknownObject,
     }),
     options: undefined,
     extensionPoints: () => [

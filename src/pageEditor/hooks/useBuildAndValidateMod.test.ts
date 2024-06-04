@@ -42,6 +42,7 @@ import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories"
 import { array } from "cooky-cutter";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { normalizeModDefinition } from "@/utils/modUtils";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
@@ -163,7 +164,9 @@ describe("useBuildAndValidateMod", () => {
         });
 
         // Compare results
-        expect(newMod).toStrictEqual(updatedMod);
+        expect(normalizeModDefinition(newMod)).toStrictEqual(
+          normalizeModDefinition(updatedMod),
+        );
       });
     },
   );

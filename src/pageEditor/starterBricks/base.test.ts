@@ -18,7 +18,7 @@
 import {
   getImplicitReader,
   removeEmptyValues,
-  selectIsAvailable,
+  selectStarterBrickAvailability,
 } from "./base";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type ReaderConfig } from "@/bricks/types";
@@ -80,13 +80,15 @@ describe("selectIsAvailable", () => {
     delete extensionPoint.definition.isAvailable.selectors;
     delete extensionPoint.definition.isAvailable.urlPatterns;
 
-    const normalized = selectIsAvailable(extensionPoint);
+    const normalized = selectStarterBrickAvailability(extensionPoint);
 
-    expect(normalized.matchPatterns).toStrictEqual(["https://www.example.com"]);
-
-    // Don't add properties that were undefined as part of normalization
-    expect(normalized.selectors).toBeUndefined();
-    expect(normalized.urlPatterns).toBeUndefined();
+    expect(normalized).toStrictEqual({
+      matchPatterns: ["https://www.example.com"],
+      // As of 2.0.2, properties are added during normalization
+      selectors: [],
+      urlPatterns: [],
+      allFrames: true,
+    });
   });
 });
 

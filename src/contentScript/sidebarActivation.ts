@@ -58,7 +58,9 @@ async function showSidebarActivationForMods(
 
 function addActivateModsListener(): void {
   // Prevent duplicating listener
-  window.removeEventListener(ACTIVATE_EVENT_TYPE, listener);
+  if (listener) {
+    window.removeEventListener(ACTIVATE_EVENT_TYPE, listener);
+  }
 
   listener = async (event: CustomEvent<ACTIVATE_EVENT_DETAIL>) => {
     const { activateUrl } = event.detail;

@@ -24,10 +24,10 @@ import useAsyncState from "@/hooks/useAsyncState";
 
 // TODO: don't use process.env here so that we can use the same JS app bundle for all environments
 //  see https://github.com/pixiebrix/pixiebrix-app/issues/259
-const environment = process.env.ENVIRONMENT;
+const environment = process.env.ENVIRONMENT ?? null;
 const isExtension = isExtensionContext();
 
-const variantMap = new Map<string, BannerVariant>([
+const variantMap = new Map<string | null, BannerVariant>([
   [null, "warning"],
   ["", "warning"],
   ["development", "success"],

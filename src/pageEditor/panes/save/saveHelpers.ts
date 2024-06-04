@@ -26,7 +26,7 @@ import {
   PACKAGE_REGEX,
   validateRegistryId,
 } from "@/types/helpers";
-import { compact, isEqual, pick, sortBy } from "lodash";
+import { compact, pick, sortBy } from "lodash";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -53,12 +53,16 @@ import {
   type ModDependencyAPIVersion,
 } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
-import {
-  isModOptionsSchemaEmpty,
-  normalizeModOptionsDefinition,
-} from "@/utils/modUtils";
+import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
-import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
+import {
+  isStarterBrickDefinitionLike,
+  type StarterBrickDefinitionLike,
+} from "@/starterBricks/types";
+import {
+  isInnerDefinitionEqual,
+  isStarterBrickDefinitionPropEqual,
+} from "@/starterBricks/starterBrickUtils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -141,7 +145,7 @@ export function findMaxIntegrationDependencyApiVersion(
   return maxApiVersion;
 }
 
-export function selectExtensionPointIntegrations({
+export function selectModComponentIntegrations({
   integrationDependencies,
 }: Pick<
   ModComponentBase,
@@ -183,6 +187,25 @@ export function selectExtensionPointIntegrations({
 }
 
 /**
+ * Deleted unreferenced inner starter brick definitions. Stopgap for logic errors causing unmatched inner definitions
+ * in `buildNewMod` and `replaceModComponent`
+ */
+function deleteUnusedStarterBrickDefinitions(
+  innerDefinitions: InnerDefinitions | undefined,
+  modComponentDefinitions: ModComponentDefinition[],
+) {
+  const referencedIds = new Set(modComponentDefinitions.map((x) => x.id));
+
+  for (const [id, definition] of Object.entries(innerDefinitions ?? {})) {
+    // Only delete starter brick definitions. In the future, we may complete support for internal brick definitions
+    if (isStarterBrickDefinitionLike(definition) && !referencedIds.has(id)) {
+      // eslint-disable-next-line security/detect-object-injection -- from Object.entries
+      delete innerDefinitions[id];
+    }
+  }
+}
+
+/**
  * Create a copy of `sourceMod` with `modMetadata` and `modComponent`.
  *
  * NOTE: the caller is responsible for updating an extensionPoint package (i.e., that has its own version). This method
@@ -212,18 +235,19 @@ export function replaceModComponent(
 
   return produce(sourceMod, (draft: ModDefinition) => {
     draft.metadata = modMetadata;
+    draft.options = newModComponent.optionsDefinition;
 
     if (sourceMod.apiVersion !== newModComponent.apiVersion) {
       const canUpdateModApiVersion = sourceMod.extensionPoints.length <= 1;
       if (canUpdateModApiVersion) {
         draft.apiVersion = newModComponent.apiVersion;
 
-        const extensionPointId = sourceMod.extensionPoints[0]?.id;
+        const starterBrickId = sourceMod.extensionPoints[0]?.id;
         // eslint-disable-next-line security/detect-object-injection -- getting a property by extension id
-        const extensionPointDefinition = draft.definitions?.[extensionPointId];
+        const starterBrickDefinition = draft.definitions?.[starterBrickId];
 
-        if (extensionPointDefinition?.apiVersion != null) {
-          extensionPointDefinition.apiVersion = newModComponent.apiVersion;
+        if (starterBrickDefinition?.apiVersion != null) {
+          starterBrickDefinition.apiVersion = newModComponent.apiVersion;
         }
       } else {
         throw new Error(
@@ -231,10 +255,6 @@ export function replaceModComponent(
         );
       }
     }
-
-    draft.options = isModOptionsSchemaEmpty(newModComponent.optionsDefinition)
-      ? undefined
-      : newModComponent.optionsDefinition;
 
     const modComponentIndex = findModComponentIndex(
       sourceMod,
@@ -245,29 +265,21 @@ export function replaceModComponent(
       newModComponent.type,
     );
     const rawModComponent = selectExtension(newModComponent);
-    const extensionPointId = newModComponent.extensionPoint.metadata.id;
-    const hasInnerExtensionPoint =
-      isInnerDefinitionRegistryId(extensionPointId);
+    const starterBrickId = newModComponent.extensionPoint.metadata.id;
+    const hasInnerDefinition = isInnerDefinitionRegistryId(starterBrickId);
 
-    const commonModComponentConfig: Except<ModComponentDefinition, "id"> = {
+    const commonModComponentDefinition: Except<ModComponentDefinition, "id"> = {
       ...pick(rawModComponent, [
         "label",
         "config",
         "permissions",
         "templateEngine",
       ]),
+      services: selectModComponentIntegrations(rawModComponent),
     };
 
-    // The `services` field is optional, so only add it to the config if the raw
-    // mod component has a value. Normalizing here makes testing harder because we
-    // then have to account for the normalized value in assertions.
-    if (rawModComponent.integrationDependencies) {
-      commonModComponentConfig.services =
-        selectExtensionPointIntegrations(rawModComponent);
-    }
-
-    if (hasInnerExtensionPoint) {
-      const extensionPointConfig =
+    if (hasInnerDefinition) {
+      const starterBrickDefinition =
         selectStarterBrickDefinition(newModComponent);
 
       const originalInnerId =
@@ -279,29 +291,23 @@ export function replaceModComponent(
           .length > 1
       ) {
         // Multiple mod components share the same inner extension point definition. If the inner extension point
-        // definition was modified, the behavior we want (at least for now) is to create new extensionPoint entry
+        // definition was modified, the behavior we want (at least for now) is to create new starter brick definition
         // instead of modifying the shared entry. If it wasn't modified, we don't have to make any changes.
-
-        // NOTE: there are some non-functional changes (e.g., services being normalized from undefined to {}) that will
-        // cause the definitions to not be equal. This is OK for now -- in practice it won't happen for mods
-        // originally built using the Page Editor since it produces configs that include the explicit {} and [] objects
-        // instead of undefined.
         if (
-          !isEqual(
+          !isStarterBrickDefinitionPropEqual(
             // eslint-disable-next-line security/detect-object-injection -- existing id
             draft.definitions[originalInnerId].definition,
-            extensionPointConfig.definition,
+            starterBrickDefinition.definition,
           )
         ) {
-          const freshId = freshIdentifier(
+          newInnerId = freshIdentifier(
             "extensionPoint" as SafeString,
             Object.keys(sourceMod.definitions),
           ) as InnerDefinitionRef;
-          newInnerId = freshId;
           // eslint-disable-next-line security/detect-object-injection -- generated with freshIdentifier
-          draft.definitions[freshId] = {
+          draft.definitions[newInnerId] = {
             kind: "extensionPoint",
-            definition: extensionPointConfig.definition,
+            definition: starterBrickDefinition.definition,
           } satisfies StarterBrickDefinitionLike;
         }
       } else {
@@ -309,14 +315,14 @@ export function replaceModComponent(
         // eslint-disable-next-line security/detect-object-injection -- existing id
         draft.definitions[originalInnerId] = {
           kind: "extensionPoint",
-          definition: extensionPointConfig.definition,
+          definition: starterBrickDefinition.definition,
         } satisfies StarterBrickDefinitionLike;
       }
 
       // eslint-disable-next-line security/detect-object-injection -- false positive for number
       draft.extensionPoints[modComponentIndex] = {
         id: newInnerId,
-        ...commonModComponentConfig,
+        ...commonModComponentDefinition,
       };
     } else {
       // It's not currently possible to switch from using an extensionPoint package to an inner extensionPoint
@@ -324,9 +330,14 @@ export function replaceModComponent(
       // eslint-disable-next-line security/detect-object-injection -- false positive for number
       draft.extensionPoints[modComponentIndex] = {
         id: rawModComponent.extensionPointId,
-        ...commonModComponentConfig,
+        ...commonModComponentDefinition,
       };
     }
+
+    deleteUnusedStarterBrickDefinitions(
+      draft.definitions,
+      draft.extensionPoints,
+    );
 
     return draft;
   });
@@ -335,17 +346,11 @@ export function replaceModComponent(
 function selectModComponentDefinition(
   modComponent: ModComponentBase,
 ): ModComponentDefinition {
-  const extensionPoint: ModComponentDefinition = {
+  return {
     ...pick(modComponent, ["label", "config", "permissions", "templateEngine"]),
     id: modComponent.extensionPointId,
+    services: selectModComponentIntegrations(modComponent),
   };
-
-  // To make round-trip testing easier, don't add a `services` property if it didn't already exist
-  if (modComponent.integrationDependencies != null) {
-    extensionPoint.services = selectExtensionPointIntegrations(modComponent);
-  }
-
-  return extensionPoint;
 }
 
 export type ModParts = {
@@ -400,9 +405,7 @@ export function buildNewMod({
 
   return produce(unsavedModDefinition, (draft: UnsavedModDefinition): void => {
     if (dirtyModOptions) {
-      draft.options = isModOptionsSchemaEmpty(dirtyModOptions)
-        ? undefined
-        : normalizeModOptionsDefinition(dirtyModOptions);
+      draft.options = normalizeModOptionsDefinition(dirtyModOptions);
     }
 
     if (dirtyModMetadata) {
@@ -454,7 +457,7 @@ export function buildNewMod({
         return unsavedModComponent;
       });
 
-    const { innerDefinitions, extensionPoints } = buildExtensionPoints([
+    const { innerDefinitions, extensionPoints } = buildModComponents([
       ...cleanModComponents,
       ...unsavedModComponents,
     ]);
@@ -464,62 +467,75 @@ export function buildNewMod({
     // split/recombination logic causes things to get out of order in the result.
     draft.extensionPoints = sortBy(extensionPoints, (x) => x.id);
     draft.definitions = innerDefinitions;
+
+    // Delete any extra starter brick definitions that might have crept in
+    deleteUnusedStarterBrickDefinitions(
+      draft.definitions,
+      draft.extensionPoints,
+    );
   });
 }
 
-type BuildExtensionPointsResult = {
+type BuildModComponentsResult = {
   innerDefinitions: InnerDefinitions;
   extensionPoints: ModComponentDefinition[];
 };
 
-function buildExtensionPoints(
+function buildModComponents(
   modComponents: ModComponentBase[],
-): BuildExtensionPointsResult {
-  const innerDefinitions: InnerDefinitions = {};
-  const extensionPoints: ModComponentDefinition[] = [];
+): BuildModComponentsResult {
+  const definitionsResult: InnerDefinitions = {};
+  const componentsResult: ModComponentDefinition[] = [];
 
   for (const modComponent of modComponents) {
-    // When an extensionPointId is an @inner/* style reference, or if the
-    // id has already been used in the mod, we need to generate a new
-    // extensionPointId to use instead. If we are changing the extensionPointId
-    // of the current modComponent, then we need to keep track of this change
-    // so that we can build the extensionPoint with the correct id.
-    let newExtensionPointId: RegistryId | InnerDefinitionRef = null;
+    // When a starter brick id is an @inner/* style reference, or if the id has already been used in the mod,
+    // we need to generate a new starter brick id to use instead. If we are changing the starter brick id
+    // of the current modComponent, then we need to keep track of this change so that we can build the
+    // mod component definition with the correct id
+    let newStarterBrickId: RegistryId | InnerDefinitionRef = null;
 
-    for (const [extensionPointId, definition] of Object.entries(
+    for (const [
+      componentInnerDefinitionId,
+      componentInnerDefinition,
+    ] of Object.entries(
+      // Definitions are currently all starter brick definitions
       modComponent.definitions ?? {},
     )) {
-      const usedExtensionPointIds = Object.keys(innerDefinitions);
+      const currentStarterBrickIds = Object.keys(definitionsResult);
 
       let isDefinitionAlreadyAdded = false;
-      let needsFreshExtensionPointId = false;
+      let needsFreshStarterBrickId = false;
 
-      if (isInnerDefinitionRegistryId(extensionPointId)) {
+      if (isInnerDefinitionRegistryId(componentInnerDefinitionId)) {
         // Always replace inner ids
-        needsFreshExtensionPointId = true;
+        needsFreshStarterBrickId = true;
 
         // Check to see if the definition has already been added under a different id
-        for (const [id, innerDefinition] of Object.entries(innerDefinitions)) {
-          if (isEqual(definition, innerDefinition)) {
-            // We found a match in the definitions we've already built
-            isDefinitionAlreadyAdded = true;
+        const match = Object.entries(definitionsResult).find(([, x]) =>
+          isInnerDefinitionEqual(componentInnerDefinition, x),
+        );
 
-            // If this definition matches the modComponent's extensionPointId, track
-            // the id change with our variable declared above.
-            if (modComponent.extensionPointId === extensionPointId) {
-              newExtensionPointId = id as InnerDefinitionRef;
-            }
+        if (match) {
+          // We found a match in the definitions we've already built
+          isDefinitionAlreadyAdded = true;
 
-            // If we found a matching definition, we don't need to keep searching
-            break;
+          // If this definition matches the modComponent's starter brick id,
+          // track the id change with our variable declared above.
+          if (modComponent.extensionPointId === componentInnerDefinitionId) {
+            newStarterBrickId = match[0] as InnerDefinitionRef;
           }
         }
-      } else if (usedExtensionPointIds.includes(extensionPointId)) {
+      } else if (currentStarterBrickIds.includes(componentInnerDefinitionId)) {
         // We already used this extensionPointId, need to generate a fresh one
-        needsFreshExtensionPointId = true;
+        needsFreshStarterBrickId = true;
 
-        // eslint-disable-next-line security/detect-object-injection -- extensionPointId is coming from the modComponent definition entries
-        if (isEqual(definition, innerDefinitions[extensionPointId])) {
+        if (
+          isInnerDefinitionEqual(
+            componentInnerDefinition,
+            // eslint-disable-next-line security/detect-object-injection -- extensionPointId is coming from the modComponent definition entries
+            definitionsResult[componentInnerDefinitionId],
+          )
+        ) {
           // Not only has the id been used before, but the definition deeply matches
           // the one being added as well
           isDefinitionAlreadyAdded = true;
@@ -531,41 +547,41 @@ function buildExtensionPoints(
         continue;
       }
 
-      const newInnerId = needsFreshExtensionPointId
+      const newInnerId = needsFreshStarterBrickId
         ? freshIdentifier(
             DEFAULT_EXTENSION_POINT_VAR as SafeString,
-            usedExtensionPointIds,
+            currentStarterBrickIds,
           )
-        : extensionPointId;
+        : componentInnerDefinitionId;
 
-      // If the definition being added had the same extensionPointId as the modComponent,
-      // and if we generated a new extensionPointId for the definition, then we also
-      // need to update the id for the extensionPoint we're going to add that references
-      // this definition.
+      // If the definition being added had the same starter brick id as the modComponent,
+      // and if we generated a new starter brick id for the definition, then we also
+      // need to update the id for the mod component definition we're going to add that references
+      // this starter brick definition.
       if (
-        needsFreshExtensionPointId &&
-        modComponent.extensionPointId === extensionPointId
+        needsFreshStarterBrickId &&
+        modComponent.extensionPointId === componentInnerDefinitionId
       ) {
-        newExtensionPointId = newInnerId as InnerDefinitionRef;
+        newStarterBrickId = newInnerId as InnerDefinitionRef;
       }
 
       // eslint-disable-next-line security/detect-object-injection -- we just constructed the id
-      innerDefinitions[newInnerId] = definition;
+      definitionsResult[newInnerId] = componentInnerDefinition;
     }
 
     // Construct the modComponent point config from the modComponent
-    const extensionPoint = selectModComponentDefinition(modComponent);
+    const modComponentDefinition = selectModComponentDefinition(modComponent);
 
     // Add the extensionPoint, replacing the id with our updated
     // extensionPointId, if we've tracked a change in newExtensionPointId
-    extensionPoints.push({
-      ...extensionPoint,
-      id: newExtensionPointId ?? extensionPoint.id,
+    componentsResult.push({
+      ...modComponentDefinition,
+      id: newStarterBrickId ?? modComponentDefinition.id,
     });
   }
 
   return {
-    innerDefinitions,
-    extensionPoints,
+    innerDefinitions: definitionsResult,
+    extensionPoints: componentsResult,
   };
 }

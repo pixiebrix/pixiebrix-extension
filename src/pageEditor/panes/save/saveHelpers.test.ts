@@ -20,9 +20,9 @@ import {
   findMaxIntegrationDependencyApiVersion,
   generateScopeBrickId,
   replaceModComponent,
-  selectExtensionPointIntegrations,
+  selectModComponentIntegrations,
 } from "@/pageEditor/panes/save/saveHelpers";
-import { validateRegistryId, normalizeSemVerString } from "@/types/helpers";
+import { normalizeSemVerString, validateRegistryId } from "@/types/helpers";
 import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
 import {
   internalStarterBrickMetaFactory,
@@ -57,13 +57,18 @@ import {
   modComponentDefinitionFactory,
   modDefinitionWithVersionedStarterBrickFactory,
   starterBrickDefinitionFactory,
+  starterBrickInnerDefinitionFactory,
   versionedModDefinitionWithResolvedModComponents,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
-import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import {
+  emptyModOptionsDefinitionFactory,
+  normalizeModDefinition,
+} from "@/utils/modUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
@@ -207,12 +212,55 @@ describe("replaceModComponent round trip", () => {
       modComponentFormState,
     );
 
-    expect(newMod).toStrictEqual(
-      produce(modDefinition, (draft) => {
-        draft.metadata.id = newId;
-        draft.extensionPoints[0].label = "New Label";
+    const target = produce(modDefinition, (draft) => {
+      draft.metadata.id = newId;
+      draft.extensionPoints[0].label = "New Label";
+    });
+
+    expect(normalizeModDefinition(newMod)).toStrictEqual(
+      normalizeModDefinition(target),
+    );
+  });
+
+  test("remove excess starter brick definitions", async () => {
+    const modDefinition = innerStarterBrickModDefinitionFactory()();
+    const originalId = Object.keys(modDefinition.definitions)[0];
+    modDefinition.definitions.excess = starterBrickInnerDefinitionFactory();
+
+    const state = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.activateMod({
+        modDefinition,
+        screen: "pageEditor",
+        isReactivate: false,
       }),
     );
+
+    // Mimic what would come back via internal.ts:resolveRecipe
+    jest.mocked(lookupExtensionPoint).mockResolvedValue({
+      ...modDefinition.definitions.extensionPoint,
+      metadata: {
+        id: makeInternalId(modDefinition.definitions.extensionPoint),
+        name: "Internal Starter Brick",
+        version: normalizeSemVerString("1.0.0"),
+      },
+    } as any);
+
+    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
+      state.extensions[0],
+    );
+
+    modComponentFormState.label = "New Label";
+
+    const newMod = replaceModComponent(
+      modDefinition,
+      { ...modDefinition.metadata, id: registryIdFactory() },
+      state.extensions,
+      modComponentFormState,
+    );
+
+    // Expect the excess definition was removed
+    expect(Object.keys(newMod.definitions)).toStrictEqual([originalId]);
   });
 
   test("generate fresh identifier definition changed", async () => {
@@ -259,19 +307,21 @@ describe("replaceModComponent round trip", () => {
       modComponentFormState,
     );
 
-    expect(newMod).toStrictEqual(
-      produce(modDefinition, (draft) => {
-        draft.metadata.id = newId;
+    const target = produce(modDefinition, (draft) => {
+      draft.metadata.id = newId;
 
-        draft.definitions.extensionPoint2 = cloneDeep(
-          modDefinition.definitions.extensionPoint,
-        );
-        (
-          draft.definitions.extensionPoint2.definition as MenuItemDefinition
-        ).template = newTemplate;
-        draft.extensionPoints[0].id = "extensionPoint2" as InnerDefinitionRef;
-        draft.extensionPoints[0].label = "New Label";
-      }),
+      draft.definitions.extensionPoint2 = cloneDeep(
+        modDefinition.definitions.extensionPoint,
+      );
+      (
+        draft.definitions.extensionPoint2.definition as MenuItemDefinition
+      ).template = newTemplate;
+      draft.extensionPoints[0].id = "extensionPoint2" as InnerDefinitionRef;
+      draft.extensionPoints[0].label = "New Label";
+    });
+
+    expect(normalizeModDefinition(newMod)).toStrictEqual(
+      normalizeModDefinition(target),
     );
   });
 
@@ -450,7 +500,7 @@ describe("mod options", () => {
     );
   }
 
-  test("doesn't add empty schema when mod options is empty", async () => {
+  test("adds empty schema when mod options is empty", async () => {
     const emptyOptions = emptyModOptionsDefinitionFactory();
 
     const updatedModDefinition = await runReplaceModComponent(
@@ -458,7 +508,9 @@ describe("mod options", () => {
       emptyOptions,
     );
 
-    expect(updatedModDefinition.options).toBeUndefined();
+    expect(updatedModDefinition.options).toStrictEqual(
+      emptyModOptionsDefinitionFactory(),
+    );
   });
 
   test("creates mod options", async () => {
@@ -517,7 +569,7 @@ describe("mod options", () => {
     expect(updatedModDefinition.options).toBe(modComponentModOptions);
   });
 
-  test("removes mod options", async () => {
+  test("preserves mod options", async () => {
     const modOptionsDefinition: ModOptionsDefinition = {
       schema: {
         type: "object",
@@ -539,7 +591,9 @@ describe("mod options", () => {
       modComponentModOptions,
     );
 
-    expect(updatedMod.options).toBeUndefined();
+    expect(updatedMod.options).toStrictEqual(
+      emptyModOptionsDefinitionFactory(),
+    );
   });
 });
 
@@ -652,6 +706,42 @@ describe("buildNewMod", () => {
     expect(newMod.extensionPoints).toHaveLength(2);
     expect(newMod.extensionPoints[0].id).toBe("extensionPoint");
     expect(newMod.extensionPoints[1].id).toBe("extensionPoint2");
+  });
+
+  test("Delete excess starter brick definitions", async () => {
+    // Load the adapter for this mod component
+    const starterBricks = [
+      starterBrickInnerDefinitionFactory(),
+      starterBrickInnerDefinitionFactory(),
+      // Excess
+      starterBrickInnerDefinitionFactory(),
+    ];
+
+    const modComponents = starterBricks.slice(0, 2).map((starterBrick) => {
+      const modComponent = modComponentFactory({
+        apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+      }) as UnresolvedModComponent;
+
+      modComponent.definitions = {
+        extensionPoint: starterBrick,
+      };
+
+      modComponent.extensionPointId = "extensionPoint" as InnerDefinitionRef;
+
+      return modComponent;
+    });
+
+    // Call the function under test
+    const newMod = buildNewMod({
+      sourceMod: null,
+      cleanModComponents: modComponents,
+      dirtyModComponentFormStates: [],
+    });
+
+    expect(Object.keys(newMod.definitions)).toStrictEqual([
+      "extensionPoint",
+      "extensionPoint2",
+    ]);
   });
 
   test("Coalesce duplicate starter brick definitions", async () => {
@@ -776,7 +866,9 @@ describe("buildNewMod", () => {
       });
 
       // Compare results
-      expect(newMod).toStrictEqual(updatedMod);
+      expect(normalizeModDefinition(newMod)).toStrictEqual(
+        normalizeModDefinition(updatedMod),
+      );
     },
   );
 });
@@ -845,7 +937,7 @@ describe("selectExtensionPointIntegrations", () => {
         }),
       ],
     };
-    expect(selectExtensionPointIntegrations(modComponent)).toStrictEqual({
+    expect(selectModComponentIntegrations(modComponent)).toStrictEqual({
       [modComponent.integrationDependencies[0].outputKey]:
         modComponent.integrationDependencies[0].integrationId,
       [modComponent.integrationDependencies[1].outputKey]:
@@ -870,7 +962,7 @@ describe("selectExtensionPointIntegrations", () => {
         }),
       ],
     };
-    expect(selectExtensionPointIntegrations(modComponent)).toStrictEqual({
+    expect(selectModComponentIntegrations(modComponent)).toStrictEqual({
       properties: {
         [modComponent.integrationDependencies[0].outputKey]: {
           $ref: `${SERVICES_BASE_SCHEMA_URL}${modComponent.integrationDependencies[0].integrationId}`,

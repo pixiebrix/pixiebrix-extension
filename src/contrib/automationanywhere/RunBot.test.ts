@@ -153,7 +153,7 @@ describe("Automation Anywhere - RunBot", () => {
 
     getCachedAuthDataMock.mockResolvedValue({
       user: { id: CONTROL_ROOM_USER_ID },
-      _oauthBrand: undefined,
+      _oauthBrand: null,
     } as AuthData);
 
     const values = await brick.run(
@@ -219,7 +219,7 @@ describe("Automation Anywhere - RunBot", () => {
 
     getCachedAuthDataMock.mockResolvedValue({
       user: { id: CONTROL_ROOM_USER_ID },
-      _oauthBrand: undefined,
+      _oauthBrand: null,
     } as AuthData);
 
     const values = await brick.run(
@@ -284,7 +284,7 @@ describe("Automation Anywhere - RunBot", () => {
 
     getCachedAuthDataMock.mockResolvedValue({
       user: { id: CONTROL_ROOM_USER_ID },
-      _oauthBrand: undefined,
+      _oauthBrand: null,
     } as AuthData);
 
     const values = await brick.run(
@@ -459,7 +459,7 @@ describe("Automation Anywhere - RunBot", () => {
 
     getCachedAuthDataMock.mockResolvedValue({
       user: { id: CONTROL_ROOM_USER_ID },
-      _oauthBrand: undefined,
+      _oauthBrand: null,
     } as AuthData);
 
     const values = await brick.run(

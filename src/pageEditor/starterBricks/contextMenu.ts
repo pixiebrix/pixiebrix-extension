@@ -26,9 +26,9 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeIsAvailable,
+  makeDefaultAvailability,
   removeEmptyValues,
-  selectIsAvailable,
+  selectStarterBrickAvailability,
 } from "@/pageEditor/starterBricks/base";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
@@ -43,6 +43,7 @@ import {
   type ContextMenuDefinition,
   type ContextMenuConfig,
 } from "@/starterBricks/contextMenu/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(
   url: string,
@@ -50,7 +51,7 @@ function fromNativeElement(
 ): ContextMenuFormState {
   const base = makeInitialBaseState();
 
-  const isAvailable = makeIsAvailable(url);
+  const isAvailable = makeDefaultAvailability(url);
 
   const title = "Context menu item";
 
@@ -131,8 +132,13 @@ async function fromExtension(
     ContextMenuConfig,
     "contextMenu"
   >(config, "contextMenu");
-  const { documentUrlPatterns, defaultOptions, contexts, targetMode, reader } =
-    extensionPoint.definition;
+  const {
+    documentUrlPatterns = [],
+    defaultOptions = {},
+    contexts,
+    targetMode,
+    reader,
+  } = extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
@@ -140,11 +146,14 @@ async function fromExtension(
     "action",
   );
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
@@ -155,7 +164,7 @@ async function fromExtension(
         contexts,
         // See comment on SingleLayerReaderConfig
         reader: reader as SingleLayerReaderConfig,
-        isAvailable: selectIsAvailable(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(extensionPoint),
       },
     },
   };

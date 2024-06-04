@@ -26,9 +26,9 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeIsAvailable,
+  makeDefaultAvailability,
   removeEmptyValues,
-  selectIsAvailable,
+  selectStarterBrickAvailability,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
@@ -43,11 +43,12 @@ import {
   type QuickBarDefinition,
   type QuickBarConfig,
 } from "@/starterBricks/quickBar/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   const base = makeInitialBaseState();
 
-  const isAvailable = makeIsAvailable(url);
+  const isAvailable = makeDefaultAvailability(url);
 
   const title = "Quick Bar item";
 
@@ -128,8 +129,13 @@ async function fromExtension(
     "quickBar"
   >(config, "quickBar");
 
-  const { documentUrlPatterns, defaultOptions, contexts, targetMode, reader } =
-    extensionPoint.definition;
+  const {
+    documentUrlPatterns = [],
+    defaultOptions = {},
+    contexts,
+    targetMode,
+    reader,
+  } = extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
@@ -137,11 +143,14 @@ async function fromExtension(
     "action",
   );
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
@@ -152,7 +161,7 @@ async function fromExtension(
         contexts,
         // See comment on SingleLayerReaderConfig
         reader: reader as SingleLayerReaderConfig,
-        isAvailable: selectIsAvailable(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(extensionPoint),
       },
     },
   };

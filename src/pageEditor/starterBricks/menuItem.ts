@@ -25,15 +25,15 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeIsAvailable,
+  makeDefaultAvailability,
   readerTypeHack,
   removeEmptyValues,
-  selectIsAvailable,
+  selectStarterBrickAvailability,
+  cleanIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemExtension";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
@@ -48,6 +48,7 @@ import {
   type MenuItemDefinition,
   type MenuItemStarterBrickConfig,
 } from "@/starterBricks/menuItem/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(
   url: string,
@@ -65,7 +66,7 @@ function fromNativeElement(
         ...button.menu,
         type: "menuItem",
         reader: getImplicitReader("menuItem"),
-        isAvailable: makeIsAvailable(url),
+        isAvailable: makeDefaultAvailability(url),
         targetMode: "document",
         attachMode: "once",
       },
@@ -105,7 +106,7 @@ function selectStarterBrickDefinition(
     definition: {
       type: "menuItem",
       reader,
-      isAvailable: pickBy(isAvailable, identity),
+      isAvailable: cleanIsAvailable(isAvailable),
       containerSelector,
       targetMode,
       attachMode,
@@ -151,20 +152,22 @@ async function fromExtension(
     "action",
   );
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     // `containerInfo` only populated on initial creation session
     containerInfo: null,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
         reader: readerTypeHack(extensionPoint.definition.reader),
-        isAvailable: selectIsAvailable(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(extensionPoint),
       },
     },
   };

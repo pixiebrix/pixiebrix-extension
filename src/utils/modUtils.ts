@@ -18,6 +18,7 @@
 import {
   type ModDefinition,
   type ModOptionsDefinition,
+  type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import * as semver from "semver";
 import { type Organization } from "@/types/contract";
@@ -43,13 +44,16 @@ import {
   minimalUiSchemaFactory,
   propertiesToSchema,
 } from "@/utils/schemaUtils";
-import { isEmpty, sortBy } from "lodash";
+import { mapValues, sortBy } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import {
   type Schema,
   type SchemaProperties,
   type UiSchema,
 } from "@/types/schemaTypes";
+import { produce } from "immer";
+import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
+import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBrickUtils";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -397,20 +401,6 @@ export function normalizeModOptionsDefinition(
 }
 
 /**
- * Returns true if the options form state does not define any options/activation instructions
- * @param options options definition
- * @since 1.8.5
- */
-export function isModOptionsSchemaEmpty(
-  options: ModDefinition["options"] | undefined,
-): boolean {
-  return (
-    isEmpty(options?.schema?.properties) &&
-    isNullOrBlank(options?.schema?.description)
-  );
-}
-
-/**
  * Return the activation instructions for a mod as markdown, or null if there are none.
  */
 export function getModActivationInstructions(
@@ -425,4 +415,31 @@ export function getModActivationInstructions(
   }
 
   return isNullOrBlank(description) ? null : description.trim();
+}
+
+/**
+ * Normalize the shape of a mod definition (e.g., for roundtrip test assertions).
+ */
+export function normalizeModDefinition<
+  T extends UnsavedModDefinition = UnsavedModDefinition,
+>(definition: T): T {
+  return produce(definition, (draft) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- type error due to nested readonly string array
+    draft.options = normalizeModOptionsDefinition(draft.options) as any;
+    draft.definitions = mapValues(
+      draft.definitions ?? {},
+      (innerDefinition) => {
+        if (isStarterBrickDefinitionLike(innerDefinition)) {
+          return {
+            ...innerDefinition,
+            definition: normalizeStarterBrickDefinitionProp(
+              innerDefinition.definition,
+            ),
+          };
+        }
+
+        return innerDefinition;
+      },
+    );
+  });
 }

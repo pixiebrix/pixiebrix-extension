@@ -35,6 +35,7 @@ import { getContentScriptState } from "@/contentScript/ready";
 import { isLinked } from "@/auth/authStorage";
 import { array } from "cooky-cutter";
 import { MARKETPLACE_URL } from "@/urlConstants";
+import { type RegistryId } from "@/types/registryTypes";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ...jest.requireActual("@/contentScript/sidebarController"),
@@ -97,7 +98,10 @@ describe("marketplace enhancements", () => {
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;
     getActivatedModIdsMock.mockResolvedValue(
-      new Set([modComponent1._recipe?.id, modComponent2._recipe?.id]),
+      new Set<RegistryId | undefined>([
+        modComponent1._recipe?.id,
+        modComponent2._recipe?.id,
+      ]),
     );
 
     await loadActivationEnhancements();
@@ -105,7 +109,7 @@ describe("marketplace enhancements", () => {
 
     // Click an activate button
     const activateButtons = document.querySelectorAll("a");
-    activateButtons[0].click();
+    activateButtons[0]!.click();
     await waitForEffect();
 
     // The current page should not navigate away from the marketplace
@@ -130,7 +134,7 @@ describe("marketplace enhancements", () => {
     document.body.innerHTML = `
     <div>
         <a class="btn btn-primary" data-activate-button href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
-          modIds[0],
+          modIds[0]!,
         )}&id=${modIds[1]}">Click Me!</a>
     </div>`;
 
@@ -144,7 +148,7 @@ describe("marketplace enhancements", () => {
 
     // Click an activate button
     const activateButton = document.querySelector("a");
-    activateButton.click();
+    activateButton!.click();
     await waitForEffect();
 
     expect(window.location.href).toBe("https://www.pixiebrix.com/");
@@ -164,7 +168,7 @@ describe("marketplace enhancements", () => {
 
     // Click an activate button
     const activateButtons = document.querySelectorAll("a");
-    activateButtons[0].click();
+    activateButtons[0]!.click();
     await waitForEffect();
 
     // User is not logged in, so current page should navigate away from marketplace
@@ -207,8 +211,8 @@ describe("marketplace enhancements", () => {
 
     const activateButtons = document.querySelectorAll("a");
     // Text content starts with a space because of the icon
-    expect(activateButtons[0].textContent).toBe("Reactivate");
-    expect(activateButtons[1].textContent).toBe(" Activate");
+    expect(activateButtons[0]!.textContent).toBe("Reactivate");
+    expect(activateButtons[1]!.textContent).toBe(" Activate");
   });
 
   test("given user is logged in, when loaded, should change button text for installed recipe", async () => {
@@ -229,8 +233,8 @@ describe("marketplace enhancements", () => {
     await initSidebarActivation();
 
     const activateButtons = document.querySelectorAll("a");
-    expect(activateButtons[0].textContent).toBe("Reactivate");
-    expect(activateButtons[1].textContent).toBe(" Activate");
+    expect(activateButtons[0]!.textContent).toBe("Reactivate");
+    expect(activateButtons[1]!.textContent).toBe(" Activate");
   });
 
   test("given user is logged in, when loaded, should resume activation in progress", async () => {

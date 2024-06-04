@@ -185,7 +185,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
 
   private async syncActionProvidersForUrl(): Promise<void> {
     // Remove any actions that were available on the previous navigation, but are no longer available
-    if (!testMatchPatterns(this.documentUrlPatterns)) {
+    if (!testMatchPatterns(this.documentUrlPatterns, null)) {
       // Remove actions and un-attach generators
       quickBarRegistry.removeExtensionPointActions(this.id);
       this.clearModComponentInterfaceAndEvents(

@@ -25,10 +25,10 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeIsAvailable,
+  makeDefaultAvailability,
   readerTypeHack,
   removeEmptyValues,
-  selectIsAvailable,
+  selectStarterBrickAvailability,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
@@ -43,6 +43,7 @@ import {
   type SidebarConfig,
   type SidebarDefinition,
 } from "@/starterBricks/sidebar/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const base = makeInitialBaseState();
@@ -58,7 +59,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
 
       definition: {
         type: "actionPanel",
-        isAvailable: makeIsAvailable(url),
+        isAvailable: makeDefaultAvailability(url),
         reader: getImplicitReader("actionPanel"),
 
         trigger: "load",
@@ -146,11 +147,14 @@ async function fromExtension(
     reader,
   } = extensionPoint.definition;
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
@@ -159,7 +163,7 @@ async function fromExtension(
         debounce,
         customEvent,
         reader: readerTypeHack(reader),
-        isAvailable: selectIsAvailable(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(extensionPoint),
       },
     },
   };

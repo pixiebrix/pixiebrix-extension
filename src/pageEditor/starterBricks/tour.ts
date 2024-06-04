@@ -24,14 +24,14 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeIsAvailable,
+  makeDefaultAvailability,
   readerTypeHack,
   removeEmptyValues,
-  selectIsAvailable,
+  selectStarterBrickAvailability,
+  cleanIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
@@ -44,6 +44,7 @@ import {
   type TourDefinition,
   type TourConfig,
 } from "@/starterBricks/tour/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(
   url: string,
@@ -61,7 +62,7 @@ function fromNativeElement(
         allowUserRun: true,
         autoRunSchedule: "never",
         reader: getImplicitReader("tour"),
-        isAvailable: makeIsAvailable(url),
+        isAvailable: makeDefaultAvailability(url),
       },
     },
     extension: {
@@ -82,7 +83,7 @@ function selectStarterBrickDefinition(
     definition: {
       type: "tour",
       reader,
-      isAvailable: pickBy(isAvailable, identity),
+      isAvailable: cleanIsAvailable(isAvailable),
     },
   });
 }
@@ -128,17 +129,20 @@ async function fromExtension(
     "tour",
   );
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
         reader: readerTypeHack(reader),
-        isAvailable: selectIsAvailable(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(extensionPoint),
       },
     },
   };

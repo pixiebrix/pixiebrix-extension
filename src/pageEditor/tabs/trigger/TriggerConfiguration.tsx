@@ -164,6 +164,14 @@ const TriggerConfiguration: React.FC<{
         {...makeLockableFieldProps("Run in Background", isLocked)}
       />
 
+      <ConnectedFieldTemplate
+        name={fieldName("isAvailable", "allFrames")}
+        title="Run in All Frames"
+        as={BooleanWidget}
+        description="Run the trigger in all frames. If toggled off, the trigger will only run in the top-level frame."
+        {...makeLockableFieldProps("Run in All Frames", isLocked)}
+      />
+
       {supportsSelector(trigger) && (
         <>
           <ConnectedFieldTemplate
