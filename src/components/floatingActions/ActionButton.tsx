@@ -68,7 +68,7 @@ export function ActionButton() {
           <img
             src={logoUrl}
             className="logo"
-            alt="open the PixieBrix Sidebar"
+            alt="Toggle the PixieBrix Sidebar"
           />
         </Button>
       </div>
