@@ -240,8 +240,6 @@ export function replaceModComponent(
     draft.metadata = modMetadata;
     draft.options = newModComponent.optionsDefinition;
 
-    assertNotNullish(draft.definitions, "Mod definition has no definitions");
-
     if (sourceMod.apiVersion !== newModComponent.apiVersion) {
       const canUpdateModApiVersion = sourceMod.extensionPoints.length <= 1;
       if (canUpdateModApiVersion) {
@@ -255,7 +253,7 @@ export function replaceModComponent(
         );
 
         // eslint-disable-next-line security/detect-object-injection -- getting a property by extension id
-        const starterBrickDefinition = draft.definitions[starterBrickId];
+        const starterBrickDefinition = draft.definitions?.[starterBrickId];
 
         if (starterBrickDefinition?.apiVersion != null) {
           starterBrickDefinition.apiVersion = newModComponent.apiVersion;
@@ -298,6 +296,8 @@ export function replaceModComponent(
       assertNotNullish(originalInnerId, "Original inner id not found");
       let newInnerId = originalInnerId;
 
+      assertNotNullish(draft.definitions, "Definitions not found");
+
       if (
         sourceMod.extensionPoints.filter((x) => x.id === originalInnerId)
           .length > 1
@@ -308,7 +308,7 @@ export function replaceModComponent(
         if (
           !isStarterBrickDefinitionPropEqual(
             // eslint-disable-next-line security/detect-object-injection -- existing id
-            draft.definitions[originalInnerId]?.definition,
+            draft.definitions?.[originalInnerId]?.definition,
             starterBrickDefinition.definition,
           )
         ) {
