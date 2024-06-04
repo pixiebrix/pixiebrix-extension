@@ -25,6 +25,8 @@ import { Stylesheets } from "@/components/Stylesheets";
 import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTypes";
 import { launchInteractiveOAuthFlow } from "@/background/messenger/api";
 import { type UUID } from "@/types/stringTypes";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import notify from "@/utils/notify";
 
 const LoginBanner: React.FC<DeferredLogin & { dismissLogin: () => void }> = ({
   integration,
@@ -51,8 +53,12 @@ const LoginBanner: React.FC<DeferredLogin & { dismissLogin: () => void }> = ({
           variant="danger"
           size="sm"
           onClick={async () => {
-            // Show an interactive login flow. `deferredLoginController` is listening for changes to authentication state
-            await launchInteractiveOAuthFlow(config.id);
+            try {
+              // Show an interactive login flow. `deferredLoginController` is listening for changes to authentication state
+              await launchInteractiveOAuthFlow(config.id);
+            } catch (error) {
+              notify.error(getErrorMessage(error));
+            }
           }}
         >
           Log in to {label}
