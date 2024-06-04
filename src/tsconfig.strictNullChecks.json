@@ -495,7 +495,7 @@
     "./components/fields/schemaFields/widgets/widgetUtils.ts",
     "./components/fields/schemaFields/widgets/widgetsRegistry.ts",
     "./components/floatingActions/FloatingActions.tsx",
-    "./components/floatingActions/QuickbarButton.tsx",
+    "./components/floatingActions/ActionButton.tsx",
     "./components/floatingActions/floatingActionsConstants.ts",
     "./components/floatingActions/initFloatingActions.ts",
     "./components/floatingActions/store.ts",
