@@ -21,6 +21,7 @@ import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { test as base } from "@playwright/test";
 import {
   E2E_GOOGLE_TEST_USER_EMAIL,
+  E2E_GOOGLE_TEST_USER_OTP_KEY,
   E2E_GOOGLE_TEST_USER_PASSWORD,
 } from "../../env";
 import { generateOTP } from "../../utils";
@@ -52,7 +53,7 @@ test("can activate a google spreadsheet mod with no config options", async ({
     const code = googleAuthPopup.getByLabel("Enter code");
     await code.waitFor({ state: "visible", timeout: 5000 });
 
-    const twoFACode = generateOTP(process.env.GOOGLE_OTP_SECRET);
+    const twoFACode = generateOTP(E2E_GOOGLE_TEST_USER_OTP_KEY);
     const totpNext = googleAuthPopup.getByRole("button", { name: "Next" });
     await code.fill(twoFACode);
     await totpNext.click();
