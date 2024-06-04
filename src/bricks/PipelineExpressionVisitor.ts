@@ -25,9 +25,13 @@ import PipelineVisitor, {
   nestedPosition,
   type VisitBlockExtra,
 } from "./PipelineVisitor";
-import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import {
+  isDocumentElementArray,
+  type DocumentElement,
+} from "@/components/documentBuilder/documentBuilderTypes";
 import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
 import { joinPathParts } from "@/utils/formUtils";
+import { BusinessError } from "@/errors/businessErrors";
 
 export type VisitDocumentElementArgs = {
   /**
@@ -76,13 +80,17 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
     blockConfig: BrickConfig,
   ): void {
     super.visitDocument(position, blockConfig);
-    for (const [index, element] of Object.entries(blockConfig.config.body)) {
-      this.visitDocumentElement({
-        position,
-        blockConfig,
-        element,
-        pathInBlock: `config.body.${index}`,
-      });
+    if (isDocumentElementArray(blockConfig.config.body)) {
+      for (const [index, element] of Object.entries(blockConfig.config.body)) {
+        this.visitDocumentElement({
+          position,
+          blockConfig,
+          element,
+          pathInBlock: `config.body.${index}`,
+        });
+      }
+    } else {
+      throw new BusinessError("Invalid document body");
     }
   }
 
