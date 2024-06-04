@@ -23,6 +23,7 @@ import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import useExtensionPermissions from "@/permissions/useExtensionPermissions";
 import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 // By default, assume the extensions have permissions.
 const fallback: PermissionsStatus = {
@@ -41,9 +42,7 @@ function useModPermissions(extensions: ModComponentBase[]): {
 } {
   const { data: browserPermissions, isSuccess } = useExtensionPermissions();
 
-  const {
-    data: { hasPermissions, permissions },
-  } = fallbackValue(
+  const { data } = fallbackValue(
     useAsyncState(async () => {
       if (isSuccess) {
         return checkExtensionPermissions(extensions);
@@ -53,6 +52,9 @@ function useModPermissions(extensions: ModComponentBase[]): {
     }, [extensions, browserPermissions, isSuccess]),
     fallback,
   );
+
+  assertNotNullish(data, "Permissions data is null");
+  const { permissions, hasPermissions } = data;
 
   const requestPermissions = useRequestPermissionsCallback(permissions);
 

@@ -39,10 +39,11 @@ import { type BrickType } from "@/runtime/runtimeTypes";
 import { type Metadata } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 function getDefaultBrickIcon<T extends Metadata>(
   brick: T,
-  blockType: BrickType,
+  blockType: Nullishable<BrickType>,
 ): IconProp {
   if ("schema" in brick) {
     return faCloud;

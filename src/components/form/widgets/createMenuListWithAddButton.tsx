@@ -80,7 +80,9 @@ const MenuListWithAddButton = <
  * This is meant to be used together with {@link SelectWidget} to show "Add new" button.
  * See [From.stories.tsx](https://github.com/pixiebrix/pixiebrix-extension/blob/main/src/components/form/Form.stories.tsx#L184:L195) for usage example.
  */
-const createMenuListWithAddButton = (action: (() => void) | string) => {
+const createMenuListWithAddButton = (
+  action: (() => void) | string,
+): React.FC => {
   let onAddClick: () => void;
   let href: string;
 

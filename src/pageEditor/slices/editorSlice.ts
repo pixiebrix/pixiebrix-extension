@@ -484,7 +484,7 @@ export const editorSlice = createSlice({
     /**
      * Updates the active element of a Document or Form builder on the Preview tab
      */
-    setNodePreviewActiveElement(state, action: PayloadAction<string>) {
+    setNodePreviewActiveElement(state, action: PayloadAction<string | null>) {
       const activeElement = action.payload;
       const nodeUIState = validateNodeUIState(state);
 
