@@ -44,7 +44,6 @@ export async function launchWebAuthFlow(
     responseUrl = await browser.identity.launchWebAuthFlow(details);
   } catch (error) {
     const message = getErrorMessage(error);
-    console.log("LaunchWebAuthFlow error", message, error);
     if (
       INTERACTIVE_MESSAGE_PATTERNS.some((pattern) => message.includes(pattern))
     ) {
