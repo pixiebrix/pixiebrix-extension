@@ -43,6 +43,7 @@ import {
   type SidebarConfig,
   type SidebarDefinition,
 } from "@/starterBricks/sidebar/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const base = makeInitialBaseState();
@@ -146,11 +147,14 @@ async function fromExtension(
     reader,
   } = extensionPoint.definition;
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {

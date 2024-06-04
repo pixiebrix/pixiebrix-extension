@@ -85,7 +85,7 @@ import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { assertNotNullish } from "@/utils/nullishUtils";
+import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 
 type TriggerTarget = Document | HTMLElement;
 
@@ -97,8 +97,10 @@ export type TriggerConfig = {
  * Returns the default error/event reporting mode for the trigger type.
  * @param trigger the trigger type
  */
-export function getDefaultReportModeForTrigger(trigger: Trigger): ReportMode {
-  return USER_ACTION_TRIGGERS.includes(trigger) ? "all" : "once";
+export function getDefaultReportModeForTrigger(
+  trigger: Nullishable<Trigger>,
+): ReportMode {
+  return trigger && USER_ACTION_TRIGGERS.includes(trigger) ? "all" : "once";
 }
 
 /**
@@ -177,9 +179,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   abstract get debounceOptions(): DebounceOptions;
 
-  abstract get customTriggerOptions(): CustomEventOptions | undefined;
+  abstract get customTriggerOptions(): Nullishable<CustomEventOptions>;
 
-  abstract get triggerSelector(): string | undefined;
+  abstract get triggerSelector(): Nullishable<string>;
 
   abstract getBaseReader(): Promise<Reader>;
 
@@ -990,7 +992,7 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
     return this._definition.debounce ?? {};
   }
 
-  get customTriggerOptions(): CustomEventOptions | undefined {
+  get customTriggerOptions(): Nullishable<CustomEventOptions> {
     return this._definition.customEvent;
   }
 
@@ -1025,7 +1027,7 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
     return this._definition.intervalMillis ?? 0;
   }
 
-  get triggerSelector(): string | undefined {
+  get triggerSelector(): Nullishable<string> {
     return this._definition.rootSelector;
   }
 

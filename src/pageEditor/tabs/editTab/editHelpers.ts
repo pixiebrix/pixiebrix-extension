@@ -30,6 +30,7 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type SafeString } from "@/types/stringTypes";
 import { freshIdentifier } from "@/utils/variableUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Default brick output key, if the brick doesn't define its own default output key.
@@ -88,6 +89,7 @@ class PipelineMapVisitor extends PipelineVisitor {
     blockConfig: BrickConfig,
     extra: VisitBlockExtra,
   ): void {
+    assertNotNullish(blockConfig.instanceId, "Block instanceId is missing");
     this.pipelineMap[blockConfig.instanceId] = {
       blockId: blockConfig.id,
       path: position.path,

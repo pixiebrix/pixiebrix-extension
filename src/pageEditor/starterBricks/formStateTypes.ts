@@ -60,6 +60,7 @@ import {
   type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
 import { type NormalizedAvailability } from "@/types/availabilityTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 // ActionFormState
 type ActionExtensionState = BaseExtensionState &
@@ -91,7 +92,7 @@ type ActionExtensionPointState = BaseExtensionPointState & {
 export interface ActionFormState
   extends BaseFormState<ActionExtensionState, ActionExtensionPointState> {
   type: "menuItem";
-  containerInfo: ElementInfo;
+  containerInfo: ElementInfo | null;
 }
 
 // SidebarFormState
@@ -109,13 +110,13 @@ type SidebarExtensionPointState = BaseExtensionPointState & {
      * Debouncing props
      * @since 1.6.5
      */
-    debounce: DebounceOptions | null;
+    debounce: Nullishable<DebounceOptions>;
 
     /**
      * Custom trigger props
      * @since 1.6.5
      */
-    customEvent: CustomEventOptions | null;
+    customEvent: Nullishable<CustomEventOptions>;
   };
 };
 
@@ -128,28 +129,28 @@ export interface SidebarFormState
 type TriggerExtensionPointState = BaseExtensionPointState & {
   definition: {
     type: StarterBrickType;
-    rootSelector: string | null;
-    trigger: TriggerTrigger;
+    rootSelector?: string;
+    trigger?: TriggerTrigger;
     reader: SingleLayerReaderConfig;
-    attachMode: AttachMode;
-    targetMode: TargetMode;
-    reportMode: ReportMode;
+    attachMode?: AttachMode;
+    targetMode?: TargetMode;
+    reportMode?: ReportMode;
     /**
      * @since 1.7.34
      */
-    showErrors: boolean;
+    showErrors?: boolean;
 
     isAvailable: NormalizedAvailability;
 
     // Debouncing props
-    debounce: DebounceOptions;
+    debounce?: DebounceOptions;
 
     // Custom tigger props
-    customEvent: CustomEventOptions;
+    customEvent?: CustomEventOptions;
 
     // Interval props
-    intervalMillis: number | null;
-    background: boolean | null;
+    intervalMillis?: number;
+    background?: boolean;
   };
 };
 
@@ -188,7 +189,7 @@ export interface PanelFormState
   extends BaseFormState<PanelExtensionState, PanelExtensionPointState> {
   type: "panel";
 
-  containerInfo: ElementInfo;
+  containerInfo: ElementInfo | null;
 }
 
 // ContextMenuFormState

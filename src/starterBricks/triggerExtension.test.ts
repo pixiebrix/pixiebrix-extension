@@ -87,7 +87,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     definition: define<TriggerDefinition>({
       type: "trigger",
       background: derive<TriggerDefinition, boolean>((x) =>
-        getDefaultAllowInactiveFramesForTrigger(x.trigger),
+        getDefaultAllowInactiveFramesForTrigger(x.trigger!),
       ),
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
@@ -99,11 +99,11 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
 
 const extensionFactory = define<ResolvedModComponent<TriggerConfig>>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined,
+  _resolvedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: null,
+  _recipe: undefined,
   label: "Test Extension",
   config: define<TriggerConfig>({
     action: () => [] as BrickPipeline,
@@ -127,7 +127,7 @@ beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([rootReader, new InvalidContextReader(), throwBrick]);
   rootReader.readCount = 0;
-  rootReader.ref = undefined;
+  rootReader.ref = null;
 });
 
 describe("triggerExtension", () => {

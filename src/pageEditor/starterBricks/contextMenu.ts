@@ -43,6 +43,7 @@ import {
   type ContextMenuDefinition,
   type ContextMenuConfig,
 } from "@/starterBricks/contextMenu/types";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(
   url: string,
@@ -131,8 +132,13 @@ async function fromExtension(
     ContextMenuConfig,
     "contextMenu"
   >(config, "contextMenu");
-  const { documentUrlPatterns, defaultOptions, contexts, targetMode, reader } =
-    extensionPoint.definition;
+  const {
+    documentUrlPatterns = [],
+    defaultOptions = {},
+    contexts,
+    targetMode,
+    reader,
+  } = extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
@@ -140,11 +146,14 @@ async function fromExtension(
     "action",
   );
 
+  assertNotNullish(
+    extensionPoint.metadata,
+    "Starter brick metadata is required",
+  );
+
   return {
     ...base,
-
     extension,
-
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
