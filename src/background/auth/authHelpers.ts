@@ -24,7 +24,6 @@ const INTERACTIVE_MESSAGE_PATTERNS = [
   "User interaction required",
   "cancelled",
   "The user did not approve access",
-  "Authorization page could not be loaded",
 ];
 
 /**
