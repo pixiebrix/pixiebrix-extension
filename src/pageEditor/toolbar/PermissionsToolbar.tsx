@@ -30,6 +30,7 @@ import {
 import { calculatePermissionsForElement } from "@/pageEditor/editorPermissionsHelpers";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type Permissions } from "webextension-polyfill";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const fallbackState = {
   hasPermissions: true,
@@ -51,10 +52,10 @@ const PermissionsToolbar: React.FunctionComponent<{
     async () => calculatePermissionsForElement(debouncedElement),
     [debouncedElement],
   );
-  const {
-    refetch,
-    data: { permissions, hasPermissions },
-  } = fallbackValue(state, fallbackState);
+  const { refetch, data } = fallbackValue(state, fallbackState);
+
+  assertNotNullish(data, "Permissions data is null");
+  const { permissions, hasPermissions } = data;
 
   const requestPermissions = async () => {
     if (await ensurePermissionsFromUserGesture(permissions)) {

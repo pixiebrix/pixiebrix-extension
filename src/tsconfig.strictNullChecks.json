@@ -4,6 +4,11 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/tabs/effect/ExtensionPointPreview.tsx",
+    "./pageEditor/toolbar/PermissionsToolbar.tsx",
+    "./pageEditor/tabs/editTab/dataPanel/tabs/StateTab.tsx",
+    "./pageEditor/tabs/effect/BrickPreview.tsx",
+    "./pageEditor/hooks/useUpsertModComponentFormState.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/envSetup.ts",
