@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Locator, type Page } from "@playwright/test";
+import { type Page } from "@playwright/test";
 
 export class FloatingActionButton {
   constructor(private readonly page: Page) {}
@@ -39,13 +39,5 @@ export class FloatingActionButton {
       name: "Hide Button",
     });
     await hideButton.click();
-  }
-
-  // TODO: write a smoke test for drag/drop once we have VRTs to assert against
-  async dragFloatingActionButton(dragTo: Locator) {
-    const dragHandle = this.page.getByRole("img", {
-      name: "drag to move action button",
-    });
-    await dragHandle.dragTo(dragTo);
   }
 }
