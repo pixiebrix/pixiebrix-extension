@@ -49,26 +49,28 @@ import { traceRecordFactory } from "@/testUtils/factories/traceFactories";
 import { pipelineFactory } from "@/testUtils/factories/brickFactories";
 import { type DerivedFunction } from "cooky-cutter/dist/derive";
 import { type BaseExtensionState } from "@/pageEditor/baseFormStateTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
 });
-const internalFormStateFactory = define<
-  ModComponentFormState & {
-    extensionPoint: DerivedFunction<
-      ModComponentFormState,
-      StarterBrickDefinitionLike
-    >;
-  }
->({
+
+type InternalFormStateOverride = ModComponentFormState & {
+  extensionPoint: DerivedFunction<
+    ModComponentFormState,
+    StarterBrickDefinitionLike
+  >;
+};
+
+const internalFormStateFactory = define<InternalFormStateOverride>({
   apiVersion: "v3" as ApiVersion,
   uuid: uuidSequence,
   installed: true,
-  optionsArgs: null as OptionsArgs,
+  optionsArgs: {} as OptionsArgs,
   integrationDependencies(): IntegrationDependency[] {
     return [];
   },
-  recipe: null,
+  recipe: undefined,
   type: "panel" as StarterBrickType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
@@ -76,7 +78,10 @@ const internalFormStateFactory = define<
   extensionPoint: derive<ModComponentFormState, StarterBrickDefinitionLike>(
     ({ type }) => {
       const starterBrick = starterBrickDefinitionFactory();
-      starterBrick.definition.type = type;
+      if (type) {
+        starterBrick.definition.type = type;
+      }
+
       return starterBrick;
     },
     "type",
@@ -93,10 +98,10 @@ export const formStateFactory = (
       extension: baseExtensionStateFactory({
         blockPipeline: pipelineOverride,
       }),
-    } as unknown);
+    } as InternalFormStateOverride);
   }
 
-  return internalFormStateFactory(override as unknown);
+  return internalFormStateFactory(override as InternalFormStateOverride);
 };
 
 export const triggerFormStateFactory = (
@@ -241,7 +246,10 @@ export const formStateWithTraceDataFactory = define<{
       records: TraceRecord[];
     },
     TraceRecord[]
-  >(({ formState: { uuid: extensionId, extension } }) => {
+  >(({ formState }) => {
+    assertNotNullish(formState, "formState is required");
+    const { uuid: extensionId, extension } = formState;
+
     let outputKey = "" as OutputKey;
     let output: JsonObject = foundationOutputFactory();
     return extension.blockPipeline.map((block, index) => {
