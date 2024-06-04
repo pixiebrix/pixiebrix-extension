@@ -232,7 +232,7 @@ jobs:
         shell: bash
         env:
           ARTIFACT_ZIP_PASSWORD: ${{ secrets.ARTIFACT_ZIP_PASSWORD }}
-        run: (rm ./end-to-end-tests/playwright-report.7z || true) && 7z a ./end-to-end-tests/playwright-report.7z ./end-to-end-tests/.report/* -p"$ARTIFACT_ZIP_PASSWORD"
+        run: 7z a ./end-to-end-tests/playwright-report.7z ./end-to-end-tests/.report/* -p"$ARTIFACT_ZIP_PASSWORD"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
