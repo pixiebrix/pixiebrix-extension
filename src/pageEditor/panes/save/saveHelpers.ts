@@ -497,7 +497,7 @@ type BuildModComponentsResult = {
   extensionPoints: ModComponentDefinition[];
 };
 
-function buildModComponents(
+export function buildModComponents(
   modComponents: ModComponentBase[],
 ): BuildModComponentsResult {
   const definitionsResult: InnerDefinitions = {};
