@@ -47,27 +47,17 @@ test("initiates sidebar mod activation from activate url click", async ({
   page,
   extensionId,
 }) => {
+  const redirectUrl = "https://www.pixiebrix.com/";
   await page.goto("/bootstrap-5");
-  await createActivationLink(
-    page,
-    "a[href*='#alpha']",
-    "https://www.pixiebrix.com/",
-  );
+  await createActivationLink(page, "a[href*='#alpha']", redirectUrl);
   await page.getByText("Alpha").click();
   await page.waitForURL("https://app.pixiebrix.com/*");
-  // Using page.waitforUrl below is not working as expected, so we use the following workaround
-  await expect(() => {
-    expect(page.url()).toBe("https://www.pixiebrix.com/");
-  }).toPass({
-    timeout: 5000,
-  });
 
   const sidebarPage = await getSidebarPage(page, extensionId);
-  const activateTab = sidebarPage.getByText("Activating");
-  const modName = sidebarPage.getByText("Reverse GitLink");
 
-  await expect(activateTab).toBeVisible();
-  await expect(modName).toBeVisible();
+  await expect(sidebarPage.getByText("Activating")).toBeVisible();
+  await expect(sidebarPage.getByText("Reverse GitLink")).toBeVisible();
+  expect(page.url()).toBe(redirectUrl);
 });
 
 test("does not redirect to non-pixiebrix domain", async ({
@@ -79,17 +69,11 @@ test("does not redirect to non-pixiebrix domain", async ({
   await createActivationLink(page, "a[href*='#alpha']", invalidRedirectUrl);
   await page.getByText("Alpha").click();
   await page.waitForURL("https://app.pixiebrix.com/*");
-  // Using page.waitforUrl below is not working as expected, so we use the following workaround
-  await expect(() => {
-    expect(page.url()).toBe("https://www.pixiebrix.com/");
-  }).toPass({
-    timeout: 5000,
-  });
 
+  // TODO: sidebarpage shouldn't open in this case
   const sidebarPage = await getSidebarPage(page, extensionId);
-  const activateTab = sidebarPage.getByText("Activating");
-  const modName = sidebarPage.getByText("Reverse GitLink");
 
-  await expect(activateTab).toBeVisible();
-  await expect(modName).toBeVisible();
+  await expect(sidebarPage.getByText("Activating")).toBeVisible();
+  await expect(sidebarPage.getByText("Reverse GitLink")).toBeVisible();
+  expect(page.url()).toBe("https://www.pixiebrix.com/");
 });
