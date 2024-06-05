@@ -159,7 +159,7 @@ export function isValidUrl(maybeUrl: string | null): boolean {
   }
 }
 
-export function isPixieBrixDomain(url: string): boolean {
+export function isPixieBrixDomain(url: string | null): boolean {
   if (!isValidUrl(url)) {
     return false;
   }
