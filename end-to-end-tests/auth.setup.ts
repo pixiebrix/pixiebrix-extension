@@ -18,45 +18,20 @@
 import { expect, type Page } from "@playwright/test";
 import { test } from "./fixtures/authSetup";
 import {
-  E2E_GOOGLE_TEST_USER_EMAIL,
-  E2E_GOOGLE_TEST_USER_OTP_KEY,
-  E2E_GOOGLE_TEST_USER_PASSWORD,
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
   SERVICE_URL,
 } from "./env";
-import { ensureVisibility, generateOTP } from "./utils";
+import { ensureVisibility } from "./utils";
 import { LocalIntegrationsPage } from "./pageObjects/extensionConsole/localIntegrationsPage";
-
-/**
- * Submit the OTP code to the Google Auth popup. This function will wait for the OTP code input to be visible and then
- * submit the OTP code generated from the provided OTP key from the environment variables. This function will also
- * handle the case where the OTP code is incorrect and will retry submitting the OTP code.
- * @param googleAuthPopup The Google Auth popup page
- */
-const submitOtpCode = async (googleAuthPopup: Page) => {
-  const enterCode = googleAuthPopup.getByLabel("Enter code");
-  const totpNext = googleAuthPopup.getByRole("button", { name: "Next" });
-  const wrongCodeError = googleAuthPopup.getByText("Wrong code");
-
-  await enterCode.waitFor({ state: "visible", timeout: 5000 });
-  let prevToken = "";
-
-  await expect(async () => {
-    await enterCode.click();
-    const otpKey = E2E_GOOGLE_TEST_USER_OTP_KEY.replaceAll(/\s/g, "");
-    const token = generateOTP(otpKey);
-    expect(token).not.toStrictEqual(prevToken); // Ensure the token is different from the previous one on retry
-    prevToken = token;
-    await enterCode.fill(token);
-    await totpNext.click();
-    // Wait for submission to complete to see if the code was correct
-    await googleAuthPopup.waitForTimeout(2000);
-    await expect(wrongCodeError).toBeHidden();
-  }).toPass({ timeout: 40_000 }); // Codes rotate every 30 seconds
-};
+import { GoogleAuthPopup } from "./pageObjects/external/googleAuthPopup";
 
 test("authenticate", async ({ contextAndPage: { context, page } }) => {
+  test.slow(
+    true,
+    "Test is slow due to two-factor authentication and loading times",
+  );
+
   await test.step("Login with unaffiliated user and link to Admin console page", async () => {
     await page.goto(`${SERVICE_URL}/login/email`);
     await page.getByLabel("Email").fill(E2E_TEST_USER_EMAIL_UNAFFILIATED);
@@ -116,37 +91,8 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
     await localIntegrationsPage.createNewIntegration("Google Drive");
 
     const googleAuthPopup = await popupPromise;
-    await googleAuthPopup.waitForSelector("#identifierId");
-
-    // Authenticate with email and password
-    await googleAuthPopup
-      .getByLabel("Email or Phone")
-      .fill(E2E_GOOGLE_TEST_USER_EMAIL);
-    await googleAuthPopup.getByRole("button", { name: "Next" }).click();
-    await googleAuthPopup
-      .getByLabel("Enter your password")
-      .fill(E2E_GOOGLE_TEST_USER_PASSWORD);
-    await googleAuthPopup.getByLabel("Enter your password").press("Enter");
-
-    // Two-factor authentication. Requires two OTP codes.
-    await submitOtpCode(googleAuthPopup);
-    await submitOtpCode(googleAuthPopup);
-
-    // Conditionally click on Continue button if present
-    try {
-      const continueButton = googleAuthPopup.getByRole("button", {
-        name: "Continue",
-      });
-      await continueButton.waitFor({ state: "visible", timeout: 5000 });
-      await continueButton.click();
-    } catch {
-      // Continue button not present, do nothing
-    }
-
-    // Provide Pixiebrix access to drive resources
-    const allowButton = googleAuthPopup.getByRole("button", { name: "Allow" });
-    await expect(allowButton).toBeVisible();
-    await allowButton.click();
+    const googleAuthPopupPage = new GoogleAuthPopup(googleAuthPopup);
+    await googleAuthPopupPage.logInAndAllowAccess();
 
     await expect(
       extensionConsolePage.getByRole("cell", {

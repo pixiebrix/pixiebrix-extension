@@ -19,6 +19,8 @@ import { test, expect } from "../../fixtures/extensionBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
+import { E2E_GOOGLE_TEST_USER_EMAIL } from "../../env";
+import { GoogleAuthPopup } from "../../pageObjects/external/googleAuthPopup";
 
 test("can activate a google spreadsheet mod with config options", async ({
   context,
@@ -27,10 +29,27 @@ test("can activate a google spreadsheet mod with config options", async ({
 }) => {
   const modId = "@e2e-testing/spreadsheet-lookup";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
+
+  // Sometimes google auth is re-prompted, so we need to handle that
+  const popupPromise = context.waitForEvent("page", { timeout: 3000 });
+
   await modActivationPage.goto();
 
+  try {
+    const googleAuthPopup = await popupPromise;
+    const googleAuthPopupPage = new GoogleAuthPopup(googleAuthPopup);
+    await googleAuthPopupPage.chooseAccountAndAllowAccess();
+  } catch (error) {
+    // eslint-disable-next-line playwright/no-conditional-in-test -- we need to handle the timeout error
+    if (error instanceof Error && error.message.includes("Timeout")) {
+      // No google auth popup was shown, continue
+    } else {
+      throw error;
+    }
+  }
+
   await expect(
-    page.getByText("test-user-1@pixiebrix.dev — Private"),
+    page.getByText(`${E2E_GOOGLE_TEST_USER_EMAIL} — Private`),
   ).toBeVisible();
 
   await expect(page.getByLabel("testSheet")).toBeVisible();
