@@ -52,6 +52,7 @@ export default defineConfig<{ chromiumChannel: string }>({
         chromiumChannel: "msedge",
       },
       testMatch: /.*\.setup\.ts/,
+      dependencies: ["chromeSetup"], // Ensure that the setup projects don't run in parallel to avoid login conflicts (e.g. with Google)
     },
     {
       name: "chrome",
