@@ -140,3 +140,30 @@ export function assertProtocolUrl(
     );
   }
 }
+
+/**
+ * Return true if the string is a valid URL
+ * @param maybeUrl the url to check
+ */
+export function isValidUrl(maybeUrl: string | null): boolean {
+  if (!maybeUrl) {
+    return false;
+  }
+
+  try {
+    // eslint-disable-next-line no-new -- evaluate for side effects
+    new URL(maybeUrl);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function isPixieBrixDomain(url: string): boolean {
+  if (!isValidUrl(url)) {
+    return false;
+  }
+
+  const { hostname } = new URL(url);
+  return hostname === "pixiebrix.com" || hostname.endsWith(".pixiebrix.com");
+}

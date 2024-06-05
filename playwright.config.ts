@@ -32,7 +32,7 @@ export default defineConfig<{ chromiumChannel: string }>({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: "https://pbx.vercel.app",
+    baseURL: "https://pbx.vercel.app/",
 
     /* Collect trace when retrying the failed test in CI, and always on failure when running locally. See https://playwright.dev/docs/trace-viewer */
     trace: CI ? "on-first-retry" : "retain-on-failure",

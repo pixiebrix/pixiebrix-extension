@@ -25,6 +25,7 @@ import type { ModActivationConfig } from "@/types/modTypes";
 import { isEmpty, uniq } from "lodash";
 import deepEquals from "fast-deep-equal";
 import { base64ToString, stringToBase64 } from "uint8array-extras";
+import { isPixieBrixDomain } from "@/utils/urlUtils";
 
 const ACTIVATE_PATH = "/activate";
 
@@ -127,7 +128,12 @@ export function getNextUrlFromActivateUrl(
   activateUrl: string,
 ): Nullishable<string> {
   const url = new URL(activateUrl);
-  return url.searchParams.get("nextUrl");
+  const nextUrl = url.searchParams.get("nextUrl");
+  if (isPixieBrixDomain(nextUrl)) {
+    return nextUrl;
+  }
+
+  return null;
 }
 
 /**
