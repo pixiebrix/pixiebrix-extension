@@ -23,24 +23,21 @@ import { type Page, test as base } from "@playwright/test";
 /**
  * Convert an existing link element on the page into a mod activation link
  * @param page the page on which to run the script
- * @param selector the selector of the element to convert
  * @param nextUrl the url to which to redirect after activation
  */
-const createActivationLink = async (
-  page: Page,
-  selector: string,
-  nextUrl: string,
-) => {
-  await page.evaluate(
-    ({ selector, nextUrl }: { selector: string; nextUrl: string }) => {
-      const link = document.querySelector(selector);
-      link.setAttribute(
+const insertActivationLink = async (page: Page, nextUrl: string) => {
+  await page.addInitScript((nextUrl: string) => {
+    window.addEventListener("DOMContentLoaded", () => {
+      const linkElement = document.createElement("a");
+      linkElement.setAttribute(
         "href",
         `http://app.pixiebrix.com/activate?id=%40misha-holtz%2Freverse-gitlink&nextUrl=${nextUrl}`,
       );
-    },
-    { selector, nextUrl },
-  );
+      linkElement.innerHTML = "Activate mod";
+      linkElement.setAttribute("id", "activation-link");
+      document.body.append(linkElement);
+    });
+  }, nextUrl);
 };
 
 test("initiates sidebar mod activation from activate url click", async ({
@@ -48,10 +45,9 @@ test("initiates sidebar mod activation from activate url click", async ({
   extensionId,
 }) => {
   const redirectUrl = "https://www.pixiebrix.com/";
-  await page.goto("/bootstrap-5");
-  await createActivationLink(page, "a[href*='#alpha']", redirectUrl);
-  await page.getByText("Alpha").click();
-  await page.waitForURL("https://app.pixiebrix.com/*");
+  await insertActivationLink(page, redirectUrl);
+  await page.goto("/");
+  await page.locator("#activation-link").click();
 
   const sidebarPage = await getSidebarPage(page, extensionId);
 
@@ -65,8 +61,8 @@ test("does not redirect to non-pixiebrix domain", async ({
   extensionId,
 }) => {
   const invalidRedirectUrl = "https://pbx.vercel.app/";
-  await page.goto("/bootstrap-5");
-  await createActivationLink(page, "a[href*='#alpha']", invalidRedirectUrl);
+  await page.goto("/");
+  await insertActivationLink(page, "a[href*='#alpha']", invalidRedirectUrl);
   await page.getByText("Alpha").click();
   await page.waitForURL("https://app.pixiebrix.com/*");
 
