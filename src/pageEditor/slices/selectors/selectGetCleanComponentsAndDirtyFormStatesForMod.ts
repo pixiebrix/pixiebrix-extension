@@ -21,6 +21,7 @@ import {
   selectIsModComponentDirtyById,
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
+  selectIsModComponentRemovedById,
 } from "@/pageEditor/slices/editorSelectors";
 import { buildModComponents } from "@/pageEditor/panes/save/saveHelpers";
 import produce from "immer";
@@ -30,19 +31,27 @@ export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
   selectNotDeletedActivatedModComponents,
   selectNotDeletedModComponentFormStates,
   selectIsModComponentDirtyById,
-  (activatedModComponents, formStates, isDirtyByComponentId) =>
+  selectIsModComponentRemovedById,
+  (
+    activatedModComponents,
+    formStates,
+    isDirtyByComponentId,
+    isRemovedByComponentId,
+  ) =>
     (modId: RegistryId) => {
       const dirtyModComponentFormStates = formStates.filter(
         (formState) =>
           formState.recipe?.id === modId &&
           isDirtyByComponentId[formState.uuid],
       );
+
       const cleanModComponents = activatedModComponents.filter(
         (modComponent) =>
           modComponent._recipe?.id === modId &&
           !dirtyModComponentFormStates.some(
             (formState) => formState.uuid === modComponent.id,
-          ),
+          ) &&
+          !isRemovedByComponentId[modComponent.id],
       );
 
       const { extensionPoints } = buildModComponents(cleanModComponents);
@@ -52,7 +61,8 @@ export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
         // @see saveHelpers.ts:deleteUnusedStarterBrickDefinitions
         cleanModComponents: cleanModComponents.map((modComponent) =>
           produce(modComponent, (draft) => {
-            const definitions = draft.definitions ?? ({} as InnerDefinitions);
+            delete draft.definitions;
+            const definitions = {} as InnerDefinitions;
 
             for (const [innerDefinitionId, innerDefinition] of Object.entries(
               modComponent.definitions,

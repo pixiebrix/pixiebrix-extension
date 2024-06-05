@@ -98,6 +98,7 @@ export const initialState: EditorState = {
   elements: [],
   knownEditable: [],
   dirty: {},
+  removed: {},
   isBetaUI: false,
   elementUIStates: {},
   dirtyRecipeOptionsById: {},
@@ -532,7 +533,7 @@ export const editorSlice = createSlice({
       }
     },
     showAddToRecipeModal(state) {
-      state.visibleModalKey = ModalKey.ADD_TO_RECIPE;
+      state.visibleModalKey = ModalKey.ADD_TO_MOD;
     },
     addElementToRecipe(
       state,
@@ -579,7 +580,7 @@ export const editorSlice = createSlice({
       }
     },
     showRemoveFromRecipeModal(state) {
-      state.visibleModalKey = ModalKey.REMOVE_FROM_RECIPE;
+      state.visibleModalKey = ModalKey.REMOVE_FROM_MOD;
     },
     removeElementFromRecipe(
       state,
@@ -607,6 +608,7 @@ export const editorSlice = createSlice({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- nullish assignment above
       state.deletedElementsByRecipeId[recipeId]!.push(element);
       state.elements.splice(elementIndex, 1);
+      state.removed[elementId] = true;
       delete state.dirty[elementId];
       delete state.elementUIStates[elementId];
       state.activeElementId = null;
@@ -624,7 +626,7 @@ export const editorSlice = createSlice({
       }
     },
     showSaveAsNewRecipeModal(state) {
-      state.visibleModalKey = ModalKey.SAVE_AS_NEW_RECIPE;
+      state.visibleModalKey = ModalKey.SAVE_AS_NEW_MOD;
     },
     clearDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
@@ -653,7 +655,7 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{ keepLocalCopy: boolean }>,
     ) {
-      state.visibleModalKey = ModalKey.CREATE_RECIPE;
+      state.visibleModalKey = ModalKey.CREATE_MOD;
       state.keepLocalCopyOnCreateRecipe = action.payload.keepLocalCopy;
     },
     addNode(
@@ -793,7 +795,7 @@ export const editorSlice = createSlice({
     },
     showAddBlockModal(state, action: PayloadAction<AddBlockLocation>) {
       state.addBlockLocation = action.payload;
-      state.visibleModalKey = ModalKey.ADD_BLOCK;
+      state.visibleModalKey = ModalKey.ADD_BRICK;
     },
     hideModal(state) {
       state.visibleModalKey = null;
@@ -954,6 +956,7 @@ export const persistEditorConfig = {
     "inserting",
     "isVarPopoverVisible",
     "isSaveDataIntegrityErrorModalVisible",
+    "removed",
   ],
 };
 

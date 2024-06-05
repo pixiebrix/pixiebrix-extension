@@ -151,7 +151,7 @@ const CreateModModalBody: React.FC = () => {
   const formSchema = useFormSchema();
 
   const hideModal = useCallback(() => {
-    dispatch(editorActions.hideModalIfShowing(ModalKey.CREATE_RECIPE));
+    dispatch(editorActions.hideModalIfShowing(ModalKey.CREATE_MOD));
   }, [dispatch]);
 
   const initialModMetadataFormState = useInitialFormState({
@@ -263,7 +263,7 @@ const CreateModModal: React.FunctionComponent = () => {
 
   const dispatch = useDispatch();
   const hideModal = useCallback(() => {
-    dispatch(editorActions.hideModalIfShowing(ModalKey.CREATE_RECIPE));
+    dispatch(editorActions.hideModalIfShowing(ModalKey.CREATE_MOD));
   }, [dispatch]);
 
   return (
