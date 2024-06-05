@@ -64,7 +64,10 @@ class HttpRequestAnalysis extends AnalysisVisitorABC {
     let methodLiteral;
 
     try {
-      urlLiteral = new URL(castTextLiteralOrThrow(url));
+      const castUrl = castTextLiteralOrThrow(url);
+      if (castUrl) {
+        urlLiteral = new URL(castUrl);
+      }
     } catch {
       // NOP
     }
@@ -124,7 +127,7 @@ class HttpRequestAnalysis extends AnalysisVisitorABC {
     }
 
     if (
-      !["get", "delete", "options"].includes(methodLiteral) &&
+      !["get", "delete", "options"].includes(methodLiteral ?? "") &&
       isEmpty(data) &&
       !isEmpty(params)
     ) {

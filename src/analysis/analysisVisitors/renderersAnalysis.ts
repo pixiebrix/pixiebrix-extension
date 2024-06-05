@@ -26,6 +26,7 @@ import {
   type VisitPipelineExtra,
 } from "@/bricks/PipelineVisitor";
 import { AnnotationType } from "@/types/annotationTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
   "A panel can only have one renderer. There are one or more other renderers configured for this mod.";
@@ -51,6 +52,10 @@ class RenderersAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     let lastRendererIndex = -1;
     for (let brickIndex = pipeline.length - 1; brickIndex >= 0; --brickIndex) {
       const pipelineBlock = pipeline.at(brickIndex);
+      assertNotNullish(
+        pipelineBlock,
+        `Pipeline block at index ${brickIndex} is null`,
+      );
       const brickType = this.allBlocks.get(pipelineBlock.id)?.type;
       const brickErrors = [];
 

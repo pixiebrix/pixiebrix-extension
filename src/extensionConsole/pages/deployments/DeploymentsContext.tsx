@@ -46,7 +46,7 @@ import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import { useGetDeploymentsQuery } from "@/data/service/api";
 import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
-import { isEmpty, isEqual } from "lodash";
+import { isEqual } from "lodash";
 import useMemoCompare from "@/hooks/useMemoCompare";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import type { Deployment } from "@/types/contract";
@@ -104,7 +104,8 @@ function useDeployments(): DeploymentsState {
 
   const deploymentsState = useGetDeploymentsQuery(
     {
-      uid: browserIdentifier,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- see skip
+      uid: browserIdentifier!,
       version: getExtensionVersion(),
       active: activeDeployments,
     },
@@ -128,8 +129,9 @@ function useDeployments(): DeploymentsState {
 
       const unassignedModComponents = activatedModComponents.filter(
         (activeModComponent) =>
-          !isEmpty(activeModComponent._deployment) &&
-          !deployedModIds.has(activeModComponent._recipe?.id),
+          activeModComponent._deployment &&
+          activeModComponent._recipe &&
+          !deployedModIds.has(activeModComponent._recipe.id),
       );
 
       const updatedDeployments = deployments.filter((x) => isUpdated(x));
@@ -259,7 +261,8 @@ function useDeployments(): DeploymentsState {
   }, []);
 
   return {
-    hasUpdate: activatableDeployments?.length > 0,
+    hasUpdate:
+      (activatableDeployments && activatableDeployments.length > 0) ?? false,
     update: handleUpdateFromUserGesture,
     updateExtension,
     extensionUpdateRequired,

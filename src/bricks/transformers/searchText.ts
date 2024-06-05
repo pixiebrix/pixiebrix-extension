@@ -21,6 +21,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { castArray } from "lodash";
 import { stemmer } from "stemmer";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * A text search match.
@@ -108,6 +109,7 @@ function searchStemmed(needles: string[], haystack: string): Match[] {
   for (const { originalNeedle, stemmedNeedle } of stemmedNeedles) {
     for (const stemmedIndex of indexOfAll(stemmedNeedle, stemmedHaystack)) {
       const originalStartIndex = indexMap.get(stemmedIndex);
+      assertNotNullish(originalStartIndex, "Original start index is null");
 
       const transformedEndIndex = stemmedIndex + stemmedNeedle.length;
 
@@ -116,7 +118,12 @@ function searchStemmed(needles: string[], haystack: string): Match[] {
       if (transformedEndIndex >= stemmedHaystack.length) {
         originalEndIndex = haystack.length;
       } else {
-        originalEndIndex = indexMap.get(transformedEndIndex + 1) - 1;
+        const value = indexMap.get(transformedEndIndex + 1);
+        assertNotNullish(
+          value,
+          `Index ${transformedEndIndex + 1} not found in indexMap`,
+        );
+        originalEndIndex = value - 1;
       }
 
       const originalText = haystack.slice(originalStartIndex, originalEndIndex);

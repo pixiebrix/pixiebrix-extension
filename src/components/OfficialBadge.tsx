@@ -22,4 +22,5 @@ import { Badge } from "react-bootstrap";
 
 export const OfficialBadge: React.FunctionComponent<{
   id: RegistryId;
-}> = ({ id }) => isOfficial(id) && <Badge variant="info py-1">Official</Badge>;
+}> = ({ id }) =>
+  isOfficial(id) ? <Badge variant="info py-1">Official</Badge> : null;

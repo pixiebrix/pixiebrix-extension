@@ -42,13 +42,13 @@ function makeArgumentYaml(schema: Schema): string {
     return result;
   }
 
-  for (const [prop, value] of Object.entries(schema.properties)) {
+  for (const [prop, value] of Object.entries(schema.properties ?? {})) {
     if (typeof value === "boolean") {
       continue;
     }
 
     result += `# ${prop}: ${value.type as string} (${
-      schema.required.includes(prop) ? "required" : "optional"
+      schema.required?.includes(prop) ? "required" : "optional"
     })\n`;
     if (value.description) {
       for (const line of value.description.split("\n")) {
@@ -94,7 +94,7 @@ const BrickDetail = <T extends Metadata>({
 
   const copyHandler = useUserAction(
     async () => {
-      await writeToClipboard({ text: makeArgumentYaml(schema) });
+      await writeToClipboard({ text: makeArgumentYaml(schema as Schema) });
     },
     {
       successMessage: "Copied input argument YAML to clipboard",
@@ -143,7 +143,7 @@ const BrickDetail = <T extends Metadata>({
             <Button className="p-0 mb-3" variant="link" onClick={copyHandler}>
               <FontAwesomeIcon icon={faClipboard} /> Copy Argument YAML
             </Button>
-            <SchemaTree schema={schema} />
+            <SchemaTree schema={schema as Schema} />
           </div>
         )}
       </DetailSection>
