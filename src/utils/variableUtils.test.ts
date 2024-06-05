@@ -17,6 +17,7 @@
 
 import { type SafeString } from "@/types/stringTypes";
 import { freshIdentifier, stripOptionalChaining } from "@/utils/variableUtils";
+import { isPixieBrixDomain, isValidUrl } from "@/utils/urlUtils";
 
 test("can generate fresh identifier", () => {
   const root = "field" as SafeString;
@@ -40,5 +41,51 @@ describe("stripOptionalChaining", () => {
 
   it("preserves original values", () => {
     expect(stripOptionalChaining("foo")).toBe("foo");
+  });
+});
+
+describe("isValidUrl", () => {
+  it.each([
+    "https://example.com",
+    "http://example.com",
+    "https://example.com/path",
+    "http://example.com/path",
+    "https://example.com/path?query=param",
+    "http://example.com/path?query=param",
+    "https://example.com/path#hash",
+    "http://example.com/path#hash",
+    "https://example.com/path?query=param#hash",
+    "http://example.com/path?query=param#hash",
+  ])("returns true for %s", (url) => {
+    expect(isValidUrl(url)).toBe(true);
+  });
+
+  it.each(["example.com", "www.example.com", "not a url", null])(
+    "returns false for %s",
+    (url) => {
+      expect(isValidUrl(url)).toBe(false);
+    },
+  );
+});
+
+describe("isPixieBrixDomain", () => {
+  it.each([
+    "https://pixiebrix.com",
+    "https://docs.pixiebrix.com",
+    "https://www.pixiebrix.com",
+  ])("returns true for %s", (url) => {
+    expect(isPixieBrixDomain(url)).toBe(true);
+  });
+
+  it.each([
+    "https://example.com",
+    "https://www.example.com",
+    "https://docs.example.com",
+    "https://https://maliciousdomain.com/pixiebrix.com",
+    "https://pixiebrix.com.maliciousdomain.com",
+    "not a url",
+    null,
+  ])("returns false for %s", (url) => {
+    expect(isPixieBrixDomain(url)).toBe(false);
   });
 });
