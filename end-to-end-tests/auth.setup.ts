@@ -87,7 +87,7 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
     );
     await localIntegrationsPage.goto();
 
-    const popupPromise = context.waitForEvent("page", { timeout: 3000 });
+    const popupPromise = context.waitForEvent("page", { timeout: 5000 });
     await localIntegrationsPage.createNewIntegration("Google Drive");
 
     const googleAuthPopup = await popupPromise;

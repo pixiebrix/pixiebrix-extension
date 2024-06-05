@@ -22,6 +22,7 @@ import { test as base } from "@playwright/test";
 import { E2E_GOOGLE_TEST_USER_EMAIL } from "../../env";
 import { GoogleAuthPopup } from "../../pageObjects/external/googleAuthPopup";
 
+// eslint-disable-next-line local-rules/preferUsingStepsForLongTests -- temporary for CI
 test("can activate a google spreadsheet mod with config options", async ({
   context,
   page,
@@ -35,10 +36,23 @@ test("can activate a google spreadsheet mod with config options", async ({
 
   await modActivationPage.goto();
 
+  // Conditionally handle the Google auth popup that prompts for account selection and access again.
   try {
     const googleAuthPopup = await popupPromise;
     const googleAuthPopupPage = new GoogleAuthPopup(googleAuthPopup);
     await googleAuthPopupPage.chooseAccountAndAllowAccess();
+    await page
+      .getByRole("button", { name: "Refresh integration" })
+      .click({ timeout: 3000 });
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- Timeout for debugging in CI
+    await page.waitForTimeout(2000);
+    const googleIntegrationSelector = page.getByTestId(
+      "integration-auth-selector-integrationDependencies.0.configId",
+    );
+    await googleIntegrationSelector
+      .getByRole("combobox")
+      .click({ timeout: 3000 });
+    await page.reload();
   } catch (error) {
     // eslint-disable-next-line playwright/no-conditional-in-test -- we need to handle the timeout error
     if (error instanceof Error && error.message.includes("Timeout")) {
@@ -48,8 +62,10 @@ test("can activate a google spreadsheet mod with config options", async ({
     }
   }
 
-  await page
-    .getByTestId("integration-auth-selector-integrationDependencies.0.configId")
+  const googleIntegrationSelector = page.getByTestId(
+    "integration-auth-selector-integrationDependencies.0.configId",
+  );
+  await googleIntegrationSelector
     .getByRole("combobox")
     .click({ timeout: 3000 });
 
@@ -57,11 +73,9 @@ test("can activate a google spreadsheet mod with config options", async ({
     .getByRole("option", { name: `${E2E_GOOGLE_TEST_USER_EMAIL} —` })
     .click({ timeout: 3000 });
 
-  await expect(
-    page.getByTestId(
-      "integration-auth-selector-integrationDependencies.0.configId",
-    ),
-  ).toContainText(`${E2E_GOOGLE_TEST_USER_EMAIL} — Private`);
+  await expect(googleIntegrationSelector).toContainText(
+    `${E2E_GOOGLE_TEST_USER_EMAIL} — Private`,
+  );
 
   await expect(page.getByLabel("testSheet")).toBeVisible();
   await page.getByLabel("testSheet").click();
