@@ -131,7 +131,7 @@ function useDeployments(): DeploymentsState {
         (activeModComponent) =>
           activeModComponent._deployment &&
           activeModComponent._recipe &&
-          !deployedModIds.has(activeModComponent._recipe?.id),
+          !deployedModIds.has(activeModComponent._recipe.id),
       );
 
       const updatedDeployments = deployments.filter((x) => isUpdated(x));
