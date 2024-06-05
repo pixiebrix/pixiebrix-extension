@@ -61,6 +61,9 @@ test.describe("sidebar page smoke test", () => {
 
     await page.reload();
 
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- Give the page time to mount the floating action button if it's going to
+    await page.waitForTimeout(1000);
+
     await expect(actionButton).toBeHidden();
   });
 });
