@@ -48,9 +48,20 @@ test("can activate a google spreadsheet mod with config options", async ({
     }
   }
 
+  await page
+    .getByTestId("integration-auth-selector-integrationDependencies.0.configId")
+    .getByRole("combobox")
+    .click({ timeout: 3000 });
+
+  await page
+    .getByRole("option", { name: `${E2E_GOOGLE_TEST_USER_EMAIL} —` })
+    .click({ timeout: 3000 });
+
   await expect(
-    page.getByText(`${E2E_GOOGLE_TEST_USER_EMAIL} — Private`),
-  ).toBeVisible();
+    page.getByTestId(
+      "integration-auth-selector-integrationDependencies.0.configId",
+    ),
+  ).toContainText(`${E2E_GOOGLE_TEST_USER_EMAIL} — Private`);
 
   await expect(page.getByLabel("testSheet")).toBeVisible();
   await page.getByLabel("testSheet").click();
