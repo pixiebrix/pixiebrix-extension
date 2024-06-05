@@ -160,7 +160,7 @@ export function isValidUrl(maybeUrl: string | null): boolean {
 }
 
 export function isPixieBrixDomain(url: string | null): boolean {
-  if (!isValidUrl(url)) {
+  if (url != null && !isValidUrl(url)) {
     return false;
   }
 
