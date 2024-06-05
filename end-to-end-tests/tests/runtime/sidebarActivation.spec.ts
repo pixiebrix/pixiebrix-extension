@@ -21,11 +21,12 @@ import { getSidebarPage } from "../../utils";
 import { type Page, test as base } from "@playwright/test";
 
 /**
- * Convert an existing link element on the page into a mod activation link
+ * Inject an activation link element into the page. Element is added before the content script is run to preserve
+ * sidebar activation behavior, see loadActivationEnhancementsCore.ts.
  * @param page the page on which to run the script
  * @param nextUrl the url to which to redirect after activation
  */
-const insertActivationLink = async (page: Page, nextUrl: string) => {
+const initInsertActivationLink = async (page: Page, nextUrl: string) => {
   await page.addInitScript((nextUrl: string) => {
     window.addEventListener("DOMContentLoaded", () => {
       const linkElement = document.createElement("a");
@@ -45,7 +46,7 @@ test("initiates sidebar mod activation from activate url click", async ({
   extensionId,
 }) => {
   const redirectUrl = "https://www.pixiebrix.com/";
-  await insertActivationLink(page, redirectUrl);
+  await initInsertActivationLink(page, redirectUrl);
   await page.goto("/");
   await page.locator("#activation-link").click();
 
@@ -59,17 +60,16 @@ test("initiates sidebar mod activation from activate url click", async ({
 test("does not redirect to non-pixiebrix domain", async ({
   page,
   extensionId,
+  baseURL,
 }) => {
-  const invalidRedirectUrl = "https://pbx.vercel.app/";
+  const invalidRedirectUrl = "https://www.google.com/";
+  await initInsertActivationLink(page, invalidRedirectUrl);
   await page.goto("/");
-  await insertActivationLink(page, "a[href*='#alpha']", invalidRedirectUrl);
-  await page.getByText("Alpha").click();
-  await page.waitForURL("https://app.pixiebrix.com/*");
+  await page.locator("#activation-link").click();
 
-  // TODO: sidebarpage shouldn't open in this case
   const sidebarPage = await getSidebarPage(page, extensionId);
 
   await expect(sidebarPage.getByText("Activating")).toBeVisible();
   await expect(sidebarPage.getByText("Reverse GitLink")).toBeVisible();
-  expect(page.url()).toBe("https://www.pixiebrix.com/");
+  expect(page.url()).toBe(baseURL);
 });
