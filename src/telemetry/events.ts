@@ -47,12 +47,10 @@ export const Events = {
 
   FACTORY_RESET: "FactoryReset",
 
-  FLOATING_QUICK_BAR_BUTTON_CLICK: "FloatingQuickBarButtonClick",
-  FLOATING_QUICK_BAR_BUTTON_REPOSITIONED: "FloatingQuickBarButtonRepositioned",
-  FLOATING_QUICK_BAR_BUTTON_ON_SCREEN_HIDE:
-    "FloatingQuickBarButtonOnScreenHide",
-  FLOATING_QUICK_BAR_BUTTON_TOGGLE_SETTING:
-    "ToggleFloatingQuickBarButtonSetting",
+  FLOATING_ACTION_BUTTON_CLICK: "FloatingQuickBarButtonClick",
+  FLOATING_ACTION_BUTTON_REPOSITIONED: "FloatingQuickBarButtonRepositioned",
+  FLOATING_ACTION_BUTTON_ON_SCREEN_HIDE: "FloatingQuickBarButtonOnScreenHide",
+  FLOATING_ACTION_BUTTON_TOGGLE_SETTING: "ToggleFloatingQuickBarButtonSetting",
 
   GOOGLE_FILE_PICKER_EVENT: "GoogleFilePickerEvent",
 

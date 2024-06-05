@@ -18,24 +18,25 @@
 import React from "react";
 import logoUrl from "@/icons/custom-icons/logo.svg";
 import { Button } from "react-bootstrap";
-import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import AsyncButton from "@/components/AsyncButton";
 import notify from "@/utils/notify";
 import { useDispatch } from "react-redux";
 import SettingsSlice from "@/store/settings/settingsSlice";
+// eslint-disable-next-line local-rules/noCrossBoundaryImports -- TODO: remove floatingActions folder from src/components in follow-PR
+import { toggleSidebar } from "@/contentScript/sidebarController";
 
 /**
- * Opens the quickbar menu
+ * Opens the action menu
  */
-export function QuickbarButton() {
+export function ActionButton() {
   const dispatch = useDispatch();
 
   return (
     // Using standard css here because the shadow dom in `FloatingActions.tsx`
     // prevents us from using regular css modules.
-    <div className="quickbar-button-container">
+    <div className="action-button-container">
       <div className="hide-button-container">
         <AsyncButton
           className="hide-button"
@@ -44,7 +45,7 @@ export function QuickbarButton() {
               dispatch(
                 SettingsSlice.actions.setFloatingActionButtonEnabled(false),
               );
-              reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_ON_SCREEN_HIDE);
+              reportEvent(Events.FLOATING_ACTION_BUTTON_ON_SCREEN_HIDE);
             } catch (error) {
               notify.error({ message: "Error saving settings", error });
             }
@@ -56,10 +57,10 @@ export function QuickbarButton() {
       </div>
       <div>
         <Button
-          className="quickbar-button"
+          className="action-button"
           onClick={() => {
-            reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_CLICK);
-            void toggleQuickBar();
+            reportEvent(Events.FLOATING_ACTION_BUTTON_CLICK);
+            void toggleSidebar();
           }}
         >
           {/* <img> tag since we're using a different svg than the <Logo> component and it overrides all the styles
@@ -67,7 +68,7 @@ export function QuickbarButton() {
           <img
             src={logoUrl}
             className="logo"
-            alt="open the PixieBrix quick bar"
+            alt="Toggle the PixieBrix Sidebar"
           />
         </Button>
       </div>
