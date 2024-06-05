@@ -25,15 +25,10 @@ test.describe("sidebar page smoke test", () => {
     page,
     extensionId,
   }) => {
-    const modId = "@pixies/ai/writer-assist";
+    const modId = "@e2e-testing/simple-sidebar-panel";
 
     const modActivationPage = new ActivateModPage(page, extensionId, modId);
     await modActivationPage.goto();
-    // The default integration values are not immediately loaded and are temporarily empty.
-    // If we try activating too fast, the activation will fail due to missing configuration, so we wait for the values to load.
-    await expect(
-      page.getByText("OpenAI — ✨ Built-in", { exact: true }),
-    ).toBeVisible();
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
     await page.goto("/bootstrap-5");
@@ -43,7 +38,7 @@ test.describe("sidebar page smoke test", () => {
 
     const sideBarPage = await getSidebarPage(page, extensionId);
     await expect(
-      sideBarPage.getByRole("heading", { name: "✍️ Write Assist" }),
+      sideBarPage.getByRole("heading", { name: "Simple Sidebar Panel" }),
     ).toBeVisible();
 
     await floatingActionButton.toggleSidebar();
@@ -61,6 +56,10 @@ test.describe("sidebar page smoke test", () => {
     await expect(actionButton).toBeVisible();
 
     await floatingActionButton.hideFloatingActionButton();
+
+    await expect(actionButton).toBeHidden();
+
+    await page.reload();
 
     await expect(actionButton).toBeHidden();
   });
