@@ -53,7 +53,7 @@ export type DocumentElement<
   children?: DocumentElement[];
 };
 
-export function isDocumentElement(value: unknown): value is DocumentElement {
+function isDocumentElement(value: unknown): value is DocumentElement {
   return isObject(value) && "type" in value && "config" in value;
 }
 
