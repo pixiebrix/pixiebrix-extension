@@ -19,7 +19,7 @@ import { test, expect } from "../../fixtures/extensionBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
-import { E2E_GOOGLE_TEST_USER_EMAIL } from "../../env";
+import { CI, E2E_GOOGLE_TEST_USER_EMAIL } from "../../env";
 import { GoogleAuthPopup } from "../../pageObjects/external/googleAuthPopup";
 
 test("can activate a google spreadsheet mod with config options", async ({
@@ -27,6 +27,11 @@ test("can activate a google spreadsheet mod with config options", async ({
   page,
   extensionId,
 }) => {
+  // TODO: look into a method for avoiding captcha checks in CI
+  test.skip(
+    CI !== undefined,
+    "Skipping test due to flakiness in CI -- captcha checking",
+  );
   const modId = "@e2e-testing/spreadsheet-lookup";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
 
@@ -58,8 +63,6 @@ test("can activate a google spreadsheet mod with config options", async ({
 
   await page
     .getByRole("option", { name: `${E2E_GOOGLE_TEST_USER_EMAIL} — Private` })
-    // The integration name sometimes is different in the dropdown (in CI)
-    .or(page.getByRole("option", { name: "Google Drive Config — Private" }))
     .click({ timeout: 3000 });
 
   await expect(page.getByLabel("testSheet")).toBeVisible();
