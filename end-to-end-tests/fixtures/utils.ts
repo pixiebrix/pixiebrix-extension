@@ -15,19 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrowserContext } from "@playwright/test";
-import { chromium } from "playwright-extra";
+import { type BrowserContext, chromium } from "@playwright/test";
 import { CI, PWDEBUG, SLOWMO } from "../env";
 import path from "node:path";
-// Load the stealth plugin and use defaults to avoid google login captchas
-import stealth from "puppeteer-extra-plugin-stealth";
 
 export const launchPersistentContextWithExtension = async (
   chromiumChannel: "chrome" | "msedge",
   profileDirectory: string,
 ) => {
   const pathToExtension = path.join(__dirname, "../../dist");
-  chromium.use(stealth());
   return chromium.launchPersistentContext(profileDirectory, {
     // Test against the branded Chrome browser
     // See: https://playwright.dev/docs/browsers#google-chrome--microsoft-edge
