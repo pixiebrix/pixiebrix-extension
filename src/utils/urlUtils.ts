@@ -140,3 +140,16 @@ export function assertProtocolUrl(
     );
   }
 }
+
+export function isPixieBrixDomain(url: string | null): boolean {
+  if (url == null) {
+    return false;
+  }
+
+  if (!canParseUrl(url)) {
+    return false;
+  }
+
+  const { hostname } = new URL(url);
+  return hostname === "pixiebrix.com" || hostname.endsWith(".pixiebrix.com");
+}

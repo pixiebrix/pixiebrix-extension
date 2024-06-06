@@ -21,6 +21,7 @@ import {
   makeURL,
   selectAbsoluteUrl,
   isUrlRelative,
+  isPixieBrixDomain,
 } from "@/utils/urlUtils";
 
 describe("assertHttpsUrl", () => {
@@ -162,5 +163,27 @@ describe("isUrlRelative", () => {
     expect(isUrlRelative("http://example.com/foo")).toBe(false);
     expect(isUrlRelative("file://example.com/foo")).toBe(false);
     expect(isUrlRelative("//example.com/foo")).toBe(false);
+  });
+});
+
+describe("isPixieBrixDomain", () => {
+  it.each([
+    "https://pixiebrix.com",
+    "https://docs.pixiebrix.com",
+    "https://www.pixiebrix.com",
+  ])("returns true for %s", (url) => {
+    expect(isPixieBrixDomain(url)).toBe(true);
+  });
+
+  it.each([
+    "https://example.com",
+    "https://www.example.com",
+    "https://docs.example.com",
+    "https://https://maliciousdomain.com/pixiebrix.com",
+    "https://pixiebrix.com.maliciousdomain.com",
+    "not a url",
+    null,
+  ])("returns false for %s", (url) => {
+    expect(isPixieBrixDomain(url)).toBe(false);
   });
 });
