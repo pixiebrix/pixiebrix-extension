@@ -18,6 +18,7 @@
 import { expect, type Page } from "@playwright/test";
 import { test } from "./fixtures/authSetup";
 import {
+  CI,
   E2E_GOOGLE_TEST_USER_EMAIL,
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
@@ -82,30 +83,37 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
     );
   });
 
-  await test.step("Authenticate with Google and add a local Drive integration", async () => {
-    const localIntegrationsPage = new LocalIntegrationsPage(
-      extensionConsolePage,
-    );
-    await localIntegrationsPage.goto();
+  // Skipping authentication in CI due to flakiness -- captcha checking
+  // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8058
+  // eslint-disable-next-line playwright/no-conditional-in-test -- see above
+  if (CI === undefined) {
+    await test.step("Authenticate with Google and add a local Drive integration", async () => {
+      const localIntegrationsPage = new LocalIntegrationsPage(
+        extensionConsolePage,
+      );
+      await localIntegrationsPage.goto();
 
-    const popupPromise = context.waitForEvent("page", { timeout: 5000 });
-    await localIntegrationsPage.createNewIntegration("Google Drive");
+      const popupPromise = context.waitForEvent("page", { timeout: 5000 });
+      await localIntegrationsPage.createNewIntegration("Google Drive");
 
-    const googleAuthPopup = await popupPromise;
-    const googleAuthPopupPage = new GoogleAuthPopup(googleAuthPopup);
-    await googleAuthPopupPage.logInAndAllowAccess();
+      const googleAuthPopup = await popupPromise;
+      const googleAuthPopupPage = new GoogleAuthPopup(googleAuthPopup);
+      await googleAuthPopupPage.logInAndAllowAccess();
 
-    await expect(
-      extensionConsolePage.getByRole("cell", {
-        name: "Icon Google Drive google/",
-      }),
-    ).toBeVisible();
-    // NOTE: if the tab is closed before the integration label is updated from the google api info call, the integration
-    // name will be "Google Drive Config" instead of the test user email.
-    await expect(
-      extensionConsolePage.getByRole("cell", {
-        name: E2E_GOOGLE_TEST_USER_EMAIL,
-      }),
-    ).toBeVisible();
-  });
+      // eslint-disable-next-line playwright/no-conditional-expect -- see #8058
+      await expect(
+        extensionConsolePage.getByRole("cell", {
+          name: "Icon Google Drive google/",
+        }),
+      ).toBeVisible();
+      // NOTE: if the tab is closed before the integration label is updated from the google api info call, the integration
+      // name will be "Google Drive Config" instead of the test user email.
+      // eslint-disable-next-line playwright/no-conditional-expect -- see #8058
+      await expect(
+        extensionConsolePage.getByRole("cell", {
+          name: E2E_GOOGLE_TEST_USER_EMAIL,
+        }),
+      ).toBeVisible();
+    });
+  }
 });
