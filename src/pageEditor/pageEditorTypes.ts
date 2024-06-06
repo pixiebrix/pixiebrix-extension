@@ -103,13 +103,6 @@ export interface EditorState {
   dirty: Record<string, boolean>;
 
   /**
-   * @since 2.0.2
-   * Elements that have been removed in the page editor
-   * Not persisted
-   */
-  removed: Record<string, boolean>;
-
-  /**
    * Unsaved elements
    */
   readonly elements: ModComponentFormState[];

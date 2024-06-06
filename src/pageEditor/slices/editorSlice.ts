@@ -98,7 +98,6 @@ export const initialState: EditorState = {
   elements: [],
   knownEditable: [],
   dirty: {},
-  removed: {},
   isBetaUI: false,
   elementUIStates: {},
   dirtyRecipeOptionsById: {},
@@ -608,7 +607,6 @@ export const editorSlice = createSlice({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- nullish assignment above
       state.deletedElementsByRecipeId[recipeId]!.push(element);
       state.elements.splice(elementIndex, 1);
-      state.removed[elementId] = true;
       delete state.dirty[elementId];
       delete state.elementUIStates[elementId];
       state.activeElementId = null;

@@ -21,20 +21,13 @@ import {
   selectIsModComponentDirtyById,
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
-  selectIsModComponentRemovedById,
 } from "@/pageEditor/slices/editorSelectors";
 
 export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
   selectNotDeletedActivatedModComponents,
   selectNotDeletedModComponentFormStates,
   selectIsModComponentDirtyById,
-  selectIsModComponentRemovedById,
-  (
-    activatedModComponents,
-    formStates,
-    isDirtyByComponentId,
-    isRemovedByComponentId,
-  ) =>
+  (activatedModComponents, formStates, isDirtyByComponentId) =>
     (modId: RegistryId) => {
       const dirtyModComponentFormStates = formStates.filter(
         (formState) =>
@@ -47,8 +40,7 @@ export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
           modComponent._recipe?.id === modId &&
           !dirtyModComponentFormStates.some(
             (formState) => formState.uuid === modComponent.id,
-          ) &&
-          !isRemovedByComponentId[modComponent.id],
+          ),
       );
 
       return {

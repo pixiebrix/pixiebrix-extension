@@ -83,9 +83,6 @@ export const selectErrorState = ({ editor }: EditorRootState) => ({
 export const selectIsModComponentDirtyById = ({ editor }: EditorRootState) =>
   editor.dirty;
 
-export const selectIsModComponentRemovedById = ({ editor }: EditorRootState) =>
-  editor.removed;
-
 export const selectDeletedComponentFormStatesByModId = ({
   editor,
 }: EditorRootState) => editor.deletedElementsByRecipeId;
