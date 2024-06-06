@@ -113,7 +113,7 @@ function useCheckModStarterBrickInvariants(): (
           const definitions = {} as InnerDefinitions;
 
           for (const [innerDefinitionId, innerDefinition] of Object.entries(
-            modComponent.definitions,
+            modComponent.definitions ?? {},
           )) {
             if (
               isStarterBrickDefinitionLike(innerDefinition) &&
