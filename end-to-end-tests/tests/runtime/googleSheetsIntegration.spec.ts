@@ -22,7 +22,6 @@ import { test as base } from "@playwright/test";
 import { E2E_GOOGLE_TEST_USER_EMAIL } from "../../env";
 import { GoogleAuthPopup } from "../../pageObjects/external/googleAuthPopup";
 
-// eslint-disable-next-line local-rules/preferUsingStepsForLongTests -- temporary for CI
 test("can activate a google spreadsheet mod with config options", async ({
   context,
   page,
@@ -31,7 +30,7 @@ test("can activate a google spreadsheet mod with config options", async ({
   const modId = "@e2e-testing/spreadsheet-lookup";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
 
-  // Sometimes google auth is re-prompted, so we need to handle that
+  // Sometimes google auth is re-prompted
   const popupPromise = context.waitForEvent("page", { timeout: 3000 });
 
   await modActivationPage.goto();
@@ -71,6 +70,7 @@ test("can activate a google spreadsheet mod with config options", async ({
 
   await page
     .getByRole("option", { name: `${E2E_GOOGLE_TEST_USER_EMAIL} — Private` })
+    // The integration name sometimes is different in the dropdown (in CI)
     .or(page.getByRole("option", { name: "Google Drive Config — Private" }))
     .click({ timeout: 3000 });
 

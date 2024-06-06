@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expect, Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 import {
   E2E_GOOGLE_TEST_USER_EMAIL,
   E2E_GOOGLE_TEST_USER_OTP_KEY,
