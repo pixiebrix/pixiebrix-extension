@@ -71,5 +71,5 @@ test("does not redirect to non-pixiebrix domain", async ({
 
   await expect(sidebarPage.getByText("Activating")).toBeVisible();
   await expect(sidebarPage.getByText("Reverse GitLink")).toBeVisible();
-  expect(page.url()).toBe(baseURL);
+  expect(page.url()).toBe(`${baseURL}/`);
 });
