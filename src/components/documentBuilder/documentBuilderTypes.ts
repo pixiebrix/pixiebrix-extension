@@ -22,6 +22,7 @@ import {
 } from "@/types/runtimeTypes";
 import { type ElementType, type MouseEventHandler, type Ref } from "react";
 import type { IconConfig } from "@/types/iconTypes";
+import { isObject } from "@/utils/objectUtils";
 
 export const DOCUMENT_ELEMENT_TYPES = [
   "header",
@@ -51,6 +52,18 @@ export type DocumentElement<
   config: TConfig;
   children?: DocumentElement[];
 };
+
+function isDocumentElement(value: unknown): value is DocumentElement {
+  return isObject(value) && "type" in value && "config" in value;
+}
+
+export function isDocumentElementArray(
+  value: unknown,
+): value is DocumentElement[] {
+  return (
+    Array.isArray(value) && value.every((element) => isDocumentElement(element))
+  );
+}
 
 type ListDocumentConfig = {
   array: Expression;

@@ -84,7 +84,7 @@ class OutputKeyAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     }
 
     const { type: blockType } = typedBlock;
-    if (blockTypesWithEmptyOutputKey.includes(blockType)) {
+    if (blockTypesWithEmptyOutputKey.includes(blockType ?? "")) {
       if (!outputKey) {
         return;
       }

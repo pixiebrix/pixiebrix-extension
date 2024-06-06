@@ -58,7 +58,7 @@
   transform: scale(1.4) translateX(9px);
 }
 
-.quickbar-button-container {
+.action-button-container {
   display: flex;
   flex-direction: column;
   .hide-button-container {
@@ -89,7 +89,7 @@
     max-height: 200px;
   }
 
-  .quickbar-button {
+  .action-button {
     padding: 7px;
     border: none;
     overflow: hidden;

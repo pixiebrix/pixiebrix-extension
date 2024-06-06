@@ -27,11 +27,9 @@ const getParentElementName = (elementName: string): string | null => {
     return null;
   }
 
-  const {
-    groups: { parentElementName },
-  } = match;
+  const { groups: { parentElementName } = {} } = match;
 
-  return parentElementName;
+  return parentElementName ?? null;
 };
 
 function useSelectParentElement() {

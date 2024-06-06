@@ -15,12 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isOfficial } from "@/bricks/util";
-import { type RegistryId } from "@/types/registryTypes";
-import React from "react";
-import { Badge } from "react-bootstrap";
+import { type Page } from "@playwright/test";
 
-export const OfficialBadge: React.FunctionComponent<{
-  id: RegistryId;
-}> = ({ id }) =>
-  isOfficial(id) ? <Badge variant="info py-1">Official</Badge> : null;
+export class FloatingActionButton {
+  constructor(private readonly page: Page) {}
+
+  async getActionButton() {
+    return this.page.getByRole("button", {
+      name: "Toggle the PixieBrix Sidebar",
+    });
+  }
+
+  async toggleSidebar() {
+    const floatingActionButton = await this.getActionButton();
+    await floatingActionButton.click();
+  }
+
+  async hideFloatingActionButton() {
+    const actionButton = await this.getActionButton();
+    await actionButton.hover();
+
+    const hideButton = this.page.getByRole("button", {
+      name: "Hide Button",
+    });
+    await hideButton.click();
+  }
+}

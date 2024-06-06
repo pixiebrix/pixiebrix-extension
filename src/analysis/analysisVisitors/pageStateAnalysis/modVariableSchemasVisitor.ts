@@ -36,7 +36,7 @@ export type ModVariableSchemaResult = {
  * @since 1.7.34
  */
 class ModVariableSchemasVisitor extends PipelineVisitor {
-  readonly schemaPromises: Array<Promise<Schema>> = [];
+  readonly schemaPromises: Array<Promise<Schema | undefined>> = [];
 
   constructor(readonly allBlocks: TypedBrickMap) {
     super();

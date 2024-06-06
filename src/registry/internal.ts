@@ -252,7 +252,7 @@ export async function resolveExtensionInnerDefinitions<
  */
 export async function resolveRecipeInnerDefinitions(
   recipe: Pick<ModDefinition, "extensionPoints" | "definitions"> | undefined,
-): Promise<ResolvedModComponentDefinition[] | undefined> {
+): Promise<ResolvedModComponentDefinition[]> {
   const extensionDefinitions = recipe?.extensionPoints;
 
   if (isEmpty(recipe?.definitions)) {
@@ -278,12 +278,14 @@ export async function resolveRecipeInnerDefinitions(
     ),
   );
 
-  return extensionDefinitions?.map(
-    (definition) =>
-      (definition.id in resolvedDefinitions
-        ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
-          { ...definition, id: resolvedDefinitions[definition.id]!.id }
-        : definition) as ResolvedModComponentDefinition,
+  return (
+    extensionDefinitions?.map(
+      (definition) =>
+        (definition.id in resolvedDefinitions
+          ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
+            { ...definition, id: resolvedDefinitions[definition.id]!.id }
+          : definition) as ResolvedModComponentDefinition,
+    ) ?? []
   );
 }
 

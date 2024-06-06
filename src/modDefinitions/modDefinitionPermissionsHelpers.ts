@@ -104,7 +104,7 @@ export async function checkModDefinitionPermissions(
   );
 
   const requiredPermissions = {
-    permissions: permissions.permissions.filter(
+    permissions: permissions.permissions?.filter(
       (permission) => !optionalPermissions.includes(permission),
     ),
     origins: permissions.origins,

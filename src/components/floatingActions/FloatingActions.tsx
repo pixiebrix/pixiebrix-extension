@@ -21,7 +21,7 @@ import bootstrap from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import React from "react";
 import styles from "./FloatingActions.scss?loadAsUrl";
 import ReactDOM from "react-dom";
-import { QuickbarButton } from "@/components/floatingActions/QuickbarButton";
+import { ActionButton } from "@/components/floatingActions/ActionButton";
 import store, { persistor } from "@/components/floatingActions/store";
 import Draggable from "react-draggable";
 import dragIcon from "@/icons/drag-handle.svg";
@@ -39,7 +39,7 @@ function reportReposition() {
   // Check here to prevent reporting the event twice on the same page. We just want to know
   // whether users are repositioning on the page at all.
   if (!dragReported) {
-    reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_REPOSITIONED);
+    reportEvent(Events.FLOATING_ACTION_BUTTON_REPOSITIONED);
     dragReported = true;
   }
 }
@@ -54,12 +54,12 @@ function FloatingActions() {
           <img
             src={dragIcon}
             className="drag-handle"
-            alt="drag to move quick bar button"
+            alt="drag to move action button"
             // Setting draggable=false prevents browser default drag events on images
             draggable={false}
           />
           <div className="content-container">
-            <QuickbarButton />
+            <ActionButton />
           </div>
         </div>
       </div>

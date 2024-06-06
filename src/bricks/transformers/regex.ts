@@ -18,7 +18,7 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { isArray, unary } from "lodash";
+import { compact, isArray, unary } from "lodash";
 import { PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "@/bricks/types";
 import { extractRegexLiteral } from "@/analysis/analysisVisitors/regexAnalysis";
@@ -30,7 +30,9 @@ function extractNamedCaptureGroups(pattern: string): string[] {
   // Create new regex on each analysis call to avoid state issues with test
   const namedCapturedGroupRegex = /\(\?<(\S+)>.*?\)/g;
 
-  return [...pattern.matchAll(namedCapturedGroupRegex)].map((x) => x[1]);
+  return compact(
+    [...pattern.matchAll(namedCapturedGroupRegex)].map((x) => x[1]),
+  );
 }
 
 export class RegexTransformer extends TransformerABC {
@@ -155,7 +157,9 @@ export class RegexTransformer extends TransformerABC {
     regex: string | RegExp;
     input: string | null | Array<string | null>;
     ignoreCase?: boolean;
-  }>): Promise<Record<string, string> | Array<Record<string, string>>> {
+  }>): Promise<
+    Record<string, string> | Array<Record<string, string> | null> | null
+  > {
     let compiled: RegExp;
 
     try {
