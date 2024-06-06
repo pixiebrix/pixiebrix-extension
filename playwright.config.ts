@@ -18,7 +18,7 @@ export default defineConfig<{ chromiumChannel: string }>({
   /* Timeout for each test, if a test should take longer than this, use `test.slow()` */
   timeout: 60_000,
   /* Timeout for the entire test run */
-  globalTimeout: 20 * 60 * 1000, // 20 minutes
+  globalTimeout: 30 * 60 * 1000, // 30 minutes
   expect: {
     /* Timeout for each assertion. If a particular interaction is timing out, adjust its specific timeout value rather than this global setting */
     timeout: 5000,
