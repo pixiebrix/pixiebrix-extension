@@ -25,9 +25,15 @@ import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import type { StarterBrickDefinitionLike } from "@/starterBricks/types";
+import {
+  isStarterBrickDefinitionLike,
+  type StarterBrickDefinitionLike,
+} from "@/starterBricks/types";
 import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { type InnerDefinitions } from "@/types/registryTypes";
+import produce from "immer";
+import { buildModComponents } from "@/pageEditor/panes/save/saveHelpers";
 
 type SourceModParts = {
   sourceModDefinition?: ModDefinition;
@@ -97,9 +103,37 @@ function useCheckModStarterBrickInvariants(): (
         }
       }
 
-      for (const cleanModComponent of cleanModComponents) {
+      const { extensionPoints } = buildModComponents(cleanModComponents);
+      const referencedIds = new Set(extensionPoints.map((x) => x.id));
+
+      // @see saveHelpers.ts:deleteUnusedStarterBrickDefinitions
+      const normalizedModComponents = cleanModComponents.map((modComponent) =>
+        produce(modComponent, (draft) => {
+          delete draft.definitions;
+          const definitions = {} as InnerDefinitions;
+
+          for (const [innerDefinitionId, innerDefinition] of Object.entries(
+            modComponent.definitions,
+          )) {
+            if (
+              isStarterBrickDefinitionLike(innerDefinition) &&
+              referencedIds.has(innerDefinitionId)
+            ) {
+              // The ActivatedModComponents may include unused starter bricks, so we only include the ones that are actually used
+              // eslint-disable-next-line security/detect-object-injection -- Object.entries
+              definitions[innerDefinitionId] = innerDefinition;
+            }
+          }
+
+          draft.definitions = definitions;
+
+          return draft;
+        }),
+      );
+
+      for (const normalizedModComponent of normalizedModComponents) {
         if (
-          Object.values(cleanModComponent.definitions ?? {}).some(
+          Object.values(normalizedModComponent.definitions ?? {}).some(
             (definitionFromComponent) =>
               !definitionsFromMod.some((definitionFromMod) =>
                 isInnerDefinitionEqual(

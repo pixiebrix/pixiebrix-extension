@@ -16,16 +16,13 @@
  */
 
 import { createSelector } from "@reduxjs/toolkit";
-import type { InnerDefinitions, RegistryId } from "@/types/registryTypes";
+import type { RegistryId } from "@/types/registryTypes";
 import {
   selectIsModComponentDirtyById,
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
   selectIsModComponentRemovedById,
 } from "@/pageEditor/slices/editorSelectors";
-import { buildModComponents } from "@/pageEditor/panes/save/saveHelpers";
-import produce from "immer";
-import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
 
 export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
   selectNotDeletedActivatedModComponents,
@@ -54,34 +51,8 @@ export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
           !isRemovedByComponentId[modComponent.id],
       );
 
-      const { extensionPoints } = buildModComponents(cleanModComponents);
-      const referencedIds = new Set(extensionPoints.map((x) => x.id));
-
       return {
-        // @see saveHelpers.ts:deleteUnusedStarterBrickDefinitions
-        cleanModComponents: cleanModComponents.map((modComponent) =>
-          produce(modComponent, (draft) => {
-            delete draft.definitions;
-            const definitions = {} as InnerDefinitions;
-
-            for (const [innerDefinitionId, innerDefinition] of Object.entries(
-              modComponent.definitions,
-            )) {
-              if (
-                isStarterBrickDefinitionLike(innerDefinition) &&
-                referencedIds.has(innerDefinitionId)
-              ) {
-                // PageEditor state may include unused starter bricks, so we only include the ones that are actually used
-                // eslint-disable-next-line security/detect-object-injection -- Object.entries
-                definitions[innerDefinitionId] = innerDefinition;
-              }
-            }
-
-            draft.definitions = definitions;
-
-            return draft;
-          }),
-        ),
+        cleanModComponents,
         dirtyModComponentFormStates,
       };
     },
