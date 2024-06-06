@@ -15,13 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file Store data in a Map with fallback to storage.session, if present.
- * The alternative would be to use `chrome.storage.local` as a polyfill, but
- * then we'd have to manually keep track of this data and clean it up,
- * potentially leaving data behind.
- */
-
 import { expectContext } from "@/utils/expectContext";
 import { type OmitIndexSignature, type JsonValue } from "type-fest";
 import { type ManualStorageKey } from "@/utils/storageUtils";
@@ -36,8 +29,7 @@ function validateContext(): void {
 }
 
 /**
- * MV3-compatible Map-like storage, this helps transition to chrome.storage.session
- * and provide some type safety.
+ * Wrapper for chrome.storage.session with added type safety.
  */
 export class SessionMap<Value extends JsonValue> {
   constructor(
@@ -97,8 +89,8 @@ export class SessionMap<Value extends JsonValue> {
 }
 
 /**
- * MV3-compatible single-value storage.
- * This helps transition to chrome.storage.session and provide some type safety.
+ * Single-value storage leveraging chrome.storage.session.
+ * Adds some additional type safety.
  */
 // "OmitIndexSignature" is because of https://github.com/sindresorhus/type-fest/issues/815
 export class SessionValue<Value extends OmitIndexSignature<JsonValue>> {
