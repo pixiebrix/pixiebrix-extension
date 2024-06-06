@@ -23,47 +23,81 @@ import {
   SERVICE_URL,
 } from "./env";
 import { ensureVisibility } from "./utils";
+import { LocalIntegrationsPage } from "./pageObjects/extensionConsole/localIntegrationsPage";
+import { GoogleAuthPopup } from "./pageObjects/external/googleAuthPopup";
 
 test("authenticate", async ({ contextAndPage: { context, page } }) => {
-  await page.goto(`${SERVICE_URL}/login/email`);
-  await page.getByLabel("Email").fill(E2E_TEST_USER_EMAIL_UNAFFILIATED);
-  await page.getByLabel("Password").fill(E2E_TEST_USER_PASSWORD_UNAFFILIATED);
-  await page.getByRole("button", { name: "Log in" }).click();
-  await page.waitForURL(SERVICE_URL);
-  await ensureVisibility(
-    page.getByText(
-      "Successfully linked the Browser Extension to your PixieBrix account",
-    ),
-    { timeout: 12_000 },
+  test.slow(
+    true,
+    "Test is slow due to two-factor authentication and loading times",
   );
-  await expect(page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED)).toBeVisible();
-  await expect(page.getByText("Admin Console")).toBeVisible();
+
+  await test.step("Login with unaffiliated user and link to Admin console page", async () => {
+    await page.goto(`${SERVICE_URL}/login/email`);
+    await page.getByLabel("Email").fill(E2E_TEST_USER_EMAIL_UNAFFILIATED);
+    await page.getByLabel("Password").fill(E2E_TEST_USER_PASSWORD_UNAFFILIATED);
+    await page.getByRole("button", { name: "Log in" }).click();
+    await page.waitForURL(SERVICE_URL);
+    await ensureVisibility(
+      page.getByText(
+        "Successfully linked the Browser Extension to your PixieBrix account",
+      ),
+      { timeout: 12_000 },
+    );
+    await expect(
+      page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
+    ).toBeVisible();
+    await expect(page.getByText("Admin Console")).toBeVisible();
+  });
 
   let extensionConsolePage: Page;
-  // Sometimes get the following error "Error: Could not establish connection. Receiving end does not exist."
-  // when trying to click on the "Open Extension Console" button. This happens when the Extension has not fully
-  // initialized to be able to receive messages via the external messenger api, which happens when the Extension
-  // reloads after linking. Thus, we wrap the following with an `expect.toPass` retry.
-  await expect(async () => {
-    // Ensure the extension console loads with authenticated user
-    const extensionConsolePagePromise = context.waitForEvent("page", {
-      timeout: 2000,
-    });
-    await page
-      .locator("button")
-      .filter({ hasText: "Open Extension Console" })
-      .click();
+  await test.step("Open Extension Console", async () => {
+    // Sometimes get the following error "Error: Could not establish connection. Receiving end does not exist."
+    // when trying to click on the "Open Extension Console" button. This happens when the Extension has not fully
+    // initialized to be able to receive messages via the external messenger api, which happens when the Extension
+    // reloads after linking. Thus, we wrap the following with an `expect.toPass` retry.
+    await expect(async () => {
+      // Ensure the extension console loads with authenticated user
+      const extensionConsolePagePromise = context.waitForEvent("page", {
+        timeout: 2000,
+      });
+      await page
+        .locator("button")
+        .filter({ hasText: "Open Extension Console" })
+        .click();
 
-    extensionConsolePage = await extensionConsolePagePromise;
+      extensionConsolePage = await extensionConsolePagePromise;
 
-    await expect(extensionConsolePage.locator("#container")).toContainText(
-      "Extension Console",
+      await expect(extensionConsolePage.locator("#container")).toContainText(
+        "Extension Console",
+      );
+    }).toPass({ timeout: 10_000 });
+
+    await ensureVisibility(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above
+      extensionConsolePage!.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
+      // The first time the extension console is opened after logging in, it sometimes takes a while to load the extension console
+      { timeout: 16_000 },
     );
-  }).toPass({ timeout: 10_000 });
+  });
 
-  await ensureVisibility(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above
-    extensionConsolePage!.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
-    { timeout: 12_000 },
-  );
+  await test.step("Authenticate with Google and add a local Drive integration", async () => {
+    const localIntegrationsPage = new LocalIntegrationsPage(
+      extensionConsolePage,
+    );
+    await localIntegrationsPage.goto();
+
+    const popupPromise = context.waitForEvent("page", { timeout: 5000 });
+    await localIntegrationsPage.createNewIntegration("Google Drive");
+
+    const googleAuthPopup = await popupPromise;
+    const googleAuthPopupPage = new GoogleAuthPopup(googleAuthPopup);
+    await googleAuthPopupPage.logInAndAllowAccess();
+
+    await expect(
+      extensionConsolePage.getByRole("cell", {
+        name: "Icon Google Drive google/",
+      }),
+    ).toBeVisible();
+  });
 });

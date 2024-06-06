@@ -153,7 +153,10 @@ const IntegrationAuthSelector: React.FunctionComponent<{
   }
 
   return (
-    <Form.Group controlId={field.name}>
+    <Form.Group
+      controlId={field.name}
+      data-testid={`integration-auth-selector-${field.name}`}
+    >
       <Select
         styles={customStyles}
         name={field.name}

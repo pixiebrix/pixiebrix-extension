@@ -278,6 +278,7 @@
     "msw-storybook-addon": "^1.10.0",
     "multimatch": "^5.0.0",
     "node-polyfill-webpack-plugin": "^4.0.0",
+    "otpauth": "^9.3.1",
     "prettier": "3.1.0",
     "react-refresh-typescript": "^2.0.9",
     "react-select-event": "^5.3.0",

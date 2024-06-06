@@ -19,17 +19,21 @@ import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
 
 export class LocalIntegrationsPage {
-  private readonly extensionConsoleUrl: string;
+  private readonly extensionConsoleUrl?: string;
 
   constructor(
     private readonly page: Page,
-    extensionId: string,
+    extensionId?: string,
   ) {
-    this.extensionConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
+    this.extensionConsoleUrl =
+      extensionId && getBaseExtensionConsoleUrl(extensionId);
   }
 
   async goto() {
-    await this.page.goto(this.extensionConsoleUrl);
+    if (this.extensionConsoleUrl) {
+      await this.page.goto(this.extensionConsoleUrl);
+    }
+
     await this.page
       .getByRole("link", {
         name: "Local Integrations",
