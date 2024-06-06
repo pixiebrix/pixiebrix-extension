@@ -34,6 +34,7 @@ export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
           formState.recipe?.id === modId &&
           isDirtyByComponentId[formState.uuid],
       );
+
       const cleanModComponents = activatedModComponents.filter(
         (modComponent) =>
           modComponent._recipe?.id === modId &&
@@ -41,6 +42,7 @@ export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
             (formState) => formState.uuid === modComponent.id,
           ),
       );
+
       return {
         cleanModComponents,
         dirtyModComponentFormStates,

@@ -54,11 +54,11 @@ export type AddBlockLocation = {
 };
 
 export enum ModalKey {
-  ADD_TO_RECIPE,
-  REMOVE_FROM_RECIPE,
-  SAVE_AS_NEW_RECIPE,
-  CREATE_RECIPE,
-  ADD_BLOCK,
+  ADD_TO_MOD,
+  REMOVE_FROM_MOD,
+  SAVE_AS_NEW_MOD,
+  CREATE_MOD,
+  ADD_BRICK,
   SAVE_DATA_INTEGRITY_ERROR,
 }
 

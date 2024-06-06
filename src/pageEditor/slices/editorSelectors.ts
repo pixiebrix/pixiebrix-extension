@@ -220,13 +220,13 @@ export const selectModIsDirty =
     Boolean(modId && modIsDirtySelector(state, modId));
 
 export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
-  isAddToModModalVisible: editor.visibleModalKey === ModalKey.ADD_TO_RECIPE,
+  isAddToModModalVisible: editor.visibleModalKey === ModalKey.ADD_TO_MOD,
   isRemoveFromModModalVisible:
-    editor.visibleModalKey === ModalKey.REMOVE_FROM_RECIPE,
+    editor.visibleModalKey === ModalKey.REMOVE_FROM_MOD,
   isSaveAsNewModModalVisible:
-    editor.visibleModalKey === ModalKey.SAVE_AS_NEW_RECIPE,
-  isCreateModModalVisible: editor.visibleModalKey === ModalKey.CREATE_RECIPE,
-  isAddBlockModalVisible: editor.visibleModalKey === ModalKey.ADD_BLOCK,
+    editor.visibleModalKey === ModalKey.SAVE_AS_NEW_MOD,
+  isCreateModModalVisible: editor.visibleModalKey === ModalKey.CREATE_MOD,
+  isAddBlockModalVisible: editor.visibleModalKey === ModalKey.ADD_BRICK,
   isSaveDataIntegrityErrorModalVisible:
     editor.visibleModalKey === ModalKey.SAVE_DATA_INTEGRITY_ERROR,
 });
