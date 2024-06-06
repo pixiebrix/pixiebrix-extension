@@ -58,8 +58,6 @@ test("can activate a google spreadsheet mod with config options", async ({
 
   await page
     .getByRole("option", { name: `${E2E_GOOGLE_TEST_USER_EMAIL} — Private` })
-    // The integration name sometimes is different in the dropdown (in CI)
-    .or(page.getByRole("option", { name: "Google Drive Config — Private" }))
     .click({ timeout: 3000 });
 
   await expect(page.getByLabel("testSheet")).toBeVisible();

@@ -18,6 +18,7 @@
 import { expect, type Page } from "@playwright/test";
 import { test } from "./fixtures/authSetup";
 import {
+  E2E_GOOGLE_TEST_USER_EMAIL,
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
   SERVICE_URL,
@@ -97,6 +98,13 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
     await expect(
       extensionConsolePage.getByRole("cell", {
         name: "Icon Google Drive google/",
+      }),
+    ).toBeVisible();
+    // NOTE: if the tab is closed before the integration label is updated from the google api info call, the integration
+    // name will be "Google Drive Config" instead of the test user email.
+    await expect(
+      extensionConsolePage.getByRole("cell", {
+        name: E2E_GOOGLE_TEST_USER_EMAIL,
       }),
     ).toBeVisible();
   });
