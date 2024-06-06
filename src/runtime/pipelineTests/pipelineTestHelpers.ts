@@ -346,7 +346,6 @@ export const contextBrick = new ContextBrick();
 export const optionsBrick = new OptionsBrick();
 export const identityBrick = new IdentityBrick();
 export const throwBrick = new ThrowBrick();
-export const throwTwiceBrick = new ThrowTwiceBrick();
 export const teapotBrick = new TeapotBrick();
 export const arrayBrick = new ArrayBrick();
 export const pipelineBrick = new PipelineBrick();
