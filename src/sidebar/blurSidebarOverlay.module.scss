@@ -27,7 +27,7 @@
   background-color: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(2.5px);
   pointer-events: all;
-  z-index: 1; // ensure overlay is on top of the sidebar panel content
+  z-index: 100; // ensure overlay is on top of the sidebar panel content
   > div {
     margin-top: 15vh;
     width: 300px;
