@@ -40,6 +40,7 @@ import { type Timestamp, type UUID } from "@/types/stringTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import type { RegistryId } from "@/types/registryTypes";
 import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const { saveModComponent } = extensionsSlice.actions;
 const { markClean } = editorSlice.actions;
@@ -141,6 +142,8 @@ function useUpsertModComponentFormState(): SaveCallback {
 
       const adapter = ADAPTERS.get(element.type);
 
+      assertNotNullish(adapter, `No adapter found for ${element.type}`);
+
       const extensionPointId = element.extensionPoint.metadata.id;
       const hasInnerExtensionPoint =
         isInnerDefinitionRegistryId(extensionPointId);
@@ -149,9 +152,11 @@ function useUpsertModComponentFormState(): SaveCallback {
 
       // Handle the case where the Page Editor is also editing an extension point that exists as a registry item
       if (!hasInnerExtensionPoint) {
+        assertNotNullish(editablePackages, "Editable packages not loaded");
         // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
         // number of bricks implemented and frequency of saves
-        isEditable = editablePackages.some((x) => x.name === extensionPointId);
+        isEditable =
+          editablePackages.some((x) => x.name === extensionPointId) ?? false;
 
         const isLocked = element.installed && !isEditable;
 
@@ -162,8 +167,8 @@ function useUpsertModComponentFormState(): SaveCallback {
             const packageId = element.installed
               ? editablePackages.find(
                   // Bricks endpoint uses "name" instead of id
-                  (x) => x.name === extensionPointConfig.metadata.id,
-                )?.id
+                  (x) => x.name === extensionPointConfig.metadata?.id,
+                )?.id ?? null
               : null;
 
             await upsertPackageConfig(

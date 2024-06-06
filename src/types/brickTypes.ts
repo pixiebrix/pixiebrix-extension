@@ -82,8 +82,8 @@ export interface Brick extends Metadata {
    * @since 1.8.4
    */
   getPipelineVariableSchema?(
-    _config: BrickConfig,
-    pipelineName: string,
+    _config: BrickConfig | undefined,
+    pipelineName: string | undefined,
   ): Schema | undefined;
 
   /**

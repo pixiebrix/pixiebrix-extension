@@ -36,7 +36,10 @@ import { type TraceRecord } from "@/telemetry/trace";
 import parseTemplateVariables from "./parseTemplateVariables";
 import recipesRegistry from "@/modDefinitions/registry";
 import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
-import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import {
+  isDocumentElementArray,
+  type ListDocumentElement,
+} from "@/components/documentBuilder/documentBuilderTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { fromJS } from "@/starterBricks/factory";
 import { type Schema } from "@/types/schemaTypes";
@@ -52,6 +55,8 @@ import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import { getOutputReference, isOutputKey } from "@/runtime/runtimeTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { BusinessError } from "@/errors/businessErrors";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -135,6 +140,10 @@ async function setInputVars(
   contextVars: VarMap,
 ): Promise<void> {
   const adapter = ADAPTERS.get(extension.extensionPoint.definition.type);
+  assertNotNullish(
+    adapter,
+    `Adapter not found for ${extension.extensionPoint.definition.type}`,
+  );
   const config = adapter.selectStarterBrickDefinition(extension);
 
   const extensionPoint = fromJS(config);
@@ -341,7 +350,7 @@ async function setModVariables(
     schema: {
       type: "object",
       properties: Object.fromEntries(
-        modVariableSchemas.flatMap((schema) => Object.entries(schema)),
+        modVariableSchemas.flatMap((schema) => Object.entries(schema ?? {})),
       ),
       additionalProperties: true,
     },
@@ -400,7 +409,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   /**
    * Cache of block definitions to fetch definitions synchronously.
    */
-  private allBlocks: TypedBrickMap;
+  private allBlocks!: TypedBrickMap;
 
   get id() {
     return "var";
@@ -433,7 +442,8 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
     // Be defensive if getOutputSchema errors due to nested variables, etc.
     try {
-      return block.getOutputSchema(blockConfig);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- wrapped in try/catch
+      return block!.getOutputSchema!(blockConfig) ?? {};
     } catch {
       // NOP
     }
@@ -466,7 +476,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
    * Returns the current context variables. Do not modify the returned object directly, call `clone` first.
    */
   private get currentContextVars(): VarMap {
-    return this.contextStack.at(-1).vars ?? new VarMap();
+    return this.contextStack.at(-1)?.vars ?? new VarMap();
   }
 
   override visitBrick(
@@ -479,6 +489,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     // - Any blocks that appeared before this one in the pipeline
     // - Values seen from the trace
     const context = this.contextStack.at(-1);
+    assertNotNullish(context, "Context should be defined");
     const blockKnownVars = context.vars.clone();
     blockKnownVars.addSourceMap(context.blockOutputVars);
 
@@ -624,10 +635,17 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     if (childPipelineKey && isOutputKey(childPipelineKey)) {
       const variableName = getOutputReference(childPipelineKey);
 
-      const block = this.allBlocks.get(extra.parentNode.id);
+      const block = extra.parentNode?.id
+        ? this.allBlocks.get(extra.parentNode.id)
+        : null;
       const variableSchema = block?.block.getPipelineVariableSchema?.(
         extra.parentNode,
         extra.pipelinePropName,
+      );
+
+      assertNotNullish(
+        extra.parentPosition,
+        "Parent position should be defined",
       );
 
       childPipelineVars.setVariableExistence({
@@ -761,15 +779,19 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     position: BrickPosition,
     blockConfig: BrickConfig,
   ): void {
-    // Override because the base class extracts all pipelines directly. Instead, we need to visit the pipeline
-    // in the context of their ancestor document builder elements (e.g., ListElement introduces a variable)
-    for (const [index, element] of Object.entries(blockConfig.config.body)) {
-      this.visitDocumentElement({
-        position,
-        blockConfig,
-        element,
-        pathInBlock: `config.body.${index}`,
-      });
+    if (isDocumentElementArray(blockConfig.config.body)) {
+      // Override because the base class extracts all pipelines directly. Instead, we need to visit the pipeline
+      // in the context of their ancestor document builder elements (e.g., ListElement introduces a variable)
+      for (const [index, element] of Object.entries(blockConfig.config.body)) {
+        this.visitDocumentElement({
+          position,
+          blockConfig,
+          element,
+          pathInBlock: `config.body.${index}`,
+        });
+      }
+    } else {
+      throw new BusinessError("Invalid document body");
     }
   }
 

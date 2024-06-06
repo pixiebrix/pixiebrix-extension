@@ -60,7 +60,7 @@ class TraceAnalysis extends AnalysisVisitorABC {
 
   mapErrorAnnotations(
     position: BrickPosition,
-    traceError: ErrorObject,
+    traceError: ErrorObject | null,
   ): AnalysisAnnotation[] {
     const annotations: AnalysisAnnotation[] = [];
 
@@ -68,7 +68,7 @@ class TraceAnalysis extends AnalysisVisitorABC {
       for (const maybeInputError of traceError.errors) {
         const rootProperty = rootPropertyRegex.exec(
           maybeInputError.instanceLocation,
-        )?.groups.property;
+        )?.groups?.property;
 
         if (rootProperty) {
           annotations.push({
@@ -82,7 +82,7 @@ class TraceAnalysis extends AnalysisVisitorABC {
         }
 
         const requiredProperty = requiredFieldRegex.exec(maybeInputError.error)
-          ?.groups.property;
+          ?.groups?.property;
         if (requiredProperty) {
           const errorMessage =
             "Error from the last run: This field is required.";
@@ -122,7 +122,9 @@ class TraceAnalysis extends AnalysisVisitorABC {
   ) {
     super.visitBrick(position, blockConfig, extra);
 
-    const errorRecord = this.traceErrorMap.get(blockConfig.instanceId)?.at(0);
+    const errorRecord = blockConfig.instanceId
+      ? this.traceErrorMap.get(blockConfig.instanceId)?.at(0)
+      : null;
     if (errorRecord == null) {
       return;
     }

@@ -29,6 +29,7 @@ import { $safeFind } from "@/utils/domUtils";
 import { BusinessError } from "@/errors/businessErrors";
 import { type RegistryId } from "@/types/registryTypes";
 import { type RunBlockArgs } from "@/contentScript/pageEditor/types";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Run a single block (e.g., for generating output previews)
@@ -41,7 +42,7 @@ export async function runBlockPreview({
   blueprintId,
   rootSelector,
 }: RunBlockArgs & {
-  blueprintId: RegistryId | null;
+  blueprintId: Nullishable<RegistryId>;
 }): Promise<unknown> {
   const versionOptions = apiVersionOptions(apiVersion);
 

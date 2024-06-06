@@ -26,6 +26,7 @@ import {
 import notify from "@/utils/notify";
 import { type Permissions } from "webextension-polyfill";
 import { castArray } from "lodash";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export async function calculatePermissionsForElement(
   element: ModComponentFormState,
@@ -34,6 +35,8 @@ export async function calculatePermissionsForElement(
   permissions: Permissions.Permissions;
 }> {
   const adapter = ADAPTERS.get(element.type);
+
+  assertNotNullish(adapter, `Adapter not found for ${element.type}`);
 
   const { extension, extensionPointConfig } = adapter.asDynamicElement(element);
 

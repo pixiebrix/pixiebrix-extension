@@ -304,7 +304,7 @@ export const editorSlice = createSlice({
     resetEditor() {
       return initialState;
     },
-    toggleInsert(state, action: PayloadAction<StarterBrickType>) {
+    toggleInsert(state, action: PayloadAction<StarterBrickType | null>) {
       state.inserting = action.payload;
       state.beta = false;
       state.error = null;
@@ -484,7 +484,7 @@ export const editorSlice = createSlice({
     /**
      * Updates the active element of a Document or Form builder on the Preview tab
      */
-    setNodePreviewActiveElement(state, action: PayloadAction<string>) {
+    setNodePreviewActiveElement(state, action: PayloadAction<string | null>) {
       const activeElement = action.payload;
       const nodeUIState = validateNodeUIState(state);
 

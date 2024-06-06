@@ -20,7 +20,7 @@ import {
   type ModComponentFormState,
   isTriggerExtensionPoint,
 } from "@/pageEditor/starterBricks/formStateTypes";
-import { flatten, isEmpty, uniq } from "lodash";
+import { flatten, uniq } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";
 import CollectEventNamesVisitor, {
   type EventNameAnalysisResult,
@@ -32,7 +32,7 @@ import { DOM_EVENTS } from "@/types/browserTypes";
  * @see CollectEventNamesVisitor
  */
 class CheckEventNamesAnalysis extends AnalysisVisitorABC {
-  private collectedEvents: EventNameAnalysisResult;
+  private collectedEvents!: EventNameAnalysisResult;
 
   constructor(readonly formStates: ModComponentFormState[]) {
     super();
@@ -60,7 +60,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
     ) {
       const eventName = extensionPoint.definition.customEvent?.eventName;
 
-      if (isEmpty(eventName)) {
+      if (!eventName) {
         this.annotations.push({
           analysisId: this.id,
           type: AnnotationType.Error,
@@ -69,9 +69,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
         });
       } else if (
         !DOM_EVENTS.includes(eventName) &&
-        !this.collectedEvents.knownEmittedNames.includes(
-          extensionPoint.definition.customEvent.eventName,
-        )
+        !this.collectedEvents.knownEmittedNames.includes(eventName)
       ) {
         if (this.collectedEvents.hasDynamicEventName) {
           // The mod uses dynamic names, so we don't know for sure. In the future, we could parse the templates and
@@ -79,7 +77,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
           this.annotations.push({
             analysisId: this.id,
             type: AnnotationType.Info,
-            message: `Custom event ${extensionPoint.definition.customEvent.eventName} does not match a known emitted event in this Mod`,
+            message: `Custom event ${eventName} does not match a known emitted event in this Mod`,
             position: {
               path: "extensionPoint.definition.customEvent.eventName",
             },
@@ -88,7 +86,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
           this.annotations.push({
             analysisId: this.id,
             type: AnnotationType.Warning,
-            message: `Custom event ${extensionPoint.definition.customEvent.eventName} is not emitted in this Mod`,
+            message: `Custom event ${eventName} is not emitted in this Mod`,
             position: {
               path: "extensionPoint.definition.customEvent.eventName",
             },

@@ -23,6 +23,7 @@ import { type DocumentElement } from "@/components/documentBuilder/documentBuild
 import getElementCollectionName from "@/components/documentBuilder/edit/getElementCollectionName";
 
 import { joinPathParts } from "@/utils/formUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type MoveWithinParent = {
   canMoveUp: boolean;
@@ -35,6 +36,8 @@ function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
     selectNodePreviewActiveElement,
     actions.setNodePreviewActiveElement,
   );
+
+  assertNotNullish(activeElement, "No active element found");
 
   const { collectionName, elementIndex } =
     getElementCollectionName(activeElement);
@@ -53,8 +56,10 @@ function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
 
     /* eslint-disable security/detect-object-injection -- swapping list elements  */
     [newElementsCollection[elementIndex], newElementsCollection[toIndex]] = [
-      newElementsCollection[toIndex],
-      newElementsCollection[elementIndex],
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- protected by canMoveUp and canMoveDown
+      newElementsCollection[toIndex]!,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- protected by canMoveUp and canMoveDown
+      newElementsCollection[elementIndex]!,
     ];
     /* eslint-enable security/detect-object-injection  */
 

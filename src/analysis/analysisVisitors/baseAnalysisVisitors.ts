@@ -32,7 +32,7 @@ export abstract class AnalysisVisitorABC
 {
   abstract readonly id: string;
 
-  protected extension: ModComponentFormState;
+  protected extension!: ModComponentFormState;
 
   protected readonly annotations: AnalysisAnnotation[] = [];
   getAnnotations(): AnalysisAnnotation[] {
@@ -60,7 +60,7 @@ export abstract class AnalysisVisitorABC
 }
 
 export abstract class AnalysisVisitorWithResolvedBricksABC extends AnalysisVisitorABC {
-  protected allBlocks: TypedBrickMap;
+  protected allBlocks!: TypedBrickMap;
 
   override async run(extension: ModComponentFormState): Promise<void> {
     this.allBlocks = await blockRegistry.allTyped();

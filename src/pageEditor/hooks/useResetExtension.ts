@@ -28,6 +28,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type UUID } from "@/types/stringTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
+import { compact } from "lodash";
 
 type Config = {
   extensionId: UUID;
@@ -65,7 +66,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
           dispatch(actions.removeElement(extensionId));
         } else {
           const formState = await modComponentToFormState(extension);
-          initRecipeOptionsIfNeeded(formState, recipes);
+          initRecipeOptionsIfNeeded(formState, compact(recipes));
           dispatch(actions.resetInstalled(formState));
         }
       } catch (error) {

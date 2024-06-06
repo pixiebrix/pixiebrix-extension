@@ -30,6 +30,7 @@ import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
 import { SERVICE_URL } from "../env";
 import { ExtensionsShortcutsPage } from "end-to-end-tests/pageObjects/extensionsShortcutsPage";
+import { FloatingActionButton } from "end-to-end-tests/pageObjects/floatingActionButton";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -86,10 +87,10 @@ test("can activate a mod with built-in integration", async ({
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
   await page.goto("/");
 
+  const floatingActionButton = new FloatingActionButton(page);
+
   // Ensure the QuickBar is ready
-  await expect(
-    page.getByRole("button", { name: "open the PixieBrix quick bar" }),
-  ).toBeVisible();
+  await expect(await floatingActionButton.getActionButton()).toBeVisible();
 
   await runModViaQuickBar(page, "GIPHY Search");
 

@@ -132,7 +132,9 @@ export function getExampleBrickConfig(
         // Adding text to the second row
         const text = createNewElement("text");
         text.config.text = "Example step content. **Markdown** is supported.";
-        container.children[0].children[0].children.push(text);
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- we know this is safe
+        container.children![0]!.children![0]!.children!.push(text);
 
         return {
           body: [container],
@@ -141,17 +143,20 @@ export function getExampleBrickConfig(
 
       // Creating container with 2 rows and 1 column in each row
       const container = createNewElement("container");
-      container.children.push(createNewElement("row"));
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- we know this is safe
+      container.children!.push(createNewElement("row"));
 
       // Adding Header to the first row
       const header = createNewElement("header");
       header.config.title = "Example document";
-      container.children[0].children[0].children.push(header);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- we know this is safe
+      container.children![0]!.children![0]!.children!.push(header);
 
       // Adding text to the second row
       const text = createNewElement("text");
       text.config.text = "Example text element. **Markdown** is supported.";
-      container.children[1].children[0].children.push(text);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- we know this is safe
+      container.children![1]!.children![0]!.children!.push(text);
 
       return {
         body: [container],

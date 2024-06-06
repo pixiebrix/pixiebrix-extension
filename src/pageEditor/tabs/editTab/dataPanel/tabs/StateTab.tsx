@@ -24,10 +24,15 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const StateTab: React.FC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
+  );
+  assertNotNullish(
+    activeModComponentFormState,
+    "No active mod component form state found",
   );
   const annotations = useSelector(
     selectExtensionAnnotations(activeModComponentFormState.uuid),

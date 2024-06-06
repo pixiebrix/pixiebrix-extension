@@ -39,9 +39,10 @@ import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type FormState = {
-  recipeId: RegistryId;
+  recipeId: RegistryId | null;
   moveOrCopy: "move" | "copy";
 };
 
@@ -86,6 +87,7 @@ const AddToRecipeModal: React.FC = () => {
     { recipeId, moveOrCopy },
     helpers,
   ) => {
+    assertNotNullish(recipeId, "recipeId must be defined");
     const keepLocalCopy = moveOrCopy === "copy";
 
     if (recipeId === NEW_RECIPE_ID) {
@@ -97,7 +99,8 @@ const AddToRecipeModal: React.FC = () => {
     const modMetadata = modMetadataById[recipeId];
 
     try {
-      const modComponentId = activeModComponentFormState.uuid;
+      const modComponentId = activeModComponentFormState?.uuid;
+      assertNotNullish(modComponentId, "modComponentId must be defined");
       dispatch(
         editorActions.addElementToRecipe({
           elementId: modComponentId,
@@ -117,7 +120,7 @@ const AddToRecipeModal: React.FC = () => {
 
       hideModal();
     } catch (error) {
-      if (isSingleObjectBadRequestError(error) && error.response.data.config) {
+      if (isSingleObjectBadRequestError(error) && error.response?.data.config) {
         helpers.setStatus(error.response.data.config);
         return;
       }

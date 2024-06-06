@@ -23,7 +23,7 @@ import {
   type RootState,
 } from "@/pageEditor/pageEditorTypes";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
-import { flatMap, isEmpty, sortBy, uniqBy } from "lodash";
+import { compact, flatMap, isEmpty, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   type ModComponentUIState,
@@ -244,9 +244,11 @@ export const selectInstalledModMetadatas = createSelector(
       .filter((component) => Boolean(component._recipe))
       .map((component) => component._recipe);
 
-    return uniqBy(
-      [...formStateModMetadatas, ...activatedModComponentModMetadatas],
-      (modMetadata) => modMetadata?.id,
+    return compact(
+      uniqBy(
+        [...formStateModMetadatas, ...activatedModComponentModMetadatas],
+        (modMetadata) => modMetadata?.id,
+      ),
     );
   },
 );
