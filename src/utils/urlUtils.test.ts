@@ -21,7 +21,6 @@ import {
   makeURL,
   selectAbsoluteUrl,
   isUrlRelative,
-  isValidUrl,
   isPixieBrixDomain,
 } from "@/utils/urlUtils";
 
@@ -165,30 +164,6 @@ describe("isUrlRelative", () => {
     expect(isUrlRelative("file://example.com/foo")).toBe(false);
     expect(isUrlRelative("//example.com/foo")).toBe(false);
   });
-});
-
-describe("isValidUrl", () => {
-  it.each([
-    "https://example.com",
-    "http://example.com",
-    "https://example.com/path",
-    "http://example.com/path",
-    "https://example.com/path?query=param",
-    "http://example.com/path?query=param",
-    "https://example.com/path#hash",
-    "http://example.com/path#hash",
-    "https://example.com/path?query=param#hash",
-    "http://example.com/path?query=param#hash",
-  ])("returns true for %s", (url) => {
-    expect(isValidUrl(url)).toBe(true);
-  });
-
-  it.each(["example.com", "www.example.com", "not a url", null])(
-    "returns false for %s",
-    (url) => {
-      expect(isValidUrl(url)).toBe(false);
-    },
-  );
 });
 
 describe("isPixieBrixDomain", () => {
