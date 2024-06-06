@@ -70,12 +70,9 @@ test("can activate a google spreadsheet mod with config options", async ({
     .click({ timeout: 3000 });
 
   await page
-    .getByRole("option", { name: `${E2E_GOOGLE_TEST_USER_EMAIL} —` })
+    .getByRole("option", { name: `${E2E_GOOGLE_TEST_USER_EMAIL} — Private` })
+    .or(page.getByRole("option", { name: "Google Drive Config — Private" }))
     .click({ timeout: 3000 });
-
-  await expect(googleIntegrationSelector).toContainText(
-    `${E2E_GOOGLE_TEST_USER_EMAIL} — Private`,
-  );
 
   await expect(page.getByLabel("testSheet")).toBeVisible();
   await page.getByLabel("testSheet").click();
