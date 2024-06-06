@@ -40,18 +40,6 @@ test("can activate a google spreadsheet mod with config options", async ({
     const googleAuthPopup = await popupPromise;
     const googleAuthPopupPage = new GoogleAuthPopup(googleAuthPopup);
     await googleAuthPopupPage.chooseAccountAndAllowAccess();
-    await page
-      .getByRole("button", { name: "Refresh integration" })
-      .click({ timeout: 3000 });
-    // eslint-disable-next-line playwright/no-wait-for-timeout -- Timeout for debugging in CI
-    await page.waitForTimeout(2000);
-    const googleIntegrationSelector = page.getByTestId(
-      "integration-auth-selector-integrationDependencies.0.configId",
-    );
-    await googleIntegrationSelector
-      .getByRole("combobox")
-      .click({ timeout: 3000 });
-    await page.reload();
   } catch (error) {
     // eslint-disable-next-line playwright/no-conditional-in-test -- we need to handle the timeout error
     if (error instanceof Error && error.message.includes("Timeout")) {
