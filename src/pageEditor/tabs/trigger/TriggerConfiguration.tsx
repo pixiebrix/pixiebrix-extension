@@ -245,16 +245,16 @@ const TriggerConfiguration: React.FC<{
         title="Telemetry Mode"
         description={
           <p>
-            Events/errors to report telemetry. Select &ldquo;Report All Events
-            and Errors&rdquo; to report all runs and errors. Select
-            &ldquo;Report First Event and Error&rdquo; to only report the first
-            run and first error.
+            Configures which events (also known as runs) and errors to report in
+            mod telemetry.
           </p>
         }
         {...makeLockableFieldProps("Telemetry Mode", isLocked)}
       >
         <option value="all">Report All Events and Errors</option>
         <option value="once">Report First Event and Error</option>
+        <option value="error-once">Report First Error</option>
+        <option value="never">Never Report Events and Errors</option>
       </ConnectedFieldTemplate>
 
       <MatchRulesSection isLocked={isLocked} />
