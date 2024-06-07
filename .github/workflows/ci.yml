@@ -270,11 +270,11 @@ jobs:
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: playwright-blob-reports
+          path: blob-report
           pattern: blob-report-*
           merge-multiple: true
       - name: Merge blob reports
-        run: PLAYWRIGHT_JSON_OUTPUT_NAME=results.json npx playwright merge-reports --reporter json ./playwright-blob-reports
+        run: PLAYWRIGHT_JSON_OUTPUT_NAME=results.json npx playwright merge-reports --reporter json ./blob-report
       - name: Create report comment
         id: report-summary
         uses: daun/playwright-report-summary@v3
