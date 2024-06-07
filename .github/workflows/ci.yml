@@ -280,7 +280,7 @@ jobs:
         uses: daun/playwright-report-summary@v3
         with:
           comment-title: "Playwright test results"
-          report-file: end-to-end-tests/.report/report.json
+          report-file: results.json
           report-tag: manifest-version-3
           report-url: https://github.com/pixiebrix/pixiebrix-extension/actions/runs/${{ github.run_id }}
         if: (success() || failure()) && github.event_name == 'pull_request'
