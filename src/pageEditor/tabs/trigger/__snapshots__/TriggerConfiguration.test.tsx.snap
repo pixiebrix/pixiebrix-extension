@@ -843,7 +843,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           <option
             value="never"
           >
-            Never Report Events and Errors
+            Never Report Events or Errors
           </option>
         </select>
         <small
