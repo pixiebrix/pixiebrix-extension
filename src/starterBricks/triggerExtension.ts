@@ -221,7 +221,13 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    * @param alreadyReported true if the event or error has already been reported
    * @param isError true if reporting an error
    */
-  private shouldReport(alreadyReported: boolean, isError: boolean): boolean {
+  private shouldReport({
+    alreadyReported,
+    isError,
+  }: {
+    alreadyReported: boolean;
+    isError: boolean;
+  }): boolean {
     switch (this.reportMode) {
       case "once": {
         return !alreadyReported;
@@ -268,7 +274,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     if (extensionId) {
       const alreadyReported = this.reportedErrors.has(extensionId);
       this.reportedErrors.add(extensionId);
-      return this.shouldReport(alreadyReported, true);
+      return this.shouldReport({ alreadyReported, isError: true });
     }
 
     return true;
@@ -280,7 +286,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   private shouldReportEvent(componentId: UUID): boolean {
     const alreadyReported = this.reportedEvents.has(componentId);
     this.reportedEvents.add(componentId);
-    return this.shouldReport(alreadyReported, false);
+    return this.shouldReport({ alreadyReported, isError: false });
   }
 
   async install(): Promise<boolean> {
