@@ -254,7 +254,7 @@ const TriggerConfiguration: React.FC<{
         <option value="all">Report All Events and Errors</option>
         <option value="once">Report First Event and Error</option>
         <option value="error-once">Report First Error</option>
-        <option value="never">Never Report Events and Errors</option>
+        <option value="never">Never Report Events or Errors</option>
       </ConnectedFieldTemplate>
 
       <MatchRulesSection isLocked={isLocked} />
