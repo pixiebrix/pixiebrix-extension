@@ -100,7 +100,9 @@ export type TriggerConfig = {
 export function getDefaultReportModeForTrigger(
   trigger: Nullishable<Trigger>,
 ): ReportMode {
-  return trigger && USER_ACTION_TRIGGERS.includes(trigger) ? "all" : "once";
+  return trigger && USER_ACTION_TRIGGERS.includes(trigger)
+    ? "all"
+    : "error-once";
 }
 
 /**
@@ -215,13 +217,28 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   readonly capabilities: PlatformCapability[] = ["dom", "state"];
 
   /**
-   * Returns true if an event should be reported, given whether it has already been reported.
-   * @param alreadyReported true if the event has already been reported
+   * Returns true if an event or error should be reported, given whether it has already been reported.
+   * @param alreadyReported true if the event or error has already been reported
+   * @param isError true if reporting an error
    */
-  private shouldReport(alreadyReported: boolean): boolean {
+  private shouldReport({
+    alreadyReported,
+    isError,
+  }: {
+    alreadyReported: boolean;
+    isError: boolean;
+  }): boolean {
     switch (this.reportMode) {
       case "once": {
         return !alreadyReported;
+      }
+
+      case "error-once": {
+        return isError && !alreadyReported;
+      }
+
+      case "never": {
+        return false;
       }
 
       case "all": {
@@ -257,7 +274,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     if (extensionId) {
       const alreadyReported = this.reportedErrors.has(extensionId);
       this.reportedErrors.add(extensionId);
-      return this.shouldReport(alreadyReported);
+      return this.shouldReport({ alreadyReported, isError: true });
     }
 
     return true;
@@ -269,7 +286,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   private shouldReportEvent(componentId: UUID): boolean {
     const alreadyReported = this.reportedEvents.has(componentId);
     this.reportedEvents.add(componentId);
-    return this.shouldReport(alreadyReported);
+    return this.shouldReport({ alreadyReported, isError: false });
   }
 
   async install(): Promise<boolean> {
