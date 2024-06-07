@@ -188,7 +188,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [chromium, msedge]
+        project: [chrome, edge]
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
@@ -231,7 +231,7 @@ jobs:
       - name: Run end to end tests
         # Xvfb is required to run the tests in headed mode. Headed mode is required to run tests for browser extensions
         # in Playwright, see https://playwright.dev/docs/ci#running-headed
-        run: xvfb-run npm run test:e2e -- --project=${{ matrix.project }}
+        run: xvfb-run npm run test:e2e -- --project=${{ matrix.project }}*
       - name: Password protect Playwright traces
         if: always()
         shell: bash
