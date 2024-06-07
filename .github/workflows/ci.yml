@@ -238,20 +238,22 @@ jobs:
         env:
           ARTIFACT_ZIP_PASSWORD: ${{ secrets.ARTIFACT_ZIP_PASSWORD }}
         run: 7z a ./end-to-end-tests/playwright-report.7z ./end-to-end-tests/.report/* -p"$ARTIFACT_ZIP_PASSWORD"
-      - name: Upload blob report to GitHub Actions Artifacts
+      - name: Upload zipped Playwright Report to GitHub Actions Artifacts
         if: always()
         uses: actions/upload-artifact@v4
-        with:
-          name: blob-report-${{ matrix.project }}
-          path: blob-report
-          retention-days: 1
-      - uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: end-to-end-tests-report-${{ matrix.project }}
           path: end-to-end-tests/playwright-report.7z
           retention-days: 5
           compression-level: 0 # already compressed with 7z
+      - name: Upload blob report to GitHub Actions Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-${{ matrix.project }}
+          path: end-to-end-tests/.report/report.json
+          retention-days: 1
+          if-no-files-found: error
 
   report-comment:
     name: Create report
