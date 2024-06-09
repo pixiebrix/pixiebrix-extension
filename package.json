@@ -258,7 +258,7 @@
     "css-loader": "^6.11.0",
     "css-minimizer-webpack-plugin": "^7.0.0",
     "dotenv": "^16.4.5",
-    "eslint": "^8.57.0",
+    "eslint": "^9.4.0",
     "eslint-config-pixiebrix": "^0.39.0",
     "eslint-plugin-local-rules": "^2.0.1",
     "eslint-plugin-playwright": "^1.6.2",
