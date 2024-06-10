@@ -38,8 +38,12 @@ const submitOtpCode = async (googleAuthPopup: Page) => {
   let prevToken = "";
 
   await expect(async () => {
+    if (E2E_GOOGLE_TEST_USER_OTP_KEY === undefined) {
+      throw new Error("Google test user OTP key is not configured");
+    }
+
     await enterCode.click();
-    const otpKey = E2E_GOOGLE_TEST_USER_OTP_KEY?.replaceAll(/\s/g, "");
+    const otpKey = E2E_GOOGLE_TEST_USER_OTP_KEY.replaceAll(/\s/g, "");
     const token = generateOTP(otpKey);
     expect(token).not.toStrictEqual(prevToken); // Ensure the token is different from the previous one on retry
     prevToken = token;
