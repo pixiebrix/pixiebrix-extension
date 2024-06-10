@@ -56,6 +56,7 @@ storybook-static
 # Playwright
 /end-to-end-tests/.output/
 /end-to-end-tests/.report/
+/end-to-end-tests/.blob-report/
 /end-to-end-tests/.auth/
 /playwright/.cache/
-/end-to-end-tests/playwright-report.7z
+/end-to-end-tests/blob-report.7z
