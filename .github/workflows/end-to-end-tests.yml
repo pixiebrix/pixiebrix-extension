@@ -7,16 +7,10 @@ on:
         description: "Branch, tag, or commit on which to run the tests"
         required: false
         type: string
-      skip-tests:
-        description: "Skip the end-to-end tests"
-        required: false
-        type: string
-        default: false
 
 jobs:
   end-to-end-tests:
     name: end-to-end-tests
-    if: ${{ inputs.skip-tests != 'true' }}
     strategy:
       fail-fast: false
     timeout-minutes: 60

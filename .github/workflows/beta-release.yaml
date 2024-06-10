@@ -74,8 +74,8 @@ jobs:
     uses: ./.github/workflows/end-to-end-tests.yml
     secrets: inherit
     with:
-      skip-tests: ${{ github.event.inputs.skip_tests != 'true' }}
       checkout-ref: release/${{ github.event.inputs.version }}
+    if: ${{ github.event.inputs.skip_tests != 'true' }}
 
   publish:
     # https://github.com/fregante/chrome-webstore-upload-keys
