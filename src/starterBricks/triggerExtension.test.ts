@@ -43,10 +43,12 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   throwBrick,
   ThrowBrick,
+  ThrowTwiceBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { showNotification } from "@/utils/notify";
 import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import reportError from "@/telemetry/reportError";
+import reportEvent from "@/telemetry/reportEvent";
 import { screen } from "@testing-library/react";
 import type { Trigger } from "@/starterBricks/triggerExtensionTypes";
 import { getPlatform } from "@/platform/platformContext";
@@ -72,6 +74,7 @@ jest.mock("@/errors/contextInvalidated", () => {
 jest.mock("@/utils/notify");
 
 const reportErrorMock = jest.mocked(reportError);
+const reportEventMock = jest.mocked(reportEvent);
 const showNotificationMock = jest.mocked(showNotification);
 const notifyContextInvalidatedMock = jest.mocked(notifyContextInvalidated);
 
@@ -122,10 +125,16 @@ beforeEach(() => {
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
   reportErrorMock.mockReset();
+  reportEventMock.mockReset();
   showNotificationMock.mockReset();
   notifyContextInvalidatedMock.mockReset();
   blockRegistry.clear();
-  blockRegistry.register([rootReader, new InvalidContextReader(), throwBrick]);
+  blockRegistry.register([
+    rootReader,
+    new InvalidContextReader(),
+    throwBrick,
+    new ThrowTwiceBrick(),
+  ]);
   rootReader.readCount = 0;
   rootReader.ref = null;
 });
@@ -543,12 +552,92 @@ describe("triggerExtension", () => {
     expect(notifyContextInvalidatedMock).toHaveBeenCalledTimes(2);
   });
 
-  it("reports only the first brick error for reportMode: once", async () => {
+  it("reports only the first brick error or event for reportMode: once", async () => {
     const extensionPoint = fromJS(
       getPlatform(),
       extensionPointFactory({
         trigger: "load",
         reportMode: "once",
+        showErrors: true,
+      })({}),
+    );
+
+    const modComponent = extensionFactory({
+      extensionPointId: extensionPoint.id,
+      config: {
+        action: { id: ThrowTwiceBrick.BRICK_ID, config: {} },
+      },
+    });
+
+    extensionPoint.registerModComponent(modComponent);
+
+    await extensionPoint.install();
+
+    // Run 4x
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will throw an error
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will throw another error
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will run successfully
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will also run successfully
+
+    // Does not report successful event only once
+    expect(reportEventMock).toHaveBeenCalledExactlyOnceWith("TriggerRun", {
+      extensionId: modComponent.id,
+    });
+
+    // Reports an error once
+    expect(reportErrorMock).toHaveBeenCalledTimes(1);
+    expect(showNotificationMock).toHaveBeenCalledExactlyOnceWith({
+      type: "error",
+      message: "An error occurred running a trigger",
+      reportError: false,
+      error: expect.toBeObject(),
+    });
+  });
+
+  it("reports only the first brick error for reportMode: error-once", async () => {
+    const extensionPoint = fromJS(
+      getPlatform(),
+      extensionPointFactory({
+        trigger: "load",
+        reportMode: "error-once",
+        showErrors: true,
+      })({}),
+    );
+
+    const modComponent = extensionFactory({
+      extensionPointId: extensionPoint.id,
+      config: {
+        action: { id: ThrowTwiceBrick.BRICK_ID, config: {} },
+      },
+    });
+
+    extensionPoint.registerModComponent(modComponent);
+
+    // Run 4x
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will throw an error
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will throw another error
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will run successfully
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will also run successfully
+
+    // Reports a successful event only once
+    expect(reportEventMock).not.toHaveBeenCalled();
+
+    // Reports an error once
+    expect(reportErrorMock).toHaveBeenCalledTimes(1);
+    expect(showNotificationMock).toHaveBeenCalledExactlyOnceWith({
+      type: "error",
+      message: "An error occurred running a trigger",
+      reportError: false,
+      error: expect.toBeObject(),
+    });
+  });
+
+  it("never reports brick errors for reportMode: never", async () => {
+    const extensionPoint = fromJS(
+      getPlatform(),
+      extensionPointFactory({
+        trigger: "load",
+        reportMode: "never",
         showErrors: true,
       })({}),
     );
@@ -564,18 +653,10 @@ describe("triggerExtension", () => {
 
     await extensionPoint.install();
 
-    // Run 2x
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
     await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
-    expect(reportErrorMock).toHaveBeenCalledTimes(1);
-
-    expect(showNotificationMock).toHaveBeenCalledExactlyOnceWith({
-      type: "error",
-      message: "An error occurred running a trigger",
-      reportError: false,
-      error: expect.toBeObject(),
-    });
+    expect(reportErrorMock).not.toHaveBeenCalled();
+    expect(showNotificationMock).not.toHaveBeenCalled();
   });
 
   it("reports all brick errors for reportMode: all, showErrors: true", async () => {
@@ -635,6 +716,37 @@ describe("triggerExtension", () => {
 
     expect(reportErrorMock).toHaveBeenCalledTimes(2);
     expect(showNotificationMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("reports error notifications, but does not display them for reportMode: default, showErrors: default", async () => {
+    const extensionPoint = fromJS(
+      getPlatform(),
+      extensionPointFactory({
+        trigger: "load",
+        // Testing the default of error-once, for backward compatability
+        // reportMode: "error-once",
+        // Testing the default of false, for backward compatability
+        // showErrors: false,
+      })({}),
+    );
+
+    extensionPoint.registerModComponent(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+        config: {
+          action: { id: ThrowBrick.BRICK_ID, config: {} },
+        },
+      }),
+    );
+
+    await extensionPoint.install();
+
+    // Run 2x
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+
+    expect(reportErrorMock).toHaveBeenCalledTimes(1);
+    expect(showNotificationMock).not.toHaveBeenCalled();
   });
 });
 

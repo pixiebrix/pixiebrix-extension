@@ -35,6 +35,10 @@ export type TargetMode =
 export type ReportMode =
   // Events (trigger/error) reported only once per extension per page
   | "once"
+  // Only errors are reported once per extension per page
+  | "error-once"
+  // Never reports events
+  | "never"
   // Report all events
   | "all";
 

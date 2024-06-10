@@ -835,12 +835,22 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           >
             Report First Event and Error
           </option>
+          <option
+            value="error-once"
+          >
+            Report First Error
+          </option>
+          <option
+            value="never"
+          >
+            Never Report Events or Errors
+          </option>
         </select>
         <small
           class="text-muted form-text"
         >
           <p>
-            Events/errors to report telemetry. Select “Report All Events and Errors” to report all runs and errors. Select “Report First Event and Error” to only report the first run and first error.
+            Configures which events (also known as runs) and errors to report in mod telemetry.
           </p>
         </small>
       </div>

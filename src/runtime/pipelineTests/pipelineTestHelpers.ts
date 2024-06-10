@@ -190,6 +190,39 @@ export class ThrowBrick extends BrickABC {
   }
 }
 
+export class ThrowTwiceBrick extends BrickABC {
+  static BRICK_ID = validateRegistryId("test/throw-twice");
+  private timesThrown: number;
+  private get maxThrows() {
+    return 2;
+  }
+
+  constructor() {
+    super(ThrowTwiceBrick.BRICK_ID, "Throw Twice Brick");
+    this.timesThrown = 0;
+  }
+
+  inputSchema = propertiesToSchema(
+    {
+      message: {
+        type: "string",
+      },
+    },
+    [],
+  );
+
+  async run({
+    message = "Default Business Error",
+  }: BrickArgs<{ message?: string }>) {
+    if (this.maxThrows && this.timesThrown >= this.maxThrows) {
+      return { prop: "no error!" };
+    }
+
+    this.timesThrown += 1;
+    throw new BusinessError(message);
+  }
+}
+
 class ArrayBrick extends BrickABC {
   constructor() {
     super("test/array", "Array Brick");
