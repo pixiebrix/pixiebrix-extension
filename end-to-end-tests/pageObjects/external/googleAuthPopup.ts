@@ -77,6 +77,14 @@ export class GoogleAuthPopup {
   }
 
   async logInAndAllowAccess() {
+    if (
+      E2E_GOOGLE_TEST_USER_EMAIL === undefined ||
+      E2E_GOOGLE_TEST_USER_PASSWORD === undefined ||
+      E2E_GOOGLE_TEST_USER_OTP_KEY === undefined
+    ) {
+      throw new Error("Google test user credentials are not configured");
+    }
+
     // eslint-disable-next-line playwright/no-wait-for-selector -- waitForSelector is needed to wait for the page to be ready
     await this.page.waitForSelector("#identifierId");
 
