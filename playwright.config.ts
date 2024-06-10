@@ -26,6 +26,7 @@ export default defineConfig<{ chromiumChannel: string }>({
   reportSlowTests: null,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
+    ["blob", { outputDir: "./end-to-end-tests/.blob-report" }],
     ["html", { outputFolder: "./end-to-end-tests/.report" }],
     ["json", { outputFile: "./end-to-end-tests/.report/report.json" }],
   ],

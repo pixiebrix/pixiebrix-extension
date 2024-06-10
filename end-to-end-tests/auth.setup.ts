@@ -86,7 +86,7 @@ test("authenticate", async ({ contextAndPage: { context, page } }) => {
   // Skipping authentication in CI due to flakiness -- captcha checking
   // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8058
   // eslint-disable-next-line playwright/no-conditional-in-test -- see above
-  if (CI === undefined) {
+  if (CI === undefined && E2E_GOOGLE_TEST_USER_EMAIL !== undefined) {
     await test.step("Authenticate with Google and add a local Drive integration", async () => {
       const localIntegrationsPage = new LocalIntegrationsPage(
         extensionConsolePage,
