@@ -39,8 +39,7 @@ const submitOtpCode = async (googleAuthPopup: Page) => {
 
   await expect(async () => {
     await enterCode.click();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked before this call
-    const otpKey = E2E_GOOGLE_TEST_USER_OTP_KEY!.replaceAll(/\s/g, "");
+    const otpKey = E2E_GOOGLE_TEST_USER_OTP_KEY.replaceAll(/\s/g, "");
     const token = generateOTP(otpKey);
     expect(token).not.toStrictEqual(prevToken); // Ensure the token is different from the previous one on retry
     prevToken = token;

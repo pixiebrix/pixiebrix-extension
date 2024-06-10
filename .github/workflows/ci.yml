@@ -293,6 +293,6 @@ jobs:
         uses: daun/playwright-report-summary@v3
         with:
           comment-title: "Playwright test results"
-          report-file: ${{ steps.upload-merged-playwright-report-step.outputs.artifact-url }}
-          report-url: https://github.com/pixiebrix/pixiebrix-extension/actions/runs/${{ github.run_id }}
+          report-file: ./playwright-report/results.json
+          report-url: ${{ steps.upload-merged-playwright-report-step.outputs.artifact-url }}
         if: (success() || failure()) && github.event_name == 'pull_request'
