@@ -237,6 +237,7 @@ export function getActiveExtensionPoints(): StarterBrick[] {
 
 /**
  * Test helper to get internal persisted extension state
+ * @knip used in tests, see lifecycle.test.ts
  */
 export function TEST_getPersistedExtensions(): Map<UUID, StarterBrick> {
   return _persistedExtensions;
@@ -244,6 +245,7 @@ export function TEST_getPersistedExtensions(): Map<UUID, StarterBrick> {
 
 /**
  * Test helper to get internal editor extension state
+ * @knip used in tests, see lifecycle.test.ts
  */
 export function TEST_getEditorExtensions(): Map<UUID, StarterBrick> {
   return _editorExtensions;
@@ -561,6 +563,7 @@ function decideRunReason({ force }: { force?: boolean }): RunReason {
 
 /**
  * Handle a website navigation, e.g., page load or a URL change in an SPA.
+ * @knip export used in tests, see lifecycle.test.ts
  */
 export async function handleNavigate({
   force,
