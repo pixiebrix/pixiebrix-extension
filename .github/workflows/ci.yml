@@ -259,8 +259,6 @@ jobs:
         with:
           node-version-file: package.json
           cache: npm
-      - name: Install dependencies
-        run: npm ci
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -274,7 +272,7 @@ jobs:
           ARTIFACT_ZIP_PASSWORD: ${{ secrets.ARTIFACT_ZIP_PASSWORD }}
         run: 7z -y x -p"$ARTIFACT_ZIP_PASSWORD" -o./playwright-report "./7z-blob-reports/*.7z"
       - name: Merge blob reports
-        run: npx playwright merge-reports --reporter html,json ./playwright-report
+        run: PLAYWRIGHT_JSON_OUTPUT_NAME=./playwright-report/results.json npx playwright merge-reports --reporter=html,json ./playwright-report
       - name: Password protect merged Playwright report
         if: always()
         shell: bash
