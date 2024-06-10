@@ -38,6 +38,10 @@ const submitOtpCode = async (googleAuthPopup: Page) => {
   let prevToken = "";
 
   await expect(async () => {
+    if (E2E_GOOGLE_TEST_USER_OTP_KEY === undefined) {
+      throw new Error("Google test user OTP key is not configured");
+    }
+
     await enterCode.click();
     const otpKey = E2E_GOOGLE_TEST_USER_OTP_KEY.replaceAll(/\s/g, "");
     const token = generateOTP(otpKey);
@@ -77,6 +81,14 @@ export class GoogleAuthPopup {
   }
 
   async logInAndAllowAccess() {
+    if (
+      E2E_GOOGLE_TEST_USER_EMAIL === undefined ||
+      E2E_GOOGLE_TEST_USER_PASSWORD === undefined ||
+      E2E_GOOGLE_TEST_USER_OTP_KEY === undefined
+    ) {
+      throw new Error("Google test user credentials are not configured");
+    }
+
     // eslint-disable-next-line playwright/no-wait-for-selector -- waitForSelector is needed to wait for the page to be ready
     await this.page.waitForSelector("#identifierId");
 

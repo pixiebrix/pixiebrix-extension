@@ -24,9 +24,6 @@ const requiredEnvVariables = [
   "SERVICE_URL",
   "E2E_TEST_USER_EMAIL_UNAFFILIATED",
   "E2E_TEST_USER_PASSWORD_UNAFFILIATED",
-  "E2E_GOOGLE_TEST_USER_EMAIL",
-  "E2E_GOOGLE_TEST_USER_PASSWORD",
-  "E2E_GOOGLE_TEST_USER_OTP_KEY",
   "SHADOW_DOM",
 ] as const;
 
@@ -37,6 +34,9 @@ const optionalEnvVariables = [
   "SLOWMO",
   "PWDEBUG",
   "REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST",
+  "E2E_GOOGLE_TEST_USER_EMAIL",
+  "E2E_GOOGLE_TEST_USER_PASSWORD",
+  "E2E_GOOGLE_TEST_USER_OTP_KEY",
 ] as const;
 
 type RequiredEnvVariables = Record<
@@ -71,9 +71,13 @@ export const {
   SERVICE_URL,
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
+} = process.env as RequiredEnvVariables;
+
+export const {
+  CI,
+  SLOWMO,
+  PWDEBUG,
   E2E_GOOGLE_TEST_USER_EMAIL,
   E2E_GOOGLE_TEST_USER_PASSWORD,
   E2E_GOOGLE_TEST_USER_OTP_KEY,
-} = process.env as RequiredEnvVariables;
-
-export const { CI, SLOWMO, PWDEBUG } = process.env as OptionalEnvVariables;
+} = process.env as OptionalEnvVariables;

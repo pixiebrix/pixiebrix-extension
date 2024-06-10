@@ -103,6 +103,7 @@ const createConfig = (env, options) =>
     devtool: false,
 
     output: {
+      publicPath: "",
       path: path.resolve("dist"),
       chunkFilename: "bundles/[name].bundle.js",
       environment: {
