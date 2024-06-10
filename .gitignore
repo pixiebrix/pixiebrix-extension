@@ -60,3 +60,4 @@ storybook-static
 /end-to-end-tests/.auth/
 /playwright/.cache/
 /end-to-end-tests/blob-report.7z
+/playwright-report/
