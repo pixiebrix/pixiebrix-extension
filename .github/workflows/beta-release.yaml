@@ -72,6 +72,7 @@ jobs:
   end-to-end-tests:
     name: end-to-end-tests
     uses: ./.github/workflows/end-to-end-tests.yml
+    secrets: inherit
     with:
       skip-tests: ${{ github.event.inputs.skip_tests != 'true' }}
       checkout-ref: release/${{ github.event.inputs.version }}
