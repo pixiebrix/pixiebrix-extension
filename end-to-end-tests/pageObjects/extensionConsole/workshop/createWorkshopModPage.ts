@@ -15,18 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expect, test } from "../../fixtures/mergedFixture";
-// @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { test as base } from "@playwright/test";
+import { Locator, type Page } from "@playwright/test";
+import { WorkshopModEditor } from "./modEditor";
 
-test.describe("page editor smoke test", () => {
-  test("can open the page editor and connect to an open tab", async ({
-    page,
-    newPageEditorPage,
-  }) => {
-    await page.goto("/bootstrap-5");
+export class CreateWorkshopModPage {
+  readonly editor: WorkshopModEditor;
+  readonly createBrickButton: Locator;
 
-    const pageEditorPage = await newPageEditorPage(page.url());
-    await expect(pageEditorPage.getTemplateGalleryButton()).toBeVisible();
-  });
-});
+  constructor(private readonly page: Page) {
+    this.editor = new WorkshopModEditor(this.page);
+    this.createBrickButton = this.page.getByRole("button", {
+      name: "Create Brick",
+    });
+  }
+}

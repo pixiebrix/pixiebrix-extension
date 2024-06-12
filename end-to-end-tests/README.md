@@ -41,7 +41,7 @@ One-time setup:
 
 Adhere to these principles, based on the [Playwright Best Practices](https://playwright.dev/docs/best-practices):
 
-- Utilize `test` from `extensionBase.ts` for test environment setup and extension interaction.
+- Utilize `test` from `pageContext.ts` for test environment setup and extension interaction.
 - Employ page objects from `./end-to-end-tests/pageObjects` for web page interactions.
 - Ensure tests are self-contained, leveraging [Playwright fixtures](https://playwright.dev/docs/test-fixtures) for shared setup/teardown.
 - Use the [recommended built-in locator methods](https://playwright.dev/docs/locators#quick-guide) that have auto-waiting and retry features.
@@ -92,7 +92,7 @@ The tests are configured to run the extension on both Chrome and Edge.
 
 ### Fixtures
 
-Use the fixture file `./fixtures/extensionBase.ts` for test environment setup. It exports a `test` object that enhances
+Use the fixture file `./fixtures/pageContext.ts` for test environment setup. It exports a `test` object that enhances
 Playwright's built-in `test` object with extension-specific features.
 
 ### Playwright Configuration

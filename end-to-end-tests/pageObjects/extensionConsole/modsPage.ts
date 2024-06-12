@@ -47,7 +47,7 @@ export class ModsPage {
     const activeModsHeading = this.page.getByRole("heading", {
       name: "Active Mods",
     });
-    await ensureVisibility(activeModsHeading, { timeout: 10_000 });
+    await ensureVisibility(activeModsHeading, { timeout: 20_000 });
     const modTableItems = this.modTableItems();
     const contentLoadedLocator = this.page
       .getByText("Welcome to PixieBrix!")

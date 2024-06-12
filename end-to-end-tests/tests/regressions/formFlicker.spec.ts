@@ -16,7 +16,7 @@
  */
 
 import { getSidebarPage, runModViaQuickBar } from "../../utils";
-import { test, expect } from "../../fixtures/extensionBase";
+import { expect, test } from "../../fixtures/mergedFixture";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only

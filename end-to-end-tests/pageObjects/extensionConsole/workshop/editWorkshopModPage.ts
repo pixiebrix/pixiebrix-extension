@@ -16,27 +16,12 @@
  */
 
 import { type Page } from "@playwright/test";
+import { WorkshopModEditor } from "./modEditor";
 
 export class EditWorkshopModPage {
-  constructor(private readonly page: Page) {}
-
-  async findText(text: string) {
-    await this.page
-      .getByLabel("Editor")
-      .locator("div")
-      .filter({ hasText: text })
-      .nth(2)
-      .click();
-
-    await this.page.getByRole("textbox").nth(0).press("ControlOrMeta+f");
-    await this.page.getByPlaceholder("Search for").fill(text);
-  }
-
-  async findAndReplaceText(findText: string, replaceText: string) {
-    await this.findText(findText);
-    await this.page.getByText("+", { exact: true }).click();
-    await this.page.getByPlaceholder("Replace with").fill(replaceText);
-    await this.page.getByText("Replace").click();
+  readonly editor: WorkshopModEditor;
+  constructor(private readonly page: Page) {
+    this.editor = new WorkshopModEditor(this.page);
   }
 
   async updateBrick() {
@@ -46,5 +31,7 @@ export class EditWorkshopModPage {
   async deleteBrick() {
     await this.page.getByRole("button", { name: "Delete Brick" }).click();
     await this.page.getByRole("button", { name: "Permanently Delete" }).click();
+    // eslint-disable-next-line playwright/no-networkidle -- for some reason, can't assert on the "Brick deleted" notice
+    await this.page.waitForLoadState("networkidle");
   }
 }

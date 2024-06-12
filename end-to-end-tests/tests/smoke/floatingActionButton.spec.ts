@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../../fixtures/extensionBase";
+import { expect, test } from "../../fixtures/mergedFixture";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { FloatingActionButton } from "../../pageObjects/floatingActionButton";
 import { getSidebarPage, isSidebarOpen } from "../../utils";
