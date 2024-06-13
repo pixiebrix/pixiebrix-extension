@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../../fixtures/extensionBase";
+import { test, expect } from "../../fixtures/testBase";
 import { ModsPage } from "../../pageObjects/extensionConsole/modsPage";
 import AxeBuilder from "@axe-core/playwright";
 import { checkForCriticalViolations, ensureVisibility } from "../../utils";

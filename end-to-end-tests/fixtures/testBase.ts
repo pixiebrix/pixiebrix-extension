@@ -15,18 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../../fixtures/testBase";
-// @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { test as base } from "@playwright/test";
+import { mergeTests } from "@playwright/test";
+import { test as pageContextFixture } from "./pageContext";
+import { test as envFixture } from "./environmentCheck";
 
-test.describe("page editor smoke test", () => {
-  test("can open the page editor and connect to an open tab", async ({
-    page,
-    newPageEditorPage,
-  }) => {
-    await page.goto("/bootstrap-5");
-
-    const pageEditorPage = await newPageEditorPage(page.url());
-    await expect(pageEditorPage.getTemplateGalleryButton()).toBeVisible();
-  });
-});
+export const test = mergeTests(pageContextFixture, envFixture);
+export const { expect } = test;

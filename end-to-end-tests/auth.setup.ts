@@ -16,7 +16,7 @@
  */
 
 import { expect, type Page } from "@playwright/test";
-import { test } from "./fixtures/authSetup";
+import { test } from "./fixtures/authentication";
 import {
   CI,
   E2E_GOOGLE_TEST_USER_EMAIL,

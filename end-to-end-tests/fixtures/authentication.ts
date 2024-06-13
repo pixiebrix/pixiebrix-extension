@@ -28,7 +28,7 @@ import {
 import fs from "node:fs/promises";
 import path from "node:path";
 import * as os from "node:os";
-import { test as envSetup } from "./envSetup";
+import { test as envSetup } from "./environmentCheck";
 
 // Create a local auth directory to store the profile paths
 const createAuthProfilePathDirectory = async () => {

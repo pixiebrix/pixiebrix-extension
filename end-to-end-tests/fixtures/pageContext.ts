@@ -28,7 +28,7 @@ import {
   launchPersistentContextWithExtension,
 } from "./utils";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
-import { test as envSetup } from "./envSetup";
+import { test as envSetup } from "./environmentCheck";
 import { PageEditorPage } from "../pageObjects/pageEditorPage";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
