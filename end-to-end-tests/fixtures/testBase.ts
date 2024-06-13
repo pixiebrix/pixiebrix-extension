@@ -18,6 +18,11 @@
 import { mergeTests } from "@playwright/test";
 import { test as pageContextFixture } from "./pageContext";
 import { test as envFixture } from "./environmentCheck";
+import { test as modDefinitionsFixture } from "./modDefinitions";
 
-export const test = mergeTests(pageContextFixture, envFixture);
+export const test = mergeTests(
+  pageContextFixture,
+  envFixture,
+  modDefinitionsFixture,
+);
 export const { expect } = test;
