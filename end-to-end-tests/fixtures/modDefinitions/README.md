@@ -2,7 +2,9 @@ This directory contains yaml definition files for mods used in end to end tests.
 used alongside the `modDefinitions` fixture to automatically create the specified mods
 and handle their cleanup for each test.
 
-Definition file names must be lowercase in dash-case.
+Definition file names must be lowercase in dash-case. The definition yaml must contain a placeholder value
+for the mod id, which will be replaced with the actual mod id when the mod is created. The placeholder
+value is `"{{ modId }}"`.
 
 Test Usage:
 
