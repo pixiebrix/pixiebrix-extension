@@ -15,18 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Page } from "@playwright/test";
-import { getBaseExtensionConsoleUrl } from "../constants";
-import { EditWorkshopModPage } from "end-to-end-tests/pageObjects/extensionConsole/editWorkshopModPage";
+import { type Locator, type Page, expect } from "@playwright/test";
+import { getBaseExtensionConsoleUrl } from "../../constants";
+import { EditWorkshopModPage } from "end-to-end-tests/pageObjects/extensionConsole/workshop/editWorkshopModPage";
+import { CreateWorkshopModPage } from "./createWorkshopModPage";
 
 export class WorkshopPage {
   private readonly extensionConsoleUrl: string;
+  private readonly createNewBrickButton: Locator;
 
   constructor(
     private readonly page: Page,
     extensionId: string,
   ) {
     this.extensionConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
+    this.createNewBrickButton = this.page.getByRole("button", {
+      name: "Create New Brick",
+    });
   }
 
   async goto() {
@@ -47,8 +52,19 @@ export class WorkshopPage {
     return new EditWorkshopModPage(this.page);
   }
 
+  async createNewModFromDefinition(modDefinitionName: string) {
+    await this.createNewBrickButton.click();
+    const createPage = new CreateWorkshopModPage(this.page);
+    const modId =
+      await createPage.editor.replaceWithModDefinition(modDefinitionName);
+    await createPage.createBrickButton.click();
+    await expect(
+      this.page.getByRole("status").getByText("Created "),
+    ).toBeVisible({ timeout: 8000 });
+    return modId;
+  }
+
   async deletePackagedModByModId(modId: string) {
-    await this.page.bringToFront();
     const editWorkshopModPage = await this.findAndSelectMod(modId);
     await editWorkshopModPage.deleteBrick();
   }

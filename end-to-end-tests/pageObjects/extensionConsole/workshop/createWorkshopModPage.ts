@@ -15,15 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { mergeTests } from "@playwright/test";
-import { test as pageContextFixture } from "./pageContext";
-import { test as envFixture } from "./environmentCheck";
-import { test as modDefinitionsFixture } from "./modDefinitions";
+import { type Locator, type Page } from "@playwright/test";
+import { WorkshopModEditor } from "./modEditor";
 
-export const test = mergeTests(
-  pageContextFixture,
-  envFixture,
-  modDefinitionsFixture,
-);
+export class CreateWorkshopModPage {
+  readonly editor: WorkshopModEditor;
+  readonly createBrickButton: Locator;
 
-export const { expect } = test;
+  constructor(private readonly page: Page) {
+    this.editor = new WorkshopModEditor(this.page);
+    this.createBrickButton = this.page.getByRole("button", {
+      name: "Create Brick",
+    });
+  }
+}

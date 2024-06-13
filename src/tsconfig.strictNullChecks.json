@@ -11,7 +11,7 @@
     "../end-to-end-tests/pageObjects/constants.ts",
     "../end-to-end-tests/pageObjects/extensionConsole/localIntegrationsPage.ts",
     "../end-to-end-tests/pageObjects/extensionConsole/modsPage.ts",
-    "../end-to-end-tests/pageObjects/extensionConsole/workshopPage.ts",
+    "../end-to-end-tests/pageObjects/extensionConsole/workshop/workshopPage.ts",
     "../end-to-end-tests/tests/extensionConsoleActivation.spec.ts",
     "../end-to-end-tests/tests/smoke/modsPage.spec.ts",
     "../end-to-end-tests/tests/telemetry/errors.spec.ts",

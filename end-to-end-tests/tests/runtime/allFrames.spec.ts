@@ -42,7 +42,6 @@ test("8527: availability allFrames declaration", async ({
 
   for (const markLocator of markLocators) {
     // Expect yellow
-    // eslint-disable-next-line no-await-in-loop -- test code
     await expect(markLocator).toHaveCSS("background-color", "rgb(255, 255, 0)");
   }
 

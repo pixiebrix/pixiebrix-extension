@@ -116,7 +116,7 @@ export const test = base.extend<
     });
 
     for (const page of pageEditorPages) {
-      // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
+      await page.bringToFront();
       await page.cleanup();
     }
   },
