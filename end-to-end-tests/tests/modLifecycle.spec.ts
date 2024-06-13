@@ -20,7 +20,7 @@ import { expect, test } from "../fixtures/testBase";
 import { type Page, test as base } from "@playwright/test";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 import { clickAndWaitForNewPage } from "end-to-end-tests/utils";
-import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshopPage";
+import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshop/workshopPage";
 
 test("create, run, package, and update mod", async ({
   page,
@@ -89,11 +89,11 @@ test("create, run, package, and update mod", async ({
     const workshopPage = new WorkshopPage(newPage, extensionId);
     await workshopPage.goto();
     const editWorkshopModPage = await workshopPage.findAndSelectMod(modId);
-    await editWorkshopModPage.findAndReplaceText(
+    await editWorkshopModPage.editor.findAndReplaceText(
       "version: 1.0.0",
       "version: 1.0.1",
     );
-    await editWorkshopModPage.findAndReplaceText(
+    await editWorkshopModPage.editor.findAndReplaceText(
       "description: Created with the PixieBrix Page Editor",
       "description: Created through Playwright Automation",
     );

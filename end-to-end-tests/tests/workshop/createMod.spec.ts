@@ -15,26 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../../fixtures/testBase";
-import { WorkshopPage } from "../../pageObjects/extensionConsole/workshop/workshopPage";
+import { expect, test } from "../../fixtures/mergedFixture";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
+import { WorkshopPage } from "../../pageObjects/extensionConsole/workshop/workshopPage";
 
-test.describe("extension console workshop smoke test", () => {
-  test("can navigate to workshop page without a username", async ({
-    page,
-    extensionId,
-  }) => {
-    const workshopPage = new WorkshopPage(page, extensionId);
-    await workshopPage.goto();
+test.use({ modDefinitionNames: ["simple-sidebar-panel"] });
 
-    const pageTitle = await page.title();
-    expect(pageTitle).toBe("Workshop | PixieBrix");
+test("can create a new mod from a yaml definition", async ({
+  page,
+  extensionId,
+  createdModIds,
+}) => {
+  // Test uses the modDefinitionNames fixture to automatically create the mod definition
+  const simpleSidebarModId = createdModIds[0];
 
-    await expect(page.getByText("Custom Bricks")).toBeVisible();
-    const workshopListItems = page.getByRole("table").locator("tr");
+  const workshopPage = new WorkshopPage(page, extensionId);
+  await workshopPage.goto();
+  const editWorkshopModPage =
+    await workshopPage.findAndSelectMod(simpleSidebarModId);
 
-    // Expect at least one workshop item visible in the list
-    await expect(workshopListItems.nth(0)).toBeVisible();
-  });
+  await expect(editWorkshopModPage.editor.baseLocator).toContainText(
+    simpleSidebarModId,
+  );
 });

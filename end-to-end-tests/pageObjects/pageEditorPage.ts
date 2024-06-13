@@ -19,7 +19,7 @@ import { getBasePageEditorUrl } from "./constants";
 import { type Page, expect } from "@playwright/test";
 import { uuidv4 } from "@/types/helpers";
 import { ModsPage } from "./extensionConsole/modsPage";
-import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshopPage";
+import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshop/workshopPage";
 import { type UUID } from "@/types/stringTypes";
 
 // Starter brick names as shown in the Page Editor UI
