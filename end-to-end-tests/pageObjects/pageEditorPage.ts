@@ -237,14 +237,12 @@ export class PageEditorPage {
     const modsPage = new ModsPage(this.page, this.extensionId);
     await modsPage.goto();
     for (const standaloneModName of this.savedStandaloneModNames) {
-      // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
       await modsPage.deleteStandaloneModByName(standaloneModName);
     }
 
     const workshopPage = new WorkshopPage(this.page, this.extensionId);
     await workshopPage.goto();
     for (const packagedModId of this.savedPackageModIds) {
-      // eslint-disable-next-line no-await-in-loop -- optimization via parallelization not relevant here
       await workshopPage.deletePackagedModByModId(packagedModId);
     }
   }

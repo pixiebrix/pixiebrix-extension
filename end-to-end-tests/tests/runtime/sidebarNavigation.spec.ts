@@ -240,7 +240,6 @@ test("sidebar form and temporary panels are unavailable after navigation", async
   await page.goto(SERVICE_URL);
 
   for (const { navigationMethod, name } of navigationMethods) {
-    // eslint-disable-next-line no-await-in-loop -- check each navigation method sequentially
     await test.step(`Checking navigation method: ${name}`, async () => {
       await checkUnavailibilityForNavigationMethod(
         page,

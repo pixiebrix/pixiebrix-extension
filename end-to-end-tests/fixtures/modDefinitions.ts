@@ -30,11 +30,9 @@ export const test = pageContextFixture.extend<{
       if (modDefinitionNames.length > 0) {
         const workshopPage = new WorkshopPage(page, extensionId);
         for (const definition of modDefinitionNames) {
-          // eslint-disable-next-line no-await-in-loop -- TODO disable
           await workshopPage.goto();
           const createdModId =
-            // eslint-disable-next-line no-await-in-loop -- TODO disable
-            await workshopPage.createNewBrickFromModDefinition(definition);
+            await workshopPage.createNewModFromDefinition(definition);
           createdIds.push(createdModId);
         }
       }
@@ -44,9 +42,7 @@ export const test = pageContextFixture.extend<{
       if (createdIds.length > 0) {
         const workshopPage = new WorkshopPage(page, extensionId);
         for (const id of createdIds) {
-          // eslint-disable-next-line no-await-in-loop -- TODO disable
           await workshopPage.goto();
-          // eslint-disable-next-line no-await-in-loop -- TODO disable
           await workshopPage.deletePackagedModByModId(id);
         }
       }

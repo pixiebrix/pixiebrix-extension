@@ -52,7 +52,7 @@ export class WorkshopPage {
     return new EditWorkshopModPage(this.page);
   }
 
-  async createNewBrickFromModDefinition(modDefinitionName: string) {
+  async createNewModFromDefinition(modDefinitionName: string) {
     await this.createNewBrickButton.click();
     const createPage = new CreateWorkshopModPage(this.page);
     const modId =
@@ -65,7 +65,6 @@ export class WorkshopPage {
   }
 
   async deletePackagedModByModId(modId: string) {
-    await this.page.bringToFront(); // TODO: is this needed?
     const editWorkshopModPage = await this.findAndSelectMod(modId);
     await editWorkshopModPage.deleteBrick();
   }
