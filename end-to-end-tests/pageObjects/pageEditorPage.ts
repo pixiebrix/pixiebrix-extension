@@ -33,10 +33,10 @@ export type StarterBrickName =
   | "Tour";
 
 /**
- * Page object for the Page Editor. Prefer the newPageEditorPage fixture in extensionBase.ts to directly creating an
+ * Page object for the Page Editor. Prefer the newPageEditorPage fixture in testBase.ts to directly creating an
  * instance of this class to take advantage of automatic cleanup of saved mods.
  *
- * @knip usage of PageEditorPage indirectly via the newPageEditorPage fixture in extensionBase.ts causes a
+ * @knip usage of PageEditorPage indirectly via the newPageEditorPage fixture in testBase.ts causes a
  * false-positive
  */
 export class PageEditorPage {
@@ -231,7 +231,7 @@ export class PageEditorPage {
    * This method is meant to be called exactly once after the test is done to clean up any saved mods created during the
    * test.
    *
-   * @see newPageEditorPage in fixtures/extensionBase.ts
+   * @see newPageEditorPage in fixtures/testBase.ts
    */
   async cleanup() {
     const modsPage = new ModsPage(this.page, this.extensionId);
