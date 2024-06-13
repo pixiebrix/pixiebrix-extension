@@ -26,7 +26,7 @@ export const test = pageContextFixture.extend<{
   modDefinitionNames: [],
   createdModIds: [
     async ({ modDefinitionNames, page, extensionId }, use) => {
-      let createdIds: string[] = [];
+      const createdIds: string[] = [];
       if (modDefinitionNames.length > 0) {
         const workshopPage = new WorkshopPage(page, extensionId);
         for (const definition of modDefinitionNames) {

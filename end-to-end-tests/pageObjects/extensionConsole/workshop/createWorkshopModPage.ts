@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Locator, type Page } from "@playwright/test";
+import { type Locator, type Page } from "@playwright/test";
 import { WorkshopModEditor } from "./modEditor";
 
 export class CreateWorkshopModPage {
