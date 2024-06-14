@@ -38,7 +38,7 @@ import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deploymentUpdater";
 import initTheme from "@/background/initTheme";
 import initStarterMods from "@/background/starterMods";
-import { initPartnerTokenRefresh } from "@/background/partnerIntegrations";
+import { initPartnerTokenRefresh } from "@/background/auth/partnerIntegrations/partnerIntegrations";
 import { initLogSweep } from "@/telemetry/logging";
 import { initModUpdater } from "@/background/modUpdater";
 import { initRuntimeLogging } from "@/development/runtimeLogging";

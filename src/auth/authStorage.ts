@@ -93,7 +93,7 @@ export async function getExtensionToken(): Promise<string | undefined> {
   return token;
 }
 
-export async function readPartnerAuthData(): Promise<Partial<PartnerAuthData>> {
+export async function getPartnerAuthData(): Promise<Partial<PartnerAuthData>> {
   return partnerTokenStorage.get();
 }
 
@@ -102,7 +102,7 @@ export async function readPartnerAuthData(): Promise<Partial<PartnerAuthData>> {
  *
  * @see clearPartnerAuth
  */
-export async function setPartnerAuth(data: PartnerAuthData): Promise<void> {
+export async function setPartnerAuthData(data: PartnerAuthData): Promise<void> {
   if (!isEmpty(data.authId) && isEmpty(data.token)) {
     // Should use clearPartnerAuth for clearing the partner integration JWT
     throw new Error("Received null/blank token for partner integration");
@@ -114,7 +114,7 @@ export async function setPartnerAuth(data: PartnerAuthData): Promise<void> {
 /**
  * Clear authentication data when using the partner JWT to authenticate.
  *
- * @see setPartnerAuth
+ * @see setPartnerAuthData
  */
 export async function clearPartnerAuth(): Promise<void> {
   return partnerTokenStorage.set({});
@@ -130,7 +130,7 @@ export async function clearPartnerAuth(): Promise<void> {
 export async function getAuthHeaders(): Promise<UnknownObject | null> {
   const [nativeToken, partnerAuth] = await Promise.all([
     getExtensionToken(),
-    readPartnerAuthData(),
+    getPartnerAuthData(),
   ]);
 
   if (nativeToken) {

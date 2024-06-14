@@ -22,7 +22,7 @@
 
 import { _liftBackground as liftExternal } from "@/background/externalProtocol";
 import * as local from "@/background/messenger/external/_implementation";
-import { readPartnerAuthData } from "@/auth/authStorage";
+import { getPartnerAuthData } from "@/auth/authStorage";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 
 export const connectPage = liftExternal("CONNECT_PAGE", async () =>
@@ -61,7 +61,7 @@ export const openExtensionOptions = liftExternal(
 
 export const getPartnerToken = liftExternal(
   "GET_PARTNER_TOKEN",
-  readPartnerAuthData,
+  getPartnerAuthData,
 );
 
 export const installStarterBlueprints = liftExternal(
