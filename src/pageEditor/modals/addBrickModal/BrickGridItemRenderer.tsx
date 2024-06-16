@@ -16,44 +16,44 @@
  */
 
 import React, { type CSSProperties } from "react";
-import BlockGridItem from "@/components/addBlockModal/BlockGridItem";
-import { type BlockGridData } from "./addBlockModalTypes";
-import { getFlatArrayIndex } from "@/components/addBlockModal/addBlockModalHelpers";
+import BrickGridItem from "@/pageEditor/modals/addBrickModal/BrickGridItem";
+import { type BrickGridData } from "./addBrickModalTypes";
+import { getFlatArrayIndex } from "@/pageEditor/modals/addBrickModal/addBrickModalHelpers";
 
 type ItemRendererProps = {
   columnIndex: number;
   rowIndex: number;
   style: CSSProperties;
-  data: BlockGridData;
+  data: BrickGridData;
 };
 
 // The item renderer must be its own separate component to react-window from re-mounting the results
 // https://github.com/bvaughn/react-window/issues/420#issuecomment-585813335
-const BlockGridItemRenderer: React.VFC<ItemRendererProps> = ({
+const BrickGridItemRenderer: React.VFC<ItemRendererProps> = ({
   columnIndex,
   rowIndex,
   style,
-  data: { blockOptions, invalidBlockMessages, onSetDetailBlock, onSelectBlock },
+  data: { brickOptions, invalidBrickMessages, onSetDetailBrick, onSelectBrick },
 }) => {
   const index = getFlatArrayIndex({ rowIndex, columnIndex });
-  const blockResult = blockOptions.at(index)?.blockResult;
+  const blockResult = brickOptions.at(index)?.brickResult;
 
   return (
     <div style={style}>
       {blockResult && (
-        <BlockGridItem
-          block={blockResult}
+        <BrickGridItem
+          brick={blockResult}
           onSelect={() => {
-            onSelectBlock(blockResult);
+            onSelectBrick(blockResult);
           }}
           onShowDetail={() => {
-            onSetDetailBlock(blockResult);
+            onSetDetailBrick(blockResult);
           }}
-          invalidMessage={invalidBlockMessages.get(blockResult.id)}
+          invalidMessage={invalidBrickMessages.get(blockResult.id)}
         />
       )}
     </div>
   );
 };
 
-export default BlockGridItemRenderer;
+export default BrickGridItemRenderer;

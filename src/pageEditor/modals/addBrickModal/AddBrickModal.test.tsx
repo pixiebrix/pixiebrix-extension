@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render, screen } from "@/pageEditor/testHelpers";
-import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
+import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import userEvent from "@testing-library/user-event";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
@@ -46,10 +46,10 @@ beforeAll(() => {
   appApiMock.onGet("/api/marketplace/listings/").reply(200, listings);
 });
 
-describe("AddBlockModal", () => {
+describe("AddBrickModal", () => {
   test("it renders", async () => {
     const formState = formStateFactory();
-    const { asFragment } = render(<AddBlockModal />, {
+    const { asFragment } = render(<AddBrickModal />, {
       setupRedux(dispatch) {
         dispatch(actions.addElement(formState));
         dispatch(actions.selectElement(formState.uuid));
@@ -74,7 +74,7 @@ describe("AddBlockModal", () => {
   test("it renders with tag selected and search query", async () => {
     const formState = formStateFactory();
 
-    const { asFragment } = render(<AddBlockModal />, {
+    const { asFragment } = render(<AddBrickModal />, {
       setupRedux(dispatch) {
         dispatch(actions.addElement(formState));
         dispatch(actions.selectElement(formState.uuid));

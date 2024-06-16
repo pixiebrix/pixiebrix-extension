@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
+import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
 import React from "react";
 import AddToRecipeModal from "./sidebar/modals/AddToRecipeModal";
 import CreateModModal from "./sidebar/modals/CreateModModal";
@@ -29,7 +29,7 @@ const Modals: React.FunctionComponent = () => (
     <MoveFromModModal />
     <SaveAsNewRecipeModal />
     <CreateModModal />
-    <AddBlockModal />
+    <AddBrickModal />
     <SaveDataIntegrityErrorModal />
   </>
 );

@@ -34,7 +34,7 @@ import { JQTransformer } from "@/bricks/transformers/jq";
 import { AlertEffect } from "@/bricks/effects/alert";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { type OutputKey, type PipelineExpression } from "@/types/runtimeTypes";
-import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
+import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
 import { type EditablePackageMetadata } from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
@@ -235,7 +235,7 @@ describe("can add a node", () => {
     render(
       <>
         <EditorPane />
-        <AddBlockModal />
+        <AddBrickModal />
       </>,
       {
         setupRedux(dispatch) {
@@ -269,7 +269,7 @@ describe("can add a node", () => {
     render(
       <>
         <EditorPane />
-        <AddBlockModal />
+        <AddBrickModal />
       </>,
       {
         setupRedux(dispatch) {
@@ -298,7 +298,7 @@ describe("can add a node", () => {
     const { getReduxStore } = render(
       <div>
         <EditorPane />
-        <AddBlockModal />
+        <AddBrickModal />
       </div>,
       {
         setupRedux(dispatch) {
@@ -356,7 +356,7 @@ async function renderEditorPaneWithBasicFormState() {
   const utils = render(
     <div>
       <EditorPane />
-      <AddBlockModal />
+      <AddBrickModal />
     </div>,
     {
       setupRedux(dispatch) {
@@ -646,7 +646,7 @@ describe("validation", () => {
     const { container, getReduxStore } = render(
       <>
         <EditorPane />
-        <AddBlockModal />
+        <AddBrickModal />
       </>,
       {
         setupRedux(dispatch) {
@@ -739,7 +739,7 @@ describe("validation", () => {
     const { container } = render(
       <>
         <EditorPane />
-        <AddBlockModal />
+        <AddBrickModal />
       </>,
       {
         setupRedux(dispatch) {
@@ -871,7 +871,7 @@ describe("brick validation in Add Brick Modal UI", () => {
       render(
         <>
           <EditorPane />
-          <AddBlockModal />
+          <AddBrickModal />
         </>,
         {
           setupRedux(dispatch) {
@@ -913,7 +913,7 @@ describe("brick validation in Add Brick Modal UI", () => {
     render(
       <>
         <EditorPane />
-        <AddBlockModal />
+        <AddBrickModal />
       </>,
       {
         setupRedux(dispatch) {

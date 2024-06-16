@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/components/addBlockModal/addBlockModalVariables.scss";
+@import "@/pageEditor/modals/addBrickModal/addBrickModalVariables";
 
 $bodyHeight: calc(100vh - 100px);
 $tagListWidth: 180px;
@@ -96,7 +96,7 @@ $modalPaddingX: calc(
   border-bottom-right-radius: 0.3rem;
 }
 
-.blockDetail {
+.brickDetail {
   height: $bodyHeight;
   flex-grow: 1;
   padding: 1rem;

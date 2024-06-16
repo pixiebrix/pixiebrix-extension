@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BLOCK_RESULT_COLUMN_COUNT } from "@/components/addBlockModal/addBlockModalConstants";
+import { BRICK_RESULT_COLUMN_COUNT } from "@/pageEditor/modals/addBrickModal/addBrickModalConstants";
 import { type RegistryId } from "@/types/registryTypes";
-import { type ItemKeyInput } from "@/components/addBlockModal/addBlockModalTypes";
+import { type ItemKeyInput } from "@/pageEditor/modals/addBrickModal/addBrickModalTypes";
 
 export function getFlatArrayIndex({
   rowIndex,
@@ -27,7 +27,7 @@ export function getFlatArrayIndex({
   columnIndex: number;
 }): number {
   // Layout items in the grid left to right, top to bottom
-  return rowIndex * BLOCK_RESULT_COLUMN_COUNT + columnIndex;
+  return rowIndex * BRICK_RESULT_COLUMN_COUNT + columnIndex;
 }
 
 // We need to provide an item key because we reorder elements on search
@@ -35,15 +35,15 @@ export function getFlatArrayIndex({
 // Here, we use the brick id as the key, which is the "value" prop on the search result option
 export function getItemKey({
   columnIndex,
-  data: { blockOptions },
+  data: { brickOptions },
   rowIndex,
 }: ItemKeyInput): RegistryId | number | undefined {
   const resultIndex = getFlatArrayIndex({ rowIndex, columnIndex });
   // Number of bricks for the last Grid row could be less than the number of columns
   // Returning the index here, ItemRenderer will render an empty cell
-  if (resultIndex >= blockOptions.length) {
+  if (resultIndex >= brickOptions.length) {
     return resultIndex;
   }
 
-  return blockOptions.at(resultIndex)?.value;
+  return brickOptions.at(resultIndex)?.value;
 }

@@ -20,53 +20,53 @@ import { useMemo } from "react";
 import { isEmpty, sortBy } from "lodash";
 import Fuse from "fuse.js";
 import {
-  type BlockOption,
-  type BlockResult,
-} from "@/components/addBlockModal/addBlockModalTypes";
-import { TAG_ALL } from "@/components/addBlockModal/addBlockModalConstants";
+  type BrickSelectOption,
+  type BrickSearchResult,
+} from "@/pageEditor/modals/addBrickModal/addBrickModalTypes";
+import { TAG_ALL } from "@/pageEditor/modals/addBrickModal/addBrickModalConstants";
 import { isNullOrBlank } from "@/utils/stringUtils";
 
-function makeBlockOption(block: Brick): BlockOption {
+function mapBrickSelectOption(brick: Brick): BrickSelectOption {
   return {
-    value: block.id,
-    label: block.name,
-    blockResult: block as BlockResult,
+    value: brick.id,
+    label: brick.name,
+    brickResult: brick as BrickSearchResult,
   };
 }
 
-const EMPTY_BLOCK_RESULTS: BlockOption[] = [];
+const EMPTY_BRICK_RESULTS: BrickSelectOption[] = [];
 
-function useBlockSearch(
-  blocks: Brick[],
+function useBrickSearch(
+  bricks: Brick[],
   taggedBrickIds: Record<string, Set<string>>,
   query: string,
   searchTag: string | null,
-): BlockOption[] {
-  const { fuse, blockOptions } = useMemo(() => {
-    if (isEmpty(blocks)) {
+): BrickSelectOption[] {
+  const { fuse, brickOptions } = useMemo(() => {
+    if (isEmpty(bricks)) {
       return {
         fuse: null,
-        blockOptions: EMPTY_BLOCK_RESULTS,
+        brickOptions: EMPTY_BRICK_RESULTS,
       };
     }
 
-    function blockHasTag(block: Brick): boolean {
+    function blockHasTag(brick: Brick): boolean {
       if (searchTag == null || searchTag === TAG_ALL) {
         return true;
       }
 
       // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- tag values come from the API
-      return taggedBrickIds[searchTag]!.has(block.id);
+      return taggedBrickIds[searchTag]!.has(brick.id);
     }
 
-    const blockOptions = sortBy(
-      (blocks ?? [])
+    const brickOptions = sortBy(
+      (bricks ?? [])
         // We should never show @internal bricks to users. They'll sometimes find their way in from the registry.
         .filter((x) => !x.id.startsWith("@internal/") && blockHasTag(x))
-        .map((x) => makeBlockOption(x)),
+        .map((x) => mapBrickSelectOption(x)),
       (x) => x.label,
     );
-    const fuse = new Fuse<BlockOption>(blockOptions, {
+    const fuse = new Fuse<BrickSelectOption>(brickOptions, {
       keys: ["label", "blockResult.description", "value"],
       // Arbitrary threshold that seems strict enough to avoid search results that are unrelated to the query.
       threshold: 0.2,
@@ -77,16 +77,16 @@ function useBlockSearch(
       ignoreLocation: true,
     });
 
-    return { blockOptions, fuse };
-  }, [blocks, searchTag, taggedBrickIds]);
+    return { brickOptions, fuse };
+  }, [bricks, searchTag, taggedBrickIds]);
 
   return useMemo(
     () =>
       isNullOrBlank(query) || !fuse
-        ? blockOptions
+        ? brickOptions
         : fuse.search(query).map((x) => x.item),
-    [query, fuse, blockOptions],
+    [query, fuse, brickOptions],
   );
 }
 
-export default useBlockSearch;
+export default useBrickSearch;

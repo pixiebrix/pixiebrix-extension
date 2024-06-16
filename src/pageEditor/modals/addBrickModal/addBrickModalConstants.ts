@@ -15,47 +15,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/components/addBlockModal/addBlockModalVariables.scss";
-
-.root {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: stretch;
-  padding-right: $verticalSpacing;
-}
-
-.item {
-  border-radius: 4px;
-  border: none;
-  font-weight: 400;
-  font-size: 16px;
-  color: #7674ab;
-  background: none;
-  text-align: start;
-  padding: 0.25rem 0.5rem;
-
-  &:hover {
-    background: #fbe5ff !important;
-  }
-}
-
-.itemActive {
-  color: #fae5ff !important;
-  background: #6462aa;
-
-  &:hover {
-    background: #6462aa !important;
-  }
-}
-
-.iconContainer {
-  display: inline-block;
-  width: 1.5rem;
-}
-
-.svgIcon {
-  width: 1.25em;
-  height: 1em;
-  margin-right: 0.25em;
-}
+export const TAG_ALL = "All Categories";
+export const BRICK_RESULT_COLUMN_COUNT = 2;

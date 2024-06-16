@@ -15,5 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const TAG_ALL = "All Categories";
-export const BLOCK_RESULT_COLUMN_COUNT = 2;
+import type React from "react";
+import { type Brick } from "@/types/brickTypes";
+import { type RegistryId } from "@/types/registryTypes";
+
+export type BrickSearchResult = Brick & {
+  isPopular?: boolean;
+};
+
+export type BrickSelectOption = {
+  brickResult: BrickSearchResult;
+  value: RegistryId;
+  label: string;
+};
+
+export type BrickGridData = {
+  brickOptions: BrickSelectOption[];
+  invalidBrickMessages: Map<RegistryId, React.ReactNode>;
+  onSetDetailBrick: (brick: Brick) => void;
+  onSelectBrick: (brick: Brick) => void;
+};
+
+export type ItemKeyInput = {
+  columnIndex: number;
+  data: BrickGridData;
+  rowIndex: number;
+};
