@@ -32,6 +32,21 @@ import { getIn } from "formik";
 export type MenuOptions = Array<[string, UnknownRecord]>;
 
 /**
+ * Returns true if the value is null or is likely plain text/not a variable.
+ */
+function isTextOrNull(value: string | null): boolean {
+  return value == null || value === "@" || !value.startsWith("@");
+}
+
+/**
+ * Convert a variable to a normalized variable path, removing optional chaining. Result is suitable for filtering
+ * by path prefix.
+ */
+function toVarPath(value: string): string[] {
+  return toPath(value.replaceAll("?.", "."));
+}
+
+/**
  * Filter top-level variables by source type. Currently, excludes integration variables because they're managed
  * automatically by the Page Editor.
  * @param options variable popover options
@@ -54,15 +69,11 @@ export function filterOptionsByVariable(
   options: MenuOptions,
   likelyVariable: string,
 ): MenuOptions {
-  if (
-    likelyVariable == null ||
-    likelyVariable === "@" ||
-    !likelyVariable.startsWith("@")
-  ) {
+  if (isTextOrNull(likelyVariable)) {
     return options;
   }
 
-  const [base, ...rest] = toPath(likelyVariable);
+  const [base, ...rest] = toVarPath(likelyVariable);
   return options.filter(([source, vars]) => {
     if (rest.length === 0) {
       return Object.keys(vars).some((x) => x.startsWith(base));
@@ -114,15 +125,11 @@ export function filterVarMapByVariable(
   varMap: UnknownRecord,
   likelyVariable: string,
 ): UnknownRecord {
-  if (
-    likelyVariable == null ||
-    likelyVariable === "@" ||
-    !likelyVariable.startsWith("@")
-  ) {
+  if (isTextOrNull(likelyVariable)) {
     return varMap;
   }
 
-  return filterVarMapByPath(varMap, toPath(likelyVariable));
+  return filterVarMapByPath(varMap, toVarPath(likelyVariable));
 }
 
 /**
@@ -134,17 +141,13 @@ export function expandCurrentVariableLevel(
   varMap: UnknownRecord,
   likelyVariable: string,
 ): ShouldExpandNodeInitially {
-  if (
-    likelyVariable == null ||
-    likelyVariable === "@" ||
-    !likelyVariable.startsWith("@")
-  ) {
+  if (isTextOrNull(likelyVariable)) {
     return () => false;
   }
 
   // If likelyVariable ends with ".", there's a part for the empty string at the end of the path. So can just use
   // as normal without logic for trailing "."
-  const parts = toPath(likelyVariable);
+  const parts = toVarPath(likelyVariable);
   return (keyPath, data, level) => {
     // Key path from JSONTree is in reverse order
     const reverseKeyPath = [...keyPath].reverse();
@@ -241,12 +244,7 @@ export function defaultMenuOption(
     return null;
   }
 
-  if (
-    likelyVariable == null ||
-    likelyVariable === "@" ||
-    !likelyVariable.startsWith("@") ||
-    toPath(likelyVariable).length === 0
-  ) {
+  if (isTextOrNull(likelyVariable) || toVarPath(likelyVariable).length === 0) {
     // Must always have at least one option (e.g., the `@input`)
     // Prefer the last option, because that's the latest output
 
@@ -255,7 +253,7 @@ export function defaultMenuOption(
     return [first];
   }
 
-  const parts = toPath(likelyVariable);
+  const parts = toVarPath(likelyVariable);
 
   const [head, ...rest] = parts;
 
