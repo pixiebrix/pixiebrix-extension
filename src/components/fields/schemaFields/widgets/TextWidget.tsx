@@ -59,12 +59,12 @@ function schemaSupportsTemplates(schema: Schema): boolean {
 //   -@: Check for a @ character at the beginning of the string.
 //   -(?!\d): Ensure the first character of the identifier is not a digit.
 //   -([\w$]+): Capture the initial identifier, which can consist of letters, digits, underscores, or dollar signs.
-//   -((\.[\w$]+)|(\[(\d+|"[^"]+")\]))*: Match any number of properties or array indices, separated by periods or enclosed in square brackets.\.[\w$]+: A property preceded by a period, consisting of letters, digits, underscores, or dollar signs.
+//   -((\??\.[\w$]+)|(\[(\d+|"[^"]+")\]))*: Match any number of properties or array indices, separated by periods or enclosed in square brackets.\.[\w$]+: A property preceded by a period, consisting of letters, digits, underscores, or dollar signs.
 //   -\[(\d+|"[^"]+")\]: Either an array index consisting of one or more digits, or a property name wrapped in double quotes and containing any characters except double quotes, both enclosed in square brackets.
 //   -$: Assert the end of the string.
 const objectPathRegex =
   // eslint-disable-next-line security/detect-unsafe-regex -- risky for long strings, but ok for var names
-  /^@(?!\d)([\w$]+)((\.[\w$]+)|(\[(\d+|"[^"]+"|'[^']+')]))*$/;
+  /^@(?!\d)([\w$]+)((\??\.[\w$]+)|(\[(\d+|"[^"]+"|'[^']+')]))*$/;
 
 // Regex to help detect if the user is typing a bracket expression on the end of a variable
 // eslint-disable-next-line security/detect-unsafe-regex -- risky for long strings, but ok for var names
@@ -85,6 +85,9 @@ export function isVarLike(value: string): boolean {
     isVarValue(value) ||
     // User-just started typing a variable
     value === "@" ||
+    // User is starting to access an optional property
+    isVarValue(trimEndOnce(value, "?")) ||
+    isVarValue(trimEndOnce(value, "?.")) ||
     // User is starting to access a sub property.
     isVarValue(trimEndOnce(value, ".")) ||
     // User is starting to access an array index, or property with whitespace.
