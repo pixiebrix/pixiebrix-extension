@@ -186,7 +186,7 @@ export const CUSTOM_FORM_SCHEMA: Schema = {
       default: false,
     },
   },
-  required: ["schema"],
+  required: ["schema", "storage"],
 };
 
 const IsolatedCustomFormComponent: React.FunctionComponent<
@@ -258,7 +258,7 @@ export class CustomFormRenderer extends RendererABC {
       // Default to save if not provided for backwards compatibility
       postSubmitAction = "save",
     }: BrickArgs<{
-      storage?: Storage;
+      storage: Storage;
       recordId: string | null;
       schema: Schema;
       uiSchema?: UiSchema;
@@ -277,19 +277,10 @@ export class CustomFormRenderer extends RendererABC {
       throw new Error("extensionId is required");
     }
 
+    // Redundant with the JSON Schema input validation for `required`. But keeping here for clarity
     if (!storage) {
       throw new PropError(
         "storage is required since extension version 2.0.3",
-        this.id,
-        "storage",
-        storage,
-      );
-    }
-
-    // Support for localStorage was removed in 2.0.3
-    if ((storage.type as string) === "localStorage") {
-      throw new PropError(
-        "localStorage data binding is no longer supported since extension version 2.0.3",
         this.id,
         "storage",
         storage,

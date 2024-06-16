@@ -271,28 +271,6 @@ describe("CustomFormRenderer", () => {
     );
   });
 
-  test("error on storage.type localStorage", async () => {
-    // eslint-disable-next-line testing-library/render-result-naming-convention -- false positive
-    const renderPromise = brick.render(
-      unsafeAssumeValidArg({
-        storage: { type: "localStorage" },
-        autoSave: true,
-        recordId: "test",
-        schema: {
-          type: "object",
-          properties: {
-            name: { type: "string" },
-          },
-        },
-      }),
-      brickOptionsFactory(),
-    );
-
-    await expect(renderPromise).rejects.toThrow(
-      "localStorage data binding is no longer supported since extension version 2.0.3",
-    );
-  });
-
   test("Supports postSubmitAction reset", async () => {
     const brick = new CustomFormRenderer();
     const runPipelineMock = jest.fn();
