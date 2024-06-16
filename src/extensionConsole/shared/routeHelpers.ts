@@ -18,6 +18,11 @@
 import { type RegistryId } from "@/types/registryTypes";
 
 /**
+ * @file This file contains helper functions for generating routes in the Extension Console. Other contexts can
+ * also use these methods to generate deep links.
+ */
+
+/**
  * Returns the Extension Console hash route to activate a mod in the Extension Console.
  */
 export function getActivateModHashRoute(modId: RegistryId): string {

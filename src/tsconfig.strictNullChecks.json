@@ -920,6 +920,7 @@
     "./extensionConsole/pages/workshop/workshopTypes.ts",
     "./extensionConsole/pages/workshop/workshopUtils.test.ts",
     "./extensionConsole/pages/workshop/workshopUtils.ts",
+    "./extensionConsole/shared/routeHelpers.ts",
     "./extensionConsole/testHelpers.tsx",
     "./extensionConsole/toggleSidebar.tsx",
     "./extensionContext.ts",
