@@ -20,7 +20,6 @@ import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import { showMySidePanel } from "@/background/sidePanel";
 import { waitForContentScript } from "@/background/contentScript";
-import { getRecord, setRecord } from "@/background/dataStore";
 import initTheme from "@/background/initTheme";
 import {
   addTraceEntry,
@@ -84,8 +83,6 @@ declare global {
   interface MessengerMethods {
     SHOW_MY_SIDE_PANEL: typeof showMySidePanel;
     WAIT_FOR_CONTENT_SCRIPT: typeof waitForContentScript;
-    GET_DATA_STORE: typeof getRecord;
-    SET_DATA_STORE: typeof setRecord;
     ACTIVATE_THEME: typeof initTheme;
     ADD_TRACE_ENTRY: typeof addTraceEntry;
     ADD_TRACE_EXIT: typeof addTraceExit;
@@ -156,8 +153,6 @@ export default function registerMessenger(): void {
   registerMethods({
     SHOW_MY_SIDE_PANEL: showMySidePanel,
     WAIT_FOR_CONTENT_SCRIPT: waitForContentScript,
-    GET_DATA_STORE: getRecord,
-    SET_DATA_STORE: setRecord,
     ACTIVATE_THEME: initTheme,
     ADD_TRACE_ENTRY: addTraceEntry,
     ADD_TRACE_EXIT: addTraceExit,

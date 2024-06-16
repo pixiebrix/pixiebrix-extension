@@ -29,7 +29,9 @@ import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
  * @see unsafeAssumeValidArg
  */
 export const brickOptionsFactory = define<BrickOptions>({
-  ctxt: {},
+  ctxt() {
+    return {};
+  },
   platform: () => contentScriptPlatform,
   logger: (i: number) =>
     new ConsoleLogger({

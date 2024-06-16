@@ -17,7 +17,6 @@
 
 import React from "react";
 import { type JsonObject } from "type-fest";
-import { dataStore } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
@@ -63,7 +62,8 @@ export type StateStorage = {
 };
 
 export type Storage =
-  | { type: "localStorage" }
+  // Support for `localStorage` was removed in 2.0.3
+  // | { type: "localStorage"}
   | {
       type: "database";
       databaseId: UUID;
@@ -118,18 +118,6 @@ export const CUSTOM_FORM_SCHEMA: Schema = {
           },
           required: ["type"],
         },
-        {
-          type: "object",
-          properties: {
-            type: {
-              type: "string",
-              const: "localStorage",
-              // Deprecated because custom form is the only way to access the information
-              title: "Local Storage (Deprecated)",
-            },
-          },
-          required: ["type"],
-        },
       ],
     },
     autoSave: {
@@ -165,7 +153,7 @@ export const CUSTOM_FORM_SCHEMA: Schema = {
     recordId: {
       type: "string",
       description:
-        "Unique identifier for the data record. Required if using a database or local storage",
+        "Unique identifier for the data record. Required if using a database storage",
     },
     schema: {
       type: "object",
@@ -256,7 +244,7 @@ export class CustomFormRenderer extends RendererABC {
 
   async render(
     {
-      storage = { type: "localStorage" },
+      storage,
       recordId,
       schema,
       uiSchema,
@@ -289,12 +277,28 @@ export class CustomFormRenderer extends RendererABC {
       throw new Error("extensionId is required");
     }
 
-    if (
-      isEmpty(recordId) &&
-      ["database", "localStorage"].includes(storage.type)
-    ) {
+    if (!storage) {
       throw new PropError(
-        "recordId is required for database and localStorage",
+        "storage is required since extension version 2.0.3",
+        this.id,
+        "storage",
+        storage,
+      );
+    }
+
+    // Support for localStorage was removed in 2.0.3
+    if ((storage.type as string) === "localStorage") {
+      throw new PropError(
+        "localStorage data binding is no longer supported since extension version 2.0.3",
+        this.id,
+        "storage",
+        storage,
+      );
+    }
+
+    if (isEmpty(recordId) && storage.type === "database") {
+      throw new PropError(
+        "recordId is required for database storage",
         this.id,
         "recordId",
         recordId,
@@ -398,17 +402,16 @@ async function getInitialData(
   { blueprintId, extensionId }: Partial<Context>,
 ): Promise<UnknownObject> {
   switch (storage.type) {
-    case "localStorage": {
-      const data = await dataStore.get(recordId);
-      assertObject(data, BusinessError);
-      return data;
-    }
-
     case "state": {
       const namespace = storage.namespace ?? "blueprint";
       const topLevelFrame = await getConnectedTarget();
-      // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
-      // sidebar which runs in the context of the top-level frame
+      // XXX: CustomForm currently uses page state directly instead of the platform's state API. Switching to the
+      //  platform's state API would be a breaking change for any forms that are relying on the top-level frame behavior
+      // Original comment:
+      //  Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
+      //  sidebar which runs in the context of the top-level frame
+      // The above isn't true anymore, because custom form could appear in a modal or popover, which could be in the
+      // context of a frame
       return getPageState(topLevelFrame, {
         namespace,
         blueprintId,
@@ -451,11 +454,6 @@ async function setData(
   const cleanValues = ensureJsonObject(values);
 
   switch (storage.type) {
-    case "localStorage": {
-      await dataStore.set(recordId, cleanValues);
-      return;
-    }
-
     case "database": {
       await getPlatform().request(storage.service, {
         url: `/api/databases/${storage.databaseId}/records/`,
@@ -515,8 +513,8 @@ export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
   return normalizedData;
 }
 
-// The server uses a shallow merge strategy that ignores undefined values,
-// so we need to make all the undefined field values null instead, so that the server will clear those fields instead of ignoring them
+// The server uses a shallow merge strategy that ignores undefined values, so we need to make all the undefined field
+// values null instead, so that the server will clear those fields instead of ignoring them
 export function normalizeOutgoingFormData(schema: Schema, data: UnknownObject) {
   const normalizedData = { ...data };
   for (const key of Object.keys(schema.properties ?? {})) {
