@@ -21,6 +21,7 @@ import { isModDefinition } from "@/utils/modUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { push } from "connected-react-router";
+import { getActivateModHashRoute } from "@/extensionConsole/shared/routeHelpers";
 
 function useActivateAction(modViewItem: ModViewItem): (() => void) | null {
   const dispatch = useDispatch();
@@ -33,9 +34,7 @@ function useActivateAction(modViewItem: ModViewItem): (() => void) | null {
         reinstall: false,
       });
 
-      dispatch(
-        push(`/marketplace/activate/${encodeURIComponent(mod.metadata.id)}`),
-      );
+      dispatch(push(getActivateModHashRoute(mod.metadata.id)));
     } else {
       reportEvent(Events.START_MOD_ACTIVATE, {
         blueprintId: null,
