@@ -28,7 +28,7 @@ import PipelineVisitor, {
 import {
   isDocumentElementArray,
   type DocumentElement,
-} from "@/components/documentBuilder/documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { BusinessError } from "@/errors/businessErrors";

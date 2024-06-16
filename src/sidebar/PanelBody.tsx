@@ -46,8 +46,8 @@ import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
-import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
+import { type DynamicPath } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { mapPathToTraceBranches } from "@/pageEditor/documentBuilder/utils";
 import { getPlatform } from "@/platform/platformContext";
 
 type BodyProps = {

@@ -18,7 +18,7 @@
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { type BrickPosition, type BrickConfig } from "@/bricks/types";
-import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import PipelineVisitor, { type VisitBlockExtra } from "./PipelineVisitor";

@@ -38,7 +38,7 @@ import DatabaseGetOptions, {
 import DatabasePutOptions, {
   DATABASE_PUT_ID,
 } from "@/pageEditor/fields/DatabasePutOptions";
-import DocumentOptions from "@/components/documentBuilder/edit/DocumentOptions";
+import DocumentOptions from "@/pageEditor/documentBuilder/edit/DocumentOptions";
 import RemoteMethodOptions, {
   REMOTE_METHOD_ID,
 } from "@/pageEditor/fields/RemoteMethodOptions";

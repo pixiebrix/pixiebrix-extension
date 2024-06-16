@@ -18,7 +18,7 @@
 import { COMPONENT_READER_ID } from "@/bricks/transformers/component/ComponentReader";
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
-import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { type BrickConfig } from "@/bricks/types";

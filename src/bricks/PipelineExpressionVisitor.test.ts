@@ -17,7 +17,7 @@
 
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { type BrickPosition, type BrickPipeline } from "@/bricks/types";
-import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
 import { type Expression } from "@/types/runtimeTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import PipelineExpressionVisitor from "./PipelineExpressionVisitor";
