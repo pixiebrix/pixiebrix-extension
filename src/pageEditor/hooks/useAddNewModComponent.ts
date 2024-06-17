@@ -37,8 +37,7 @@ import {
 
 type AddModComponent = (config: ModComponentFormStateAdapter) => void;
 
-// TODO: useAddNewModComponent alternatively?
-function useAddModComponent(): AddModComponent {
+function useAddNewModComponent(): AddModComponent {
   const dispatch = useDispatch();
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
@@ -102,4 +101,4 @@ function useAddModComponent(): AddModComponent {
   );
 }
 
-export default useAddModComponent;
+export default useAddNewModComponent;

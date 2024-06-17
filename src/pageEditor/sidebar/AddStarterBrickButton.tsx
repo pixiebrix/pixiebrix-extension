@@ -21,7 +21,7 @@ import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortBy } from "lodash";
-import useAddModComponent from "@/pageEditor/hooks/useAddModComponent";
+import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
 import { useSelector } from "react-redux";
 import { selectTabHasPermissions } from "@/pageEditor/tabState/tabStateSelectors";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -63,7 +63,7 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
   const sessionId = useSelector(selectSessionId);
 
-  const addElement = useAddModComponent();
+  const addElement = useAddNewModComponent();
 
   const { data: entries = [] } = useAsyncState<React.ReactNode>(async () => {
     const results = await Promise.all(

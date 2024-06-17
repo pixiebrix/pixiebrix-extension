@@ -1083,7 +1083,7 @@
     "./pageEditor/fields/makeLockableFieldProps.tsx",
     "./pageEditor/fields/selectorListItem/SelectorListItem.stories.tsx",
     "./pageEditor/fields/selectorListItem/SelectorListItem.tsx",
-    "./pageEditor/hooks/useAddModComponent.ts",
+    "./pageEditor/hooks/useAddNewModComponent.ts",
     "./pageEditor/hooks/useApiVersionAtLeast.tsx",
     "./pageEditor/hooks/useBuildAndValidateMod.ts",
     "./pageEditor/hooks/useCheckModStarterBrickInvariants.ts",
