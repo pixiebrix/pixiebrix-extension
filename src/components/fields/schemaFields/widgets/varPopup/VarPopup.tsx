@@ -17,10 +17,12 @@
 
 import React, { useCallback, useEffect } from "react";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import { replaceLikelyVariable } from "./likelyVariableUtils";
+import {
+  getFullVariableName,
+  replaceLikelyVariable,
+} from "./likelyVariableUtils";
 import VarMenu from "./VarMenu";
 import fitTextarea from "fit-textarea";
-import { getPathFromArray } from "@/runtime/pathHelpers";
 import useAttachPopup from "@/components/fields/schemaFields/widgets/varPopup/useAttachPopup";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -71,7 +73,10 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
     (selectedPath: string[]) => {
       reportEvent(Events.VAR_POPOVER_SELECT);
 
-      const fullVariableName = getPathFromArray(selectedPath);
+      const fullVariableName = getFullVariableName(
+        likelyVariable,
+        selectedPath,
+      );
 
       switch (inputMode) {
         case "var": {
@@ -117,7 +122,7 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
 
       hideMenu();
     },
-    [hideMenu, inputElementRef, inputMode, setValue, value],
+    [hideMenu, inputElementRef, inputMode, setValue, value, likelyVariable],
   );
 
   if (!isMenuShowing) {

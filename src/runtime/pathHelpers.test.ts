@@ -145,35 +145,54 @@ describe("getFieldNamesFromPathString", () => {
   });
 });
 
-test("getPathFromArray", () => {
-  const expectMatch = (
-    pathArray: Array<number | string>,
-    expectedPathString: string,
-  ) => {
-    const pathString = getPathFromArray(pathArray);
-    const lodashArray = toPath(pathString);
+describe("getPathFromArray", () => {
+  test("required path parts", () => {
+    const expectMatch = (
+      pathArray: Array<number | string>,
+      expectedPathString: string,
+    ) => {
+      const pathString = getPathFromArray(pathArray);
+      const lodashArray = toPath(pathString);
 
-    // Compare the array to the expected string
-    expect(pathString).toBe(expectedPathString);
+      // Compare the array to the expected string
+      expect(pathString).toBe(expectedPathString);
 
-    // Expect the same input, except that lodash only returns strings even for numbers
-    expect(lodashArray).toEqual(pathArray.map(String));
-  };
+      // Expect the same input, except that lodash only returns strings even for numbers
+      expect(lodashArray).toEqual(pathArray.map(String));
+    };
 
-  expectMatch(["user"], "user");
-  expectMatch(["users", 0], "users[0]");
-  expectMatch(["users", 0, "name"], "users[0].name");
-  expectMatch(["users", ""], 'users[""]');
-  expectMatch(["names", "Dante Alighieri"], 'names["Dante Alighieri"]');
-  expectMatch(
-    ["Ugo Foscolo", "User Location"],
-    '["Ugo Foscolo"]["User Location"]',
-  );
-  expectMatch(["User List", 100, "id"], '["User List"][100].id');
-  expectMatch(
-    ["User List", 100_000_000, "The name"],
-    '["User List"][100000000]["The name"]',
-  );
+    expectMatch(["user"], "user");
+    expectMatch(["users", 0], "users[0]");
+    expectMatch(["users", 0, "name"], "users[0].name");
+    expectMatch(["users", ""], 'users[""]');
+    expectMatch(["names", "Dante Alighieri"], 'names["Dante Alighieri"]');
+    expectMatch(
+      ["Ugo Foscolo", "User Location"],
+      '["Ugo Foscolo"]["User Location"]',
+    );
+    expectMatch(["User List", 100, "id"], '["User List"][100].id');
+    expectMatch(
+      ["User List", 100_000_000, "The name"],
+      '["User List"][100000000]["The name"]',
+    );
+  });
+
+  test("optional chaining path parts", () => {
+    expect(
+      getPathFromArray(["users", { part: 0, isOptional: true }, "name"]),
+    ).toBe("users[0]?.name");
+    expect(
+      getPathFromArray(["users?", { part: 0, isOptional: true }, "name"]),
+    ).toBe("users?.[0]?.name");
+    expect(
+      getPathFromArray([
+        "users",
+        "foo bar?",
+        { part: 0, isOptional: true },
+        "name",
+      ]),
+    ).toBe('users["foo bar?"][0]?.name');
+  });
 });
 
 test.each([

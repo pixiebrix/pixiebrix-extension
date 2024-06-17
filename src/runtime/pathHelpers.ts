@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { identity, toPath } from "lodash";
+import { identity, toPath, trimEnd } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { cleanValue, isObject } from "@/utils/objectUtils";
 import { joinName } from "@/utils/formUtils";
@@ -151,6 +151,52 @@ export function getFieldNamesFromPathString(
   return [parentFieldName, fieldName];
 }
 
+/**
+ * Normalize an array of parts into an explicit format simpler for joining the path back together.
+ */
+function normalizePart(
+  partOrRecord:
+    | string
+    | number
+    | { part: string | number; isOptional: boolean },
+): { part: string; isOptional: boolean; isBrackets: boolean } {
+  if (typeof partOrRecord === "string") {
+    if (partOrRecord === "" || /[ .]/.test(partOrRecord)) {
+      return {
+        part: `["${partOrRecord}"]`,
+        isOptional: false,
+        isBrackets: true,
+      };
+    }
+
+    // Treat numeric strings as array access
+    if (/\d+/.test(partOrRecord)) {
+      return {
+        part: `[${partOrRecord}]`,
+        isOptional: false,
+        isBrackets: true,
+      };
+    }
+
+    return {
+      part: trimEnd(partOrRecord, "?"),
+      isOptional: partOrRecord.endsWith("?"),
+      isBrackets: false,
+    };
+  }
+
+  if (typeof partOrRecord === "number") {
+    return { part: `[${partOrRecord}]`, isOptional: false, isBrackets: true };
+  }
+
+  const normalized = normalizePart(partOrRecord.part);
+
+  return {
+    ...normalized,
+    isOptional: partOrRecord.isOptional || normalized.isOptional,
+  };
+}
+
 // Counterpart to _.toPath: https://lodash.com/docs/4.17.15#toPath
 // `fromPath` Missing from lodash: https://github.com/lodash/lodash/issues/2169
 /**
@@ -159,19 +205,27 @@ export function getFieldNamesFromPathString(
  *
  * @example getPathFromArray(["user", "name"]) // => "user.name"
  * @example getPathFromArray(["title", "Divine Comedy"]) // => "title["Divine Comedy"]"
+ * @example getPathFromArray([{part: "title", isOptional: true}, "Divine Comedy"]) // => "title?.["Divine Comedy"]"
  */
-export function getPathFromArray(parts: Array<string | number>): string {
-  return parts
-    .map((part, index) => {
-      if (part === "" || (typeof part === "string" && /[ .]/.test(part))) {
-        return `["${part}"]`;
+export function getPathFromArray(
+  parts: Array<
+    string | number | { part: string | number; isOptional: boolean }
+  >,
+): string {
+  const normalizedParts = parts.map((x) => normalizePart(x));
+
+  return normalizedParts
+    .map(({ part, isOptional, isBrackets }, index) => {
+      let modified = part;
+
+      if (isOptional) {
+        modified = `${part}?`;
       }
 
-      if (typeof part === "number" || /^\d+$/.test(part)) {
-        return `[${part}]`;
-      }
-
-      return index === 0 ? part : `.${part}`;
+      return index === 0 ||
+        (isBrackets && !normalizedParts[index - 1]?.isOptional)
+        ? modified
+        : `.${modified}`;
     })
     .join("");
 }
