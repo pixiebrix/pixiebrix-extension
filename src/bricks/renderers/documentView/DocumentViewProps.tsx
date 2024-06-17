@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { type BrickArgsContext, type BrickOptions } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";

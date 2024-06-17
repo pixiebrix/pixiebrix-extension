@@ -55,7 +55,11 @@ const ZapierIntegrationModal: React.FunctionComponent<OwnProps> = ({
           <InputGroup>
             <Form.Control type="text" readOnly defaultValue={data?.api_key} />
             <InputGroup.Append>
-              <Button variant="info" onClick={handleCopy}>
+              <Button
+                variant="info"
+                onClick={handleCopy}
+                aria-label="Copy PixieBrix Zapier key to clipboard"
+              >
                 {/* eslint-disable-next-line react/jsx-max-depth -- Not worth extracting */}
                 <FontAwesomeIcon icon={faCopy} />
               </Button>

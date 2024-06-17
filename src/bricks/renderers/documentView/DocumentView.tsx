@@ -17,10 +17,10 @@
 
 import "@/vendors/bootstrapWithoutRem.css";
 import "@/sidebar/sidebarBootstrapOverrides.scss";
-import { buildDocumentBranch } from "@/components/documentBuilder/documentTree";
+import { buildDocumentBranch } from "@/pageEditor/documentBuilder/documentTree";
 import React from "react";
 import { type DocumentViewProps } from "./DocumentViewProps";
-import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
+import DocumentContext from "@/pageEditor/documentBuilder/render/DocumentContext";
 import { Stylesheets } from "@/components/Stylesheets";
 import { joinPathParts } from "@/utils/formUtils";
 import StylesheetsContext, {

@@ -32,12 +32,12 @@ import { SELF_EXISTENCE, VarExistence } from "./varMap";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
 import {
   type ButtonDocumentElement,
   type DocumentElement,
   type ListDocumentElement,
-} from "@/components/documentBuilder/documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { services } from "@/background/messenger/api";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";

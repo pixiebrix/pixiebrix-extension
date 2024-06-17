@@ -27,7 +27,7 @@ import { type Schema } from "@/types/schemaTypes";
 import {
   DOCUMENT_ELEMENT_TYPES,
   type DocumentElement,
-} from "@/components/documentBuilder/documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import { type DocumentViewProps } from "./documentView/DocumentViewProps";
 
