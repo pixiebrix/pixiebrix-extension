@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { toPath } from "lodash";
+import { getPathFromArray } from "@/runtime/pathHelpers";
+
 const varRegex = /(?<varName>@(\.|\w|(\[\d+])|(\[("|')[\s\w]+("|')]))*)/g;
 
 type LikelyVariable = {
@@ -188,4 +191,50 @@ export function replaceLikelyVariable(
     newTemplate: `${templatePartLeftOfLikelyVariable}${replacementWithBraces}${templatePartRightOfLikelyVariable}`,
     newCursorPosition: endOfVariableIndex,
   };
+}
+
+/**
+ * Select the full variable name based on the selected path and user's expression so far.
+ */
+export function getFullVariableName(
+  likelyVariable: string,
+  selectedPath: string[],
+): string {
+  // `toPath` will create a separate element for the ? symbol. So we need to merge them back. Eventually we need to
+  // switch from `toPath` to our own implementation/parser.
+  // @foo.bar[42]? -> [@foo, bar, 42, ?]
+  const pathWithChainElements = toPath(likelyVariable);
+
+  const likelyPath: string[] = [];
+  for (let i = 0; i < pathWithChainElements.length; i++) {
+    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- numeric index
+    const base: string = pathWithChainElements[i]!;
+
+    if (pathWithChainElements[i + 1] === "?") {
+      // TODO: #8637: https://github.com/pixiebrix/pixiebrix-extension/issues/8638
+      //  if the path is `["hello world?"]` this results in ??, which is incorrect. See test case.
+      likelyPath.push(base + "?");
+      i++;
+    } else {
+      likelyPath.push(base);
+    }
+  }
+
+  return getPathFromArray(
+    selectedPath.map((part, index) => {
+      // eslint-disable-next-line security/detect-object-injection -- numeric index
+      const current = likelyPath[index] ?? "";
+
+      // Preserve optional chaining from what the user has typed so far
+      if (
+        current.endsWith("?") &&
+        !/[ .]/.test(current) &&
+        index !== selectedPath.length - 1
+      ) {
+        return { part, isOptional: true };
+      }
+
+      return part;
+    }),
+  );
 }

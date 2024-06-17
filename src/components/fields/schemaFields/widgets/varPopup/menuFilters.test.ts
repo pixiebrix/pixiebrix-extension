@@ -91,6 +91,15 @@ describe("filterVarMapByVariable", () => {
       }),
     );
 
+    // Exact match with chaining
+    expect(filterVarMapByVariable(inputMap, "@input?.foo")).toEqual(
+      expect.objectContaining({
+        "@input": expect.objectContaining({
+          foo: expect.toBeObject(),
+        }),
+      }),
+    );
+
     // Empty because trailing period indicates final variable name
     expect(filterVarMapByVariable(inputMap, "@input.fo.")).toEqual(
       expect.objectContaining({

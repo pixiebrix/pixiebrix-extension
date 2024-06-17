@@ -16,6 +16,7 @@
  */
 
 import {
+  getFullVariableName,
   getLikelyVariableAtPosition,
   replaceLikelyVariable,
 } from "./likelyVariableUtils";
@@ -312,5 +313,46 @@ describe("replaceLikelyVariable", () => {
 
     expect(actual).toEqual(expectedTemplate);
     expect(newCursorPosition).toEqual(endOfVariableIndex);
+  });
+});
+
+describe("getFullVariableName", () => {
+  it("preserves optional chaining", () => {
+    expect(getFullVariableName("@foo", ["@foo", "bar"])).toBe("@foo.bar");
+    expect(getFullVariableName("@foo?", ["@foo", "bar"])).toBe("@foo?.bar");
+    expect(getFullVariableName("@foo?.bar?", ["@foo", "bar", "baz"])).toBe(
+      "@foo?.bar?.baz",
+    );
+  });
+
+  // TODO: #8638: https://github.com/pixiebrix/pixiebrix-extension/issues/8638
+  it.skip("#8638: handle ? in property accessor", () => {
+    expect(
+      getFullVariableName('@foo.bar["hello world?"]?', [
+        "@foo",
+        "bar",
+        "hello world?",
+        "qux",
+      ]),
+    ).toBe('@foo.bar["hello world?"]?.qux');
+  });
+
+  it("handles optional chaining with bracket notation", () => {
+    expect(
+      getFullVariableName("@foo.bar?.[42]", ["@foo", "bar", "42", "qux"]),
+    ).toBe("@foo.bar?.[42].qux");
+    expect(
+      getFullVariableName("@foo.bar[42]?", ["@foo", "bar", "42", "qux"]),
+    ).toBe("@foo.bar[42]?.qux");
+    expect(
+      getFullVariableName('@foo.bar[""]?', ["@foo", "bar", "", "qux"]),
+    ).toBe('@foo.bar[""]?.qux');
+    expect(
+      getFullVariableName('@foo?.["hello world?"]', [
+        "@foo",
+        "hello world?",
+        "bar",
+      ]),
+    ).toBe('@foo?.["hello world?"].bar');
   });
 });
