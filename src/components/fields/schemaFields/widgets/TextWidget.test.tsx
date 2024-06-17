@@ -87,12 +87,17 @@ describe("TextWidget", () => {
     expect(isVarValue("@example.property['nestedProperty']")).toBe(true);
     expect(isVarValue('@example["property"].nestedProperty')).toBe(true);
     expect(isVarValue("@example.property.nestedProperty")).toBe(true);
+    expect(isVarValue("@myObject.optionalProperty?.bar")).toBe(true);
+    expect(isVarValue("@myOptionalObject?.bar")).toBe(true);
 
     // Invalid strings:
     expect(isVarValue("abc")).toBe(false);
     expect(isVarValue("@property extra text")).toBe(false);
     expect(isVarValue("@123")).toBe(false);
     expect(isVarValue("@")).toBe(false);
+    expect(isVarValue("@myObject.optionalProperty?")).toBe(false);
+    expect(isVarValue("?")).toBe(false);
+    expect(isVarValue("?@abc")).toBe(false);
   });
 
   test("isVarLike", () => {
@@ -101,6 +106,8 @@ describe("TextWidget", () => {
     expect(isVarLike("@object[")).toBe(true);
     expect(isVarLike("@object[0")).toBe(true);
     expect(isVarLike("@object.")).toBe(true);
+    expect(isVarLike("@object?")).toBe(true);
+    expect(isVarLike("@object?.")).toBe(true);
     expect(isVarLike("@obj ect.")).toBe(false);
   });
 });
