@@ -41,16 +41,16 @@ import { type Brick } from "@/types/brickTypes";
 import { joinPathParts } from "@/utils/formUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-type TestAddBlockResult = {
+type TestAddBrickResult = {
   error?: React.ReactNode;
 };
 
-type AddBlock = {
-  testAddBlock: (block: Brick) => Promise<TestAddBlockResult>;
-  addBlock: (block: Brick) => Promise<void>;
+type AddBrick = {
+  testAddBrick: (brick: Brick) => Promise<TestAddBrickResult>;
+  addBrick: (brick: Brick) => Promise<void>;
 };
 
-function makeBlockLevelAnalyses(): Analysis[] {
+function makeBrickLevelAnalyses(): Analysis[] {
   return [
     new BrickTypeAnalysis(),
     new FormBrickAnalysis(),
@@ -58,7 +58,7 @@ function makeBlockLevelAnalyses(): Analysis[] {
   ];
 }
 
-function useAddBlock(): AddBlock {
+function useAddBrick(): AddBrick {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const activeExtension = useSelector(selectActiveModComponentFormState);
@@ -66,17 +66,17 @@ function useAddBlock(): AddBlock {
 
   const addBlockLocation = useSelector(selectAddBlockLocation);
 
-  const makeNewBlock = useCallback(
-    async (block: Brick): Promise<BrickConfig> => {
+  const makeNewBrick = useCallback(
+    async (brick: Brick): Promise<BrickConfig> => {
       const outputKey = await generateFreshOutputKey(
-        block,
+        brick,
         compact([
           "input" as OutputKey,
           ...Object.values(pipelineMap).map((x) => x.blockConfig.outputKey),
         ]),
       );
-      const newBlock = createNewConfiguredBrick(block.id, {
-        brickInputSchema: block.inputSchema,
+      const newBlock = createNewConfiguredBrick(brick.id, {
+        brickInputSchema: brick.inputSchema,
       });
       if (outputKey) {
         newBlock.outputKey = outputKey;
@@ -88,18 +88,18 @@ function useAddBlock(): AddBlock {
   );
 
   /**
-   * Create a copy of the active extension, add the block, and then
-   * run block-level analyses to determine if there are any issues
-   * with adding the particular block.
+   * Create a copy of the active extension, add the brick, and then
+   * run brick-level analyses to determine if there are any issues
+   * with adding the particular brick.
    */
-  const testAddBlock = useCallback(
-    async (block: Brick): Promise<TestAddBlockResult> => {
+  const testAddBrick = useCallback(
+    async (block: Brick): Promise<TestAddBrickResult> => {
       if (!addBlockLocation) {
         return {};
       }
 
       // Add the block to a copy of the extension
-      const newBlock = await makeNewBlock(block);
+      const newBlock = await makeNewBrick(block);
       const newExtension = produce(activeExtension, (draft) => {
         const pipeline = get(draft, addBlockLocation.path) as
           | BrickConfig[]
@@ -112,7 +112,7 @@ function useAddBlock(): AddBlock {
       });
 
       // Run the block-level analyses and gather annotations
-      const analyses = makeBlockLevelAnalyses();
+      const analyses = makeBrickLevelAnalyses();
       const annotationSets = await Promise.all(
         analyses.map(async (analysis) => {
           await analysis.run(newExtension);
@@ -136,16 +136,16 @@ function useAddBlock(): AddBlock {
 
       return {};
     },
-    [activeExtension, addBlockLocation, makeNewBlock],
+    [activeExtension, addBlockLocation, makeNewBrick],
   );
 
-  const addBlock = useCallback(
-    async (block: Brick) => {
+  const addBrick = useCallback(
+    async (brick: Brick) => {
       if (!addBlockLocation) {
         return;
       }
 
-      const newBlock = await makeNewBlock(block);
+      const newBlock = await makeNewBrick(brick);
 
       dispatch(
         actions.addNode({
@@ -156,7 +156,7 @@ function useAddBlock(): AddBlock {
       );
 
       reportEvent(Events.BRICK_ADD, {
-        brickId: block.id,
+        brickId: brick.id,
         sessionId,
         extensionId: activeExtension.uuid,
         source: "PageEditor-BrickSearchModal",
@@ -166,15 +166,15 @@ function useAddBlock(): AddBlock {
       activeExtension?.uuid,
       addBlockLocation,
       dispatch,
-      makeNewBlock,
+      makeNewBrick,
       sessionId,
     ],
   );
 
   return {
-    testAddBlock,
-    addBlock,
+    testAddBrick,
+    addBrick,
   };
 }
 
-export default useAddBlock;
+export default useAddBrick;

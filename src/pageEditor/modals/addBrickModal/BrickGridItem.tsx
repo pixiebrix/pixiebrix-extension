@@ -18,26 +18,26 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
-import styles from "./BlockGridItem.module.scss";
+import styles from "./BrickGridItem.module.scss";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Icon from "@/icons/Icon";
-import { type BlockResult } from "@/components/addBlockModal/addBlockModalTypes";
+import { type BrickSearchResult } from "@/pageEditor/modals/addBrickModal/addBrickModalTypes";
 import cx from "classnames";
 import Alert from "@/components/Alert";
 import ClickableElement from "@/components/ClickableElement";
 
-export const BLOCK_ITEM_FIXED_HEIGHT_PX = 89;
+export const BRICK_ITEM_FIXED_HEIGHT_PX = 89;
 
-type BlockItemProps = {
-  block: BlockResult;
+type BrickItemProps = {
+  brick: BrickSearchResult;
   onSelect: () => void;
   onShowDetail: () => void;
   invalidMessage?: React.ReactNode;
 };
 
-const BlockGridItem: React.VFC<BlockItemProps> = ({
-  block,
+const BrickGridItem: React.VFC<BrickItemProps> = ({
+  brick,
   onSelect,
   onShowDetail,
   invalidMessage,
@@ -49,9 +49,9 @@ const BlockGridItem: React.VFC<BlockItemProps> = ({
       })}
     >
       <div className={styles.nameRow}>
-        <BrickIcon brick={block} faIconClass={styles.icon} />
-        <span className={styles.name}>{block.name}</span>
-        {block.isPopular && (
+        <BrickIcon brick={brick} faIconClass={styles.icon} />
+        <span className={styles.name}>{brick.name}</span>
+        {brick.isPopular && (
           <Icon
             icon="icon-sparkles"
             library="custom"
@@ -59,8 +59,8 @@ const BlockGridItem: React.VFC<BlockItemProps> = ({
           />
         )}
       </div>
-      {block.description ? (
-        <div className={styles.description}>{block.description}</div>
+      {brick.description ? (
+        <div className={styles.description}>{brick.description}</div>
       ) : (
         <small className="text-muted font-italic">
           No description provided.
@@ -86,4 +86,4 @@ const BlockGridItem: React.VFC<BlockItemProps> = ({
   </ClickableElement>
 );
 
-export default BlockGridItem;
+export default BrickGridItem;

@@ -9,20 +9,20 @@ import SchemaTree from "@/components/schemaTree/SchemaTree";
 
 import { MARKETPLACE_URL } from "@/urlConstants";
 
-const BlockDetail: React.FunctionComponent<{
-  block: Brick;
+const BrickDetail: React.FunctionComponent<{
+  brick: Brick;
   listing?: MarketplaceListing;
   onSelect: () => void;
   selectCaption: React.ReactNode;
-}> = ({ block, selectCaption = "Select", listing, onSelect }) => (
+}> = ({ brick, selectCaption = "Select", listing, onSelect }) => (
   <div className="d-flex flex-column gap-3 flex-grow-1">
     <div className="d-flex justify-content-between">
       <div>
         <h4>
-          {block.name} <BrickIcon brick={block} />
+          {brick.name} <BrickIcon brick={brick} />
         </h4>
-        <code>{block.id}</code>
-        <p>{block.description}</p>
+        <code>{brick.id}</code>
+        <p>{brick.description}</p>
         {listing && (
           <a
             href={`${MARKETPLACE_URL}${listing.id}/`}
@@ -44,16 +44,16 @@ const BlockDetail: React.FunctionComponent<{
 
     <div className="small">
       <h6 className="my-3">Input Schema</h6>
-      <SchemaTree schema={block.inputSchema} />
+      <SchemaTree schema={brick.inputSchema} />
     </div>
 
-    {block.outputSchema && (
+    {brick.outputSchema && (
       <div className="small">
         <h6 className="my-3">Output Schema</h6>
-        <SchemaTree schema={block.outputSchema} />
+        <SchemaTree schema={brick.outputSchema} />
       </div>
     )}
   </div>
 );
 
-export default BlockDetail;
+export default BrickDetail;

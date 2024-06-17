@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
+import groupListingsByTag from "@/pageEditor/modals/addBrickModal/groupListingsByTag";
 
 import {
   marketplaceListingFactory,

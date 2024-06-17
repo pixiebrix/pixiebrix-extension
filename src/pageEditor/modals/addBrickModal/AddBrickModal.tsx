@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./AddBlockModal.module.scss";
+import styles from "./AddBrickModal.module.scss";
 
 import React, {
   useCallback,
@@ -28,38 +28,40 @@ import { Button, Modal } from "react-bootstrap";
 import { compact, isEmpty } from "lodash";
 import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
-import { BLOCK_ITEM_FIXED_HEIGHT_PX } from "./BlockGridItem";
+import { BRICK_ITEM_FIXED_HEIGHT_PX } from "./BrickGridItem";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
-import TagSearchInput from "@/components/addBlockModal/TagSearchInput";
-import TagList, { type TagItem } from "@/components/addBlockModal/TagList";
+import TagSearchInput from "@/pageEditor/modals/addBrickModal/TagSearchInput";
+import TagList, {
+  type TagItem,
+} from "@/pageEditor/modals/addBrickModal/TagList";
 import {
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
 } from "@/data/service/api";
 import { type MarketplaceListing } from "@/types/contract";
-import BlockDetail from "@/components/addBlockModal/BlockDetail";
+import BrickDetail from "@/pageEditor/modals/addBrickModal/BrickDetail";
 import Loader from "@/components/Loader";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type Draft, produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
-import useBlockSearch from "@/components/addBlockModal/useBlockSearch";
-import BlockGridItemRenderer from "@/components/addBlockModal/BlockGridItemRenderer";
-import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
+import useBrickSearch from "@/pageEditor/modals/addBrickModal/useBrickSearch";
+import BrickGridItemRenderer from "@/pageEditor/modals/addBrickModal/BrickGridItemRenderer";
+import groupListingsByTag from "@/pageEditor/modals/addBrickModal/groupListingsByTag";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectEditorModalVisibilities } from "@/pageEditor/slices/editorSelectors";
 import {
-  BLOCK_RESULT_COLUMN_COUNT,
+  BRICK_RESULT_COLUMN_COUNT,
   TAG_ALL,
-} from "@/components/addBlockModal/addBlockModalConstants";
+} from "@/pageEditor/modals/addBrickModal/addBrickModalConstants";
 import {
-  type BlockGridData,
-  type BlockOption,
-} from "@/components/addBlockModal/addBlockModalTypes";
-import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
-import useAddBlock from "@/components/addBlockModal/useAddBlock";
+  type BrickGridData,
+  type BrickSelectOption,
+} from "@/pageEditor/modals/addBrickModal/addBrickModalTypes";
+import { getItemKey } from "@/pageEditor/modals/addBrickModal/addBrickModalHelpers";
+import useAddBrick from "@/pageEditor/modals/addBrickModal/useAddBrick";
 import useTheme from "@/hooks/useTheme";
 import aaLogo from "@img/aa-logo-small.png";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
@@ -75,7 +77,7 @@ type State = {
   query: string;
   searchTag: string;
   scrollPosition: number;
-  detailBlock: Brick | null;
+  detailBrick: Brick | null;
   scrollTo: number | null;
 };
 
@@ -83,7 +85,7 @@ const initialState: State = {
   query: "",
   searchTag: TAG_ALL,
   scrollPosition: 0,
-  detailBlock: null,
+  detailBrick: null,
   scrollTo: null,
 };
 
@@ -102,12 +104,12 @@ const slice = createSlice({
     setScrollPosition(state, action: PayloadAction<number>) {
       state.scrollPosition = action.payload;
     },
-    onSetDetailBlock(state, action: PayloadAction<Brick>) {
-      state.detailBlock = action.payload as Draft<Brick>;
+    onSetDetailBrick(state, action: PayloadAction<Brick>) {
+      state.detailBrick = action.payload as Draft<Brick>;
       state.scrollTo = state.scrollPosition;
     },
-    onClearDetailBlock(state) {
-      state.detailBlock = null;
+    onClearDetailBrick(state) {
+      state.detailBrick = null;
     },
     onClearScrollTo(state) {
       state.scrollTo = null;
@@ -122,7 +124,7 @@ const slice = createSlice({
   },
 });
 
-const AddBlockModal: React.FC = () => {
+const AddBrickModal: React.FC = () => {
   const [state, dispatch] = useReducer(slice.reducer, initialState);
 
   const { isAddBlockModalVisible: show } = useSelector(
@@ -139,19 +141,19 @@ const AddBlockModal: React.FC = () => {
     dispatch(slice.actions.resetState);
   }, [reduxDispatch]);
 
-  const { testAddBlock, addBlock } = useAddBlock();
+  const { testAddBrick, addBrick } = useAddBrick();
 
-  const onSelectBlock = useCallback(
-    async (block: Brick) => {
+  const onSelectBrick = useCallback(
+    async (brick: Brick) => {
       try {
-        await addBlock(block);
+        await addBrick(brick);
       } catch (error) {
         console.error(error);
       }
 
       closeModal();
     },
-    [addBlock, closeModal],
+    [addBrick, closeModal],
   );
 
   useEffect(() => {
@@ -162,13 +164,13 @@ const AddBlockModal: React.FC = () => {
     if (
       state.scrollTo != null &&
       state.scrollPosition !== state.scrollTo &&
-      state.detailBlock == null
+      state.detailBrick == null
     ) {
       const scrollTo = { scrollTop: state.scrollTo };
       dispatch(slice.actions.onClearScrollTo());
       gridRef.current.scrollTo(scrollTo);
     }
-  }, [state.detailBlock, state.scrollPosition, state.scrollTo]);
+  }, [state.detailBrick, state.scrollPosition, state.scrollTo]);
 
   const { data: marketplaceTags = [], isLoading: isLoadingTags } =
     useGetMarketplaceTagsQuery();
@@ -212,45 +214,45 @@ const AddBlockModal: React.FC = () => {
     return items;
   }, [marketplaceTags, themeName]);
 
-  const filteredBlocks = useMemo<Brick[]>(() => {
+  const filteredBricks = useMemo<Brick[]>(() => {
     if (isLoadingAllBricks || isLoadingTags || isEmpty(allBricks)) {
       return [];
     }
 
-    let typedBlocks = [...allBricks.values()];
+    let typedBricks = [...allBricks.values()];
 
     if (themeName === AUTOMATION_ANYWHERE_PARTNER_KEY) {
-      typedBlocks = typedBlocks.filter(
+      typedBricks = typedBricks.filter(
         // eslint-disable-next-line security/detect-object-injection -- constant
         (typed) => !taggedBrickIds[TAG_UIPATH]?.has(typed.block.id),
       );
     }
 
-    return typedBlocks.map(({ block }) => block);
+    return typedBricks.map(({ block }) => block);
   }, [allBricks, isLoadingAllBricks, isLoadingTags, themeName, taggedBrickIds]);
 
-  const searchResults = useBlockSearch(
-    filteredBlocks,
+  const searchResults = useBrickSearch(
+    filteredBricks,
     taggedBrickIds,
     state.query,
     state.searchTag,
   );
 
-  const blockOptions = useMemo<BlockOption[]>(() => {
+  const brickOptions = useMemo<BrickSelectOption[]>(() => {
     if (isEmpty(searchResults)) {
       return [];
     }
 
-    const popular: BlockOption[] = [];
-    const regular: BlockOption[] = [];
+    const popular: BrickSelectOption[] = [];
+    const regular: BrickSelectOption[] = [];
 
-    for (const blockOption of searchResults) {
+    for (const brickOption of searchResults) {
       // eslint-disable-next-line security/detect-object-injection -- constant
-      if (taggedBrickIds[TAG_POPULAR]?.has(blockOption.blockResult.id)) {
+      if (taggedBrickIds[TAG_POPULAR]?.has(brickOption.brickResult.id)) {
         // Use immer to keep the class prototype and it's methods. There are downstream calls to runtime/getType which
         // depend on certain methods (e.g., transform, etc.) being present on the brick
-        const newOption = produce(blockOption, (draft) => {
-          draft.blockResult.isPopular = true;
+        const newOption = produce(brickOption, (draft) => {
+          draft.brickResult.isPopular = true;
         });
         // Do not sort popular bricks on top if the user has typed a search query
         if (isEmpty(state.query)) {
@@ -259,25 +261,25 @@ const AddBlockModal: React.FC = () => {
           regular.push(newOption);
         }
       } else {
-        regular.push(blockOption);
+        regular.push(brickOption);
       }
     }
 
     return [...popular, ...regular];
   }, [searchResults, state.query, taggedBrickIds]);
 
-  const { data: invalidBlockMessages } = useAsyncState<
-    BlockGridData["invalidBlockMessages"]
+  const { data: invalidBrickMessages } = useAsyncState<
+    BrickGridData["invalidBrickMessages"]
   >(
     async () =>
       new Map(
         compact(
           await Promise.all(
-            blockOptions.map(
-              async (blockOption): Promise<[RegistryId, React.ReactNode]> => {
-                const result = await testAddBlock(blockOption.blockResult);
+            brickOptions.map(
+              async (brickOption): Promise<[RegistryId, React.ReactNode]> => {
+                const result = await testAddBrick(brickOption.brickResult);
                 if (result.error) {
-                  return [blockOption.blockResult.id, result.error];
+                  return [brickOption.brickResult.id, result.error];
                 }
 
                 return null;
@@ -286,22 +288,22 @@ const AddBlockModal: React.FC = () => {
           ),
         ),
       ),
-    [blockOptions],
+    [brickOptions],
   );
 
-  const gridData = useMemo<BlockGridData>(
+  const gridData = useMemo<BrickGridData>(
     () => ({
-      blockOptions,
-      invalidBlockMessages:
-        invalidBlockMessages ?? new Map<RegistryId, string>(),
-      onSetDetailBlock(block: Brick) {
-        dispatch(slice.actions.onSetDetailBlock(block));
+      brickOptions,
+      invalidBrickMessages:
+        invalidBrickMessages ?? new Map<RegistryId, string>(),
+      onSetDetailBrick(brick: Brick) {
+        dispatch(slice.actions.onSetDetailBrick(brick));
       },
-      onSelectBlock(block: Brick) {
-        void onSelectBlock(block);
+      onSelectBrick(brick: Brick) {
+        void onSelectBrick(brick);
       },
     }),
-    [blockOptions, invalidBlockMessages, onSelectBlock],
+    [brickOptions, invalidBrickMessages, onSelectBrick],
   );
 
   return (
@@ -315,11 +317,11 @@ const AddBlockModal: React.FC = () => {
       keyboard={false}
     >
       <Modal.Header className={styles.header}>
-        {state.detailBlock ? (
+        {state.detailBrick ? (
           <Button
             variant="link"
             onClick={() => {
-              dispatch(slice.actions.onClearDetailBlock());
+              dispatch(slice.actions.onClearDetailBrick());
             }}
           >
             <FontAwesomeIcon icon={faChevronLeft} /> Back
@@ -357,20 +359,20 @@ const AddBlockModal: React.FC = () => {
       </Modal.Header>
       <Modal.Body
         className={cx(styles.body, {
-          [styles.blockDetail ?? ""]: state.detailBlock != null,
+          [styles.brickDetail ?? ""]: state.detailBrick != null,
         })}
       >
-        {state.detailBlock ? (
-          <BlockDetail
-            block={state.detailBlock}
-            listing={listings[state.detailBlock.id]}
+        {state.detailBrick ? (
+          <BrickDetail
+            brick={state.detailBrick}
+            listing={listings[state.detailBrick.id]}
             selectCaption={
               <span>
                 <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add brick
               </span>
             }
             onSelect={() => {
-              void addBlock(state.detailBlock);
+              void addBrick(state.detailBrick);
               closeModal();
             }}
           />
@@ -405,12 +407,12 @@ const AddBlockModal: React.FC = () => {
                       height={height}
                       width={width}
                       columnWidth={
-                        (width - scrollbarWidth()) / BLOCK_RESULT_COLUMN_COUNT
+                        (width - scrollbarWidth()) / BRICK_RESULT_COLUMN_COUNT
                       }
-                      rowHeight={BLOCK_ITEM_FIXED_HEIGHT_PX}
-                      columnCount={BLOCK_RESULT_COLUMN_COUNT}
+                      rowHeight={BRICK_ITEM_FIXED_HEIGHT_PX}
+                      columnCount={BRICK_RESULT_COLUMN_COUNT}
                       rowCount={Math.ceil(
-                        searchResults.length / BLOCK_RESULT_COLUMN_COUNT,
+                        searchResults.length / BRICK_RESULT_COLUMN_COUNT,
                       )}
                       itemKey={getItemKey}
                       itemData={gridData}
@@ -419,7 +421,7 @@ const AddBlockModal: React.FC = () => {
                       }}
                       ref={gridRef}
                     >
-                      {BlockGridItemRenderer}
+                      {BrickGridItemRenderer}
                     </LazyGrid>
                   )}
                 </AutoSizer>
@@ -432,4 +434,4 @@ const AddBlockModal: React.FC = () => {
   );
 };
 
-export default AddBlockModal;
+export default AddBrickModal;
