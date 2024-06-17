@@ -59,7 +59,7 @@ function schemaSupportsTemplates(schema: Schema): boolean {
 //   -@: Check for a @ character at the beginning of the string.
 //   -(?!\d): Ensure the first character of the identifier is not a digit.
 //   -([\w$]+): Capture the initial identifier, which can consist of letters, digits, underscores, or dollar signs.
-//   -((\??\.[\w$]+)|(\[(\d+|"[^"]+")\]))*: Match any number of properties or array indices, separated by periods or enclosed in square brackets.\.[\w$]+: A property preceded by a period, consisting of letters, digits, underscores, or dollar signs.
+//   -((\??\.[\w$]+)|(\[(\d+|"[^"]+")\]))*: Match any number of properties or array indices, separated by periods (potentially with an optional chaining question mark) or enclosed in square brackets.\.[\w$]+: A property preceded by a period, consisting of letters, digits, underscores, or dollar signs.
 //   -\[(\d+|"[^"]+")\]: Either an array index consisting of one or more digits, or a property name wrapped in double quotes and containing any characters except double quotes, both enclosed in square brackets.
 //   -$: Assert the end of the string.
 const objectPathRegex =

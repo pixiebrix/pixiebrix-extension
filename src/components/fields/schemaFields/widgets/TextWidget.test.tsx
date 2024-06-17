@@ -96,6 +96,8 @@ describe("TextWidget", () => {
     expect(isVarValue("@123")).toBe(false);
     expect(isVarValue("@")).toBe(false);
     expect(isVarValue("@myObject.optionalProperty?")).toBe(false);
+    expect(isVarValue("?")).toBe(false);
+    expect(isVarValue("?@abc")).toBe(false);
   });
 
   test("isVarLike", () => {
