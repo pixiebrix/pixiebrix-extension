@@ -35,9 +35,10 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 
-type AddElement = (config: ElementConfig) => void;
+type AddModComponent = (config: ElementConfig) => void;
 
-function useAddModComponent(): AddElement {
+// TODO: useAddNewModComponent alternatively?
+function useAddModComponent(): AddModComponent {
   const dispatch = useDispatch();
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
