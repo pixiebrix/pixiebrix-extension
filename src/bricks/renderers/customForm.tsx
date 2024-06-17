@@ -56,14 +56,20 @@ interface DatabaseResult {
   data: unknown;
 }
 
+/**
+ * Mod variable / page state storage definition.
+ */
 export type StateStorage = {
   type: "state";
   namespace?: "extension" | "blueprint" | "shared";
 };
 
+/**
+ * The storage/data binding configuration for the form.
+ *
+ * @since 2.0.3 Removed support for `localStorage`
+ */
 export type Storage =
-  // Support for `localStorage` was removed in 2.0.3
-  // | { type: "localStorage"}
   | {
       type: "database";
       databaseId: UUID;
