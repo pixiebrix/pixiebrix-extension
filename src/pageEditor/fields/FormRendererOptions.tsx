@@ -167,7 +167,7 @@ const FormDataBindingOptions: React.FC<{
         />
       )}
 
-      {["database"].includes(storageType) && (
+      {storageType === "database" && (
         <SchemaField
           name={makeName("recordId")}
           label="Record ID"
