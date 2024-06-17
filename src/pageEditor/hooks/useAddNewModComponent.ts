@@ -35,9 +35,9 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 
-type AddModComponent = (config: ModComponentFormStateAdapter) => void;
+type AddNewModComponent = (config: ModComponentFormStateAdapter) => void;
 
-function useAddNewModComponent(): AddModComponent {
+function useAddNewModComponent(): AddNewModComponent {
   const dispatch = useDispatch();
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
@@ -45,21 +45,24 @@ function useAddNewModComponent(): AddModComponent {
   );
 
   return useCallback(
-    async (config: ModComponentFormStateAdapter) => {
-      if (config.flag && flagOff(config.flag)) {
+    async (modComponentFormStateAdapter: ModComponentFormStateAdapter) => {
+      if (
+        modComponentFormStateAdapter.flag &&
+        flagOff(modComponentFormStateAdapter.flag)
+      ) {
         dispatch(actions.betaError());
         return;
       }
 
-      dispatch(actions.toggleInsert(config.elementType));
+      dispatch(actions.toggleInsert(modComponentFormStateAdapter.elementType));
 
-      if (!config.selectNativeElement) {
+      if (!modComponentFormStateAdapter.selectNativeElement) {
         // If the foundation is not for a native element, stop after toggling insertion mode
         return;
       }
 
       try {
-        const element = await config.selectNativeElement(
+        const element = await modComponentFormStateAdapter.selectNativeElement(
           inspectedTab,
           suggestElements,
         );
@@ -67,11 +70,15 @@ function useAddNewModComponent(): AddModComponent {
 
         const metadata = internalStarterBrickMetaFactory();
 
-        const initialState = config.fromNativeElement(url, metadata, element);
+        const initialState = modComponentFormStateAdapter.fromNativeElement(
+          url,
+          metadata,
+          element,
+        );
 
         updateDynamicElement(
           allFramesInInspectedTab,
-          config.asDynamicElement(initialState),
+          modComponentFormStateAdapter.asDynamicElement(initialState),
         );
 
         dispatch(
@@ -82,7 +89,7 @@ function useAddNewModComponent(): AddModComponent {
         dispatch(actions.checkActiveModComponentAvailability());
 
         reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
-          type: config.elementType,
+          type: modComponentFormStateAdapter.elementType,
         });
       } catch (error) {
         if (isSpecificError(error, CancelError)) {
@@ -90,7 +97,7 @@ function useAddNewModComponent(): AddModComponent {
         }
 
         notify.error({
-          message: `Error adding ${config.label.toLowerCase()}`,
+          message: `Error adding ${modComponentFormStateAdapter.label.toLowerCase()}`,
           error,
         });
       } finally {

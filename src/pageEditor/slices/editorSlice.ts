@@ -318,13 +318,13 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<ModComponentFormState>,
     ) {
-      const element = action.payload as Draft<ModComponentFormState>;
+      const modComponentFormState =
+        action.payload as Draft<ModComponentFormState>;
       state.inserting = null;
-      state.elements.push(element);
-      state.dirty[element.uuid] = true;
+      state.elements.push(modComponentFormState);
+      state.dirty[modComponentFormState.uuid] = true;
 
-      // TODO: remove this side effect? i.e. call "activate element" at call sites
-      activateElement(state, element);
+      activateElement(state, modComponentFormState);
     },
     betaError(state) {
       const error = new BusinessError("This feature is in private beta");
