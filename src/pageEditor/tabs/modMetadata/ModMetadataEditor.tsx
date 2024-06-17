@@ -42,6 +42,8 @@ import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import cx from "classnames";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { type RegistryId } from "@/types/registryTypes";
+import { getActivateModHashRoute } from "@/extensionConsole/shared/routeHelpers";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -63,6 +65,33 @@ const selectFirstModComponent = createSelector(
   selectActiveModId,
   (modComponents, activeModId) =>
     modComponents.find((x) => x._recipe?.id === activeModId),
+);
+
+const OldModVersionAlert: React.FunctionComponent<{
+  modId: RegistryId;
+  installedModVersion: string;
+  latestModVersion: string;
+}> = ({
+  modId,
+  installedModVersion,
+  latestModVersion,
+}: {
+  modId: RegistryId;
+  installedModVersion: string;
+  latestModVersion: string;
+}) => (
+  <Alert variant="warning">
+    You are editing version {installedModVersion} of this mod, the latest
+    version is {latestModVersion}. To get the latest version,{" "}
+    <a
+      href={`/options.html#${getActivateModHashRoute(modId)}`}
+      target="_blank"
+      title="Re-activate the mod"
+      rel="noreferrer"
+    >
+      re-activate the mod
+    </a>
+  </Alert>
 );
 
 const ModMetadataEditor: React.VoidFunctionComponent = () => {
@@ -126,17 +155,11 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
         <Card.Header>Mod Metadata</Card.Header>
         <Card.Body>
           {showOldModVersionWarning && (
-            <Alert variant="warning">
-              You are editing version {installedModVersion} of this mod, the
-              latest version is {latestModVersion}. To get the latest version,{" "}
-              <a
-                href="/options.html#/mods"
-                target="_blank"
-                title="Re-activate the mod"
-              >
-                re-activate the mod
-              </a>
-            </Alert>
+            <OldModVersionAlert
+              modId={modId}
+              installedModVersion={installedModVersion}
+              latestModVersion={latestModVersion}
+            />
           )}
           <ConnectedFieldTemplate
             name="id"
