@@ -33,12 +33,12 @@ export type Namespace = "blueprint" | "extension" | "shared";
  * Namespace options for use in oneOf.
  */
 export const namespaceOptions = [
-  { const: "blueprint", title: "Mod (formerly called blueprint)" },
+  { const: "blueprint", title: "Mod" },
   {
     const: "extension",
-    title: "Private (formerly called extension)",
+    title: "Private",
   },
-  { const: "shared", title: "Public (formerly called shared)" },
+  { const: "shared", title: "Public" },
 ] as Schema[];
 
 export class SetPageState extends TransformerABC {
