@@ -44,7 +44,7 @@ import { get, isEmpty } from "lodash";
 import {
   type DocumentElement,
   isButtonElement,
-} from "@/components/documentBuilder/documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -79,7 +79,7 @@ import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName, joinPathParts } from "@/utils/formUtils";
-import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/components/documentBuilder/preview/ElementPreview";
+import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/pageEditor/documentBuilder/preview/ElementPreview";
 import { getBrickOutlineSummary } from "@/pageEditor/brickSummary";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";

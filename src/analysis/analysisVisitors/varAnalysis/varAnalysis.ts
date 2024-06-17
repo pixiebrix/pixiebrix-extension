@@ -39,7 +39,7 @@ import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import {
   isDocumentElementArray,
   type ListDocumentElement,
-} from "@/components/documentBuilder/documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { fromJS } from "@/starterBricks/factory";
 import { type Schema } from "@/types/schemaTypes";

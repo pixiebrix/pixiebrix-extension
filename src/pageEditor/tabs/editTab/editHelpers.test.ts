@@ -17,7 +17,7 @@
 
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
-import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import { generateFreshOutputKey, getPipelineMap } from "./editHelpers";

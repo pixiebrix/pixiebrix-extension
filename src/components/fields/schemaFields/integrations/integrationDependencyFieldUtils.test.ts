@@ -20,8 +20,8 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { validateRegistryId, validateUUID } from "@/types/helpers";
 import { selectIntegrationDependencyVariables } from "./integrationDependencyFieldUtils";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
-import { createNewElement } from "@/components/documentBuilder/createNewElement";
-import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
+import { type ListDocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";

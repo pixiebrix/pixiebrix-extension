@@ -25,7 +25,7 @@ import {
   isButtonElement,
   isListElement,
   isPipelineElement,
-} from "@/components/documentBuilder/documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pick, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
