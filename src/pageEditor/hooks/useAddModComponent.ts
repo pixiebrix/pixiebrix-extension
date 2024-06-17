@@ -37,7 +37,7 @@ import {
 
 type AddElement = (config: ElementConfig) => void;
 
-function useAddElement(): AddElement {
+function useAddModComponent(): AddElement {
   const dispatch = useDispatch();
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
@@ -97,4 +97,4 @@ function useAddElement(): AddElement {
   );
 }
 
-export default useAddElement;
+export default useAddModComponent;
