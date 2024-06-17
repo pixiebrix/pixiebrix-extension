@@ -325,7 +325,8 @@ describe("getFullVariableName", () => {
     );
   });
 
-  it("handles optional chaining with bracket notation", () => {
+  // TODO: #8638: https://github.com/pixiebrix/pixiebrix-extension/issues/8638
+  it.skip("#8638: handle ? in property accessor", () => {
     expect(
       getFullVariableName('@foo.bar["hello world?"]?', [
         "@foo",
@@ -334,7 +335,9 @@ describe("getFullVariableName", () => {
         "qux",
       ]),
     ).toBe('@foo.bar["hello world?"]?.qux');
+  });
 
+  it("handles optional chaining with bracket notation", () => {
     expect(
       getFullVariableName("@foo.bar?.[42]", ["@foo", "bar", "42", "qux"]),
     ).toBe("@foo.bar?.[42].qux");

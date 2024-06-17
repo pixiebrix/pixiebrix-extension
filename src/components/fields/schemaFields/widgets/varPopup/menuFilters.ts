@@ -34,7 +34,7 @@ export type MenuOptions = Array<[string, UnknownRecord]>;
 /**
  * Returns true if the value is null or is likely plain text (i.e., not a variable).
  */
-function isTextOrNull(value: string | null): boolean {
+function isTextOrNullVar(value: string | null): boolean {
   return value == null || value === "@" || !value.startsWith("@");
 }
 
@@ -42,7 +42,11 @@ function isTextOrNull(value: string | null): boolean {
  * Convert a variable to a normalized variable path, removing optional chaining. Result is suitable for filtering
  * by path prefix.
  */
-function toVarPath(value: string): string[] {
+function toVarPath(value: string | null): string[] {
+  if (value == null) {
+    return [];
+  }
+
   return toPath(value.replaceAll("?.", "."));
 }
 
@@ -69,7 +73,7 @@ export function filterOptionsByVariable(
   options: MenuOptions,
   likelyVariable: string,
 ): MenuOptions {
-  if (isTextOrNull(likelyVariable)) {
+  if (isTextOrNullVar(likelyVariable)) {
     return options;
   }
 
@@ -125,7 +129,7 @@ export function filterVarMapByVariable(
   varMap: UnknownRecord,
   likelyVariable: string,
 ): UnknownRecord {
-  if (isTextOrNull(likelyVariable)) {
+  if (isTextOrNullVar(likelyVariable)) {
     return varMap;
   }
 
@@ -141,7 +145,7 @@ export function expandCurrentVariableLevel(
   varMap: UnknownRecord,
   likelyVariable: string,
 ): ShouldExpandNodeInitially {
-  if (isTextOrNull(likelyVariable)) {
+  if (isTextOrNullVar(likelyVariable)) {
     return () => false;
   }
 
@@ -244,7 +248,9 @@ export function defaultMenuOption(
     return null;
   }
 
-  if (isTextOrNull(likelyVariable) || toVarPath(likelyVariable).length === 0) {
+  const parts = toVarPath(likelyVariable);
+
+  if (isTextOrNullVar(likelyVariable) || parts.length === 0) {
     // Must always have at least one option (e.g., the `@input`)
     // Prefer the last option, because that's the latest output
 
@@ -252,8 +258,6 @@ export function defaultMenuOption(
     const first = Object.keys(vars)[0];
     return [first];
   }
-
-  const parts = toVarPath(likelyVariable);
 
   const [head, ...rest] = parts;
 

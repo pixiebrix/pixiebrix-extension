@@ -205,6 +205,7 @@ function normalizePart(
  *
  * @example getPathFromArray(["user", "name"]) // => "user.name"
  * @example getPathFromArray(["title", "Divine Comedy"]) // => "title["Divine Comedy"]"
+ * @example getPathFromArray([{part: "title", isOptional: true}, "Divine Comedy"]) // => "title?.["Divine Comedy"]"
  */
 export function getPathFromArray(
   parts: Array<

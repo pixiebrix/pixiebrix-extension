@@ -191,7 +191,7 @@ describe("getPathFromArray", () => {
         { part: 0, isOptional: true },
         "name",
       ]),
-    ).toBe('users["foo bar?"].[0]?.name');
+    ).toBe('users["foo bar?"][0]?.name');
   });
 });
 
