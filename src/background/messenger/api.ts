@@ -31,10 +31,6 @@ export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL", bg);
 export const waitForContentScript = getMethod("WAIT_FOR_CONTENT_SCRIPT", bg);
 
-export const dataStore = {
-  get: getMethod("GET_DATA_STORE", bg),
-  set: getMethod("SET_DATA_STORE", bg),
-};
 export const activateTheme = getMethod("ACTIVATE_THEME", bg);
 
 export const traces = {

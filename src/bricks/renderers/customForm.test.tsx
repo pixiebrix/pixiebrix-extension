@@ -28,15 +28,25 @@ import {
   normalizeOutgoingFormData,
 } from "./customForm";
 import userEvent from "@testing-library/user-event";
-
-import { dataStore } from "@/background/messenger/api";
 import { type Schema } from "@/types/schemaTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { toExpression } from "@/utils/expressionUtils";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import {
+  TEST_resetState,
+  getState,
+  setState,
+} from "@/platform/state/stateController";
+import type { Target } from "@/types/messengerTypes";
 
-const dataStoreGetMock = jest.mocked(dataStore.get);
-const dataStoreSetSpy = jest.spyOn(dataStore, "set");
+const brick = new CustomFormRenderer();
+
+// CustomForm uses @/contentScript/messenger/api instead of the platform API
+jest.mock("@/contentScript/messenger/api", () => ({
+  getPageState: jest.fn((_: Target, args: any) => getState(args)),
+  setPageState: jest.fn((_: Target, args: any) => setState(args)),
+}));
 
 // I couldn't get shadow-dom-testing-library working
 jest.mock("react-shadow/emotion", () => ({
@@ -214,17 +224,14 @@ describe("form data normalization", () => {
 
 describe("CustomFormRenderer", () => {
   beforeEach(() => {
+    TEST_resetState();
     jest.clearAllMocks();
   });
 
   test("Render auto-saved form", async () => {
-    const brick = new CustomFormRenderer();
-
-    dataStoreGetMock.mockResolvedValue({});
-
     const { Component, props } = await brick.render(
-      {
-        storage: { type: "localStorage" },
+      unsafeAssumeValidArg({
+        storage: { type: "state" },
         autoSave: true,
         recordId: "test",
         schema: {
@@ -233,7 +240,7 @@ describe("CustomFormRenderer", () => {
             name: { type: "string" },
           },
         },
-      } as any,
+      }),
       brickOptionsFactory(),
     );
 
@@ -243,15 +250,34 @@ describe("CustomFormRenderer", () => {
     await expect(screen.findByRole("textbox")).resolves.toBeInTheDocument();
   });
 
+  test("error on no storage defined", async () => {
+    // eslint-disable-next-line testing-library/render-result-naming-convention -- false positive
+    const renderPromise = brick.render(
+      unsafeAssumeValidArg({
+        autoSave: true,
+        recordId: "test",
+        schema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+          },
+        },
+      }),
+      brickOptionsFactory(),
+    );
+
+    await expect(renderPromise).rejects.toThrow(
+      "storage is required since extension version 2.0.3",
+    );
+  });
+
   test("Supports postSubmitAction reset", async () => {
     const brick = new CustomFormRenderer();
     const runPipelineMock = jest.fn();
 
-    dataStoreGetMock.mockResolvedValue({});
-
     const { Component, props } = await brick.render(
-      {
-        storage: { type: "localStorage" },
+      unsafeAssumeValidArg({
+        storage: { type: "state" },
         recordId: "test",
         onSubmit: toExpression("pipeline", []),
         postSubmitAction: "reset",
@@ -265,7 +291,7 @@ describe("CustomFormRenderer", () => {
             name: { type: "string" },
           },
         },
-      } as any,
+      }),
       brickOptionsFactory({ runPipeline: () => runPipelineMock }),
     );
 
@@ -278,8 +304,6 @@ describe("CustomFormRenderer", () => {
 
     expect(runPipelineMock).toHaveBeenCalledOnce();
 
-    expect(dataStoreSetSpy).not.toHaveBeenCalled();
-
     // Need to get new textbox reference, because the old one is removed when the key changes
     expect(screen.getByRole("textbox")).toHaveValue("");
   });
@@ -287,14 +311,15 @@ describe("CustomFormRenderer", () => {
   test.each([undefined, "save"])(
     "postSubmitAction: %s doesn't reset",
     async (postSubmitAction) => {
-      const brick = new CustomFormRenderer();
       const runPipelineMock = jest.fn();
 
-      dataStoreGetMock.mockResolvedValue({});
+      const options = brickOptionsFactory({
+        runPipeline: () => runPipelineMock,
+      });
 
       const { Component, props } = await brick.render(
-        {
-          storage: { type: "localStorage" },
+        unsafeAssumeValidArg({
+          storage: { type: "state" },
           recordId: "test",
           onSubmit: toExpression("pipeline", []),
           postSubmitAction,
@@ -308,8 +333,8 @@ describe("CustomFormRenderer", () => {
               name: { type: "string" },
             },
           },
-        } as any,
-        brickOptionsFactory({ runPipeline: () => runPipelineMock }),
+        }),
+        options,
       );
 
       render(<Component {...props} />);
@@ -322,7 +347,14 @@ describe("CustomFormRenderer", () => {
       await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
       expect(runPipelineMock).toHaveBeenCalledOnce();
-      expect(dataStoreSetSpy).toHaveBeenCalledExactlyOnceWith("test", {
+
+      expect(
+        getState({
+          namespace: "blueprint",
+          extensionId: options.logger.context.extensionId,
+          blueprintId: options.logger.context.blueprintId,
+        }),
+      ).toStrictEqual({
         name: value,
       });
 

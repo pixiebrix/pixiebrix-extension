@@ -121,7 +121,6 @@
     "./background/contextMenus/makeMenuId.ts",
     "./background/contextMenus/preloadContextMenus.ts",
     "./background/contextMenus/uninstallContextMenu.ts",
-    "./background/dataStore.ts",
     "./background/executor.test.ts",
     "./background/executor.ts",
     "./background/externalProtocol.ts",

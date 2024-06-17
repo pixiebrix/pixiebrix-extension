@@ -17,7 +17,6 @@
 
 import React from "react";
 import { type JsonObject } from "type-fest";
-import { dataStore } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
@@ -57,13 +56,20 @@ interface DatabaseResult {
   data: unknown;
 }
 
+/**
+ * Mod variable / page state storage definition.
+ */
 export type StateStorage = {
   type: "state";
   namespace?: "extension" | "blueprint" | "shared";
 };
 
+/**
+ * The storage/data binding configuration for the form.
+ *
+ * @since 2.0.3 Removed support for `localStorage`
+ */
 export type Storage =
-  | { type: "localStorage" }
   | {
       type: "database";
       databaseId: UUID;
@@ -118,18 +124,6 @@ export const CUSTOM_FORM_SCHEMA: Schema = {
           },
           required: ["type"],
         },
-        {
-          type: "object",
-          properties: {
-            type: {
-              type: "string",
-              const: "localStorage",
-              // Deprecated because custom form is the only way to access the information
-              title: "Local Storage (Deprecated)",
-            },
-          },
-          required: ["type"],
-        },
       ],
     },
     autoSave: {
@@ -165,7 +159,7 @@ export const CUSTOM_FORM_SCHEMA: Schema = {
     recordId: {
       type: "string",
       description:
-        "Unique identifier for the data record. Required if using a database or local storage",
+        "Unique identifier for the data record. Required if using a database for storage",
     },
     schema: {
       type: "object",
@@ -198,7 +192,7 @@ export const CUSTOM_FORM_SCHEMA: Schema = {
       default: false,
     },
   },
-  required: ["schema"],
+  required: ["schema", "storage"],
 };
 
 const IsolatedCustomFormComponent: React.FunctionComponent<
@@ -256,7 +250,7 @@ export class CustomFormRenderer extends RendererABC {
 
   async render(
     {
-      storage = { type: "localStorage" },
+      storage,
       recordId,
       schema,
       uiSchema,
@@ -270,7 +264,7 @@ export class CustomFormRenderer extends RendererABC {
       // Default to save if not provided for backwards compatibility
       postSubmitAction = "save",
     }: BrickArgs<{
-      storage?: Storage;
+      storage: Storage;
       recordId: string | null;
       schema: Schema;
       uiSchema?: UiSchema;
@@ -289,12 +283,19 @@ export class CustomFormRenderer extends RendererABC {
       throw new Error("extensionId is required");
     }
 
-    if (
-      isEmpty(recordId) &&
-      ["database", "localStorage"].includes(storage.type)
-    ) {
+    // Redundant with the JSON Schema input validation for `required`. But keeping here for clarity
+    if (!storage) {
       throw new PropError(
-        "recordId is required for database and localStorage",
+        "storage is required since extension version 2.0.3",
+        this.id,
+        "storage",
+        storage,
+      );
+    }
+
+    if (isEmpty(recordId) && storage.type === "database") {
+      throw new PropError(
+        "recordId is required for database storage",
         this.id,
         "recordId",
         recordId,
@@ -398,17 +399,23 @@ async function getInitialData(
   { blueprintId, extensionId }: Partial<Context>,
 ): Promise<UnknownObject> {
   switch (storage.type) {
-    case "localStorage": {
-      const data = await dataStore.get(recordId);
-      assertObject(data, BusinessError);
-      return data;
-    }
-
     case "state": {
       const namespace = storage.namespace ?? "blueprint";
       const topLevelFrame = await getConnectedTarget();
-      // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
-      // sidebar which runs in the context of the top-level frame
+      // XXX: CustomForm currently uses page state directly instead of the platform's state API. The platform state API
+      // does not currently provide a way to specify which frame to read the data from. Calling the API would use
+      // the state in whichever frame the call came from.
+      //
+      // For sidebar panels (from sidebar mod or display temporary information), we'd want it to always be the top-level
+      // frame. Although ths sidebar is in the Chromium Side Panel which is technically a separate frame, conceptually
+      // mods treat the sidebar panel as being associated with the top-level frame.
+      //
+      // Popover and modal panels can technically be run from within frames. Changing the behavior here
+      // to target the parent frame of the panel would technically be a breaking change. However, there are
+      // likely very few, if any, instances of custom forms in popovers or modals in the wild.
+      //
+      // The correct future behavior will be to use the platform state API, but target the frame that the panel
+      // is rendered in. And for the PixieBrix sidebar, target the top-level frame.
       return getPageState(topLevelFrame, {
         namespace,
         blueprintId,
@@ -451,11 +458,6 @@ async function setData(
   const cleanValues = ensureJsonObject(values);
 
   switch (storage.type) {
-    case "localStorage": {
-      await dataStore.set(recordId, cleanValues);
-      return;
-    }
-
     case "database": {
       await getPlatform().request(storage.service, {
         url: `/api/databases/${storage.databaseId}/records/`,
@@ -515,8 +517,8 @@ export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
   return normalizedData;
 }
 
-// The server uses a shallow merge strategy that ignores undefined values,
-// so we need to make all the undefined field values null instead, so that the server will clear those fields instead of ignoring them
+// The server uses a shallow merge strategy that ignores undefined values, so we need to make all the undefined field
+// values null instead, so that the server will clear those fields instead of ignoring them
 export function normalizeOutgoingFormData(schema: Schema, data: UnknownObject) {
   const normalizedData = { ...data };
   for (const key of Object.keys(schema.properties ?? {})) {

@@ -73,7 +73,6 @@ type StringOption<Value extends string = string> = {
 const storageTypeOptions: Options<StringOption> = [
   { value: "state", label: "Mod Variables / Page State" },
   { value: "database", label: "Database" },
-  { value: "localStorage", label: "Local Storage (Deprecated)" },
 ];
 
 const postSubmitActionOptions: Options<StringOption<PostSubmitAction>> = [
@@ -168,7 +167,7 @@ const FormDataBindingOptions: React.FC<{
         />
       )}
 
-      {["localStorage", "database"].includes(storageType) && (
+      {storageType === "database" && (
         <SchemaField
           name={makeName("recordId")}
           label="Record ID"
