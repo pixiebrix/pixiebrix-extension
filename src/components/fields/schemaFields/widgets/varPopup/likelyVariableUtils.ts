@@ -211,7 +211,8 @@ export function getFullVariableName(
     const base: string = pathWithChainElements[i]!;
 
     if (pathWithChainElements[i + 1] === "?") {
-      // FIXME: if the path is `["hello world?"]` this results in ??, which is incorrect
+      // TODO: #8637: https://github.com/pixiebrix/pixiebrix-extension/issues/8638
+      //  if the path is `["hello world?"]` this results in ??, which is incorrect. See test case.
       likelyPath.push(base + "?");
       i++;
     } else {
