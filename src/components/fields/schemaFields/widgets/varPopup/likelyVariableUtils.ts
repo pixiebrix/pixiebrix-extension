@@ -207,8 +207,8 @@ export function getFullVariableName(
 
   const likelyPath: string[] = [];
   for (let i = 0; i < pathWithChainElements.length; i++) {
-    // eslint-disable-next-line security/detect-object-injection -- numeric index
-    const base: string = pathWithChainElements[i];
+    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- numeric index
+    const base: string = pathWithChainElements[i]!;
 
     if (pathWithChainElements[i + 1] === "?") {
       // FIXME: if the path is `["hello world?"]` this results in ??, which is incorrect
