@@ -153,7 +153,7 @@ export const CUSTOM_FORM_SCHEMA: Schema = {
     recordId: {
       type: "string",
       description:
-        "Unique identifier for the data record. Required if using a database storage",
+        "Unique identifier for the data record. Required if using a database for storage",
     },
     schema: {
       type: "object",
@@ -396,13 +396,20 @@ async function getInitialData(
     case "state": {
       const namespace = storage.namespace ?? "blueprint";
       const topLevelFrame = await getConnectedTarget();
-      // XXX: CustomForm currently uses page state directly instead of the platform's state API. Switching to the
-      //  platform's state API would be a breaking change for any forms that are relying on the top-level frame behavior
-      // Original comment:
-      //  Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
-      //  sidebar which runs in the context of the top-level frame
-      // The above isn't true anymore, because custom form could appear in a modal or popover, which could be in the
-      // context of a frame
+      // XXX: CustomForm currently uses page state directly instead of the platform's state API. The platform state API
+      // does not currently provide a way to specify which frame to read the data from. Calling the API would use
+      // the state in whichever frame the call came from.
+      //
+      // For sidebar panels (from sidebar mod or display temporary information), we'd want it to always be the top-level
+      // frame. Although ths sidebar is in the Chromium Side Panel which is technically a separate frame, conceptually
+      // mods treat the sidebar panel as being associated with the top-level frame.
+      //
+      // Popover and modal panels can technically be run from within frames. Changing the behavior here
+      // to target the parent frame of the panel would technically be a breaking change. However, there are
+      // likely very few, if any, instances of custom forms in popovers or modals in the wild.
+      //
+      // The correct future behavior will be to use the platform state API, but target the frame that the panel
+      // is rendered in. And for the PixieBrix sidebar, target the top-level frame.
       return getPageState(topLevelFrame, {
         namespace,
         blueprintId,
