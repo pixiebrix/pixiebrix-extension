@@ -145,7 +145,9 @@ const cloneActiveExtension = createAsyncThunk<
     "New active mod component form state not found",
   );
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned extension
-  thunkAPI.dispatch(actions.addElement(newActiveModComponentFormState));
+  thunkAPI.dispatch(
+    actions.addModComponentFormState(newActiveModComponentFormState),
+  );
 });
 
 type AvailableInstalled = {
@@ -312,12 +314,16 @@ export const editorSlice = createSlice({
     markEditable(state, action: PayloadAction<RegistryId>) {
       state.knownEditable.push(action.payload);
     },
-    addElement(state, action: PayloadAction<ModComponentFormState>) {
+    addModComponentFormState(
+      state,
+      action: PayloadAction<ModComponentFormState>,
+    ) {
       const element = action.payload as Draft<ModComponentFormState>;
       state.inserting = null;
       state.elements.push(element);
       state.dirty[element.uuid] = true;
 
+      // TODO: remove this side effect? i.e. call "activate element" at call sites
       activateElement(state, element);
     },
     betaError(state) {

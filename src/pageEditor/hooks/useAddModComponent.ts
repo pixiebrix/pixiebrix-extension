@@ -75,7 +75,11 @@ function useAddModComponent(): AddModComponent {
           config.asDynamicElement(initialState),
         );
 
-        dispatch(actions.addElement(initialState as ModComponentFormState));
+        dispatch(
+          actions.addModComponentFormState(
+            initialState as ModComponentFormState,
+          ),
+        );
         dispatch(actions.checkActiveElementAvailability());
 
         reportEvent(Events.MOD_COMPONENT_ADD_NEW, {

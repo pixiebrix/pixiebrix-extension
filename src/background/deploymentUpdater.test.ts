@@ -333,7 +333,7 @@ describe("syncDeployments", () => {
     ).fromExtension(modComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
-      editorSlice.actions.addElement(element),
+      editorSlice.actions.addModComponentFormState(element),
     );
     await saveEditorState(editorState);
 
@@ -443,7 +443,7 @@ describe("syncDeployments", () => {
     )) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
-      editorSlice.actions.addElement(element),
+      editorSlice.actions.addModComponentFormState(element),
     );
     await saveEditorState(editorState);
 
@@ -736,7 +736,7 @@ describe("syncDeployments", () => {
     ).fromExtension(standaloneModComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
-      editorSlice.actions.addElement(personalElement),
+      editorSlice.actions.addModComponentFormState(personalElement),
     );
 
     const deploymentElement = (await ADAPTERS.get(
@@ -744,7 +744,7 @@ describe("syncDeployments", () => {
     ).fromExtension(deploymentModComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
-      editorSlice.actions.addElement(deploymentElement),
+      editorSlice.actions.addModComponentFormState(deploymentElement),
     );
 
     await saveModComponentState({

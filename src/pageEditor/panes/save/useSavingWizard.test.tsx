@@ -97,7 +97,9 @@ test("maintains wizard open state", () => {
   });
 
   const store = createStore();
-  store.dispatch(editorSlice.actions.addElement(modComponentFormState));
+  store.dispatch(
+    editorSlice.actions.addModComponentFormState(modComponentFormState),
+  );
 
   const { result } = renderUseSavingWizard(store);
   // Modal is closed.
@@ -126,7 +128,9 @@ test("maintains wizard open state", () => {
 test("saves non packaged mod component form state", async () => {
   const modComponentFormState = formStateFactory();
   const store = createStore();
-  store.dispatch(editorSlice.actions.addElement(modComponentFormState));
+  store.dispatch(
+    editorSlice.actions.addModComponentFormState(modComponentFormState),
+  );
 
   const createMock = jest.fn();
   jest.mocked(useUpsertFormElementMock).mockReturnValueOnce(createMock);
@@ -193,7 +197,9 @@ describe("saving a mod component", () => {
         extensions: [extension],
       },
     });
-    store.dispatch(editorSlice.actions.addElement(menuItemFormState));
+    store.dispatch(
+      editorSlice.actions.addModComponentFormState(menuItemFormState),
+    );
 
     const createMock = jest.fn();
     jest.mocked(useUpsertFormElementMock).mockReturnValue(createMock);

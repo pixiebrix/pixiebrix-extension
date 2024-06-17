@@ -53,7 +53,7 @@ describe("error alerting in the UI", () => {
     const formState = formStateFactory();
     render(<EditorContent />, {
       async setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.selectElement(formState.uuid));
         await dispatch(editorActions.checkAvailableDynamicElements());
       },
@@ -73,7 +73,7 @@ describe("error alerting in the UI", () => {
     const formState = formStateFactory();
     render(<EditorContent />, {
       async setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.selectElement(formState.uuid));
         await dispatch(editorActions.checkAvailableInstalledExtensions());
       },

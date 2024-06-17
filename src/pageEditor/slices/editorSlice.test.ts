@@ -231,7 +231,7 @@ describe("Add/Remove Bricks", () => {
     );
 
     const action2 = dispatch.mock.calls[1][0];
-    expect(action2).toHaveProperty("type", "editor/addElement");
+    expect(action2).toHaveProperty("type", "editor/addModComponentFormState");
     expect(action2.payload).toEqual(
       expect.objectContaining({
         uuid: expect.not.stringMatching(source.uuid),

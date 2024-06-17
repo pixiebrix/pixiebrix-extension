@@ -92,7 +92,7 @@ function useCreateModFromModComponent(
               },
             );
 
-            dispatch(editorActions.addElement(newModComponent));
+            dispatch(editorActions.addModComponentFormState(newModComponent));
 
             await upsertModComponentFormState({
               element: newModComponent,

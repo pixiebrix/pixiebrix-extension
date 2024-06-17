@@ -193,7 +193,7 @@ describe("useBuildAndValidateMod", () => {
               isReactivate: false,
             }),
           );
-          dispatch(editorActions.addElement(dirtyFormState1));
+          dispatch(editorActions.addModComponentFormState(dirtyFormState1));
         },
       },
     );

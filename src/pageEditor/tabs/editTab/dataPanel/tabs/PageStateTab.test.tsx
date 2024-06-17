@@ -42,7 +42,7 @@ describe("PageStateTab", () => {
       </Tab.Container>,
       {
         setupRedux(dispatch) {
-          dispatch(actions.addElement(formState));
+          dispatch(actions.addModComponentFormState(formState));
           dispatch(actions.selectElement(formState.uuid));
         },
       },

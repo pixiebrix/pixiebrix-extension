@@ -31,7 +31,7 @@ describe("TriggerConfiguration", () => {
     const { asFragment } = render(<TriggerConfiguration isLocked={false} />, {
       initialValues: formState,
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.selectElement(formState.uuid));
         dispatch(editorActions.setElementActiveNodeId(null));
       },
