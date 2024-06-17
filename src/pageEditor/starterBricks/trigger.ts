@@ -40,7 +40,7 @@ import {
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
-import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
@@ -207,7 +207,7 @@ async function fromExtension(
   };
 }
 
-const config: ElementConfig<undefined, TriggerFormState> = {
+const config: ModComponentFormStateAdapter<undefined, TriggerFormState> = {
   displayOrder: 4,
   elementType: "trigger",
   label: "Trigger",

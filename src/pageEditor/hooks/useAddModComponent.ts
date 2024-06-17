@@ -21,7 +21,7 @@ import notify from "@/utils/notify";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { isSpecificError } from "@/errors/errorHelpers";
-import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import useFlags from "@/hooks/useFlags";
@@ -35,7 +35,7 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 
-type AddModComponent = (config: ElementConfig) => void;
+type AddModComponent = (config: ModComponentFormStateAdapter) => void;
 
 // TODO: useAddNewModComponent alternatively?
 function useAddModComponent(): AddModComponent {
@@ -46,7 +46,7 @@ function useAddModComponent(): AddModComponent {
   );
 
   return useCallback(
-    async (config: ElementConfig) => {
+    async (config: ModComponentFormStateAdapter) => {
       if (config.flag && flagOff(config.flag)) {
         dispatch(actions.betaError());
         return;

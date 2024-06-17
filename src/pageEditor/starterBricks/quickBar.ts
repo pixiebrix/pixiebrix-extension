@@ -33,7 +33,7 @@ import {
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { faThLarge } from "@fortawesome/free-solid-svg-icons";
-import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
@@ -175,7 +175,7 @@ function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
   };
 }
 
-const config: ElementConfig<undefined, QuickBarFormState> = {
+const config: ModComponentFormStateAdapter<undefined, QuickBarFormState> = {
   displayOrder: 1,
   elementType: "quickBar",
   label: "Quick Bar Action",

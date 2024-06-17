@@ -36,7 +36,7 @@ import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
-import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type SidebarFormState } from "./formStateTypes";
 import {
@@ -169,7 +169,7 @@ async function fromExtension(
   };
 }
 
-const config: ElementConfig<never, SidebarFormState> = {
+const config: ModComponentFormStateAdapter<never, SidebarFormState> = {
   displayOrder: 3,
   elementType: "actionPanel",
   label: "Sidebar Panel",

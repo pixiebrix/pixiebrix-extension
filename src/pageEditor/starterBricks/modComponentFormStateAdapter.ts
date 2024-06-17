@@ -29,7 +29,7 @@ import { type Nullishable } from "@/utils/nullishUtils";
 /**
  * ExtensionPoint configuration for use with the Page Editor.
  */
-export interface ElementConfig<
+export interface ModComponentFormStateAdapter<
   TResult = unknown,
   TState extends BaseFormState = BaseFormState,
 > {
