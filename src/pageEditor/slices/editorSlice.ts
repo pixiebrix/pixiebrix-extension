@@ -262,7 +262,7 @@ const checkAvailableDynamicElements = createAsyncThunk<
   return { availableDynamicIds };
 });
 
-const checkActiveElementAvailability = createAsyncThunk<
+const checkActiveModComponentAvailability = createAsyncThunk<
   {
     availableDynamicIds: UUID[];
   },
@@ -271,20 +271,20 @@ const checkActiveElementAvailability = createAsyncThunk<
 >("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
   const tabUrl = await getCurrentInspectedURL();
   const state = thunkAPI.getState();
-  // The currently selected element in the page editor
+  // The form state of the currently selected mod component in the page editor
   const activeModComponentFormState = selectActiveModComponentFormState(state);
   assertNotNullish(
     activeModComponentFormState,
     "Active mod component form state not found",
   );
-  // Calculate new availability for the active element
+  // Calculate new availability for the active mod component
   const isAvailable = await isElementAvailable(
     tabUrl,
     activeModComponentFormState.extensionPoint,
   );
-  // Calculate the new dynamic element availability, depending on the
-  // new availability of the active element -- should be a unique list of ids,
-  // and we add/remove the active element's id based on isAvailable
+  // Calculate the new dynamic mod component availability, depending on the
+  // new availability of the active mod component -- should be a unique list of ids,
+  // and we add/remove the active mod component's id based on isAvailable
   const availableDynamicIds = [...state.editor.availableDynamicIds];
   if (isAvailable) {
     if (!availableDynamicIds.includes(activeModComponentFormState.uuid)) {
@@ -931,7 +931,7 @@ export const editorSlice = createSlice({
         reportError(error);
       })
       .addCase(
-        checkActiveElementAvailability.fulfilled,
+        checkActiveModComponentAvailability.fulfilled,
         (state, { payload: { availableDynamicIds } }) => ({
           ...state,
           availableDynamicIds,
@@ -946,7 +946,7 @@ export const actions = {
   cloneActiveExtension,
   checkAvailableInstalledExtensions,
   checkAvailableDynamicElements,
-  checkActiveElementAvailability,
+  checkActiveModComponentAvailability,
 };
 
 export const persistEditorConfig = {

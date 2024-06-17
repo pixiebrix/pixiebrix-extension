@@ -1373,7 +1373,7 @@
     "./store/ReduxPersistenceContext.ts",
     "./store/StorageInterface.ts",
     "./store/browserExtensionIdStorage.ts",
-    "./store/checkActiveElementAvailability.test.ts",
+    "./store/checkActiveModComponentAvailability.test.ts",
     "./store/checkAvailableDynamicElements.test.ts",
     "./store/checkAvailableInstalledExtensions.test.ts",
     "./store/commonActions.ts",

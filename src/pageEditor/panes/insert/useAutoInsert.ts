@@ -47,7 +47,7 @@ function useAutoInsert(type: StarterBrickType): void {
       );
 
       dispatch(addModComponentFormState(formState));
-      dispatch(actions.checkActiveElementAvailability());
+      dispatch(actions.checkActiveModComponentAvailability());
 
       // Don't auto-run tours on selection in Page Editor
       if (config.elementType !== "tour") {

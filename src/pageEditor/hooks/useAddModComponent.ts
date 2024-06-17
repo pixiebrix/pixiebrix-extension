@@ -80,7 +80,7 @@ function useAddModComponent(): AddModComponent {
             initialState as ModComponentFormState,
           ),
         );
-        dispatch(actions.checkActiveElementAvailability());
+        dispatch(actions.checkActiveModComponentAvailability());
 
         reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
           type: config.elementType,
