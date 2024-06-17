@@ -327,6 +327,15 @@ describe("getFullVariableName", () => {
 
   it("handles optional chaining with bracket notation", () => {
     expect(
+      getFullVariableName('@foo.bar["hello world?"]?', [
+        "@foo",
+        "bar",
+        "hello world?",
+        "qux",
+      ]),
+    ).toBe('@foo.bar["hello world?"]?.qux');
+
+    expect(
       getFullVariableName("@foo.bar?.[42]", ["@foo", "bar", "42", "qux"]),
     ).toBe("@foo.bar?.[42].qux");
     expect(
@@ -336,12 +345,11 @@ describe("getFullVariableName", () => {
       getFullVariableName('@foo.bar[""]?', ["@foo", "bar", "", "qux"]),
     ).toBe('@foo.bar[""]?.qux');
     expect(
-      getFullVariableName('@foo.bar["hello world?"]?', [
+      getFullVariableName('@foo?.["hello world?"]', [
         "@foo",
-        "bar",
         "hello world?",
-        "qux",
+        "bar",
       ]),
-    ).toBe('@foo.bar["hello world?"]?.qux');
+    ).toBe('@foo?.["hello world?"].bar');
   });
 });

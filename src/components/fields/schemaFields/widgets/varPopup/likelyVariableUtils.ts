@@ -208,9 +208,10 @@ export function getFullVariableName(
   const likelyPath: string[] = [];
   for (let i = 0; i < pathWithChainElements.length; i++) {
     // eslint-disable-next-line security/detect-object-injection -- numeric index
-    const base: string = pathWithChainElements[i]!;
+    const base: string = pathWithChainElements[i];
 
     if (pathWithChainElements[i + 1] === "?") {
+      // FIXME: if the path is `["hello world?"]` this results in ??, which is incorrect
       likelyPath.push(base + "?");
       i++;
     } else {
@@ -220,10 +221,13 @@ export function getFullVariableName(
 
   return getPathFromArray(
     selectedPath.map((part, index) => {
-      // Preserve optional chaining from what the use has typed so far
+      // eslint-disable-next-line security/detect-object-injection -- numeric index
+      const current = likelyPath[index] ?? "";
+
+      // Preserve optional chaining from what the user has typed so far
       if (
-        // eslint-disable-next-line security/detect-object-injection -- numeric index
-        likelyPath[index]?.endsWith("?") &&
+        current.endsWith("?") &&
+        !/[ .]/.test(current) &&
         index !== selectedPath.length - 1
       ) {
         return { part, isOptional: true };

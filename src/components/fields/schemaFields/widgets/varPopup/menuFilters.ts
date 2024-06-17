@@ -32,7 +32,7 @@ import { getIn } from "formik";
 export type MenuOptions = Array<[string, UnknownRecord]>;
 
 /**
- * Returns true if the value is null or is likely plain text/not a variable.
+ * Returns true if the value is null or is likely plain text (i.e., not a variable).
  */
 function isTextOrNull(value: string | null): boolean {
   return value == null || value === "@" || !value.startsWith("@");
