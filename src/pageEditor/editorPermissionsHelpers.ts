@@ -58,20 +58,20 @@ export async function calculatePermissionsForModComponentFormState(
 
 /**
  * Prompt the user to grant permissions if needed, and return whether PixieBrix has the required permissions.
- * @param elementOrElements the Page Editor element form state(s)
+ * @param modComponentFormStates the Page Editor mod component form state(s)
  */
-export async function ensureElementPermissionsFromUserGesture(
-  elementOrElements: ModComponentFormState | ModComponentFormState[],
+export async function ensureModComponentFormStatePermissionsFromUserGesture(
+  modComponentFormStates: ModComponentFormState | ModComponentFormState[],
 ): Promise<boolean> {
   try {
-    const elementPermissions = await Promise.all(
-      castArray(elementOrElements).map(async (element) =>
-        calculatePermissionsForModComponentFormState(element),
+    const modComponentPermissions = await Promise.all(
+      castArray(modComponentFormStates).map(async (formState) =>
+        calculatePermissionsForModComponentFormState(formState),
       ),
     );
 
     const { hasPermissions: alreadyHasPermissions, permissions } =
-      mergePermissionsStatuses(elementPermissions);
+      mergePermissionsStatuses(modComponentPermissions);
 
     if (alreadyHasPermissions) {
       return true;

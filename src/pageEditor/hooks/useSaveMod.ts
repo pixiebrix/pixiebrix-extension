@@ -34,7 +34,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
-import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import type { EditablePackageMetadata } from "@/types/contract";
@@ -121,7 +121,9 @@ function useSaveMod(): ModSaver {
     // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
     // long to confirm?
     // Check permissions as early as possible
-    void ensureElementPermissionsFromUserGesture(dirtyModComponentFormStates);
+    void ensureModComponentFormStatePermissionsFromUserGesture(
+      dirtyModComponentFormStates,
+    );
 
     // Dirty options/metadata or null if there are no staged changes.
     // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
