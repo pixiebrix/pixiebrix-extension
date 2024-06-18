@@ -59,8 +59,8 @@ const WizardNavItem: React.FunctionComponent<{
  * @see RecipePane
  */
 const ElementWizard: React.FunctionComponent<{
-  element: ModComponentFormState;
-}> = ({ element }) => {
+  modComponentFormState: ModComponentFormState;
+}> = ({ modComponentFormState }) => {
   const [step, setStep] = useState(wizard[0].step);
 
   const { isValid, status, handleReset } =
@@ -83,7 +83,7 @@ const ElementWizard: React.FunctionComponent<{
   const wizardSteps = [...wizard];
 
   return (
-    <Tab.Container activeKey={step} key={element.uuid}>
+    <Tab.Container activeKey={step} key={modComponentFormState.uuid}>
       <AnalysisAnnotationsContext.Provider
         value={{
           analysisAnnotationsSelectorForPath:
@@ -109,9 +109,12 @@ const ElementWizard: React.FunctionComponent<{
             {/* spacer */}
             <div className="flex-grow-1" />
 
-            <PermissionsToolbar element={element} disabled={!isValid} />
+            <PermissionsToolbar
+              element={modComponentFormState}
+              disabled={!isValid}
+            />
 
-            <ReloadToolbar element={element} />
+            <ReloadToolbar element={modComponentFormState} />
           </Nav>
 
           {status && <div className="text-danger">{status}</div>}

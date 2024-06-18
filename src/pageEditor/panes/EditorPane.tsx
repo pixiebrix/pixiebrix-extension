@@ -70,7 +70,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
         onChange={syncReduxState}
         delayMillis={CHANGE_DETECT_DELAY_MILLIS}
       />
-      <ElementWizard element={element} />
+      <ElementWizard modComponentFormState={element} />
     </IntegrationsSliceModIntegrationsContextAdapter>
   );
 };
