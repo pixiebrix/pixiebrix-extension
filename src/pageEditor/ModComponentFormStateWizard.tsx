@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ElementWizard.module.scss";
+import styles from "./ModComponentFormStateWizard.module.scss";
 
 import React, { useState } from "react";
 import { useFormikContext } from "formik";
