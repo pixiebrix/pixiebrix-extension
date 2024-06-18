@@ -28,7 +28,7 @@ import { type Permissions } from "webextension-polyfill";
 import { castArray } from "lodash";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-export async function calculatePermissionsForElement(
+export async function calculatePermissionsForModComponentFormState(
   modComponentFormState: ModComponentFormState,
 ): Promise<{ hasPermissions: boolean; permissions: Permissions.Permissions }> {
   const adapter = ADAPTERS.get(modComponentFormState.type);
@@ -65,7 +65,7 @@ export async function ensureElementPermissionsFromUserGesture(
   try {
     const elementPermissions = await Promise.all(
       castArray(elementOrElements).map(async (element) =>
-        calculatePermissionsForElement(element),
+        calculatePermissionsForModComponentFormState(element),
       ),
     );
 

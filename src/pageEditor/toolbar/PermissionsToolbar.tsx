@@ -27,7 +27,7 @@ import {
   emptyPermissionsFactory,
   ensurePermissionsFromUserGesture,
 } from "@/permissions/permissionsUtils";
-import { calculatePermissionsForElement } from "@/pageEditor/editorPermissionsHelpers";
+import { calculatePermissionsForModComponentFormState } from "@/pageEditor/editorPermissionsHelpers";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type Permissions } from "webextension-polyfill";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -49,7 +49,7 @@ const PermissionsToolbar: React.FunctionComponent<{
   });
 
   const state = useAsyncState(
-    async () => calculatePermissionsForElement(debouncedElement),
+    async () => calculatePermissionsForModComponentFormState(debouncedElement),
     [debouncedElement],
   );
   const { refetch, data } = fallbackValue(state, fallbackState);
