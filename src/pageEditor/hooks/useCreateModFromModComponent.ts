@@ -56,9 +56,9 @@ function useCreateModFromModComponent(
       modMetadata: ModMetadataFormState,
       // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
     ) =>
-      // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ensureModComponentFormStatePermissionsFromUserGesture(
         modComponentFormState,
+        // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ).then(async (hasPermissions) => {
         if (!hasPermissions) {
           return;
