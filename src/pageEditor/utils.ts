@@ -54,10 +54,12 @@ export function getIdForElement(
   return isModComponentBase(element) ? element.id : element.uuid;
 }
 
-export function getModIdForElement(
-  element: ModComponentBase | ModComponentFormState,
+export function getModId(
+  modComponentOrFormState: ModComponentBase | ModComponentFormState,
 ): RegistryId | undefined {
-  return isModComponentBase(element) ? element._recipe?.id : element.recipe?.id;
+  return isModComponentBase(modComponentOrFormState)
+    ? modComponentOrFormState._recipe?.id
+    : modComponentOrFormState.recipe?.id;
 }
 
 /**
