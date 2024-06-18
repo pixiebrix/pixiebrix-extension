@@ -47,7 +47,7 @@ test("useRemoveModComponentFromStorage", async () => {
   const { dispatch } = getReduxStore();
 
   expect(dispatch).toHaveBeenCalledWith(
-    editorActions.removeElement(extensionId),
+    editorActions.removeModComponentFormState(extensionId),
   );
   expect(dispatch).toHaveBeenCalledWith(
     extensionsActions.removeExtension({ extensionId }),

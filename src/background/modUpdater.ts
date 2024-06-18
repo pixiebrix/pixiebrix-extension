@@ -158,7 +158,7 @@ function deactivateModComponent(
 
   newEditorState = editorSlice.reducer(
     newEditorState,
-    editorSlice.actions.removeElement(modComponent.id),
+    editorSlice.actions.removeModComponentFormState(modComponent.id),
   );
 
   return {

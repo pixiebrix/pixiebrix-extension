@@ -439,9 +439,9 @@ export const editorSlice = createSlice({
       // Force reload of Formik state
       state.selectionSeq++;
     },
-    removeElement(state, action: PayloadAction<UUID>) {
-      const uuid = action.payload;
-      removeModComponentFormState(state, uuid);
+    removeModComponentFormState(state, action: PayloadAction<UUID>) {
+      const modComponentId = action.payload;
+      removeModComponentFormState(state, modComponentId);
     },
     selectRecipeId(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
