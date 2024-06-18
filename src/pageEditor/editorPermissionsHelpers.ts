@@ -38,15 +38,16 @@ export async function calculatePermissionsForModComponentFormState(
     `Adapter not found for ${modComponentFormState.type}`,
   );
 
-  const { extension, extensionPointConfig } = adapter.asDynamicElement(
-    modComponentFormState,
-  );
+  const {
+    extension: modComponent,
+    extensionPointConfig: starterBrickDefinition,
+  } = adapter.asDynamicElement(modComponentFormState);
 
-  const starterBrick = starterBrickFactory(extensionPointConfig);
+  const starterBrick = starterBrickFactory(starterBrickDefinition);
 
-  // Pass the extensionPoint in directly because the foundation will not have been saved/added to the
+  // Pass the starter brick directly because the foundation will not have been saved/added to the
   // registry at this point when called from useCreate
-  const permissions = await collectExtensionPermissions(extension, {
+  const permissions = await collectExtensionPermissions(modComponent, {
     extensionPoint: starterBrick,
   });
 
