@@ -17,35 +17,31 @@
 
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectModalsContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { selectShowShareContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { RequireScope } from "@/auth/RequireScope";
 import ModalLayout from "@/components/ModalLayout";
-import ConvertToRecipeModalBody from "./ConvertToRecipeModalBody";
+import ShareModModalBody from "./ShareModModalBody";
 
-const ConvertToRecipeModal: React.FunctionComponent = () => {
+const ShareModModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const closeModal = () => {
     dispatch(modModalsSlice.actions.closeModal());
   };
 
-  const { showShareContext, showPublishContext } =
-    useSelector(selectModalsContext);
-  const showConvertToRecipeModal = Boolean(
-    showShareContext?.extensionId || showPublishContext?.extensionId,
-  );
+  const showShareContext = useSelector(selectShowShareContext);
 
   return (
     <ModalLayout
-      show={showConvertToRecipeModal}
-      title="Name your mod"
+      show={showShareContext?.blueprintId != null}
+      title="Share with Teams"
       onHide={closeModal}
     >
-      <RequireScope scopeSettingsDescription="To publish a mod, you must first set an account alias for your PixieBrix account">
-        <ConvertToRecipeModalBody />
+      <RequireScope scopeSettingsDescription="To share a mod, you must first set an account alias for your PixieBrix account">
+        <ShareModModalBody />
       </RequireScope>
     </ModalLayout>
   );
 };
 
-export default ConvertToRecipeModal;
+export default ShareModModal;

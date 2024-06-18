@@ -34,14 +34,14 @@ import PublishContentLayout from "./PublishContentLayout";
 
 import { MARKETPLACE_URL } from "@/urlConstants";
 
-const PublishRecipeContent: React.FunctionComponent = () => {
+const PublishModContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { blueprintId } = useSelector(selectShowPublishContext);
+  const { blueprintId: modId } = useSelector(selectShowPublishContext);
   const [updateRecipe] = useUpdateRecipeMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
-  const { data: recipe, refetch: refetchRecipes } =
-    useOptionalModDefinition(blueprintId);
+  const { data: modDefinition, refetch: refetchModDefinition } =
+    useOptionalModDefinition(modId);
 
   const [isPublishing, setPublishing] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -55,22 +55,22 @@ const PublishRecipeContent: React.FunctionComponent = () => {
     setError(null);
 
     try {
-      const newRecipe = produce(recipe, (draft) => {
+      const newModDefinition = produce(modDefinition, (draft) => {
         draft.sharing.public = true;
       });
 
       const packageId = editablePackages.find(
-        (x) => x.name === newRecipe.metadata.id,
+        (x) => x.name === newModDefinition.metadata.id,
       )?.id;
 
       await updateRecipe({
         packageId,
-        recipe: newRecipe,
+        recipe: newModDefinition,
       }).unwrap();
 
       notify.success("Shared brick");
       closeModal();
-      refetchRecipes();
+      refetchModDefinition();
     } catch (error) {
       if (
         isSingleObjectBadRequestError(error) &&
@@ -109,7 +109,7 @@ const PublishRecipeContent: React.FunctionComponent = () => {
         </p>
 
         <p className="mb-1">Public link to share:</p>
-        <ActivationLink modId={blueprintId} />
+        <ActivationLink modId={modId} />
       </Modal.Body>
       <Modal.Footer>
         <Button variant="link" disabled={isPublishing} onClick={closeModal}>
@@ -127,4 +127,4 @@ const PublishRecipeContent: React.FunctionComponent = () => {
   );
 };
 
-export default PublishRecipeContent;
+export default PublishModContent;

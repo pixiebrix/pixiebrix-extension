@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render, screen } from "@/extensionConsole/testHelpers";
-import PublishRecipeModals from "./PublishRecipeModals";
+import PublishModModals from "./PublishModModals";
 import { authSlice } from "@/auth/authSlice";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -67,7 +67,7 @@ afterEach(() => {
 test("renders publish modal", async () => {
   render(
     <MarketplaceListingsWrapper>
-      <PublishRecipeModals />
+      <PublishModModals />
     </MarketplaceListingsWrapper>,
     {
       setupRedux(dispatch) {
@@ -92,7 +92,7 @@ test("renders edit publish modal", async () => {
 
   render(
     <MarketplaceListingsWrapper>
-      <PublishRecipeModals />
+      <PublishModModals />
     </MarketplaceListingsWrapper>,
     {
       setupRedux(dispatch) {
@@ -117,7 +117,7 @@ test("renders cancel publish modal", async () => {
 
   render(
     <MarketplaceListingsWrapper>
-      <PublishRecipeModals />
+      <PublishModModals />
     </MarketplaceListingsWrapper>,
     {
       setupRedux(dispatch) {

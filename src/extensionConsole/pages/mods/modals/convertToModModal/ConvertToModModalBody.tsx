@@ -101,41 +101,43 @@ const selectStylesOverride: StylesConfig = {
   }),
 };
 
-const ConvertToRecipeModalBody: React.FunctionComponent = () => {
+const ConvertToModModalBody: React.FunctionComponent = () => {
   const dispatch = useDispatch();
 
-  const [createRecipe] = useCreateRecipeMutation();
+  const [createMod] = useCreateRecipeMutation();
   const { showShareContext, showPublishContext } =
     useSelector(selectModalsContext);
-  const extensionId =
+  const modComponentId =
     showShareContext?.extensionId ?? showPublishContext?.extensionId;
-  const extensions = useSelector(selectActivatedModComponents);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
   const { data: standaloneModDefinitions } =
     useGetAllStandaloneModDefinitionsQuery();
   const [deleteStandaloneModDefinition] =
     useDeleteStandaloneModDefinitionMutation();
 
-  const extension = useMemo(() => {
-    if (extensionId == null) {
+  const modComponent = useMemo(() => {
+    if (modComponentId == null) {
       return null;
     }
 
-    const extension =
-      extensions.find((x) => x.id === extensionId) ??
-      standaloneModDefinitions?.find((x) => x.id === extensionId);
-    if (extension == null) {
-      throw new Error(`No persisted extension exists with id: ${extensionId}`);
+    const modComponent =
+      activatedModComponents.find((x) => x.id === modComponentId) ??
+      standaloneModDefinitions?.find((x) => x.id === modComponentId);
+    if (modComponent == null) {
+      throw new Error(
+        `No persisted extension exists with id: ${modComponentId}`,
+      );
     }
 
-    return extension;
-  }, [standaloneModDefinitions, extensions, extensionId]);
+    return modComponent;
+  }, [standaloneModDefinitions, activatedModComponents, modComponentId]);
 
   const scope = useSelector(selectScope);
 
   const initialValues: ConvertModFormState = useMemo(
     () => ({
-      blueprintId: generatePackageId(scope, extension.label),
-      name: extension.label,
+      blueprintId: generatePackageId(scope, modComponent.label),
+      name: modComponent.label,
       version: normalizeSemVerString("1.0.0"),
       description: "Created with the PixieBrix Page Editor",
     }),
@@ -147,21 +149,21 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
     dispatch(modModalsSlice.actions.closeModal());
   };
 
-  const { refetch: refetchRecipes } = useAllModDefinitions();
+  const { refetch: refetchModDefinitions } = useAllModDefinitions();
 
   const convertToMod = async (
     formValues: ConvertModFormState,
     helpers: FormikHelpers<ConvertModFormState>,
   ) => {
     try {
-      const unsavedModDefinition = makeBlueprint(extension, {
+      const unsavedModDefinition = makeBlueprint(modComponent, {
         id: formValues.blueprintId,
         name: formValues.name,
         description: formValues.description,
         version: formValues.version,
       });
 
-      const response = await createRecipe({
+      const response = await createMod({
         recipe: unsavedModDefinition,
         organizations: [],
         public: false,
@@ -175,11 +177,11 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
       };
 
       // Cloud extension doesn't have "active" property
-      if ("active" in extension && extension.active) {
+      if ("active" in modComponent && modComponent.active) {
         // Dealing with installed extension
         dispatch(
           extensionsSlice.actions.attachExtension({
-            extensionId: extension.id,
+            extensionId: modComponent.id,
             recipeMetadata: pickModDefinitionMetadata(modDefinition),
           }),
         );
@@ -187,11 +189,11 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
         // In case of cloud extension, we need to delete it
         // Since it's now a part of the blueprint
         await deleteStandaloneModDefinition({
-          extensionId: extension.id,
+          extensionId: modComponent.id,
         }).unwrap();
       }
 
-      refetchRecipes();
+      refetchModDefinitions();
 
       if (showPublishContext == null) {
         dispatch(
@@ -277,4 +279,4 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
   );
 };
 
-export default ConvertToRecipeModalBody;
+export default ConvertToModModalBody;
