@@ -25,7 +25,7 @@ import { Link } from "react-router-dom";
 import { getBaseURL } from "@/data/service/baseService";
 import {
   addListener as addAuthListener,
-  readPartnerAuthData,
+  getPartnerAuthData,
   removeListener as removeAuthListener,
 } from "@/auth/authStorage";
 import { useSelector } from "react-redux";
@@ -50,7 +50,7 @@ const subscribe = (callback: () => void) => {
 async function getAdminConsoleUrl(): Promise<string> {
   const [baseUrl, partnerAuth] = await Promise.all([
     getBaseURL(),
-    readPartnerAuthData(),
+    getPartnerAuthData(),
   ]);
   const url = partnerAuth?.token
     ? new URL("partner-auth", baseUrl)

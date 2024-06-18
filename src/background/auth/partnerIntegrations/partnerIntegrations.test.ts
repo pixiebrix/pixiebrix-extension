@@ -15,23 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  _refreshPartnerToken,
-  getPartnerPrincipals,
-} from "@/background/partnerIntegrations";
+import { _refreshPartnerToken } from "@/background/auth/partnerIntegrations/partnerIntegrations";
 import { readRawConfigurations } from "@/integrations/registry";
 import tokenIntegrationDefinition from "@contrib/integrations/automation-anywhere.yaml";
 import oauthIntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import { locator as serviceLocator } from "@/background/locator";
 import { uuidv4 } from "@/types/helpers";
-import { readPartnerAuthData, setPartnerAuth } from "@/auth/authStorage";
-import { syncRemotePackages } from "@/registry/memoryRegistry";
+import { getPartnerAuthData, setPartnerAuthData } from "@/auth/authStorage";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
-import {
-  integrationConfigFactory,
-  secretsConfigFactory,
-} from "@/testUtils/factories/integrationFactories";
+import { secretsConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { registry } from "@/background/messenger/api";
 import { setCachedAuthData } from "@/background/auth/authStorage";
@@ -47,8 +40,8 @@ const integrationDefinitionMap = new Map([
 
 jest.mock("@/background/auth/authStorage");
 jest.mock("@/auth/authStorage", () => ({
-  readPartnerAuthData: jest.fn().mockResolvedValue({}),
-  setPartnerAuth: jest.fn(),
+  getPartnerAuthData: jest.fn().mockResolvedValue({}),
+  setPartnerAuthData: jest.fn(),
   addListener: jest.fn(),
 }));
 
@@ -72,60 +65,9 @@ jest.mocked(registry.find).mockImplementation(async (id: RegistryId) => {
 });
 
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
-const setPartnerAuthMock = jest.mocked(setPartnerAuth);
-const readPartnerAuthDataMock = jest.mocked(readPartnerAuthData);
+const setPartnerAuthDataMock = jest.mocked(setPartnerAuthData);
+const getPartnerAuthDataMock = jest.mocked(getPartnerAuthData);
 const setCachedAuthDataMock = jest.mocked(setCachedAuthData);
-
-describe("getPartnerPrincipals", () => {
-  beforeEach(() => {
-    appApiMock.reset();
-
-    appApiMock
-      .onGet("/api/registry/bricks/")
-      .reply(200, [tokenIntegrationDefinition, oauthIntegrationDefinition]);
-
-    appApiMock.onGet("/api/services/shared/").reply(200, []);
-
-    readRawConfigurationsMock.mockReset();
-  });
-
-  test("get empty principals", async () => {
-    // No local integration configurations
-    readRawConfigurationsMock.mockResolvedValue([]);
-
-    await syncRemotePackages();
-    await serviceLocator.refresh();
-
-    const principals = await getPartnerPrincipals();
-
-    expect(principals).toStrictEqual([]);
-  });
-
-  test("get configured principal", async () => {
-    // Local configuration
-    readRawConfigurationsMock.mockResolvedValue([
-      integrationConfigFactory({
-        integrationId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-        config: secretsConfigFactory({
-          controlRoomUrl: "https://control-room.example.com",
-          username: "bot_creator",
-        }),
-      }),
-    ]);
-
-    await serviceLocator.refresh();
-    await syncRemotePackages();
-
-    const principals = await getPartnerPrincipals();
-
-    expect(principals).toStrictEqual([
-      {
-        hostname: "control-room.example.com",
-        principalId: "bot_creator",
-      },
-    ]);
-  });
-});
 
 describe("refresh partner token", () => {
   beforeEach(() => {
@@ -135,11 +77,11 @@ describe("refresh partner token", () => {
 
   it("nop if no token", async () => {
     await _refreshPartnerToken();
-    expect(readPartnerAuthDataMock).toHaveBeenCalledOnce();
+    expect(getPartnerAuthDataMock).toHaveBeenCalledOnce();
   });
 
   it("nop if no refresh token", async () => {
-    readPartnerAuthDataMock.mockResolvedValue({
+    getPartnerAuthDataMock.mockResolvedValue({
       authId: uuidv4(),
       token: "notatoken",
     });
@@ -150,7 +92,7 @@ describe("refresh partner token", () => {
 
   it("refreshes token", async () => {
     const authId = uuidv4();
-    readPartnerAuthDataMock.mockResolvedValue({
+    getPartnerAuthDataMock.mockResolvedValue({
       authId,
       token: "notatoken",
       refreshToken: "notarefreshtoken",
@@ -177,7 +119,7 @@ describe("refresh partner token", () => {
     await _refreshPartnerToken();
     expect(appApiMock.history.post).toHaveLength(1);
     // `toHaveBeenCalledOnceWith` had the wrong types :shrug:
-    expect(setPartnerAuthMock).toHaveBeenCalledWith({
+    expect(setPartnerAuthDataMock).toHaveBeenCalledWith({
       authId,
       token: "notatoken2",
       refreshToken: "notarefreshtoken2",
@@ -194,7 +136,7 @@ describe("refresh partner token", () => {
 
   it("throws on authorization error", async () => {
     const authId = uuidv4();
-    readPartnerAuthDataMock.mockResolvedValue({
+    getPartnerAuthDataMock.mockResolvedValue({
       authId,
       token: "notatoken",
       refreshToken: "notarefreshtoken",

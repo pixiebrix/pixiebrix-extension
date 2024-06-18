@@ -51,10 +51,6 @@ import { locator, refreshServices } from "@/background/locator";
 import { closeTab, focusTab, openTab } from "@/background/tabs";
 import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow";
 import { performConfiguredRequest } from "@/background/requests";
-import {
-  getPartnerPrincipals,
-  launchAuthIntegration,
-} from "@/background/partnerIntegrations";
 import { getAvailableVersion } from "@/background/installer";
 import {
   collectPerformanceDiagnostics,
@@ -76,6 +72,8 @@ import {
 import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
 import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods";
+import { launchAuthIntegration } from "@/background/auth/partnerIntegrations/launchAuthIntegration";
+import { getPartnerPrincipals } from "@/background/auth/partnerIntegrations/getPartnerPrincipals";
 
 expectContext("background");
 
