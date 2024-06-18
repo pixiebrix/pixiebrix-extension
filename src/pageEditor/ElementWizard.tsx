@@ -110,11 +110,11 @@ const ElementWizard: React.FunctionComponent<{
             <div className="flex-grow-1" />
 
             <PermissionsToolbar
-              element={modComponentFormState}
+              modComponentFormState={modComponentFormState}
               disabled={!isValid}
             />
 
-            <ReloadToolbar element={modComponentFormState} />
+            <ReloadToolbar modComponentFormState={modComponentFormState} />
           </Nav>
 
           {status && <div className="text-danger">{status}</div>}
