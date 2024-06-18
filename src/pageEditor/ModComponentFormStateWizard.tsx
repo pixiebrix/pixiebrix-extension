@@ -58,7 +58,7 @@ const WizardNavItem: React.FunctionComponent<{
  * @see EditorTabLayout
  * @see RecipePane
  */
-const ElementWizard: React.FunctionComponent<{
+const ModComponentFormStateWizard: React.FunctionComponent<{
   modComponentFormState: ModComponentFormState;
 }> = ({ modComponentFormState }) => {
   const [step, setStep] = useState(wizard[0].step);
@@ -129,4 +129,4 @@ const ElementWizard: React.FunctionComponent<{
   );
 };
 
-export default ElementWizard;
+export default ModComponentFormStateWizard;
