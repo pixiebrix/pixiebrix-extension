@@ -52,10 +52,12 @@ describe("DynamicModComponentListItem", () => {
           setupRedux(dispatch) {
             dispatch(authActions.setAuth(authStateFactory()));
             // The addElement also sets the active element
-            dispatch(editorActions.addElement(formStateFactory()));
+            dispatch(
+              editorActions.addModComponentFormState(formStateFactory()),
+            );
 
             // Add new element to deactivate the previous one
-            dispatch(editorActions.addElement(formState));
+            dispatch(editorActions.addModComponentFormState(formState));
             // Remove the active element and stay with one inactive item
             dispatch(editorActions.removeElement(formState.uuid));
           },
@@ -77,7 +79,7 @@ describe("DynamicModComponentListItem", () => {
           setupRedux(dispatch) {
             dispatch(authActions.setAuth(authStateFactory()));
             // The addElement also sets the active element
-            dispatch(editorActions.addElement(formState));
+            dispatch(editorActions.addModComponentFormState(formState));
           },
         },
       ).asFragment(),

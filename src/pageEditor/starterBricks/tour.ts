@@ -34,7 +34,7 @@ import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getDomain } from "@/permissions/patterns";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
-import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TourFormState } from "./formStateTypes";
 import { TourStarterBrickABC } from "@/starterBricks/tour/tourExtension";
@@ -148,7 +148,7 @@ async function fromExtension(
   };
 }
 
-const config: ElementConfig<undefined, TourFormState> = {
+const config: ModComponentFormStateAdapter<undefined, TourFormState> = {
   displayOrder: 8,
   elementType: "tour",
   label: "Tour",

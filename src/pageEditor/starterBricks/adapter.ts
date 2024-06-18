@@ -27,22 +27,24 @@ import contextMenuExtension from "@/pageEditor/starterBricks/contextMenu";
 import sidebarExtension from "@/pageEditor/starterBricks/sidebar";
 import quickBarProviderExtension from "@/pageEditor/starterBricks/quickBarProvider";
 import tourExtension from "@/pageEditor/starterBricks/tour";
-import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-export const ADAPTERS = new Map<StarterBrickType, ElementConfig>([
-  ["trigger", triggerExtension],
-  ["panel", panelExtension],
-  ["contextMenu", contextMenuExtension],
-  ["actionPanel", sidebarExtension],
-  ["menuItem", menuItemExtension],
-  ["quickBar", quickBarExtension],
-  ["quickBarProvider", quickBarProviderExtension],
-  ["tour", tourExtension],
-]);
+export const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>(
+  [
+    ["trigger", triggerExtension],
+    ["panel", panelExtension],
+    ["contextMenu", contextMenuExtension],
+    ["actionPanel", sidebarExtension],
+    ["menuItem", menuItemExtension],
+    ["quickBar", quickBarExtension],
+    ["quickBarProvider", quickBarProviderExtension],
+    ["tour", tourExtension],
+  ],
+);
 
 export async function selectType(
   extension: ModComponentBase,

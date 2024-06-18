@@ -35,7 +35,7 @@ import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { PanelStarterBrickABC } from "@/starterBricks/panel/panelExtension";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
-import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import PanelConfiguration from "@/pageEditor/tabs/panel/PanelConfiguration";
 import { insertPanel } from "@/contentScript/messenger/api";
 import {
@@ -173,7 +173,10 @@ async function fromExtension(
   };
 }
 
-const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
+const config: ModComponentFormStateAdapter<
+  PanelSelectionResult,
+  PanelFormState
+> = {
   displayOrder: 2,
   elementType: "panel",
   label: "Panel",

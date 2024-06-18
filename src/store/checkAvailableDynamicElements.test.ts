@@ -88,7 +88,9 @@ describe("checkAvailableDynamicElements", () => {
       },
     });
 
-    store.dispatch(actions.addElement(unavailableDynamicExtension));
+    store.dispatch(
+      actions.addModComponentFormState(unavailableDynamicExtension),
+    );
     store.dispatch(actions.selectInstalled(availableDynamicExtension));
 
     jest

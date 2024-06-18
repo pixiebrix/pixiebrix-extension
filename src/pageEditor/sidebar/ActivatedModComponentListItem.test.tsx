@@ -74,7 +74,7 @@ describe("ActivatedModComponentListItem", () => {
       {
         setupRedux(dispatch) {
           // The addElement also sets the active element
-          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.addModComponentFormState(formState));
         },
       },
     );

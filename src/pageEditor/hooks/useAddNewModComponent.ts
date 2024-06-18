@@ -21,7 +21,7 @@ import notify from "@/utils/notify";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { isSpecificError } from "@/errors/errorHelpers";
-import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import useFlags from "@/hooks/useFlags";
@@ -35,9 +35,9 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 
-type AddElement = (config: ElementConfig) => void;
+type AddNewModComponent = (config: ModComponentFormStateAdapter) => void;
 
-function useAddElement(): AddElement {
+function useAddNewModComponent(): AddNewModComponent {
   const dispatch = useDispatch();
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
@@ -45,21 +45,24 @@ function useAddElement(): AddElement {
   );
 
   return useCallback(
-    async (config: ElementConfig) => {
-      if (config.flag && flagOff(config.flag)) {
+    async (modComponentFormStateAdapter: ModComponentFormStateAdapter) => {
+      if (
+        modComponentFormStateAdapter.flag &&
+        flagOff(modComponentFormStateAdapter.flag)
+      ) {
         dispatch(actions.betaError());
         return;
       }
 
-      dispatch(actions.toggleInsert(config.elementType));
+      dispatch(actions.toggleInsert(modComponentFormStateAdapter.elementType));
 
-      if (!config.selectNativeElement) {
+      if (!modComponentFormStateAdapter.selectNativeElement) {
         // If the foundation is not for a native element, stop after toggling insertion mode
         return;
       }
 
       try {
-        const element = await config.selectNativeElement(
+        const element = await modComponentFormStateAdapter.selectNativeElement(
           inspectedTab,
           suggestElements,
         );
@@ -67,18 +70,26 @@ function useAddElement(): AddElement {
 
         const metadata = internalStarterBrickMetaFactory();
 
-        const initialState = config.fromNativeElement(url, metadata, element);
+        const initialState = modComponentFormStateAdapter.fromNativeElement(
+          url,
+          metadata,
+          element,
+        );
 
         updateDynamicElement(
           allFramesInInspectedTab,
-          config.asDynamicElement(initialState),
+          modComponentFormStateAdapter.asDynamicElement(initialState),
         );
 
-        dispatch(actions.addElement(initialState as ModComponentFormState));
-        dispatch(actions.checkActiveElementAvailability());
+        dispatch(
+          actions.addModComponentFormState(
+            initialState as ModComponentFormState,
+          ),
+        );
+        dispatch(actions.checkActiveModComponentAvailability());
 
         reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
-          type: config.elementType,
+          type: modComponentFormStateAdapter.elementType,
         });
       } catch (error) {
         if (isSpecificError(error, CancelError)) {
@@ -86,7 +97,7 @@ function useAddElement(): AddElement {
         }
 
         notify.error({
-          message: `Error adding ${config.label.toLowerCase()}`,
+          message: `Error adding ${modComponentFormStateAdapter.label.toLowerCase()}`,
           error,
         });
       } finally {
@@ -97,4 +108,4 @@ function useAddElement(): AddElement {
   );
 }
 
-export default useAddElement;
+export default useAddNewModComponent;

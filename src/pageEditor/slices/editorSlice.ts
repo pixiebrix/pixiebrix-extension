@@ -144,8 +144,10 @@ const cloneActiveExtension = createAsyncThunk<
     newActiveModComponentFormState,
     "New active mod component form state not found",
   );
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned extension
-  thunkAPI.dispatch(actions.addElement(newActiveModComponentFormState));
+  thunkAPI.dispatch(
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned extension
+    actions.addModComponentFormState(newActiveModComponentFormState),
+  );
 });
 
 type AvailableInstalled = {
@@ -260,7 +262,7 @@ const checkAvailableDynamicElements = createAsyncThunk<
   return { availableDynamicIds };
 });
 
-const checkActiveElementAvailability = createAsyncThunk<
+const checkActiveModComponentAvailability = createAsyncThunk<
   {
     availableDynamicIds: UUID[];
   },
@@ -269,20 +271,20 @@ const checkActiveElementAvailability = createAsyncThunk<
 >("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
   const tabUrl = await getCurrentInspectedURL();
   const state = thunkAPI.getState();
-  // The currently selected element in the page editor
+  // The form state of the currently selected mod component in the page editor
   const activeModComponentFormState = selectActiveModComponentFormState(state);
   assertNotNullish(
     activeModComponentFormState,
     "Active mod component form state not found",
   );
-  // Calculate new availability for the active element
+  // Calculate new availability for the active mod component
   const isAvailable = await isElementAvailable(
     tabUrl,
     activeModComponentFormState.extensionPoint,
   );
-  // Calculate the new dynamic element availability, depending on the
-  // new availability of the active element -- should be a unique list of ids,
-  // and we add/remove the active element's id based on isAvailable
+  // Calculate the new dynamic mod component availability, depending on the
+  // new availability of the active mod component -- should be a unique list of ids,
+  // and we add/remove the active mod component's id based on isAvailable
   const availableDynamicIds = [...state.editor.availableDynamicIds];
   if (isAvailable) {
     if (!availableDynamicIds.includes(activeModComponentFormState.uuid)) {
@@ -312,13 +314,17 @@ export const editorSlice = createSlice({
     markEditable(state, action: PayloadAction<RegistryId>) {
       state.knownEditable.push(action.payload);
     },
-    addElement(state, action: PayloadAction<ModComponentFormState>) {
-      const element = action.payload as Draft<ModComponentFormState>;
+    addModComponentFormState(
+      state,
+      action: PayloadAction<ModComponentFormState>,
+    ) {
+      const modComponentFormState =
+        action.payload as Draft<ModComponentFormState>;
       state.inserting = null;
-      state.elements.push(element);
-      state.dirty[element.uuid] = true;
+      state.elements.push(modComponentFormState);
+      state.dirty[modComponentFormState.uuid] = true;
 
-      activateElement(state, element);
+      activateElement(state, modComponentFormState);
     },
     betaError(state) {
       const error = new BusinessError("This feature is in private beta");
@@ -925,7 +931,7 @@ export const editorSlice = createSlice({
         reportError(error);
       })
       .addCase(
-        checkActiveElementAvailability.fulfilled,
+        checkActiveModComponentAvailability.fulfilled,
         (state, { payload: { availableDynamicIds } }) => ({
           ...state,
           availableDynamicIds,
@@ -940,7 +946,7 @@ export const actions = {
   cloneActiveExtension,
   checkAvailableInstalledExtensions,
   checkAvailableDynamicElements,
-  checkActiveElementAvailability,
+  checkActiveModComponentAvailability,
 };
 
 export const persistEditorConfig = {

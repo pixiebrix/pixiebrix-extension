@@ -17,7 +17,7 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 
-const { addElement, toggleInsert } = actions;
+const { addModComponentFormState, toggleInsert } = actions;
 
 function useAutoInsert(type: StarterBrickType): void {
   const dispatch = useDispatch();
@@ -46,8 +46,8 @@ function useAutoInsert(type: StarterBrickType): void {
         formState.type,
       );
 
-      dispatch(addElement(formState));
-      dispatch(actions.checkActiveElementAvailability());
+      dispatch(addModComponentFormState(formState));
+      dispatch(actions.checkActiveModComponentAvailability());
 
       // Don't auto-run tours on selection in Page Editor
       if (config.elementType !== "tour") {

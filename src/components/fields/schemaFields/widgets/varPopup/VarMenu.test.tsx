@@ -71,7 +71,7 @@ describe("VarMenu", () => {
       />,
       {
         setupRedux(dispatch) {
-          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.addModComponentFormState(formState));
           dispatch(editorActions.selectElement(formState.uuid));
         },
       },
@@ -101,7 +101,7 @@ describe("VarMenu", () => {
       />,
       {
         async setupRedux(dispatch) {
-          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.addModComponentFormState(formState));
           dispatch(editorActions.selectElement(formState.uuid));
           dispatch(
             editorActions.setElementActiveNodeId(
@@ -146,7 +146,7 @@ describe("VarMenu", () => {
       />,
       {
         async setupRedux(dispatch) {
-          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.addModComponentFormState(formState));
           dispatch(editorActions.selectElement(formState.uuid));
           dispatch(
             editorActions.setElementActiveNodeId(

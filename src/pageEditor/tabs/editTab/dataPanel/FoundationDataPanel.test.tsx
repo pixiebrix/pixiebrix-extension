@@ -32,7 +32,7 @@ describe("FoundationDataPanel", () => {
     const { asFragment } = render(<FoundationDataPanel />, {
       initialValues: formState,
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.selectElement(formState.uuid));
         dispatch(
           runtimeSlice.actions.setExtensionTrace({ extensionId, records }),

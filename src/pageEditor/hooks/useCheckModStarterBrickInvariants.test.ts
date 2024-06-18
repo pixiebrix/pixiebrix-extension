@@ -221,7 +221,7 @@ describe("useCheckModStarterBrickInvariants", () => {
           }
 
           for (const formState of newFormStates) {
-            dispatch(editorActions.addElement(formState));
+            dispatch(editorActions.addModComponentFormState(formState));
           }
         },
       });
@@ -265,7 +265,7 @@ describe("useCheckModStarterBrickInvariants", () => {
 
     const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
       },
     });
 
@@ -304,7 +304,7 @@ describe("useCheckModStarterBrickInvariants", () => {
 
     const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
       },
     });
     const checkModStarterBrickInvariants = result.current;

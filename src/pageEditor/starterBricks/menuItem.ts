@@ -36,7 +36,7 @@ import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemExtens
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
-import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import MenuItemConfiguration from "@/pageEditor/tabs/menuItem/MenuItemConfiguration";
 import { insertButton } from "@/contentScript/messenger/api";
 import {
@@ -181,7 +181,10 @@ function asDynamicElement(element: ActionFormState): ButtonDefinition {
   };
 }
 
-const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
+const config: ModComponentFormStateAdapter<
+  ButtonSelectionResult,
+  ActionFormState
+> = {
   displayOrder: 0,
   elementType: "menuItem",
   label: "Button",

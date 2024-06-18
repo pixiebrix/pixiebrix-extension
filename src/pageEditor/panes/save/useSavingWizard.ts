@@ -145,7 +145,7 @@ const useSavingWizard = () => {
       recipe: undefined,
     };
 
-    dispatch(editorActions.addElement(personalElement));
+    dispatch(editorActions.addModComponentFormState(personalElement));
     await reset({
       extensionId: activeModComponentFormState.uuid,
       shouldShowConfirmation: false,

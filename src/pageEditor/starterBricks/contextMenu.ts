@@ -33,7 +33,7 @@ import {
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
@@ -178,7 +178,7 @@ function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
   };
 }
 
-const config: ElementConfig<undefined, ContextMenuFormState> = {
+const config: ModComponentFormStateAdapter<undefined, ContextMenuFormState> = {
   displayOrder: 1,
   elementType: "contextMenu",
   label: "Context Menu",

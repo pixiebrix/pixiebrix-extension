@@ -203,7 +203,7 @@ describe("renders", () => {
     const { instanceId } = formState.extension.blockPipeline[0];
     const { asFragment } = render(<EditorPane />, {
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.selectElement(formState.uuid));
         dispatch(editorActions.setElementActiveNodeId(instanceId));
       },
@@ -218,7 +218,7 @@ describe("renders", () => {
     const formState = getFormStateWithSubPipelines();
     const { asFragment } = render(<EditorPane />, {
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.selectElement(formState.uuid));
       },
     });
@@ -239,7 +239,7 @@ describe("can add a node", () => {
       </>,
       {
         setupRedux(dispatch) {
-          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.addModComponentFormState(formState));
           dispatch(editorActions.selectElement(formState.uuid));
         },
       },
@@ -273,7 +273,7 @@ describe("can add a node", () => {
       </>,
       {
         setupRedux(dispatch) {
-          dispatch(editorActions.addElement(element));
+          dispatch(editorActions.addModComponentFormState(element));
           dispatch(editorActions.selectElement(element.uuid));
         },
       },
@@ -302,7 +302,7 @@ describe("can add a node", () => {
       </div>,
       {
         setupRedux(dispatch) {
-          dispatch(editorActions.addElement(element));
+          dispatch(editorActions.addModComponentFormState(element));
           dispatch(editorActions.selectElement(element.uuid));
         },
       },
@@ -360,7 +360,7 @@ async function renderEditorPaneWithBasicFormState() {
     </div>,
     {
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(element));
+        dispatch(editorActions.addModComponentFormState(element));
         dispatch(editorActions.selectElement(element.uuid));
         dispatch(editorActions.setElementActiveNodeId(activeNodeId));
       },
@@ -608,7 +608,7 @@ describe("validation", () => {
     ).__value__[0];
     const { container } = render(<EditorPane />, {
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.selectElement(formState.uuid));
         dispatch(editorActions.setElementActiveNodeId(subEchoNode.instanceId));
       },
@@ -650,8 +650,8 @@ describe("validation", () => {
       </>,
       {
         setupRedux(dispatch) {
-          dispatch(editorActions.addElement(modComponent1));
-          dispatch(editorActions.addElement(modComponent2));
+          dispatch(editorActions.addModComponentFormState(modComponent1));
+          dispatch(editorActions.addModComponentFormState(modComponent2));
           dispatch(editorActions.selectElement(modComponent1.uuid));
           dispatch(editorActions.setElementActiveNodeId(echoBlockInstanceId));
         },
@@ -743,7 +743,7 @@ describe("validation", () => {
       </>,
       {
         setupRedux(dispatch) {
-          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.addModComponentFormState(formState));
           dispatch(editorActions.selectElement(formState.uuid));
         },
       },
@@ -778,7 +778,7 @@ describe("validation", () => {
     const { instanceId } = formState.extension.blockPipeline[2];
     const { container } = render(<EditorPane />, {
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.selectElement(formState.uuid));
         dispatch(editorActions.setElementActiveNodeId(instanceId));
       },
@@ -821,7 +821,7 @@ describe("validation", () => {
 
       const { container } = render(<EditorPane />, {
         setupRedux(dispatch) {
-          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.addModComponentFormState(formState));
           dispatch(editorActions.selectElement(formState.uuid));
           // Adding the node will invoke validation (can't add with UI because of UI validation rules)
           dispatch(
@@ -875,7 +875,7 @@ describe("brick validation in Add Brick Modal UI", () => {
         </>,
         {
           setupRedux(dispatch) {
-            dispatch(editorActions.addElement(formState));
+            dispatch(editorActions.addModComponentFormState(formState));
             dispatch(editorActions.selectElement(formState.uuid));
           },
         },
@@ -917,7 +917,7 @@ describe("brick validation in Add Brick Modal UI", () => {
       </>,
       {
         setupRedux(dispatch) {
-          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.addModComponentFormState(formState));
           dispatch(editorActions.selectElement(formState.uuid));
         },
       },

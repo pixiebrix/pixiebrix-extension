@@ -51,7 +51,7 @@ describe("AddBrickModal", () => {
     const formState = formStateFactory();
     const { asFragment } = render(<AddBrickModal />, {
       setupRedux(dispatch) {
-        dispatch(actions.addElement(formState));
+        dispatch(actions.addModComponentFormState(formState));
         dispatch(actions.selectElement(formState.uuid));
         dispatch(
           actions.showAddBlockModal({
@@ -76,7 +76,7 @@ describe("AddBrickModal", () => {
 
     const { asFragment } = render(<AddBrickModal />, {
       setupRedux(dispatch) {
-        dispatch(actions.addElement(formState));
+        dispatch(actions.addModComponentFormState(formState));
         dispatch(actions.selectElement(formState.uuid));
         dispatch(
           actions.showAddBlockModal({

@@ -40,7 +40,7 @@ jest.mock("@/pageEditor/context/connection");
 
 const { reducer: extensionsReducer } = extensionsSlice;
 
-describe("checkActiveElementAvailability", () => {
+describe("checkActiveModComponentAvailability", () => {
   test("it checks the active element correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
     jest.mocked(getCurrentInspectedURL).mockResolvedValue(testUrl);
@@ -88,7 +88,9 @@ describe("checkActiveElementAvailability", () => {
       },
     });
 
-    store.dispatch(actions.addElement(unavailableDynamicExtension));
+    store.dispatch(
+      actions.addModComponentFormState(unavailableDynamicExtension),
+    );
     store.dispatch(actions.selectInstalled(availableDynamicExtension));
 
     jest
@@ -117,7 +119,7 @@ describe("checkActiveElementAvailability", () => {
     });
     store.dispatch(actions.editElement(available));
 
-    await store.dispatch(actions.checkActiveElementAvailability());
+    await store.dispatch(actions.checkActiveModComponentAvailability());
 
     const state2 = store.getState();
 

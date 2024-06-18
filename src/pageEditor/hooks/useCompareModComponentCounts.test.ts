@@ -56,7 +56,7 @@ describe("useCompareModComponentCounts", () => {
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
       },
     });
 
@@ -107,7 +107,7 @@ describe("useCompareModComponentCounts", () => {
             isReactivate: false,
           }),
         );
-        dispatch(editorActions.addElement(dirtyFormState));
+        dispatch(editorActions.addModComponentFormState(dirtyFormState));
       },
     });
 
@@ -145,8 +145,8 @@ describe("useCompareModComponentCounts", () => {
             isReactivate: false,
           }),
         );
-        dispatch(editorActions.addElement(dirtyFormState1));
-        dispatch(editorActions.addElement(dirtyFormState2));
+        dispatch(editorActions.addModComponentFormState(dirtyFormState1));
+        dispatch(editorActions.addModComponentFormState(dirtyFormState2));
       },
     });
 
@@ -175,7 +175,7 @@ describe("useCompareModComponentCounts", () => {
             isReactivate: false,
           }),
         );
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
       },
     });
 
@@ -205,7 +205,7 @@ describe("useCompareModComponentCounts", () => {
             isReactivate: false,
           }),
         );
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
       },
     });
 
@@ -294,7 +294,7 @@ describe("useCompareModComponentCounts", () => {
             isReactivate: false,
           }),
         );
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
       },
     });
 
@@ -325,7 +325,7 @@ describe("useCompareModComponentCounts", () => {
             isReactivate: false,
           }),
         );
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
       },
     });
 
@@ -356,7 +356,7 @@ describe("useCompareModComponentCounts", () => {
             isReactivate: false,
           }),
         );
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
       },
     });
 
@@ -387,7 +387,7 @@ describe("useCompareModComponentCounts", () => {
             isReactivate: false,
           }),
         );
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
       },
     });
 
@@ -404,7 +404,7 @@ describe("useCompareModComponentCounts", () => {
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(newFormState));
+        dispatch(editorActions.addModComponentFormState(newFormState));
       },
     });
 
@@ -423,7 +423,7 @@ describe("useCompareModComponentCounts", () => {
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
       },
     });
 
@@ -440,7 +440,7 @@ describe("useCompareModComponentCounts", () => {
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.addModComponentFormState(formState));
       },
     });
 

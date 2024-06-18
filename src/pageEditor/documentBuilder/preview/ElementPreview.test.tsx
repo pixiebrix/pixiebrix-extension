@@ -71,7 +71,7 @@ const renderElementPreview = (
   return render(<ElementPreview {...props} />, {
     initialValues: formState,
     setupRedux(dispatch) {
-      dispatch(actions.addElement(formState));
+      dispatch(actions.addModComponentFormState(formState));
       dispatch(actions.selectElement(formState.uuid));
       dispatch(
         actions.setElementActiveNodeId(
