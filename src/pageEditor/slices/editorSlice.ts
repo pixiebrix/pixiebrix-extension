@@ -529,12 +529,13 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<ModComponentBase["_recipe"]>,
     ) {
-      const metadata = action.payload;
-      const recipeElements = state.elements.filter(
-        (element) => element.recipe?.id === metadata?.id,
+      const modMetadata = action.payload;
+      const modComponentFormStates = state.elements.filter(
+        (modComponentFormState) =>
+          modComponentFormState.recipe?.id === modMetadata?.id,
       );
-      for (const element of recipeElements) {
-        element.recipe = metadata;
+      for (const formState of modComponentFormStates) {
+        formState.recipe = modMetadata;
       }
     },
     showAddToRecipeModal(state) {
