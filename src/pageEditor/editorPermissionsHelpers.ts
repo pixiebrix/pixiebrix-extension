@@ -29,16 +29,18 @@ import { castArray } from "lodash";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 export async function calculatePermissionsForElement(
-  element: ModComponentFormState,
-): Promise<{
-  hasPermissions: boolean;
-  permissions: Permissions.Permissions;
-}> {
-  const adapter = ADAPTERS.get(element.type);
+  modComponentFormState: ModComponentFormState,
+): Promise<{ hasPermissions: boolean; permissions: Permissions.Permissions }> {
+  const adapter = ADAPTERS.get(modComponentFormState.type);
 
-  assertNotNullish(adapter, `Adapter not found for ${element.type}`);
+  assertNotNullish(
+    adapter,
+    `Adapter not found for ${modComponentFormState.type}`,
+  );
 
-  const { extension, extensionPointConfig } = adapter.asDynamicElement(element);
+  const { extension, extensionPointConfig } = adapter.asDynamicElement(
+    modComponentFormState,
+  );
 
   const starterBrick = starterBrickFactory(extensionPointConfig);
 
