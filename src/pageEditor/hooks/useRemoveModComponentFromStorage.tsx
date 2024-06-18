@@ -100,7 +100,6 @@ export function useRemoveModComponentFromStorage(): (
 
       try {
         // Remove from Page Editor
-        // Equivalent of @/store/dynamicElementStorage.ts:removeDynamicElements
         dispatch(editorActions.removeElement(extensionId));
 
         // Remove from options slice / extension storage

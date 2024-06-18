@@ -53,7 +53,7 @@ import {
   editRecipeMetadata,
   editRecipeOptionsDefinitions,
   ensureElementUIState,
-  removeElement,
+  removeModComponentFormState,
   removeRecipeData,
   selectRecipeId,
   setActiveNodeId,
@@ -441,7 +441,7 @@ export const editorSlice = createSlice({
     },
     removeElement(state, action: PayloadAction<UUID>) {
       const uuid = action.payload;
-      removeElement(state, uuid);
+      removeModComponentFormState(state, uuid);
     },
     selectRecipeId(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
