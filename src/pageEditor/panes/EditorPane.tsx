@@ -26,7 +26,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import Effect from "@/components/Effect";
-import ElementWizard from "@/pageEditor/ElementWizard";
+import ModComponentFormStateWizard from "@/pageEditor/ModComponentFormStateWizard";
 import { logActions } from "@/components/logViewer/logSlice";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
@@ -70,7 +70,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
         onChange={syncReduxState}
         delayMillis={CHANGE_DETECT_DELAY_MILLIS}
       />
-      <ElementWizard element={element} />
+      <ModComponentFormStateWizard modComponentFormState={element} />
     </IntegrationsSliceModIntegrationsContextAdapter>
   );
 };

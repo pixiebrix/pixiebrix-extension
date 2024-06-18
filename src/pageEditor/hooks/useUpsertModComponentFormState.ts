@@ -34,7 +34,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
 
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
@@ -137,7 +137,7 @@ function useUpsertModComponentFormState(): SaveCallback {
     ): Promise<string | null> => {
       if (options.checkPermissions) {
         // Good to prompt the creator for permissions if any is missing, but they're not actually required to save
-        void ensureElementPermissionsFromUserGesture(element);
+        void ensureModComponentFormStatePermissionsFromUserGesture(element);
       }
 
       const adapter = ADAPTERS.get(element.type);

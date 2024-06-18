@@ -91,24 +91,30 @@ export function shouldAutoRun(element: ModComponentFormState): boolean {
  * - tours
  */
 const ReloadToolbar: React.FunctionComponent<{
-  element: ModComponentFormState;
+  modComponentFormState: ModComponentFormState;
   refreshMillis?: number;
-}> = ({ element, refreshMillis = DEFAULT_RELOAD_MILLIS }) => {
+}> = ({ modComponentFormState, refreshMillis = DEFAULT_RELOAD_MILLIS }) => {
   const sessionId = useSelector(selectSessionId);
 
   const run = useCallback(async () => {
-    const adapter = ADAPTERS.get(element.type);
-    assertNotNullish(adapter, `Adapter not found for ${element.type}`);
+    const adapter = ADAPTERS.get(modComponentFormState.type);
+    assertNotNullish(
+      adapter,
+      `Adapter not found for ${modComponentFormState.type}`,
+    );
     const { asDynamicElement: factory } = adapter;
 
-    updateDynamicElement(allFramesInInspectedTab, factory(element));
-  }, [element]);
+    updateDynamicElement(
+      allFramesInInspectedTab,
+      factory(modComponentFormState),
+    );
+  }, [modComponentFormState]);
 
   const manualRun = async () => {
     // Report before the run to report even if the run errors
     reportEvent(Events.PAGE_EDITOR_MANUAL_RUN, {
       sessionId,
-      extensionId: element.uuid,
+      extensionId: modComponentFormState.uuid,
     });
 
     await run();
@@ -124,17 +130,17 @@ const ReloadToolbar: React.FunctionComponent<{
     trailing: true,
   });
 
-  const isPanel = isPanelElement(element);
-  const isTrigger = isAutomaticTrigger(element);
-  const isTour = element.type === "tour";
+  const isPanel = isPanelElement(modComponentFormState);
+  const isTrigger = isAutomaticTrigger(modComponentFormState);
+  const isTour = modComponentFormState.type === "tour";
 
   useEffect(() => {
-    if (!shouldAutoRun(element)) {
+    if (!shouldAutoRun(modComponentFormState)) {
       return;
     }
 
     void debouncedRun();
-  }, [debouncedRun, element]);
+  }, [debouncedRun, modComponentFormState]);
 
   if (isPanel) {
     return (

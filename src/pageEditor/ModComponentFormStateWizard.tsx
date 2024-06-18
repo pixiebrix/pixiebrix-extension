@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ElementWizard.module.scss";
+import styles from "./ModComponentFormStateWizard.module.scss";
 
 import React, { useState } from "react";
 import { useFormikContext } from "formik";
@@ -58,9 +58,9 @@ const WizardNavItem: React.FunctionComponent<{
  * @see EditorTabLayout
  * @see RecipePane
  */
-const ElementWizard: React.FunctionComponent<{
-  element: ModComponentFormState;
-}> = ({ element }) => {
+const ModComponentFormStateWizard: React.FunctionComponent<{
+  modComponentFormState: ModComponentFormState;
+}> = ({ modComponentFormState }) => {
   const [step, setStep] = useState(wizard[0].step);
 
   const { isValid, status, handleReset } =
@@ -83,7 +83,7 @@ const ElementWizard: React.FunctionComponent<{
   const wizardSteps = [...wizard];
 
   return (
-    <Tab.Container activeKey={step} key={element.uuid}>
+    <Tab.Container activeKey={step} key={modComponentFormState.uuid}>
       <AnalysisAnnotationsContext.Provider
         value={{
           analysisAnnotationsSelectorForPath:
@@ -109,9 +109,12 @@ const ElementWizard: React.FunctionComponent<{
             {/* spacer */}
             <div className="flex-grow-1" />
 
-            <PermissionsToolbar element={element} disabled={!isValid} />
+            <PermissionsToolbar
+              modComponentFormState={modComponentFormState}
+              disabled={!isValid}
+            />
 
-            <ReloadToolbar element={element} />
+            <ReloadToolbar modComponentFormState={modComponentFormState} />
           </Nav>
 
           {status && <div className="text-danger">{status}</div>}
@@ -126,4 +129,4 @@ const ElementWizard: React.FunctionComponent<{
   );
 };
 
-export default ElementWizard;
+export default ModComponentFormStateWizard;

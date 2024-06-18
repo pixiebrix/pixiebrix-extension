@@ -28,23 +28,26 @@ import { type Permissions } from "webextension-polyfill";
 import { castArray } from "lodash";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-export async function calculatePermissionsForElement(
-  element: ModComponentFormState,
-): Promise<{
-  hasPermissions: boolean;
-  permissions: Permissions.Permissions;
-}> {
-  const adapter = ADAPTERS.get(element.type);
+export async function calculatePermissionsForModComponentFormState(
+  modComponentFormState: ModComponentFormState,
+): Promise<{ hasPermissions: boolean; permissions: Permissions.Permissions }> {
+  const adapter = ADAPTERS.get(modComponentFormState.type);
 
-  assertNotNullish(adapter, `Adapter not found for ${element.type}`);
+  assertNotNullish(
+    adapter,
+    `Adapter not found for ${modComponentFormState.type}`,
+  );
 
-  const { extension, extensionPointConfig } = adapter.asDynamicElement(element);
+  const {
+    extension: modComponent,
+    extensionPointConfig: starterBrickDefinition,
+  } = adapter.asDynamicElement(modComponentFormState);
 
-  const starterBrick = starterBrickFactory(extensionPointConfig);
+  const starterBrick = starterBrickFactory(starterBrickDefinition);
 
-  // Pass the extensionPoint in directly because the foundation will not have been saved/added to the
+  // Pass the starter brick directly because the foundation will not have been saved/added to the
   // registry at this point when called from useCreate
-  const permissions = await collectExtensionPermissions(extension, {
+  const permissions = await collectExtensionPermissions(modComponent, {
     extensionPoint: starterBrick,
   });
 
@@ -55,20 +58,20 @@ export async function calculatePermissionsForElement(
 
 /**
  * Prompt the user to grant permissions if needed, and return whether PixieBrix has the required permissions.
- * @param elementOrElements the Page Editor element form state(s)
+ * @param modComponentFormStates the Page Editor mod component form state(s)
  */
-export async function ensureElementPermissionsFromUserGesture(
-  elementOrElements: ModComponentFormState | ModComponentFormState[],
+export async function ensureModComponentFormStatePermissionsFromUserGesture(
+  modComponentFormStates: ModComponentFormState | ModComponentFormState[],
 ): Promise<boolean> {
   try {
-    const elementPermissions = await Promise.all(
-      castArray(elementOrElements).map(async (element) =>
-        calculatePermissionsForElement(element),
+    const modComponentPermissions = await Promise.all(
+      castArray(modComponentFormStates).map(async (formState) =>
+        calculatePermissionsForModComponentFormState(formState),
       ),
     );
 
     const { hasPermissions: alreadyHasPermissions, permissions } =
-      mergePermissionsStatuses(elementPermissions);
+      mergePermissionsStatuses(modComponentPermissions);
 
     if (alreadyHasPermissions) {
       return true;
