@@ -525,7 +525,7 @@ export const editorSlice = createSlice({
       delete state.dirtyRecipeMetadataById[recipeId];
       delete state.dirtyRecipeOptionsById[recipeId];
     },
-    updateRecipeMetadataForElements(
+    updateModMetadataOnModComponentFormStates(
       state,
       action: PayloadAction<ModComponentBase["_recipe"]>,
     ) {
