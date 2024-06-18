@@ -48,10 +48,12 @@ import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
-export function getIdForElement(
-  element: ModComponentBase | ModComponentFormState,
+export function getModComponentId(
+  modComponentOrFormState: ModComponentBase | ModComponentFormState,
 ): UUID {
-  return isModComponentBase(element) ? element.id : element.uuid;
+  return isModComponentBase(modComponentOrFormState)
+    ? modComponentOrFormState.id
+    : modComponentOrFormState.uuid;
 }
 
 export function getModId(
