@@ -144,8 +144,8 @@ const cloneActiveExtension = createAsyncThunk<
     newActiveModComponentFormState,
     "New active mod component form state not found",
   );
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned extension
   thunkAPI.dispatch(
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned extension
     actions.addModComponentFormState(newActiveModComponentFormState),
   );
 });
