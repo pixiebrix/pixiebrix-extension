@@ -61,26 +61,27 @@ const AddATeamMenuList = createMenuListWithAddButton(
   "https://app.pixiebrix.com/teams/create",
 );
 
-const ShareRecipeModalBody: React.FunctionComponent = () => {
+const ShareModModalBody: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { blueprintId } = useSelector(selectShowShareContext);
+  const { blueprintId: modId } = useSelector(selectShowShareContext);
   const organizationsForSelect = useSortOrganizations();
-  const [updateRecipe] = useUpdateRecipeMutation();
+  const [updateModDefinition] = useUpdateRecipeMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
   const {
-    data: recipe,
-    isFetching: isFetchingRecipe,
-    refetch: refetchRecipes,
-  } = useOptionalModDefinition(blueprintId);
-  const hasEditPermissions = useHasEditPermissions(blueprintId);
+    data: modDefinition,
+    isFetching: isFetchingModDefinition,
+    refetch: refetchModDefinition,
+  } = useOptionalModDefinition(modId);
+  const hasEditPermissions = useHasEditPermissions(modId);
 
   const closeModal = () => {
     dispatch(modModalsSlice.actions.closeModal());
   };
 
-  // If an extension was just converted to a blueprint, the API request is likely be in progress and recipe will be null
-  if (isFetchingRecipe) {
+  // If a mod component was just converted to a mod, the API request is likely be in progress and mod definition
+  // will be null
+  if (isFetchingModDefinition) {
     return (
       <Modal.Body>
         <Loader />
@@ -89,7 +90,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
   }
 
   const initialValues: ShareModFormState = {
-    organizations: recipe.sharing.organizations,
+    organizations: modDefinition.sharing.organizations,
   };
 
   const saveSharing = async (
@@ -97,22 +98,22 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
     helpers: FormikHelpers<ShareModFormState>,
   ) => {
     try {
-      const newRecipe = produce(recipe, (draft) => {
+      const newModDefinition = produce(modDefinition, (draft) => {
         draft.sharing.organizations = formValues.organizations;
       });
 
       const packageId = editablePackages.find(
-        (x) => x.name === newRecipe.metadata.id,
+        (x) => x.name === newModDefinition.metadata.id,
       )?.id;
 
-      await updateRecipe({
+      await updateModDefinition({
         packageId,
-        recipe: newRecipe,
+        recipe: newModDefinition,
       }).unwrap();
 
-      notify.success("Shared brick");
+      notify.success("Shared mod");
       closeModal();
-      refetchRecipes();
+      refetchModDefinition();
     } catch (error) {
       if (
         isSingleObjectBadRequestError(error) &&
@@ -172,7 +173,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
                 />
 
                 <div className={styles.row}>
-                  <ModOwnerLabel modId={blueprintId} />
+                  <ModOwnerLabel modId={modId} />
                   <span className="text-muted">Owner</span>
                 </div>
 
@@ -224,11 +225,11 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
             permissions to change sharing
           </div>
           <div className={styles.row}>
-            <ModOwnerLabel modId={blueprintId} />
+            <ModOwnerLabel modId={modId} />
             <span className="text-muted">Owner</span>
           </div>
           {organizationsForSelect
-            .filter((x) => recipe.sharing.organizations.includes(x.id))
+            .filter((x) => modDefinition.sharing.organizations.includes(x.id))
             .map((organization) => (
               <div className={styles.row} key={organization.id}>
                 <span>
@@ -243,10 +244,10 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
         <p className="mb-1">
           People with access can activate the mod with this link
         </p>
-        <ActivationLink modId={blueprintId} />
+        <ActivationLink modId={modId} />
       </Modal.Body>
     </>
   );
 };
 
-export default ShareRecipeModalBody;
+export default ShareModModalBody;

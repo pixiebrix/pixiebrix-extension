@@ -16,17 +16,17 @@
  */
 
 import React from "react";
-import ConvertToRecipeModal from "./convertToRecipeModal/ConvertToRecipeModal";
+import ConvertToModModal from "./convertToModModal/ConvertToModModal";
 import ExtensionLogsModal from "./extensionLogsModal/ExtensionLogsModal";
-import PublishRecipeModals from "./shareModals/PublishRecipeModals";
-import ShareRecipeModal from "./shareModals/ShareRecipeModal";
+import PublishModModals from "./shareModals/PublishModModals";
+import ShareModModal from "./shareModals/ShareModModal";
 
 const Modals: React.FunctionComponent = () => (
   <>
     <ExtensionLogsModal />
-    <ConvertToRecipeModal />
-    <ShareRecipeModal />
-    <PublishRecipeModals />
+    <ConvertToModModal />
+    <ShareModModal />
+    <PublishModModals />
   </>
 );
 
