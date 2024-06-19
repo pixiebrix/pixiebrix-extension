@@ -34,7 +34,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import {
   awaitElementOnce,
-  selectExtensionContext,
+  selectModComponentContext,
 } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
@@ -55,12 +55,12 @@ import {
   type TargetMode,
   type Trigger,
   USER_ACTION_TRIGGERS,
-} from "@/starterBricks/triggerExtensionTypes";
+} from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import {
   getEventReader,
   getShimEventReader,
   pickEventProperties,
-} from "@/starterBricks/triggerEventReaders";
+} from "@/starterBricks/trigger/triggerEventReaders";
 import CompositeReader from "@/bricks/readers/CompositeReader";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -166,8 +166,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   /**
    * Allow trigger to run even when the tab is not active.
    *
-   * NOTE: this property does not refer to running the trigger in the extension's background page. PixieBrix currently
-   * only supports running mods in the context of a frame's content script.
+   * NOTE: this property does not refer to running the trigger in the browser extension's background page. PixieBrix
+   * currently only supports running mods in the context of a frame's content script.
    *
    * @see TriggerDefinition.background
    */
@@ -205,7 +205,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    */
   private readonly cancelHandlers = new ReusableAbortController();
 
-  // Extensions that have errors/events reported. NOTE: this tracked per contentScript instance. These are not
+  // Mod Components that have errors/events reported. NOTE: this tracked per contentScript instance. These are not
   // reset on Single Page Application navigation events
   private readonly reportedEvents = new Set<UUID>();
   private readonly reportedErrors = new Set<UUID>();
@@ -256,10 +256,10 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    * Return true if an error should be reported.
    */
   private shouldReportError({
-    extensionId,
+    modComponentId,
     error,
   }: {
-    extensionId?: UUID;
+    modComponentId?: UUID;
     error: unknown;
   }): boolean {
     if (
@@ -271,9 +271,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       return false;
     }
 
-    if (extensionId) {
-      const alreadyReported = this.reportedErrors.has(extensionId);
-      this.reportedErrors.add(extensionId);
+    if (modComponentId) {
+      const alreadyReported = this.reportedErrors.has(modComponentId);
+      this.reportedErrors.add(modComponentId);
       return this.shouldReport({ alreadyReported, isError: true });
     }
 
@@ -281,11 +281,11 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   }
 
   /**
-   * Return true if an event should be reported for the given extension id.
+   * Return true if an event should be reported for the given mod component id.
    */
-  private shouldReportEvent(componentId: UUID): boolean {
-    const alreadyReported = this.reportedEvents.has(componentId);
-    this.reportedEvents.add(componentId);
+  private shouldReportEvent(modComponentId: UUID): boolean {
+    const alreadyReported = this.reportedEvents.has(modComponentId);
+    this.reportedEvents.add(modComponentId);
     return this.shouldReport({ alreadyReported, isError: false });
   }
 
@@ -309,7 +309,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   }
 
   cancelObservers(): void {
-    console.debug("TriggerExtensionPoint:cancelObservers", {
+    console.debug("TriggerStarterBrick:cancelObservers", {
       id: this.id,
       instanceNonce: this.instanceNonce,
     });
@@ -323,9 +323,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   }
 
   clearModComponentInterfaceAndEvents(): void {
-    // NOP: the unregisterExtensionEvents method doesn't need to unregister anything from the page because the
-    // observers/handlers are installed for the extensionPoint instance itself, not the extensions. I.e., there's a
-    // single load/click/etc. trigger that's shared by all extensions using this extension point.
+    // NOP: the clearModComponentInterfaceAndEvents method doesn't need to unregister anything from the page because the
+    // observers/handlers are installed for the starter brick instance itself, not the mod component. I.e., there's a
+    // single load/click/etc. trigger that's shared by all mod components using this starter brick.
   }
 
   override uninstall(): void {
@@ -339,17 +339,17 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       ? $safeFind(this.triggerSelector)
       : $(document);
 
-    console.debug("TriggerExtensionPoint:uninstall", {
+    console.debug("TriggerStarterBrick:uninstall", {
       id: this.id,
       instanceNonce: this.instanceNonce,
       trigger: this.trigger,
       $currentElements,
     });
 
-    // This won't impact with other trigger extension points because the handler reference is unique to `this`
+    // This won't impact with other trigger starter bricks because the handler reference is unique to `this`
     this.cancelHandlers.abortAndReset();
 
-    // Remove all extensions to prevent them from running if there are any straggler event handlers on the page
+    // Remove all mod components to prevent them from running if there are any straggler event handlers on the page
     this.modComponents.length = 0;
   }
 
@@ -398,7 +398,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     root: SelectorRoot,
   ) {
     const componentLogger = this.logger.childLogger(
-      selectExtensionContext(modComponent),
+      selectModComponentContext(modComponent),
     );
 
     const { action: actionConfig } = modComponent.config;
@@ -426,7 +426,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     assertNotNullish(event, "Event is required");
 
     let element = event.target as HTMLElement | Document;
-    console.debug("TriggerExtensionPoint:eventHandler", {
+    console.debug("TriggerStarterBrick:eventHandler", {
       id: this.id,
       instanceNonce: this.instanceNonce,
       target: element,
@@ -453,7 +453,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   };
 
   /**
-   * Mark a run as in-progress for an extension. Used to enforce synchronous execution of a
+   * Mark a run as in-progress for a mod component. Used to enforce synchronous execution of a
    * trigger on a particular element.
    * @param modComponentId the UUID of the mod component
    * @param element the element the trigger is running against
@@ -481,18 +481,18 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       nativeEvent: Event | null;
     },
   ): Promise<void> {
-    let extensionsToRun = this.modComponents;
+    let modComponentsToRun = this.modComponents;
 
     if (this.trigger === "hover") {
       // Enforce synchronous behavior for `hover` event
-      extensionsToRun = extensionsToRun.filter(
-        (extension) =>
-          !this.runningModComponentElements.get(extension.id)?.has(root),
+      modComponentsToRun = modComponentsToRun.filter(
+        (modComponent) =>
+          !this.runningModComponentElements.get(modComponent.id)?.has(root),
       );
     }
 
-    // Don't bother running the reader if no extensions match
-    if (extensionsToRun.length === 0) {
+    // Don't bother running the reader if no mod components match
+    if (modComponentsToRun.length === 0) {
       return;
     }
 
@@ -515,31 +515,33 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
 
     await Promise.all(
-      extensionsToRun.map(async (extension) => {
-        const extensionLogger = this.logger.childLogger(
-          selectExtensionContext(extension),
+      modComponentsToRun.map(async (modComponent) => {
+        const componentLogger = this.logger.childLogger(
+          selectModComponentContext(modComponent),
         );
         try {
-          this.markRun(extension.id, root);
-          await this.runModComponent(readerContext, extension, root);
+          this.markRun(modComponent.id, root);
+          await this.runModComponent(readerContext, modComponent, root);
         } catch (error) {
-          if (this.shouldReportError({ extensionId: extension.id, error })) {
-            // Don't need to call `reportError` because it's already reported by extensionLogger
-            extensionLogger.error(error);
+          if (
+            this.shouldReportError({ modComponentId: modComponent.id, error })
+          ) {
+            // Don't need to call `reportError` because it's already reported by componentLogger
+            componentLogger.error(error);
             throw error;
           }
 
           // Silently ignore the error
           return;
         } finally {
-          // NOTE: if the extension is not running with synchronous behavior, there's a race condition where
-          // the `delete` could be called while another extension run is still in progress
-          this.runningModComponentElements.get(extension.id)?.delete(root);
+          // NOTE: if the mod component is not running with synchronous behavior, there's a race condition where
+          // the `delete` could be called while another mod component run is still in progress
+          this.runningModComponentElements.get(modComponent.id)?.delete(root);
         }
 
-        if (this.shouldReportEvent(extension.id)) {
-          reportEvent(Events.TRIGGER_RUN, selectEventData(extension));
-          extensionLogger.info("Successfully ran trigger");
+        if (this.shouldReportEvent(modComponent.id)) {
+          reportEvent(Events.TRIGGER_RUN, selectEventData(modComponent));
+          componentLogger.info("Successfully ran trigger");
         }
       }),
     );
@@ -553,7 +555,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     // Force parameter to be included to make it explicit which types of triggers pass nativeEvent
     { nativeEvent }: { nativeEvent: Event | null },
   ): Promise<void> => {
-    // Previously, run trigger returns individual extension errors. That approach was confusing, because it mixed
+    // Previously, run trigger returns individual mod component errors. That approach was confusing, because it mixed
     // thrown errors with collected errors returned as values. Instead, we now just rely on a thrown error, and at
     // most one error will be thrown per root.
     const promises = roots.map(async (root) =>
@@ -568,7 +570,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   };
 
   /**
-   * Run all trigger extensions for all the provided roots.
+   * Run all trigger mod components for all the provided roots.
    */
   private debouncedRunTriggersAndNotify = this._runTriggersAndNotify; // Default to un-debounced
 
@@ -648,7 +650,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         requestAnimationFrame: !this.allowInactiveFrames,
       });
 
-      console.debug("TriggerExtensionPoint:attachInterval", {
+      console.debug("TriggerStarterBrick:attachInterval", {
         id: this.id,
         instanceNonce: this.instanceNonce,
         intervalMillis: this.intervalMillis,
@@ -757,7 +759,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     // 1) Navigation events on SPAs where the element remains on the page
     // 2) `watch` mode, because the observer will fire the existing elements on the page. (That re-fire will have
     //  watch: false, see observer handler below.)
-    console.debug("TriggerExtensionPoint:attachDOMTrigger", {
+    console.debug("TriggerStarterBrick:attachDOMTrigger", {
       id: this.id,
       instanceNonce: this.instanceNonce,
       trigger: this.trigger,
@@ -791,7 +793,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     if (watch) {
       if ($elements.get(0) === document) {
         console.warn(
-          "TriggerExtensionPoint: ignoring watchMode for document target",
+          "TriggerStarterBrick ignoring watchMode for document target",
         );
         return;
       }
@@ -909,8 +911,8 @@ export interface TriggerDefinition extends StarterBrickDefinitionProp {
   /**
    * Allow the trigger to run even when the tab/frame is not active.
    *
-   * NOTE: this property does not refer to running the trigger in the extension's background page. PixieBrix currently
-   * only supports running mods in the context of a frame's content script.
+   * NOTE: this property does not refer to running the trigger in the browser extension's background page. PixieBrix
+   * currently only supports running mods in the context of a frame's content script.
    *
    * - Introduced in 1.5.3 and checked for interval triggers. The effective value was `true` for other triggers
    *  because this value was not checked. (However, certain triggers, e.g., 'click' can only be triggered by the user
@@ -924,7 +926,7 @@ export interface TriggerDefinition extends StarterBrickDefinitionProp {
   background?: boolean;
 
   /**
-   * Flag to control if all trigger fires/errors for an extension are reported.
+   * Flag to control if all trigger fires/errors for an mod component are reported.
    *
    * If not provided, defaults based on the trigger type:
    * - User action (e.g., click): all
@@ -969,12 +971,12 @@ export interface TriggerDefinition extends StarterBrickDefinitionProp {
   customEvent?: CustomEventOptions;
 
   /**
-   * Debounce the trigger for the extension point.
+   * Debounce the trigger for the starter brick.
    */
   debounce?: DebounceOptions;
 }
 
-class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
+class RemoteTriggerStarterBrick extends TriggerStarterBrickABC {
   private readonly _definition: TriggerDefinition;
 
   public readonly permissions: Permissions.Permissions;
@@ -1073,5 +1075,5 @@ export function fromJS(
     throw new Error(`Expected type=trigger, got ${type}`);
   }
 
-  return new RemoteTriggerExtensionPoint(platform, config);
+  return new RemoteTriggerStarterBrick(platform, config);
 }

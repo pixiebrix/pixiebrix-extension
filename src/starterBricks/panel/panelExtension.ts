@@ -28,7 +28,7 @@ import {
   acquireElement,
   awaitElementOnce,
   onNodeRemoved,
-  selectExtensionContext,
+  selectModComponentContext,
 } from "@/starterBricks/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import {
@@ -294,7 +294,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     const bodyUUID = uuidv4();
     const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension),
+      selectModComponentContext(extension),
     );
 
     const {

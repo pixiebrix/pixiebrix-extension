@@ -24,7 +24,7 @@ import {
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
-import { selectExtensionContext } from "@/starterBricks/helpers";
+import { selectModComponentContext } from "@/starterBricks/helpers";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -225,7 +225,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     const { generator, rootAction } = extension.config;
 
     const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension),
+      selectModComponentContext(extension),
     );
 
     let rootActionId: string | null = null;

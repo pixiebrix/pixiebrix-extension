@@ -40,7 +40,7 @@ import {
   type ReportMode,
   type TargetMode,
   type Trigger as TriggerTrigger,
-} from "@/starterBricks/triggerExtensionTypes";
+} from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import {
   type CustomEventOptions,
   type DebounceOptions,

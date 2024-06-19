@@ -36,7 +36,7 @@ import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { selectExtensionContext } from "@/starterBricks/helpers";
+import { selectModComponentContext } from "@/starterBricks/helpers";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
@@ -207,7 +207,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     ); // Defaults to a box
 
     const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension),
+      selectModComponentContext(extension),
     );
 
     quickBarRegistry.addAction({

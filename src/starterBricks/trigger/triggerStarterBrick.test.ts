@@ -32,7 +32,7 @@ import {
   getDefaultAllowInactiveFramesForTrigger,
   type TriggerConfig,
   type TriggerDefinition,
-} from "@/starterBricks/triggerExtension";
+} from "@/starterBricks/trigger/triggerStarterBrick";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -50,7 +50,7 @@ import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { screen } from "@testing-library/react";
-import type { Trigger } from "@/starterBricks/triggerExtensionTypes";
+import type { Trigger } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { getPlatform } from "@/platform/platformContext";
 
 let hidden = false;
@@ -78,7 +78,7 @@ const reportEventMock = jest.mocked(reportEvent);
 const showNotificationMock = jest.mocked(showNotification);
 const notifyContextInvalidatedMock = jest.mocked(notifyContextInvalidated);
 
-const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
+const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickDefinitionLike<TriggerDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
@@ -100,7 +100,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<ResolvedModComponent<TriggerConfig>>({
+const modComponentFactory = define<ResolvedModComponent<TriggerConfig>>({
   apiVersion: "v3",
   _resolvedModComponentBrand: undefined as never,
   id: uuidSequence,
@@ -139,51 +139,51 @@ beforeEach(() => {
   rootReader.ref = null;
 });
 
-describe("triggerExtension", () => {
+describe("triggerStarterBrick", () => {
   it.each([["load"], [undefined]])(
     "runs page load trigger",
     async (trigger) => {
-      const extensionPoint = fromJS(
+      const starterBrick = fromJS(
         getPlatform(),
-        extensionPointFactory({
+        starterBrickFactory({
           trigger,
         })(),
       );
 
-      extensionPoint.registerModComponent(
-        extensionFactory({
-          extensionPointId: extensionPoint.id,
+      starterBrick.registerModComponent(
+        modComponentFactory({
+          extensionPointId: starterBrick.id,
         }),
       );
 
-      await extensionPoint.install();
-      await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+      await starterBrick.install();
+      await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
       expect(rootReader.readCount).toBe(1);
 
-      extensionPoint.uninstall();
+      starterBrick.uninstall();
     },
   );
 
   it("runs non-background page load trigger on visibilitychange", async () => {
     hidden = true;
 
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "load",
         background: false,
       })(),
     );
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
       }),
     );
 
-    await extensionPoint.install();
-    const runPromise = extensionPoint.runModComponents({
+    await starterBrick.install();
+    const runPromise = starterBrick.runModComponents({
       reason: RunReason.MANUAL,
     });
 
@@ -197,34 +197,34 @@ describe("triggerExtension", () => {
 
     expect(rootReader.readCount).toBe(1);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 
   it("runs non-background page load runs immediately if page visible", async () => {
     hidden = false;
 
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "load",
         background: false,
       })(),
     );
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
       }),
     );
 
-    await extensionPoint.install();
-    await extensionPoint.runModComponents({
+    await starterBrick.install();
+    await starterBrick.runModComponents({
       reason: RunReason.MANUAL,
     });
 
     expect(rootReader.readCount).toBe(1);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 
   it.each([[undefined], ["once"], ["watch"]])(
@@ -234,23 +234,23 @@ describe("triggerExtension", () => {
         "<button>Click Me</button>",
       ).body.innerHTML;
 
-      const extensionPoint = fromJS(
+      const starterBrick = fromJS(
         getPlatform(),
-        extensionPointFactory({
+        starterBrickFactory({
           trigger: "click",
           attachMode,
           rootSelector: "button",
         })(),
       );
 
-      extensionPoint.registerModComponent(
-        extensionFactory({
-          extensionPointId: extensionPoint.id,
+      starterBrick.registerModComponent(
+        modComponentFactory({
+          extensionPointId: starterBrick.id,
         }),
       );
 
-      await extensionPoint.install();
-      await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+      await starterBrick.install();
+      await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
       expect(rootReader.readCount).toBe(0);
 
@@ -275,7 +275,7 @@ describe("triggerExtension", () => {
 
       expect(rootReader.readCount).toBe(attachMode === "watch" ? 2 : 1);
 
-      extensionPoint.uninstall();
+      starterBrick.uninstall();
     },
   );
 
@@ -286,23 +286,23 @@ describe("triggerExtension", () => {
         "<div><button>Click Me</button></div>",
       ).body.innerHTML;
 
-      const extensionPoint = fromJS(
+      const starterBrick = fromJS(
         getPlatform(),
-        extensionPointFactory({
+        starterBrickFactory({
           trigger: "click",
           targetMode,
           rootSelector: "div",
         })(),
       );
 
-      extensionPoint.registerModComponent(
-        extensionFactory({
-          extensionPointId: extensionPoint.id,
+      starterBrick.registerModComponent(
+        modComponentFactory({
+          extensionPointId: starterBrick.id,
         }),
       );
 
-      await extensionPoint.install();
-      await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+      await starterBrick.install();
+      await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
       screen.getByRole("button").click();
       await tick();
@@ -312,7 +312,7 @@ describe("triggerExtension", () => {
       expect(rootReader.readCount).toBe(1);
       expect(rootReader.ref).toBe(buttonRef);
 
-      extensionPoint.uninstall();
+      starterBrick.uninstall();
     },
   );
 
@@ -321,23 +321,23 @@ describe("triggerExtension", () => {
       "<div data-testid=ref><button>Click Me</button></div>",
     ).body.innerHTML;
 
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "click",
         targetMode: "root",
         rootSelector: "div",
       })(),
     );
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
       }),
     );
 
-    await extensionPoint.install();
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.install();
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     screen.getByRole("button").click();
     await tick();
@@ -347,7 +347,7 @@ describe("triggerExtension", () => {
     expect(rootReader.readCount).toBe(1);
     expect(rootReader.ref).toBe(divRef);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 
   it("runs keypress trigger", async () => {
@@ -355,22 +355,22 @@ describe("triggerExtension", () => {
       "<div><input type='text'></input></div>",
     ).body.innerHTML;
 
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "keypress",
         rootSelector: "input",
       })(),
     );
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
       }),
     );
 
-    await extensionPoint.install();
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.install();
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     const element = screen.getByRole("textbox");
 
@@ -379,7 +379,7 @@ describe("triggerExtension", () => {
 
     expect(rootReader.readCount).toBe(1);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 
   it("runs hover trigger", async () => {
@@ -387,22 +387,22 @@ describe("triggerExtension", () => {
       "<div><button>Hover Me</button></div>",
     ).body.innerHTML;
 
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "hover",
         rootSelector: "button",
       })(),
     );
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
       }),
     );
 
-    await extensionPoint.install();
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.install();
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     const buttonElement = screen.getByRole("button");
 
@@ -414,18 +414,18 @@ describe("triggerExtension", () => {
     // See comment above, the handler isn't actually run because userEvent.hover isn't enough to trigger hoverintent
     expect(rootReader.readCount).toBe(0);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 
   it("includes selection change reader schema", async () => {
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "selectionchange",
       })(),
     );
 
-    const reader = await extensionPoint.defaultReader();
+    const reader = await starterBrick.defaultReader();
 
     expect(
       (reader.outputSchema.properties as any).event.properties.selectionText
@@ -436,7 +436,7 @@ describe("triggerExtension", () => {
   it("includes custom event schema", async () => {
     const extensionPoint = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "custom",
       })(),
     );
@@ -448,42 +448,42 @@ describe("triggerExtension", () => {
   });
 
   it("includes keyboard event schema", async () => {
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "keypress",
       })(),
     );
 
-    const reader = await extensionPoint.defaultReader();
+    const reader = await starterBrick.defaultReader();
     expect(
       (reader.outputSchema.properties as any).event.properties.key.type,
     ).toBe("string");
   });
 
   it("excludes event for mouse click", async () => {
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "click",
       })(),
     );
 
-    const reader = await extensionPoint.defaultReader();
+    const reader = await starterBrick.defaultReader();
     expect((reader.outputSchema.properties as any).event).toBeUndefined();
   });
 
   it.each([["selectionchange"], ["click"], ["keypress"], ["custom"]])(
     "smoke test for preview %s",
     async (trigger) => {
-      const extensionPoint = fromJS(
+      const starterBrick = fromJS(
         getPlatform(),
-        extensionPointFactory({
+        starterBrickFactory({
           trigger,
         })(),
       );
 
-      const reader = await extensionPoint.previewReader();
+      const reader = await starterBrick.previewReader();
       const result = await reader.read(document);
 
       expect(result).toStrictEqual(
@@ -495,22 +495,22 @@ describe("triggerExtension", () => {
   );
 
   it("ignores context invalidated error for non user-action trigger in reader", async () => {
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "load",
         reader: () => [InvalidContextReader.BRICK_ID],
       })({}),
     );
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
       }),
     );
 
-    await extensionPoint.install();
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.install();
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     expect(showNotificationMock).not.toHaveBeenCalled();
   });
@@ -520,9 +520,9 @@ describe("triggerExtension", () => {
       "<div><button>Click Me</button></div>",
     ).body.innerHTML;
 
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "click",
         rootSelector: "button",
         showErrors: true,
@@ -530,14 +530,14 @@ describe("triggerExtension", () => {
       })({}),
     );
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
       }),
     );
 
-    await extensionPoint.install();
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.install();
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     screen.getByRole("button").click();
     await tick();
@@ -553,31 +553,31 @@ describe("triggerExtension", () => {
   });
 
   it("reports only the first brick error or event for reportMode: once", async () => {
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "load",
         reportMode: "once",
         showErrors: true,
       })({}),
     );
 
-    const modComponent = extensionFactory({
-      extensionPointId: extensionPoint.id,
+    const modComponent = modComponentFactory({
+      extensionPointId: starterBrick.id,
       config: {
         action: { id: ThrowTwiceBrick.BRICK_ID, config: {} },
       },
     });
 
-    extensionPoint.registerModComponent(modComponent);
+    starterBrick.registerModComponent(modComponent);
 
-    await extensionPoint.install();
+    await starterBrick.install();
 
     // Run 4x
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will throw an error
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will throw another error
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will run successfully
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will also run successfully
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL }); // Will throw an error
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL }); // Will throw another error
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL }); // Will run successfully
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL }); // Will also run successfully
 
     // Does not report successful event only once
     expect(reportEventMock).toHaveBeenCalledExactlyOnceWith("TriggerRun", {
@@ -595,29 +595,29 @@ describe("triggerExtension", () => {
   });
 
   it("reports only the first brick error for reportMode: error-once", async () => {
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "load",
         reportMode: "error-once",
         showErrors: true,
       })({}),
     );
 
-    const modComponent = extensionFactory({
-      extensionPointId: extensionPoint.id,
+    const modComponent = modComponentFactory({
+      extensionPointId: starterBrick.id,
       config: {
         action: { id: ThrowTwiceBrick.BRICK_ID, config: {} },
       },
     });
 
-    extensionPoint.registerModComponent(modComponent);
+    starterBrick.registerModComponent(modComponent);
 
     // Run 4x
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will throw an error
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will throw another error
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will run successfully
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL }); // Will also run successfully
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL }); // Will throw an error
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL }); // Will throw another error
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL }); // Will run successfully
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL }); // Will also run successfully
 
     // Reports a successful event only once
     expect(reportEventMock).not.toHaveBeenCalled();
@@ -633,65 +633,65 @@ describe("triggerExtension", () => {
   });
 
   it("never reports brick errors for reportMode: never", async () => {
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "load",
         reportMode: "never",
         showErrors: true,
       })({}),
     );
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
         config: {
           action: { id: ThrowBrick.BRICK_ID, config: {} },
         },
       }),
     );
 
-    await extensionPoint.install();
+    await starterBrick.install();
 
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     expect(reportErrorMock).not.toHaveBeenCalled();
     expect(showNotificationMock).not.toHaveBeenCalled();
   });
 
   it("reports all brick errors for reportMode: all, showErrors: true", async () => {
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "load",
         reportMode: "all",
         showErrors: true,
       })({}),
     );
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
         config: {
           action: { id: ThrowBrick.BRICK_ID, config: {} },
         },
       }),
     );
 
-    await extensionPoint.install();
+    await starterBrick.install();
 
     // Run 2x
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     expect(reportErrorMock).toHaveBeenCalledTimes(2);
     expect(showNotificationMock).toHaveBeenCalledTimes(2);
   });
 
   it("does not display error notifications for reportMode: all, showErrors: default", async () => {
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "load",
         reportMode: "all",
         // Testing the default of false, for backward compatability
@@ -699,29 +699,29 @@ describe("triggerExtension", () => {
       })({}),
     );
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
         config: {
           action: { id: ThrowBrick.BRICK_ID, config: {} },
         },
       }),
     );
 
-    await extensionPoint.install();
+    await starterBrick.install();
 
     // Run 2x
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     expect(reportErrorMock).toHaveBeenCalledTimes(2);
     expect(showNotificationMock).toHaveBeenCalledTimes(0);
   });
 
   it("reports error notifications, but does not display them for reportMode: default, showErrors: default", async () => {
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
-      extensionPointFactory({
+      starterBrickFactory({
         trigger: "load",
         // Testing the default of error-once, for backward compatability
         // reportMode: "error-once",
@@ -730,20 +730,20 @@ describe("triggerExtension", () => {
       })({}),
     );
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
         config: {
           action: { id: ThrowBrick.BRICK_ID, config: {} },
         },
       }),
     );
 
-    await extensionPoint.install();
+    await starterBrick.install();
 
     // Run 2x
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     expect(reportErrorMock).toHaveBeenCalledTimes(1);
     expect(showNotificationMock).not.toHaveBeenCalled();

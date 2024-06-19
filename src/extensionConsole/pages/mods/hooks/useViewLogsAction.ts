@@ -19,7 +19,7 @@ import { type ModViewItem } from "@/types/modTypes";
 import { useDispatch } from "react-redux";
 import { getLabel, isModDefinition } from "@/utils/modUtils";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
-import { selectExtensionContext } from "@/starterBricks/helpers";
+import { selectModComponentContext } from "@/starterBricks/helpers";
 
 function useViewLogsAction(modViewItem: ModViewItem): (() => void) | null {
   const dispatch = useDispatch();
@@ -34,7 +34,7 @@ function useViewLogsAction(modViewItem: ModViewItem): (() => void) | null {
               label: getLabel(mod),
               blueprintId: mod.metadata.id,
             }
-          : selectExtensionContext(mod),
+          : selectModComponentContext(mod),
       }),
     );
   };

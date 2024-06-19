@@ -33,7 +33,7 @@ import { checkAvailable } from "@/bricks/available";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import "@/vendors/hoverintent";
-import { selectExtensionContext } from "@/starterBricks/helpers";
+import { selectModComponentContext } from "@/starterBricks/helpers";
 import {
   type InitialValues,
   reduceExtensionPipeline,
@@ -135,7 +135,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     const ctxt = await reader.read(document);
 
     const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension),
+      selectModComponentContext(extension),
     );
 
     const initialValues: InitialValues = {

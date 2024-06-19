@@ -36,7 +36,7 @@ import {
   type TriggerConfig,
   type TriggerDefinition,
   TriggerStarterBrickABC,
-} from "@/starterBricks/triggerExtension";
+} from "@/starterBricks/trigger/triggerStarterBrick";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";

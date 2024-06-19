@@ -22,7 +22,7 @@ import selectionController from "@/utils/selectionController";
 import {
   KEYBOARD_TRIGGERS,
   type Trigger,
-} from "@/starterBricks/triggerExtensionTypes";
+} from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { ensureJsonObject, isObject } from "@/utils/objectUtils";
 
@@ -85,7 +85,7 @@ class KeyboardEventReader extends ReaderABC {
   }
 
   async read(): Promise<JsonObject> {
-    // The actual field is set by the extension point, not the reader
+    // The actual field is set by the starter brick, not the reader
     throw new Error("KeyboardEventReader.read() should not be called directly");
   }
 
@@ -146,7 +146,7 @@ class SelectionChangedReader extends ReaderABC {
   }
 
   async read(): Promise<JsonObject> {
-    // The actual field is set by the extension point, not the reader
+    // The actual field is set by the starter brick, not the reader
     throw new Error(
       "SelectionChangedReader.read() should not be called directly",
     );
@@ -183,7 +183,7 @@ class CustomEventReader extends ReaderABC {
   }
 
   async read(): Promise<JsonObject> {
-    // The actual field is set by the extension point, not the reader
+    // The actual field is set by the starter brick, not the reader
     throw new Error(
       "SelectionChangedReader.read() should not be called directly",
     );
