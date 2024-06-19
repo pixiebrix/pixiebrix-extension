@@ -18,8 +18,8 @@
 import { useEffect, useMemo } from "react";
 import { useGetFeatureFlagsQuery } from "@/data/service/api";
 import {
-  addListener as addAuthStorageListener,
-  removeListener as removeAuthStorageListener,
+  addAuthListener as addAuthStorageListener,
+  removeAuthListener as removeAuthStorageListener,
 } from "@/auth/authStorage";
 import type { AsyncState } from "@/types/sliceTypes";
 import { mergeAsyncState } from "@/utils/asyncStateUtils";

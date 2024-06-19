@@ -19,10 +19,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { getDNT } from "@/telemetry/dnt";
 import { getBaseURL } from "@/data/service/baseService";
 import { forbidContext } from "@/utils/expectContext";
-import {
-  addListener as addAuthListener,
-  readAuthData,
-} from "@/auth/authStorage";
+import { addAuthListener, readAuthData } from "@/auth/authStorage";
 import {
   cleanDatadogVersionName,
   mapAppUserToTelemetryUser,

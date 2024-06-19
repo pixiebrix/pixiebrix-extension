@@ -21,7 +21,10 @@ import styles from "./SettingsCard.module.scss";
 import { Button, Card, Form } from "react-bootstrap";
 import { useConfiguredHost } from "@/data/service/baseService";
 import React, { useCallback } from "react";
-import { clearCachedAuthSecrets, clearPartnerAuth } from "@/auth/authStorage";
+import {
+  clearCachedAuthSecrets,
+  clearPartnerAuthData,
+} from "@/auth/authStorage";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
 import settingsSlice, {
@@ -32,7 +35,6 @@ import { assertProtocolUrl } from "@/utils/urlUtils";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pTimeout from "p-timeout";
-import chromeP from "webext-polyfill-kinda";
 import useUserAction from "@/hooks/useUserAction";
 import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/data/service/api";
@@ -67,12 +69,9 @@ const AdvancedSettings: React.FunctionComponent = () => {
 
   const clearTokens = useUserAction(
     async () => {
-      // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
-      await chromeP.identity.clearAllCachedAuthTokens();
-
       // Force reset of all queries, and partner bearer JWT will no longer be present.
       // NOTE: currently the Navbar will show the user information, as it falls back to cached auth
-      await clearPartnerAuth();
+      await clearPartnerAuthData();
       dispatch(apiUtil.resetApiState());
     },
     {

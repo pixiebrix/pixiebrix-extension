@@ -23,12 +23,13 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 import { canParseUrl } from "@/utils/urlUtils";
-import { getBaseURL } from "@/data/service/baseService";
-import axios from "axios";
-import { isAxiosError } from "@/errors/networkErrorHelpers";
 import chromeP from "webext-polyfill-kinda";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { setPartnerAuthData } from "@/auth/authStorage";
+import { stringToBase64 } from "uint8array-extras";
+import { getApiClient } from "@/data/service/apiClient";
+import { selectAxiosError } from "@/data/service/requestErrorUtils";
+import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
 
 /**
  * Launch the browser's web auth flow get a partner token for communicating with the PixieBrix server.
@@ -43,24 +44,24 @@ export async function launchAuthIntegration({
 }): Promise<void> {
   expectContext("background");
 
-  const service = await serviceRegistry.lookup(integrationId);
+  const integration = await serviceRegistry.lookup(integrationId);
 
   await serviceLocator.refreshLocal();
   const allAuths = await serviceLocator.locateAllForService(integrationId);
   const localAuths = allAuths.filter((x) => !x.proxy);
 
   if (localAuths.length === 0) {
-    throw new Error(`No local configurations found for: ${service.id}`);
+    throw new Error(`No local configurations found for: ${integration.id}`);
   }
 
   if (localAuths.length > 1) {
-    console.warn("Multiple local configurations found for: %s", service.id);
+    console.warn("Multiple local configurations found for: %s", integration.id);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- just checked array length
   const authId = localAuths[0]!.id;
 
-  // `launchOAuth2Flow` expects the raw auth. In the case of CONTROL_ROOM_OAUTH_SERVICE_ID, they'll be the same
+  // `launchOAuth2Flow` expects the raw auth. In the case of CONTROL_ROOM_OAUTH_INTEGRATION_ID, they'll be the same
   // because it doesn't have any secrets.
   const integrationConfig = await serviceLocator.findIntegrationConfig(authId);
   assertNotNullish(
@@ -68,16 +69,16 @@ export async function launchAuthIntegration({
     `Integration config not found for authId: ${authId}`,
   );
 
-  const data = await launchOAuth2Flow(service, integrationConfig, {
+  const newAuthData = await launchOAuth2Flow(integration, integrationConfig, {
     interactive: true,
   });
 
   if (integrationId === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
-    // Hard-coding headers for now. In the future, will want to add support for defining in the service definition.
+    // Hard-coding headers for now. In the future, will want to add support for defining in the integration definition.
 
     const { controlRoomUrl } = integrationConfig.config;
     if (!canParseUrl(controlRoomUrl)) {
-      // Fine to dump to console for debugging because CONTROL_ROOM_OAUTH_SERVICE_ID doesn't have any secret props.
+      // Fine to dump to console for debugging because CONTROL_ROOM_OAUTH_INTEGRATION_ID doesn't have any secret props.
       console.warn(
         "controlRoomUrl is missing on configuration",
         integrationConfig,
@@ -85,53 +86,78 @@ export async function launchAuthIntegration({
       throw new Error("controlRoomUrl is missing on configuration");
     }
 
+    if (newAuthData.access_token == null) {
+      throw new Error(
+        "access_token not found in launchOAuth2Flow() result for Control Room login",
+      );
+    }
+
+    const token = newAuthData.access_token as string;
+    // `refresh_token` only returned if offline_access scope is requested
+    const refreshToken = (newAuthData.refresh_token ?? null) as string | null;
+
     // Make a single call to the PixieBrix server with the JWT in order verify the JWT is valid for the Control Room and
     // to set up the ControlRoomPrincipal. If the token is rejected by the Control Room, the PixieBrix server will
     // return a 401.
     // Once the value is set on setPartnerAuthData, a cascade of network requests will happen which causes a race condition
     // in just-in-time user initialization.
-    const baseURL = await getBaseURL();
+    const apiClient = await getApiClient();
     try {
-      await axios.get("/api/me/", {
-        baseURL,
+      await apiClient.get("/api/me/", {
         headers: {
-          Authorization: `Bearer ${data.access_token as string}`,
+          Authorization: `Bearer ${token}`,
           "X-Control-Room": controlRoomUrl,
         },
       });
     } catch (error) {
-      if (
-        isAxiosError(error) &&
-        error.response &&
-        [401, 403].includes(error.response.status)
-      ) {
-        // Clear the token to allow the user re-login with the SAML/SSO provider
-        // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
-        await chromeP.identity.clearAllCachedAuthTokens();
-
-        throw new Error(
-          `Control Room rejected login. Verify you are a user in the Control Room, and/or verify the Control Room SAML and AuthConfig App configuration.
-          Error: ${getErrorMessage(error)}`,
-        );
+      const axiosError = selectAxiosError(error);
+      if (!axiosError || !isAuthenticationAxiosError(axiosError)) {
+        throw error;
       }
 
-      throw error;
+      // Clear the token to allow the user re-login with the SAML/SSO provider
+      await chromeP.identity.removeCachedAuthToken({ token });
+
+      throw new Error(
+        `Control Room rejected login. Verify you are a user in the Control Room, and/or verify the Control Room SAML and AuthConfig App configuration.
+          Error: ${getErrorMessage(error)}`,
+      );
     }
+
+    const oAuth2Context = integration.getOAuth2Context(
+      integrationConfig.config,
+    );
+    assertNotNullish(oAuth2Context, "Service did not return an OAuth2 context");
+    assertNotNullish(
+      oAuth2Context.tokenUrl,
+      `OAuth2 context for service ${integrationConfig.integrationId} does not include a token URL`,
+    );
 
     console.info("Setting partner auth for Control Room %s", controlRoomUrl);
 
     await setPartnerAuthData({
       authId: integrationConfig.id,
-      token: data.access_token as string,
-      // `refresh_token` only returned if offline_access scope is requested
-      refreshToken: data.refresh_token as string,
+      token,
+      refreshToken,
+      refreshUrl: refreshToken ? oAuth2Context.tokenUrl : null,
+      refreshParamPayload: refreshToken
+        ? {
+            client_id: oAuth2Context.client_id,
+            hosturl: controlRoomUrl,
+          }
+        : null,
+      refreshExtraHeaders: refreshToken
+        ? {
+            Authorization: `Basic ${stringToBase64(oAuth2Context.client_id)}`,
+          }
+        : null,
       extraHeaders: {
         "X-Control-Room": controlRoomUrl,
       },
     });
-  } else {
-    throw new Error(
-      `Support for login with integration not implemented: ${integrationId}`,
-    );
   }
+
+  throw new Error(
+    `Support for login with integration not implemented: ${integrationId}`,
+  );
 }

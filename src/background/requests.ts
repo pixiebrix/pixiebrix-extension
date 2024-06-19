@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios, { type AxiosError, type AxiosResponse, type Method } from "axios";
+import axios, { type AxiosResponse, type Method } from "axios";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import serviceRegistry from "@/integrations/registry";
 import { getExtensionToken } from "@/auth/authStorage";
@@ -52,7 +52,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import refreshPKCEToken from "@/background/refreshToken";
 import reportError from "@/telemetry/reportError";
 import { assertProtocolUrl, isUrlRelative } from "@/utils/urlUtils";
-import { ensureJsonObject, isObject } from "@/utils/objectUtils";
+import { ensureJsonObject } from "@/utils/objectUtils";
 import {
   deleteCachedAuthData,
   getCachedAuthData,
@@ -66,6 +66,8 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
 import { type Nullishable } from "@/utils/nullishUtils";
 
+import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
+
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)
 type SanitizedResponse<T = unknown> = Pick<
@@ -74,8 +76,6 @@ type SanitizedResponse<T = unknown> = Pick<
 > & {
   _sanitizedResponseBrand: null;
 };
-
-const UNAUTHORIZED_STATUS_CODES = new Set([401, 403]);
 
 function sanitizeResponse<T>(response: AxiosResponse<T>): SanitizedResponse<T> {
   const { data, status, statusText } = response;
@@ -253,31 +253,6 @@ async function proxyRequest<T>(
   };
 }
 
-function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
-  // Response should be an object
-  if (!isObject(error.response)) {
-    return false;
-  }
-
-  // Technically 403 is an authorization error and re-authenticating as the same user won't help. However, there is
-  // a case where the user just needs an updated JWT that contains the most up-to-date entitlements
-  if (UNAUTHORIZED_STATUS_CODES.has(error.response.status)) {
-    return true;
-  }
-
-  // Handle Automation Anywhere's Control Room expired JWT response. They'll return this from any endpoint instead
-  // of a proper error code.
-  if (
-    error.response.status === 400 &&
-    isObject(error.response.data) &&
-    error.response.data.message === "Access Token has expired"
-  ) {
-    return true;
-  }
-
-  return false;
-}
-
 async function _performConfiguredRequest(
   integrationConfig: SanitizedIntegrationConfig,
   requestConfig: NetworkRequestConfig,
@@ -300,7 +275,7 @@ async function _performConfiguredRequest(
 
     const axiosError = selectAxiosError(error);
 
-    if (axiosError && isAuthenticationError(axiosError)) {
+    if (axiosError && isAuthenticationAxiosError(axiosError)) {
       const integration = await serviceRegistry.lookup(
         integrationConfig.serviceId,
       );
@@ -330,7 +305,7 @@ async function _performConfiguredRequest(
             // An authentication error can occur if the refresh token was revoked. Besides that, there should be
             // no reason for the refresh to fail. Report the error if it's not an authentication error.
             const axiosError = selectAxiosError(error);
-            if (!axiosError || !isAuthenticationError(axiosError)) {
+            if (!axiosError || !isAuthenticationAxiosError(axiosError)) {
               reportError(error);
             }
           }

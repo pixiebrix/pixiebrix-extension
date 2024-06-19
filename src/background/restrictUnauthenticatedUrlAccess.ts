@@ -17,7 +17,7 @@
 
 import { type OrganizationAuthUrlPattern } from "@/types/contract";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
-import { addListener as addAuthListener, isLinked } from "@/auth/authStorage";
+import { addAuthListener, isLinked } from "@/auth/authStorage";
 import { validateUUID } from "@/types/helpers";
 import { type UUID } from "@/types/stringTypes";
 import { testMatchPatterns } from "@/bricks/available";

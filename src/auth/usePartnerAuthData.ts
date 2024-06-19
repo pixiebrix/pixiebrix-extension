@@ -16,9 +16,9 @@
  */
 
 import {
-  addListener as addAuthListener,
+  addAuthListener,
   getPartnerAuthData,
-  removeListener as removeAuthListener,
+  removeAuthListener,
 } from "@/auth/authStorage";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import type { AsyncState } from "@/types/sliceTypes";
