@@ -110,6 +110,7 @@ const ActivateModPage: React.FunctionComponent = () => {
     <Page
       title={`${isReinstall ? "Reactivate" : "Activate"} Mod`}
       icon={faStoreAlt}
+      documentationUrl="https://docs.pixiebrix.com/activating-mods"
       isPending={isFetching}
       error={error}
     >

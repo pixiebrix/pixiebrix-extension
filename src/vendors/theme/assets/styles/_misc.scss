@@ -90,18 +90,13 @@ code {
 
 .page-header {
   @extend .d-flex;
-  @extend .justify-content-between;
   @extend .align-items-center;
   margin: 0 0 1.5rem 0;
   .breadcrumb {
     border: 0;
     margin-bottom: 0;
   }
-}
-.page-title {
-  color: $black;
-  font-size: 1.125rem;
-  margin-bottom: 0;
+
   .page-title-icon {
     display: inline-block;
     width: 36px;
@@ -114,4 +109,14 @@ code {
       line-height: 36px;
     }
   }
+}
+
+.page-title {
+  color: $black;
+  font-size: 1.125rem;
+  margin-bottom: 0;
+}
+
+.page-documentation {
+  font-size: 0.75em;
 }

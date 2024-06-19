@@ -419,6 +419,7 @@ const IntegrationsPage: React.VFC = () => {
       description="Configure external accounts, resources, and APIs. Local integrations are
           stored in your browser; they are never transmitted to the PixieBrix servers or shared with your team"
       isPending={localState.isLoadingIntegrations}
+      documentationUrl="https://docs.pixiebrix.com/integrations/configuring-integrations"
       toolbar={
         <BrickModal
           onSelect={onSelectIntegrationForNewConfig}

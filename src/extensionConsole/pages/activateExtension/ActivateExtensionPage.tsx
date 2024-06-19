@@ -49,6 +49,7 @@ const ActivateExtensionPage: React.FunctionComponent = () => {
     <Page
       title="Activate Mod"
       icon={faCloudDownloadAlt}
+      documentationUrl="https://docs.pixiebrix.com/activating-mods"
       error={error}
       isPending={isFetching || authOptions == null}
     >
