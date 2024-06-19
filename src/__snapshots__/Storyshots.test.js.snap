@@ -7838,11 +7838,9 @@ exports[`Storyshots Layout/Page Default 1`] = `
     <div
       className="flex-grow-1"
     >
-      <div
-        className="page-header"
-      >
-        <h3
-          className="page-title"
+      <div>
+        <div
+          className="page-header"
         >
           <span
             className="page-title-icon bg-gradient-primary text-white mr-2"
@@ -7865,8 +7863,97 @@ exports[`Storyshots Layout/Page Default 1`] = `
               />
             </svg>
           </span>
-          Example page
-        </h3>
+          <div>
+            <h3
+              className="page-title"
+            >
+              Example page
+            </h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    className="pb-4"
+  >
+    <p>
+      Welcome to an example page! Have a look around.
+    </p>
+  </div>
+  Hello world!
+</div>
+`;
+
+exports[`Storyshots Layout/Page Documentation Link 1`] = `
+<div>
+  <div
+    className="d-flex"
+  >
+    <div
+      className="flex-grow-1"
+    >
+      <div>
+        <div
+          className="page-header"
+        >
+          <span
+            className="page-title-icon bg-gradient-primary text-white mr-2"
+          >
+            <svg
+              aria-hidden="true"
+              className="svg-inline--fa fa-music fa-w-16 "
+              data-icon="music"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              style={{}}
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M470.38 1.51L150.41 96A32 32 0 0 0 128 126.51v261.41A139 139 0 0 0 96 384c-53 0-96 28.66-96 64s43 64 96 64 96-28.66 96-64V214.32l256-75v184.61a138.4 138.4 0 0 0-32-3.93c-53 0-96 28.66-96 64s43 64 96 64 96-28.65 96-64V32a32 32 0 0 0-41.62-30.49z"
+                fill="currentColor"
+                style={{}}
+              />
+            </svg>
+          </span>
+          <div>
+            <h3
+              className="page-title"
+            >
+              Page with documentation link
+            </h3>
+            <div
+              className="page-documentation"
+            >
+              <a
+                href="https://docs.pixiebrix.com/"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <svg
+                  aria-hidden="true"
+                  className="svg-inline--fa fa-external-link-alt fa-w-16 "
+                  data-icon="external-link-alt"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  style={{}}
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+                    fill="currentColor"
+                    style={{}}
+                  />
+                </svg>
+                 View Documentation
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -7889,11 +7976,9 @@ exports[`Storyshots Layout/Page Load Error 1`] = `
     <div
       className="flex-grow-1"
     >
-      <div
-        className="page-header"
-      >
-        <h3
-          className="page-title"
+      <div>
+        <div
+          className="page-header"
         >
           <span
             className="page-title-icon bg-gradient-primary text-white mr-2"
@@ -7916,8 +8001,14 @@ exports[`Storyshots Layout/Page Load Error 1`] = `
               />
             </svg>
           </span>
-          Example page
-        </h3>
+          <div>
+            <h3
+              className="page-title"
+            >
+              Example page
+            </h3>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -7938,6 +8029,70 @@ exports[`Storyshots Layout/Page Load Error 1`] = `
       Error loading page
     </p>
   </div>
+</div>
+`;
+
+exports[`Storyshots Layout/Page Toolbar 1`] = `
+<div>
+  <div
+    className="d-flex"
+  >
+    <div
+      className="flex-grow-1"
+    >
+      <div>
+        <div
+          className="page-header"
+        >
+          <span
+            className="page-title-icon bg-gradient-primary text-white mr-2"
+          >
+            <svg
+              aria-hidden="true"
+              className="svg-inline--fa fa-music fa-w-16 "
+              data-icon="music"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              style={{}}
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M470.38 1.51L150.41 96A32 32 0 0 0 128 126.51v261.41A139 139 0 0 0 96 384c-53 0-96 28.66-96 64s43 64 96 64 96-28.66 96-64V214.32l256-75v184.61a138.4 138.4 0 0 0-32-3.93c-53 0-96 28.66-96 64s43 64 96 64 96-28.65 96-64V32a32 32 0 0 0-41.62-30.49z"
+                fill="currentColor"
+                style={{}}
+              />
+            </svg>
+          </span>
+          <div>
+            <h3
+              className="page-title"
+            >
+              Page with toolbar
+            </h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <button
+        className="btn btn-primary"
+        disabled={false}
+        type="button"
+      >
+        Example action
+      </button>
+    </div>
+  </div>
+  <div
+    className="pb-4"
+  >
+    <p>
+      Welcome to an example page! Have a look around.
+    </p>
+  </div>
+  Hello world!
 </div>
 `;
 
