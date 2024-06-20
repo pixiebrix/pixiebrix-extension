@@ -30,7 +30,7 @@ import {
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import { TriggerStarterBrickABC } from "@/starterBricks/trigger/triggerStarterBrick";
-import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemExtension";
+import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemStarterBrick";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
 import { PanelStarterBrickABC } from "@/starterBricks/panel/panelExtension";
 import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
