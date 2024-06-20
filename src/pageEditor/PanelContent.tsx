@@ -29,7 +29,7 @@ import EditorLayout from "@/pageEditor/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
 import {
-  updateDraftElement,
+  updateDraftModComponent,
   removeInstalledExtension,
 } from "@/contentScript/messenger/api";
 import { selectActiveModComponentFormState } from "./slices/editorSelectors";
@@ -80,7 +80,7 @@ const PanelContent: React.FC = () => {
       const draftModComponent = formStateToDraftModComponent(
         activeModComponentFormState,
       );
-      updateDraftElement(allFramesInInspectedTab, draftModComponent);
+      updateDraftModComponent(allFramesInInspectedTab, draftModComponent);
     }
   }, [dispatch, activeModComponentFormState]);
 

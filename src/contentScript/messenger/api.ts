@@ -106,5 +106,7 @@ export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 export const clearDraftModComponents = getNotifier(
   "CLEAR_DRAFT_MOD_COMPONENTS",
 );
-export const updateDraftElement = getNotifier("UPDATE_DRAFT_ELEMENT");
+export const updateDraftModComponent = getNotifier(
+  "UPDATE_DRAFT_MOD_COMPONENT",
+);
 export const checkAvailable = getMethod("CHECK_AVAILABLE");

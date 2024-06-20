@@ -126,7 +126,7 @@ declare global {
     ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
     RESET_TAB: typeof resetTab;
     CLEAR_DRAFT_MOD_COMPONENTS: typeof clearDraftModComponents;
-    UPDATE_DRAFT_ELEMENT: typeof updateDraftModComponent;
+    UPDATE_DRAFT_MOD_COMPONENT: typeof updateDraftModComponent;
   }
 }
 export default function registerMessenger(): void {
@@ -180,6 +180,6 @@ export default function registerMessenger(): void {
     ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
     RESET_TAB: resetTab,
     CLEAR_DRAFT_MOD_COMPONENTS: clearDraftModComponents,
-    UPDATE_DRAFT_ELEMENT: updateDraftModComponent,
+    UPDATE_DRAFT_MOD_COMPONENT: updateDraftModComponent,
   });
 }
