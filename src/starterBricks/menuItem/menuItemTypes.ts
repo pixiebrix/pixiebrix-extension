@@ -31,13 +31,13 @@ export type AttachMode =
 
 export type MenuItemStarterBrickConfig = {
   /**
-   * The button caption to supply to the `caption` in the extension point template.
+   * The button caption to supply to the `caption` in the starter brick template.
    * If `dynamicCaption` is true, can include template expressions.
    */
   caption: string;
 
   /**
-   * (Optional) the icon to supply to the icon in the extension point template
+   * (Optional) the icon to supply to the icon in the starter brick template
    */
   icon?: IconConfig;
 
@@ -63,7 +63,7 @@ export type MenuItemStarterBrickConfig = {
   synchronous: boolean;
 
   /**
-   * (Experimental) message to show on error running the extension
+   * (Experimental) message to show on error running the component
    */
   onError?: MessageConfig;
   /**
@@ -71,7 +71,7 @@ export type MenuItemStarterBrickConfig = {
    */
   onCancel?: MessageConfig;
   /**
-   * (Experimental) message to show on success when running the extension
+   * (Experimental) message to show on success when running the mod component
    */
   onSuccess?: MessageConfig | boolean;
 };
@@ -120,7 +120,7 @@ export interface MenuItemDefinition extends StarterBrickDefinitionProp {
    */
   readerSelector?: string;
   /**
-   * The element to pass as the root to the readers and extension (default="document")
+   * The element to pass as the root to the readers and mod component (default="document")
    * @since 1.7.16
    * @see readerSelector
    */
@@ -131,7 +131,7 @@ export interface MenuItemDefinition extends StarterBrickDefinitionProp {
    */
   shadowDOM?: ShadowDOM;
   /**
-   * Default options for ModComponentBases attached to the extension point
+   * Default options for ModComponentBases attached to the starter brick
    */
   defaultOptions?: MenuDefaultOptions;
   /**

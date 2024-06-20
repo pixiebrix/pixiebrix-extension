@@ -32,7 +32,7 @@ import {
   cleanIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemExtension";
+import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemStarterBrick";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
@@ -47,7 +47,7 @@ import { type ActionFormState } from "./formStateTypes";
 import {
   type MenuItemDefinition,
   type MenuItemStarterBrickConfig,
-} from "@/starterBricks/menuItem/types";
+} from "@/starterBricks/menuItem/menuItemTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(

@@ -88,7 +88,7 @@ import {
   type AttachMode,
   type MenuItemDefinition,
   type MenuTargetMode,
-} from "@/starterBricks/menuItem/types";
+} from "@/starterBricks/menuItem/menuItemTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DATA_ATTR = "data-pb-uuid";
@@ -126,20 +126,20 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   private readonly removed: Set<UUID>;
 
   /**
-   * Set of methods to call to cancel any DOM watchers associated with this extension point
+   * Set of methods to call to cancel any DOM watchers associated with this starter brick
    */
   private readonly cancelController = new ReusableAbortController();
 
   /**
-   * True if the extension point has been uninstalled
+   * True if the starter brick has been uninstalled
    */
   private uninstalled = false;
 
   /**
-   * Mapping from extension id to the set of menu items that have been clicked and still running.
+   * Mapping from component id to the set of menu items that have been clicked and still running.
    * @see MenuItemStarterBrickConfig.synchronous
    */
-  private readonly runningExtensionElements = new Map<
+  private readonly runningModComponentPageElements = new Map<
     UUID,
     WeakSet<HTMLElement>
   >();
@@ -212,21 +212,21 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   );
 
   private cancelAllPending(): void {
-    console.debug("Cancelling menuItemExtension observers");
+    console.debug("Cancelling menuItemStarterBrick observers");
     this.cancelController.abortAndReset();
   }
 
-  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(modComponentIds: UUID[]): void {
     console.debug(
-      "Remove extensionIds for menuItem extension point: %s",
+      "Remove componentIds for menuItem starter brick: %s",
       this.id,
-      { extensionIds },
+      { modComponentIds },
     );
     // Can't use this.menus.values() here b/c because it may have already been cleared
-    for (const extensionId of extensionIds) {
-      const $item = $safeFind(`[${DATA_ATTR}="${extensionId}"]`);
+    for (const modComponentId of modComponentIds) {
+      const $item = $safeFind(`[${DATA_ATTR}="${modComponentId}"]`);
       if ($item.length === 0) {
-        console.warn(`Item for ${extensionId} was not in the menu`);
+        console.warn(`Item for ${modComponentId} was not in the menu`);
       }
 
       $item.remove();
@@ -239,24 +239,26 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     const menus = [...this.menus.values()];
 
     // Clear so they don't get re-added by the onNodeRemoved mechanism
-    const extensions = this.modComponents.splice(0);
+    const modComponents = this.modComponents.splice(0);
     this.menus.clear();
 
-    if (extensions.length === 0) {
+    if (modComponents.length === 0) {
       console.warn(
-        `uninstall called on menu extension point with no extensions: ${this.id}`,
+        `uninstall called on menu starter brick with no mod components: ${this.id}`,
       );
     }
 
     console.debug(
-      `Uninstalling ${menus.length} menus for ${extensions.length} extensions`,
+      `Uninstalling ${menus.length} menus for ${modComponents.length} mod components`,
     );
 
     this.cancelAllPending();
 
     for (const element of menus) {
       try {
-        this.clearModComponentInterfaceAndEvents(extensions.map((x) => x.id));
+        this.clearModComponentInterfaceAndEvents(
+          modComponents.map((x) => x.id),
+        );
         // Release the menu element
         element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
       } catch (error) {
@@ -291,9 +293,9 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 
   async getBricks(
-    extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
+    modComponent: ResolvedModComponent<MenuItemStarterBrickConfig>,
   ): Promise<Brick[]> {
-    return collectAllBricks(extension.config.action);
+    return collectAllBricks(modComponent.config.action);
   }
 
   /**
@@ -308,7 +310,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
     if (this.uninstalled) {
       console.warn(
-        `${this.instanceNonce}: cannot reacquire because extension ${this.id} is destroyed`,
+        `${this.instanceNonce}: cannot reacquire because mod component ${this.id} is destroyed`,
       );
       return;
     }
@@ -333,7 +335,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 
   /**
-   * Attach extension point to the provided menu containers.
+   * Attach starter brick to the provided menu containers.
    */
   private attachMenus($menuContainers: JQuery): void {
     const existingMenuContainers = new Set(this.menus.values());
@@ -388,13 +390,13 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 
   /**
-   * Find and claim the new menu containers currently on the page for the extension point.
+   * Find and claim the new menu containers currently on the page for the starter brick.
    * @returns true iff one or more menu containers were found
    */
   private async waitAttachMenus(): Promise<boolean> {
     if (this.uninstalled) {
-      console.error("Menu item extension point is uninstalled", {
-        extensionPointNonce: this.instanceNonce,
+      console.error("Menu item starter brick is uninstalled", {
+        starerBrickNonce: this.instanceNonce,
       });
       throw new Error(
         "Cannot install menu item because starter brick was uninstalled",
@@ -447,25 +449,25 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
   protected abstract makeItem(
     html: string,
-    extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
+    modComponent: ResolvedModComponent<MenuItemStarterBrickConfig>,
   ): JQuery;
 
-  private async runExtension(
+  private async runModComponent(
     menu: HTMLElement,
     ctxtPromise: Promise<JsonObject> | undefined,
-    extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
+    modComponent: ResolvedModComponent<MenuItemStarterBrickConfig>,
   ) {
-    if (!extension.id) {
+    if (!modComponent.id) {
       this.logger.error(`Refusing to run mod without id for ${this.id}`);
       return;
     }
 
-    const extensionLogger = this.logger.childLogger(
-      selectModComponentContext(extension),
+    const modComponentLogger = this.logger.childLogger(
+      selectModComponentContext(modComponent),
     );
 
     console.debug(
-      `${this.instanceNonce}: running menuItem extension ${extension.id}`,
+      `${this.instanceNonce}: running menuItem mod component ${modComponent.id}`,
     );
 
     // Safe because menu is an HTMLElement, not a string
@@ -480,24 +482,24 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       onSuccess = {},
       icon = { id: "box", size: 18 },
       synchronous,
-    } = extension.config;
+    } = modComponent.config;
 
-    const versionOptions = apiVersionOptions(extension.apiVersion);
+    const versionOptions = apiVersionOptions(modComponent.apiVersion);
 
     const implicitRender = versionOptions.explicitRender
       ? null
       : engineRenderer(
-          extension.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+          modComponent.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
           versionOptions,
         );
 
     let html: string;
 
-    if (extension.config.if) {
+    if (modComponent.config.if) {
       // Read the latest state at the time of the action
       const input = await ctxtPromise;
       const serviceContext = await makeIntegrationsContextFromDependencies(
-        extension.integrationDependencies,
+        modComponent.integrationDependencies,
       );
 
       console.debug("Checking menuItem precondition", {
@@ -515,14 +517,14 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       const initialValues: InitialValues = {
         input,
         serviceContext,
-        optionsArgs: extension.optionsArgs,
+        optionsArgs: modComponent.optionsArgs,
         root: document,
       };
 
       // NOTE: don't use reduceExtensionPipeline because this is just evaluating the condition and shouldn't show up
       // as a "run" in the logs/traces. We also leave off the extensionLogger (see note)
-      const show = await reducePipeline(extension.config.if, initialValues, {
-        // Don't pass extension: extensionLogger because our log display doesn't handle the in-extension point
+      const show = await reducePipeline(modComponent.config.if, initialValues, {
+        // Don't pass extension: modComponentLogger because our log display doesn't handle the in-starter brick
         // conditionals yet
         ...versionOptions,
       });
@@ -538,15 +540,15 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
       const serviceContext = await makeIntegrationsContextFromDependencies(
-        extension.integrationDependencies,
+        modComponent.integrationDependencies,
       );
 
       // Integrations take precedence over the other context
       // XXX: don't support adding "@mod" variable for now. Dynamic Captions are not available in the Page Editor
-      const extensionContext = { ...ctxt, ...serviceContext };
+      const modComponentContext = { ...ctxt, ...serviceContext };
 
       html = (await renderMustache(this.getTemplate(), {
-        caption: (await mapArgs(caption, extensionContext, {
+        caption: (await mapArgs(caption, modComponentContext, {
           implicitRender,
           autoescape: versionOptions.autoescape,
         })) as string,
@@ -559,14 +561,17 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       })) as string;
     }
 
-    const $menuItem = this.makeItem(html, extension);
+    const $menuItem = this.makeItem(html, modComponent);
 
     $menuItem.on("click", async (event) => {
       let runningElements: WeakSet<HTMLElement> | undefined =
-        this.runningExtensionElements.get(extension.id);
+        this.runningModComponentPageElements.get(modComponent.id);
       if (runningElements == null) {
         runningElements = new WeakSet([event.target]);
-        this.runningExtensionElements.set(extension.id, runningElements);
+        this.runningModComponentPageElements.set(
+          modComponent.id,
+          runningElements,
+        );
       } else {
         if (synchronous && runningElements.has(event.target)) {
           return;
@@ -581,7 +586,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
         console.debug("Run menu item", this.logger.context);
 
-        reportEvent(Events.MENU_ITEM_CLICK, selectEventData(extension));
+        reportEvent(Events.MENU_ITEM_CLICK, selectEventData(modComponent));
 
         try {
           // Read the latest state at the time of the action
@@ -595,15 +600,15 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
               }),
             ),
             serviceContext: await makeIntegrationsContextFromDependencies(
-              extension.integrationDependencies,
+              modComponent.integrationDependencies,
             ),
-            optionsArgs: extension.optionsArgs,
+            optionsArgs: modComponent.optionsArgs,
             root: this.getPipelineRoot($menuItem),
           };
 
           await reduceExtensionPipeline(actionConfig, initialValues, {
-            logger: extensionLogger,
-            ...apiVersionOptions(extension.apiVersion),
+            logger: modComponentLogger,
+            ...apiVersionOptions(modComponent.apiVersion),
           });
 
           if (onSuccess) {
@@ -625,7 +630,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
               ...pick(onCancel, "message", "type"),
             });
           } else {
-            extensionLogger.error(error);
+            modComponentLogger.error(error);
             this.platform.toasts.showNotification({
               ...DEFAULT_ACTION_RESULTS.error,
               error, // Include more details in the notification
@@ -639,17 +644,17 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       }
     });
 
-    const $existingItem = $menu.find(`[${DATA_ATTR}="${extension.id}"]`);
+    const $existingItem = $menu.find(`[${DATA_ATTR}="${modComponent.id}"]`);
 
     if ($existingItem.length > 0) {
       // We don't need to unbind any click handlers because we're replacing the element completely.
       console.debug(
-        `Replacing existing menu item for ${extension.id} (${extension.label})`,
+        `Replacing existing menu item for ${modComponent.id} (${modComponent.label})`,
       );
       $existingItem.replaceWith($menuItem);
     } else {
       console.debug(
-        `Adding new menu item ${extension.id} (${extension.label})`,
+        `Adding new menu item ${modComponent.id} (${modComponent.label})`,
       );
       this.addMenuItem($menu, $menuItem);
     }
@@ -663,7 +668,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         () => {
           // Don't re-install here. We're reinstalling the entire menu
           console.debug(
-            `Menu item for ${extension.id} was removed from the DOM`,
+            `Menu item for ${modComponent.id} was removed from the DOM`,
           );
         },
         this.cancelController.signal,
@@ -698,11 +703,11 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
       let ctxtPromise: Promise<JsonObject> | undefined;
 
-      for (const extension of this.modComponents) {
+      for (const modComponent of this.modComponents) {
         // Run in order so that the order stays the same for where they get rendered. The service
         // context is the only thing that's async as part of the initial configuration right now
 
-        if (extensionIds != null && !extensionIds.includes(extension.id)) {
+        if (extensionIds != null && !extensionIds.includes(modComponent.id)) {
           continue;
         }
 
@@ -710,8 +715,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
           continue;
         }
 
-        if (extension.config.dynamicCaption || extension.config.if) {
-          // Lazily read context for the menu if one of the extensions actually uses it
+        if (modComponent.config.dynamicCaption || modComponent.config.if) {
+          // Lazily read context for the menu if one of the mod components actually uses it
 
           // Wrap in rejectOnCancelled because if the reader takes a long time to run, the user may
           // navigate away from the page before the reader comes back.
@@ -728,19 +733,19 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
         try {
           // eslint-disable-next-line no-await-in-loop -- TODO: Make it run in parallel if possible while maintaining the order
-          await this.runExtension(menu, ctxtPromise, extension);
+          await this.runModComponent(menu, ctxtPromise, modComponent);
         } catch (error) {
           if (error instanceof PromiseCancelled) {
             console.debug(
-              `menuItemExtension run promise cancelled for extension: ${extension.id}`,
+              `menuItemStarterBrick run promise cancelled for mod component: ${modComponent.id}`,
             );
           } else {
             errors.push(error);
             reportError(error, {
               context: {
-                deploymentId: extension._deployment?.id,
-                extensionPointId: extension.extensionPointId,
-                extensionId: extension.id,
+                deploymentId: modComponent._deployment?.id,
+                extensionPointId: modComponent.extensionPointId,
+                extensionId: modComponent.id,
               },
             });
           }
@@ -760,7 +765,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 }
 
-export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
+export class RemoteMenuItemStarterBrick extends MenuItemStarterBrickABC {
   private readonly _definition: MenuItemDefinition;
 
   public readonly permissions: Permissions.Permissions;
@@ -923,7 +928,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
 
   protected makeItem(
     unsanitizedHTML: string,
-    extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
+    modComponent: ResolvedModComponent<MenuItemStarterBrickConfig>,
   ): JQuery {
     const sanitizedHTML = sanitize(unsanitizedHTML);
 
@@ -940,7 +945,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
       $root = $(sanitizedHTML);
     }
 
-    $root.attr(DATA_ATTR, extension.id);
+    $root.attr(DATA_ATTR, modComponent.id);
 
     return $root;
   }
@@ -960,5 +965,5 @@ export function fromJS(
     throw new Error(`Expected type=menuItem, got ${type as string}`);
   }
 
-  return new RemoteMenuItemExtensionPoint(platform, config);
+  return new RemoteMenuItemStarterBrick(platform, config);
 }

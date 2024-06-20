@@ -23,7 +23,7 @@ import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
-import { RemoteMenuItemExtensionPoint } from "@/starterBricks/menuItem/menuItemExtension";
+import { RemoteMenuItemStarterBrick } from "@/starterBricks/menuItem/menuItemStarterBrick";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import { RemoteQuickBarExtensionPoint } from "@/starterBricks/quickBar/quickBarExtension";
@@ -32,7 +32,7 @@ import { standaloneModDefinitionFactory } from "@/testUtils/factories/modCompone
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { getPlatform } from "@/platform/platformContext";
-import { type MenuItemDefinition } from "@/starterBricks/menuItem/types";
+import { type MenuItemDefinition } from "@/starterBricks/menuItem/menuItemTypes";
 import { type QuickBarDefinition } from "@/starterBricks/quickBar/types";
 
 jest.mock("@/contentScript/messenger/api");
@@ -83,7 +83,7 @@ describe("checkAvailableInstalledExtensions", () => {
         },
       },
     ) as StarterBrickDefinitionLike<MenuItemDefinition>;
-    const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
+    const availableButtonExtensionPoint = new RemoteMenuItemStarterBrick(
       getPlatform(),
       availableButtonStarterBrickDefinition,
     );
