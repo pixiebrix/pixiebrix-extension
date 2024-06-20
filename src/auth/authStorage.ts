@@ -104,7 +104,7 @@ export async function getPartnerAuthData(): Promise<
   }
 
   // Backwards compatibility with old, looser type
-  if (!storageValue.authId || !storageValue.token || isError) {
+  if (isError || !storageValue?.authId || !storageValue?.token) {
     await clearPartnerAuthData();
     return undefined;
   }

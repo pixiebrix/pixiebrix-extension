@@ -17,15 +17,21 @@
 
 import { define } from "cooky-cutter";
 import {
+  IntegrationABC,
   type IntegrationConfig,
   type IntegrationDefinition,
   type IntegrationDependency,
   type KeyAuthenticationDefinition,
+  OAuth2AuthenticationDefinition,
+  OAuth2Context,
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
 } from "@/integrations/integrationTypes";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  registryIdFactory,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -121,6 +127,28 @@ export const keyAuthIntegrationDefinitionFactory = define<
   },
 });
 
+export const controlRoomOAuth2IntegrationDefinitionFactory = define<
+  IntegrationDefinition<OAuth2AuthenticationDefinition>
+>({
+  metadata: metadataFactory,
+  inputSchema() {
+    return {};
+  },
+  authentication(): OAuth2AuthenticationDefinition {
+    return {
+      oauth2: {
+        client_id: "test-oauth2-client-id",
+        tokenUrl: "https://api.test.com/oauth2_sso",
+        authorizeUrl: "https://api.test.com/oauth2_sso/authorize",
+      },
+      headers: {
+        Authorization: "Bearer test-oauth2-token",
+        "X-Control-Room": "https://control-room.test.com",
+      } as Record<string, string>,
+    };
+  },
+});
+
 export function generateIntegrationAndRemoteConfig(): {
   remoteConfig: RemoteIntegrationConfig;
   integrationDefinition: IntegrationDefinition & { kind: Kind };
@@ -141,3 +169,24 @@ export function generateIntegrationAndRemoteConfig(): {
     integrationDefinition,
   };
 }
+
+export const controlRoomOAuth2IntegrationFactory = define<IntegrationABC>({
+  id: registryIdFactory,
+  name: "Test Control Room OAuth2 Integration",
+  schema: {},
+  hasAuth: true,
+  isOAuth2: true,
+  isOAuth2PKCE: true,
+  isAuthorizationGrant: false,
+  isBasicHttpAuth: false,
+  isToken: false,
+  getOAuth2Context(config: SecretsConfig): OAuth2Context {
+    return {
+      client_id: "test-oauth2-client-id",
+      tokenUrl: "https://api.test.com/oauth2_sso",
+    };
+  },
+  authenticateRequest: undefined,
+  getOrigins: undefined,
+  getTokenContext: undefined,
+});
