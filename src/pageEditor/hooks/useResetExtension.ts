@@ -63,7 +63,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
       try {
         const extension = installed.find((x) => x.id === extensionId);
         if (extension == null) {
-          dispatch(actions.removeElement(extensionId));
+          dispatch(actions.removeModComponentFormState(extensionId));
         } else {
           const formState = await modComponentToFormState(extension);
           initRecipeOptionsIfNeeded(formState, compact(recipes));

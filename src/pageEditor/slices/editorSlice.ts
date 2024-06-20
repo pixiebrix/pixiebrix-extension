@@ -49,11 +49,11 @@ import {
 } from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
-  activateElement,
+  makeModComponentFormStateActive,
   editRecipeMetadata,
   editRecipeOptionsDefinitions,
   ensureElementUIState,
-  removeElement,
+  removeModComponentFormState,
   removeRecipeData,
   selectRecipeId,
   setActiveNodeId,
@@ -324,7 +324,7 @@ export const editorSlice = createSlice({
       state.elements.push(modComponentFormState);
       state.dirty[modComponentFormState.uuid] = true;
 
-      activateElement(state, modComponentFormState);
+      makeModComponentFormStateActive(state, modComponentFormState);
     },
     betaError(state) {
       const error = new BusinessError("This feature is in private beta");
@@ -348,7 +348,7 @@ export const editorSlice = createSlice({
         state.elements.push(element);
       }
 
-      activateElement(state, element);
+      makeModComponentFormStateActive(state, element);
     },
     resetInstalled(state, actions: PayloadAction<ModComponentFormState>) {
       const element = actions.payload as Draft<ModComponentFormState>;
@@ -384,7 +384,7 @@ export const editorSlice = createSlice({
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
 
-      activateElement(state, element);
+      makeModComponentFormStateActive(state, element);
     },
     markClean(state, action: PayloadAction<UUID>) {
       const element = state.elements.find((x) => action.payload === x.uuid);
@@ -439,9 +439,9 @@ export const editorSlice = createSlice({
       // Force reload of Formik state
       state.selectionSeq++;
     },
-    removeElement(state, action: PayloadAction<UUID>) {
-      const uuid = action.payload;
-      removeElement(state, uuid);
+    removeModComponentFormState(state, action: PayloadAction<UUID>) {
+      const modComponentId = action.payload;
+      removeModComponentFormState(state, modComponentId);
     },
     selectRecipeId(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
@@ -525,16 +525,17 @@ export const editorSlice = createSlice({
       delete state.dirtyRecipeMetadataById[recipeId];
       delete state.dirtyRecipeOptionsById[recipeId];
     },
-    updateRecipeMetadataForElements(
+    updateModMetadataOnModComponentFormStates(
       state,
       action: PayloadAction<ModComponentBase["_recipe"]>,
     ) {
-      const metadata = action.payload;
-      const recipeElements = state.elements.filter(
-        (element) => element.recipe?.id === metadata?.id,
+      const modMetadata = action.payload;
+      const modComponentFormStates = state.elements.filter(
+        (modComponentFormState) =>
+          modComponentFormState.recipe?.id === modMetadata?.id,
       );
-      for (const element of recipeElements) {
-        element.recipe = metadata;
+      for (const formState of modComponentFormStates) {
+        formState.recipe = modMetadata;
       }
     },
     showAddToRecipeModal(state) {

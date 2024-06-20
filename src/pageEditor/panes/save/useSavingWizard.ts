@@ -163,7 +163,11 @@ const useSavingWizard = () => {
     });
 
     if (!error) {
-      dispatch(editorActions.removeElement(activeModComponentFormState.uuid));
+      dispatch(
+        editorActions.removeModComponentFormState(
+          activeModComponentFormState.uuid,
+        ),
+      );
       dispatch(
         optionsActions.removeExtension({
           extensionId: activeModComponentFormState.uuid,

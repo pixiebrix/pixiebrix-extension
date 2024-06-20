@@ -48,49 +48,53 @@ import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
-export function getIdForElement(
-  element: ModComponentBase | ModComponentFormState,
+export function getModComponentId(
+  modComponentOrFormState: ModComponentBase | ModComponentFormState,
 ): UUID {
-  return isModComponentBase(element) ? element.id : element.uuid;
+  return isModComponentBase(modComponentOrFormState)
+    ? modComponentOrFormState.id
+    : modComponentOrFormState.uuid;
 }
 
-export function getModIdForElement(
-  element: ModComponentBase | ModComponentFormState,
+export function getModId(
+  modComponentOrFormState: ModComponentBase | ModComponentFormState,
 ): RegistryId | undefined {
-  return isModComponentBase(element) ? element._recipe?.id : element.recipe?.id;
+  return isModComponentBase(modComponentOrFormState)
+    ? modComponentOrFormState._recipe?.id
+    : modComponentOrFormState.recipe?.id;
 }
 
 /**
- * Return pipeline prop names for a configured block.
+ * Return pipeline prop names for a configured brick.
  *
  * Returns prop names in the order they should be displayed in the layout.
  *
- * @param block the block, or null if resolved block not available yet
- * @param blockConfig the block configuration
+ * @param brick the brick, or null if resolved block not available yet
+ * @param brickConfig the brick configuration
  *
  * @see PipelineToggleField
  */
 export function getPipelinePropNames(
-  block: Brick | null,
-  blockConfig: BrickConfig,
+  brick: Brick | null,
+  brickConfig: BrickConfig,
 ): string[] {
-  switch (blockConfig.id) {
+  switch (brickConfig.id) {
     // Special handling for tour step to avoid clutter and input type alternatives
     case TourStepTransformer.BRICK_ID: {
       const propNames = [];
 
       // Only show onBeforeShow if it's provided, to avoid cluttering the UI
-      if (blockConfig.config.onBeforeShow != null) {
+      if (brickConfig.config.onBeforeShow != null) {
         propNames.push("onBeforeShow");
       }
 
       // `body` can be a markdown value, or a pipeline
-      if (isPipelineExpression(blockConfig.config.body)) {
+      if (isPipelineExpression(brickConfig.config.body)) {
         propNames.push("body");
       }
 
       // Only show onAfterShow if it's provided, to avoid cluttering the UI
-      if (blockConfig.config.onAfterShow != null) {
+      if (brickConfig.config.onAfterShow != null) {
         propNames.push("onAfterShow");
       }
 
@@ -101,7 +105,7 @@ export function getPipelinePropNames(
       const propNames = [];
 
       // Only show onSubmit if it's provided, to avoid cluttering the UI
-      if (blockConfig.config.onSubmit != null) {
+      if (brickConfig.config.onSubmit != null) {
         propNames.push("onSubmit");
       }
 
@@ -109,18 +113,18 @@ export function getPipelinePropNames(
     }
 
     default: {
-      if (block == null) {
+      if (brick == null) {
         return [];
       }
 
       const pipelineProperties = pickBy(
-        inputProperties(block.inputSchema),
+        inputProperties(brick.inputSchema),
         (value) =>
           typeof value === "object" &&
           value.$ref === "https://app.pixiebrix.com/schemas/pipeline#",
       );
 
-      return sortedFields(pipelineProperties, block.uiSchema, {
+      return sortedFields(pipelineProperties, brick.uiSchema, {
         includePipelines: true,
         // JS control flow bricks don't define a uiSchema
         preserveSchemaOrder: true,

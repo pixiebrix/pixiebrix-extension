@@ -29,7 +29,7 @@ sessionChangesListenerMiddleware.startListening({
     actions.moveNode,
     actions.removeNode,
     actions.resetInstalled,
-    actions.removeElement,
+    actions.removeModComponentFormState,
     actions.editRecipeMetadata,
     actions.editRecipeOptionsDefinitions,
     actions.editRecipeOptionsValues,

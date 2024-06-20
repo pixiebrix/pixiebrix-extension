@@ -106,7 +106,10 @@ function deactivateModComponentFromStates(
     optionsActions.removeExtension({ extensionId: modComponentId }),
   );
   const editor = editorState
-    ? editorReducer(editorState, editorActions.removeElement(modComponentId))
+    ? editorReducer(
+        editorState,
+        editorActions.removeModComponentFormState(modComponentId),
+      )
     : undefined;
   return { options, editor };
 }

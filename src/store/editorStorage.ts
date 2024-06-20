@@ -20,7 +20,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { produce } from "immer";
 import {
-  removeElement,
+  removeModComponentFormState,
   removeRecipeData,
 } from "@/pageEditor/slices/editorSliceHelpers";
 import {
@@ -82,7 +82,7 @@ export async function removeDynamicElements(elementIds: UUID[]): Promise<void> {
 
   const newState = produce(state, (draft) => {
     for (const id of elementIds) {
-      removeElement(draft, id);
+      removeModComponentFormState(draft, id);
     }
   });
 
@@ -114,7 +114,7 @@ export async function removeDynamicElementsForRecipe(
     for (const element of state.elements) {
       if (element.recipe?.id === recipeId) {
         removedDynamicElements.push(element.uuid);
-        removeElement(draft, element.uuid);
+        removeModComponentFormState(draft, element.uuid);
       }
     }
   });
