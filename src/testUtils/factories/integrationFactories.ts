@@ -17,13 +17,13 @@
 
 import { define } from "cooky-cutter";
 import {
-  IntegrationABC,
+  type IntegrationABC,
   type IntegrationConfig,
   type IntegrationDefinition,
   type IntegrationDependency,
   type KeyAuthenticationDefinition,
-  OAuth2AuthenticationDefinition,
-  OAuth2Context,
+  type OAuth2AuthenticationDefinition,
+  type OAuth2Context,
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
