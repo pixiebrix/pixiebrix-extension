@@ -265,7 +265,7 @@ const DeploymentModal: React.FC<
   }
 
   return (
-    <Modal show>
+    <Modal show data-testid="activateDeploymentModal">
       <Modal.Header>
         <Modal.Title>Team Deployments Available</Modal.Title>
       </Modal.Header>

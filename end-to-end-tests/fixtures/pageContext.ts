@@ -38,6 +38,7 @@ export const test = base.extend<
   {
     context: BrowserContext;
     extensionId: string;
+    profileName: "unaffiliated" | "affiliated";
     chromiumChannel: "chrome" | "msedge";
     newPageEditorPage: (urlToConnectTo: string) => Promise<PageEditorPage>;
   },
@@ -46,12 +47,13 @@ export const test = base.extend<
   }
 >({
   chromiumChannel: ["chrome", { option: true }],
-  async context({ chromiumChannel }, use) {
+  profileName: "unaffiliated",
+  async context({ chromiumChannel, profileName }, use) {
     let authSetupProfileDirectory: string;
 
     try {
       authSetupProfileDirectory = await fs.readFile(
-        getAuthProfilePathFile(chromiumChannel),
+        getAuthProfilePathFile(profileName, chromiumChannel),
         "utf8",
       );
     } catch (error) {

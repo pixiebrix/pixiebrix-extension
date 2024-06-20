@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -12,6 +11,8 @@
     "../end-to-end-tests/pageObjects/extensionConsole/localIntegrationsPage.ts",
     "../end-to-end-tests/pageObjects/extensionConsole/modsPage.ts",
     "../end-to-end-tests/pageObjects/extensionConsole/workshop/workshopPage.ts",
+    "../end-to-end-tests/setup/affiliated.setup.ts",
+    "../end-to-end-tests/setup/unaffiliated.setup.ts",
     "../end-to-end-tests/tests/extensionConsoleActivation.spec.ts",
     "../end-to-end-tests/tests/smoke/modsPage.spec.ts",
     "../end-to-end-tests/tests/telemetry/errors.spec.ts",
