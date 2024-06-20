@@ -36,8 +36,8 @@ const profileNameFromTestPath = (testFilePath: string) => {
   const fileName = parts.at(-1);
 
   // Split the file name into words and return the first word
-  const words = fileName?.split(".") || ["unknown"];
-  return words[0];
+  const words = fileName?.split(".");
+  return words?.[0] || "unknown";
 };
 
 // Create a local auth directory to store the profile paths
