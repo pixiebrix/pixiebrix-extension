@@ -45,7 +45,11 @@ const CreatePage: React.FunctionComponent = () => {
         <Form noValidate onSubmit={handleSubmit} autoComplete="off">
           <div className="d-flex">
             <div className="flex-grow-1">
-              <PageTitle icon={faHammer} title="Create New Brick" />
+              <PageTitle
+                icon={faHammer}
+                title="Create New Brick"
+                documentationUrl="https://docs.pixiebrix.com/developing-mods/advanced-workshop"
+              />
             </div>
             <div className="flex-grow-1 text-right">
               <Button disabled={!isValid} type="submit">

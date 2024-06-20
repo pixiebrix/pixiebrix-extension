@@ -21,20 +21,36 @@ import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import Loader from "@/components/Loader";
 import { ErrorDisplay } from "./ErrorDisplay";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 export const PageTitle: React.FunctionComponent<{
   title: React.ReactNode;
+  documentationUrl?: string;
   icon?: IconProp;
-}> = ({ title, icon }) => (
-  <div className="page-header">
-    <h3 className="page-title">
+}> = ({ title, icon, documentationUrl }) => (
+  <div>
+    <div className="page-header">
       {icon && (
         <span className="page-title-icon bg-gradient-primary text-white mr-2">
           <FontAwesomeIcon icon={icon} />
         </span>
       )}
-      {title}
-    </h3>
+      <div>
+        <h3 className="page-title">{title}</h3>
+        {documentationUrl && (
+          <div className="page-documentation">
+            <a
+              href={documentationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FontAwesomeIcon icon={faExternalLinkAlt} />
+              &nbsp;View Documentation
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
   </div>
 );
 
@@ -46,6 +62,11 @@ const Page: React.FunctionComponent<{
   breadcrumb?: React.ReactNode;
   toolbar?: React.ReactNode;
   children: React.ReactNode;
+
+  /**
+   * An optional documentation URL.
+   */
+  documentationUrl?: string;
 
   /**
    * True to show a loader for the main page content.
@@ -66,6 +87,7 @@ const Page: React.FunctionComponent<{
   toolbar,
   description = null,
   children,
+  documentationUrl,
 }) => {
   useSetDocumentTitle(title);
 
@@ -85,7 +107,11 @@ const Page: React.FunctionComponent<{
     <div className={className}>
       <div className="d-flex">
         <div className="flex-grow-1">
-          <PageTitle icon={icon} title={title} />
+          <PageTitle
+            icon={icon}
+            title={title}
+            documentationUrl={documentationUrl}
+          />
         </div>
         {toolbar && <div>{toolbar}</div>}
       </div>

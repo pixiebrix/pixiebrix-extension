@@ -258,6 +258,7 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => (
           created in the Page Editor can also be edited here.
         </p>
       }
+      documentationUrl="https://docs.pixiebrix.com/developing-mods/advanced-workshop"
       toolbar={
         <Button
           variant="info"
