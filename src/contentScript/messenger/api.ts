@@ -103,6 +103,8 @@ export const getInstalledExtensionPoints = getMethod(
 );
 export const resetTab = getNotifier("RESET_TAB");
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
-export const clearDraftElements = getNotifier("CLEAR_DRAFT_ELEMENTS");
+export const clearDraftModComponents = getNotifier(
+  "CLEAR_DRAFT_MOD_COMPONENTS",
+);
 export const updateDraftElement = getNotifier("UPDATE_DRAFT_ELEMENT");
 export const checkAvailable = getMethod("CHECK_AVAILABLE");

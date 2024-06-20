@@ -18,7 +18,7 @@
 import {
   removeInstalledExtension,
   removeSidebars,
-  clearDraftElements,
+  clearDraftModComponents,
 } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/utils/extensionUtils";
 import { type UUID } from "@/types/stringTypes";
@@ -34,7 +34,7 @@ export async function removeExtensionForEveryTab(
   await forEachTab(async ({ tabId }) => {
     const allFrames = { tabId, frameId: "allFrames" } as const;
     removeInstalledExtension(allFrames, extensionId);
-    clearDraftElements(allFrames, { uuid: extensionId });
+    clearDraftModComponents(allFrames, { uuid: extensionId });
     await removeSidebars({ tabId }, [extensionId]);
   });
   await uninstallContextMenu({ extensionId });
