@@ -22,7 +22,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
-import ConvertToRecipeModal from "./ConvertToRecipeModal";
+import ConvertToModModal from "./ConvertToModModal";
 import * as api from "@/data/service/api";
 import {
   selectModalsContext,
@@ -63,7 +63,7 @@ describe("it renders", () => {
   test("default state", () => {
     const standaloneModDefinition = standaloneModDefinitionFactory();
 
-    render(<ConvertToRecipeModal />, {
+    render(<ConvertToModModal />, {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(authStateFactory()));
         dispatch(
@@ -86,7 +86,7 @@ describe("it renders", () => {
   test("requires user scope", async () => {
     const standaloneModDefinition = standaloneModDefinitionFactory();
 
-    render(<ConvertToRecipeModal />, {
+    render(<ConvertToModModal />, {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(anonAuth));
         dispatch(
@@ -141,7 +141,7 @@ describe("it renders", () => {
 
       const { getReduxStore } = render(
         <div>
-          <ConvertToRecipeModal />
+          <ConvertToModModal />
         </div>,
         {
           setupRedux(dispatch) {
@@ -194,7 +194,7 @@ describe("it renders", () => {
       .mocked(api.useDeleteStandaloneModDefinitionMutation)
       .mockReturnValue([deleteCloudExtensionMock] as any);
 
-    const { getReduxStore } = render(<ConvertToRecipeModal />, {
+    const { getReduxStore } = render(<ConvertToModModal />, {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(authStateFactory()));
         dispatch(

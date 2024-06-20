@@ -19,7 +19,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
-import PublishRecipeContent from "./PublishRecipeContent";
+import PublishModContent from "./PublishModContent";
 import { Modal } from "react-bootstrap";
 import { useGetMarketplaceListingQuery } from "@/data/service/api";
 import Loader from "@/components/Loader";
@@ -33,10 +33,10 @@ const ModalContentSwitch: React.FunctionComponent = () => {
   const { blueprintId: modId, cancelingPublish } = showPublishContext;
   const { data: listing, isLoading: isLoadingListing } =
     useGetMarketplaceListingQuery({ packageId: modId });
-  const { data: modDefinition, isLoading: isLoadingRecipe } =
+  const { data: modDefinition, isLoading: isLoadingModDefinition } =
     useOptionalModDefinition(modId);
 
-  if (isLoadingRecipe || isLoadingListing) {
+  if (isLoadingModDefinition || isLoadingListing) {
     return (
       <Modal.Body>
         <Loader />
@@ -45,7 +45,7 @@ const ModalContentSwitch: React.FunctionComponent = () => {
   }
 
   if (!modDefinition.sharing.public) {
-    return <PublishRecipeContent />;
+    return <PublishModContent />;
   }
 
   // A mod is pending publish if it has been made public but does not yet have a marketplace listing
@@ -57,20 +57,20 @@ const ModalContentSwitch: React.FunctionComponent = () => {
   return <PublishedContent />;
 };
 
-const PublishRecipeModals: React.FunctionComponent = () => {
+const PublishModModals: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const closeModal = () => {
     dispatch(modModalsSlice.actions.closeModal());
   };
 
   const showPublishContext = useSelector(selectShowPublishContext);
-  const showPublishRecipeModal = showPublishContext?.blueprintId != null;
+  const showPublishModModal = showPublishContext?.blueprintId != null;
 
   return (
-    <Modal show={showPublishRecipeModal} onHide={closeModal}>
-      {showPublishRecipeModal && <ModalContentSwitch />}
+    <Modal show={showPublishModModal} onHide={closeModal}>
+      {showPublishModModal && <ModalContentSwitch />}
     </Modal>
   );
 };
 
-export default PublishRecipeModals;
+export default PublishModModals;
