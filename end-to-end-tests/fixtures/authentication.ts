@@ -36,7 +36,7 @@ const profileNameFromTestPath = (testFilePath: string) => {
   const fileName = parts.at(-1);
 
   // Split the file name into words and return the first word
-  const words = fileName.split(".");
+  const words = fileName?.split(".") || ["unknown"];
   return words[0];
 };
 
