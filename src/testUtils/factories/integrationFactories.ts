@@ -17,21 +17,16 @@
 
 import { define } from "cooky-cutter";
 import {
-  type IntegrationABC,
   type IntegrationConfig,
   type IntegrationDefinition,
   type IntegrationDependency,
   type KeyAuthenticationDefinition,
   type OAuth2AuthenticationDefinition,
-  type OAuth2Context,
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
 } from "@/integrations/integrationTypes";
-import {
-  registryIdFactory,
-  uuidSequence,
-} from "@/testUtils/factories/stringFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -169,24 +164,3 @@ export function generateIntegrationAndRemoteConfig(): {
     integrationDefinition,
   };
 }
-
-export const controlRoomOAuth2IntegrationFactory = define<IntegrationABC>({
-  id: registryIdFactory,
-  name: "Test Control Room OAuth2 Integration",
-  schema: {},
-  hasAuth: true,
-  isOAuth2: true,
-  isOAuth2PKCE: true,
-  isAuthorizationGrant: false,
-  isBasicHttpAuth: false,
-  isToken: false,
-  getOAuth2Context(config: SecretsConfig): OAuth2Context {
-    return {
-      client_id: "test-oauth2-client-id",
-      tokenUrl: "https://api.test.com/oauth2_sso",
-    };
-  },
-  authenticateRequest: undefined,
-  getOrigins: undefined,
-  getTokenContext: undefined,
-});

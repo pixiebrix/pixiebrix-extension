@@ -20,6 +20,7 @@ import { expectContext } from "@/utils/expectContext";
 import { getPartnerAuthData, setPartnerAuthData } from "@/auth/authStorage";
 import axios, { type AxiosResponse } from "axios";
 import { setCachedAuthData } from "@/background/auth/authStorage";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Refreshes the partner authentication token for the current partner auth session.
@@ -43,20 +44,24 @@ export default async function refreshPartnerAuthentication(): Promise<void> {
     refreshExtraHeaders,
   } = partnerAuthData;
 
-  if (refreshToken == null) {
-    throw new Error("No refresh token found for authId: " + authId);
-  }
+  assertNotNullish(
+    refreshToken,
+    "No refresh token found for authId: " + authId,
+  );
+  assertNotNullish(refreshUrl, "No refresh URL found for authId: " + authId);
 
   console.debug("Refreshing partner JWT for authId: " + authId);
 
-  const postData = new URLSearchParams(refreshParamPayload);
+  const postData = refreshParamPayload
+    ? new URLSearchParams(refreshParamPayload)
+    : undefined;
   // This will automatically throw the error on a 401 (or other bad response
   // status code), allow the caller to decide how to handle
   const { data }: AxiosResponse<AuthData> = await axios.post(
     refreshUrl,
     postData,
     {
-      headers: refreshExtraHeaders,
+      headers: refreshExtraHeaders ?? {},
     },
   );
 

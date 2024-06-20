@@ -38,7 +38,7 @@ const subscribe = (callback: () => void) => {
  * Use the current partner auth data. Automatically listens for changes and updates the state.
  * @see getPartnerAuthData
  */
-function usePartnerAuthData(): AsyncState<Partial<PartnerAuthData>> {
+function usePartnerAuthData(): AsyncState<PartnerAuthData | undefined> {
   return useAsyncExternalStore(subscribe, getPartnerAuthData);
 }
 

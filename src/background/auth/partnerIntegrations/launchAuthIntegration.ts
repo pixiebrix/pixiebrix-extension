@@ -131,10 +131,8 @@ export async function launchAuthIntegration({
       oAuth2Context,
       "Integration did not return an OAuth2 context",
     );
-    assertNotNullish(
-      oAuth2Context.tokenUrl,
-      `OAuth2 context for integration ${integrationConfig.integrationId} does not include a token URL`,
-    );
+
+    const refreshUrl = refreshToken ? oAuth2Context.tokenUrl ?? null : null;
 
     console.info("Setting partner auth for Control Room %s", controlRoomUrl);
 
@@ -142,7 +140,7 @@ export async function launchAuthIntegration({
       authId: integrationConfig.id,
       token,
       refreshToken,
-      refreshUrl: refreshToken ? oAuth2Context.tokenUrl : null,
+      refreshUrl,
       refreshParamPayload: refreshToken
         ? {
             client_id: oAuth2Context.client_id,
