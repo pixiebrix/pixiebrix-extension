@@ -71,7 +71,7 @@ describe("refresh token argument validation", () => {
     await expect(
       refreshPKCEToken(aaIntegration, integrationConfig),
     ).rejects.toThrow(
-      `Use _refreshPartnerToken to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`,
+      `Use refreshPartnerAuthentication to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`,
     );
   });
 
