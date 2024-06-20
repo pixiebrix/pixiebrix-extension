@@ -119,17 +119,17 @@ class QuickBarRegistry implements QuickBarProtocol {
   /**
    * Remove all actions added by a given extension point.
    */
-  removeExtensionPointActions(extensionPointId: RegistryId): void {
-    remove(this.actions, (x) => x.extensionPointId === extensionPointId);
+  removeStarterBrickActions(starterBrickId: RegistryId): void {
+    remove(this.actions, (x) => x.extensionPointId === starterBrickId);
     this.notifyListeners();
   }
 
   /**
-   * Remove all actions added by a given extension.
-   * @param extensionId the ModComponentBase UUID
+   * Remove all actions added by a given mod component.
+   * @param modComponentId the ModComponentBase UUID
    */
-  removeExtensionActions(extensionId: UUID): void {
-    remove(this.actions, (x) => x.extensionId === extensionId);
+  removeModComponentActions(modComponentId: UUID): void {
+    remove(this.actions, (x) => x.extensionId === modComponentId);
     this.notifyListeners();
   }
 

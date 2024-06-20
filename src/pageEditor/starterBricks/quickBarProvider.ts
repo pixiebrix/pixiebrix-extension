@@ -36,13 +36,13 @@ import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type QuickBarProviderFormState } from "./formStateTypes";
-import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProvider/quickBarProviderExtension";
+import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProvider/quickBarProviderStarterBrick";
 import QuickBarProviderConfiguration from "@/pageEditor/tabs/quickBarProvider/QuickBarProviderConfiguration";
 import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
 import {
   type QuickBarProviderDefinition,
   type QuickBarProviderConfig,
-} from "@/starterBricks/quickBarProvider/types";
+} from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(

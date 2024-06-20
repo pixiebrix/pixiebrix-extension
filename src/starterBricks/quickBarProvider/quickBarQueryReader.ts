@@ -24,7 +24,7 @@ import { type Schema } from "@/types/schemaTypes";
  *
  * The data for the output scheme is filled by the dynamic Quick Bar.
  */
-export class QuickbarQueryReader extends ReaderABC {
+export class QuickBarQueryReader extends ReaderABC {
   constructor() {
     super(
       "@pixiebrix/quickbar/query",
@@ -40,7 +40,7 @@ export class QuickbarQueryReader extends ReaderABC {
   async read(): Promise<JsonObject> {
     // The actual field is set by the extension point, not the reader, because it's made available
     // by the browser API in the menu handler
-    throw new Error("QuickbarQueryReader.read() should not be called directly");
+    throw new Error("QuickBarQueryReader.read() should not be called directly");
   }
 
   override outputSchema: Schema = {
@@ -57,7 +57,7 @@ export class QuickbarQueryReader extends ReaderABC {
 export const quickbarQueryReaderShim = {
   isAvailable: async () => true,
 
-  outputSchema: new QuickbarQueryReader().outputSchema,
+  outputSchema: new QuickBarQueryReader().outputSchema,
 
   async read() {
     return {

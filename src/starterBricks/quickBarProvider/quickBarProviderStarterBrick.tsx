@@ -40,9 +40,9 @@ import { isSpecificError } from "@/errors/errorHelpers";
 import { type ActionGenerator } from "@/components/quickBar/quickbarTypes";
 import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import {
-  QuickbarQueryReader,
+  QuickBarQueryReader,
   quickbarQueryReaderShim,
-} from "@/starterBricks/quickBarProvider/quickbarQueryReader";
+} from "@/starterBricks/quickBarProvider/quickBarQueryReader";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -61,16 +61,16 @@ import {
   type QuickBarProviderDefaultOptions,
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
-} from "@/starterBricks/quickBarProvider/types";
+} from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<QuickBarProviderConfig> {
-  static isQuickBarProviderExtensionPoint(
-    extensionPoint: StarterBrick,
-  ): extensionPoint is QuickBarProviderStarterBrickABC {
+  static isQuickBarProviderStarterBrick(
+    starterBrick: StarterBrick,
+  ): starterBrick is QuickBarProviderStarterBrickABC {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any
     -- Need to access a type specific property (QuickBarProviderStarterBrickABC._definition) on a base-typed entity (StarterBrick) */
-    return (extensionPoint as any)?._definition?.type === "quickBarProvider";
+    return (starterBrick as any)?._definition?.type === "quickBarProvider";
   }
 
   abstract getBaseReader(): Promise<Reader>;
@@ -108,9 +108,9 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   );
 
   async getBricks(
-    extension: ResolvedModComponent<QuickBarProviderConfig>,
+    modComponent: ResolvedModComponent<QuickBarProviderConfig>,
   ): Promise<Brick[]> {
-    return collectAllBricks(extension.config.generator);
+    return collectAllBricks(modComponent.config.generator);
   }
 
   public get kind(): "quickBarProvider" {
@@ -122,21 +122,21 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     this.clearModComponentInterfaceAndEvents(
       this.modComponents.map((x) => x.id),
     );
-    quickBarRegistry.removeExtensionPointActions(this.id);
+    quickBarRegistry.removeStarterBrickActions(this.id);
     this.modComponents.length = 0;
   }
 
   /**
-   * Unregister quick bar action providers for the given extension IDs.
-   * @param extensionIds the extensions IDs to unregister
+   * Unregister quick bar action providers for the given mod component IDs.
+   * @param modComponentIds the mod component IDs to unregister
    */
-  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
-    for (const extensionId of extensionIds) {
-      const generator = this.generators.get(extensionId);
-      assertNotNullish(generator, `Generator not found for ${extensionId}`);
+  clearModComponentInterfaceAndEvents(modComponentIds: UUID[]): void {
+    for (const modComponentId of modComponentIds) {
+      const generator = this.generators.get(modComponentId);
+      assertNotNullish(generator, `Generator not found for ${modComponentId}`);
 
       quickBarRegistry.removeGenerator(generator);
-      this.generators.delete(extensionId);
+      this.generators.delete(modComponentId);
     }
   }
 
@@ -148,7 +148,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
 
     await initQuickBarApp();
 
-    // Like for context menus, the match patterns for quick bar control which pages the extension point requires early
+    // Like for context menus, the match patterns for quick bar control which pages the starter brick requires early
     // access to (so PixieBrix will ask for permissions). Whether a quick bar item actually appears is controlled by the
     // documentUrlPatterns.
     return true;
@@ -160,8 +160,8 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
         `quickBar starter brick ${this.id} has no installed components`,
       );
 
-      // Not sure if this is needed or not, but remove any straggler extension actions
-      quickBarRegistry.removeExtensionPointActions(this.id);
+      // Not sure if this is needed or not, but remove any straggler mod component actions
+      quickBarRegistry.removeStarterBrickActions(this.id);
       return;
     }
 
@@ -171,7 +171,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   override async defaultReader(): Promise<Reader> {
     return new ArrayCompositeReader([
       // Include QuickbarQueryReader for the outputSchema. The value gets filled in by the run method
-      new QuickbarQueryReader(),
+      new QuickBarQueryReader(),
       await this.getBaseReader(),
     ]);
   }
@@ -187,18 +187,18 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     // Remove any actions that were available on the previous navigation, but are no longer available
     if (!testMatchPatterns(this.documentUrlPatterns, null)) {
       // Remove actions and un-attach generators
-      quickBarRegistry.removeExtensionPointActions(this.id);
+      quickBarRegistry.removeStarterBrickActions(this.id);
       this.clearModComponentInterfaceAndEvents(
         this.modComponents.map((x) => x.id),
       );
       return;
     }
 
-    const promises = this.modComponents.map(async (extension) => {
+    const promises = this.modComponents.map(async (modComponent) => {
       try {
-        await this.registerActionProvider(extension);
+        await this.registerActionProvider(modComponent);
       } catch (error) {
-        reportError(error, { context: selectEventData(extension) });
+        reportError(error, { context: selectEventData(modComponent) });
         throw error;
       }
     });
@@ -217,15 +217,15 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   }
 
   /**
-   * Add a QuickBar action for extension
+   * Add a QuickBar action for mod component
    */
   private async registerActionProvider(
-    extension: ResolvedModComponent<QuickBarProviderConfig>,
+    modComponent: ResolvedModComponent<QuickBarProviderConfig>,
   ): Promise<void> {
-    const { generator, rootAction } = extension.config;
+    const { generator, rootAction } = modComponent.config;
 
-    const extensionLogger = this.logger.childLogger(
-      selectModComponentContext(extension),
+    const modComponentLogger = this.logger.childLogger(
+      selectModComponentContext(modComponent),
     );
 
     let rootActionId: string | null = null;
@@ -238,7 +238,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
         <Icon />
       ); // Defaults to a box
 
-      rootActionId = `provider-${extension.id}`;
+      rootActionId = `provider-${modComponent.id}`;
 
       quickBarRegistry.addAction({
         id: rootActionId,
@@ -254,7 +254,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       abortSignal,
     }) => {
       // Remove the old results during re-generation because they're no longer relevant
-      quickBarRegistry.removeExtensionActions(extension.id);
+      quickBarRegistry.removeModComponentActions(modComponent.id);
 
       if (
         rootActionId &&
@@ -268,7 +268,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       const [reader, serviceContext] = await Promise.all([
         this.getBaseReader(),
         makeIntegrationsContextFromDependencies(
-          extension.integrationDependencies,
+          modComponent.integrationDependencies,
         ),
       ]);
 
@@ -284,13 +284,13 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
         input,
         root: targetElement,
         serviceContext,
-        optionsArgs: extension.optionsArgs,
+        optionsArgs: modComponent.optionsArgs,
       };
 
       try {
         await reduceExtensionPipeline(generator, initialValues, {
-          logger: extensionLogger,
-          ...apiVersionOptions(extension.apiVersion),
+          logger: modComponentLogger,
+          ...apiVersionOptions(modComponent.apiVersion),
           abortSignal,
         });
       } catch (error) {
@@ -303,18 +303,18 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     };
 
     // Remove previous generator (if any)
-    const prevGenerator = this.generators.get(extension.id);
+    const prevGenerator = this.generators.get(modComponent.id);
     if (prevGenerator) {
       quickBarRegistry.removeGenerator(prevGenerator);
     }
 
     // Register new generator
-    this.generators.set(extension.id, actionGenerator);
+    this.generators.set(modComponent.id, actionGenerator);
     quickBarRegistry.addGenerator(actionGenerator, rootActionId);
   }
 }
 
-class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderStarterBrickABC {
+class RemoteQuickBarProviderStarterBrick extends QuickBarProviderStarterBrickABC {
   private readonly _definition: QuickBarProviderDefinition;
 
   public readonly permissions: Permissions.Permissions;
@@ -382,5 +382,5 @@ export function fromJS(
     throw new Error(`Expected type=quickBarProvider, got ${type}`);
   }
 
-  return new RemoteQuickBarProviderExtensionPoint(platform, config);
+  return new RemoteQuickBarProviderStarterBrick(platform, config);
 }
