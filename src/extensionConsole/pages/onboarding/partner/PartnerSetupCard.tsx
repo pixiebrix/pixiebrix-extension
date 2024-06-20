@@ -40,6 +40,7 @@ import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useLinkState from "@/auth/useLinkState";
 import Loader from "@/components/Loader";
+import { activateTheme } from "@/background/messenger/api";
 
 /**
  * Create the app URL for the partner start page. It shows content based on whether or not the hostname corresponds
@@ -151,6 +152,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   useEffect(() => {
     // Ensure the partner branding is applied
     dispatch(updateLocalPartnerTheme("automation-anywhere"));
+    void activateTheme();
   }, [dispatch]);
 
   if (isLinkedLoading || isMeLoading) {
