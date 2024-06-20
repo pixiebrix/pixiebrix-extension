@@ -31,7 +31,7 @@ import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
 import { HeadlessModeError } from "@/bricks/errors";
 import {
-  selectExtensionContext,
+  selectModComponentContext,
   shouldModComponentRunForStateChange,
 } from "@/starterBricks/helpers";
 import { cloneDeep, debounce, remove } from "lodash";
@@ -166,7 +166,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     const runId = uuidv4();
 
     const componentLogger = this.logger.childLogger(
-      selectExtensionContext(modComponent),
+      selectModComponentContext(modComponent),
     );
 
     const serviceContext = await makeIntegrationsContextFromDependencies(

@@ -36,7 +36,7 @@ import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { selectExtensionContext } from "@/starterBricks/helpers";
+import { selectModComponentContext } from "@/starterBricks/helpers";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
@@ -331,7 +331,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     } = extension.config;
 
     const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension),
+      selectModComponentContext(extension),
     );
 
     const handler = async (

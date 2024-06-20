@@ -28,7 +28,7 @@ import {
   acquireElement,
   awaitElementOnce,
   onNodeRemoved,
-  selectExtensionContext,
+  selectModComponentContext,
 } from "@/starterBricks/helpers";
 import {
   StarterBrickABC,
@@ -461,7 +461,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     }
 
     const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension),
+      selectModComponentContext(extension),
     );
 
     console.debug(

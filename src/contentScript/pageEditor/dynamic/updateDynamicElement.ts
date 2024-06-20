@@ -22,7 +22,7 @@ import {
 import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
-import { type TriggerDefinition } from "@/starterBricks/triggerExtension";
+import { type TriggerDefinition } from "@/starterBricks/trigger/triggerStarterBrick";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import {
   activateExtensionPanel,
