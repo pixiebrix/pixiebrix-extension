@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { registry } from "@/background/messenger/api";
+import { launchAuthIntegration, registry } from "@/background/messenger/api";
 import oauth2IntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
 jest.mocked(registry.find).mockResolvedValue({
   id: (oauth2IntegrationDefinition!.metadata as any).id,
@@ -24,5 +25,10 @@ jest.mocked(registry.find).mockResolvedValue({
 } as any);
 
 describe("launchAuthIntegration", () => {
-  it("throws error if no local auths are found", async () => {});
+  it("throws error if no local auths are found", async () => {
+    const integrationId = registryIdFactory();
+    await expect(launchAuthIntegration({ integrationId })).rejects.toThrow(
+      /No local auths found/,
+    );
+  });
 });

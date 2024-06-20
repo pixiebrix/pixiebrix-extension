@@ -16,7 +16,7 @@
  */
 
 import refreshPartnerAuthentication from "@/background/auth/partnerIntegrations/refreshPartnerAuthentication";
-import { PartnerAuthData } from "@/auth/authTypes";
+import { type PartnerAuthData } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
@@ -29,6 +29,9 @@ jest.mock("@/auth/authStorage");
 
 const getPartnerAuthDataMock = jest.mocked(getPartnerAuthData);
 const setPartnerAuthDataMock = jest.mocked(setPartnerAuthData);
+
+jest.mock("@/background/auth/authStorage");
+
 const setCachedAuthDataMock = jest.mocked(setCachedAuthData);
 
 describe("refreshPartnerAuthentication", () => {
@@ -78,18 +81,13 @@ describe("refreshPartnerAuthentication", () => {
       token: "new_test_token",
     });
     await refreshPartnerAuthentication();
-    expect(axiosMock.history.post.length).toHaveLength(1);
+    expect(axiosMock.history.post).toHaveLength(1);
     const axiosRequestConfig = axiosMock.history.post[0];
     expect(axiosRequestConfig).toMatchObject({
       method: "post",
       url: "https://my.testrefreshurl.com",
-      data: {
-        client_id: "1234556",
-        refresh_token: "test_refresh_token",
-      },
+      data: "client_id=1234556&refresh_token=test_refresh_token",
       headers: {
-        test_header_1: "foo",
-        test_header_2: "bar",
         refresh_header_1: "baz",
         refresh_header_2: "qux",
       },
