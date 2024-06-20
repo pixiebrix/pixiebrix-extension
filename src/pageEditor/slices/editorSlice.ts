@@ -49,7 +49,7 @@ import {
 } from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
-  activateElement,
+  makeModComponentFormStateActive,
   editRecipeMetadata,
   editRecipeOptionsDefinitions,
   ensureElementUIState,
@@ -324,7 +324,7 @@ export const editorSlice = createSlice({
       state.elements.push(modComponentFormState);
       state.dirty[modComponentFormState.uuid] = true;
 
-      activateElement(state, modComponentFormState);
+      makeModComponentFormStateActive(state, modComponentFormState);
     },
     betaError(state) {
       const error = new BusinessError("This feature is in private beta");
@@ -348,7 +348,7 @@ export const editorSlice = createSlice({
         state.elements.push(element);
       }
 
-      activateElement(state, element);
+      makeModComponentFormStateActive(state, element);
     },
     resetInstalled(state, actions: PayloadAction<ModComponentFormState>) {
       const element = actions.payload as Draft<ModComponentFormState>;
@@ -384,7 +384,7 @@ export const editorSlice = createSlice({
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
 
-      activateElement(state, element);
+      makeModComponentFormStateActive(state, element);
     },
     markClean(state, action: PayloadAction<UUID>) {
       const element = state.elements.find((x) => action.payload === x.uuid);

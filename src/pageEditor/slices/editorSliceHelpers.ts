@@ -210,7 +210,7 @@ export function editRecipeOptionsDefinitions(
     options as Draft<ModOptionsDefinition>;
 }
 
-export function activateElement(
+export function makeModComponentFormStateActive(
   state: Draft<EditorState>,
   element: ModComponentFormState,
 ) {
