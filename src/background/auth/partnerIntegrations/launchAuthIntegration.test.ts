@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { launchAuthIntegration, registry } from "@/background/messenger/api";
+import { registry } from "@/background/messenger/api";
 import oauth2IntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { launchAuthIntegration } from "@/background/auth/partnerIntegrations/launchAuthIntegration";
 
 jest.mocked(registry.find).mockResolvedValue({
   id: (oauth2IntegrationDefinition!.metadata as any).id,
