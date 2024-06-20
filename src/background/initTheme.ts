@@ -24,7 +24,6 @@ import { allSettled } from "@/utils/promiseUtils";
 
 /**
  * Set the toolbar icon based on the current theme settings.
- * @see useGetTheme
  */
 async function setToolbarIcon(): Promise<void> {
   const cachedTheme = await themeStorage.get();
