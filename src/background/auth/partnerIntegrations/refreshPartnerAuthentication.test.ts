@@ -105,6 +105,7 @@ describe("refreshPartnerAuthentication", () => {
       refreshUrl: "https://my.testrefreshurl.com",
       refreshParamPayload: {
         client_id: "1234556",
+        refresh_token: "test_refresh_token",
       },
       refreshExtraHeaders: {},
     };
@@ -131,6 +132,7 @@ describe("refreshPartnerAuthentication", () => {
       refreshUrl: "https://my.testrefreshurl.com",
       refreshParamPayload: {
         client_id: "1234556",
+        refresh_token: "test_refresh_token",
       },
       refreshExtraHeaders: {},
     };
@@ -151,5 +153,24 @@ describe("refreshPartnerAuthentication", () => {
         refresh_token: "new_test_refresh_token",
       },
     });
+  });
+
+  it("throws on authorization error on the refresh request", async () => {
+    const partnerAuthData: PartnerAuthData = {
+      authId: uuidSequence(5),
+      token: "test_token",
+      extraHeaders: {},
+      refreshToken: "test_refresh_token",
+      refreshUrl: "https://my.testrefreshurl.com",
+      refreshParamPayload: null,
+      refreshExtraHeaders: null,
+    };
+    getPartnerAuthDataMock.mockResolvedValue(partnerAuthData);
+    axiosMock.onPost("https://my.testrefreshurl.com").reply(401, {
+      error: "unauthorized",
+    });
+    await expect(refreshPartnerAuthentication()).rejects.toThrow(
+      /Request failed with status code 401/,
+    );
   });
 });
