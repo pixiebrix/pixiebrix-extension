@@ -127,10 +127,13 @@ export async function launchAuthIntegration({
     const oAuth2Context = integration.getOAuth2Context(
       integrationConfig.config,
     );
-    assertNotNullish(oAuth2Context, "Service did not return an OAuth2 context");
+    assertNotNullish(
+      oAuth2Context,
+      "Integration did not return an OAuth2 context",
+    );
     assertNotNullish(
       oAuth2Context.tokenUrl,
-      `OAuth2 context for service ${integrationConfig.integrationId} does not include a token URL`,
+      `OAuth2 context for integration ${integrationConfig.integrationId} does not include a token URL`,
     );
 
     console.info("Setting partner auth for Control Room %s", controlRoomUrl);
