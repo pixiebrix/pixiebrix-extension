@@ -33,7 +33,7 @@ import { test as envSetup } from "./environmentCheck";
 const profileNameFromTestPath = (testFilePath: string) => {
   // Split the file path into directory and file name
   const parts = testFilePath.split("/");
-  const fileName = parts[parts.length - 1];
+  const fileName = parts.at(-1);
 
   // Split the file name into words and return the first word
   const words = fileName.split(".");
@@ -88,7 +88,7 @@ export const test = mergeTests(
       // Store the profile path for future use if the auth setup test passes
       if (testInfo.status === "passed") {
         const authProfilePathFile = getAuthProfilePathFile(
-          profileNameFromTestPath(testInfo.titlePath[0]),
+          profileNameFromTestPath(testInfo.titlePath[0] || "unknown"),
           chromiumChannel,
         );
         await fs.writeFile(
