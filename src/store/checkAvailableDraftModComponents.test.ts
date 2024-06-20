@@ -40,8 +40,8 @@ jest.mock("@/pageEditor/context/connection");
 
 const { reducer: extensionsReducer } = extensionsSlice;
 
-describe("checkAvailableDynamicElements", () => {
-  test("it checks dynamic elements correctly", async () => {
+describe("checkAvailableDraftModComponents", () => {
+  test("it checks draft mod components correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
     jest.mocked(getCurrentInspectedURL).mockResolvedValue(testUrl);
 
@@ -52,7 +52,7 @@ describe("checkAvailableDynamicElements", () => {
       },
     });
 
-    const availableDynamicExtension = menuItemFormStateFactory({
+    const availableDraftModComponent = menuItemFormStateFactory({
       extensionPoint: {
         metadata: {
           id: validateRegistryId("test/available-button"),
@@ -70,7 +70,7 @@ describe("checkAvailableDynamicElements", () => {
       },
     });
 
-    const unavailableDynamicExtension = menuItemFormStateFactory({
+    const unavailableDraftModComponent = menuItemFormStateFactory({
       extensionPoint: {
         metadata: {
           id: validateRegistryId("test/unavailable-button"),
@@ -89,9 +89,9 @@ describe("checkAvailableDynamicElements", () => {
     });
 
     store.dispatch(
-      actions.addModComponentFormState(unavailableDynamicExtension),
+      actions.addModComponentFormState(unavailableDraftModComponent),
     );
-    store.dispatch(actions.selectInstalled(availableDynamicExtension));
+    store.dispatch(actions.selectInstalled(availableDraftModComponent));
 
     jest
       .mocked(checkAvailable)
@@ -103,13 +103,16 @@ describe("checkAvailableDynamicElements", () => {
         ) => backgroundCheckAvailable(availability, url),
       );
 
-    await store.dispatch(actions.checkAvailableDynamicElements());
+    await store.dispatch(actions.checkAvailableDraftModComponents());
     await store.dispatch(actions.checkAvailableInstalledExtensions());
 
     const state = store.getState();
 
-    const { availableDynamicIds } = selectModComponentAvailability(state);
+    const { availableDraftModComponentIds } =
+      selectModComponentAvailability(state);
 
-    expect(availableDynamicIds).toStrictEqual([availableDynamicExtension.uuid]);
+    expect(availableDraftModComponentIds).toStrictEqual([
+      availableDraftModComponent.uuid,
+    ]);
   });
 });

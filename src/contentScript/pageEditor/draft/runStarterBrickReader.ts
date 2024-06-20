@@ -18,13 +18,13 @@
 import { type JsonObject } from "type-fest";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { $safeFind } from "@/utils/domUtils";
-import { type DynamicDefinition } from "@/contentScript/pageEditor/types";
+import { type DraftModComponent } from "@/contentScript/pageEditor/types";
 import { expectContext } from "@/utils/expectContext";
 import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
 import { type Nullishable } from "@/utils/nullishUtils";
 
 export async function runStarterBrickReader(
-  { extensionPointConfig }: Pick<DynamicDefinition, "extensionPointConfig">,
+  { extensionPointConfig }: Pick<DraftModComponent, "extensionPointConfig">,
   rootSelector: Nullishable<string>,
 ): Promise<JsonObject> {
   expectContext("contentScript");

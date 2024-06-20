@@ -29,11 +29,11 @@ import EditorLayout from "@/pageEditor/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
 import {
-  updateDynamicElement,
+  updateDraftElement,
   removeInstalledExtension,
 } from "@/contentScript/messenger/api";
 import { selectActiveModComponentFormState } from "./slices/editorSelectors";
-import { formStateToDynamicElement } from "./starterBricks/adapter";
+import { formStateToDraftModComponent } from "./starterBricks/adapter";
 import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
@@ -77,10 +77,10 @@ const PanelContent: React.FC = () => {
       activeModComponentFormState != null &&
       shouldAutoRun(activeModComponentFormState)
     ) {
-      const dynamicElement = formStateToDynamicElement(
+      const draftModComponent = formStateToDraftModComponent(
         activeModComponentFormState,
       );
-      updateDynamicElement(allFramesInInspectedTab, dynamicElement);
+      updateDraftElement(allFramesInInspectedTab, draftModComponent);
     }
   }, [dispatch, activeModComponentFormState]);
 

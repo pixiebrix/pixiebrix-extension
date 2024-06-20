@@ -20,7 +20,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import ToggleField from "@/pageEditor/components/ToggleField";
 import { Button } from "react-bootstrap";
-import { updateDynamicElement } from "@/contentScript/messenger/api";
+import { updateDraftElement } from "@/contentScript/messenger/api";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -102,12 +102,9 @@ const ReloadToolbar: React.FunctionComponent<{
       adapter,
       `Adapter not found for ${modComponentFormState.type}`,
     );
-    const { asDynamicElement: factory } = adapter;
+    const { asDraftModComponent: factory } = adapter;
 
-    updateDynamicElement(
-      allFramesInInspectedTab,
-      factory(modComponentFormState),
-    );
+    updateDraftElement(allFramesInInspectedTab, factory(modComponentFormState));
   }, [modComponentFormState]);
 
   const manualRun = async () => {

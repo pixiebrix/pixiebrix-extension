@@ -30,7 +30,7 @@ import tourExtension from "@/pageEditor/starterBricks/tour";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { type DynamicDefinition } from "@/contentScript/pageEditor/types";
+import { type DraftModComponent } from "@/contentScript/pageEditor/types";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>(
@@ -86,13 +86,13 @@ export async function modComponentToFormState(
   return fromExtension(modComponent) as Promise<ModComponentFormState>;
 }
 
-export function formStateToDynamicElement(
+export function formStateToDraftModComponent(
   formState: ModComponentFormState,
-): DynamicDefinition {
+): DraftModComponent {
   const elementConfig = ADAPTERS.get(formState.type);
   assertNotNullish(
     elementConfig,
     `No adapter found for starter brick type: ${formState.type}`,
   );
-  return elementConfig.asDynamicElement(formState);
+  return elementConfig.asDraftModComponent(formState);
 }

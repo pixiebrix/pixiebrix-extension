@@ -357,11 +357,11 @@ describe("syncDeployments", () => {
     const { extensions: activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toBeArrayOfSize(2);
     const foo = await getEditorState();
-    // Expect unrelated dynamic element not to be removed
+    // Expect unrelated draft mod component not to be removed
     expect(foo.elements).toBeArrayOfSize(1);
   });
 
-  test("deactivate existing mod with no dynamic elements", async () => {
+  test("deactivate existing mod with no draft mod components", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { deployment, modDefinition } = activatableDeploymentFactory();
@@ -407,7 +407,7 @@ describe("syncDeployments", () => {
     );
   });
 
-  test("deactivate existing mod with dynamic element", async () => {
+  test("deactivate existing mod with draft mod components", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { deployment, modDefinition } = activatableDeploymentFactory();
@@ -464,7 +464,7 @@ describe("syncDeployments", () => {
     const { extensions: activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toBeArrayOfSize(1);
     const { elements } = await getEditorState();
-    // Expect dynamic element to be removed
+    // Expect draft mod component to be removed
     expect(elements).toBeArrayOfSize(0);
     expect(activatedModComponents[0]._recipe.version).toBe(
       deployment.package.version,

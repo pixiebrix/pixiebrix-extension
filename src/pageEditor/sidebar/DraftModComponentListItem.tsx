@@ -56,7 +56,7 @@ import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { selectIsModComponentSavedOnCloud } from "@/store/extensionsSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
 
-type DynamicModComponentListItemProps = {
+type DraftModComponentListItemProps = {
   modComponentFormState: ModComponentFormState;
   isAvailable: boolean;
   isNested?: boolean;
@@ -67,8 +67,8 @@ type DynamicModComponentListItemProps = {
  * @see ActivatedModComponentListItem
  * @see ModComponentListItem
  */
-const DynamicModComponentListItem: React.FunctionComponent<
-  DynamicModComponentListItemProps
+const DraftModComponentListItem: React.FunctionComponent<
+  DraftModComponentListItemProps
 > = ({ modComponentFormState, isAvailable, isNested = false }) => {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
@@ -228,4 +228,4 @@ const DynamicModComponentListItem: React.FunctionComponent<
   );
 };
 
-export default DynamicModComponentListItem;
+export default DraftModComponentListItem;

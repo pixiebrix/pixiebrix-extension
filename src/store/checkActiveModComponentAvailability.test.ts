@@ -52,7 +52,7 @@ describe("checkActiveModComponentAvailability", () => {
       },
     });
 
-    const availableDynamicExtension = menuItemFormStateFactory({
+    const availableDraftModComponent = menuItemFormStateFactory({
       extensionPoint: {
         metadata: {
           id: validateRegistryId("test/available-button"),
@@ -70,7 +70,7 @@ describe("checkActiveModComponentAvailability", () => {
       },
     });
 
-    const unavailableDynamicExtension = menuItemFormStateFactory({
+    const unavailableDraftModComponent = menuItemFormStateFactory({
       extensionPoint: {
         metadata: {
           id: validateRegistryId("test/unavailable-button"),
@@ -89,9 +89,9 @@ describe("checkActiveModComponentAvailability", () => {
     });
 
     store.dispatch(
-      actions.addModComponentFormState(unavailableDynamicExtension),
+      actions.addModComponentFormState(unavailableDraftModComponent),
     );
-    store.dispatch(actions.selectInstalled(availableDynamicExtension));
+    store.dispatch(actions.selectInstalled(availableDraftModComponent));
 
     jest
       .mocked(checkAvailable)
@@ -103,7 +103,7 @@ describe("checkActiveModComponentAvailability", () => {
         ) => backgroundCheckAvailable(availability, url),
       );
 
-    await store.dispatch(actions.checkAvailableDynamicElements());
+    await store.dispatch(actions.checkAvailableDraftModComponents());
     await store.dispatch(actions.checkAvailableInstalledExtensions());
 
     const state1 = store.getState();
@@ -111,10 +111,10 @@ describe("checkActiveModComponentAvailability", () => {
     const availability1 = selectModComponentAvailability(state1);
 
     // Check both are unavailable
-    expect(availability1.availableDynamicIds).toBeEmpty();
+    expect(availability1.availableDraftModComponentIds).toBeEmpty();
 
     // Make available element available
-    const available = produce(availableDynamicExtension, (draft) => {
+    const available = produce(availableDraftModComponent, (draft) => {
       draft.extensionPoint.definition.isAvailable.matchPatterns = [testUrl];
     });
     store.dispatch(actions.editElement(available));
@@ -126,8 +126,8 @@ describe("checkActiveModComponentAvailability", () => {
     const availability2 = selectModComponentAvailability(state2);
 
     // Check that one is available now
-    expect(availability2.availableDynamicIds).toStrictEqual([
-      availableDynamicExtension.uuid,
+    expect(availability2.availableDraftModComponentIds).toStrictEqual([
+      availableDraftModComponent.uuid,
     ]);
   });
 });

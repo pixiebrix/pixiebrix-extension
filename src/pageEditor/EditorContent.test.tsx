@@ -44,7 +44,7 @@ jest.mock("@/pageEditor/hooks/useCurrentInspectedUrl");
 jest.mock("@/contentScript/messenger/api");
 
 describe("error alerting in the UI", () => {
-  test("shows error when checkAvailableDynamicElements fails", async () => {
+  test("shows error when checkAvailableDraftElements fails", async () => {
     const message = "testing error";
     jest.mocked(getCurrentInspectedURL).mockImplementation(() => {
       throw new Error(message);
@@ -55,7 +55,7 @@ describe("error alerting in the UI", () => {
       async setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.selectElement(formState.uuid));
-        await dispatch(editorActions.checkAvailableDynamicElements());
+        await dispatch(editorActions.checkAvailableDraftModComponents());
       },
     });
 

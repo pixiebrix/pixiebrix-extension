@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
-import DynamicModComponentListItem from "@/pageEditor/sidebar/DynamicModComponentListItem";
+import DraftModComponentListItem from "@/pageEditor/sidebar/DraftModComponentListItem";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -38,12 +38,12 @@ afterAll(() => {
   jest.clearAllMocks();
 });
 
-describe("DynamicModComponentListItem", () => {
+describe("DraftModComponentListItem", () => {
   test("it renders not active element", () => {
     const formState = formStateFactory();
     expect(
       render(
-        <DynamicModComponentListItem
+        <DraftModComponentListItem
           modComponentFormState={formState}
           isAvailable
         />,
@@ -70,7 +70,7 @@ describe("DynamicModComponentListItem", () => {
     const formState = formStateFactory();
     expect(
       render(
-        <DynamicModComponentListItem
+        <DraftModComponentListItem
           modComponentFormState={formState}
           isAvailable
         />,

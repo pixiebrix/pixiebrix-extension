@@ -49,8 +49,10 @@ const EditorContent: React.FC = () => {
   const { isBetaError, editorError } = useSelector(selectErrorState);
   const activeModComponentId = useSelector(selectActiveModComponentId);
   const activeModId = useSelector(selectActiveModId);
-  const { isPendingInstalledModComponents, isPendingDynamicModComponents } =
-    useSelector(selectModComponentAvailability);
+  const {
+    isPendingInstalledModComponents,
+    isPendingDraftModComponents: isPendingDynamicModComponents,
+  } = useSelector(selectModComponentAvailability);
 
   const isPendingModComponents =
     isPendingInstalledModComponents || isPendingDynamicModComponents;

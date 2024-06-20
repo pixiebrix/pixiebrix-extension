@@ -21,7 +21,7 @@ import { render } from "./testHelpers";
 import { navigationEvent } from "@/pageEditor/events";
 import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { updateDynamicElement } from "@/contentScript/messenger/api";
+import { updateDraftElement } from "@/contentScript/messenger/api";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -49,7 +49,7 @@ describe("Listen to navigationEvent", () => {
 
     // One call on load and one on navigation event
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(2);
-    expect(updateDynamicElement).not.toHaveBeenCalled();
+    expect(updateDraftElement).not.toHaveBeenCalled();
   });
 
   test("an element is selected", async () => {
@@ -64,12 +64,12 @@ describe("Listen to navigationEvent", () => {
     });
     await waitForEffect();
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(1);
-    expect(updateDynamicElement).not.toHaveBeenCalled();
+    expect(updateDraftElement).not.toHaveBeenCalled();
 
     navigationEvent.emit();
 
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(2);
     // Panels are not automatically updated on navigation
-    expect(updateDynamicElement).toHaveBeenCalledTimes(0);
+    expect(updateDraftElement).toHaveBeenCalledTimes(0);
   });
 });

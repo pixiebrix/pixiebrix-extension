@@ -23,7 +23,7 @@ import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
 import { type TriggerDefinition } from "@/starterBricks/trigger/triggerStarterBrick";
-import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import {
   activateExtensionPanel,
   showSidebar,
@@ -31,10 +31,10 @@ import {
 import { type TourDefinition } from "@/starterBricks/tour/types";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 
-export async function updateDynamicElement({
+export async function updateDraftModComponent({
   extensionPointConfig,
   extension: extensionConfig,
-}: DynamicDefinition): Promise<void> {
+}: DraftModComponent): Promise<void> {
   expectContext("contentScript");
 
   // Iframes should not attempt to control the sidebar
@@ -63,7 +63,7 @@ export async function updateDynamicElement({
 
   const starterBrick = starterBrickFactory(extensionPointConfig);
 
-  // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated dynamic element
+  // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated draft mod component
   // will automatically replace the old panel because the panels are keyed by extension id
   if (starterBrick.kind !== "actionPanel") {
     clearEditorExtension(extensionConfig.id, { clearTrace: false });

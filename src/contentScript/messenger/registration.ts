@@ -53,7 +53,7 @@ import { insertButton } from "@/contentScript/pageEditor/insertButton";
 import {
   disableOverlay,
   enableOverlay,
-} from "@/contentScript/pageEditor/dynamic/overlay";
+} from "@/contentScript/pageEditor/draft/overlay";
 import { runMapArgs } from "@/contentScript/pipelineProtocol/runMapArgs";
 import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
 import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController";
@@ -62,7 +62,7 @@ import { runBrick } from "@/contentScript/executor";
 import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadlessPipeline";
 import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock";
 import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline";
-import { runStarterBrickReader } from "@/contentScript/pageEditor/dynamic/runStarterBrickReader";
+import { runStarterBrickReader } from "@/contentScript/pageEditor/draft/runStarterBrickReader";
 import {
   activatePrerenderedTab,
   ensureInstalled,
@@ -71,8 +71,8 @@ import {
   reactivateTab,
   removePersistedExtension,
 } from "@/contentScript/lifecycle";
-import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements";
-import { updateDynamicElement } from "@/contentScript/pageEditor/dynamic/updateDynamicElement";
+import { clearDraftModComponents } from "@/contentScript/pageEditor/draft/clearDraftModComponents";
+import { updateDraftModComponent } from "@/contentScript/pageEditor/draft/updateDraftModComponent";
 import { resetTab } from "@/contentScript/pageEditor/resetTab";
 
 declare global {
@@ -125,8 +125,8 @@ declare global {
     INSTALLED_EXTENSION_POINTS: typeof getActiveExtensionPoints;
     ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
     RESET_TAB: typeof resetTab;
-    CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
-    UPDATE_DYNAMIC_ELEMENT: typeof updateDynamicElement;
+    CLEAR_DRAFT_ELEMENTS: typeof clearDraftModComponents;
+    UPDATE_DRAFT_ELEMENT: typeof updateDraftModComponent;
   }
 }
 export default function registerMessenger(): void {
@@ -179,7 +179,7 @@ export default function registerMessenger(): void {
     INSTALLED_EXTENSION_POINTS: getActiveExtensionPoints,
     ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
     RESET_TAB: resetTab,
-    CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
-    UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
+    CLEAR_DRAFT_ELEMENTS: clearDraftModComponents,
+    UPDATE_DRAFT_ELEMENT: updateDraftModComponent,
   });
 }

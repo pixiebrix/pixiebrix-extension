@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DynamicModComponentListItem it renders active element 1`] = `
+exports[`DraftModComponentListItem it renders active element 1`] = `
 <DocumentFragment>
   <form
     action="#"
@@ -94,7 +94,7 @@ exports[`DynamicModComponentListItem it renders active element 1`] = `
 </DocumentFragment>
 `;
 
-exports[`DynamicModComponentListItem it renders not active element 1`] = `
+exports[`DraftModComponentListItem it renders not active element 1`] = `
 <DocumentFragment>
   <form
     action="#"

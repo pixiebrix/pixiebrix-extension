@@ -20,7 +20,7 @@ import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Metadata } from "@/types/registryTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Target } from "@/types/messengerTypes";
 import { type BaseFormState } from "@/pageEditor/baseFormStateTypes";
@@ -91,9 +91,9 @@ export interface ModComponentFormStateAdapter<
   ) => TState;
 
   /**
-   * Returns a dynamic mod component definition that the content script can render on the page
+   * Returns a draft mod component definition that the content script can render on the page
    */
-  readonly asDynamicElement: (state: TState) => DynamicDefinition;
+  readonly asDraftModComponent: (state: TState) => DraftModComponent;
 
   /**
    * Returns the FormState corresponding to extension

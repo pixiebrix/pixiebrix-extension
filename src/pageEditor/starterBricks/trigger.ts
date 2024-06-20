@@ -42,7 +42,7 @@ import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
-import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -141,11 +141,13 @@ function selectExtension(
   });
 }
 
-function asDynamicElement(element: TriggerFormState): DynamicDefinition {
+function asDraftModComponent(
+  triggerFormState: TriggerFormState,
+): DraftModComponent {
   return {
     type: "trigger",
-    extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectStarterBrickDefinition(element),
+    extension: selectExtension(triggerFormState, { includeInstanceIds: true }),
+    extensionPointConfig: selectStarterBrickDefinition(triggerFormState),
   };
 }
 
@@ -216,7 +218,7 @@ const config: ModComponentFormStateAdapter<undefined, TriggerFormState> = {
   selectNativeElement: undefined,
   icon: faBolt,
   fromNativeElement,
-  asDynamicElement,
+  asDraftModComponent,
   selectStarterBrickDefinition,
   selectExtension,
   fromExtension,

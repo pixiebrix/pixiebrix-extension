@@ -131,10 +131,10 @@ export function removeModComponentFormState(
   delete state.dirty[uuid];
   delete state.elementUIStates[uuid];
 
-  const dynamicIndex = state.availableDynamicIds.indexOf(uuid);
-  if (dynamicIndex > -1) {
+  const draftIndex = state.availableDynamicIds.indexOf(uuid);
+  if (draftIndex > -1) {
     // Mod component is available, remove from list of available ids
-    state.availableDynamicIds.splice(dynamicIndex, 1);
+    state.availableDynamicIds.splice(draftIndex, 1);
   }
 
   // Make sure we're not keeping any private data around from Page Editor sessions
