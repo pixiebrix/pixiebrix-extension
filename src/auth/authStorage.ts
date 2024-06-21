@@ -142,9 +142,6 @@ export async function clearPartnerAuthData(): Promise<void> {
       "Clearing partner auth for authId: " + partnerAuthData.authId,
     );
     await removeOAuth2Token(partnerAuthData.token);
-    // await chromeP.identity.removeCachedAuthToken({
-    //   token: partnerAuthData.token,
-    // });
   }
 
   await partnerTokenStorage.remove();

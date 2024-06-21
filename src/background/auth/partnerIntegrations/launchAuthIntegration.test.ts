@@ -28,7 +28,6 @@ import {
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { type Metadata } from "@/types/registryTypes";
 import { removeOAuth2Token, setPartnerAuthData } from "@/auth/authStorage";
-import chromeP from "webext-polyfill-kinda";
 
 jest.mock("@/integrations/util/readRawConfigurations");
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
@@ -48,22 +47,6 @@ jest.mock("@/auth/authStorage");
 const setPartnerAuthDataMock = jest.mocked(setPartnerAuthData);
 const removeOAuth2TokenMock = jest.mocked(removeOAuth2Token);
 
-// const removeCachedAuthTokenMock = jest.mocked(chrome.identity.removeCachedAuthToken);
-// const removeCachedAuthTokenMock = jest.fn(async () => {
-//   console.log("*** inner mark")
-// });
-
-// beforeAll(() => {
-//   chrome.identity = {
-//     ...chrome.identity,
-//     removeCachedAuthToken: jest.fn(),
-//   };
-//   chromeP.identity = {
-//     ...chromeP.identity,
-//     removeCachedAuthToken: jest.fn(),
-//   };
-// });
-
 describe("launchAuthIntegration", () => {
   beforeEach(() => {
     appApiMock.reset();
@@ -77,7 +60,6 @@ describe("launchAuthIntegration", () => {
     readRawConfigurationsMock.mockReset();
     launchOAuth2FlowMock.mockReset();
     setPartnerAuthDataMock.mockReset();
-    // removeCachedAuthTokenMock.mockReset();
   });
 
   it("throws error if no local auths are found", async () => {

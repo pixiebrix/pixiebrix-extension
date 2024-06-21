@@ -23,7 +23,6 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 import { canParseUrl } from "@/utils/urlUtils";
-import chromeP from "webext-polyfill-kinda";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { removeOAuth2Token, setPartnerAuthData } from "@/auth/authStorage";
 import { stringToBase64 } from "uint8array-extras";
