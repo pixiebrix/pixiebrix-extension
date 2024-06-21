@@ -67,9 +67,9 @@ describe("it renders", () => {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(authStateFactory()));
         dispatch(
-          extensionsSlice.actions.activateStandaloneModDefinition({
+          extensionsSlice.actions.activateStandaloneModDefinition(
             standaloneModDefinition,
-          }),
+          ),
         );
         dispatch(
           modModalsSlice.actions.setShareContext({
@@ -90,9 +90,9 @@ describe("it renders", () => {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(anonAuth));
         dispatch(
-          extensionsSlice.actions.activateStandaloneModDefinition({
+          extensionsSlice.actions.activateStandaloneModDefinition(
             standaloneModDefinition,
-          }),
+          ),
         );
         dispatch(
           modModalsSlice.actions.setShareContext({
@@ -147,9 +147,9 @@ describe("it renders", () => {
           setupRedux(dispatch) {
             dispatch(authSlice.actions.setAuth(authStateFactory()));
             dispatch(
-              extensionsSlice.actions.activateStandaloneModDefinition({
+              extensionsSlice.actions.activateStandaloneModDefinition(
                 standaloneModDefinition,
-              }),
+              ),
             );
             dispatch(
               sharingAction({

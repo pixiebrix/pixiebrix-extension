@@ -82,11 +82,9 @@ const extensionsSlice = createSlice({
     activateStandaloneModDefinition(
       state,
       {
-        payload,
-      }: PayloadAction<{ standaloneModDefinition: StandaloneModDefinition }>,
+        payload: standaloneModDefinition,
+      }: PayloadAction<StandaloneModDefinition>,
     ) {
-      const { standaloneModDefinition } = payload;
-
       reportEvent(
         Events.MOD_COMPONENT_CLOUD_ACTIVATE,
         selectEventData(standaloneModDefinition),

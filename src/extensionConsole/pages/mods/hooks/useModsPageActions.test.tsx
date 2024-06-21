@@ -437,14 +437,14 @@ describe("actions", () => {
       } = renderHook(() => useModsPageActions(modViewItem), {
         setupRedux(dispatch) {
           dispatch(
-            extensionActions.activateStandaloneModDefinition({
+            extensionActions.activateStandaloneModDefinition(
               standaloneModDefinition,
-            }),
+            ),
           );
           dispatch(
-            extensionActions.activateStandaloneModDefinition({
-              standaloneModDefinition: standaloneModDefinitionFactory(),
-            }),
+            extensionActions.activateStandaloneModDefinition(
+              standaloneModDefinitionFactory(),
+            ),
           );
         },
       });

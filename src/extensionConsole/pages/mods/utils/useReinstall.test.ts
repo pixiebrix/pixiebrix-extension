@@ -44,14 +44,14 @@ test("uninstalls mod components", async () => {
   } = renderHook(() => useReinstall(), {
     setupRedux(dispatch) {
       dispatch(
-        extensionActions.activateStandaloneModDefinition({
+        extensionActions.activateStandaloneModDefinition(
           standaloneModDefinition,
-        }),
+        ),
       );
       dispatch(
-        extensionActions.activateStandaloneModDefinition({
-          standaloneModDefinition: anotherStandaloneModDefinition,
-        }),
+        extensionActions.activateStandaloneModDefinition(
+          anotherStandaloneModDefinition,
+        ),
       );
     },
   });
@@ -85,9 +85,9 @@ test("dispatches install recipe action", async () => {
   } = renderHook(() => useReinstall(), {
     setupRedux(dispatch) {
       dispatch(
-        extensionActions.activateStandaloneModDefinition({
+        extensionActions.activateStandaloneModDefinition(
           standaloneModDefinition,
-        }),
+        ),
       );
     },
   });

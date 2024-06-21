@@ -127,24 +127,14 @@ describe("checkAvailableInstalledExtensions", () => {
     });
 
     store.dispatch(
-      optionsActions.activateStandaloneModDefinition({
-        standaloneModDefinition: availableButton,
-      }),
+      optionsActions.activateStandaloneModDefinition(availableButton),
     );
     store.dispatch(
-      optionsActions.activateStandaloneModDefinition({
-        standaloneModDefinition: unavailableButton,
-      }),
+      optionsActions.activateStandaloneModDefinition(unavailableButton),
     );
+    store.dispatch(optionsActions.activateStandaloneModDefinition(availableQb));
     store.dispatch(
-      optionsActions.activateStandaloneModDefinition({
-        standaloneModDefinition: availableQb,
-      }),
-    );
-    store.dispatch(
-      optionsActions.activateStandaloneModDefinition({
-        standaloneModDefinition: unavailableQb,
-      }),
+      optionsActions.activateStandaloneModDefinition(unavailableQb),
     );
 
     await store.dispatch(actions.checkAvailableInstalledExtensions());
