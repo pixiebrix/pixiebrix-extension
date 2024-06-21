@@ -15,13 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { expect } from "@playwright/test";
 import { test as pageContextFixture } from "./pageContext";
 import { WorkshopPage } from "../pageObjects/extensionConsole/workshop/workshopPage";
+
+// Removes any uuids from the text
+function normalize(string: string) {
+  return string.replaceAll(
+    // eslint-disable-next-line unicorn/better-regex -- more clear this way
+    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g,
+    "00000000-0000-0000-0000-000000000000",
+  );
+}
 
 export const test = pageContextFixture.extend<{
   // These should correspond 1-1 with the mod definition file names in the fixtures/modDefinitions directory
   modDefinitionNames: string[];
   createdModIds: string[];
+  verifyModDefinitionSnapshot: (options: {
+    modId: string;
+    snapshotName: string;
+  }) => Promise<void>;
 }>({
   modDefinitionNames: [],
   createdModIds: [
@@ -49,4 +63,26 @@ export const test = pageContextFixture.extend<{
     },
     { auto: true },
   ],
+  async verifyModDefinitionSnapshot({ page, extensionId }, use, testInfo) {
+    // Overriding the snapshot suffix to avoid including the os name.
+    testInfo.snapshotSuffix = `${testInfo.title}`;
+    const _verifyModDefinitionSnapshot = async ({
+      modId,
+      snapshotName,
+    }: {
+      modId: string;
+      snapshotName: string;
+    }) => {
+      const workshopPage = new WorkshopPage(page, extensionId);
+      await workshopPage.goto();
+      const editPage = await workshopPage.findAndSelectMod(modId);
+
+      const normalizedModDefinitionYaml = normalize(
+        await editPage.editor.getValue(),
+      );
+      expect(normalizedModDefinitionYaml).toMatchSnapshot(snapshotName);
+    };
+
+    await use(_verifyModDefinitionSnapshot);
+  },
 });

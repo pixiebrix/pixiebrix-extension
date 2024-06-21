@@ -49,12 +49,15 @@ export class WorkshopPage {
       .fill(modId);
     await this.page.getByRole("cell", { name: modId }).click();
 
-    return new EditWorkshopModPage(this.page);
+    const editPage = new EditWorkshopModPage(this.page);
+    await editPage.editor.waitForLoad();
+    return editPage;
   }
 
   async createNewModFromDefinition(modDefinitionName: string) {
     await this.createNewBrickButton.click();
     const createPage = new CreateWorkshopModPage(this.page);
+    await createPage.editor.waitForLoad();
     const modId =
       await createPage.editor.replaceWithModDefinition(modDefinitionName);
     await createPage.createBrickButton.click();
