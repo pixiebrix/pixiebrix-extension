@@ -38,7 +38,7 @@ import {
 import {
   logIfInvalidOutput,
   selectBrickRootElement,
-  shouldRunBlock,
+  shouldRunBrick,
   throwIfInvalidInput,
 } from "@/runtime/runtimeUtils";
 import ConsoleLogger from "@/utils/ConsoleLogger";
@@ -101,7 +101,7 @@ export function initRuntime(
 }
 
 /**
- * CommonOptions for running pipelines and blocks
+ * CommonOptions for running pipelines and bricks
  */
 type CommonOptions = ApiVersionOptions & {
   /**
@@ -186,7 +186,7 @@ export type IntermediateState = {
  * All the data that determine the execution behavior of a brick
  * @see Brick.run
  */
-type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
+type BrickProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
   /**
    * The rendered args for the brick, which may or may not have been already validated against the inputSchema depending
    * on the static type.
@@ -200,7 +200,7 @@ type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
 
   /**
    * The previous output
-   * @deprecated ignored since v2
+   * @deprecated ignored since runtime v2
    */
   previousOutput: unknown;
 
@@ -211,7 +211,7 @@ type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
   root?: SelectorRoot;
 };
 
-type BlockOutput = {
+type BrickOutput = {
   /**
    * The output of the brick to pass to the next brick. If a brick uses an outputKey, output will be the output of the
    * previous brick in the BrickPipeline.
@@ -242,7 +242,7 @@ interface TraceMetadata extends RunMetadata {
   blockInstanceId: Nullishable<UUID>;
 }
 
-type RunBlockOptions = CommonOptions & {
+type RunBrickOptions = CommonOptions & {
   /**
    * Additional context to record with the trace entry/exit records.
    */
@@ -252,8 +252,6 @@ type RunBlockOptions = CommonOptions & {
 /**
  * Get the lexical environment for running a pipeline. Currently, we're just tracking on the pipeline arg itself.
  * https://en.wikipedia.org/wiki/Closure_(computer_programming)
- *
- * @see ExternalBlock.initPipelineClosures
  */
 function getPipelineLexicalEnvironment({
   pipeline,
@@ -277,24 +275,24 @@ function getPipelineLexicalEnvironment({
   };
 }
 
-async function resolveBlockConfig(
+async function resolveBrickConfig(
   config: BrickConfig,
 ): Promise<ResolvedBrickConfig> {
-  const block = await brickRegistry.lookup(config.id);
+  const brick = await brickRegistry.lookup(config.id);
   return {
     config,
-    block,
-    type: await getType(block),
+    brick,
+    type: await getType(brick),
   };
 }
 
 /**
  * Execute/run the resolved brick in the target (self, etc.) with the validated args.
  */
-async function executeBlockWithValidatedProps(
-  { config, block }: ResolvedBrickConfig,
-  { args, context, root, previousOutput }: BlockProps<BrickArgs>,
-  options: RunBlockOptions,
+async function executeBrickWithValidatedProps(
+  { config, brick }: ResolvedBrickConfig,
+  { args, context, root, previousOutput }: BrickProps<BrickArgs>,
+  options: RunBrickOptions,
 ): Promise<unknown> {
   const commonOptions = {
     // This condition of what to pass to the brick is wacky, but seemingly necessary to replicate behavior in v1 where
@@ -340,7 +338,7 @@ async function executeBlockWithValidatedProps(
     case "self": {
       const { runId, extensionId, branches } = options.trace;
 
-      return block.run(args, {
+      return brick.run(args, {
         platform: getPlatform(),
         ...commonOptions,
         ...options,
@@ -374,7 +372,7 @@ async function executeBlockWithValidatedProps(
         /**
          * Renderers need to be run with try-catch, catch the HeadlessModeError, and
          * use that to send the panel payload to the sidebar (or other target)
-         * @see runRendererBlock
+         * @see runRendererBrick
          * @see SidebarExtensionPoint
          *  starting on line 184, the call to reduceExtensionPipeline(),
          *  wrapped in a try-catch
@@ -443,10 +441,10 @@ async function executeBlockWithValidatedProps(
   }
 }
 
-async function renderBlockArg(
+async function renderBrickArg(
   resolvedConfig: ResolvedBrickConfig,
   state: IntermediateState,
-  options: RunBlockOptions,
+  options: RunBrickOptions,
 ): Promise<RenderedArgs> {
   const { config, type } = resolvedConfig;
 
@@ -501,7 +499,7 @@ async function renderBlockArg(
         { autoescape },
       );
 
-  const blockArgs = (await mapArgs(stageTemplate, ctxt, {
+  const brickArgs = (await mapArgs(stageTemplate, ctxt, {
     implicitRender,
     autoescape,
   })) as RenderedArgs;
@@ -513,17 +511,17 @@ async function renderBlockArg(
         id: config.id,
         template: stageTemplate,
         templateContext: state.context,
-        renderedArgs: blockArgs,
+        renderedArgs: brickArgs,
       },
     );
   }
 
-  return blockArgs;
+  return brickArgs;
 }
 
 function selectTraceRecordMeta(
   resolvedConfig: ResolvedBrickConfig,
-  options: RunBlockOptions,
+  options: RunBrickOptions,
 ): TraceRecordMeta {
   return {
     ...options.trace,
@@ -545,24 +543,24 @@ function selectTraceEnabled({
   );
 }
 
-async function runBlock(
+async function runBrick(
   resolvedConfig: ResolvedBrickConfig,
-  props: BlockProps,
-  options: RunBlockOptions,
+  props: BrickProps,
+  options: RunBrickOptions,
 ): Promise<unknown> {
   const { validateInput, logger, headless, trace } = options;
 
-  const { config: stage, block, type } = resolvedConfig;
+  const { config: stage, brick, type } = resolvedConfig;
 
   if (validateInput) {
-    await throwIfInvalidInput(block, props.args);
+    await throwIfInvalidInput(brick, props.args);
   }
 
   let notification: string | undefined;
 
   if (stage.notifyProgress) {
     notification = showNotification({
-      message: stage.label ?? block.name,
+      message: stage.label ?? brick.name,
       type: "loading",
     });
   }
@@ -572,7 +570,7 @@ async function runBlock(
       getPlatform().debugger.traces.exit({
         ...trace,
         extensionId: logger.context.extensionId,
-        blockId: block.id,
+        blockId: brick.id,
         isFinal: true,
         isRenderer: true,
         error: null,
@@ -582,7 +580,7 @@ async function runBlock(
     }
 
     throw new HeadlessModeError(
-      block.id,
+      brick.id,
       // Call to throwIfInvalidInput above ensures args are valid for the brick
       unsafeAssumeValidArg(props.args),
       props.context,
@@ -592,8 +590,8 @@ async function runBlock(
 
   try {
     // Inputs validated in throwIfInvalidInput
-    const validatedProps = props as unknown as BlockProps<BrickArgs>;
-    return await executeBlockWithValidatedProps(
+    const validatedProps = props as unknown as BrickProps<BrickArgs>;
+    return await executeBrickWithValidatedProps(
       resolvedConfig,
       validatedProps,
       options,
@@ -640,11 +638,11 @@ async function applyReduceDefaults({
   };
 }
 
-export async function blockReducer(
+export async function brickReducer(
   brickConfig: BrickConfig,
   state: IntermediateState,
   options: ReduceOptions,
-): Promise<BlockOutput> {
+): Promise<BrickOutput> {
   const { index, isLastBlock, previousOutput, context, root } = state;
   const { runId, extensionId, explicitDataFlow, logValues, logger, branches } =
     options;
@@ -655,9 +653,9 @@ export async function blockReducer(
       ? context
       : { ...context, ...previousOutput };
 
-  const resolvedConfig = await resolveBlockConfig(brickConfig);
+  const resolvedConfig = await resolveBrickConfig(brickConfig);
 
-  const optionsWithTraceRef: RunBlockOptions = {
+  const optionsWithTraceRef: RunBrickOptions = {
     ...options,
     trace: {
       runId,
@@ -684,7 +682,7 @@ export async function blockReducer(
   // Only renders the args if we need them
   const lazyRenderArgs = once(async () => {
     try {
-      renderedArgs = await renderBlockArg(
+      renderedArgs = await renderBrickArg(
         resolvedConfig,
         { ...state, root: brickRoot },
         optionsWithTraceRef,
@@ -694,7 +692,7 @@ export async function blockReducer(
     }
   });
 
-  // // Pass blockOptions because it includes the trace property
+  // Pass blockOptions because it includes the trace property
   const traceMeta = selectTraceRecordMeta(resolvedConfig, optionsWithTraceRef);
   const traceEnabled = selectTraceEnabled(traceMeta);
 
@@ -723,7 +721,7 @@ export async function blockReducer(
   };
 
   if (
-    !(await shouldRunBlock(brickConfig, contextWithPreviousOutput, options))
+    !(await shouldRunBrick(brickConfig, contextWithPreviousOutput, options))
   ) {
     logger.debug(`Skipping stage ${brickConfig.id} because condition not met`);
 
@@ -746,14 +744,14 @@ export async function blockReducer(
     throw renderError;
   }
 
-  const props: BlockProps = {
+  const props: BrickProps = {
     args: renderedArgs,
     root: brickRoot,
     previousOutput,
     context: contextWithPreviousOutput,
   };
 
-  const output = await runBlock(resolvedConfig, props, optionsWithTraceRef);
+  const output = await runBrick(resolvedConfig, props, optionsWithTraceRef);
 
   if (logValues) {
     console.info(`Output for brick #${index + 1}: ${brickConfig.id}`, {
@@ -775,7 +773,7 @@ export async function blockReducer(
     });
   }
 
-  await logIfInvalidOutput(resolvedConfig.block, output, logger, {
+  await logIfInvalidOutput(resolvedConfig.brick, output, logger, {
     window: brickConfig.window,
   });
 
@@ -815,8 +813,8 @@ export async function blockReducer(
   return { output, context, blockOutput: output };
 }
 
-function throwBlockError(
-  blockConfig: BrickConfig,
+function throwBrickError(
+  brickConfig: BrickConfig,
   state: IntermediateState,
   error: unknown,
   options: ReduceOptions,
@@ -830,13 +828,13 @@ function throwBlockError(
     throw error;
   }
 
-  if (selectTraceEnabled({ runId, blockInstanceId: blockConfig.instanceId })) {
+  if (selectTraceEnabled({ runId, blockInstanceId: brickConfig.instanceId })) {
     getPlatform().debugger.traces.exit({
       runId,
       branches,
       extensionId: logger.context.extensionId,
-      blockId: blockConfig.id,
-      blockInstanceId: blockConfig.instanceId,
+      blockId: brickConfig.id,
+      blockInstanceId: brickConfig.instanceId,
       error: serializeError(error),
       skippedRun: false,
       isRenderer: false,
@@ -844,14 +842,14 @@ function throwBlockError(
     });
   }
 
-  if (blockConfig.onError?.alert) {
+  if (brickConfig.onError?.alert) {
     // An affordance to send emails to allow for manual process recovery if a step fails (e.g., an API call to a
     // transaction queue fails)
     if (logger.context.deploymentId) {
       sendDeploymentAlert({
         deploymentId: logger.context.deploymentId,
         data: {
-          id: blockConfig.id,
+          id: brickConfig.id,
           context,
           error: serializeError(error),
         },
@@ -862,7 +860,7 @@ function throwBlockError(
   }
 
   throw new ContextError(
-    `An error occurred running pipeline stage #${index + 1}: ${blockConfig.id}`,
+    `An error occurred running pipeline stage #${index + 1}: ${brickConfig.id}`,
     {
       cause: error,
       context: logger.context,
@@ -870,16 +868,16 @@ function throwBlockError(
   );
 }
 
-async function getStepLogger(
-  blockConfig: BrickConfig,
+async function getBrickLogger(
+  brickConfig: BrickConfig,
   pipelineLogger: Logger,
 ): Promise<Logger> {
   let resolvedConfig: ResolvedBrickConfig | null = null;
   let version: SemVerString | undefined;
 
   try {
-    resolvedConfig = await resolveBlockConfig(blockConfig);
-    version = resolvedConfig.block.version;
+    resolvedConfig = await resolveBrickConfig(brickConfig);
+    version = resolvedConfig.brick.version;
 
     // Built-in bricks don't have a version number. Use the browser extension version to identify bugs introduced
     // during browser extension releases
@@ -889,18 +887,18 @@ async function getStepLogger(
   }
 
   return pipelineLogger.childLogger({
-    blockId: blockConfig.id,
+    blockId: brickConfig.id,
     blockVersion: version,
     // Use the most customized name for the step
     label:
-      blockConfig.label ??
-      resolvedConfig?.block.name ??
+      brickConfig.label ??
+      resolvedConfig?.brick.name ??
       pipelineLogger.context.label,
   });
 }
 
-/** Execute all the bricks of an extension. */
-export async function reduceExtensionPipeline(
+/** Execute primary pipeline of a mod component attached to a starter brick. */
+export async function reduceModComponentPipeline(
   pipeline: BrickConfig | BrickPipeline,
   initialValues: InitialValues,
   partialOptions: Partial<ReduceOptions> = {},
@@ -929,7 +927,10 @@ export async function reduceExtensionPipeline(
   });
 }
 
-/** Execute a pipeline of bricks and return the result. */
+/**
+ * Execute a pipeline of bricks and return the result. For starter bricks, use reduceModComponentPipeline.
+ * @see reduceModComponentPipeline
+ */
 export async function reducePipeline(
   pipeline: BrickConfig | BrickPipeline,
   initialValues: InitialValues,
@@ -953,7 +954,7 @@ export async function reducePipeline(
 
   const pipelineArray = castArray(pipeline);
 
-  for (const [index, blockConfig] of pipelineArray.entries()) {
+  for (const [index, brickConfig] of pipelineArray.entries()) {
     const state: IntermediateState = {
       root,
       index,
@@ -967,18 +968,18 @@ export async function reducePipeline(
       }),
     };
 
-    let nextValues: BlockOutput | null = null;
+    let nextValues: BrickOutput | null = null;
 
     const stepOptions = {
       ...options,
       // Could actually parallelize. But performance benefit won't be significant vs. readability impact
       // eslint-disable-next-line no-await-in-loop -- see comment above
-      logger: await getStepLogger(blockConfig, pipelineLogger),
+      logger: await getBrickLogger(brickConfig, pipelineLogger),
     };
 
     if (abortSignal?.aborted) {
-      throwBlockError(
-        blockConfig,
+      throwBrickError(
+        brickConfig,
         state,
         new CancelError("Run automatically cancelled"),
         stepOptions,
@@ -987,12 +988,12 @@ export async function reducePipeline(
 
     try {
       // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step
-      nextValues = await blockReducer(blockConfig, state, stepOptions);
+      nextValues = await brickReducer(brickConfig, state, stepOptions);
     } catch (error) {
-      throwBlockError(blockConfig, state, error, stepOptions);
+      throwBrickError(brickConfig, state, error, stepOptions);
     }
 
-    // Must be set because throwBlockError will throw if it's not
+    // Must be set because throwBrickError will throw if it's not
     assertNotNullish(nextValues, "nextValues must be set after running brick");
 
     output = nextValues.output;
@@ -1023,9 +1024,9 @@ async function reducePipelineExpression(
 
   // The implicit output flowing from the bricks
   let legacyOutput: unknown = null;
-  let lastBlockOutput: unknown = null;
+  let lastBrickOutput: unknown = null;
 
-  for (const [index, blockConfig] of pipeline.entries()) {
+  for (const [index, brickConfig] of pipeline.entries()) {
     const state: IntermediateState = {
       root,
       index,
@@ -1040,29 +1041,29 @@ async function reducePipelineExpression(
       }),
     };
 
-    let nextValues: BlockOutput | null = null;
+    let nextValues: BrickOutput | null = null;
 
     const stepOptions = {
       ...options,
       // Could actually parallelize. But performance benefit won't be significant vs. readability impact
       // eslint-disable-next-line no-await-in-loop -- see comment above
-      logger: await getStepLogger(blockConfig, pipelineLogger),
+      logger: await getBrickLogger(brickConfig, pipelineLogger),
     };
 
     try {
       // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step
-      nextValues = await blockReducer(blockConfig, state, stepOptions);
+      nextValues = await brickReducer(brickConfig, state, stepOptions);
     } catch (error) {
-      throwBlockError(blockConfig, state, error, stepOptions);
+      throwBrickError(brickConfig, state, error, stepOptions);
     }
 
-    // Must be set because throwBlockError will throw if it's not
+    // Must be set because throwBrickError will throw if it's not
     assertNotNullish(nextValues, "nextValues must be set after running brick");
 
     legacyOutput = nextValues.output;
-    lastBlockOutput = nextValues.blockOutput;
+    lastBrickOutput = nextValues.blockOutput;
     context = nextValues.context;
   }
 
-  return lastBlockOutput;
+  return lastBrickOutput;
 }

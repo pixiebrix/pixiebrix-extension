@@ -67,13 +67,13 @@ import {
   selectNodePreviewActiveElement,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
-import { getRootPipelineFlavor } from "@/bricks/blockFilterHelpers";
+import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type Branch, type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
-import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBlock";
+import usePasteBrick from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBrick";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type Brick } from "@/types/brickTypes";
@@ -214,7 +214,7 @@ const usePipelineNodes = (): {
 
   const { allBricks, isLoading } = useAllBricks();
 
-  const pasteBlock = usePasteBlock();
+  const pasteBlock = usePasteBrick();
   const showPaste = pasteBlock && isApiAtLeastV2;
 
   const starterBrickType = activeModComponentFormState.type;

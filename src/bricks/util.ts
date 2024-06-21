@@ -22,7 +22,7 @@ import pipelineSchema from "@schemas/pipeline.json";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Brick } from "@/types/brickTypes";
-import BlockIdVisitor from "@/analysis/analysisVisitors/blockIdVisitor";
+import BrickIdVisitor from "@/analysis/analysisVisitors/brickIdVisitor";
 import { removeUndefined } from "@/utils/objectUtils";
 import { toExpression } from "@/utils/expressionUtils";
 
@@ -79,6 +79,6 @@ export function defaultBrickConfig(schema: Schema): BrickConfig["config"] {
 export async function collectAllBricks(
   config: BrickConfig | BrickPipeline,
 ): Promise<Brick[]> {
-  const ids = BlockIdVisitor.collectBlockIds(config);
+  const ids = BrickIdVisitor.collectBrickIds(config);
   return Promise.all([...ids].map(async (id) => brickRegistry.lookup(id)));
 }

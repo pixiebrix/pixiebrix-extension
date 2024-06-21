@@ -28,7 +28,7 @@ import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SerializableResponse } from "@/types/messengerTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
-import { runRendererBlock } from "@/contentScript/messenger/api";
+import { runRendererBrick } from "@/contentScript/messenger/api";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
 import { type UUID } from "@/types/stringTypes";
@@ -190,7 +190,7 @@ export default function useDocumentPreviewRunBlock(
         (parentBlockInfo?.blockConfig.config.location as Location) ?? "panel";
 
       try {
-        await runRendererBlock(inspectedTab, {
+        await runRendererBrick(inspectedTab, {
           extensionId: modComponentId,
           blueprintId: mod?.id,
           runId: traceRecord.runId,

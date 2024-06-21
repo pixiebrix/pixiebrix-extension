@@ -19,7 +19,7 @@ import React from "react";
 import store from "./store";
 import { Provider } from "react-redux";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
+import registerContribBricks from "@/contrib/registerContribBricks";
 import registerEditors from "@/contrib/editors";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
@@ -29,7 +29,7 @@ import TabInspectionGate from "@/pageEditor/context/TabInspectionGate";
 
 // Register the built-in bricks
 registerEditors();
-registerContribBlocks();
+registerContribBricks();
 registerBuiltinBricks();
 
 // Register Widgets

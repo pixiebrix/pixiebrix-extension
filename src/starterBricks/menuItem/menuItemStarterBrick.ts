@@ -20,7 +20,7 @@ import { checkAvailable } from "@/bricks/available";
 import { castArray, cloneDeep, debounce, pick } from "lodash";
 import {
   type InitialValues,
-  reduceExtensionPipeline,
+  reduceModComponentPipeline,
   reducePipeline,
 } from "@/runtime/reducePipeline";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
@@ -606,7 +606,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
             root: this.getPipelineRoot($menuItem),
           };
 
-          await reduceExtensionPipeline(actionConfig, initialValues, {
+          await reduceModComponentPipeline(actionConfig, initialValues, {
             logger: modComponentLogger,
             ...apiVersionOptions(modComponent.apiVersion),
           });
