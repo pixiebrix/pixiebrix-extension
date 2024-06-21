@@ -20,7 +20,7 @@ import { renderHook } from "@/pageEditor/testHelpers";
 import useActivateMod from "./useActivateMod";
 import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/types";
+import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { uninstallMod } from "@/store/uninstallUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";

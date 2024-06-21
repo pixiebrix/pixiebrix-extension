@@ -63,7 +63,7 @@ import { propertiesToSchema } from "@/utils/schemaUtils";
 import {
   type TourConfig,
   type TourDefinition,
-} from "@/starterBricks/tour/types";
+} from "@/starterBricks/tour/tourTypes";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 
 export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
@@ -73,7 +73,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
 
   readonly capabilities: PlatformCapability[] = CONTENT_SCRIPT_CAPABILITIES;
 
-  readonly extensionTours = new Map<UUID, RegisteredTour>();
+  readonly modComponentTours = new Map<UUID, RegisteredTour>();
 
   /**
    * Allow the user to manually run the tour, e.g., via the Quick Bar.
@@ -99,13 +99,13 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     return false;
   }
 
-  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
-    console.debug("tourExtension:removeExtensions");
+  clearModComponentInterfaceAndEvents(modComponentIds: UUID[]): void {
+    console.debug("tourStarterBrick:clearModComponentInterfaceAndEvents");
     unregisterTours(this.modComponents.map((x) => x.id));
   }
 
   override uninstall(): void {
-    console.debug("tourExtension:uninstall", {
+    console.debug("tourStarterBrick:uninstall", {
       id: this.id,
     });
     unregisterTours(this.modComponents.map((x) => x.id));
@@ -121,35 +121,35 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
   );
 
   async getBricks(
-    extension: ResolvedModComponent<TourConfig>,
+    modComponent: ResolvedModComponent<TourConfig>,
   ): Promise<Brick[]> {
-    return collectAllBricks(extension.config.tour);
+    return collectAllBricks(modComponent.config.tour);
   }
 
-  private async runExtensionTour(
-    extension: ResolvedModComponent<TourConfig>,
+  private async runModComponentTour(
+    modComponent: ResolvedModComponent<TourConfig>,
     abortController: AbortController,
   ): Promise<void> {
     const reader = await this.defaultReader();
-    const { tour: tourConfig } = extension.config;
+    const { tour: tourConfig } = modComponent.config;
     const ctxt = await reader.read(document);
 
-    const extensionLogger = this.logger.childLogger(
-      selectModComponentContext(extension),
+    const modComponentLogger = this.logger.childLogger(
+      selectModComponentContext(modComponent),
     );
 
     const initialValues: InitialValues = {
       input: ctxt,
       root: document,
       serviceContext: await makeIntegrationsContextFromDependencies(
-        extension.integrationDependencies,
+        modComponent.integrationDependencies,
       ),
-      optionsArgs: extension.optionsArgs,
+      optionsArgs: modComponent.optionsArgs,
     };
 
     await reduceExtensionPipeline(tourConfig, initialValues, {
-      logger: extensionLogger,
-      ...apiVersionOptions(extension.apiVersion),
+      logger: modComponentLogger,
+      ...apiVersionOptions(modComponent.apiVersion),
       abortSignal: abortController.signal,
     });
   }
@@ -158,25 +158,25 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
    * Register a tour with the tour controller.
    */
   private async registerTour(
-    extension: ResolvedModComponent<TourConfig>,
+    modComponent: ResolvedModComponent<TourConfig>,
   ): Promise<void> {
     assertNotNullish(
-      extension._recipe?.id,
+      modComponent._recipe?.id,
       "Blueprint ID is required to register tour",
     );
 
     const tour = await registerTour({
-      blueprintId: extension._recipe.id,
-      extension,
+      blueprintId: modComponent._recipe.id,
+      extension: modComponent,
       allowUserRun: this.allowUserRun,
       run: () => {
         const abortController = new AbortController();
-        const promise = this.runExtensionTour(extension, abortController);
+        const promise = this.runModComponentTour(modComponent, abortController);
         return { promise, abortController };
       },
     });
 
-    this.extensionTours.set(extension.id, tour);
+    this.modComponentTours.set(modComponent.id, tour);
   }
 
   /**
@@ -192,22 +192,22 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
   async decideAutoRunTour(): Promise<
     Nullishable<ResolvedModComponent<TourConfig>>
   > {
-    const extensionIds = new Set(this.modComponents.map((x) => x.id));
+    const modComponentIds = new Set(this.modComponents.map((x) => x.id));
 
     const runs = await getAll();
 
-    // Try to group by extensionId, otherwise fall back to blueprintId+label
+    // Try to group by mod component id, otherwise fall back to mod id + label
     const matching = groupBy(runs, (tour) => {
-      if (extensionIds.has(tour.extensionId)) {
+      if (modComponentIds.has(tour.extensionId)) {
         return tour.extensionId;
       }
 
-      for (const extension of this.modComponents) {
+      for (const modComponent of this.modComponents) {
         if (
-          extension._recipe?.id === tour.packageId &&
-          extension.label === tour.tourName
+          modComponent._recipe?.id === tour.packageId &&
+          modComponent.label === tour.tourName
         ) {
-          return extension.id;
+          return modComponent.id;
         }
       }
 
@@ -252,9 +252,10 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     // tours re-running on Page Editor close/open or "Reactivate All" unless they have a matching autoRunSchedule
     if (reason === RunReason.PAGE_EDITOR) {
       cancelAllTours();
-      const extensionPool = extensionIds ?? this.modComponents.map((x) => x.id);
+      const modComponentPool =
+        extensionIds ?? this.modComponents.map((x) => x.id);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- this.modComponents.length > 0
-      this.extensionTours.get(extensionPool[0]!)?.run();
+      this.modComponentTours.get(modComponentPool[0]!)?.run();
       return;
     }
 
@@ -264,22 +265,22 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     }
 
     if (this.autoRunSchedule === "never") {
-      // Don't auto-run tours from this extension point. They must be run via the tourController run method
+      // Don't auto-run tours from this starter brick. They must be run via the tourController run method
       return;
     }
 
-    // Have to re-check isTourInProgress to avoid race condition with other instances of this extension point
+    // Have to re-check isTourInProgress to avoid race condition with other instances of this starter brick
     // returning from decideAutoRunTour
-    const extension = await this.decideAutoRunTour();
-    if (extension && !isTourInProgress()) {
-      const registeredTour = this.extensionTours.get(extension.id);
+    const modComponent = await this.decideAutoRunTour();
+    if (modComponent && !isTourInProgress()) {
+      const registeredTour = this.modComponentTours.get(modComponent.id);
       assertNotNullish(registeredTour, "Tour not registered");
       registeredTour.run();
     }
   }
 }
 
-class RemoteTourExtensionPoint extends TourStarterBrickABC {
+class RemoteTourStarterBrick extends TourStarterBrickABC {
   private readonly _definition: TourDefinition;
 
   public readonly permissions: Permissions.Permissions;
@@ -336,5 +337,5 @@ export function fromJS(
     throw new Error(`Expected type=tour, got ${type}`);
   }
 
-  return new RemoteTourExtensionPoint(platform, config);
+  return new RemoteTourStarterBrick(platform, config);
 }

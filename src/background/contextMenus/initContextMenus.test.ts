@@ -16,7 +16,7 @@
  */
 
 import extensionPointRegistry from "@/starterBricks/registry";
-import { fromJS } from "@/starterBricks/contextMenu/contextMenu";
+import { fromJS } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import * as backgroundApi from "@/background/messenger/api";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
@@ -28,7 +28,7 @@ import { getPlatform } from "@/platform/platformContext";
 import {
   type ContextMenuDefinition,
   type ContextMenuConfig,
-} from "@/starterBricks/contextMenu/types";
+} from "@/starterBricks/contextMenu/contextMenuTypes";
 import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
 import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
 

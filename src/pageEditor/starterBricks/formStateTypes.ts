@@ -20,7 +20,7 @@ import {
   type ContextMenuConfig,
   type ContextMenuTargetMode,
   type MenuDefaultOptions as ContextMenuDefaultOptions,
-} from "@/starterBricks/contextMenu/types";
+} from "@/starterBricks/contextMenu/contextMenuTypes";
 import {
   type MenuItemStarterBrickConfig,
   type MenuPosition,
@@ -52,7 +52,7 @@ import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefaultOptions,
 } from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
-import { type TourDefinition } from "@/starterBricks/tour/types";
+import { type TourDefinition } from "@/starterBricks/tour/tourTypes";
 import {
   type BaseExtensionPointState,
   type BaseExtensionState,

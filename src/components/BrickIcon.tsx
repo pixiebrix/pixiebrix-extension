@@ -31,7 +31,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { TriggerStarterBrickABC } from "@/starterBricks/trigger/triggerStarterBrick";
 import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemStarterBrick";
-import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { PanelStarterBrickABC } from "@/starterBricks/panel/panelStarterBrick";
 import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import getType from "@/runtime/getType";
