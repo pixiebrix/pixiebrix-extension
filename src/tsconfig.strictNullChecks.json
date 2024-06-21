@@ -985,6 +985,7 @@
     "./integrations/util/permissionsHelpers.ts",
     "./integrations/util/pixiebrixConfigurationFactory.ts",
     "./integrations/util/pixiebrixIntegrationDependencyFactory.ts",
+    "./integrations/util/readRawConfigurations.ts",
     "./layout/EnvironmentBanner.tsx",
     "./layout/ErrorDisplay.tsx",
     "./layout/Footer.tsx",
