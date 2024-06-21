@@ -58,7 +58,7 @@ import {
   type SidebarDefinition,
   type SidebarConfig,
   type Trigger,
-} from "@/starterBricks/sidebar/types";
+} from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConfig> {
@@ -124,18 +124,18 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   readonly capabilities: PlatformCapability[] = ["panel"];
 
   async getBricks(
-    extension: ResolvedModComponent<SidebarConfig>,
+    modComponent: ResolvedModComponent<SidebarConfig>,
   ): Promise<Brick[]> {
-    return collectAllBricks(extension.config.body);
+    return collectAllBricks(modComponent.config.body);
   }
 
-  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
-    this.platform.panels.removeComponents(extensionIds);
+  clearModComponentInterfaceAndEvents(modComponentIds: UUID[]): void {
+    this.platform.panels.removeComponents(modComponentIds);
   }
 
   public override uninstall(): void {
-    const extensions = this.modComponents.splice(0);
-    this.clearModComponentInterfaceAndEvents(extensions.map((x) => x.id));
+    const modComponents = this.modComponents.splice(0);
+    this.clearModComponentInterfaceAndEvents(modComponents.map((x) => x.id));
     this.platform.panels.unregisterExtensionPoint(this.id);
     console.debug(
       "SidebarStarterBrick:uninstall: stop listening for sidebarShowEvents",
@@ -145,15 +145,16 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 
   /**
-   * HACK: a version of uninstall that keeps the panel for extensionId in the sidebar so the tab doesn't flicker
-   * @param extensionId the panel to preserve
+   * HACK: a version of uninstall that keeps the panel for mod component in the sidebar so the tab doesn't flicker
+   * @param modComponentId the panel to preserve
    * @see uninstall
    */
-  public HACK_uninstallExceptExtension(extensionId: UUID): void {
-    // Don't call this.clearExtensionInterfaceAndEvents to keep the panel. Instead, mutate this.extensions to exclude id
-    remove(this.modComponents, (x) => x.id === extensionId);
+  public HACK_uninstallExceptModComponent(modComponentId: UUID): void {
+    // Don't call this.clearModComponentInterfaceAndEvents to keep the panel.
+    // Instead, mutate this.modComponents to exclude id
+    remove(this.modComponents, (x) => x.id === modComponentId);
     this.platform.panels.unregisterExtensionPoint(this.id, {
-      preserveExtensionIds: [extensionId],
+      preserveExtensionIds: [modComponentId],
     });
     this.platform.panels.showEvent.remove(this.runModComponents);
   }
@@ -169,14 +170,14 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       selectModComponentContext(modComponent),
     );
 
-    const serviceContext = await makeIntegrationsContextFromDependencies(
+    const integrationsContext = await makeIntegrationsContextFromDependencies(
       modComponent.integrationDependencies,
     );
-    const extensionContext = { ...readerContext, ...serviceContext };
+    const modComponentContext = { ...readerContext, ...integrationsContext };
 
     const { heading: rawHeading, body } = modComponent.config;
 
-    const heading = Mustache.render(rawHeading, extensionContext);
+    const heading = Mustache.render(rawHeading, modComponentContext);
 
     this.platform.panels.updateHeading(modComponent.id, heading);
 
@@ -184,7 +185,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       input: readerContext,
       optionsArgs: modComponent.optionsArgs,
       root: document,
-      serviceContext,
+      serviceContext: integrationsContext,
     };
 
     /**
@@ -352,7 +353,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
     if (this.modComponents.length === 0) {
       console.debug(
-        "SidebarStarterBrick:run Sidebar StarterBrick %s has no installed extensions",
+        "SidebarStarterBrick:run Sidebar StarterBrick %s has no installed mod components",
         this.id,
       );
 
@@ -362,10 +363,10 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     // Reserve placeholders in the sidebar for when it becomes visible. `Run` is called from lifecycle.ts on navigation;
     // the sidebar won't be visible yet on initial page load.
     this.platform.panels.reservePanels(
-      this.modComponents.map((extension) => ({
-        extensionId: extension.id,
+      this.modComponents.map((modComponent) => ({
+        extensionId: modComponent.id,
         extensionPointId: this.id,
-        blueprintId: extension._recipe?.id,
+        blueprintId: modComponent._recipe?.id,
       })),
     );
 
@@ -434,7 +435,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 }
 
-class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
+class RemotePanelStarterBrick extends SidebarStarterBrickABC {
   private readonly definition: SidebarDefinition;
 
   public readonly rawConfig: StarterBrickDefinitionLike;
@@ -489,5 +490,5 @@ export function fromJS(
     throw new Error(`Expected type=actionPanel, got ${type}`);
   }
 
-  return new RemotePanelExtensionPoint(platform, config);
+  return new RemotePanelStarterBrick(platform, config);
 }

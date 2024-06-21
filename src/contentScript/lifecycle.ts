@@ -34,7 +34,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
-import { type SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
+import { type SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import {
   getReloadOnNextNavigate,
   setReloadOnNextNavigate,
@@ -293,7 +293,7 @@ export function clearEditorExtension(
 
       if (extensionPoint.kind === "actionPanel" && preserveSidebar) {
         const sidebar = extensionPoint as SidebarStarterBrickABC;
-        sidebar.HACK_uninstallExceptExtension(extensionId);
+        sidebar.HACK_uninstallExceptModComponent(extensionId);
       } else {
         extensionPoint.uninstall({ global: true });
       }

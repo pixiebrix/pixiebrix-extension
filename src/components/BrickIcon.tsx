@@ -32,8 +32,8 @@ import {
 import { TriggerStarterBrickABC } from "@/starterBricks/trigger/triggerStarterBrick";
 import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemStarterBrick";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
-import { PanelStarterBrickABC } from "@/starterBricks/panel/panelExtension";
-import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
+import { PanelStarterBrickABC } from "@/starterBricks/panel/panelStarterBrick";
+import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import { type Metadata } from "@/types/registryTypes";

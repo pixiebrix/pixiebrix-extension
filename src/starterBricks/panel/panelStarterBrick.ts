@@ -66,7 +66,7 @@ import { propertiesToSchema } from "@/utils/schemaUtils";
 import {
   type PanelDefinition,
   type PanelConfig,
-} from "@/starterBricks/panel/types";
+} from "@/starterBricks/panel/panelStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 const RENDER_LOOP_THRESHOLD = 25;
@@ -94,12 +94,12 @@ function detectLoop(timestamps: Date[]): void {
 }
 
 /**
- * Extension point that adds a panel to a web page.
+ * Starter brick that adds a panel inline to a web page. Not currently generally available.
  */
 export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> {
   protected $container: JQuery | null;
 
-  private readonly collapsedExtensions: Map<UUID, boolean>;
+  private readonly collapsedModComponents: Map<UUID, boolean>;
 
   private readonly cancelController = new ReusableAbortController();
 
@@ -119,7 +119,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   protected constructor(platform: PlatformProtocol, metadata: Metadata) {
     super(platform, metadata);
     this.$container = null;
-    this.collapsedExtensions = new Map();
+    this.collapsedModComponents = new Map();
     this.cancelRemovalMonitor = new Map();
     this.renderTimestamps = new Map();
   }
@@ -161,18 +161,20 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   readonly capabilities: PlatformCapability[] = CONTENT_SCRIPT_CAPABILITIES;
 
   async getBricks(
-    extension: ResolvedModComponent<PanelConfig>,
+    modComponent: ResolvedModComponent<PanelConfig>,
   ): Promise<Brick[]> {
-    return collectAllBricks(extension.config.body);
+    return collectAllBricks(modComponent.config.body);
   }
 
   clearModComponentInterfaceAndEvents(): void {
     // FIXME: implement this to avoid unnecessary firing
-    console.warn("removeExtensions not implemented for panel extensionPoint");
+    console.warn(
+      "clearModComponentInterfaceAndEvents not implemented for panel starter brick",
+    );
   }
 
   override async defaultReader(): Promise<Reader> {
-    throw new Error("PanelExtensionPoint.defaultReader not implemented");
+    throw new Error("PanelStarterBrick.defaultReader not implemented");
   }
 
   abstract getTemplate(): string;
@@ -184,12 +186,12 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   override uninstall(): void {
     this.uninstalled = true;
 
-    for (const extension of this.modComponents) {
+    for (const modComponent of this.modComponents) {
       const $item = this.$container?.find(
-        `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`,
+        `[${PIXIEBRIX_DATA_ATTR}="${modComponent.id}"]`,
       );
       if ($item?.length === 0) {
-        console.debug(`Panel for ${extension.id} was not in the menu`);
+        console.debug(`Panel for ${modComponent.id} was not in the menu`);
       }
 
       $item?.remove();
@@ -203,7 +205,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   async install(): Promise<boolean> {
     if (!(await this.isAvailable())) {
       console.debug(
-        `Skipping panel extension because it's not available for the page: ${this.id}`,
+        `Skipping panel starter brick because it's not available for the page: ${this.id}`,
       );
       return false;
     }
@@ -237,7 +239,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     assertNotNullish(
       container,
-      "Container for panel extension must be defined",
+      "Container for panel starter brick must be defined",
     );
 
     const acquired = acquireElement(container, this.id);
@@ -268,19 +270,19 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     this.$container.append($panel);
   }
 
-  private async runExtension(
+  private async runModComponent(
     readerOutput: JsonObject,
-    extension: ResolvedModComponent<PanelConfig>,
+    modComponent: ResolvedModComponent<PanelConfig>,
   ) {
     if (this.uninstalled) {
-      throw new Error("panelExtension has already been destroyed");
+      throw new Error("panelStarterBrick has already been destroyed");
     }
 
-    // Initialize render timestamps for extension
-    let renderTimestamps = this.renderTimestamps.get(extension.id);
+    // Initialize render timestamps for mod component
+    let renderTimestamps = this.renderTimestamps.get(modComponent.id);
     if (renderTimestamps == null) {
-      this.renderTimestamps.set(extension.id, []);
-      renderTimestamps = this.renderTimestamps.get(extension.id);
+      this.renderTimestamps.set(modComponent.id, []);
+      renderTimestamps = this.renderTimestamps.get(modComponent.id);
     }
 
     assertNotNullish(renderTimestamps, "renderTimestamps cannot be null");
@@ -288,13 +290,13 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     renderTimestamps.push(new Date());
     const cnt = renderTimestamps.length;
 
-    console.debug(`Run panelExtension: ${extension.id}`);
+    console.debug(`Run panelStarterBrick: ${modComponent.id}`);
 
     detectLoop(renderTimestamps);
 
     const bodyUUID = uuidv4();
-    const extensionLogger = this.logger.childLogger(
-      selectModComponentContext(extension),
+    const modComponentLogger = this.logger.childLogger(
+      selectModComponentContext(modComponent),
     );
 
     const {
@@ -303,20 +305,20 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       heading,
       collapsible: rawCollapsible = false,
       shadowDOM: rawShadowDOM = true,
-    } = extension.config;
+    } = modComponent.config;
 
     const collapsible = boolean(rawCollapsible);
     const shadowDOM = boolean(rawShadowDOM);
 
     // Start collapsed
     if (collapsible && cnt === 1) {
-      this.collapsedExtensions.set(extension.id, true);
+      this.collapsedModComponents.set(modComponent.id, true);
     }
 
-    const serviceContext = await makeIntegrationsContextFromDependencies(
-      extension.integrationDependencies,
+    const integrationsContext = await makeIntegrationsContextFromDependencies(
+      modComponent.integrationDependencies,
     );
-    const extensionContext = { ...readerOutput, ...serviceContext };
+    const componentContext = { ...readerOutput, ...integrationsContext };
 
     assertNotNullish(
       heading,
@@ -325,7 +327,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     const $panel = $(
       Mustache.render(this.getTemplate(), {
-        heading: Mustache.render(heading, extensionContext),
+        heading: Mustache.render(heading, componentContext),
         // Render a placeholder body that we'll fill in async
         body: `<div id="${bodyUUID}"></div>`,
         icon: icon ? await getSvgIcon(icon) : null,
@@ -333,35 +335,35 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       }),
     );
 
-    $panel.attr(PIXIEBRIX_DATA_ATTR, extension.id);
+    $panel.attr(PIXIEBRIX_DATA_ATTR, modComponent.id);
 
     assertNotNullish(this.$container, "Container must exist");
 
     const $existingPanel = this.$container.find(
-      `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`,
+      `[${PIXIEBRIX_DATA_ATTR}="${modComponent.id}"]`,
     );
 
     // Clean up removal monitor, otherwise it will be re-triggered during replaceWith
-    const cancelCurrent = this.cancelRemovalMonitor.get(extension.id);
+    const cancelCurrent = this.cancelRemovalMonitor.get(modComponent.id);
     if (cancelCurrent) {
-      console.debug(`Cancelling removal monitor for ${extension.id}`);
+      console.debug(`Cancelling removal monitor for ${modComponent.id}`);
       cancelCurrent();
-      this.cancelRemovalMonitor.delete(extension.id);
+      this.cancelRemovalMonitor.delete(modComponent.id);
     } else {
-      console.debug(`No current removal monitor for ${extension.id}`);
+      console.debug(`No current removal monitor for ${modComponent.id}`);
     }
 
     if ($existingPanel.length > 0) {
-      if (this.cancelRemovalMonitor.get(extension.id) != null) {
+      if (this.cancelRemovalMonitor.get(modComponent.id) != null) {
         throw new Error("Removal monitor still attached for panel");
       }
 
-      console.debug(`Replacing existing panel for ${extension.id}`);
+      console.debug(`Replacing existing panel for ${modComponent.id}`);
       $existingPanel.replaceWith($panel);
     } else {
-      console.debug(`Adding new panel for ${extension.id}`);
+      console.debug(`Adding new panel for ${modComponent.id}`);
       this.addPanel($panel);
-      reportEvent(Events.PANEL_ADD, selectEventData(extension));
+      reportEvent(Events.PANEL_ADD, selectEventData(modComponent));
     }
 
     // FIXME: required sites that remove the panel, e.g., Pipedrive. Currently causing infinite loop on Salesforce
@@ -393,33 +395,33 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
         const initialValues: InitialValues = {
           input: readerOutput,
-          optionsArgs: extension.optionsArgs,
-          serviceContext,
+          optionsArgs: modComponent.optionsArgs,
+          serviceContext: integrationsContext,
           root: document,
         };
 
         const rendererPromise = reduceExtensionPipeline(body, initialValues, {
-          logger: extensionLogger,
-          ...apiVersionOptions(extension.apiVersion),
+          logger: modComponentLogger,
+          ...apiVersionOptions(modComponent.apiVersion),
         }) as Promise<RendererOutput>;
 
         try {
           const bodyOrComponent = await errorBoundary(
             rendererPromise,
-            extensionLogger,
+            modComponentLogger,
           );
           render(bodyContainer, bodyOrComponent, {
             shadowDOM,
           });
-          extensionLogger.debug("Successfully installed panel");
+          modComponentLogger.debug("Successfully installed panel");
         } catch (error) {
-          extensionLogger.error(error);
+          modComponentLogger.error(error);
         }
       }
     };
 
     if (collapsible) {
-      const startExpanded = !this.collapsedExtensions.get(extension.id);
+      const startExpanded = !this.collapsedModComponents.get(modComponent.id);
 
       $bodyContainers.addClass(["collapse"]);
       const $toggle = $panel.find('[data-toggle="collapse"]');
@@ -433,10 +435,10 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
         const showing = $bodyContainers.hasClass("show");
         $toggle.attr("aria-expanded", String(showing));
         $toggle.toggleClass("active", showing);
-        this.collapsedExtensions.set(extension.id, !showing);
+        this.collapsedModComponents.set(modComponent.id, !showing);
         if (showing) {
           console.debug(
-            `Installing body for collapsible panel: ${extension.id}`,
+            `Installing body for collapsible panel: ${modComponent.id}`,
           );
           await installBody();
         }
@@ -447,7 +449,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       }
     } else {
       console.debug(
-        `Installing body for non-collapsible panel: ${extension.id}`,
+        `Installing body for non-collapsible panel: ${modComponent.id}`,
       );
       await installBody();
     }
@@ -467,21 +469,21 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     const errors: unknown[] = [];
 
-    for (const extension of this.modComponents) {
-      if (extensionIds != null && !extensionIds.includes(extension.id)) {
+    for (const modComponent of this.modComponents) {
+      if (extensionIds != null && !extensionIds.includes(modComponent.id)) {
         continue;
       }
 
       try {
         /* eslint-disable-next-line no-await-in-loop
         -- Running in loop to ensure consistent placement. OK because `installBody` in runExtension is runs asynchronously */
-        await this.runExtension(readerContext, extension);
+        await this.runModComponent(readerContext, modComponent);
       } catch (error) {
         errors.push(error);
         this.logger
           .childLogger({
-            deploymentId: extension._deployment?.id,
-            extensionId: extension.id,
+            deploymentId: modComponent._deployment?.id,
+            extensionId: modComponent.id,
           })
           .error(error);
       }
@@ -499,7 +501,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   }
 }
 
-class RemotePanelExtensionPoint extends PanelStarterBrickABC {
+class RemotePanelStarterBrick extends PanelStarterBrickABC {
   private readonly _definition: PanelDefinition;
 
   public readonly permissions: Permissions.Permissions;
@@ -591,5 +593,5 @@ export function fromJS(
     throw new Error(`Expected type=panel, got ${type}`);
   }
 
-  return new RemotePanelExtensionPoint(platform, config);
+  return new RemotePanelStarterBrick(platform, config);
 }

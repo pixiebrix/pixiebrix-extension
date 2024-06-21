@@ -32,7 +32,7 @@ import {
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { PanelStarterBrickABC } from "@/starterBricks/panel/panelExtension";
+import { PanelStarterBrickABC } from "@/starterBricks/panel/panelStarterBrick";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
@@ -46,7 +46,7 @@ import { type PanelFormState, type PanelTraits } from "./formStateTypes";
 import {
   type PanelDefinition,
   type PanelConfig,
-} from "@/starterBricks/panel/types";
+} from "@/starterBricks/panel/panelStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DEFAULT_TRAITS: PanelTraits = {
