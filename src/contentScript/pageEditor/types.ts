@@ -24,7 +24,7 @@ import { type Except } from "type-fest";
 import {
   type PanelConfig,
   type PanelDefinition,
-} from "@/starterBricks/panel/types";
+} from "@/starterBricks/panel/panelStarterBrickTypes";
 import {
   type MenuItemDefinition,
   type MenuItemStarterBrickConfig,

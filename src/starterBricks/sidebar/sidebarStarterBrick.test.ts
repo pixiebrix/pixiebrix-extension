@@ -25,7 +25,7 @@ import {
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
 import { type BrickPipeline } from "@/bricks/types";
-import { fromJS } from "@/starterBricks/sidebar/sidebarExtension";
+import { fromJS } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import { RunReason } from "@/types/runtimeTypes";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import {
@@ -41,7 +41,7 @@ import { getPlatform } from "@/platform/platformContext";
 import {
   type SidebarDefinition,
   type SidebarConfig,
-} from "@/starterBricks/sidebar/types";
+} from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ...jest.requireActual("@/contentScript/sidebarController"),
@@ -70,7 +70,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<ResolvedModComponent<SidebarConfig>>({
+const modComponentFactory = define<ResolvedModComponent<SidebarConfig>>({
   apiVersion: "v3",
   _resolvedModComponentBrand: undefined as never,
   id: uuidSequence,
@@ -93,94 +93,94 @@ describe("sidebarExtension", () => {
   });
 
   it("reserves panel on load", async () => {
-    const extensionPoint = fromJS(getPlatform(), starterBrickFactory()());
+    const starterBrick = fromJS(getPlatform(), starterBrickFactory()());
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
       }),
     );
 
-    await extensionPoint.install();
+    await starterBrick.install();
 
     // To avoid race condition, it reserves panels in the install method in addition to the run method
     expect(getReservedPanelEntries()).toStrictEqual({
       forms: [],
       panels: [
         expect.objectContaining({
-          extensionPointId: extensionPoint.id,
+          extensionPointId: starterBrick.id,
         }),
       ],
       temporaryPanels: [],
       modActivationPanel: null,
     });
 
-    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     // Not run until shown
     expect(rootReader.readCount).toBe(0);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 
   it("synchronize clears panel", async () => {
-    const extensionPoint = fromJS(getPlatform(), starterBrickFactory()());
+    const starterBrick = fromJS(getPlatform(), starterBrickFactory()());
 
-    extensionPoint.registerModComponent(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
       }),
     );
 
-    await extensionPoint.install();
+    await starterBrick.install();
 
     expect(getReservedPanelEntries().panels).toHaveLength(1);
 
-    extensionPoint.synchronizeModComponents([]);
+    starterBrick.synchronizeModComponents([]);
 
     // Synchronize removes the panel
     expect(getReservedPanelEntries().panels).toHaveLength(0);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 
   it("remove clears panel", async () => {
-    const extensionPoint = fromJS(getPlatform(), starterBrickFactory()());
+    const starterBrick = fromJS(getPlatform(), starterBrickFactory()());
 
-    const extension = extensionFactory({
-      extensionPointId: extensionPoint.id,
+    const extension = modComponentFactory({
+      extensionPointId: starterBrick.id,
     });
 
-    extensionPoint.registerModComponent(extension);
+    starterBrick.registerModComponent(extension);
 
-    await extensionPoint.install();
+    await starterBrick.install();
 
     expect(getReservedPanelEntries().panels).toHaveLength(1);
 
-    extensionPoint.removeModComponent(extension.id);
+    starterBrick.removeModComponent(extension.id);
 
     // Synchronize removes the panel
     expect(getReservedPanelEntries().panels).toHaveLength(0);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 
   it("runs non-debounced state change trigger", async () => {
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
         trigger: "statechange",
       })(),
     );
 
-    const extension = extensionFactory({
-      extensionPointId: extensionPoint.id,
+    const extension = modComponentFactory({
+      extensionPointId: starterBrick.id,
       _recipe: modMetadataFactory(),
     });
 
-    extensionPoint.registerModComponent(extension);
+    starterBrick.registerModComponent(extension);
 
-    await extensionPoint.install();
+    await starterBrick.install();
 
     expect(rootReader.readCount).toBe(0);
 
@@ -230,14 +230,14 @@ describe("sidebarExtension", () => {
 
     expect(rootReader.readCount).toBe(2);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 
   it("debounces the statechange trigger", async () => {
     // :shrug: would be better to use fake timers here
     const debounceMillis = 100;
 
-    const extensionPoint = fromJS(
+    const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
         trigger: "statechange",
@@ -248,14 +248,14 @@ describe("sidebarExtension", () => {
       })(),
     );
 
-    const extension = extensionFactory({
-      extensionPointId: extensionPoint.id,
+    const extension = modComponentFactory({
+      extensionPointId: starterBrick.id,
       _recipe: modMetadataFactory(),
     });
 
-    extensionPoint.registerModComponent(extension);
+    starterBrick.registerModComponent(extension);
 
-    await extensionPoint.install();
+    await starterBrick.install();
 
     // Fake the sidebar being added to the page
     isSidePanelOpenMock.mockResolvedValue(true);
@@ -281,6 +281,6 @@ describe("sidebarExtension", () => {
 
     expect(rootReader.readCount).toBe(2);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 });

@@ -32,7 +32,7 @@ import {
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
+import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
@@ -42,7 +42,7 @@ import { type SidebarFormState } from "./formStateTypes";
 import {
   type SidebarConfig,
   type SidebarDefinition,
-} from "@/starterBricks/sidebar/types";
+} from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {

@@ -25,7 +25,7 @@ import {
   type MenuItemStarterBrickConfig,
   type MenuPosition,
 } from "@/starterBricks/menuItem/menuItemTypes";
-import { type PanelConfig } from "@/starterBricks/panel/types";
+import { type PanelConfig } from "@/starterBricks/panel/panelStarterBrickTypes";
 import {
   type QuickBarConfig,
   type QuickBarDefaultOptions,
@@ -34,7 +34,7 @@ import {
 import {
   type SidebarConfig,
   type Trigger as SidebarTrigger,
-} from "@/starterBricks/sidebar/types";
+} from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import {
   type AttachMode,
   type ReportMode,
