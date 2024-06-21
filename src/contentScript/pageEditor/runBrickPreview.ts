@@ -16,7 +16,7 @@
  */
 
 import {
-  blockReducer,
+  brickReducer,
   type IntermediateState,
   type ReduceOptions,
 } from "@/runtime/reducePipeline";
@@ -28,20 +28,20 @@ import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { $safeFind } from "@/utils/domUtils";
 import { BusinessError } from "@/errors/businessErrors";
 import { type RegistryId } from "@/types/registryTypes";
-import { type RunBlockArgs } from "@/contentScript/pageEditor/types";
+import { type RunBrickArgs } from "@/contentScript/pageEditor/types";
 import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
- * Run a single block (e.g., for generating output previews)
- * @see BlockPreview
+ * Run a single brick (e.g., for generating output previews)
+ * @see BrickPreview
  */
-export async function runBlockPreview({
+export async function runBrickPreview({
   blockConfig,
   context,
   apiVersion,
   blueprintId,
   rootSelector,
-}: RunBlockArgs & {
+}: RunBrickArgs & {
   blueprintId: Nullishable<RegistryId>;
 }): Promise<unknown> {
   const versionOptions = apiVersionOptions(apiVersion);
@@ -95,7 +95,7 @@ export async function runBlockPreview({
 
   // Exclude the outputKey so that `output` is the output of the brick. Alternatively we could have taken then
   // value from the context[outputKey] from the return value of blockReducer
-  const { output } = await blockReducer(
+  const { output } = await brickReducer(
     { ...blockConfig, outputKey: undefined },
     state,
     options,

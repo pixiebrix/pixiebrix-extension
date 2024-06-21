@@ -27,8 +27,8 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { createFrameSource } from "@/contentScript/ephemeralPanel";
 import { showModal } from "@/contentScript/modalDom";
-import { runBlockPreview } from "@/contentScript/pageEditor/runBlockPreview";
-import { type RunBlockArgs } from "@/contentScript/pageEditor/types";
+import { runBrickPreview } from "@/contentScript/pageEditor/runBrickPreview";
+import { type RunBrickArgs } from "@/contentScript/pageEditor/types";
 
 type Location = "modal" | "panel";
 
@@ -46,7 +46,7 @@ type Location = "modal" | "panel";
  * Note: Currently only implemented for the temporary sidebar panels
  * @see useDocumentPreviewRunBlock
  */
-export async function runRendererBlock({
+export async function runRendererBrick({
   extensionId,
   blueprintId,
   runId,
@@ -58,14 +58,14 @@ export async function runRendererBlock({
   blueprintId: RegistryId | null;
   runId: UUID;
   title: string;
-  args: RunBlockArgs;
+  args: RunBrickArgs;
   location: Location;
 }): Promise<void> {
   const nonce = uuidv4();
 
   let payload: PanelPayload;
   try {
-    await runBlockPreview({ ...args, blueprintId });
+    await runBrickPreview({ ...args, blueprintId });
     // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
     // noinspection ExceptionCaughtLocallyJS
     throw new NoRendererError();

@@ -71,7 +71,7 @@ export type AttributeExample = {
   value: string;
 };
 
-export type RunBlockArgs = {
+export type RunBrickArgs = {
   /**
    * The runtime API version to use
    */

@@ -28,7 +28,7 @@ import { get } from "lodash";
 import {
   getRootPipelineFlavor,
   getSubPipelineFlavor,
-} from "@/bricks/blockFilterHelpers";
+} from "@/bricks/brickFilterHelpers";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { isPipelineExpression } from "@/utils/expressionUtils";

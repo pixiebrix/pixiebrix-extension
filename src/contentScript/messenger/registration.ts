@@ -57,10 +57,10 @@ import {
 import { runMapArgs } from "@/contentScript/pipelineProtocol/runMapArgs";
 import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
 import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController";
-import { runBlockPreview } from "@/contentScript/pageEditor/runBlockPreview";
+import { runBrickPreview } from "@/contentScript/pageEditor/runBrickPreview";
 import { runBrick } from "@/contentScript/executor";
 import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadlessPipeline";
-import { runRendererBlock } from "@/contentScript/pageEditor/runRendererBlock";
+import { runRendererBrick } from "@/contentScript/pageEditor/runRendererBrick";
 import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline";
 import { runStarterBrickReader } from "@/contentScript/pageEditor/draft/runStarterBrickReader";
 import {
@@ -112,10 +112,10 @@ declare global {
     RUN_MAP_ARGS: typeof runMapArgs;
     GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
     SHOW_LOGIN_BANNER: typeof showBannerFromConfig;
-    RUN_SINGLE_BLOCK: typeof runBlockPreview;
+    RUN_SINGLE_BLOCK: typeof runBrickPreview;
     RUN_BRICK: typeof runBrick;
     RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
-    RUN_RENDERER_BLOCK: typeof runRendererBlock;
+    RUN_RENDERER_BRICK: typeof runRendererBrick;
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_EXTENSION_POINT_READER: typeof runStarterBrickReader;
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
@@ -166,10 +166,10 @@ export default function registerMessenger(): void {
     RUN_MAP_ARGS: runMapArgs,
     GET_COPILOT_HOST_DATA: getCopilotHostData,
     SHOW_LOGIN_BANNER: showBannerFromConfig,
-    RUN_SINGLE_BLOCK: runBlockPreview,
+    RUN_SINGLE_BLOCK: runBrickPreview,
     RUN_BRICK: runBrick,
     RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
-    RUN_RENDERER_BLOCK: runRendererBlock,
+    RUN_RENDERER_BRICK: runRendererBrick,
     RUN_RENDERER_PIPELINE: runRendererPipeline,
     RUN_EXTENSION_POINT_READER: runStarterBrickReader,
     QUEUE_REACTIVATE_TAB: queueReactivateTab,

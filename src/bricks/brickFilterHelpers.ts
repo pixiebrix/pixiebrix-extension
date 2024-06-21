@@ -37,10 +37,10 @@ const ALWAYS_SHOW = new Set([
   CommentEffect.BRICK_ID,
 ]);
 
-export type IsBlockAllowedPredicate = (block: TypedBrickPair) => boolean;
+export type IsBrickAllowedPredicate = (block: TypedBrickPair) => boolean;
 
-export function getRootPipelineFlavor(extensionPointType: StarterBrickType) {
-  if (PANEL_TYPES.includes(extensionPointType)) {
+export function getRootPipelineFlavor(starterBrickType: StarterBrickType) {
+  if (PANEL_TYPES.includes(starterBrickType)) {
     return PipelineFlavor.NoEffect;
   }
 
@@ -79,9 +79,9 @@ export function getSubPipelineFlavor(
   return PipelineFlavor.NoRenderer;
 }
 
-export function makeIsBlockAllowedForPipeline(
+export function makeIsBrickAllowedForPipeline(
   pipelineFlavor: PipelineFlavor,
-): IsBlockAllowedPredicate {
+): IsBrickAllowedPredicate {
   if (pipelineFlavor === PipelineFlavor.AllBricks) {
     return stubTrue;
   }

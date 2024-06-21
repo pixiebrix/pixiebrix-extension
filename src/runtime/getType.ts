@@ -20,9 +20,9 @@ import { type Metadata } from "@/types/registryTypes";
 import { isObject } from "@/utils/objectUtils";
 
 function canInferType(
-  block: unknown,
-): block is { inferType: () => Promise<BrickType | null> } {
-  return isObject(block) && typeof block.inferType === "function";
+  brick: unknown,
+): brick is { inferType: () => Promise<BrickType | null> } {
+  return isObject(brick) && typeof brick.inferType === "function";
 }
 
 /**
