@@ -36,6 +36,7 @@ jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest.fn().mockReturnValue({ refetch: jest.fn() }),
 }));
 
+// TODO: mock the API call instead of RTK Query
 jest.mock("@/data/service/api", () => {
   const originalModule = jest.requireActual("@/data/service/api");
   return {
@@ -73,7 +74,7 @@ describe("it renders", () => {
         );
         dispatch(
           modModalsSlice.actions.setShareContext({
-            standaloneModDefinition: standaloneModDefinition.id,
+            extensionId: standaloneModDefinition.id,
           }),
         );
       },
