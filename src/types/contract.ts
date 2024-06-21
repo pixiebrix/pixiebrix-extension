@@ -199,11 +199,12 @@ export type StandaloneModDefinition<Config extends UnknownObject = JsonObject> =
   };
 
 /**
- * `/api/recipes/${recipeId}`
- * @deprecated will be retired in favor of the brick endpoint
+ * Response shape from `/api/recipes/${recipeId}/`
+ * @deprecated uses deprecated `/api/recipes/${recipeId}` endpoint that will be retired
  */
-// TODO: change shape in https://github.com/pixiebrix/pixiebrix-app/issues/4355
-export type ModDefinitionResponse = {
+// TODO: change shape in https://github.com/pixiebrix/pixiebrix-app/issues/4355. Keeping name as "recipe" to be clearer
+//  that is corresponds to the deprecated endpoint
+export type RetrieveRecipeResponse = {
   // On this endpoint, the sharing and updated_at are in the envelope of the response
   config: UnsavedModDefinition;
   sharing: ModDefinition["sharing"];

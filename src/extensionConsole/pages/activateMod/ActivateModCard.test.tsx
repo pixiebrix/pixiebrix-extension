@@ -29,7 +29,7 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { useGetModDefinitionQuery } from "@/data/service/api";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { validateRegistryId } from "@/types/helpers";
-import { type ModDefinitionResponse } from "@/types/contract";
+import { type RetrieveRecipeResponse } from "@/types/contract";
 import {
   modComponentDefinitionFactory,
   defaultModDefinitionFactory,
@@ -60,7 +60,7 @@ jest.mock("@/extensionConsole/pages/useRegistryIdParam", () => ({
 global.chrome.commands.getAll = jest.fn();
 
 function setupMod(modDefinition: ModDefinition) {
-  const recipeResponse: ModDefinitionResponse = {
+  const recipeResponse: RetrieveRecipeResponse = {
     config: modDefinition,
     updated_at: modDefinition.updated_at,
     sharing: {

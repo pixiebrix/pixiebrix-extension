@@ -30,7 +30,7 @@ import {
   type PackageUpsertResponse,
   type PackageVersionDeprecated,
   type PendingInvitation,
-  type ModDefinitionResponse,
+  type RetrieveRecipeResponse,
   type RemoteIntegrationConfig,
   type StandaloneModDefinition,
   UserRole,
@@ -275,7 +275,7 @@ export const appApi = createApi({
         method: "get",
       }),
       transformResponse(
-        baseQueryReturnValue: ModDefinitionResponse,
+        baseQueryReturnValue: RetrieveRecipeResponse,
       ): ModDefinition {
         // Pull out sharing and updated_at from response and merge into the base
         // response to create a ModDefinition
