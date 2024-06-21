@@ -28,6 +28,12 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 
 /**
+ * @file utility methods to deactivate mods/mod components and remove from the existing tabs.
+ *
+ * Mocked in src/__mocks__/@/store/uninstallUtils.ts.
+ */
+
+/**
  * Use this helper outside the Page Editor context to uninstall a mod and all of its mod components.
  *
  * Uninstalls from:

@@ -15,6 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const uninstallRecipe = jest.fn();
-export const uninstallExtensions = jest.fn();
-export const removeExtensionsFromAllTabs = jest.fn();
+export const uninstallMod = jest.fn();
+export const uninstallModComponents = jest.fn();
+export const removeModComponentsFromAllTabs = jest.fn();

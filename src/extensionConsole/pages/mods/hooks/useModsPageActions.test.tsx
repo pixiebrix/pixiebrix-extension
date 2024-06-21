@@ -340,12 +340,12 @@ describe("useModsPageActions", () => {
     expectActions(["viewShare", "deactivate", "viewLogs"], actions);
   });
 
-  describe("public blueprint", () => {
-    let blueprintItem: ModViewItem;
+  describe("public mod", () => {
+    let modItem: ModViewItem;
     beforeEach(() => {
       mockHooks();
 
-      blueprintItem = {
+      modItem = {
         mod: defaultModDefinitionFactory({
           sharing: { public: true, organizations: [] },
         }),
@@ -361,7 +361,7 @@ describe("useModsPageActions", () => {
     test("pending publish", () => {
       const {
         result: { current: actions },
-      } = renderHook(() => useModsPageActions(blueprintItem));
+      } = renderHook(() => useModsPageActions(modItem));
       expectActions(
         ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
         actions,
@@ -369,11 +369,11 @@ describe("useModsPageActions", () => {
     });
 
     test("published", () => {
-      blueprintItem.sharing.listingId = uuidv4();
+      modItem.sharing.listingId = uuidv4();
 
       const {
         result: { current: actions },
-      } = renderHook(() => useModsPageActions(blueprintItem));
+      } = renderHook(() => useModsPageActions(modItem));
       expectActions(
         [
           "viewInMarketplaceHref",
@@ -394,7 +394,7 @@ describe("actions", () => {
       mockHooks();
     });
 
-    test("calls uninstallRecipe for a blueprint", () => {
+    test("calls uninstallMod for a mod", () => {
       mockHooks();
       const modViewItem = modViewItemFactory({
         isExtension: false,
@@ -418,7 +418,7 @@ describe("actions", () => {
       expect(uninstallModComponents).not.toHaveBeenCalled();
     });
 
-    test("calls uninstallExtensions for an mod component", () => {
+    test("calls uninstallModComponents for an mod component", () => {
       mockHooks();
 
       const standaloneModDefinition = standaloneModDefinitionFactory();

@@ -69,7 +69,7 @@ test("uninstalls mod components", async () => {
   );
 });
 
-test("dispatches install recipe action", async () => {
+test("dispatches activate mod action", async () => {
   jest.spyOn(extensionActions, "activateMod");
 
   const modDefinition = defaultModDefinitionFactory();
