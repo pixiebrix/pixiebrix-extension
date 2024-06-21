@@ -27,11 +27,19 @@ import { integrationConfigFactory } from "@/testUtils/factories/integrationFacto
 import { locator } from "@/background/locator";
 import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
-import { type IntegrationConfig } from "@/integrations/integrationTypes";
-import * as backgroundAuthStorage from "@/background/auth/authStorage";
+import {
+  type AuthData,
+  type IntegrationConfig,
+} from "@/integrations/integrationTypes";
 import { setPlatform } from "@/platform/platformContext";
 import backgroundPlatform from "@/background/backgroundPlatform";
 import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
+import {
+  deleteCachedAuthData,
+  getCachedAuthData,
+  setCachedAuthData,
+} from "@/background/auth/authStorage";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -43,18 +51,17 @@ jest.mocked(apiProxyService).mockImplementation(realProxyService);
 jest.mock("@/integrations/util/readRawConfigurations");
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
 
-const { deleteCachedAuthData, getCachedAuthData, setCachedAuthData } =
-  backgroundAuthStorage;
+jest.mock("@/background/auth/authStorage", () => {
+  const actual = jest.requireActual("@/background/auth/authStorage");
 
-const spyContainer = {
-  deleteCachedAuthData,
-};
+  return {
+    __esModule: true,
+    ...actual,
+    deleteCachedAuthData: jest.fn(actual.deleteCachedAuthData),
+  };
+});
 
-// const deleteCachedAuthDataMock = jest.mocked(deleteCachedAuthData);
-const deleteCachedAuthDataSpy = jest.spyOn(
-  spyContainer,
-  "deleteCachedAuthData",
-);
+const deleteCachedAuthDataSpy = jest.mocked(deleteCachedAuthData);
 
 jest.mock("@/integrations/registry", () => {
   const actual = jest.requireActual("@/integrations/registry");
@@ -70,6 +77,10 @@ jest.mock("@/integrations/registry", () => {
     }),
   };
 });
+
+jest.mock("@/background/auth/launchOAuth2Flow");
+
+const launchOAuth2FlowMock = jest.mocked(launchOAuth2Flow);
 
 beforeEach(() => {
   // `sheetsApi` uses the ambient platform context to make requests
@@ -92,6 +103,7 @@ describe("error handling", () => {
 
     readRawConfigurationsMock.mockResolvedValue([integrationConfig]);
 
+    launchOAuth2FlowMock.mockReset();
     deleteCachedAuthDataSpy.mockReset();
 
     await locator.refresh();
@@ -161,18 +173,22 @@ describe("error handling", () => {
         integrationConfig.id,
       );
 
-      await setCachedAuthData(integrationConfig.id, {
+      const authData: AuthData = {
+        _oauthBrand: null,
         access_token: "NOTAREALTOKEN",
-      });
+      };
+
+      await setCachedAuthData(integrationConfig.id, authData);
+
+      // If no refresh token, requests code will delete auth data and kick off login again
+      launchOAuth2FlowMock.mockResolvedValue(authData);
 
       await expect(getAllSpreadsheets(config)).rejects.toThrow(message);
 
-      await expect(
-        getCachedAuthData(integrationConfig.id),
-      ).resolves.toStrictEqual({
-        access_token: "NOTAREALTOKEN",
-      });
       expect(deleteCachedAuthDataSpy).toHaveBeenCalledOnce();
+      expect(deleteCachedAuthDataSpy).toHaveBeenCalledWith(
+        integrationConfig.id,
+      );
 
       expect(
         axiosMock.history.get!.filter((x) => x.url!.startsWith(DRIVE_BASE_URL)),
