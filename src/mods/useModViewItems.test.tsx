@@ -49,7 +49,7 @@ describe("useModViewItems", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            extensionsSlice.actions.UNSAFE_setExtensions([
+            extensionsSlice.actions.UNSAFE_setModComponents([
               modComponent as unknown as ActivatedModComponent,
             ]),
           );
@@ -76,7 +76,7 @@ describe("useModViewItems", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            extensionsSlice.actions.UNSAFE_setExtensions([
+            extensionsSlice.actions.UNSAFE_setModComponents([
               activatedModComponent,
             ]),
           );
@@ -107,7 +107,7 @@ describe("useModViewItems", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            extensionsSlice.actions.UNSAFE_setExtensions([
+            extensionsSlice.actions.UNSAFE_setModComponents([
               activatedModComponent,
             ]),
           );

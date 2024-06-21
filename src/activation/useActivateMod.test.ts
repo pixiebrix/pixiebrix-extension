@@ -17,11 +17,11 @@
 
 import { type WizardValues } from "@/activation/wizardTypes";
 import { renderHook } from "@/pageEditor/testHelpers";
-import useActivateRecipe from "./useActivateRecipe";
+import useActivateMod from "./useActivateMod";
 import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/types";
-import { uninstallRecipe } from "@/store/uninstallUtils";
+import { uninstallMod } from "@/store/uninstallUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
@@ -43,7 +43,7 @@ import type MockAdapter from "axios-mock-adapter";
 jest.mock("@/contentScript/messenger/api");
 
 const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
-const uninstallRecipeMock = jest.mocked(uninstallRecipe);
+const uninstallModMock = jest.mocked(uninstallMod);
 const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
 
 function setupInputs(): {
@@ -56,13 +56,13 @@ function setupInputs(): {
     optionsArgs: {},
   };
 
-  const extensionPointId = validateRegistryId("test/starter-brick-1");
+  const starterBrickId = validateRegistryId("test/starter-brick-1");
   const modComponentDefinition = modComponentDefinitionFactory({
-    id: extensionPointId,
+    id: starterBrickId,
   });
   const starterBrickDefinition = starterBrickDefinitionFactory({
     metadata: metadataFactory({
-      id: extensionPointId,
+      id: starterBrickId,
       name: "Text Starter Brick 1",
     }),
     definition: {
@@ -82,7 +82,7 @@ function setupInputs(): {
   const modDefinition = defaultModDefinitionFactory({
     extensionPoints: [modComponentDefinition],
     definitions: {
-      [extensionPointId]: starterBrickDefinition,
+      [starterBrickId]: starterBrickDefinition,
     } as unknown as InnerDefinitions,
   });
 
@@ -92,7 +92,7 @@ function setupInputs(): {
   };
 }
 
-function setRecipeHasPermissions(hasPermissions: boolean) {
+function setModHasPermissions(hasPermissions: boolean) {
   checkPermissionsMock.mockResolvedValue({
     hasPermissions,
     // The exact permissions don't matter because we're mocking the check also
@@ -104,20 +104,20 @@ function setUserAcceptedPermissions(accepted: boolean) {
   jest.mocked(browser.permissions.request).mockResolvedValue(accepted);
 }
 
-describe("useActivateRecipe", () => {
+describe("useActivateMod", () => {
   beforeEach(() => {
     reactivateEveryTabMock.mockClear();
   });
 
   it("returns error if permissions are not granted", async () => {
     const { formValues, modDefinition } = setupInputs();
-    setRecipeHasPermissions(false);
+    setModHasPermissions(false);
     setUserAcceptedPermissions(false);
 
     const {
       result: { current: activateRecipe },
       getReduxStore,
-    } = renderHook(() => useActivateRecipe("marketplace"), {
+    } = renderHook(() => useActivateMod("marketplace"), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
       },
@@ -131,19 +131,19 @@ describe("useActivateRecipe", () => {
     const { dispatch } = getReduxStore();
 
     expect(dispatch).not.toHaveBeenCalled();
-    expect(uninstallRecipeMock).not.toHaveBeenCalled();
+    expect(uninstallModMock).not.toHaveBeenCalled();
     expect(reactivateEveryTabMock).not.toHaveBeenCalled();
   });
 
   it("ignores permissions if flag set", async () => {
     const { formValues, modDefinition } = setupInputs();
-    setRecipeHasPermissions(false);
+    setModHasPermissions(false);
     setUserAcceptedPermissions(false);
 
     const {
       result: { current: activateRecipe },
     } = renderHook(
-      () => useActivateRecipe("marketplace", { checkPermissions: false }),
+      () => useActivateMod("marketplace", { checkPermissions: false }),
       {
         setupRedux(dispatch, { store }) {
           jest.spyOn(store, "dispatch");
@@ -159,14 +159,14 @@ describe("useActivateRecipe", () => {
 
   it("calls uninstallRecipe, installs to extensionsSlice, and calls reactivateEveryTab, if permissions are granted", async () => {
     const { formValues, modDefinition } = setupInputs();
-    setRecipeHasPermissions(false);
+    setModHasPermissions(false);
     setUserAcceptedPermissions(true);
 
     const {
       result: { current: activateRecipe },
       getReduxStore,
       act,
-    } = renderHook(() => useActivateRecipe("extensionConsole"), {
+    } = renderHook(() => useActivateMod("extensionConsole"), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
       },
@@ -185,7 +185,7 @@ describe("useActivateRecipe", () => {
 
     const { dispatch } = getReduxStore();
 
-    expect(uninstallRecipeMock).toHaveBeenCalledWith(
+    expect(uninstallModMock).toHaveBeenCalledWith(
       modDefinition.metadata.id,
       expect.toBeArray(),
       dispatch,
@@ -230,7 +230,7 @@ describe("useActivateRecipe", () => {
         uiSchema: inputModDefinition.options?.uiSchema,
       },
     };
-    setRecipeHasPermissions(true);
+    setModHasPermissions(true);
     setUserAcceptedPermissions(true);
 
     const createdDatabase = databaseFactory({ name: databaseName });
@@ -240,7 +240,7 @@ describe("useActivateRecipe", () => {
       result: { current: activateRecipe },
       getReduxStore,
       act,
-    } = renderHook(() => useActivateRecipe("marketplace"), {
+    } = renderHook(() => useActivateMod("marketplace"), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
       },
@@ -307,13 +307,13 @@ describe("useActivateRecipe", () => {
         format: "preview",
       },
     );
-    setRecipeHasPermissions(true);
+    setModHasPermissions(true);
     const errorMessage = "Error creating database";
 
     const {
       result: { current: activateRecipe },
       act,
-    } = renderHook(() => useActivateRecipe("marketplace"), {
+    } = renderHook(() => useActivateMod("marketplace"), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
       },

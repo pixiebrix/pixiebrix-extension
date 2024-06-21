@@ -35,9 +35,9 @@ import {
   defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-import useActivateRecipe, {
-  type ActivateRecipeFormCallback,
-} from "@/activation/useActivateRecipe";
+import useActivateMod, {
+  type ActivateModFormCallback,
+} from "@/activation/useActivateMod";
 import { minimalSchemaFactory } from "@/utils/schemaUtils";
 
 registerDefaultWidgets();
@@ -46,11 +46,11 @@ const testModId = validateRegistryId("@test/mod");
 
 const activateModCallbackMock =
   // eslint-disable-next-line no-restricted-syntax -- TODO
-  jest.fn() as jest.MockedFunction<ActivateRecipeFormCallback>;
+  jest.fn() as jest.MockedFunction<ActivateModFormCallback>;
 
-jest.mock("@/activation/useActivateRecipe.ts");
+jest.mock("@/activation/useActivateMod.ts");
 
-const activateRecipeHookMock = jest.mocked(useActivateRecipe);
+const activateRecipeHookMock = jest.mocked(useActivateMod);
 
 jest.mock("@/extensionConsole/pages/useRegistryIdParam", () => ({
   __esModule: true,

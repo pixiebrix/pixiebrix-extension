@@ -72,7 +72,7 @@ const extensionsSlice = createSlice({
   reducers: {
     // Helper method to directly update extensions in tests. Can't use activateStandaloneModDefinition because
     // StandaloneModDefinition doesn't have the _recipe field
-    UNSAFE_setExtensions(
+    UNSAFE_setModComponents(
       state,
       { payload }: PayloadAction<ActivatedModComponent[]>,
     ) {
@@ -98,20 +98,25 @@ const extensionsSlice = createSlice({
       void contextMenus.preload([extension]);
     },
 
-    attachExtension(
+    /**
+     * Set the mod metadata associated with the given activated mod component id.
+     */
+    setModComponentMetadata(
       state,
       {
         payload,
       }: PayloadAction<{
-        extensionId: UUID;
-        recipeMetadata: ModComponentBase["_recipe"];
+        modComponentId: UUID;
+        modMetadata: ModComponentBase["_recipe"];
       }>,
     ) {
-      const { extensionId, recipeMetadata } = payload;
-      const extension = state.extensions.find((x) => x.id === extensionId);
+      const { modComponentId, modMetadata } = payload;
+      const modComponent = state.extensions.find(
+        (x) => x.id === modComponentId,
+      );
 
-      if (extension != null) {
-        extension._recipe = recipeMetadata;
+      if (modComponent != null) {
+        modComponent._recipe = modMetadata;
       }
     },
 
@@ -255,17 +260,21 @@ const extensionsSlice = createSlice({
         state.extensions.push(modComponent);
       }
     },
-    updateExtension(
+
+    /**
+     * Update an activated mod component.
+     */
+    updateModComponent(
       state,
       action: PayloadAction<{ id: UUID } & Partial<ActivatedModComponent>>,
     ) {
-      const { id, ...extensionUpdate } = action.payload;
+      const { id, ...modComponentUpdate } = action.payload;
       const index = state.extensions.findIndex((x) => x.id === id);
 
       if (index === -1) {
         reportError(
           new Error(
-            `Can't find extension in optionsSlice to update. Target extension id: ${id}.`,
+            `Can't find mod component in optionsSlice to update. Target mod component id: ${id}.`,
           ),
         );
         return;
@@ -274,48 +283,67 @@ const extensionsSlice = createSlice({
       // eslint-disable-next-line security/detect-object-injection -- index is number
       state.extensions[index] = {
         ...state.extensions.at(index),
-        ...extensionUpdate,
+        ...modComponentUpdate,
       } as ActivatedModComponent;
     },
 
-    updateRecipeMetadataForExtensions(
+    /**
+     * Update the mod metadata of all mod components associated with the given mod id.
+     */
+    updateModMetadata(
       state,
       action: PayloadAction<ModComponentBase["_recipe"]>,
     ) {
       const metadata = action.payload;
-      const recipeExtensions = state.extensions.filter(
+      const modComponents = state.extensions.filter(
         (extension) => extension._recipe?.id === metadata?.id,
       );
-      for (const extension of recipeExtensions) {
-        extension._recipe = metadata;
+      for (const modComponent of modComponents) {
+        modComponent._recipe = metadata;
       }
     },
 
-    removeRecipeById(state, { payload: recipeId }: PayloadAction<RegistryId>) {
+    /**
+     * Deactivate mod components associated with the given mod id
+     */
+    removeModById(state, { payload: modId }: PayloadAction<RegistryId>) {
       const [, extensions] = partition(
         state.extensions,
-        (x) => x._recipe?.id === recipeId,
+        (x) => x._recipe?.id === modId,
       );
 
       state.extensions = extensions;
     },
 
-    removeExtensions(
+    /**
+     * Deactivate the given mod components by id.
+     */
+    removeModComponents(
       state,
-      { payload: { extensionIds } }: PayloadAction<{ extensionIds: UUID[] }>,
+      {
+        payload: { modComponentIds },
+      }: PayloadAction<{ modComponentIds: UUID[] }>,
     ) {
-      // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
+      // NOTE: We aren't deleting the mod components on the server.
+      // The user must do that separately from the mods screen
       state.extensions = state.extensions.filter(
-        (x) => !extensionIds.includes(x.id),
+        (x) => !modComponentIds.includes(x.id),
       );
     },
 
-    removeExtension(
+    /**
+     * Deactivate a single mod component by id.
+     * @see removeModComponents
+     */
+    removeModComponent(
       state,
-      { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>,
+      { payload: { modComponentId } }: PayloadAction<{ modComponentId: UUID }>,
     ) {
-      // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
-      state.extensions = state.extensions.filter((x) => x.id !== extensionId);
+      // NOTE: We aren't deleting the mod component/definition on the server.
+      // The user must do that separately from the dashboard
+      state.extensions = state.extensions.filter(
+        (x) => x.id !== modComponentId,
+      );
     },
   },
   extraReducers(builder) {

@@ -35,7 +35,7 @@ import { isEmpty } from "lodash";
 import ActivateModInputs from "@/sidebar/activateMod/ActivateModInputs";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { Button } from "react-bootstrap";
-import useActivateRecipe from "@/activation/useActivateRecipe";
+import useActivateMod from "@/activation/useActivateMod";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useActivateModWizard, {
@@ -223,7 +223,7 @@ const ActivateModPanelContent: React.FC<
   isActive,
 }) => {
   const reduxDispatch = useDispatch();
-  const marketplaceActivateRecipe = useActivateRecipe("marketplace");
+  const marketplaceActivateRecipe = useActivateMod("marketplace");
 
   const [state, stateDispatch] = useReducer(
     activationSlice.reducer,

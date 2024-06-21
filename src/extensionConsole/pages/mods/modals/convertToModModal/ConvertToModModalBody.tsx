@@ -180,9 +180,9 @@ const ConvertToModModalBody: React.FunctionComponent = () => {
       if ("active" in modComponent && modComponent.active) {
         // Dealing with installed extension
         dispatch(
-          extensionsSlice.actions.attachExtension({
-            extensionId: modComponent.id,
-            recipeMetadata: pickModDefinitionMetadata(modDefinition),
+          extensionsSlice.actions.setModComponentMetadata({
+            modComponentId: modComponent.id,
+            modMetadata: pickModDefinitionMetadata(modDefinition),
           }),
         );
       } else {

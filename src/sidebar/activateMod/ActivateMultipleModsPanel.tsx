@@ -27,9 +27,9 @@ import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { wizardStateFactory } from "@/activation/useActivateModWizard";
-import useActivateRecipe, {
+import useActivateMod, {
   type ActivateResult,
-} from "@/activation/useActivateRecipe";
+} from "@/activation/useActivateMod";
 import { SuccessPanel } from "@/sidebar/activateMod/ActivateModPanel";
 import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import type { ModActivationConfig } from "@/types/modTypes";
@@ -68,7 +68,7 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
   // Assume mods work without all permissions. Currently, the only optional permission is `clipboardWrite`, which isn't
   // actually enforced by Chrome. (Mods can still copy to the clipboard.). The only way a mod would not have all
   // permissions is if their Enterprise policy has disabled some permissions.
-  const activate = useActivateRecipe("marketplace", {
+  const activate = useActivateMod("marketplace", {
     checkPermissions: false,
   });
 

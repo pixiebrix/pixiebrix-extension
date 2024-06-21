@@ -143,8 +143,8 @@ export const contextMenus = {
   preload: getMethod("PRELOAD_CONTEXT_MENUS", bg),
 };
 
-export const removeExtensionForEveryTab = getNotifier(
-  "REMOVE_EXTENSION_EVERY_TAB",
+export const removeModComponentForEveryTab = getNotifier(
+  "REMOVE_MOD_COMPONENT_EVERY_TAB",
   bg,
 );
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);

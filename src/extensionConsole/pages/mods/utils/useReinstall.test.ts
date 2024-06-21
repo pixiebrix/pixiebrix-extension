@@ -18,7 +18,7 @@
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useReinstall from "./useReinstall";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { uninstallRecipe } from "@/store/uninstallUtils";
+import { uninstallMod } from "@/store/uninstallUtils";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
@@ -62,7 +62,7 @@ test("uninstalls recipe mod components", async () => {
 
   await act(async () => reinstall(modDefinition));
 
-  expect(uninstallRecipe).toHaveBeenCalledWith(
+  expect(uninstallMod).toHaveBeenCalledWith(
     modDefinition.metadata.id,
     [expectedExtension],
     expect.any(Function),

@@ -29,7 +29,7 @@ import {
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";
-import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
+import { uninstallModComponents, uninstallMod } from "@/store/uninstallUtils";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -410,12 +410,12 @@ describe("actions", () => {
 
       deactivate();
 
-      expect(uninstallRecipe).toHaveBeenCalledWith(
+      expect(uninstallMod).toHaveBeenCalledWith(
         (modViewItem.mod as ModDefinition).metadata.id,
         expect.any(Array),
         expect.any(Function),
       );
-      expect(uninstallExtensions).not.toHaveBeenCalled();
+      expect(uninstallModComponents).not.toHaveBeenCalled();
     });
 
     test("calls uninstallExtensions for an mod component", () => {
@@ -451,8 +451,8 @@ describe("actions", () => {
 
       deactivate();
 
-      expect(uninstallRecipe).not.toHaveBeenCalled();
-      expect(uninstallExtensions).toHaveBeenCalledWith(
+      expect(uninstallMod).not.toHaveBeenCalled();
+      expect(uninstallModComponents).toHaveBeenCalledWith(
         [standaloneModDefinition.id],
         expect.any(Function),
       );

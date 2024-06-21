@@ -21,58 +21,57 @@ import {
   removeDraftModComponentsForMod,
 } from "@/store/editorStorage";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { removeExtensionForEveryTab } from "@/background/messenger/api";
+import { removeModComponentForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 
 /**
- * Use this helper outside the Page Editor context to uninstall a recipe and all of its extensions.
+ * Use this helper outside the Page Editor context to uninstall a mod and all of its mod components.
  *
  * Uninstalls from:
  * - Extension Options slice
- * - draft mod components slice (i.e., Page Editor state)
- * - Notifies all tabs to remove the extensions
+ * - Draft mod components slice (i.e., Page Editor state)
+ * - Notifies all tabs to remove the mod components
  */
-export async function uninstallRecipe(
-  recipeId: RegistryId,
-  recipeExtensions: UnresolvedModComponent[],
+export async function uninstallMod(
+  modId: RegistryId,
+  modComponents: UnresolvedModComponent[],
   dispatch: Dispatch<unknown>,
 ): Promise<void> {
   const draftModComponentsToDeactivate =
-    await removeDraftModComponentsForMod(recipeId);
+    await removeDraftModComponentsForMod(modId);
 
-  dispatch(extensionActions.removeRecipeById(recipeId));
+  dispatch(extensionActions.removeModById(modId));
 
-  removeExtensionsFromAllTabs(
+  removeModComponentsFromAllTabs(
     uniq([
-      ...recipeExtensions.map(({ id }) => id),
+      ...modComponents.map(({ id }) => id),
       ...draftModComponentsToDeactivate,
     ]),
   );
 }
 
 /**
- * Use this helper outside the Page Editor context
- * to uninstall a collections of extensions.
+ * Use this helper outside the Page Editor context to uninstall a collections of mod components.
  */
-export async function uninstallExtensions(
-  extensionIds: UUID[],
+export async function uninstallModComponents(
+  modComponentIds: UUID[],
   dispatch: Dispatch<unknown>,
 ): Promise<void> {
-  await removeDraftModComponents(extensionIds);
+  await removeDraftModComponents(modComponentIds);
 
-  dispatch(extensionActions.removeExtensions({ extensionIds }));
+  dispatch(extensionActions.removeModComponents({ modComponentIds }));
 
-  removeExtensionsFromAllTabs(extensionIds);
+  removeModComponentsFromAllTabs(modComponentIds);
 }
 
 /**
  * Uninstalls the extensions from all open tabs
  */
-export function removeExtensionsFromAllTabs(extensionIds: UUID[]): void {
-  for (const extensionId of extensionIds) {
-    removeExtensionForEveryTab(extensionId);
+export function removeModComponentsFromAllTabs(modComponentIds: UUID[]): void {
+  for (const modComponentId of modComponentIds) {
+    removeModComponentForEveryTab(modComponentId);
   }
 }

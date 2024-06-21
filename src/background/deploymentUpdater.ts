@@ -103,7 +103,7 @@ function deactivateModComponentFromStates(
 ): { options: ModComponentState; editor: EditorState } {
   const options = optionsReducer(
     optionsState,
-    optionsActions.removeExtension({ extensionId: modComponentId }),
+    optionsActions.removeModComponent({ modComponentId }),
   );
   const editor = editorState
     ? editorReducer(
