@@ -36,7 +36,7 @@ import "@/vendors/hoverintent";
 import { selectModComponentContext } from "@/starterBricks/helpers";
 import {
   type InitialValues,
-  reduceStarterBrickPipeline,
+  reduceModComponentPipeline,
 } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import {
@@ -147,7 +147,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
       optionsArgs: modComponent.optionsArgs,
     };
 
-    await reduceStarterBrickPipeline(tourConfig, initialValues, {
+    await reduceModComponentPipeline(tourConfig, initialValues, {
       logger: modComponentLogger,
       ...apiVersionOptions(modComponent.apiVersion),
       abortSignal: abortController.signal,

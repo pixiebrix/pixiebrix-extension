@@ -17,7 +17,7 @@
 
 import {
   type InitialValues,
-  reduceStarterBrickPipeline,
+  reduceModComponentPipeline,
 } from "@/runtime/reducePipeline";
 import {
   type CustomEventOptions,
@@ -196,7 +196,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
      *  starting on line 323, the runRendererPipeline() function
      */
     try {
-      await reduceStarterBrickPipeline(body, initialValues, {
+      await reduceModComponentPipeline(body, initialValues, {
         headless: true,
         logger: componentLogger,
         ...apiVersionOptions(modComponent.apiVersion),

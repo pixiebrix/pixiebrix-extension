@@ -897,8 +897,8 @@ async function getBrickLogger(
   });
 }
 
-/** Execute primary pipeline of a starter brick. */
-export async function reduceStarterBrickPipeline(
+/** Execute primary pipeline of a mod component attached to a starter brick. */
+export async function reduceModComponentPipeline(
   pipeline: BrickConfig | BrickPipeline,
   initialValues: InitialValues,
   partialOptions: Partial<ReduceOptions> = {},
@@ -928,8 +928,8 @@ export async function reduceStarterBrickPipeline(
 }
 
 /**
- * Execute a pipeline of bricks and return the result. For starter bricks, use reduceStarterBrickPipeline.
- * @see reduceStarterBrickPipeline
+ * Execute a pipeline of bricks and return the result. For starter bricks, use reduceModComponentPipeline.
+ * @see reduceModComponentPipeline
  */
 export async function reducePipeline(
   pipeline: BrickConfig | BrickPipeline,

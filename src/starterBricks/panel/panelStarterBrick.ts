@@ -22,7 +22,7 @@ import { checkAvailable } from "@/bricks/available";
 import { castArray, cloneDeep } from "lodash";
 import {
   type InitialValues,
-  reduceStarterBrickPipeline,
+  reduceModComponentPipeline,
 } from "@/runtime/reducePipeline";
 import {
   acquireElement,
@@ -400,7 +400,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
           root: document,
         };
 
-        const rendererPromise = reduceStarterBrickPipeline(
+        const rendererPromise = reduceModComponentPipeline(
           body,
           initialValues,
           {

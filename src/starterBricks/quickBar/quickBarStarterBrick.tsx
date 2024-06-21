@@ -18,7 +18,7 @@
 import React from "react";
 import {
   type InitialValues,
-  reduceStarterBrickPipeline,
+  reduceModComponentPipeline,
 } from "@/runtime/reducePipeline";
 import {
   type Manifest,
@@ -239,7 +239,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
             optionsArgs: modComponent.optionsArgs,
           };
 
-          await reduceStarterBrickPipeline(actionConfig, initialValues, {
+          await reduceModComponentPipeline(actionConfig, initialValues, {
             logger: modComponentLogger,
             ...apiVersionOptions(modComponent.apiVersion),
           });

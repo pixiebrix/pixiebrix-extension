@@ -28,7 +28,7 @@ import {
   tick,
 } from "@/starterBricks/starterBrickTestUtils";
 import { type BrickPipeline } from "@/bricks/types";
-import { reduceStarterBrickPipeline } from "@/runtime/reducePipeline";
+import { reduceModComponentPipeline } from "@/runtime/reducePipeline";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
@@ -41,7 +41,7 @@ import {
 
 jest.mock("@/runtime/reducePipeline");
 
-const reduceExtensionPipelineMock = jest.mocked(reduceStarterBrickPipeline);
+const reduceExtensionPipelineMock = jest.mocked(reduceModComponentPipeline);
 
 globalThis.requestIdleCallback = jest.fn((callback) => {
   callback({ didTimeout: false, timeRemaining: () => 1 });
