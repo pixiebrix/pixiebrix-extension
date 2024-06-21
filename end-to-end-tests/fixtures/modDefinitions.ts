@@ -19,8 +19,8 @@ import { expect } from "@playwright/test";
 import { test as pageContextFixture } from "./pageContext";
 import { WorkshopPage } from "../pageObjects/extensionConsole/workshop/workshopPage";
 
-// Removes any uuids from the text
-function normalize(string: string) {
+// Replaces any uuids in the text with a fixed value to make snapshots more stable
+function normalizeUUids(string: string) {
   return string.replaceAll(
     // eslint-disable-next-line unicorn/better-regex -- more clear this way
     /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g,
@@ -77,7 +77,7 @@ export const test = pageContextFixture.extend<{
       await workshopPage.goto();
       const editPage = await workshopPage.findAndSelectMod(modId);
 
-      const normalizedModDefinitionYaml = normalize(
+      const normalizedModDefinitionYaml = normalizeUUids(
         await editPage.editor.getValue(),
       );
       expect(normalizedModDefinitionYaml).toMatchSnapshot(snapshotName);
