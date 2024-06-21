@@ -21,7 +21,6 @@ import {
   type IntegrationDefinition,
   type IntegrationDependency,
   type KeyAuthenticationDefinition,
-  type OAuth2AuthenticationDefinition,
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
@@ -118,28 +117,6 @@ export const keyAuthIntegrationDefinitionFactory = define<
         Accept: "application/json",
         Authorization: "Token {{{ apiKey }}}",
       },
-    };
-  },
-});
-
-export const controlRoomOAuth2IntegrationDefinitionFactory = define<
-  IntegrationDefinition<OAuth2AuthenticationDefinition>
->({
-  metadata: metadataFactory,
-  inputSchema() {
-    return {};
-  },
-  authentication(): OAuth2AuthenticationDefinition {
-    return {
-      oauth2: {
-        client_id: "test-oauth2-client-id",
-        tokenUrl: "https://api.test.com/oauth2_sso",
-        authorizeUrl: "https://api.test.com/oauth2_sso/authorize",
-      },
-      headers: {
-        Authorization: "Bearer test-oauth2-token",
-        "X-Control-Room": "https://control-room.test.com",
-      } as Record<string, string>,
     };
   },
 });
