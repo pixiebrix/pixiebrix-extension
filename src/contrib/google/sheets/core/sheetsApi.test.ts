@@ -27,41 +27,40 @@ import { integrationConfigFactory } from "@/testUtils/factories/integrationFacto
 import { locator } from "@/background/locator";
 import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
-import { readRawConfigurations } from "@/integrations/registry";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
-
-import {
-  deleteCachedAuthData,
-  getCachedAuthData,
-  setCachedAuthData,
-} from "@/background/auth/authStorage";
+import * as backgroundAuthStorage from "@/background/auth/authStorage";
 import { setPlatform } from "@/platform/platformContext";
 import backgroundPlatform from "@/background/backgroundPlatform";
+import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
 
 const axiosMock = new MockAdapter(axios);
 
 const googleIntegration = fromJS(googleDefinition as any);
 
-jest.mock("@/background/auth/authStorage", () => ({
-  ...jest.requireActual("@/background/auth/authStorage"),
-  deleteCachedAuthData: jest.fn(),
-}));
-
 // Wire up proxyService to the real implementation
 jest.mocked(apiProxyService).mockImplementation(realProxyService);
+
+jest.mock("@/integrations/util/readRawConfigurations");
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
-const deleteCachedAuthDataMock = jest.mocked(deleteCachedAuthData);
+
+const { deleteCachedAuthData, getCachedAuthData, setCachedAuthData } =
+  backgroundAuthStorage;
+
+const spyContainer = {
+  deleteCachedAuthData,
+};
+
+// const deleteCachedAuthDataMock = jest.mocked(deleteCachedAuthData);
+const deleteCachedAuthDataSpy = jest.spyOn(
+  spyContainer,
+  "deleteCachedAuthData",
+);
 
 jest.mock("@/integrations/registry", () => {
   const actual = jest.requireActual("@/integrations/registry");
 
   return {
     ...actual,
-    readRawConfigurations: jest
-      .fn()
-      .mockRejectedValue(
-        new Error("Implement readRawConfigurations mock in test"),
-      ),
     lookup: jest.fn(async (id: string) => {
       if (id === googleIntegration.id) {
         return googleIntegration;
@@ -93,7 +92,7 @@ describe("error handling", () => {
 
     readRawConfigurationsMock.mockResolvedValue([integrationConfig]);
 
-    deleteCachedAuthDataMock.mockReset();
+    deleteCachedAuthDataSpy.mockReset();
 
     await locator.refresh();
   });
@@ -116,7 +115,7 @@ describe("error handling", () => {
     );
 
     // Don't clear the token, because the token is valid the user just might not have access
-    expect(deleteCachedAuthDataMock).not.toHaveBeenCalledOnce();
+    expect(deleteCachedAuthDataSpy).not.toHaveBeenCalledOnce();
   });
 
   it("Returns bad request error", async () => {
@@ -137,7 +136,7 @@ describe("error handling", () => {
       "Bad Request",
     );
 
-    expect(deleteCachedAuthDataMock).not.toHaveBeenCalledOnce();
+    expect(deleteCachedAuthDataSpy).not.toHaveBeenCalledOnce();
   });
 
   it.each([
@@ -173,7 +172,7 @@ describe("error handling", () => {
       ).resolves.toStrictEqual({
         access_token: "NOTAREALTOKEN",
       });
-      expect(deleteCachedAuthDataMock).toHaveBeenCalledOnce();
+      expect(deleteCachedAuthDataSpy).toHaveBeenCalledOnce();
 
       expect(
         axiosMock.history.get!.filter((x) => x.url!.startsWith(DRIVE_BASE_URL)),
@@ -218,7 +217,7 @@ describe("error handling", () => {
         access_token: "NOTAREALTOKEN",
         refresh_token: "NOTAREALREFRESHTOKEN",
       });
-      expect(deleteCachedAuthDataMock).toHaveBeenCalledOnce();
+      expect(deleteCachedAuthDataSpy).toHaveBeenCalledOnce();
 
       expect(
         axiosMock.history.get!.filter((x) => x.url!.startsWith(DRIVE_BASE_URL)),
@@ -256,7 +255,7 @@ describe("error handling", () => {
         access_token: "NOTAREALTOKEN2",
         refresh_token: "NOTAREALREFRESHTOKEN2",
       });
-      expect(deleteCachedAuthDataMock).not.toHaveBeenCalled();
+      expect(deleteCachedAuthDataSpy).not.toHaveBeenCalled();
 
       const googleGetRequests = axiosMock.history.get!.filter((x) =>
         x.url!.startsWith(DRIVE_BASE_URL),

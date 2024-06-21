@@ -29,9 +29,9 @@ import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
-import { readRawConfigurations } from "@/integrations/registry";
 import { registry } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
+import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
 
 jest.mock("@/integrations/registry", () => {
   const actual = jest.requireActual("@/integrations/registry");
@@ -57,6 +57,7 @@ jest.mocked(registry.find).mockImplementation(async (id: RegistryId) => {
   } as any;
 });
 
+jest.mock("@/integrations/util/readRawConfigurations");
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
 
 describe("getPartnerPrincipals", () => {

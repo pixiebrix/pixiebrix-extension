@@ -33,7 +33,6 @@ import createAuthRefreshInterceptor from "axios-auth-refresh";
 import refreshPartnerAuthentication from "@/background/auth/partnerIntegrations/refreshPartnerAuthentication";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
-import { expectContext } from "@/utils/expectContext";
 
 /**
  * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL
@@ -119,11 +118,6 @@ async function safeSetupClient(): Promise<void> {
  * Returns an Axios client for making (optionally) authenticated API requests to PixieBrix.
  */
 export async function getApiClient(): Promise<AxiosInstance> {
-  expectContext(
-    "background",
-    "The api client should only be used in the background context.",
-  );
-
   if (apiClientSetupPromise == null) {
     await safeSetupClient();
   }
@@ -168,11 +162,6 @@ export async function maybeGetLinkedApiClient(): Promise<AxiosInstance | null> {
 }
 
 export function initApiClient() {
-  expectContext(
-    "background",
-    "The api client should only be used in the background context.",
-  );
-
   if (apiClientInstance != null) {
     console.warn(
       "initApiClient() called, but the client instance already exists.",

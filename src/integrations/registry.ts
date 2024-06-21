@@ -17,37 +17,13 @@
 
 import BaseRegistry from "@/registry/memoryRegistry";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
-import {
-  type IntegrationConfig,
-  type IntegrationABC,
-} from "@/integrations/integrationTypes";
+import { type IntegrationABC } from "@/integrations/integrationTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import {
-  readReduxStorage,
-  validateReduxStorageKey,
-} from "@/utils/storageUtils";
-import { migrations } from "@/integrations/store/integrationsMigrations";
-import { initialState } from "@/integrations/store/integrationsSlice";
-import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
-
-// @See persistIntegrationsConfig in integrationsSlice.ts
-const INTEGRATIONS_STORAGE_KEY = validateReduxStorageKey(
-  "persist:servicesOptions",
-);
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const registry = new BaseRegistry<RegistryId, IntegrationABC>(
   ["service"],
   fromJS,
 );
-
-export async function readRawConfigurations(): Promise<IntegrationConfig[]> {
-  const integrations = await readReduxStorage(
-    INTEGRATIONS_STORAGE_KEY,
-    migrations,
-    initialState,
-  );
-  return selectIntegrationConfigs({ integrations });
-}
 
 export default registry;

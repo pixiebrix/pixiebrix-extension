@@ -125,6 +125,10 @@ export async function setPartnerAuthData(data: PartnerAuthData): Promise<void> {
   return partnerTokenStorage.set(data);
 }
 
+export async function removeOAuth2Token(token: string) {
+  await chromeP.identity.removeCachedAuthToken({ token });
+}
+
 /**
  * Clear all partner OAuth2 tokens and reset api query caches
  */
@@ -137,9 +141,10 @@ export async function clearPartnerAuthData(): Promise<void> {
     console.debug(
       "Clearing partner auth for authId: " + partnerAuthData.authId,
     );
-    await chromeP.identity.removeCachedAuthToken({
-      token: partnerAuthData.token,
-    });
+    await removeOAuth2Token(partnerAuthData.token);
+    // await chromeP.identity.removeCachedAuthToken({
+    //   token: partnerAuthData.token,
+    // });
   }
 
   await partnerTokenStorage.remove();

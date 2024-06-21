@@ -25,7 +25,7 @@ import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 import { canParseUrl } from "@/utils/urlUtils";
 import chromeP from "webext-polyfill-kinda";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { setPartnerAuthData } from "@/auth/authStorage";
+import { removeOAuth2Token, setPartnerAuthData } from "@/auth/authStorage";
 import { stringToBase64 } from "uint8array-extras";
 import { getApiClient } from "@/data/service/apiClient";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
@@ -116,7 +116,8 @@ export async function launchAuthIntegration({
       }
 
       // Clear the token to allow the user re-login with the SAML/SSO provider
-      await chromeP.identity.removeCachedAuthToken({ token });
+      // await chromeP.identity.removeCachedAuthToken({ token });
+      await removeOAuth2Token(token);
 
       throw new Error(
         `Control Room rejected login. Verify you are a user in the Control Room, and/or verify the Control Room SAML and AuthConfig App configuration.
@@ -156,6 +157,12 @@ export async function launchAuthIntegration({
         "X-Control-Room": controlRoomUrl,
       },
     });
+
+    // Refactor - TODO: At some point, this whole thing should probably be a
+    //  switch statement that calls separate helper functions for each supported
+    //  integration id, to de-couple the general auth integration logic from
+    //  any partner-specific code.
+    return;
   }
 
   throw new Error(
