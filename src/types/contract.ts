@@ -188,8 +188,8 @@ export type PackageConfigDetail = Except<
 };
 
 /**
- * @deprecated because ModDefinition will be used for singluar mods
  * A mod component that is not packaged inside a mod that is synced/saved to the cloud.
+ * @deprecated because ModDefinition will be used for standalone mods
  */
 export type StandaloneModDefinition<Config extends UnknownObject = JsonObject> =
   Except<ActivatedModComponent<Config>, "active"> & {
@@ -200,8 +200,10 @@ export type StandaloneModDefinition<Config extends UnknownObject = JsonObject> =
 
 /**
  * `/api/recipes/${recipeId}`
+ * @deprecated will be retired in favor of the brick endpoint
  */
-export type RecipeResponse = {
+// TODO: change shape in https://github.com/pixiebrix/pixiebrix-app/issues/4355
+export type ModDefinitionResponse = {
   // On this endpoint, the sharing and updated_at are in the envelope of the response
   config: UnsavedModDefinition;
   sharing: ModDefinition["sharing"];

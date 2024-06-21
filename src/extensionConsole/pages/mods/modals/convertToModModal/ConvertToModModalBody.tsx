@@ -32,7 +32,7 @@ import { pick } from "lodash";
 import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
-  useCreateRecipeMutation,
+  useCreateModDefinitionMutation,
   useDeleteStandaloneModDefinitionMutation,
   useGetAllStandaloneModDefinitionsQuery,
 } from "@/data/service/api";
@@ -104,7 +104,7 @@ const selectStylesOverride: StylesConfig = {
 const ConvertToModModalBody: React.FunctionComponent = () => {
   const dispatch = useDispatch();
 
-  const [createMod] = useCreateRecipeMutation();
+  const [createMod] = useCreateModDefinitionMutation();
   const { showShareContext, showPublishContext } =
     useSelector(selectModalsContext);
   const modComponentId =
@@ -164,7 +164,7 @@ const ConvertToModModalBody: React.FunctionComponent = () => {
       });
 
       const response = await createMod({
-        recipe: unsavedModDefinition,
+        modDefinition: unsavedModDefinition,
         organizations: [],
         public: false,
         shareDependencies: true,

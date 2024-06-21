@@ -25,8 +25,8 @@ import useSavingWizard from "./useSavingWizard";
 import useUpsertFormElementMock from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import useResetExtensionMock from "@/pageEditor/hooks/useResetExtension";
 import {
-  useCreateRecipeMutation as useCreateRecipeMutationMock,
-  useUpdateRecipeMutation as useUpdateRecipeMutationMock,
+  useCreateModDefinitionMutation as useCreateModDefinitionMutationMock,
+  useUpdateModDefinitionMutation as useUpdateModDefinitionMutationMock,
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
 } from "@/data/service/api";
 import { selectModComponentFormStates } from "@/pageEditor/slices/editorSelectors";
@@ -50,8 +50,8 @@ jest.mock("@/pageEditor/hooks/useUpsertModComponentFormState");
 jest.mock("@/pageEditor/hooks/useResetExtension");
 
 jest.mock("@/data/service/api", () => ({
-  useCreateRecipeMutation: jest.fn().mockReturnValue([]),
-  useUpdateRecipeMutation: jest.fn().mockReturnValue([]),
+  useCreateModDefinitionMutation: jest.fn().mockReturnValue([]),
+  useUpdateModDefinitionMutation: jest.fn().mockReturnValue([]),
   useGetEditablePackagesQuery: jest.fn().mockReturnValue({
     data: [],
     isLoading: false,
@@ -209,12 +209,12 @@ describe("saving a mod component", () => {
 
     const createModMock = jest.fn();
     jest
-      .mocked(useCreateRecipeMutationMock)
+      .mocked(useCreateModDefinitionMutationMock)
       .mockReturnValue([createModMock] as any);
 
     const updateModMock = jest.fn();
     jest
-      .mocked(useUpdateRecipeMutationMock)
+      .mocked(useUpdateModDefinitionMutationMock)
       .mockReturnValue([updateModMock] as any);
 
     return {

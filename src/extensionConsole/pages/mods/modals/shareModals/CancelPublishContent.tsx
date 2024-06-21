@@ -25,7 +25,7 @@ import PublishContentLayout from "./PublishContentLayout";
 import { produce } from "immer";
 import {
   useGetEditablePackagesQuery,
-  useUpdateRecipeMutation,
+  useUpdateModDefinitionMutation,
 } from "@/data/service/api";
 import notify from "@/utils/notify";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
@@ -36,12 +36,12 @@ const CancelPublishContent: React.FunctionComponent = () => {
   const [error, setError] = React.useState<string | null>(null);
 
   const { blueprintId } = useSelector(selectShowPublishContext);
-  const { data: recipe, refetch: refetchRecipes } =
+  const { data: modDefinition, refetch: refetchModDefinitions } =
     useOptionalModDefinition(blueprintId);
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
 
-  const [updateRecipe] = useUpdateRecipeMutation();
+  const [updateModDefinition] = useUpdateModDefinitionMutation();
   const dispatch = useDispatch();
 
   const closeModal = () => {
@@ -53,23 +53,23 @@ const CancelPublishContent: React.FunctionComponent = () => {
     setError(null);
 
     try {
-      const newRecipe = produce(recipe, (draft) => {
+      const newModDefinition = produce(modDefinition, (draft) => {
         draft.sharing.public = false;
       });
 
       const packageId = editablePackages.find(
-        (x) => x.name === newRecipe.metadata.id,
+        (x) => x.name === newModDefinition.metadata.id,
       )?.id;
 
-      await updateRecipe({
+      await updateModDefinition({
         packageId,
-        recipe: newRecipe,
+        modDefinition: newModDefinition,
       }).unwrap();
 
       notify.success("Cancelled publish");
 
       closeModal();
-      refetchRecipes();
+      refetchModDefinitions();
     } catch (error) {
       if (
         isSingleObjectBadRequestError(error) &&

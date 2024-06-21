@@ -28,7 +28,7 @@ import { selectModHasAnyActivatedModComponents } from "@/store/extensionsSelecto
 import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";
 import {
   useCreateMilestoneMutation,
-  useGetRecipeQuery,
+  useGetModDefinitionQuery,
 } from "@/data/service/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
@@ -83,7 +83,7 @@ const ActivateModCard: React.FC = () => {
   );
   // Page parent component is gating this content component on isFetching, so
   // recipe will always be resolved here
-  const { data: mod } = useGetRecipeQuery({ recipeId: modId });
+  const { data: mod } = useGetModDefinitionQuery({ modId });
 
   const {
     data: wizardState,

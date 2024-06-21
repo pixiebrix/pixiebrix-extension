@@ -26,10 +26,10 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { useGetRecipeQuery } from "@/data/service/api";
+import { useGetModDefinitionQuery } from "@/data/service/api";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { validateRegistryId } from "@/types/helpers";
-import { type RecipeResponse } from "@/types/contract";
+import { type ModDefinitionResponse } from "@/types/contract";
 import {
   modComponentDefinitionFactory,
   defaultModDefinitionFactory,
@@ -60,7 +60,7 @@ jest.mock("@/extensionConsole/pages/useRegistryIdParam", () => ({
 global.chrome.commands.getAll = jest.fn();
 
 function setupMod(modDefinition: ModDefinition) {
-  const recipeResponse: RecipeResponse = {
+  const recipeResponse: ModDefinitionResponse = {
     config: modDefinition,
     updated_at: modDefinition.updated_at,
     sharing: {
@@ -85,8 +85,8 @@ beforeEach(() => {
 
 // Activate Mod Card is always rendered when the mod has already been found
 const ModCard: React.FC = () => {
-  const recipeState = useGetRecipeQuery({
-    recipeId: testModId,
+  const recipeState = useGetModDefinitionQuery({
+    modId: testModId,
   });
   return (
     <MemoryRouter>
