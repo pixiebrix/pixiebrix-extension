@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../fixtures/testBase";
-import { ActivateModPage } from "../pageObjects/extensionConsole/modsPage";
+import { test, expect } from "../../fixtures/testBase";
+import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import {
@@ -24,13 +24,13 @@ import {
   clickAndWaitForNewPage,
   runModViaQuickBar,
   getBrowserOs,
-} from "../utils";
+} from "../../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
-import { SERVICE_URL } from "../env";
-import { ExtensionsShortcutsPage } from "end-to-end-tests/pageObjects/extensionsShortcutsPage";
-import { FloatingActionButton } from "end-to-end-tests/pageObjects/floatingActionButton";
+import { SERVICE_URL } from "../../env";
+import { ExtensionsShortcutsPage } from "../../pageObjects/extensionsShortcutsPage";
+import { FloatingActionButton } from "../../pageObjects/floatingActionButton";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -70,7 +70,10 @@ test("can activate a mod with built-in integration", async ({
       giphyRequestPostData = route.request().postDataJSON();
 
       return route.fulfill({
-        path: path.join(__dirname, "../fixtures/responses/giphy-search.json"),
+        path: path.join(
+          __dirname,
+          "../../fixtures/responses/giphy-search.json",
+        ),
       });
     }
 

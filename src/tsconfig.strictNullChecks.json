@@ -13,7 +13,7 @@
     "../end-to-end-tests/pageObjects/extensionConsole/workshop/workshopPage.ts",
     "../end-to-end-tests/setup/affiliated.setup.ts",
     "../end-to-end-tests/setup/unaffiliated.setup.ts",
-    "../end-to-end-tests/tests/extensionConsoleActivation.spec.ts",
+    "../end-to-end-tests/tests/extensionConsole/activation.spec.ts",
     "../end-to-end-tests/tests/smoke/modsPage.spec.ts",
     "../end-to-end-tests/tests/telemetry/errors.spec.ts",
     "./__mocks__/@/auth/featureFlagStorage.ts",
