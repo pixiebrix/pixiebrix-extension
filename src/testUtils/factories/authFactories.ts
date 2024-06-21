@@ -20,7 +20,7 @@ import {
   type AuthState,
   type AuthUserOrganization,
   type OrganizationAuthState,
-  PartnerAuthData,
+  type PartnerAuthData,
   type TokenAuthData,
   type UserData,
 } from "@/auth/authTypes";
