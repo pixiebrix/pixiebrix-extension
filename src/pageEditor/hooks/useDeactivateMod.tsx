@@ -27,7 +27,7 @@ import { selectModComponentFormStates } from "@/pageEditor/slices/editorSelector
 import { uniq } from "lodash";
 import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { getIdForElement, getModIdForElement } from "@/pageEditor/utils";
+import { getModComponentId, getModId } from "@/pageEditor/utils";
 import { clearLog } from "@/background/messenger/api";
 
 type Config = {
@@ -57,13 +57,13 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
 
       const modComponentIds = uniq(
         [...activatedModComponents, ...modComponentFormStates]
-          .filter((x) => getModIdForElement(x) === modId)
-          .map((x) => getIdForElement(x)),
+          .filter((x) => getModId(x) === modId)
+          .map((x) => getModComponentId(x)),
       );
       await Promise.all(
         modComponentIds.map(async (modComponentId) =>
           removeModComponentFromStorage({
-            extensionId: modComponentId,
+            modComponentId,
           }),
         ),
       );

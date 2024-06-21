@@ -183,20 +183,20 @@ export function acquireElement(
 }
 
 /**
- * Returns the MessageContext associated with `extension`.
+ * Returns the MessageContext associated with `modComponent`.
  */
-export function selectExtensionContext(
-  extension: ResolvedModComponent,
+export function selectModComponentContext(
+  modComponent: ResolvedModComponent,
 ): MessageContext {
   return {
     // The step label will be re-assigned later in reducePipeline
-    label: extension.label ?? undefined,
-    extensionLabel: extension.label ?? undefined,
-    extensionId: extension.id,
-    extensionPointId: extension.extensionPointId,
-    deploymentId: extension._deployment?.id,
-    blueprintId: extension._recipe?.id,
-    blueprintVersion: extension._recipe?.version,
+    label: modComponent.label ?? undefined,
+    extensionLabel: modComponent.label ?? undefined,
+    extensionId: modComponent.id,
+    extensionPointId: modComponent.extensionPointId,
+    deploymentId: modComponent._deployment?.id,
+    blueprintId: modComponent._recipe?.id,
+    blueprintVersion: modComponent._recipe?.version,
   };
 }
 

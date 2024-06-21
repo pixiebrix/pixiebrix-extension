@@ -25,8 +25,8 @@ import starterBrickRegistry from "@/starterBricks/registry";
 import { type RegistryId } from "@/types/registryTypes";
 import { compact, uniq } from "lodash";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
-import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
-import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProvider/quickBarProviderExtension";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
+import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProvider/quickBarProviderStarterBrick";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 
@@ -92,8 +92,8 @@ export async function includesQuickBarStarterBrick(
     // eslint-disable-next-line no-await-in-loop -- can break when we find one
     const starterBrick = await starterBrickRegistry.lookup(id);
     if (
-      QuickBarStarterBrickABC.isQuickBarExtensionPoint(starterBrick) ||
-      QuickBarProviderStarterBrickABC.isQuickBarProviderExtensionPoint(
+      QuickBarStarterBrickABC.isQuickBarStarterBrick(starterBrick) ||
+      QuickBarProviderStarterBrickABC.isQuickBarProviderStarterBrick(
         starterBrick,
       )
     ) {

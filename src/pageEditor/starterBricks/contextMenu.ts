@@ -31,18 +31,18 @@ import {
   selectStarterBrickAvailability,
 } from "@/pageEditor/starterBricks/base";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
-import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
 import {
   type ContextMenuDefinition,
   type ContextMenuConfig,
-} from "@/starterBricks/contextMenu/types";
+} from "@/starterBricks/contextMenu/contextMenuTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(
@@ -170,11 +170,15 @@ async function fromExtension(
   };
 }
 
-function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
+function asDraftModComponent(
+  contextMenuFormState: ContextMenuFormState,
+): DraftModComponent {
   return {
     type: "contextMenu",
-    extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectStarterBrickDefinition(element),
+    extension: selectExtension(contextMenuFormState, {
+      includeInstanceIds: true,
+    }),
+    extensionPointConfig: selectStarterBrickDefinition(contextMenuFormState),
   };
 }
 
@@ -187,7 +191,7 @@ const config: ModComponentFormStateAdapter<undefined, ContextMenuFormState> = {
   selectNativeElement: undefined,
   icon: faBars,
   fromNativeElement,
-  asDynamicElement,
+  asDraftModComponent,
   selectStarterBrickDefinition,
   selectExtension,
   fromExtension,

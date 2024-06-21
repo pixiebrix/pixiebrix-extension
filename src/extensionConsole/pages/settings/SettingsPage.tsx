@@ -46,6 +46,7 @@ const SettingsPage: React.FunctionComponent = () => {
       className="max-550"
       icon={faCogs}
       title="Extension Settings"
+      documentationUrl="https://docs.pixiebrix.com/platform-overview/extension-console#settings"
       description={
         <p>
           Settings for the PixieBrix browser extension. To edit the settings for

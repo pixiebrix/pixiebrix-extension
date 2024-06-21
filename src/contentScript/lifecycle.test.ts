@@ -21,7 +21,7 @@ import {
   fromJS,
   type TriggerConfig,
   type TriggerDefinition,
-} from "@/starterBricks/triggerExtension";
+} from "@/starterBricks/trigger/triggerStarterBrick";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";

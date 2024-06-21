@@ -34,15 +34,15 @@ import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { faThLarge } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
-import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
-import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type QuickBarFormState } from "./formStateTypes";
 import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
 import {
   type QuickBarDefinition,
   type QuickBarConfig,
-} from "@/starterBricks/quickBar/types";
+} from "@/starterBricks/quickBar/quickBarTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
@@ -167,11 +167,13 @@ async function fromExtension(
   };
 }
 
-function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
+function asDraftModComponent(
+  quickBarFormState: QuickBarFormState,
+): DraftModComponent {
   return {
     type: "quickBar",
-    extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectStarterBrickDefinition(element),
+    extension: selectExtension(quickBarFormState, { includeInstanceIds: true }),
+    extensionPointConfig: selectStarterBrickDefinition(quickBarFormState),
   };
 }
 
@@ -184,7 +186,7 @@ const config: ModComponentFormStateAdapter<undefined, QuickBarFormState> = {
   selectNativeElement: undefined,
   icon: faThLarge,
   fromNativeElement,
-  asDynamicElement,
+  asDraftModComponent,
   selectStarterBrickDefinition,
   selectExtension,
   fromExtension,

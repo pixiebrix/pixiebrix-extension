@@ -26,6 +26,7 @@ test("can create a new mod from a yaml definition", async ({
   page,
   extensionId,
   createdModIds,
+  verifyModDefinitionSnapshot,
 }) => {
   // Test uses the modDefinitionNames fixture to automatically create the mod definition
   const simpleSidebarModId = createdModIds[0];
@@ -38,4 +39,9 @@ test("can create a new mod from a yaml definition", async ({
   await expect(editWorkshopModPage.editor.baseLocator).toContainText(
     simpleSidebarModId,
   );
+
+  await verifyModDefinitionSnapshot({
+    modId: simpleSidebarModId,
+    snapshotName: "simple-sidebar-panel",
+  });
 });

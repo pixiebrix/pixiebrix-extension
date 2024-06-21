@@ -54,7 +54,7 @@ import { inspectedTab } from "@/pageEditor/context/connection";
 
 /**
  * A sidebar menu entry corresponding to an untouched mod component
- * @see DynamicModComponentListItem
+ * @see DraftModComponentListItem
  */
 const ActivatedModComponentListItem: React.FunctionComponent<{
   modComponent: ModComponentBase;

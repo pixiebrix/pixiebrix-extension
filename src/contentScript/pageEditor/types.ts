@@ -24,18 +24,18 @@ import { type Except } from "type-fest";
 import {
   type PanelConfig,
   type PanelDefinition,
-} from "@/starterBricks/panel/types";
+} from "@/starterBricks/panel/panelStarterBrickTypes";
 import {
   type MenuItemDefinition,
   type MenuItemStarterBrickConfig,
-} from "@/starterBricks/menuItem/types";
+} from "@/starterBricks/menuItem/menuItemTypes";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type BrickConfig } from "@/bricks/types";
 
-export interface DynamicDefinition<
+export interface DraftModComponent<
   TExtensionPoint extends
     StarterBrickDefinitionProp = StarterBrickDefinitionProp,
   TExtension extends UnknownObject = UnknownObject,
@@ -55,7 +55,7 @@ export type PanelSelectionResult = {
   panel: Except<PanelConfig, "body">;
   containerInfo: ElementInfo;
 };
-export type ButtonDefinition = DynamicDefinition<
+export type ButtonDefinition = DraftModComponent<
   MenuItemDefinition,
   MenuItemStarterBrickConfig
 >;

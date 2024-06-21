@@ -156,7 +156,11 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
             <Form noValidate onSubmit={handleSubmit} autoComplete="off">
               <div className="d-flex">
                 <div className="flex-grow-1">
-                  <PageTitle icon={faHammer} title="Edit Brick" />
+                  <PageTitle
+                    icon={faHammer}
+                    title="Edit Brick"
+                    documentationUrl="https://docs.pixiebrix.com/developing-mods/advanced-workshop"
+                  />
                 </div>
                 <div className="flex-grow-1 EditPage__toolbar">
                   <div className="d-flex justify-content-end">

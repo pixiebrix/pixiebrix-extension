@@ -162,7 +162,7 @@ export type BrickConfig = {
   /**
    * A unique id for the configured brick, used to correlate traces across runs when using the Page Editor.
    *
-   * DO NOT SET: generated automatically by the Page Editor when configuring a dynamic element.
+   * DO NOT SET: generated automatically by the Page Editor when configuring a draft mod component.
    */
   instanceId?: UUID;
 

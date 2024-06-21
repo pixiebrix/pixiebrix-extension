@@ -4,7 +4,7 @@ import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getExampleBrickPipeline } from "@/pageEditor/exampleStarterBrickConfigs";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { updateDynamicElement } from "@/contentScript/messenger/api";
+import { updateDraftModComponent } from "@/contentScript/messenger/api";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -51,9 +51,9 @@ function useAutoInsert(type: StarterBrickType): void {
 
       // Don't auto-run tours on selection in Page Editor
       if (config.elementType !== "tour") {
-        updateDynamicElement(
+        updateDraftModComponent(
           allFramesInInspectedTab,
-          config.asDynamicElement(formState),
+          config.asDraftModComponent(formState),
         );
       }
 

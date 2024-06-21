@@ -61,7 +61,7 @@ const connectToContentScript = createAsyncThunk<
   console.debug("connectToContentScript: ensuring contentScript");
   await waitForContentScript(inspectedTab, 4500);
 
-  void thunkAPI.dispatch(actions.checkAvailableDynamicElements());
+  void thunkAPI.dispatch(actions.checkAvailableDraftModComponents());
   void thunkAPI.dispatch(actions.checkAvailableInstalledExtensions());
 
   console.debug(`connectToContentScript: replacing tabState for ${uuid}`);

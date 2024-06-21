@@ -30,6 +30,16 @@ import path from "node:path";
 import * as os from "node:os";
 import { test as envSetup } from "./environmentCheck";
 
+const profileNameFromTestPath = (testFilePath: string) => {
+  // Split the file path into directory and file name
+  const parts = testFilePath.split("/");
+  const fileName = parts.at(-1);
+
+  // Split the file name into words and return the first word
+  const words = fileName?.split(".");
+  return words?.[0] || "unknown";
+};
+
 // Create a local auth directory to store the profile paths
 const createAuthProfilePathDirectory = async () => {
   const authPath = path.join(__dirname, "../.auth");
@@ -77,7 +87,10 @@ export const test = mergeTests(
 
       // Store the profile path for future use if the auth setup test passes
       if (testInfo.status === "passed") {
-        const authProfilePathFile = getAuthProfilePathFile(chromiumChannel);
+        const authProfilePathFile = getAuthProfilePathFile(
+          profileNameFromTestPath(testInfo.titlePath[0] || "unknown"),
+          chromiumChannel,
+        );
         await fs.writeFile(
           authProfilePathFile,
           authSetupProfileDirectory,

@@ -98,7 +98,7 @@ Playwright's built-in `test` object with extension-specific features.
 ### Playwright Configuration
 
 Configure test execution via `.playwright.config.ts`, including timeout and retry options. The setup
-projects run `./auth.setup.ts` which handles user authentication and saves the path to the logged in and linked profile
+projects handles user authentication and saves the path to the logged in and linked profile
 paths in `.auth`.
 
 ### GitHub CI Integration

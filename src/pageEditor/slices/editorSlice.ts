@@ -49,11 +49,11 @@ import {
 } from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
-  activateElement,
+  makeModComponentFormStateActive,
   editRecipeMetadata,
   editRecipeOptionsDefinitions,
   ensureElementUIState,
-  removeElement,
+  removeModComponentFormState,
   removeRecipeData,
   selectRecipeId,
   setActiveNodeId,
@@ -67,7 +67,7 @@ import {
   checkAvailable,
 } from "@/contentScript/messenger/api";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { testMatchPatterns } from "@/bricks/available";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
@@ -187,7 +187,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
 
       // QuickBar is installed on every page, need to filter by the documentUrlPatterns
       if (
-        QuickBarStarterBrickABC.isQuickBarExtensionPoint(activatedStarterBrick)
+        QuickBarStarterBrickABC.isQuickBarStarterBrick(activatedStarterBrick)
       ) {
         return testMatchPatterns(
           activatedStarterBrick.documentUrlPatterns,
@@ -200,13 +200,13 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
     .map((x) => x.id);
 
   // Note: we can take out this filter if and when we persist the editor
-  // slice and remove installed mod components when they become dynamic form states
-  const notDynamicInstalled = notDeletedModComponents.filter(
+  // slice and remove installed mod components when they become draft form states
+  const notDraftActivated = notDeletedModComponents.filter(
     (modComponent) =>
       !notDeletedFormStates.some((element) => element.uuid === modComponent.id),
   );
 
-  const availableInstalledIds = notDynamicInstalled
+  const availableInstalledIds = notDraftActivated
     .filter((x) => availableExtensionPointIds.includes(x.id))
     .map((x) => x.id);
 
@@ -231,15 +231,15 @@ async function isElementAvailable(
   );
 }
 
-type AvailableDynamic = {
+type AvailableDraftModComponentIds = {
   availableDynamicIds: UUID[];
 };
 
-const checkAvailableDynamicElements = createAsyncThunk<
-  AvailableDynamic,
+const checkAvailableDraftModComponents = createAsyncThunk<
+  AvailableDraftModComponentIds,
   void,
   { state: EditorRootState }
->("editor/checkAvailableDynamicElements", async (arg, thunkAPI) => {
+>("editor/checkAvailableDraftElements", async (arg, thunkAPI) => {
   const notDeletedFormStates = selectNotDeletedModComponentFormStates(
     thunkAPI.getState(),
   );
@@ -257,9 +257,9 @@ const checkAvailableDynamicElements = createAsyncThunk<
     ),
   );
 
-  const availableDynamicIds = uniq(compact(availableFormStateIds));
+  const availableDraftModComponentIds = uniq(compact(availableFormStateIds));
 
-  return { availableDynamicIds };
+  return { availableDynamicIds: availableDraftModComponentIds };
 });
 
 const checkActiveModComponentAvailability = createAsyncThunk<
@@ -268,7 +268,7 @@ const checkActiveModComponentAvailability = createAsyncThunk<
   },
   void,
   { state: EditorRootState & ModComponentsRootState }
->("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
+>("editor/checkActiveModComponentAvailability", async (arg, thunkAPI) => {
   const tabUrl = await getCurrentInspectedURL();
   const state = thunkAPI.getState();
   // The form state of the currently selected mod component in the page editor
@@ -282,20 +282,22 @@ const checkActiveModComponentAvailability = createAsyncThunk<
     tabUrl,
     activeModComponentFormState.extensionPoint,
   );
-  // Calculate the new dynamic mod component availability, depending on the
+  // Calculate the new draft mod component availability, depending on the
   // new availability of the active mod component -- should be a unique list of ids,
   // and we add/remove the active mod component's id based on isAvailable
-  const availableDynamicIds = [...state.editor.availableDynamicIds];
+  const availableDraftModComponentIds = [...state.editor.availableDynamicIds];
   if (isAvailable) {
-    if (!availableDynamicIds.includes(activeModComponentFormState.uuid)) {
-      availableDynamicIds.push(activeModComponentFormState.uuid);
+    if (
+      !availableDraftModComponentIds.includes(activeModComponentFormState.uuid)
+    ) {
+      availableDraftModComponentIds.push(activeModComponentFormState.uuid);
     }
   } else {
-    pull(availableDynamicIds, activeModComponentFormState.uuid);
+    pull(availableDraftModComponentIds, activeModComponentFormState.uuid);
   }
 
   return {
-    availableDynamicIds,
+    availableDynamicIds: availableDraftModComponentIds,
   };
 });
 
@@ -324,7 +326,7 @@ export const editorSlice = createSlice({
       state.elements.push(modComponentFormState);
       state.dirty[modComponentFormState.uuid] = true;
 
-      activateElement(state, modComponentFormState);
+      makeModComponentFormStateActive(state, modComponentFormState);
     },
     betaError(state) {
       const error = new BusinessError("This feature is in private beta");
@@ -348,7 +350,7 @@ export const editorSlice = createSlice({
         state.elements.push(element);
       }
 
-      activateElement(state, element);
+      makeModComponentFormStateActive(state, element);
     },
     resetInstalled(state, actions: PayloadAction<ModComponentFormState>) {
       const element = actions.payload as Draft<ModComponentFormState>;
@@ -381,15 +383,15 @@ export const editorSlice = createSlice({
       const elementId = action.payload;
       const element = state.elements.find((x) => x.uuid === elementId);
       if (!element) {
-        throw new Error(`Unknown dynamic element: ${action.payload}`);
+        throw new Error(`Unknown draft mod component: ${action.payload}`);
       }
 
-      activateElement(state, element);
+      makeModComponentFormStateActive(state, element);
     },
     markClean(state, action: PayloadAction<UUID>) {
       const element = state.elements.find((x) => action.payload === x.uuid);
       if (!element) {
-        throw new Error(`Unknown dynamic element: ${action.payload}`);
+        throw new Error(`Unknown draft mod component: ${action.payload}`);
       }
 
       if (!element.installed) {
@@ -409,7 +411,7 @@ export const editorSlice = createSlice({
       const element = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index < 0) {
-        throw new Error(`Unknown dynamic element: ${element.uuid}`);
+        throw new Error(`Unknown draft mod component: ${element.uuid}`);
       }
 
       state.elements[index] = element as Draft<ModComponentFormState>;
@@ -427,7 +429,7 @@ export const editorSlice = createSlice({
       const { uuid, ...elementUpdate } = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);
       if (index < 0) {
-        throw new Error(`Unknown dynamic element: ${uuid}`);
+        throw new Error(`Unknown draft mod component: ${uuid}`);
       }
 
       // @ts-expect-error -- Concrete variants of FromState are not mutually assignable.
@@ -439,9 +441,9 @@ export const editorSlice = createSlice({
       // Force reload of Formik state
       state.selectionSeq++;
     },
-    removeElement(state, action: PayloadAction<UUID>) {
-      const uuid = action.payload;
-      removeElement(state, uuid);
+    removeModComponentFormState(state, action: PayloadAction<UUID>) {
+      const modComponentId = action.payload;
+      removeModComponentFormState(state, modComponentId);
     },
     selectRecipeId(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
@@ -525,16 +527,17 @@ export const editorSlice = createSlice({
       delete state.dirtyRecipeMetadataById[recipeId];
       delete state.dirtyRecipeOptionsById[recipeId];
     },
-    updateRecipeMetadataForElements(
+    updateModMetadataOnModComponentFormStates(
       state,
       action: PayloadAction<ModComponentBase["_recipe"]>,
     ) {
-      const metadata = action.payload;
-      const recipeElements = state.elements.filter(
-        (element) => element.recipe?.id === metadata?.id,
+      const modMetadata = action.payload;
+      const modComponentFormStates = state.elements.filter(
+        (modComponentFormState) =>
+          modComponentFormState.recipe?.id === modMetadata?.id,
       );
-      for (const element of recipeElements) {
-        element.recipe = metadata;
+      for (const formState of modComponentFormStates) {
+        formState.recipe = modMetadata;
       }
     },
     showAddToRecipeModal(state) {
@@ -914,27 +917,36 @@ export const editorSlice = createSlice({
           reportError(error);
         },
       )
-      .addCase(checkAvailableDynamicElements.pending, (state) => {
+      .addCase(checkAvailableDraftModComponents.pending, (state) => {
         state.isPendingDynamicExtensions = true;
         // We're not resetting the result here so that the old value remains during re-calculation
       })
       .addCase(
-        checkAvailableDynamicElements.fulfilled,
-        (state, { payload: { availableDynamicIds } }) => {
+        checkAvailableDraftModComponents.fulfilled,
+        (
+          state,
+          { payload: { availableDynamicIds: availableDraftModComponentIds } },
+        ) => {
           state.isPendingDynamicExtensions = false;
-          state.availableDynamicIds = availableDynamicIds;
+          state.availableDynamicIds = availableDraftModComponentIds;
         },
       )
-      .addCase(checkAvailableDynamicElements.rejected, (state, { error }) => {
-        state.isPendingDynamicExtensions = false;
-        state.error = error;
-        reportError(error);
-      })
+      .addCase(
+        checkAvailableDraftModComponents.rejected,
+        (state, { error }) => {
+          state.isPendingDynamicExtensions = false;
+          state.error = error;
+          reportError(error);
+        },
+      )
       .addCase(
         checkActiveModComponentAvailability.fulfilled,
-        (state, { payload: { availableDynamicIds } }) => ({
+        (
+          state,
+          { payload: { availableDynamicIds: availableDraftModComponentIds } },
+        ) => ({
           ...state,
-          availableDynamicIds,
+          availableDynamicIds: availableDraftModComponentIds,
         }),
       );
   },
@@ -945,7 +957,7 @@ export const actions = {
   ...editorSlice.actions,
   cloneActiveExtension,
   checkAvailableInstalledExtensions,
-  checkAvailableDynamicElements,
+  checkAvailableDraftModComponents,
   checkActiveModComponentAvailability,
 };
 

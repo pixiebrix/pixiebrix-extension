@@ -15,22 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Locator, type Page } from "@playwright/test";
+import { type Locator, type Page, expect } from "@playwright/test";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { uuidv4 } from "@/types/helpers";
 
 export class WorkshopModEditor {
   readonly textArea: Locator;
+  readonly content: Locator;
   readonly baseLocator: Locator;
 
   constructor(private readonly page: Page) {
     this.baseLocator = this.page.getByLabel("Editor");
+    this.content = this.baseLocator.locator(".ace_content");
     this.textArea = this.baseLocator.getByRole("textbox");
   }
 
+  async waitForLoad() {
+    await expect(this.textArea).toBeVisible();
+    await expect(this.baseLocator.getByText("Loading editor...")).toBeHidden();
+  }
+
+  async getValue() {
+    // Ace editor does not provide an easy way for e2e tests to get the value of the textarea with new line spacing intact,
+    // so we use the clipboard API to copy the text and then read it from the clipboard
+    await this.textArea.press("ControlOrMeta+a");
+    await this.textArea.press("ControlOrMeta+c");
+    const handle = await this.page.evaluateHandle(async () =>
+      navigator.clipboard.readText(),
+    );
+    return handle.jsonValue();
+  }
+
   async findText(text: string) {
-    await this.baseLocator.locator(".ace_content").click(); // Focus on the visible editor
+    await this.content.click(); // Focus on the visible editor
     await this.page.keyboard.press("ControlOrMeta+f");
     await this.page.getByPlaceholder("Search for").fill(text);
   }

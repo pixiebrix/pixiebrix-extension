@@ -29,11 +29,11 @@ import {
   faRandom,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import { TriggerStarterBrickABC } from "@/starterBricks/triggerExtension";
-import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemExtension";
-import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
-import { PanelStarterBrickABC } from "@/starterBricks/panel/panelExtension";
-import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
+import { TriggerStarterBrickABC } from "@/starterBricks/trigger/triggerStarterBrick";
+import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemStarterBrick";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
+import { PanelStarterBrickABC } from "@/starterBricks/panel/panelStarterBrick";
+import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import { type Metadata } from "@/types/registryTypes";

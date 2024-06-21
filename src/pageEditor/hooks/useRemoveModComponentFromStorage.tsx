@@ -28,12 +28,12 @@ import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
-import { clearDynamicElements } from "@/contentScript/messenger/api";
-import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
+import { clearDraftModComponents } from "@/contentScript/messenger/api";
+import { removeModComponentsFromAllTabs } from "@/store/uninstallUtils";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 
 type Config = {
-  extensionId: UUID;
+  modComponentId: UUID;
   // Show a confirmation modal with the specified modal props before removing the mod component if defined
   showConfirmationModal?: ConfirmationModalProps;
 };
@@ -82,8 +82,10 @@ export function useRemoveModComponentFromStorage(): (
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ extensionId, showConfirmationModal }) => {
-      console.debug(`pageEditor: remove mod component with id ${extensionId}`);
+    async ({ modComponentId, showConfirmationModal }) => {
+      console.debug(
+        `pageEditor: remove mod component with id ${modComponentId}`,
+      );
 
       if (showConfirmationModal) {
         const confirm = await showConfirmation(showConfirmationModal);
@@ -95,28 +97,27 @@ export function useRemoveModComponentFromStorage(): (
 
       reportEvent(Events.PAGE_EDITOR_REMOVE, {
         sessionId,
-        extensionId,
+        extensionId: modComponentId,
       });
 
       try {
-        // Remove from Page Editor
-        // Equivalent of @/store/dynamicElementStorage.ts:removeDynamicElements
-        dispatch(editorActions.removeElement(extensionId));
+        // Remove the mod component form state from the Page Editor
+        dispatch(editorActions.removeModComponentFormState(modComponentId));
 
         // Remove from options slice / extension storage
-        dispatch(extensionsActions.removeExtension({ extensionId }));
+        dispatch(extensionsActions.removeModComponent({ modComponentId }));
 
         // Remove from the host page
         try {
-          clearDynamicElements(allFramesInInspectedTab, {
-            uuid: extensionId,
+          clearDraftModComponents(allFramesInInspectedTab, {
+            uuid: modComponentId,
           });
         } catch (error) {
           // Element might not be on the page anymore
-          console.info("Cannot clear dynamic element from page", { error });
+          console.info("Cannot clear draft mod component from page", { error });
         }
 
-        removeExtensionsFromAllTabs([extensionId]);
+        removeModComponentsFromAllTabs([modComponentId]);
       } catch (error) {
         notify.error({
           message: "Error removing mod",

@@ -32,17 +32,17 @@ import {
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
+import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
-import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type SidebarFormState } from "./formStateTypes";
 import {
   type SidebarConfig,
   type SidebarDefinition,
-} from "@/starterBricks/sidebar/types";
+} from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
@@ -117,11 +117,13 @@ function selectExtension(
   });
 }
 
-function asDynamicElement(element: SidebarFormState): DynamicDefinition {
+function asDraftModComponent(
+  sidebarFormState: SidebarFormState,
+): DraftModComponent {
   return {
     type: "actionPanel",
-    extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectStarterBrickDefinition(element),
+    extension: selectExtension(sidebarFormState, { includeInstanceIds: true }),
+    extensionPointConfig: selectStarterBrickDefinition(sidebarFormState),
   };
 }
 
@@ -177,7 +179,7 @@ const config: ModComponentFormStateAdapter<never, SidebarFormState> = {
   selectNativeElement: undefined,
   icon: faColumns,
   fromNativeElement,
-  asDynamicElement,
+  asDraftModComponent,
   selectStarterBrickDefinition,
   selectExtension,
   fromExtension,

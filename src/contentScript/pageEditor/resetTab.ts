@@ -16,11 +16,11 @@
  */
 
 import { reactivateTab } from "@/contentScript/lifecycle";
-import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic/clearDynamicElements";
+import { clearDraftModComponents } from "@/contentScript/pageEditor/draft/clearDraftModComponents";
 import { stopInspectingNativeHandler } from "@/contentScript/pageEditor/elementPicker";
 
 export async function resetTab(): Promise<void> {
   stopInspectingNativeHandler();
-  await clearDynamicElements({});
+  await clearDraftModComponents({});
   await reactivateTab();
 }

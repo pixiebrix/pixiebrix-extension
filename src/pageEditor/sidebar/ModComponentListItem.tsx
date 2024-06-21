@@ -17,14 +17,14 @@
 
 import React from "react";
 import { isModComponentBase, type ModComponentSidebarItem } from "./common";
-import DynamicModComponentListItem from "./DynamicModComponentListItem";
+import DraftModComponentListItem from "./DraftModComponentListItem";
 import ActivatedModComponentListItem from "./ActivatedModComponentListItem";
 import { type UUID } from "@/types/stringTypes";
 
 type ModComponentListItemProps = {
   modComponentSidebarItem: ModComponentSidebarItem;
   availableInstalledIds: UUID[];
-  availableDynamicIds: UUID[];
+  availableDraftModComponentIds: UUID[];
   isNested?: boolean;
 };
 
@@ -33,7 +33,7 @@ const ModComponentListItem: React.FunctionComponent<
 > = ({
   modComponentSidebarItem,
   availableInstalledIds,
-  availableDynamicIds,
+  availableDraftModComponentIds,
   isNested = false,
 }) =>
   isModComponentBase(modComponentSidebarItem) ? (
@@ -46,11 +46,11 @@ const ModComponentListItem: React.FunctionComponent<
       isNested={isNested}
     />
   ) : (
-    <DynamicModComponentListItem
+    <DraftModComponentListItem
       modComponentFormState={modComponentSidebarItem}
       isAvailable={
-        !availableDynamicIds ||
-        availableDynamicIds.includes(modComponentSidebarItem.uuid)
+        !availableDraftModComponentIds ||
+        availableDraftModComponentIds.includes(modComponentSidebarItem.uuid)
       }
       isNested={isNested}
     />

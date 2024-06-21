@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromJS as deserializePanel } from "@/starterBricks/panel/panelExtension";
-import { fromJS as deserializeMenuItem } from "@/starterBricks/menuItem/menuItemExtension";
-import { fromJS as deserializeTrigger } from "@/starterBricks/triggerExtension";
-import { fromJS as deserializeContextMenu } from "@/starterBricks/contextMenu/contextMenu";
-import { fromJS as deserializeSidebar } from "@/starterBricks/sidebar/sidebarExtension";
-import { fromJS as deserializeQuickBar } from "@/starterBricks/quickBar/quickBarExtension";
-import { fromJS as deserializeQuickBarProvider } from "@/starterBricks/quickBarProvider/quickBarProviderExtension";
-import { fromJS as deserializeTour } from "@/starterBricks/tour/tourExtension";
+import { fromJS as deserializePanel } from "@/starterBricks/panel/panelStarterBrick";
+import { fromJS as deserializeMenuItem } from "@/starterBricks/menuItem/menuItemStarterBrick";
+import { fromJS as deserializeTrigger } from "@/starterBricks/trigger/triggerStarterBrick";
+import { fromJS as deserializeContextMenu } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
+import { fromJS as deserializeSidebar } from "@/starterBricks/sidebar/sidebarStarterBrick";
+import { fromJS as deserializeQuickBar } from "@/starterBricks/quickBar/quickBarStarterBrick";
+import { fromJS as deserializeQuickBarProvider } from "@/starterBricks/quickBarProvider/quickBarProviderStarterBrick";
+import { fromJS as deserializeTour } from "@/starterBricks/tour/tourStarterBrick";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getPlatform } from "@/platform/platformContext";

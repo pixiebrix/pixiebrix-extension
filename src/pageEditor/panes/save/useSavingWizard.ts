@@ -163,10 +163,14 @@ const useSavingWizard = () => {
     });
 
     if (!error) {
-      dispatch(editorActions.removeElement(activeModComponentFormState.uuid));
       dispatch(
-        optionsActions.removeExtension({
-          extensionId: activeModComponentFormState.uuid,
+        editorActions.removeModComponentFormState(
+          activeModComponentFormState.uuid,
+        ),
+      );
+      dispatch(
+        optionsActions.removeModComponent({
+          modComponentId: activeModComponentFormState.uuid,
         }),
       );
     }
@@ -330,7 +334,7 @@ const useSavingWizard = () => {
         ...extraUpdate,
       };
 
-      dispatch(optionsActions.updateExtension(update));
+      dispatch(optionsActions.updateModComponent(update));
     }
 
     // 2) Update the extensions in the Redux editorSlice (the slice for the page editor)

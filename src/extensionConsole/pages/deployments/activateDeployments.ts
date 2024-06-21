@@ -45,8 +45,8 @@ async function activateDeployment({
       modComponent._recipe?.id === deployment.package.package_id
     ) {
       dispatch(
-        actions.removeExtension({
-          extensionId: modComponent.id,
+        actions.removeModComponent({
+          modComponentId: modComponent.id,
         }),
       );
 
@@ -119,8 +119,8 @@ export function deactivateUnassignedModComponents({
   for (const modComponent of unassignedModComponents) {
     try {
       dispatch(
-        actions.removeExtension({
-          extensionId: modComponent.id,
+        actions.removeModComponent({
+          modComponentId: modComponent.id,
         }),
       );
       deactivatedModComponents.push(modComponent);

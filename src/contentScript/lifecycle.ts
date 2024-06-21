@@ -34,7 +34,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
-import { type SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarExtension";
+import { type SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import {
   getReloadOnNextNavigate,
   setReloadOnNextNavigate,
@@ -46,7 +46,7 @@ import {
 } from "@/utils/promiseUtils";
 import { $safeFind } from "@/utils/domUtils";
 import { onContextInvalidated } from "webext-events";
-import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { ReusableAbortController } from "abort-utils";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { notifyNavigationComplete } from "@/contentScript/sidebarController";
@@ -264,13 +264,13 @@ export function removePersistedExtension(extensionId: UUID): void {
 /**
  * Remove a page editor extensions extension(s) from the page.
  *
- * NOTE: if the dynamic extension was taking the place of a "permanent" extension, call `reactivate` or a similar
+ * NOTE: if the draft mod component was taking the place of a "permanent" extension, call `reactivate` or a similar
  * method for the extension to be reloaded.
  *
  * NOTE: this works by removing all extensions attached to the extension point. Call `reactivate` or a similar
  * method to re-install the installed extensions.
  *
- * @param extensionId the uuid of the dynamic extension, or undefined to clear all dynamic extensions
+ * @param extensionId the uuid of the draft mod component, or undefined to clear all draft mod components
  * @param options options to control clear behavior
  */
 export function clearEditorExtension(
@@ -293,7 +293,7 @@ export function clearEditorExtension(
 
       if (extensionPoint.kind === "actionPanel" && preserveSidebar) {
         const sidebar = extensionPoint as SidebarStarterBrickABC;
-        sidebar.HACK_uninstallExceptExtension(extensionId);
+        sidebar.HACK_uninstallExceptModComponent(extensionId);
       } else {
         extensionPoint.uninstall({ global: true });
       }
@@ -302,7 +302,7 @@ export function clearEditorExtension(
       _editorExtensions.delete(extensionId);
       sidebar.removeExtensions([extensionId]);
     } else {
-      console.debug(`No dynamic extension exists for uuid: ${extensionId}`);
+      console.debug(`No draft mod component exists for uuid: ${extensionId}`);
     }
 
     if (clearTrace) {
@@ -341,7 +341,7 @@ export async function runEditorExtension(
   extensionId: UUID,
   extensionPoint: StarterBrick,
 ): Promise<void> {
-  // Uninstall the installed extension point instance in favor of the dynamic extensionPoint
+  // Uninstall the installed extension point instance in favor of the draft mod componentPoint
   if (_persistedExtensions.has(extensionId)) {
     removePersistedExtension(extensionId);
   }
@@ -401,7 +401,7 @@ function cleanUpDeactivatedExtensionPoints(
  *
  * Includes starter bricks that are not available on the page.
  *
- * NOTE: Excludes dynamic extensions that are already on the page via the Page Editor.
+ * NOTE: Excludes draft mod components that are already on the page via the Page Editor.
  */
 async function loadPersistedExtensions(): Promise<StarterBrick[]> {
   console.debug("lifecycle:loadPersistedExtensions");
@@ -412,7 +412,7 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
 
   // Exclude the following:
   // - disabled deployments: the organization admin might have disabled the deployment because via Admin Console
-  // - dynamic extensions: these are already installed on the page via the Page Editor
+  // - draft mod components: these are already installed on the page via the Page Editor
   const activeExtensions = options.extensions.filter((extension) => {
     if (_editorExtensions.has(extension.id)) {
       const editorExtension = _editorExtensions.get(extension.id);

@@ -22,7 +22,7 @@ import {
   menuItemFormStateFactory,
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
-import type { AttachMode } from "@/starterBricks/menuItem/types";
+import type { AttachMode } from "@/starterBricks/menuItem/menuItemTypes";
 import { HighlightEffect } from "@/bricks/effects/highlight";
 import brickRegistry from "@/bricks/registry";
 import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";

@@ -32,7 +32,7 @@ import {
 import { produce } from "immer";
 import { makeInternalId } from "@/registry/internal";
 import { cloneDeep, range, uniq } from "lodash";
-import { type MenuItemDefinition } from "@/starterBricks/menuItem/types";
+import { type MenuItemDefinition } from "@/starterBricks/menuItem/menuItemTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
   type StarterBrickDefinitionLike,

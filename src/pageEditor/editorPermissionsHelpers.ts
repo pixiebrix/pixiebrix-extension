@@ -41,7 +41,7 @@ export async function calculatePermissionsForModComponentFormState(
   const {
     extension: modComponent,
     extensionPointConfig: starterBrickDefinition,
-  } = adapter.asDynamicElement(modComponentFormState);
+  } = adapter.asDraftModComponent(modComponentFormState);
 
   const starterBrick = starterBrickFactory(starterBrickDefinition);
 

@@ -65,5 +65,11 @@ export const getExtensionId = async (context: BrowserContext) => {
   return extensionId;
 };
 
-export const getAuthProfilePathFile = (chromiumChannel: "chrome" | "msedge") =>
-  path.join(__dirname, `../.auth/${chromiumChannel}-profile-path`);
+export const getAuthProfilePathFile = (
+  profileName: string,
+  chromiumChannel: "chrome" | "msedge",
+) =>
+  path.join(
+    __dirname,
+    `../.auth/${profileName}-${chromiumChannel}-profile-path`,
+  );

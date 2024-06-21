@@ -23,17 +23,17 @@ import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
-import { RemoteMenuItemExtensionPoint } from "@/starterBricks/menuItem/menuItemExtension";
+import { RemoteMenuItemStarterBrick } from "@/starterBricks/menuItem/menuItemStarterBrick";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
-import { RemoteQuickBarExtensionPoint } from "@/starterBricks/quickBar/quickBarExtension";
+import { RemoteQuickBarStarterBrick } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { getPlatform } from "@/platform/platformContext";
-import { type MenuItemDefinition } from "@/starterBricks/menuItem/types";
-import { type QuickBarDefinition } from "@/starterBricks/quickBar/types";
+import { type MenuItemDefinition } from "@/starterBricks/menuItem/menuItemTypes";
+import { type QuickBarDefinition } from "@/starterBricks/quickBar/quickBarTypes";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -83,7 +83,7 @@ describe("checkAvailableInstalledExtensions", () => {
         },
       },
     ) as StarterBrickDefinitionLike<MenuItemDefinition>;
-    const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
+    const availableButtonExtensionPoint = new RemoteMenuItemStarterBrick(
       getPlatform(),
       availableButtonStarterBrickDefinition,
     );
@@ -108,7 +108,7 @@ describe("checkAvailableInstalledExtensions", () => {
           };
         },
       }) as StarterBrickDefinitionLike<QuickBarDefinition>;
-    const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
+    const availableQuickbarExtensionPoint = new RemoteQuickBarStarterBrick(
       getPlatform(),
       availableQuickbarStarterBrickDefinition,
     );
@@ -127,24 +127,14 @@ describe("checkAvailableInstalledExtensions", () => {
     });
 
     store.dispatch(
-      optionsActions.activateStandaloneModDefinition({
-        extension: availableButton,
-      }),
+      optionsActions.activateStandaloneModDefinition(availableButton),
     );
     store.dispatch(
-      optionsActions.activateStandaloneModDefinition({
-        extension: unavailableButton,
-      }),
+      optionsActions.activateStandaloneModDefinition(unavailableButton),
     );
+    store.dispatch(optionsActions.activateStandaloneModDefinition(availableQb));
     store.dispatch(
-      optionsActions.activateStandaloneModDefinition({
-        extension: availableQb,
-      }),
-    );
-    store.dispatch(
-      optionsActions.activateStandaloneModDefinition({
-        extension: unavailableQb,
-      }),
+      optionsActions.activateStandaloneModDefinition(unavailableQb),
     );
 
     await store.dispatch(actions.checkAvailableInstalledExtensions());

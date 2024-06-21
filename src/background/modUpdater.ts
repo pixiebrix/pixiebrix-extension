@@ -153,12 +153,14 @@ function deactivateModComponent(
 
   newOptionsState = extensionsSlice.reducer(
     newOptionsState,
-    extensionsSlice.actions.removeExtension({ extensionId: modComponent.id }),
+    extensionsSlice.actions.removeModComponent({
+      modComponentId: modComponent.id,
+    }),
   );
 
   newEditorState = editorSlice.reducer(
     newEditorState,
-    editorSlice.actions.removeElement(modComponent.id),
+    editorSlice.actions.removeModComponentFormState(modComponent.id),
   );
 
   return {

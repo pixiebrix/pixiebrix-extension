@@ -32,21 +32,21 @@ import {
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { PanelStarterBrickABC } from "@/starterBricks/panel/panelExtension";
+import { PanelStarterBrickABC } from "@/starterBricks/panel/panelStarterBrick";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import PanelConfiguration from "@/pageEditor/tabs/panel/PanelConfiguration";
 import { insertPanel } from "@/contentScript/messenger/api";
 import {
-  type DynamicDefinition,
+  type DraftModComponent,
   type PanelSelectionResult,
 } from "@/contentScript/pageEditor/types";
 import { type PanelFormState, type PanelTraits } from "./formStateTypes";
 import {
   type PanelDefinition,
   type PanelConfig,
-} from "@/starterBricks/panel/types";
+} from "@/starterBricks/panel/panelStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DEFAULT_TRAITS: PanelTraits = {
@@ -123,11 +123,13 @@ function selectExtension(
   });
 }
 
-function asDynamicElement(element: PanelFormState): DynamicDefinition {
+function asDraftModComponent(
+  panelFormState: PanelFormState,
+): DraftModComponent {
   return {
     type: "panel",
-    extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectStarterBrickDefinition(element),
+    extension: selectExtension(panelFormState, { includeInstanceIds: true }),
+    extensionPointConfig: selectStarterBrickDefinition(panelFormState),
   };
 }
 
@@ -186,7 +188,7 @@ const config: ModComponentFormStateAdapter<
   flag: "page-editor-extension-panel",
   EditorNode: PanelConfiguration,
   fromNativeElement,
-  asDynamicElement,
+  asDraftModComponent,
   selectStarterBrickDefinition,
   selectExtension,
   fromExtension,

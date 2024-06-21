@@ -18,6 +18,7 @@
 import React from "react";
 import Page from "@/layout/Page";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
+import { Button } from "react-bootstrap";
 
 export default {
   component: Page,
@@ -33,6 +34,22 @@ Default.args = {
   icon: "music",
   title: "Example page",
   description: "Welcome to an example page! Have a look around.",
+};
+
+export const DocumentationLink = Template.bind({});
+DocumentationLink.args = {
+  icon: "music",
+  title: "Page with documentation link",
+  documentationUrl: "https://docs.pixiebrix.com/",
+  description: "Welcome to an example page! Have a look around.",
+};
+
+export const Toolbar = Template.bind({});
+Toolbar.args = {
+  icon: "music",
+  title: "Page with toolbar",
+  description: "Welcome to an example page! Have a look around.",
+  toolbar: <Button>Example action</Button>,
 };
 
 export const Loading = Template.bind({});

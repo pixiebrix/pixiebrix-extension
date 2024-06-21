@@ -29,7 +29,7 @@ import {
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";
-import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
+import { uninstallModComponents, uninstallMod } from "@/store/uninstallUtils";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -340,12 +340,12 @@ describe("useModsPageActions", () => {
     expectActions(["viewShare", "deactivate", "viewLogs"], actions);
   });
 
-  describe("public blueprint", () => {
-    let blueprintItem: ModViewItem;
+  describe("public mod", () => {
+    let modItem: ModViewItem;
     beforeEach(() => {
       mockHooks();
 
-      blueprintItem = {
+      modItem = {
         mod: defaultModDefinitionFactory({
           sharing: { public: true, organizations: [] },
         }),
@@ -361,7 +361,7 @@ describe("useModsPageActions", () => {
     test("pending publish", () => {
       const {
         result: { current: actions },
-      } = renderHook(() => useModsPageActions(blueprintItem));
+      } = renderHook(() => useModsPageActions(modItem));
       expectActions(
         ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
         actions,
@@ -369,11 +369,11 @@ describe("useModsPageActions", () => {
     });
 
     test("published", () => {
-      blueprintItem.sharing.listingId = uuidv4();
+      modItem.sharing.listingId = uuidv4();
 
       const {
         result: { current: actions },
-      } = renderHook(() => useModsPageActions(blueprintItem));
+      } = renderHook(() => useModsPageActions(modItem));
       expectActions(
         [
           "viewInMarketplaceHref",
@@ -394,7 +394,7 @@ describe("actions", () => {
       mockHooks();
     });
 
-    test("calls uninstallRecipe for a blueprint", () => {
+    test("calls uninstallMod for a mod", () => {
       mockHooks();
       const modViewItem = modViewItemFactory({
         isExtension: false,
@@ -410,15 +410,15 @@ describe("actions", () => {
 
       deactivate();
 
-      expect(uninstallRecipe).toHaveBeenCalledWith(
+      expect(uninstallMod).toHaveBeenCalledWith(
         (modViewItem.mod as ModDefinition).metadata.id,
         expect.any(Array),
         expect.any(Function),
       );
-      expect(uninstallExtensions).not.toHaveBeenCalled();
+      expect(uninstallModComponents).not.toHaveBeenCalled();
     });
 
-    test("calls uninstallExtensions for an mod component", () => {
+    test("calls uninstallModComponents for an mod component", () => {
       mockHooks();
 
       const standaloneModDefinition = standaloneModDefinitionFactory();
@@ -437,22 +437,22 @@ describe("actions", () => {
       } = renderHook(() => useModsPageActions(modViewItem), {
         setupRedux(dispatch) {
           dispatch(
-            extensionActions.activateStandaloneModDefinition({
-              extension: standaloneModDefinition,
-            }),
+            extensionActions.activateStandaloneModDefinition(
+              standaloneModDefinition,
+            ),
           );
           dispatch(
-            extensionActions.activateStandaloneModDefinition({
-              extension: standaloneModDefinitionFactory(),
-            }),
+            extensionActions.activateStandaloneModDefinition(
+              standaloneModDefinitionFactory(),
+            ),
           );
         },
       });
 
       deactivate();
 
-      expect(uninstallRecipe).not.toHaveBeenCalled();
-      expect(uninstallExtensions).toHaveBeenCalledWith(
+      expect(uninstallMod).not.toHaveBeenCalled();
+      expect(uninstallModComponents).toHaveBeenCalledWith(
         [standaloneModDefinition.id],
         expect.any(Function),
       );

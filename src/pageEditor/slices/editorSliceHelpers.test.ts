@@ -26,7 +26,7 @@ import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   ensureElementUIState,
   ensureNodeUIState,
-  removeElement,
+  removeModComponentFormState,
   removeRecipeData,
   selectRecipeId,
   setActiveNodeId,
@@ -285,7 +285,7 @@ describe("removeElement", () => {
     };
 
     const newState = produce(state, (draft) => {
-      removeElement(draft, element.uuid);
+      removeModComponentFormState(draft, element.uuid);
     });
     expect(selectActiveModComponentId({ editor: newState })).toBeNull();
     expect(selectModComponentFormStates({ editor: newState })).not.toContain(
@@ -325,7 +325,7 @@ describe("removeElement", () => {
     };
 
     const newState = produce(state, (draft) => {
-      removeElement(draft, unavailableElement.uuid);
+      removeModComponentFormState(draft, unavailableElement.uuid);
     });
     expect(selectActiveModComponentId({ editor: newState })).toEqual(
       availableElement.uuid,
@@ -395,8 +395,8 @@ describe("removeRecipeData", () => {
     };
 
     const newState = produce(state, (draft) => {
-      removeElement(draft, element1.uuid);
-      removeElement(draft, element2.uuid);
+      removeModComponentFormState(draft, element1.uuid);
+      removeModComponentFormState(draft, element2.uuid);
       removeRecipeData(draft, recipe.id);
     });
     expect(selectActiveModId({ editor: newState })).toBeNull();
