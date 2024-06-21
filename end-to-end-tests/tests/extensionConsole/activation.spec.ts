@@ -70,7 +70,10 @@ test("can activate a mod with built-in integration", async ({
       giphyRequestPostData = route.request().postDataJSON();
 
       return route.fulfill({
-        path: path.join(__dirname, "../fixtures/responses/giphy-search.json"),
+        path: path.join(
+          __dirname,
+          "../../fixtures/responses/giphy-search.json",
+        ),
       });
     }
 
