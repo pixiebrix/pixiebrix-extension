@@ -17,8 +17,8 @@
 
 import { ContextError } from "@/errors/genericErrors";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenu";
-import { type ContextMenuConfig } from "@/starterBricks/contextMenu/types";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
+import { type ContextMenuConfig } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { selectEventData } from "@/telemetry/deployments";
 import {
   type ModComponentBase,
