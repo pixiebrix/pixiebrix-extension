@@ -94,7 +94,7 @@ const ActivateExtensionCard: React.FunctionComponent<{
       try {
         dispatch(
           actions.activateStandaloneModDefinition({
-            extension: { ...extension, ...values },
+            standaloneModDefinition: { ...extension, ...values },
           }),
         );
         notify.success("Activated mod");

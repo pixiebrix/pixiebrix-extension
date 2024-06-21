@@ -68,12 +68,12 @@ describe("it renders", () => {
         dispatch(authSlice.actions.setAuth(authStateFactory()));
         dispatch(
           extensionsSlice.actions.activateStandaloneModDefinition({
-            extension: standaloneModDefinition,
+            standaloneModDefinition,
           }),
         );
         dispatch(
           modModalsSlice.actions.setShareContext({
-            extensionId: standaloneModDefinition.id,
+            standaloneModDefinition: standaloneModDefinition.id,
           }),
         );
       },
@@ -91,7 +91,7 @@ describe("it renders", () => {
         dispatch(authSlice.actions.setAuth(anonAuth));
         dispatch(
           extensionsSlice.actions.activateStandaloneModDefinition({
-            extension: standaloneModDefinition,
+            standaloneModDefinition,
           }),
         );
         dispatch(
@@ -148,7 +148,7 @@ describe("it renders", () => {
             dispatch(authSlice.actions.setAuth(authStateFactory()));
             dispatch(
               extensionsSlice.actions.activateStandaloneModDefinition({
-                extension: standaloneModDefinition,
+                standaloneModDefinition,
               }),
             );
             dispatch(

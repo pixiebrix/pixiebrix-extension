@@ -128,22 +128,22 @@ describe("checkAvailableInstalledExtensions", () => {
 
     store.dispatch(
       optionsActions.activateStandaloneModDefinition({
-        extension: availableButton,
+        standaloneModDefinition: availableButton,
       }),
     );
     store.dispatch(
       optionsActions.activateStandaloneModDefinition({
-        extension: unavailableButton,
+        standaloneModDefinition: unavailableButton,
       }),
     );
     store.dispatch(
       optionsActions.activateStandaloneModDefinition({
-        extension: availableQb,
+        standaloneModDefinition: availableQb,
       }),
     );
     store.dispatch(
       optionsActions.activateStandaloneModDefinition({
-        extension: unavailableQb,
+        standaloneModDefinition: unavailableQb,
       }),
     );
 

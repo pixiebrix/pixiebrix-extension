@@ -81,21 +81,23 @@ const extensionsSlice = createSlice({
 
     activateStandaloneModDefinition(
       state,
-      { payload }: PayloadAction<{ extension: StandaloneModDefinition }>,
+      {
+        payload,
+      }: PayloadAction<{ standaloneModDefinition: StandaloneModDefinition }>,
     ) {
-      const { extension } = payload;
+      const { standaloneModDefinition } = payload;
 
       reportEvent(
         Events.MOD_COMPONENT_CLOUD_ACTIVATE,
-        selectEventData(extension),
+        selectEventData(standaloneModDefinition),
       );
 
       // NOTE: do not save the extensions in the cloud (because the user can just activate from the marketplace /
       // or activate the deployment again
 
-      state.extensions.push({ ...extension, active: true });
+      state.extensions.push({ ...standaloneModDefinition, active: true });
 
-      void contextMenus.preload([extension]);
+      void contextMenus.preload([standaloneModDefinition]);
     },
 
     /**

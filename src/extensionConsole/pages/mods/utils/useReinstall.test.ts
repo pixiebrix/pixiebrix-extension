@@ -27,7 +27,7 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-test("uninstalls recipe mod components", async () => {
+test("uninstalls mod components", async () => {
   const modDefinition = defaultModDefinitionFactory();
   const standaloneModDefinition = standaloneModDefinitionFactory({
     _recipe: {
@@ -45,12 +45,12 @@ test("uninstalls recipe mod components", async () => {
     setupRedux(dispatch) {
       dispatch(
         extensionActions.activateStandaloneModDefinition({
-          extension: standaloneModDefinition,
+          standaloneModDefinition,
         }),
       );
       dispatch(
         extensionActions.activateStandaloneModDefinition({
-          extension: anotherStandaloneModDefinition,
+          standaloneModDefinition: anotherStandaloneModDefinition,
         }),
       );
     },
@@ -86,7 +86,7 @@ test("dispatches install recipe action", async () => {
     setupRedux(dispatch) {
       dispatch(
         extensionActions.activateStandaloneModDefinition({
-          extension: standaloneModDefinition,
+          standaloneModDefinition,
         }),
       );
     },

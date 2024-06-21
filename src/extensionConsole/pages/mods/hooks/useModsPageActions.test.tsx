@@ -438,12 +438,12 @@ describe("actions", () => {
         setupRedux(dispatch) {
           dispatch(
             extensionActions.activateStandaloneModDefinition({
-              extension: standaloneModDefinition,
+              standaloneModDefinition,
             }),
           );
           dispatch(
             extensionActions.activateStandaloneModDefinition({
-              extension: standaloneModDefinitionFactory(),
+              standaloneModDefinition: standaloneModDefinitionFactory(),
             }),
           );
         },
