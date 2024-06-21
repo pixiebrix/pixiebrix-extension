@@ -45,7 +45,7 @@
     "./activation/activationLinkUtils.ts",
     "./activation/getActivatedModComponentFromDefinition.ts",
     "./activation/modOptionsHelpers.ts",
-    "./activation/useActivateRecipe.ts",
+    "./activation/useActivateMod.ts",
     "./activation/wizardTypes.ts",
     "./analysis/AnalysisAnnotationsContext.ts",
     "./analysis/ReduxAnalysisManager.ts",

@@ -63,7 +63,7 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
       await Promise.all(
         modComponentIds.map(async (modComponentId) =>
           removeModComponentFromStorage({
-            extensionId: modComponentId,
+            modComponentId,
           }),
         ),
       );

@@ -18,7 +18,7 @@
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useReinstall from "./useReinstall";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { uninstallRecipe } from "@/store/uninstallUtils";
+import { uninstallMod } from "@/store/uninstallUtils";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
@@ -27,7 +27,7 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-test("uninstalls recipe mod components", async () => {
+test("uninstalls mod components", async () => {
   const modDefinition = defaultModDefinitionFactory();
   const standaloneModDefinition = standaloneModDefinitionFactory({
     _recipe: {
@@ -44,14 +44,14 @@ test("uninstalls recipe mod components", async () => {
   } = renderHook(() => useReinstall(), {
     setupRedux(dispatch) {
       dispatch(
-        extensionActions.activateStandaloneModDefinition({
-          extension: standaloneModDefinition,
-        }),
+        extensionActions.activateStandaloneModDefinition(
+          standaloneModDefinition,
+        ),
       );
       dispatch(
-        extensionActions.activateStandaloneModDefinition({
-          extension: anotherStandaloneModDefinition,
-        }),
+        extensionActions.activateStandaloneModDefinition(
+          anotherStandaloneModDefinition,
+        ),
       );
     },
   });
@@ -62,14 +62,14 @@ test("uninstalls recipe mod components", async () => {
 
   await act(async () => reinstall(modDefinition));
 
-  expect(uninstallRecipe).toHaveBeenCalledWith(
+  expect(uninstallMod).toHaveBeenCalledWith(
     modDefinition.metadata.id,
     [expectedExtension],
     expect.any(Function),
   );
 });
 
-test("dispatches install recipe action", async () => {
+test("dispatches activate mod action", async () => {
   jest.spyOn(extensionActions, "activateMod");
 
   const modDefinition = defaultModDefinitionFactory();
@@ -85,9 +85,9 @@ test("dispatches install recipe action", async () => {
   } = renderHook(() => useReinstall(), {
     setupRedux(dispatch) {
       dispatch(
-        extensionActions.activateStandaloneModDefinition({
-          extension: standaloneModDefinition,
-        }),
+        extensionActions.activateStandaloneModDefinition(
+          standaloneModDefinition,
+        ),
       );
     },
   });

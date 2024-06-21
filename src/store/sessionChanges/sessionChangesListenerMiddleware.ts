@@ -39,11 +39,11 @@ sessionChangesListenerMiddleware.startListening({
     actions.removeRecipeData,
 
     extensionsSlice.actions.activateStandaloneModDefinition,
-    extensionsSlice.actions.removeExtension,
-    extensionsSlice.actions.removeExtensions,
-    extensionsSlice.actions.attachExtension,
+    extensionsSlice.actions.removeModComponent,
+    extensionsSlice.actions.removeModComponents,
+    extensionsSlice.actions.setModComponentMetadata,
     extensionsSlice.actions.activateMod,
-    extensionsSlice.actions.removeRecipeById,
+    extensionsSlice.actions.removeModById,
   ),
   effect(action, { dispatch, getState }) {
     const { sessionId } = (getState() as SessionRootState).session;

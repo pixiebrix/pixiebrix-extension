@@ -36,6 +36,7 @@ jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest.fn().mockReturnValue({ refetch: jest.fn() }),
 }));
 
+// TODO: mock the API call instead of RTK Query
 jest.mock("@/data/service/api", () => {
   const originalModule = jest.requireActual("@/data/service/api");
   return {
@@ -67,9 +68,9 @@ describe("it renders", () => {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(authStateFactory()));
         dispatch(
-          extensionsSlice.actions.activateStandaloneModDefinition({
-            extension: standaloneModDefinition,
-          }),
+          extensionsSlice.actions.activateStandaloneModDefinition(
+            standaloneModDefinition,
+          ),
         );
         dispatch(
           modModalsSlice.actions.setShareContext({
@@ -90,9 +91,9 @@ describe("it renders", () => {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(anonAuth));
         dispatch(
-          extensionsSlice.actions.activateStandaloneModDefinition({
-            extension: standaloneModDefinition,
-          }),
+          extensionsSlice.actions.activateStandaloneModDefinition(
+            standaloneModDefinition,
+          ),
         );
         dispatch(
           modModalsSlice.actions.setShareContext({
@@ -147,9 +148,9 @@ describe("it renders", () => {
           setupRedux(dispatch) {
             dispatch(authSlice.actions.setAuth(authStateFactory()));
             dispatch(
-              extensionsSlice.actions.activateStandaloneModDefinition({
-                extension: standaloneModDefinition,
-              }),
+              extensionsSlice.actions.activateStandaloneModDefinition(
+                standaloneModDefinition,
+              ),
             );
             dispatch(
               sharingAction({
