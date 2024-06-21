@@ -23,7 +23,7 @@ import "@/extensionContext";
 import React from "react";
 import { render } from "react-dom";
 import EphemeralPanel from "@/bricks/transformers/temporaryInfo/EphemeralPanel";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
+import registerContribBricks from "@/contrib/registerContribBricks";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/bricks/transformers/temporaryInfo/messenger/registration";
@@ -41,6 +41,6 @@ function init(): void {
 void initMessengerLogging();
 void initRuntimeLogging();
 registerMessenger();
-registerContribBlocks();
+registerContribBricks();
 registerBuiltinBricks();
 init();

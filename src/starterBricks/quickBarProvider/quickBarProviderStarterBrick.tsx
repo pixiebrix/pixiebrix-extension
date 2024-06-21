@@ -33,7 +33,7 @@ import { CancelError } from "@/errors/businessErrors";
 import { guessSelectedElement } from "@/utils/selectionController";
 import {
   type InitialValues,
-  reduceExtensionPipeline,
+  reduceStarterBrickPipeline,
 } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { isSpecificError } from "@/errors/errorHelpers";
@@ -288,7 +288,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       };
 
       try {
-        await reduceExtensionPipeline(generator, initialValues, {
+        await reduceStarterBrickPipeline(generator, initialValues, {
           logger: modComponentLogger,
           ...apiVersionOptions(modComponent.apiVersion),
           abortSignal,

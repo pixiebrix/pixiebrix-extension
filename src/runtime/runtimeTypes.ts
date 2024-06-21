@@ -31,7 +31,7 @@ export type BrickType = "reader" | "effect" | "transform" | "renderer";
  * @see BrickType
  */
 export type ResolvedBrickConfig = {
-  block: Brick;
+  brick: Brick;
   config: BrickConfig;
   type: BrickType | null;
 };

@@ -430,7 +430,7 @@ export const selectActiveModComponentAnalysisAnnotationsForPath =
   (path?: string) => (state: RootState) =>
     activeModComponentAnalysisAnnotationsForPath(state, path);
 
-export const selectCopiedBlock = ({ editor }: EditorRootState) =>
+export const selectCopiedBrick = ({ editor }: EditorRootState) =>
   editor.copiedBlock;
 
 export const selectModComponentAvailability = ({

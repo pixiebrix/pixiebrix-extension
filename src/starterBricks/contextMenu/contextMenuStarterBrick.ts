@@ -17,7 +17,7 @@
 
 import {
   type InitialValues,
-  reduceExtensionPipeline,
+  reduceStarterBrickPipeline,
 } from "@/runtime/reducePipeline";
 import {
   type Manifest,
@@ -367,7 +367,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
           optionsArgs: modComponent.optionsArgs,
         };
 
-        await reduceExtensionPipeline(actionConfig, initialValues, {
+        await reduceStarterBrickPipeline(actionConfig, initialValues, {
           logger: modComponentLogger,
           ...apiVersionOptions(modComponent.apiVersion),
         });

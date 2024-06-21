@@ -16,19 +16,19 @@
  */
 
 import { useDispatch, useSelector } from "react-redux";
-import { selectCopiedBlock } from "@/pageEditor/slices/editorSelectors";
+import { selectCopiedBrick } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
 import { type BrickConfig } from "@/bricks/types";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-function usePasteBlock():
+function usePasteBrick():
   | ((pipelinePath: string, pipelineIndex: number) => Promise<void>)
   | null {
   const dispatch = useDispatch();
-  const copiedBlock = useSelector(selectCopiedBlock);
-  if (copiedBlock == null) {
+  const copiedBrick = useSelector(selectCopiedBrick);
+  if (copiedBrick == null) {
     return null;
   }
 
@@ -36,7 +36,7 @@ function usePasteBlock():
     // Give the block a new instanceId
     const newInstanceId = uuidv4();
     const newBrick: BrickConfig = {
-      ...copiedBlock,
+      ...copiedBrick,
       instanceId: newInstanceId,
     };
     // Give all the bricks new instance ids
@@ -51,4 +51,4 @@ function usePasteBlock():
   };
 }
 
-export default usePasteBlock;
+export default usePasteBrick;

@@ -30,7 +30,7 @@ import App from "@/sidebar/SidebarApp";
 import ReactDOM from "react-dom";
 import React from "react";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
+import registerContribBricks from "@/contrib/registerContribBricks";
 import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtocol";
@@ -54,7 +54,7 @@ async function init(): Promise<void> {
   }
 
   registerMessenger();
-  registerContribBlocks();
+  registerContribBricks();
   registerBuiltinBricks();
   initToaster();
 
