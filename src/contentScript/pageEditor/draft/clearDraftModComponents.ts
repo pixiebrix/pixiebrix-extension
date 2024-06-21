@@ -21,10 +21,10 @@ import { expectContext } from "@/utils/expectContext";
 
 /**
  * A version of `clearEditorExtension` that takes an object instead of a positional UUID argument.
- * @param uuid the uuid of the extension, or null to clear all page editor extensions
+ * @param uuid the uuid of the mod component, or null to clear all page editor mod components
  * @see clearEditorExtension
  */
-export async function clearDynamicElements({
+export async function clearDraftModComponents({
   uuid,
 }: {
   uuid?: UUID;

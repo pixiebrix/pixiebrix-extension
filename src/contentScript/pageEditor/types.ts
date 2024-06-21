@@ -35,7 +35,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type BrickConfig } from "@/bricks/types";
 
-export interface DynamicDefinition<
+export interface DraftModComponent<
   TExtensionPoint extends
     StarterBrickDefinitionProp = StarterBrickDefinitionProp,
   TExtension extends UnknownObject = UnknownObject,
@@ -55,7 +55,7 @@ export type PanelSelectionResult = {
   panel: Except<PanelConfig, "body">;
   containerInfo: ElementInfo;
 };
-export type ButtonDefinition = DynamicDefinition<
+export type ButtonDefinition = DraftModComponent<
   MenuItemDefinition,
   MenuItemStarterBrickConfig
 >;

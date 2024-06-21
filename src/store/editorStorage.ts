@@ -34,7 +34,7 @@ import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 const STORAGE_KEY = validateReduxStorageKey("persist:editor");
 
 /**
- * Read dynamic elements from local storage (without going through redux-persist)
+ * Read draft mod components from local storage (without going through redux-persist)
  *
  * @returns The editor state, if found in storage, otherwise undefined.
  */
@@ -66,12 +66,14 @@ export async function saveEditorState(
 }
 
 /**
- * Remove a list of elements by id from persisted redux storage.
+ * Remove a list of mod components by id from persisted redux storage.
  *
  * Note: this does not trigger a change even in any current redux instances
- * @param elementIds the elements to remove from persisted redux storage
+ * @param modComponentIds the mod components to remove from persisted redux storage
  */
-export async function removeDynamicElements(elementIds: UUID[]): Promise<void> {
+export async function removeDraftModComponents(
+  modComponentIds: UUID[],
+): Promise<void> {
   const state = await getEditorState();
 
   // If this is called from a page where the page editor has not been opened yet,
@@ -81,7 +83,7 @@ export async function removeDynamicElements(elementIds: UUID[]): Promise<void> {
   }
 
   const newState = produce(state, (draft) => {
-    for (const id of elementIds) {
+    for (const id of modComponentIds) {
       removeModComponentFormState(draft, id);
     }
   });
@@ -90,16 +92,16 @@ export async function removeDynamicElements(elementIds: UUID[]): Promise<void> {
 }
 
 /**
- * Remove all elements for a given recipe from persisted redux storage.
+ * Remove all mod components for a given mod from persisted redux storage.
  *
  * Note: this does not trigger a change even in any current redux instances
- * @param recipeId The recipe to remove
- * @returns The UUIDs of removed elements
+ * @param modId The mod to remove
+ * @returns The UUIDs of removed mod components
  */
-export async function removeDynamicElementsForRecipe(
-  recipeId: RegistryId,
+export async function removeDraftModComponentsForMod(
+  modId: RegistryId,
 ): Promise<UUID[]> {
-  const removedDynamicElements: UUID[] = [];
+  const removedDraftModComponents: UUID[] = [];
   const state = await getEditorState();
 
   // If this is called from a page where the page editor has not been opened yet,
@@ -109,11 +111,11 @@ export async function removeDynamicElementsForRecipe(
   }
 
   const newState = produce(state, (draft) => {
-    removeRecipeData(draft, recipeId);
+    removeRecipeData(draft, modId);
 
     for (const element of state.elements) {
-      if (element.recipe?.id === recipeId) {
-        removedDynamicElements.push(element.uuid);
+      if (element.recipe?.id === modId) {
+        removedDraftModComponents.push(element.uuid);
         removeModComponentFormState(draft, element.uuid);
       }
     }
@@ -121,5 +123,5 @@ export async function removeDynamicElementsForRecipe(
 
   await saveEditorState(newState);
 
-  return removedDynamicElements;
+  return removedDraftModComponents;
 }

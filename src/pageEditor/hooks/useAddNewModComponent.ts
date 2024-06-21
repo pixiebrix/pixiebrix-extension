@@ -22,7 +22,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
-import { updateDynamicElement } from "@/contentScript/messenger/api";
+import { updateDraftModComponent } from "@/contentScript/messenger/api";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import useFlags from "@/hooks/useFlags";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -76,9 +76,9 @@ function useAddNewModComponent(): AddNewModComponent {
           element,
         );
 
-        updateDynamicElement(
+        updateDraftModComponent(
           allFramesInInspectedTab,
-          modComponentFormStateAdapter.asDynamicElement(initialState),
+          modComponentFormStateAdapter.asDraftModComponent(initialState),
         );
 
         dispatch(

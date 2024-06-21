@@ -35,7 +35,7 @@ import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getDomain } from "@/permissions/patterns";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
-import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type TourFormState } from "./formStateTypes";
 import { TourStarterBrickABC } from "@/starterBricks/tour/tourExtension";
 import TourConfiguration from "@/pageEditor/tabs/tour/TourConfiguration";
@@ -104,11 +104,11 @@ function selectExtension(
   });
 }
 
-function asDynamicElement(element: TourFormState): DynamicDefinition {
+function asDraftModComponent(tourFormState: TourFormState): DraftModComponent {
   return {
     type: "tour",
-    extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectStarterBrickDefinition(element),
+    extension: selectExtension(tourFormState, { includeInstanceIds: true }),
+    extensionPointConfig: selectStarterBrickDefinition(tourFormState),
   };
 }
 
@@ -158,7 +158,7 @@ const config: ModComponentFormStateAdapter<undefined, TourFormState> = {
   selectNativeElement: undefined,
   icon: faMapSigns,
   fromNativeElement,
-  asDynamicElement,
+  asDraftModComponent,
   selectStarterBrickDefinition,
   selectExtension,
   fromExtension,

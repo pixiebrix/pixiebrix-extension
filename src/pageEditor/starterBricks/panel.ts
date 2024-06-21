@@ -39,7 +39,7 @@ import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/mo
 import PanelConfiguration from "@/pageEditor/tabs/panel/PanelConfiguration";
 import { insertPanel } from "@/contentScript/messenger/api";
 import {
-  type DynamicDefinition,
+  type DraftModComponent,
   type PanelSelectionResult,
 } from "@/contentScript/pageEditor/types";
 import { type PanelFormState, type PanelTraits } from "./formStateTypes";
@@ -123,11 +123,13 @@ function selectExtension(
   });
 }
 
-function asDynamicElement(element: PanelFormState): DynamicDefinition {
+function asDraftModComponent(
+  panelFormState: PanelFormState,
+): DraftModComponent {
   return {
     type: "panel",
-    extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectStarterBrickDefinition(element),
+    extension: selectExtension(panelFormState, { includeInstanceIds: true }),
+    extensionPointConfig: selectStarterBrickDefinition(panelFormState),
   };
 }
 
@@ -186,7 +188,7 @@ const config: ModComponentFormStateAdapter<
   flag: "page-editor-extension-panel",
   EditorNode: PanelConfiguration,
   fromNativeElement,
-  asDynamicElement,
+  asDraftModComponent,
   selectStarterBrickDefinition,
   selectExtension,
   fromExtension,

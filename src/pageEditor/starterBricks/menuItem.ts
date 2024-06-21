@@ -173,11 +173,13 @@ async function fromExtension(
   };
 }
 
-function asDynamicElement(element: ActionFormState): ButtonDefinition {
+function asDraftModComponent(
+  actionFormState: ActionFormState,
+): ButtonDefinition {
   return {
     type: "menuItem",
-    extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectStarterBrickDefinition(element),
+    extension: selectExtension(actionFormState, { includeInstanceIds: true }),
+    extensionPointConfig: selectStarterBrickDefinition(actionFormState),
   };
 }
 
@@ -193,7 +195,7 @@ const config: ModComponentFormStateAdapter<
   EditorNode: MenuItemConfiguration,
   selectNativeElement: insertButton,
   fromNativeElement,
-  asDynamicElement,
+  asDraftModComponent,
   selectStarterBrickDefinition,
   selectExtension,
   fromExtension,

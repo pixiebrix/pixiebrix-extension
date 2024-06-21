@@ -437,14 +437,14 @@ export const selectModComponentAvailability = ({
   editor: {
     availableInstalledIds,
     isPendingInstalledExtensions: isPendingInstalledModComponents,
-    availableDynamicIds,
-    isPendingDynamicExtensions: isPendingDynamicModComponents,
+    availableDynamicIds: availableDraftModComponentIds,
+    isPendingDynamicExtensions: isPendingDraftModComponents,
   },
 }: EditorRootState) => ({
   availableInstalledIds,
   isPendingInstalledModComponents,
-  availableDynamicIds,
-  isPendingDynamicModComponents,
+  availableDraftModComponentIds,
+  isPendingDraftModComponents,
 });
 
 export const selectKnownEventNamesForActiveModComponent = createSelector(

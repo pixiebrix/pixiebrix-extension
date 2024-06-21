@@ -53,7 +53,7 @@ const Extensions: React.FunctionComponent = () => {
   const modComponentFormStates = useSelector(
     selectNotDeletedModComponentFormStates,
   );
-  const { availableInstalledIds, availableDynamicIds } = useSelector(
+  const { availableInstalledIds, availableDraftModComponentIds } = useSelector(
     selectModComponentAvailability,
   );
 
@@ -118,7 +118,7 @@ const Extensions: React.FunctionComponent = () => {
               key={getModComponentItemId(modComponentSidebarItem)}
               modComponentSidebarItem={modComponentSidebarItem}
               availableInstalledIds={availableInstalledIds}
-              availableDynamicIds={availableDynamicIds}
+              availableDraftModComponentIds={availableDraftModComponentIds}
               isNested
             />
           ))}
@@ -131,7 +131,7 @@ const Extensions: React.FunctionComponent = () => {
         key={getModComponentItemId(sidebarItem)}
         modComponentSidebarItem={sidebarItem}
         availableInstalledIds={availableInstalledIds}
-        availableDynamicIds={availableDynamicIds}
+        availableDraftModComponentIds={availableDraftModComponentIds}
       />
     );
   });

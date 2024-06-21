@@ -37,7 +37,7 @@ import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
-import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type SidebarFormState } from "./formStateTypes";
 import {
   type SidebarConfig,
@@ -117,11 +117,13 @@ function selectExtension(
   });
 }
 
-function asDynamicElement(element: SidebarFormState): DynamicDefinition {
+function asDraftModComponent(
+  sidebarFormState: SidebarFormState,
+): DraftModComponent {
   return {
     type: "actionPanel",
-    extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectStarterBrickDefinition(element),
+    extension: selectExtension(sidebarFormState, { includeInstanceIds: true }),
+    extensionPointConfig: selectStarterBrickDefinition(sidebarFormState),
   };
 }
 
@@ -177,7 +179,7 @@ const config: ModComponentFormStateAdapter<never, SidebarFormState> = {
   selectNativeElement: undefined,
   icon: faColumns,
   fromNativeElement,
-  asDynamicElement,
+  asDraftModComponent,
   selectStarterBrickDefinition,
   selectExtension,
   fromExtension,

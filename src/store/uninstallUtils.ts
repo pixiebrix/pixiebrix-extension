@@ -17,8 +17,8 @@
 
 import { type Dispatch } from "react";
 import {
-  removeDynamicElements,
-  removeDynamicElementsForRecipe,
+  removeDraftModComponents,
+  removeDraftModComponentsForMod,
 } from "@/store/editorStorage";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { removeExtensionForEveryTab } from "@/background/messenger/api";
@@ -32,7 +32,7 @@ import { type UUID } from "@/types/stringTypes";
  *
  * Uninstalls from:
  * - Extension Options slice
- * - Dynamic Elements slice (i.e., Page Editor state)
+ * - draft mod components slice (i.e., Page Editor state)
  * - Notifies all tabs to remove the extensions
  */
 export async function uninstallRecipe(
@@ -40,15 +40,15 @@ export async function uninstallRecipe(
   recipeExtensions: UnresolvedModComponent[],
   dispatch: Dispatch<unknown>,
 ): Promise<void> {
-  const dynamicElementsToUninstall =
-    await removeDynamicElementsForRecipe(recipeId);
+  const draftModComponentsToDeactivate =
+    await removeDraftModComponentsForMod(recipeId);
 
   dispatch(extensionActions.removeRecipeById(recipeId));
 
   removeExtensionsFromAllTabs(
     uniq([
       ...recipeExtensions.map(({ id }) => id),
-      ...dynamicElementsToUninstall,
+      ...draftModComponentsToDeactivate,
     ]),
   );
 }
@@ -61,7 +61,7 @@ export async function uninstallExtensions(
   extensionIds: UUID[],
   dispatch: Dispatch<unknown>,
 ): Promise<void> {
-  await removeDynamicElements(extensionIds);
+  await removeDraftModComponents(extensionIds);
 
   dispatch(extensionActions.removeExtensions({ extensionIds }));
 

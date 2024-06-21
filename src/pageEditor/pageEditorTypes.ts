@@ -179,7 +179,7 @@ export interface EditorState {
   isPendingInstalledExtensions: boolean;
 
   /**
-   * The available dynamic elements for the current tab
+   * The available draft mod components for the current tab
    */
   availableDynamicIds: UUID[];
 

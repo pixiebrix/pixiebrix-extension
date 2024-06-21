@@ -22,8 +22,8 @@ import { type NodeUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   getEditorState,
-  removeDynamicElements,
-  removeDynamicElementsForRecipe,
+  removeDraftModComponents,
+  removeDraftModComponentsForMod,
   saveEditorState,
 } from "@/store/editorStorage";
 import { validateRegistryId } from "@/types/helpers";
@@ -50,7 +50,7 @@ const setReduxStorageMock = jest.mocked(setReduxStorage);
 
 const currentPersistenceVersion = getMaxMigrationsVersion(migrations);
 
-describe("dynamicElementStorage", () => {
+describe("draftModComponentStorage", () => {
   test("removes one active element", async () => {
     const element = formStateFactory();
     const nodeUIStates: Record<UUID, NodeUIState> = {
@@ -79,7 +79,7 @@ describe("dynamicElementStorage", () => {
     };
     readReduxStorageMock.mockResolvedValue(state);
 
-    await removeDynamicElements([element.uuid]);
+    await removeDraftModComponents([element.uuid]);
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
@@ -141,7 +141,7 @@ describe("dynamicElementStorage", () => {
     };
     readReduxStorageMock.mockResolvedValue(stateWithInactive);
 
-    await removeDynamicElements([inactiveElement.uuid]);
+    await removeDraftModComponents([inactiveElement.uuid]);
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
@@ -229,7 +229,7 @@ describe("dynamicElementStorage", () => {
     };
     readReduxStorageMock.mockResolvedValue(stateWithRecipe);
 
-    await removeDynamicElementsForRecipe(recipe.id);
+    await removeDraftModComponentsForMod(recipe.id);
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
@@ -317,7 +317,7 @@ describe("dynamicElementStorage", () => {
     };
     readReduxStorageMock.mockResolvedValue(stateWithRecipe);
 
-    await removeDynamicElementsForRecipe(recipe.id);
+    await removeDraftModComponentsForMod(recipe.id);
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
@@ -327,7 +327,7 @@ describe("dynamicElementStorage", () => {
   });
 });
 
-describe("dynamicElementStorage when no state is persisted", () => {
+describe("draftModComponentStorage when no state is persisted", () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -345,11 +345,11 @@ describe("dynamicElementStorage when no state is persisted", () => {
     },
   );
 
-  test("removeDynamicElementsForRecipe doesn't crash when readReduxStorage returns undefined", async () => {
-    await removeDynamicElementsForRecipe(validateRegistryId("@test/recipe"));
+  test("removeDraftModComponentsForMod doesn't crash when readReduxStorage returns undefined", async () => {
+    await removeDraftModComponentsForMod(validateRegistryId("@test/recipe"));
   });
 
-  test("removeDynamicElements doesn't crash when readReduxStorage returns undefined", async () => {
-    await removeDynamicElements([uuidSequence(0), uuidSequence(1)]);
+  test("removeDraftModComponents doesn't crash when readReduxStorage returns undefined", async () => {
+    await removeDraftModComponents([uuidSequence(0), uuidSequence(1)]);
   });
 });
