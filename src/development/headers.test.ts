@@ -22,13 +22,13 @@ import brickRegistry from "@/bricks/registry";
 // NOTE: we don't need to also include extensionPoints because we got rid of all the legacy hard-coded extension points
 // (e.g., the Pipedrive calendar extension point, and TechCrunch entity extension point)
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
+import registerContribBricks from "@/contrib/registerContribBricks";
 
 // Maintaining this number is a simple way to ensure bricks don't accidentally get dropped
 const EXPECTED_HEADER_COUNT = 137;
 
 registerBuiltinBricks();
-registerContribBlocks();
+registerContribBricks();
 
 Error.stackTraceLimit = Number.POSITIVE_INFINITY;
 

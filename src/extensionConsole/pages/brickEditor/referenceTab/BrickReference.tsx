@@ -31,7 +31,7 @@ import Fuse from "fuse.js";
 import { sortBy } from "lodash";
 import Loader from "@/components/Loader";
 import BrickDetail from "./BrickDetail";
-import BlockResult from "./BlockResult";
+import BrickResult from "./BrickResult";
 import { isOfficial } from "@/bricks/util";
 import { find } from "@/registry/packageRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
@@ -125,9 +125,9 @@ const BrickReference = ({
           </InputGroup>
           <ListGroup className={styles.blockResults}>
             {results.map((result) => (
-              <BlockResult
+              <BrickResult
                 key={result.id}
-                block={result}
+                brick={result}
                 active={selected?.id === result.id}
                 onSelect={() => {
                   setSelected(result);

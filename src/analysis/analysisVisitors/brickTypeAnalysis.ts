@@ -18,7 +18,7 @@
 import { AnalysisVisitorWithResolvedBricksABC } from "./baseAnalysisVisitors";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
-import { makeIsBlockAllowedForPipeline } from "@/bricks/blockFilterHelpers";
+import { makeIsBrickAllowedForPipeline } from "@/bricks/brickFilterHelpers";
 import { AnnotationType } from "@/types/annotationTypes";
 import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
 import { TourEffect } from "@/bricks/effects/tourEffect";
@@ -40,7 +40,7 @@ class BrickTypeAnalysis extends AnalysisVisitorWithResolvedBricksABC {
       return;
     }
 
-    const isBlockAllowed = makeIsBlockAllowedForPipeline(extra.pipelineFlavor)(
+    const isBlockAllowed = makeIsBrickAllowedForPipeline(extra.pipelineFlavor)(
       typedBlock,
     );
 

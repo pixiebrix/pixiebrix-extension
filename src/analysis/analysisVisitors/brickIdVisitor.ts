@@ -27,13 +27,13 @@ import { castArray } from "lodash";
  *
  * Typically, should be called as BlockIdVisitor.collectBlockIds
  *
- * @see BlockIdVisitor.collectBlockIds
+ * @see BrickIdVisitor.collectBrickIds
  */
-class BlockIdVisitor extends PipelineVisitor {
-  readonly _blockIds = new Set<RegistryId>();
+class BrickIdVisitor extends PipelineVisitor {
+  readonly _brickIds = new Set<RegistryId>();
 
-  get blockIds(): Set<RegistryId> {
-    return new Set(this._blockIds);
+  get brickIds(): Set<RegistryId> {
+    return new Set(this._brickIds);
   }
 
   override visitBrick(
@@ -42,16 +42,16 @@ class BlockIdVisitor extends PipelineVisitor {
     extra: VisitBlockExtra,
   ): void {
     super.visitBrick(position, blockConfig, extra);
-    this._blockIds.add(blockConfig.id);
+    this._brickIds.add(blockConfig.id);
   }
 
-  public static collectBlockIds(
+  public static collectBrickIds(
     pipeline: BrickConfig | BrickConfig[],
   ): Set<RegistryId> {
-    const visitor = new BlockIdVisitor();
+    const visitor = new BrickIdVisitor();
     visitor.visitRootPipeline(castArray(pipeline));
-    return visitor.blockIds;
+    return visitor.brickIds;
   }
 }
 
-export default BlockIdVisitor;
+export default BrickIdVisitor;

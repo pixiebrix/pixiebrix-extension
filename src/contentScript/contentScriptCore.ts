@@ -24,7 +24,7 @@ import { initMessengerLogging } from "@/development/messengerLogging";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import registerMessenger from "@/contentScript/messenger/registration";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
+import registerContribBricks from "@/contrib/registerContribBricks";
 import brickRegistry from "@/bricks/registry";
 import { initNavigation } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";
@@ -74,7 +74,7 @@ export async function init(): Promise<void> {
   registerMessenger();
   registerExternalMessenger();
   registerBuiltinBricks();
-  registerContribBlocks();
+  registerContribBricks();
   markDocumentAsFocusableByUser();
   // Since 1.8.2, the brick registry was de-coupled from the runtime to avoid circular dependencies
   // Since 1.8.10, we inject the platform into the runtime

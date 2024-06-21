@@ -143,7 +143,7 @@ async function renderConfigOption(
 /**
  * Return true if the stage should be run given the current context
  */
-export async function shouldRunBlock(
+export async function shouldRunBrick(
   brickConfig: BrickConfig,
   context: BrickArgsContext,
   { explicitRender, autoescape }: ApiVersionOptions,

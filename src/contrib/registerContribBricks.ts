@@ -41,10 +41,10 @@ import { RunApiTask } from "@/contrib/automationanywhere/RunApiTask";
 
 let registered = false;
 
-function registerContribBlocks(): void {
+function registerContribBricks(): void {
   if (registered) {
     console.warn(
-      "registerBuiltinBlocks already called; multiple calls are unnecessary and may impact startup performance",
+      "registerContribBricks already called; multiple calls are unnecessary and may impact startup performance",
     );
   }
 
@@ -89,4 +89,4 @@ function registerContribBlocks(): void {
   registered = true;
 }
 
-export default registerContribBlocks;
+export default registerContribBricks;

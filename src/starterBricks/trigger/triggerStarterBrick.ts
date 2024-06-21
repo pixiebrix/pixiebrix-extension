@@ -17,7 +17,7 @@
 
 import {
   type InitialValues,
-  reduceExtensionPipeline,
+  reduceModComponentPipeline,
 } from "@/runtime/reducePipeline";
 import { ReusableAbortController } from "abort-utils";
 import {
@@ -412,7 +412,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       optionsArgs: modComponent.optionsArgs,
     };
 
-    await reduceExtensionPipeline(actionConfig, initialValues, {
+    await reduceModComponentPipeline(actionConfig, initialValues, {
       logger: componentLogger,
       ...apiVersionOptions(modComponent.apiVersion),
     });

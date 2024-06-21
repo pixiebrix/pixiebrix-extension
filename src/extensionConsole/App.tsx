@@ -37,7 +37,7 @@ import ActivateExtensionPage from "@/extensionConsole/pages/activateExtension/Ac
 import SetupPage from "@/extensionConsole/pages/onboarding/SetupPage";
 import UpdateBanner from "@/extensionConsole/pages/UpdateBanner";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
+import registerContribBricks from "@/contrib/registerContribBricks";
 import registerEditors from "@/contrib/editors";
 import DeploymentBanner from "@/extensionConsole/pages/deployments/DeploymentBanner";
 import { ModalProvider } from "@/components/ConfirmationModal";
@@ -59,7 +59,7 @@ import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner"
 // Register the built-in bricks
 registerEditors();
 registerBuiltinBricks();
-registerContribBlocks();
+registerContribBricks();
 
 // Register Widgets
 registerDefaultWidgets();

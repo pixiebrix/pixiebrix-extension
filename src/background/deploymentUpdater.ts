@@ -57,7 +57,7 @@ import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
+import registerContribBricks from "@/contrib/registerContribBricks";
 import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { type UUID } from "@/types/stringTypes";
@@ -708,7 +708,7 @@ async function hideUpdatePromptUntilNextAvailableUpdate() {
 function initDeploymentUpdater(): void {
   // Need to load the built-in bricks for permissions checks to work on initial startup
   registerBuiltinBricks();
-  registerContribBlocks();
+  registerContribBricks();
 
   setInterval(syncDeployments, UPDATE_INTERVAL_MS);
   void hideUpdatePromptUntilNextAvailableUpdate();
