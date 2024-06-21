@@ -24,7 +24,10 @@ const knipConfig = {
 
     // Scripting/config entry points that are not being picked up
     "src/testUtils/FixJsdomEnvironment.js",
-    "end-to-end-tests/auth.setup.ts",
+    "end-to-end-tests/fixtures/authentication.ts",
+    "end-to-end-tests/setup/affiliated.setup.ts",
+    "end-to-end-tests/setup/unaffiliated.setup.ts",
+    "end-to-end-tests/setup/utils.ts",
     "scripts/DiscardFilePlugin.mjs",
   ],
   // https://knip.dev/guides/handling-issues#mocks-and-other-implicit-imports

@@ -81,6 +81,7 @@ exports[`DeploymentModal should render deployment update if update is enforced 1
   >
     <div
       class="modal-dialog"
+      data-testid="activateDeploymentModal"
     >
       <div
         class="modal-content"
