@@ -170,7 +170,7 @@ function useSaveMod(): ModSaver {
     );
 
     // Update the mod metadata on mod components in the options slice
-    dispatch(optionsActions.updateRecipeMetadataForExtensions(newModMetadata));
+    dispatch(optionsActions.updateModMetadata(newModMetadata));
 
     dispatch(
       editorActions.updateModMetadataOnModComponentFormStates(newModMetadata),
@@ -178,7 +178,7 @@ function useSaveMod(): ModSaver {
 
     // Remove any deleted mod component form states from the extensions slice
     for (const modComponentId of getDeletedComponentIdsForMod(modId)) {
-      dispatch(optionsActions.removeExtension({ extensionId: modComponentId }));
+      dispatch(optionsActions.removeModComponent({ modComponentId }));
     }
 
     // Clear the dirty states

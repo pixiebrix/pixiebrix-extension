@@ -32,7 +32,7 @@ import {
 } from "@/data/service/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
-import useActivateRecipe from "@/activation/useActivateRecipe";
+import useActivateMod from "@/activation/useActivateMod";
 import useMilestones from "@/hooks/useMilestones";
 import Form, { type OnSubmit, type RenderBody } from "@/components/form/Form";
 import { type WizardValues } from "@/activation/wizardTypes";
@@ -91,7 +91,7 @@ const ActivateModCard: React.FC = () => {
     error: wizardError,
   } = useActivateModWizard(mod);
 
-  const activateMod = useActivateRecipe("extensionConsole");
+  const activateMod = useActivateMod("extensionConsole");
   const [activationError, setActivationError] = useState<unknown>();
   const [createMilestone] = useCreateMilestoneMutation();
 

@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { uninstallRecipe } from "@/store/uninstallUtils";
+import { uninstallMod } from "@/store/uninstallUtils";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
@@ -36,47 +36,50 @@ export type ActivateResult = {
   error?: string;
 };
 
-export type ActivateRecipeFormCallback =
+export type ActivateModFormCallback =
   /**
-   * Callback for activating a recipe.
+   * Callback for activating a mod.
    *
-   * @param formValues The form values for recipe configuration options
-   * @param recipe The recipe definition to install
+   * @param formValues The form values for mod configuration options
+   * @param modDefinition The mod definition to activate
    * @returns a promise that resolves to an ActivateResult
    */
-  (formValues: WizardValues, recipe: ModDefinition) => Promise<ActivateResult>;
+  (
+    formValues: WizardValues,
+    modDefinition: ModDefinition,
+  ) => Promise<ActivateResult>;
 
 type ActivationSource = "marketplace" | "extensionConsole";
 
-function selectActivateEventData(recipe: ModDefinition) {
+function selectActivateEventData(modDefinition: ModDefinition) {
   return {
-    blueprintId: recipe.metadata.id,
-    extensions: recipe.extensionPoints.map((x) => x.label),
+    blueprintId: modDefinition.metadata.id,
+    extensions: modDefinition.extensionPoints.map((x) => x.label),
   };
 }
 
 /**
- * React hook to install a recipe.
+ * React hook to install a mod.
  *
  * Prompts the user to grant permissions if PixieBrix does not already have the required permissions.
  * @param source The source of the activation, only used for reporting purposes
- * @param checkPermissions Whether to check for permissions before activating the recipe
- * @returns A callback that can be used to activate a recipe
- * @see useActivateRecipeWizard
+ * @param checkPermissions Whether to check for permissions before activating the mod
+ * @returns A callback that can be used to activate a mod
+ * @see useActivateModWizard
  */
-function useActivateRecipe(
+function useActivateMod(
   source: ActivationSource,
   { checkPermissions = true }: { checkPermissions?: boolean } = {},
-): ActivateRecipeFormCallback {
+): ActivateModFormCallback {
   const dispatch = useDispatch();
-  const extensions = useSelector(selectActivatedModComponents);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
 
   const [createDatabase] = useCreateDatabaseMutation();
 
   return useCallback(
-    async (formValues: WizardValues, recipe: ModDefinition) => {
-      const isReactivate = extensions.some(
-        (extension) => extension._recipe?.id === recipe.metadata.id,
+    async (formValues: WizardValues, modDefinition: ModDefinition) => {
+      const isReactivate = activatedModComponents.some(
+        (x) => x._recipe?.id === modDefinition.metadata.id,
       );
 
       if (source === "extensionConsole") {
@@ -86,7 +89,7 @@ function useActivateRecipe(
         // console, to distinguish that from the workshop.
         // It's being kept to keep our metrics history clean.
         reportEvent(Events.MARKETPLACE_ACTIVATE, {
-          ...selectActivateEventData(recipe),
+          ...selectActivateEventData(modDefinition),
           reactivate: isReactivate,
         });
       }
@@ -96,14 +99,14 @@ function useActivateRecipe(
       );
 
       try {
-        const recipePermissions = await checkModDefinitionPermissions(
-          recipe,
+        const modPermissions = await checkModDefinitionPermissions(
+          modDefinition,
           configuredDependencies,
         );
 
         if (checkPermissions) {
           const isPermissionsAcceptedByUser =
-            await ensurePermissionsFromUserGesture(recipePermissions);
+            await ensurePermissionsFromUserGesture(modPermissions);
 
           if (!isPermissionsAcceptedByUser) {
             if (source === "extensionConsole") {
@@ -113,7 +116,7 @@ function useActivateRecipe(
               // console, to distinguish that from the workshop.
               // It's being kept like this so our metrics history stays clean.
               reportEvent(Events.MARKETPLACE_REJECT_PERMISSIONS, {
-                ...selectActivateEventData(recipe),
+                ...selectActivateEventData(modDefinition),
                 reactivate: isReactivate,
               });
             }
@@ -128,7 +131,7 @@ function useActivateRecipe(
         const { optionsArgs, integrationDependencies } = formValues;
 
         await autoCreateDatabaseOptionsArgsInPlace(
-          recipe,
+          modDefinition,
           optionsArgs,
           async (args) => {
             const result = await createDatabase(args).unwrap();
@@ -136,19 +139,23 @@ function useActivateRecipe(
           },
         );
 
-        const recipeExtensions = extensions.filter(
-          (extension) => extension._recipe?.id === recipe.metadata.id,
+        const existingModComponents = activatedModComponents.filter(
+          (x) => x._recipe?.id === modDefinition.metadata.id,
         );
 
-        await uninstallRecipe(recipe.metadata.id, recipeExtensions, dispatch);
+        await uninstallMod(
+          modDefinition.metadata.id,
+          existingModComponents,
+          dispatch,
+        );
 
         dispatch(
           extensionsSlice.actions.activateMod({
-            modDefinition: recipe,
+            modDefinition,
             configuredDependencies: integrationDependencies,
             optionsArgs,
             screen: source,
-            isReactivate: recipeExtensions.length > 0,
+            isReactivate: existingModComponents.length > 0,
           }),
         );
 
@@ -156,7 +163,7 @@ function useActivateRecipe(
       } catch (error) {
         const errorMessage = getErrorMessage(error);
 
-        console.error(`Error activating mod: ${recipe.metadata.id}`, {
+        console.error(`Error activating mod: ${modDefinition.metadata.id}`, {
           error,
         });
 
@@ -172,8 +179,8 @@ function useActivateRecipe(
         success: true,
       };
     },
-    [createDatabase, dispatch, extensions, source],
+    [createDatabase, dispatch, activatedModComponents, source],
   );
 }
 
-export default useActivateRecipe;
+export default useActivateMod;

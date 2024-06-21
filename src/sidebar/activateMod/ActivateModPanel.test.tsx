@@ -46,9 +46,9 @@ import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { refreshServices } from "@/background/locator";
 import { type WizardValues } from "@/activation/wizardTypes";
-import useActivateRecipe, {
+import useActivateMod, {
   type ActivateResult,
-} from "@/activation/useActivateRecipe";
+} from "@/activation/useActivateMod";
 import brickRegistry from "@/bricks/registry";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
@@ -86,12 +86,12 @@ jest.mock("@/registry/internal", () => ({
 
 const useQuickbarShortcutMock = jest.mocked(useQuickbarShortcut);
 
-jest.mock("@/activation/useActivateRecipe", () => ({
+jest.mock("@/activation/useActivateMod", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue(async () => ({ success: true })),
 }));
 
-const useActivateRecipeMock = jest.mocked(useActivateRecipe);
+const useActivateRecipeMock = jest.mocked(useActivateMod);
 let activateRecipeSpy: jest.MockedFunction<
   (formValues: WizardValues, recipe: ModDefinition) => Promise<ActivateResult>
 >;

@@ -105,7 +105,7 @@ function useCreateModFromModComponent(
 
           if (!keepLocalCopy) {
             await removeModComponentFromStorage({
-              extensionId: activeModComponent.uuid,
+              modComponentId: activeModComponent.uuid,
             });
           }
 

@@ -112,14 +112,14 @@ const DraftModComponentListItem: React.FunctionComponent<
 
   const deleteModComponent = async () =>
     removeModComponentFromStorage({
-      extensionId: modComponentFormState.uuid,
+      modComponentId: modComponentFormState.uuid,
       showConfirmationModal: modId
         ? DELETE_STARTER_BRICK_MODAL_PROPS
         : DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
     });
   const deactivateModComponent = async () =>
     removeModComponentFromStorage({
-      extensionId: modComponentFormState.uuid,
+      modComponentId: modComponentFormState.uuid,
       showConfirmationModal: DEACTIVATE_MOD_MODAL_PROPS,
     });
 

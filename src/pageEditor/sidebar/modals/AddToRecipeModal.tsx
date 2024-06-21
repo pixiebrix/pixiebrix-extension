@@ -110,7 +110,7 @@ const AddToRecipeModal: React.FC = () => {
       );
       if (!keepLocalCopy) {
         await removeModComponentFromStorage({
-          extensionId: modComponentId,
+          modComponentId,
         });
       }
 

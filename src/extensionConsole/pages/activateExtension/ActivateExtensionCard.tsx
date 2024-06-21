@@ -93,9 +93,7 @@ const ActivateExtensionCard: React.FunctionComponent<{
     async (values: FormState, helpers: FormikProps<FormState>) => {
       try {
         dispatch(
-          actions.activateStandaloneModDefinition({
-            extension: { ...extension, ...values },
-          }),
+          actions.activateStandaloneModDefinition({ ...extension, ...values }),
         );
         notify.success("Activated mod");
         dispatch(push("/mods"));

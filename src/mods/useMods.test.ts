@@ -61,7 +61,7 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.UNSAFE_setExtensions([
+          extensionsSlice.actions.UNSAFE_setModComponents([
             activatedModComponentFactory({
               _recipe: {
                 ...metadataFactory(),
@@ -92,7 +92,7 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.UNSAFE_setExtensions(
+          extensionsSlice.actions.UNSAFE_setModComponents(
             range(3).map(() =>
               activatedModComponentFactory({
                 _recipe: {
@@ -130,7 +130,7 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.UNSAFE_setExtensions([
+          extensionsSlice.actions.UNSAFE_setModComponents([
             activatedModComponentFactory({
               _recipe: {
                 ...metadata,
@@ -186,7 +186,7 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.UNSAFE_setExtensions([
+          extensionsSlice.actions.UNSAFE_setModComponents([
             // Content doesn't matter, just need to match the ID
             activatedModComponentFactory({ id: standaloneModDefinition.id }),
           ]),
