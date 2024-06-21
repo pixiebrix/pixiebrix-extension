@@ -72,6 +72,7 @@ jobs:
   end-to-end-tests:
     if: ${{ github.event.inputs.skip_tests != 'true' }}
     runs-on: ubuntu-latest
+    secrets: inherit
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -79,7 +80,6 @@ jobs:
           ref: release/${{ github.event.inputs.version }}
       - name: Run end-to-end tests
         uses: ./.github/actions/end-to-end-tests
-        secrets: inherit
         with:
           checkout-ref: release/${{ github.event.inputs.version }}
 
