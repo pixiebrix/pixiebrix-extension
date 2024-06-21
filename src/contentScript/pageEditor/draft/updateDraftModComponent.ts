@@ -28,7 +28,7 @@ import {
   activateExtensionPanel,
   showSidebar,
 } from "@/contentScript/sidebarController";
-import { type TourDefinition } from "@/starterBricks/tour/types";
+import { type TourDefinition } from "@/starterBricks/tour/tourTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 export async function updateDraftModComponent({

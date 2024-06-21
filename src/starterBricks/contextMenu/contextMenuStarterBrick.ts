@@ -70,7 +70,7 @@ import {
   type ContextMenuTargetMode,
   type ContextMenuConfig,
   type ContextMenuDefinition,
-} from "@/starterBricks/contextMenu/types";
+} from "@/starterBricks/contextMenu/contextMenuTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
@@ -79,7 +79,7 @@ const groupRegistrationErrorNotification = (platform: PlatformProtocol) =>
   batchedFunction(
     (errors: unknown[][]): void => {
       // `batchedFunction` will throttle the calls and coalesce all the errors into a
-      // single notification, even if they come from different extensions
+      // single notification, even if they come from different mod components
       // https://github.com/pixiebrix/pixiebrix-extension/issues/7353
       platform.toasts.showNotification({
         type: "error",
@@ -164,37 +164,37 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   );
 
   async getBricks(
-    extension: ResolvedModComponent<ContextMenuConfig>,
+    modComponent: ResolvedModComponent<ContextMenuConfig>,
   ): Promise<Brick[]> {
-    return collectAllBricks(extension.config.action);
+    return collectAllBricks(modComponent.config.action);
   }
 
   override uninstall({ global = false }: { global?: boolean }): void {
     // NOTE: don't uninstall the mouse/click handler because other context menus need it
-    const extensions = this.modComponents.splice(0);
+    const modComponents = this.modComponents.splice(0);
     if (global) {
-      for (const extension of extensions) {
-        void getPlatform().contextMenus.unregister(extension.id);
-        getPlatform().textSelectionMenu.unregister(extension.id);
+      for (const modComponent of modComponents) {
+        void getPlatform().contextMenus.unregister(modComponent.id);
+        getPlatform().textSelectionMenu.unregister(modComponent.id);
       }
     }
   }
 
   /**
-   * Remove the context menu items for the given extensions from all tabs/contexts.
+   * Remove the context menu items for the given mod components from all tabs/contexts.
    * @see uninstallContextMenu
    * @see preloadContextMenus
    */
-  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(modComponentIds: UUID[]): void {
     // Context menus are registered with Chrome by document pattern via the background page. Therefore, it's impossible
     // to clear the UI menu item from a single tab. Calling `uninstallContextMenu` removes the tab from all menus.
 
     // Uninstalling context menus is the least-bad approach because it prevents duplicate menu item titles due to
-    // re-activating a context menu (during re-activation, mod components get new extensionIds.)
+    // re-activating a context menu (during re-activation, mod components get new modComponentIds.)
 
-    for (const extensionId of extensionIds) {
-      void getPlatform().contextMenus.unregister(extensionId);
-      getPlatform().textSelectionMenu.unregister(extensionId);
+    for (const modComponentId of modComponentIds) {
+      void getPlatform().contextMenus.unregister(modComponentId);
+      getPlatform().textSelectionMenu.unregister(modComponentId);
     }
   }
 
@@ -215,7 +215,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   }
 
   async runModComponents(): Promise<void> {
-    await this.registerExtensions();
+    await this.registerModComponents();
   }
 
   override async defaultReader(): Promise<Reader> {
@@ -233,15 +233,15 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   }
 
   async registerMenuItem(
-    extension: Pick<
+    modComponent: Pick<
       ResolvedModComponent<ContextMenuConfig>,
       "id" | "config" | "_deployment"
     >,
     handler: (clickData: Menus.OnClickData) => Promise<void>,
   ): Promise<void> {
-    const { title = DEFAULT_MENU_ITEM_TITLE } = extension.config;
+    const { title = DEFAULT_MENU_ITEM_TITLE } = modComponent.config;
 
-    if (!isDeploymentActive(extension)) {
+    if (!isDeploymentActive(modComponent)) {
       return;
     }
 
@@ -250,7 +250,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     );
 
     await getPlatform().contextMenus.register({
-      extensionId: extension.id,
+      extensionId: modComponent.id,
       contexts: this.contexts ?? ["all"],
       title,
       documentUrlPatterns: patterns,
@@ -258,22 +258,22 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     });
   }
 
-  private async registerExtensions(): Promise<void> {
+  private async registerModComponents(): Promise<void> {
     console.debug(
       "Registering",
       this.modComponents.length,
       "contextMenu starter bricks",
     );
 
-    const promises = this.modComponents.map(async (extension) => {
+    const promises = this.modComponents.map(async (modComponent) => {
       try {
-        await this.registerExtension(extension);
+        await this.registerModComponentItem(modComponent);
       } catch (error) {
         reportError(error, {
           context: {
-            deploymentId: extension._deployment?.id,
-            extensionPointId: extension.extensionPointId,
-            extensionId: extension.id,
+            deploymentId: modComponent._deployment?.id,
+            extensionPointId: modComponent.extensionPointId,
+            extensionId: modComponent.id,
           },
         });
         throw error;
@@ -321,17 +321,17 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     }
   }
 
-  private async registerExtension(
-    extension: ResolvedModComponent<ContextMenuConfig>,
+  private async registerModComponentItem(
+    modComponent: ResolvedModComponent<ContextMenuConfig>,
   ): Promise<void> {
     const {
       action: actionConfig,
       onSuccess = {},
       title = DEFAULT_MENU_ITEM_TITLE,
-    } = extension.config;
+    } = modComponent.config;
 
-    const extensionLogger = this.logger.childLogger(
-      selectModComponentContext(extension),
+    const modComponentLogger = this.logger.childLogger(
+      selectModComponentContext(modComponent),
     );
 
     const handler = async (
@@ -340,13 +340,14 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         "menuItemId" | "editable" | "modifiers"
       >,
     ): Promise<void> => {
-      reportEvent(Events.HANDLE_CONTEXT_MENU, selectEventData(extension));
+      reportEvent(Events.HANDLE_CONTEXT_MENU, selectEventData(modComponent));
 
       try {
         const reader = await this.getBaseReader();
-        const serviceContext = await makeIntegrationsContextFromDependencies(
-          extension.integrationDependencies,
-        );
+        const integrationsContext =
+          await makeIntegrationsContextFromDependencies(
+            modComponent.integrationDependencies,
+          );
 
         const targetElement =
           clickedElement ?? guessSelectedElement() ?? document;
@@ -362,13 +363,13 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         const initialValues: InitialValues = {
           input,
           root: this.decidePipelineRoot(targetElement),
-          serviceContext,
-          optionsArgs: extension.optionsArgs,
+          serviceContext: integrationsContext,
+          optionsArgs: modComponent.optionsArgs,
         };
 
         await reduceExtensionPipeline(actionConfig, initialValues, {
-          logger: extensionLogger,
-          ...apiVersionOptions(extension.apiVersion),
+          logger: modComponentLogger,
+          ...apiVersionOptions(modComponent.apiVersion),
         });
 
         if (onSuccess) {
@@ -387,7 +388,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         if (hasSpecificErrorCause(error, CancelError)) {
           this.platform.toasts.showNotification(DEFAULT_ACTION_RESULTS.cancel);
         } else {
-          extensionLogger.error(error);
+          modComponentLogger.error(error);
           this.platform.toasts.showNotification({
             ...DEFAULT_ACTION_RESULTS.error,
             error, // Include more details in the notification
@@ -397,9 +398,9 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       }
     };
 
-    await this.registerMenuItem(extension, handler);
+    await this.registerMenuItem(modComponent, handler);
 
-    getPlatform().textSelectionMenu.register(extension.id, {
+    getPlatform().textSelectionMenu.register(modComponent.id, {
       title,
       // Starter Brick current doesn't have an icon affordance because the browser context menu API doesn't support them
       icon: undefined,
@@ -410,7 +411,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   }
 }
 
-class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
+class RemoteContextMenuStarterBrick extends ContextMenuStarterBrickABC {
   private readonly _definition: ContextMenuDefinition;
 
   public readonly permissions: Permissions.Permissions;
@@ -488,5 +489,5 @@ export function fromJS(
     throw new Error(`Expected type=contextMenu, got ${type}`);
   }
 
-  return new RemoteContextMenuExtensionPoint(platform, config);
+  return new RemoteContextMenuStarterBrick(platform, config);
 }

@@ -20,7 +20,7 @@ import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
-import { fromJS } from "@/starterBricks/tour/tourExtension";
+import { fromJS } from "@/starterBricks/tour/tourStarterBrick";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import { isTourInProgress } from "@/starterBricks/tour/tourController";
@@ -43,7 +43,7 @@ import { getPlatform } from "@/platform/platformContext";
 import {
   type TourDefinition,
   type TourConfig,
-} from "@/starterBricks/tour/types";
+} from "@/starterBricks/tour/tourTypes";
 
 const rootReader = new RootReader();
 

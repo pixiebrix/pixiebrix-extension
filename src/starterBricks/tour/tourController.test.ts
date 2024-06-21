@@ -32,29 +32,29 @@ import { type RegistryId } from "@/types/registryTypes";
 describe("tourController", () => {
   test("ad-hoc tour", () => {
     const nonce = uuidv4();
-    const extensionId = uuidv4();
+    const modComponentId = uuidv4();
     const abortController = new AbortController();
     markTourStart(
       nonce,
-      { id: extensionId, label: "Ad-hoc", _recipe: undefined },
-      { abortController, context: { extensionId } },
+      { id: modComponentId, label: "Ad-hoc", _recipe: undefined },
+      { abortController, context: { extensionId: modComponentId } },
     );
 
     expect(isTourInProgress()).toBe(true);
 
-    markTourEnd(nonce, { context: { extensionId } });
+    markTourEnd(nonce, { context: { extensionId: modComponentId } });
 
     expect(isTourInProgress()).toBe(false);
   });
 
   test("cancel all tours", () => {
     const nonce = uuidv4();
-    const extensionId = uuidv4();
+    const modComponentId = uuidv4();
     const abortController = new AbortController();
     markTourStart(
       nonce,
-      { id: extensionId, label: "Ad-hoc", _recipe: undefined },
-      { abortController, context: { extensionId } },
+      { id: modComponentId, label: "Ad-hoc", _recipe: undefined },
+      { abortController, context: { extensionId: modComponentId } },
     );
 
     expect(isTourInProgress()).toBe(true);
@@ -65,12 +65,12 @@ describe("tourController", () => {
   });
 
   test("register and run sub-tour", async () => {
-    const blueprintId = validateRegistryId("test/tour");
+    const modId = validateRegistryId("test/tour");
 
     const tourPromise = pDefer<void>();
 
     await registerTour({
-      blueprintId,
+      blueprintId: modId,
       extension: {
         id: uuidv4(),
         label: "Test Tour",
@@ -88,7 +88,7 @@ describe("tourController", () => {
 
     const { promise: subTourPromise, nonce } = await runSubTour({
       tour: "Test Tour",
-      blueprintId,
+      blueprintId: modId,
     });
 
     expect(getCurrentTour()?.nonce).toBe(nonce);
