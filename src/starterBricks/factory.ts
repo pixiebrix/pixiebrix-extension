@@ -20,8 +20,8 @@ import { fromJS as deserializeMenuItem } from "@/starterBricks/menuItem/menuItem
 import { fromJS as deserializeTrigger } from "@/starterBricks/trigger/triggerStarterBrick";
 import { fromJS as deserializeContextMenu } from "@/starterBricks/contextMenu/contextMenu";
 import { fromJS as deserializeSidebar } from "@/starterBricks/sidebar/sidebarExtension";
-import { fromJS as deserializeQuickBar } from "@/starterBricks/quickBar/quickBarExtension";
-import { fromJS as deserializeQuickBarProvider } from "@/starterBricks/quickBarProvider/quickBarProviderExtension";
+import { fromJS as deserializeQuickBar } from "@/starterBricks/quickBar/quickBarStarterBrick";
+import { fromJS as deserializeQuickBarProvider } from "@/starterBricks/quickBarProvider/quickBarProviderStarterBrick";
 import { fromJS as deserializeTour } from "@/starterBricks/tour/tourExtension";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";

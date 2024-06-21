@@ -26,14 +26,14 @@ import { validateRegistryId } from "@/types/helpers";
 import { RemoteMenuItemStarterBrick } from "@/starterBricks/menuItem/menuItemStarterBrick";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
-import { RemoteQuickBarExtensionPoint } from "@/starterBricks/quickBar/quickBarExtension";
+import { RemoteQuickBarStarterBrick } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { getPlatform } from "@/platform/platformContext";
 import { type MenuItemDefinition } from "@/starterBricks/menuItem/menuItemTypes";
-import { type QuickBarDefinition } from "@/starterBricks/quickBar/types";
+import { type QuickBarDefinition } from "@/starterBricks/quickBar/quickBarTypes";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -108,7 +108,7 @@ describe("checkAvailableInstalledExtensions", () => {
           };
         },
       }) as StarterBrickDefinitionLike<QuickBarDefinition>;
-    const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
+    const availableQuickbarExtensionPoint = new RemoteQuickBarStarterBrick(
       getPlatform(),
       availableQuickbarStarterBrickDefinition,
     );

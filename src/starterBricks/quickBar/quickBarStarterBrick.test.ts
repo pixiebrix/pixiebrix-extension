@@ -26,7 +26,7 @@ import {
   tick,
 } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
-import { fromJS } from "@/starterBricks/quickBar/quickBarExtension";
+import { fromJS } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { type Menus } from "webextension-polyfill";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -46,7 +46,7 @@ import { getPlatform } from "@/platform/platformContext";
 import {
   type QuickBarDefinition,
   type QuickBarConfig,
-} from "@/starterBricks/quickBar/types";
+} from "@/starterBricks/quickBar/quickBarTypes";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
@@ -77,14 +77,14 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<ResolvedModComponent<QuickBarConfig>>({
+const modComponentFactory = define<ResolvedModComponent<QuickBarConfig>>({
   apiVersion: "v3",
   _resolvedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
   _recipe: undefined,
-  label: "Test Extension",
+  label: "Test Mod Component",
   config: define<QuickBarConfig>({
     title: "Test Action",
     action: () => [] as BrickPipeline,
@@ -105,7 +105,7 @@ beforeEach(() => {
 const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
   .length;
 
-describe("quickBarExtension", () => {
+describe("quickBarStarterBrick", () => {
   it("quick bar smoke test", async () => {
     const user = userEvent.setup();
 
@@ -117,7 +117,7 @@ describe("quickBarExtension", () => {
     const starterBrick = fromJS(getPlatform(), starterBrickFactory()());
 
     starterBrick.registerModComponent(
-      extensionFactory({
+      modComponentFactory({
         extensionPointId: starterBrick.id,
       }),
     );

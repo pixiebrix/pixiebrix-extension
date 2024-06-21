@@ -67,7 +67,7 @@ import {
   checkAvailable,
 } from "@/contentScript/messenger/api";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarExtension";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { testMatchPatterns } from "@/bricks/available";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
@@ -187,7 +187,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
 
       // QuickBar is installed on every page, need to filter by the documentUrlPatterns
       if (
-        QuickBarStarterBrickABC.isQuickBarExtensionPoint(activatedStarterBrick)
+        QuickBarStarterBrickABC.isQuickBarStarterBrick(activatedStarterBrick)
       ) {
         return testMatchPatterns(
           activatedStarterBrick.documentUrlPatterns,

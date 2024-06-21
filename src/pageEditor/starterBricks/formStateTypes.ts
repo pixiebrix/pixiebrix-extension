@@ -30,7 +30,7 @@ import {
   type QuickBarConfig,
   type QuickBarDefaultOptions,
   type QuickBarTargetMode,
-} from "@/starterBricks/quickBar/types";
+} from "@/starterBricks/quickBar/quickBarTypes";
 import {
   type SidebarConfig,
   type Trigger as SidebarTrigger,
@@ -51,7 +51,7 @@ import { type Menus } from "webextension-polyfill";
 import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefaultOptions,
-} from "@/starterBricks/quickBarProvider/types";
+} from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
 import { type TourDefinition } from "@/starterBricks/tour/types";
 import {
   type BaseExtensionPointState,
