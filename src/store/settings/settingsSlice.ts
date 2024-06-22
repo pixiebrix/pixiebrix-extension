@@ -30,6 +30,9 @@ import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import { revertAll } from "@/store/commonActions";
 import { activateTheme } from "@/background/messenger/api";
+import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useEffect } from "react";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 
 export const initialSettingsState: SettingsState = {
   nextUpdate: null,
@@ -139,5 +142,25 @@ export const updateLocalPartnerTheme = createAsyncThunk<
   thunkAPI.dispatch(settingsSlice.actions.setPartnerId({ partnerId }));
   await activateTheme();
 });
+
+export const useActivatePartnerTheme = (): ((
+  partnerId: string | null,
+) => void) => {
+  const dispatch = useDispatch();
+  const { partnerId } = useSelector(selectSettings);
+
+  useEffect(() => {
+    if (partnerId) {
+      void activateTheme();
+    }
+  }, [partnerId]);
+
+  return useCallback(
+    (partnerId: string) => {
+      dispatch(settingsSlice.actions.setPartnerId({ partnerId }));
+    },
+    [dispatch],
+  );
+};
 
 export default settingsSlice;

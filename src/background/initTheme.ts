@@ -42,6 +42,7 @@ async function setToolbarIcon(): Promise<void> {
   }
 
   const activeTheme = await getActiveTheme();
+
   await allSettled(
     [themeStorage.set(activeTheme), setToolbarIconFromTheme(activeTheme)],
     { catch: "ignore" },

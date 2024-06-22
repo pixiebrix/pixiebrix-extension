@@ -25,7 +25,7 @@ import { clearCachedAuthSecrets, clearPartnerAuth } from "@/auth/authStorage";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
 import settingsSlice, {
-  updateLocalPartnerTheme,
+  useActivatePartnerTheme,
 } from "@/store/settings/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { assertProtocolUrl } from "@/utils/urlUtils";
@@ -51,6 +51,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
   const { partnerId, authIntegrationId, authMethod } =
     useSelector(selectSettings);
   const { exportDiagnostics } = useDiagnostics();
+  const activatePartnerTheme = useActivatePartnerTheme();
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
@@ -200,7 +201,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
               placeholder="my-company"
               defaultValue={partnerId ?? ""}
               onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
-                dispatch(updateLocalPartnerTheme(event.target.value));
+                activatePartnerTheme(event.target.value);
               }}
             />
             <Form.Text muted>The partner id of a PixieBrix partner</Form.Text>
