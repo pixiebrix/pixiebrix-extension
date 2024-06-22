@@ -15,11 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  createAsyncThunk,
-  createSlice,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   AUTH_METHODS,
   type SettingsFlags,
@@ -134,15 +130,6 @@ const settingsSlice = createSlice({
  * triggers updating themeStorage in the background script.
  * @see activateTheme
  */
-export const updateLocalPartnerTheme = createAsyncThunk<
-  void,
-  string,
-  { state: SettingsState }
->("settings/updatePartnerTheme", async (partnerId, thunkAPI) => {
-  thunkAPI.dispatch(settingsSlice.actions.setPartnerId({ partnerId }));
-  await activateTheme();
-});
-
 export const useActivatePartnerTheme = (): ((
   partnerId: string | null,
 ) => void) => {
