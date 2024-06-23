@@ -76,11 +76,35 @@ export class ModsPage {
   }
 
   /**
-   * Deletes a standalone mod component by name. This method will conditionally deactivate the mod as needed.
-   * Will fail if the mod is not found, or multiple mods are found for the same mod name.
-   * @param modName the name of the standalone mod to delete (must be a standalone mod, not a packaged mod)
+   * Performs a mod screen action for a mod, e.g., Edit in Workshop.
+   *
+   * For deletion, use deleteModByName because it handles deactivation/confirmation.
+   * @see deleteModByName
    */
-  async deleteStandaloneModByName(modName: string) {
+  async actionForModByName(modName: string, actionName: string): Promise<void> {
+    await this.page.bringToFront();
+    await this.searchModsInput().fill(modName);
+    await expect(this.page.getByText(`results for "${modName}`)).toBeVisible();
+
+    const modSearchResult = this.page.locator(".list-group-item", {
+      hasText: modName,
+    });
+    await expect(modSearchResult).toBeVisible();
+
+    // Open the dropdown action menu for the specified mod in the table
+    await modSearchResult.locator(".dropdown").click();
+
+    // Click the delete button in the delete confirmation modal
+    await this.page.getByRole("button", { name: actionName }).click();
+  }
+
+  /**
+   * Deletes a mod by name. This method will conditionally deactivate the mod as needed.
+   * Will fail if the mod is not found, or multiple mods are found for the same mod name.
+   * @param modName the name of the mod to delete (user must have permission to delete the mod)
+   * @see actionForModByName
+   */
+  async deleteModByName(modName: string) {
     await this.page.bringToFront();
     await this.searchModsInput().fill(modName);
     await expect(this.page.getByText(`results for "${modName}`)).toBeVisible();
@@ -115,7 +139,8 @@ export class ModsPage {
     // Click the delete button in the delete confirmation modal
     await this.page.getByRole("button", { name: "Delete" }).click();
     await expect(
-      this.page.getByText(`Deleted mod ${modName} from your account`),
+      // Exact text varies by standalone mod vs. mod package
+      this.page.getByText(`Deleted mod ${modName}`),
     ).toBeVisible();
   }
 }

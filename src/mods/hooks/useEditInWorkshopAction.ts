@@ -21,7 +21,7 @@ import { isModDefinition } from "@/utils/modUtils";
 import useHasModPackageEditPermission from "@/mods/hooks/useHasModPackageEditPermission";
 import { useHistory } from "react-router";
 import useUserAction from "@/hooks/useUserAction";
-import { CancelError } from "@/errors/businessErrors";
+import useFlags from "@/hooks/useFlags";
 
 /**
  * Hook returning a callback to a mod in the workshop, or null if mod is not mod package or the user does not have
@@ -31,16 +31,21 @@ import { CancelError } from "@/errors/businessErrors";
 function useEditInWorkshopAction(
   modViewItem: ModViewItem,
 ): (() => void) | null {
+  const { permit } = useFlags();
   const { mod } = modViewItem;
   const history = useHistory();
   const canEdit = useHasModPackageEditPermission(modViewItem);
+
   const [getEditablePackages] =
     appApi.endpoints.getEditablePackages.useLazyQuery();
+
+  const canOpenInWorkshop = permit("workshop") && canEdit;
 
   const openInWorkshop = useUserAction(
     async () => {
       if (!isModDefinition(mod)) {
-        throw new CancelError("Mod is not a mod package");
+        // Should never happen, because useHasModPackageEditPermission returns false non-packages
+        throw new Error("Mod is not a mod package");
       }
 
       // The mod definition doesn't have the surrogate id, so need to fetch it. We don't have a lookup endpoint,
@@ -62,7 +67,7 @@ function useEditInWorkshopAction(
     [getEditablePackages, mod, history],
   );
 
-  return canEdit ? openInWorkshop : null;
+  return canOpenInWorkshop ? openInWorkshop : null;
 }
 
 export default useEditInWorkshopAction;
