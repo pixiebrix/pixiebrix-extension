@@ -28,8 +28,12 @@ import { isPackageEditorRole } from "@/auth/authUtils";
  * - The package is owned by an organization the user that the user has editor permissions for
  *
  * The most accurate way to determine if the user has permission is to call getEditablePackages. However, the above
- * conditions should have the same behavior (modulo implicit permissions from deployment managers, but deployment
- * managers should generally not be editing/deleting packages anyway.).
+ * conditions should have the same behavior except for the following cases:
+ * - Public mods without a scope defined
+ * - Mods the user has edit permissions for because they're a deployment manager
+ *
+ * These limitations are acceptable compared to the cost of fetching metadata for all editable packages on the
+ * mods screen to determine the permissions.
  *
  * @see isPackageEditorRole
  * @since 2.0.4
