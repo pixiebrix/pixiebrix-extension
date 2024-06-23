@@ -257,8 +257,8 @@ export function getSharingSource({
 }
 
 export function updateAvailable(
-  availableRecipes: Map<RegistryId, ModDefinition>,
-  installedExtensions: Map<RegistryId, UnresolvedModComponent>,
+  availableMods: Map<RegistryId, ModDefinition>,
+  activatedMods: Map<RegistryId, UnresolvedModComponent>,
   mod: Mod,
 ): boolean {
   if (isUnavailableMod(mod)) {
@@ -266,54 +266,44 @@ export function updateAvailable(
     return false;
   }
 
-  const installedExtension = isModDefinition(mod)
-    ? installedExtensions.get(mod.metadata.id)
+  const activatedMod = isModDefinition(mod)
+    ? activatedMods.get(mod.metadata.id)
     : mod;
 
-  if (!installedExtension?._recipe) {
+  if (!activatedMod?._recipe) {
     return false;
   }
 
-  const availableRecipe = availableRecipes.get(installedExtension._recipe.id);
+  const availableMod = availableMods.get(activatedMod._recipe.id);
 
-  if (!availableRecipe) {
+  if (!availableMod) {
     return false;
   }
 
   // TODO: Drop assertions once the types are tighter
   // https://github.com/pixiebrix/pixiebrix-extension/pull/7010#discussion_r1410080332
   assertNotNullish(
-    installedExtension._recipe.version,
-    "The requested extension doesn't have a version",
+    activatedMod._recipe.version,
+    "The requested mod doesn't have a version",
   );
   assertNotNullish(
-    availableRecipe.metadata.version,
-    "The extension's recipe doesn't have a version",
+    availableMod.metadata.version,
+    "The mod component's mod doesn't have a version",
   );
 
-  if (
-    semver.gt(
-      availableRecipe.metadata.version,
-      installedExtension._recipe.version,
-    )
-  ) {
+  if (semver.gt(availableMod.metadata.version, activatedMod._recipe.version)) {
     return true;
   }
 
-  if (
-    semver.eq(
-      availableRecipe.metadata.version,
-      installedExtension._recipe.version,
-    )
-  ) {
+  if (semver.eq(availableMod.metadata.version, activatedMod._recipe.version)) {
     // Check the updated_at timestamp
-    if (installedExtension._recipe?.updated_at == null) {
+    if (activatedMod._recipe?.updated_at == null) {
       // Extension was installed prior to us adding updated_at to RecipeMetadata
       return false;
     }
 
-    const availableDate = new Date(availableRecipe.updated_at);
-    const installedDate = new Date(installedExtension._recipe.updated_at);
+    const availableDate = new Date(availableMod.updated_at);
+    const installedDate = new Date(activatedMod._recipe.updated_at);
 
     return availableDate > installedDate;
   }

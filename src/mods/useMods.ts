@@ -40,15 +40,15 @@ type ModsState = {
   error: unknown;
 };
 
-export function selectUnavailableRecipe(
-  extension: ModComponentBase,
+export function unavailableModFactory(
+  modComponent: ModComponentBase,
 ): UnavailableMod {
   return {
-    metadata: extension._recipe,
+    metadata: modComponent._recipe,
     kind: "recipe",
     isStub: true,
-    updated_at: extension._recipe.updated_at,
-    sharing: extension._recipe.sharing,
+    updated_at: modComponent._recipe.updated_at,
+    sharing: modComponent._recipe.sharing,
   };
 }
 
@@ -139,7 +139,7 @@ function useMods(): ModsState {
 
     // Show one entry per missing recipe
     return uniqBy(
-      unavailable.map((x) => selectUnavailableRecipe(x)),
+      unavailable.map((x) => unavailableModFactory(x)),
       (x) => x.metadata.id,
     );
   }, [knownRecipes, resolvedExtensions]);

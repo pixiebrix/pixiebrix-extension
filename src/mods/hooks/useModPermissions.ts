@@ -32,7 +32,7 @@ const fallback: PermissionsStatus = {
 };
 
 /**
- * WARNING: This hook swallows errors (to simplify the behavior for the blueprints page).
+ * WARNING: This hook swallows errors (to simplify the behavior for the mods screen).
  * Outside the `ModsPage` you probably want to use useAsyncState with `collectExtensionPermissions`
  * @see collectExtensionPermissions
  */

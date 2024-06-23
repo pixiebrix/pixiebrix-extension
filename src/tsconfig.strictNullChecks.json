@@ -1045,7 +1045,7 @@
     "./mods/ModIcon.tsx",
     "./mods/ModIntegrationsContext.tsx",
     "./mods/hooks/useDeactivateAction.ts",
-    "./mods/hooks/useDeleteExtensionAction.ts",
+    "./mods/hooks/useDeleteStandaloneModDefinitionAction.ts",
     "./mods/hooks/useMarketplaceUrl.ts",
     "./mods/hooks/useModPermissions.ts",
     "./mods/hooks/useRequestPermissionsAction.ts",
