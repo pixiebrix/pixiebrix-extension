@@ -44,7 +44,7 @@ import {
   minimalUiSchemaFactory,
   propertiesToSchema,
 } from "@/utils/schemaUtils";
-import { mapValues, sortBy } from "lodash";
+import { cloneDeep, mapValues, sortBy } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import {
   type Schema,
@@ -387,7 +387,7 @@ export function normalizeModOptionsDefinition(
           Object.keys(modDefinitionSchema as SchemaProperties),
         );
 
-  const uiSchema: UiSchema = optionsDefinition.uiSchema ?? {};
+  const uiSchema: UiSchema = cloneDeep(optionsDefinition.uiSchema ?? {});
 
   uiSchema["ui:order"] ??= [
     ...sortBy(Object.keys(schema.properties ?? {})),

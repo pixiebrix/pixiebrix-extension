@@ -178,6 +178,11 @@ export function isUnknownObjectArray(value: unknown): value is UnknownObject[] {
   return Array.isArray(value) && value.every((element) => isObject(element));
 }
 
+/**
+ * Type helper for Object.freeze. Note that this only freezes the top level of the object.
+ * @see Object.freeze
+ */
 export function freeze<T>(value: T): T {
+  // Consider supporting deep freeze a la: https://www.npmjs.com/package/deep-freeze-strict
   return Object.freeze(value);
 }
