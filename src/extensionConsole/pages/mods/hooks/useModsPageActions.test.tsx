@@ -131,10 +131,7 @@ describe("useModsPageActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useModsPageActions(standaloneModDefinition));
-    expectActions(
-      ["viewPublish", "viewShare", "activate", "deleteStandaloneModDefinition"],
-      actions,
-    );
+    expectActions(["viewPublish", "viewShare", "activate", "delete"], actions);
   });
 
   test("active personal mod component", () => {
@@ -190,7 +187,7 @@ describe("useModsPageActions", () => {
       result: { current: actions },
     } = renderHook(() => useModsPageActions(personalMod));
     expectActions(
-      ["viewPublish", "viewShare", "editInWorkshop", "deleteMod", "activate"],
+      ["viewPublish", "viewShare", "editInWorkshop", "delete", "activate"],
       actions,
     );
   });
@@ -253,7 +250,7 @@ describe("useModsPageActions", () => {
       },
     });
     expectActions(
-      ["viewPublish", "viewShare", "editInWorkshop", "deleteMod", "activate"],
+      ["viewPublish", "viewShare", "editInWorkshop", "delete", "activate"],
       actions,
     );
   });

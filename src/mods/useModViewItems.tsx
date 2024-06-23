@@ -29,7 +29,7 @@ import {
   getSharingSource,
   getUpdatedAt,
   isDeployment,
-  isResolvedModComponent,
+  isStandaloneModComponent,
   isUnavailableMod,
   updateAvailable,
 } from "@/utils/modUtils";
@@ -70,7 +70,7 @@ function useModViewItems(mods: Mod[]): {
 
   const isActive = useCallback(
     (mod: Mod) => {
-      if (isResolvedModComponent(mod)) {
+      if (isStandaloneModComponent(mod)) {
         return activatedModComponentIds.has(mod.id);
       }
 
@@ -82,7 +82,7 @@ function useModViewItems(mods: Mod[]): {
   const getStatus = useCallback(
     (mod: Mod): ModStatus => {
       if (isDeployment(mod, activatedModComponents)) {
-        if (isResolvedModComponent(mod)) {
+        if (isStandaloneModComponent(mod)) {
           return isDeploymentActive(mod) ? "Active" : "Paused";
         }
 

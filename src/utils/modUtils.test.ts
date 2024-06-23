@@ -17,7 +17,7 @@
 
 import {
   getSharingSource,
-  isResolvedModComponent,
+  isStandaloneModComponent,
   isUnavailableMod,
   normalizeModOptionsDefinition,
 } from "./modUtils";
@@ -157,12 +157,12 @@ describe("getSharingType", () => {
 describe("isExtension", () => {
   it("returns true for an extension", () => {
     const mod = modComponentFactory() as ResolvedModComponent;
-    expect(isResolvedModComponent(mod)).toBe(true);
+    expect(isStandaloneModComponent(mod)).toBe(true);
   });
 
   it("returns false for a recipe", () => {
     const mod = defaultModDefinitionFactory();
-    expect(isResolvedModComponent(mod)).toBe(false);
+    expect(isStandaloneModComponent(mod)).toBe(false);
   });
 });
 

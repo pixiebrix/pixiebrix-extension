@@ -56,7 +56,7 @@ import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
 import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBrickUtils";
 
 /**
- * Returns true if the mod is an UnavailableMod
+ * Returns true if the mod is an UnavailableMod, i.e., a mod the user no longer has access to.
  * @see UnavailableMod
  */
 export function isUnavailableMod(mod: Mod): mod is UnavailableMod {
@@ -64,9 +64,11 @@ export function isUnavailableMod(mod: Mod): mod is UnavailableMod {
 }
 
 /**
- * Returns true if the mod is a ResolvedExtension, instead of a mod definition.
+ * Returns true if the mod is a standalone ResolvedModComponent, instead of a mod definition.
  */
-export function isResolvedModComponent(mod: Mod): mod is ResolvedModComponent {
+export function isStandaloneModComponent(
+  mod: Mod,
+): mod is ResolvedModComponent {
   return "extensionPointId" in mod;
 }
 
@@ -74,7 +76,7 @@ export function isResolvedModComponent(mod: Mod): mod is ResolvedModComponent {
  * Return true if the mod is an ModComponentBase that originated from a mod.
  */
 export function isModComponentFromMod(mod: Mod): boolean {
-  return isResolvedModComponent(mod) && Boolean(mod._recipe);
+  return isStandaloneModComponent(mod) && Boolean(mod._recipe);
 }
 
 /**
@@ -90,21 +92,21 @@ export function isModDefinition(
  * Returns a unique id for the mod. Suitable for use as a React key
  */
 export function getUniqueId(mod: Mod): UUID | RegistryId {
-  return isResolvedModComponent(mod) ? mod.id : mod.metadata.id;
+  return isStandaloneModComponent(mod) ? mod.id : mod.metadata.id;
 }
 
 /**
  * Returns the human-readable label for the mod
  */
 export function getLabel(mod: Mod): string {
-  return isResolvedModComponent(mod) ? mod.label : mod.metadata.name;
+  return isStandaloneModComponent(mod) ? mod.label : mod.metadata.name;
 }
 
 /**
  * Returns the description for the mod
  */
 export const getDescription = (mod: Mod): string => {
-  if (isResolvedModComponent(mod)) {
+  if (isStandaloneModComponent(mod)) {
     return mod._recipe?.description ?? "Created in the Page Editor";
   }
 
@@ -115,7 +117,7 @@ export const getDescription = (mod: Mod): string => {
  * Return the registry id associated with a mod, or undefined
  */
 export function getPackageId(mod: Mod): RegistryId | undefined {
-  return isResolvedModComponent(mod) ? mod._recipe?.id : mod.metadata.id;
+  return isStandaloneModComponent(mod) ? mod._recipe?.id : mod.metadata.id;
 }
 
 /**
@@ -123,14 +125,14 @@ export function getPackageId(mod: Mod): RegistryId | undefined {
  */
 export function getUpdatedAt(mod: Mod): string | null {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- See TODO below
-  return isResolvedModComponent(mod)
+  return isStandaloneModComponent(mod)
     ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on ModComponentBase here
       mod._recipe?.updated_at ?? mod.updateTimestamp
     : mod.updated_at;
 }
 
 function isPublic(mod: Mod): boolean {
-  return isResolvedModComponent(mod)
+  return isStandaloneModComponent(mod)
     ? mod._recipe?.sharing?.public ?? false
     : mod.sharing.public;
 }
@@ -165,7 +167,7 @@ function hasRegistryScope(
  * @param userScope the user's scope, or null if it's not set
  */
 function isPersonal(mod: Mod, userScope: Nullishable<string>): boolean {
-  if (isResolvedModComponent(mod)) {
+  if (isStandaloneModComponent(mod)) {
     return (
       isPersonalModComponent(mod) ||
       Boolean(userScope && hasSourceModWithScope(mod, userScope))
@@ -179,7 +181,7 @@ export function getInstalledVersionNumber(
   installedExtensions: UnresolvedModComponent[],
   mod: Mod,
 ): string | undefined {
-  if (isResolvedModComponent(mod)) {
+  if (isStandaloneModComponent(mod)) {
     return mod._recipe?.version;
   }
 
@@ -195,7 +197,7 @@ export function isDeployment(
   mod: Mod,
   installedComponents: UnresolvedModComponent[],
 ): boolean {
-  if (isResolvedModComponent(mod)) {
+  if (isStandaloneModComponent(mod)) {
     return Boolean(mod._deployment);
   }
 
@@ -219,7 +221,7 @@ export function getSharingSource({
   let sharingType: SharingType | null = null;
   const organization = getOrganization(mod, organizations);
 
-  if (!isModDefinition(mod) && !isResolvedModComponent(mod)) {
+  if (!isModDefinition(mod) && !isStandaloneModComponent(mod)) {
     const error = new InvalidTypeError(
       "Mod is not a ModDefinition or ResolvedModComponent",
       { mod, organization, scope, installedExtensions },
@@ -315,7 +317,7 @@ function getOrganization(
   mod: Mod,
   organizations: Organization[],
 ): Organization | undefined {
-  const sharing = isResolvedModComponent(mod)
+  const sharing = isStandaloneModComponent(mod)
     ? mod._recipe?.sharing
     : mod.sharing;
 

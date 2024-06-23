@@ -90,15 +90,8 @@ const ModsPageActions: React.FunctionComponent<{
       {
         title: "Delete",
         icon: <FontAwesomeIcon fixedWidth icon={faTrash} />,
-        action: actions.deleteStandaloneModDefinition,
-        hide: !actions.deleteStandaloneModDefinition,
-        className: "text-danger",
-      },
-      {
-        title: "Delete",
-        icon: <FontAwesomeIcon fixedWidth icon={faTrash} />,
-        action: actions.deleteMod,
-        hide: !actions.deleteMod,
+        action: actions.delete,
+        hide: !actions.delete,
         className: "text-danger",
       },
     ],

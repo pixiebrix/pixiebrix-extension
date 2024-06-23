@@ -36,8 +36,7 @@ export type ModsPageActions = {
   viewPublish: ActionCallback | null;
   viewInMarketplaceHref: string | null;
   viewShare: ActionCallback | null;
-  deleteStandaloneModDefinition: ActionCallback | null;
-  deleteMod: ActionCallback | null;
+  delete: ActionCallback | null;
   editInWorkshop: ActionCallback | null;
   deactivate: ActionCallback | null;
   viewLogs: ActionCallback | null;
@@ -63,8 +62,7 @@ function useModsPageActions(modViewItem: ModViewItem): ModsPageActions {
     viewInMarketplaceHref,
     viewShare,
     editInWorkshop,
-    deleteStandaloneModDefinition,
-    deleteMod,
+    delete: deleteStandaloneModDefinition ?? deleteMod,
     deactivate,
     reactivate,
     viewLogs,

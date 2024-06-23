@@ -20,7 +20,7 @@ import { useModals } from "@/components/ConfirmationModal";
 import { useDeleteStandaloneModDefinitionMutation } from "@/data/service/api";
 import {
   getLabel,
-  isResolvedModComponent,
+  isStandaloneModComponent,
   isModDefinition,
 } from "@/utils/modUtils";
 import useUserAction from "@/hooks/useUserAction";
@@ -40,7 +40,7 @@ function useDeleteStandaloneModDefinitionAction(
   const isActive = status === "Active" || status === "Paused";
 
   const canDelete =
-    isResolvedModComponent(mod) &&
+    isStandaloneModComponent(mod) &&
     sharing.source.type === "Personal" &&
     // If the status is active, there is still likely a copy of the mod component saved on our server.
     // However, we want the user to have to deactivate the mod before deleting it from the server
