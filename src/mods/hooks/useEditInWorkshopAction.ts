@@ -19,12 +19,12 @@ import { type ModViewItem } from "@/types/modTypes";
 import { appApi } from "@/data/service/api";
 import { isModDefinition } from "@/utils/modUtils";
 import useHasModPackageEditPermission from "@/mods/hooks/useHasModPackageEditPermission";
-import { useCallback } from "react";
-import notify from "@/utils/notify";
 import { useHistory } from "react-router";
+import useUserAction from "@/hooks/useUserAction";
+import { CancelError } from "@/errors/businessErrors";
 
 /**
- * Hook returning a callback to  a mod in the workshop, or null if mod is not mod package or the user does not have
+ * Hook returning a callback to a mod in the workshop, or null if mod is not mod package or the user does not have
  * required permissions for the package.
  * @since 2.0.4
  */
@@ -37,23 +37,31 @@ function useEditInWorkshopAction(
   const [getEditablePackages] =
     appApi.endpoints.getEditablePackages.useLazyQuery();
 
-  const openInWorkshop = useCallback(async () => {
-    if (!isModDefinition(mod)) {
-      return;
-    }
+  const openInWorkshop = useUserAction(
+    async () => {
+      if (!isModDefinition(mod)) {
+        throw new CancelError("Mod is not a mod package");
+      }
 
-    // The mod definition doesn't have the surrogate id, so need to fetch it. We don't have a lookup endpoint,
-    // so just fetch them all for now and search locally.
-    const editable = await getEditablePackages().unwrap();
-    const modPackage = editable.find((x) => x.name === mod.metadata.id);
+      // The mod definition doesn't have the surrogate id, so need to fetch it. We don't have a lookup endpoint,
+      // so just fetch them all for now and search locally.
+      const editable = await getEditablePackages().unwrap();
+      const modPackage = editable.find((x) => x.name === mod.metadata.id);
 
-    if (!modPackage) {
-      notify.warning("You do not have edit permissions for this mod");
-      return;
-    }
+      if (!modPackage) {
+        // Using error instead of BusinessError because the UI should not have shown the user the option to edit
+        // the mod in the workshop if they don't have permissions.
+        throw new Error("You do not have edit permissions for this mod");
+      }
 
-    history.push(`/workshop/bricks/${modPackage.id}`);
-  }, [getEditablePackages, mod, history]);
+      history.push(`/workshop/bricks/${modPackage.id}`);
+    },
+    {
+      successMessage: null,
+      errorMessage: "Error opening mod in the workshop",
+    },
+    [getEditablePackages, mod, history],
+  );
 
   return canEdit ? openInWorkshop : null;
 }
