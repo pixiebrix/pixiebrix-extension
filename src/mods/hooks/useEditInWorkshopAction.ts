@@ -57,8 +57,7 @@ function useEditInWorkshopAction(
       history.push(`/workshop/bricks/${modPackage.id}`);
     },
     {
-      successMessage: null,
-      errorMessage: "Error opening mod in the workshop",
+      errorMessage: "Error opening mod in the Workshop",
     },
     [getEditablePackages, mod, history],
   );
