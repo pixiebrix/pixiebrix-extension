@@ -44,7 +44,7 @@ function useEditInWorkshopAction(
   const openInWorkshop = useUserAction(
     async () => {
       if (!isModDefinition(mod)) {
-        // Should never happen, because useHasModPackageEditPermission returns false non-packages
+        // Should never happen, because useHasModPackageEditPermission returns false for non-packages
         throw new Error("Mod is not a mod package");
       }
 

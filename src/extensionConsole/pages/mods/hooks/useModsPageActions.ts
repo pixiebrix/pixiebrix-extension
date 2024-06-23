@@ -25,7 +25,7 @@ import { type ModViewItem } from "@/types/modTypes";
 import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
 import useViewLogsAction from "@/extensionConsole/pages/mods/hooks/useViewLogsAction";
 import useDeactivateAction from "@/mods/hooks/useDeactivateAction";
-import useDeleteModAction from "@/mods/hooks/useDeleteModAction";
+import useDeleteModDefinitionAction from "@/mods/hooks/useDeleteModDefinitionAction";
 import useEditInWorkshopAction from "@/mods/hooks/useEditInWorkshopAction";
 
 type ActionCallback = () => void;
@@ -53,7 +53,7 @@ function useModsPageActions(modViewItem: ModViewItem): ModsPageActions {
   const deactivate = useDeactivateAction(modViewItem);
   const deleteStandaloneModDefinition =
     useDeleteStandaloneModDefinitionAction(modViewItem);
-  const deleteMod = useDeleteModAction(modViewItem);
+  const deleteMod = useDeleteModDefinitionAction(modViewItem);
   const requestPermissions = useRequestPermissionsAction(modViewItem);
   const editInWorkshop = useEditInWorkshopAction(modViewItem);
 

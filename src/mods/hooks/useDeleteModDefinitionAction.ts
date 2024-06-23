@@ -30,7 +30,9 @@ import useHasModPackageEditPermission from "@/mods/hooks/useHasModPackageEditPer
  * @see useDeleteStandaloneModDefinitionAction
  * @since 2.0.4
  */
-function useDeleteModAction(modViewItem: ModViewItem): (() => void) | null {
+function useDeleteModDefinitionAction(
+  modViewItem: ModViewItem,
+): (() => void) | null {
   const { mod, status } = modViewItem;
   const modals = useModals();
   const hasEditPermissions = useHasModPackageEditPermission(modViewItem);
@@ -44,7 +46,8 @@ function useDeleteModAction(modViewItem: ModViewItem): (() => void) | null {
   const deleteMod = useUserAction(
     async () => {
       if (!isModDefinition(mod)) {
-        return;
+        // Should never happen, because useHasModPackageEditPermission returns false for non-packages
+        throw new Error("Mod is not a mod definition");
       }
 
       // The mod definition doesn't have the surrogate id, so need to fetch it. We don't have a lookup endpoint,
@@ -82,4 +85,4 @@ function useDeleteModAction(modViewItem: ModViewItem): (() => void) | null {
   return canDelete ? deleteMod : null;
 }
 
-export default useDeleteModAction;
+export default useDeleteModDefinitionAction;
