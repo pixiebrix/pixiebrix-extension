@@ -30,6 +30,7 @@ import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactorie
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { InvalidTypeError } from "@/errors/genericErrors";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
+import { freeze } from "@/utils/objectUtils";
 
 describe("getSharingType", () => {
   test("throws on invalid type", () => {
@@ -201,12 +202,12 @@ describe("normalizeModOptionsDefinition", () => {
 
   it("normalizes frozen object with no ui:order", () => {
     // Root cause of https://github.com/pixiebrix/pixiebrix-app/issues/5396
-    const original = Object.freeze({
+    const original = freeze({
       schema: {
         type: "object",
-        properties: Object.freeze({}),
+        properties: freeze({}),
       },
-      uiSchema: Object.freeze({}),
+      uiSchema: freeze({}),
     }) satisfies ModOptionsDefinition;
 
     expect(normalizeModOptionsDefinition(original)).toStrictEqual({
