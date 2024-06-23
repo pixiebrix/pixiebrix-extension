@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { type RunBrickRequest } from "@/contentScript/messenger/runBrickTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
@@ -26,13 +26,13 @@ import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 export async function runBrick(request: RunBrickRequest): Promise<unknown> {
   // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`
   const { blockId, blockArgs, options } = request;
-  const block = await blockRegistry.lookup(blockId);
+  const brick = await brickRegistry.lookup(blockId);
   const logger = contentScriptPlatform.logger.childLogger(
     options.messageContext,
   );
 
   try {
-    return await block.run(blockArgs, {
+    return await brick.run(blockArgs, {
       platform: contentScriptPlatform,
       ctxt: options.ctxt as UnknownObject,
       meta: options.meta,
