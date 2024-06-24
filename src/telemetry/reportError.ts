@@ -72,6 +72,7 @@ export default function reportError(
       connectionType:
         // Casting effectiveType since isn't currently on the navigator type
         // TODO: remove this cast when the TS lib type for navigator is updated
+        //  https://github.com/microsoft/TypeScript/issues/56962
         (navigator as unknown as { connection?: { effectiveType?: string } })
           ?.connection?.effectiveType || "unknown",
     });
