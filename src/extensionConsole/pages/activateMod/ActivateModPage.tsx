@@ -24,7 +24,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RequireBrickRegistry from "@/extensionConsole/components/RequireBrickRegistry";
-import { useGetRecipeQuery } from "@/data/service/api";
+import { useGetModDefinitionQuery } from "@/data/service/api";
 import { useSelector } from "react-redux";
 import { selectModHasAnyActivatedModComponents } from "@/store/extensionsSelectors";
 import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";
@@ -36,10 +36,7 @@ const ActivateModPageContent: React.FC = () => {
   const modId = useRegistryIdParam();
   // Page parent component below is gating this content component on isFetching, so
   // recipe will always be resolved here
-  const { data: mod } = useGetRecipeQuery(
-    { recipeId: modId },
-    { skip: !modId },
-  );
+  const { data: mod } = useGetModDefinitionQuery({ modId }, { skip: !modId });
 
   if (mod.extensionPoints) {
     // Require that bricks have been fetched at least once before showing. Handles new installs where the bricks
@@ -78,8 +75,8 @@ const ActivateModPage: React.FunctionComponent = () => {
   const history = useHistory();
   const isReinstall = useSelector(selectModHasAnyActivatedModComponents(modId));
 
-  const { isFetching, error } = useGetRecipeQuery(
-    { recipeId: modId },
+  const { isFetching, error } = useGetModDefinitionQuery(
+    { modId },
     {
       // Force-refetch the latest data for this recipe before activation
       refetchOnMountOrArgChange: true,

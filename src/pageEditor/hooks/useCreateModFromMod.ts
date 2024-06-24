@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCreateRecipeMutation } from "@/data/service/api";
+import { useCreateModDefinitionMutation } from "@/data/service/api";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
@@ -44,7 +44,7 @@ type UseCreateModFromModReturn = {
 
 function useCreateModFromMod(): UseCreateModFromModReturn {
   const dispatch = useDispatch();
-  const [createMod] = useCreateRecipeMutation();
+  const [createMod] = useCreateModDefinitionMutation();
   const deactivateMod = useDeactivateMod();
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
@@ -72,7 +72,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
         });
 
         const upsertResponse = await createMod({
-          recipe: newModDefinition,
+          modDefinition: newModDefinition,
           organizations: [],
           public: false,
         }).unwrap();

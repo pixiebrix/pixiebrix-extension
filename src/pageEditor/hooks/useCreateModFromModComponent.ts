@@ -23,7 +23,7 @@ import { uuidv4 } from "@/types/helpers";
 import produce from "immer";
 import { useCallback } from "react";
 import { Events } from "@/telemetry/events";
-import { useCreateRecipeMutation } from "@/data/service/api";
+import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
@@ -45,7 +45,7 @@ function useCreateModFromModComponent(
 ): UseCreateModFromModReturn {
   const dispatch = useDispatch();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
-  const [createMod] = useCreateRecipeMutation();
+  const [createMod] = useCreateModDefinitionMutation();
   const upsertModComponentFormState = useUpsertModComponentFormState();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const { buildAndValidateMod } = useBuildAndValidateMod();
@@ -78,7 +78,7 @@ function useCreateModFromModComponent(
           });
 
           const upsertResponse = await createMod({
-            recipe: newModDefinition,
+            modDefinition: newModDefinition,
             organizations: [],
             public: false,
           }).unwrap();

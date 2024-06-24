@@ -23,7 +23,7 @@ import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSl
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   useGetEditablePackagesQuery,
-  useUpdateRecipeMutation,
+  useUpdateModDefinitionMutation,
 } from "@/data/service/api";
 import notify from "@/utils/notify";
 import { produce } from "immer";
@@ -37,7 +37,7 @@ import { MARKETPLACE_URL } from "@/urlConstants";
 const PublishModContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { blueprintId: modId } = useSelector(selectShowPublishContext);
-  const [updateRecipe] = useUpdateRecipeMutation();
+  const [updateModDefinition] = useUpdateModDefinitionMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
   const { data: modDefinition, refetch: refetchModDefinition } =
@@ -63,9 +63,9 @@ const PublishModContent: React.FunctionComponent = () => {
         (x) => x.name === newModDefinition.metadata.id,
       )?.id;
 
-      await updateRecipe({
+      await updateModDefinition({
         packageId,
-        recipe: newModDefinition,
+        modDefinition: newModDefinition,
       }).unwrap();
 
       notify.success("Shared brick");

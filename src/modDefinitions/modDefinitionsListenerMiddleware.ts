@@ -24,8 +24,8 @@ const apiEndpoints = appApi.endpoints;
 const modDefinitionsListenerMiddleware = createListenerMiddleware();
 modDefinitionsListenerMiddleware.startListening({
   matcher: isAnyOf(
-    apiEndpoints.createRecipe.matchFulfilled,
-    apiEndpoints.updateRecipe.matchFulfilled,
+    apiEndpoints.createModDefinition.matchFulfilled,
+    apiEndpoints.updateModDefinition.matchFulfilled,
     apiEndpoints.createPackage.matchFulfilled,
     apiEndpoints.updatePackage.matchFulfilled,
     apiEndpoints.deletePackage.matchFulfilled,

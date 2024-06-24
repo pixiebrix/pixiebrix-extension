@@ -34,9 +34,9 @@ import {
 import notify from "@/utils/notify";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import {
-  useCreateRecipeMutation,
+  useCreateModDefinitionMutation,
   useGetEditablePackagesQuery,
-  useUpdateRecipeMutation,
+  useUpdateModDefinitionMutation,
 } from "@/data/service/api";
 import { replaceModComponent } from "./saveHelpers";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -87,8 +87,8 @@ const useSavingWizard = () => {
 
   const { data: modDefinitions } = useAllModDefinitions();
   const { data: editablePackages } = useGetEditablePackagesQuery();
-  const [createMod] = useCreateRecipeMutation();
-  const [updateMod] = useUpdateRecipeMutation();
+  const [createMod] = useCreateModDefinitionMutation();
+  const [updateMod] = useUpdateModDefinitionMutation();
 
   const save = async () => {
     if (activeModComponentFormState.recipe == null) {
@@ -209,7 +209,7 @@ const useSavingWizard = () => {
     );
 
     const createModResponse = await createMod({
-      recipe: newModDefinition,
+      modDefinition: newModDefinition,
       // Don't share with anyone (only the author will have access)
       organizations: [],
       public: false,
@@ -280,7 +280,7 @@ const useSavingWizard = () => {
 
     const updateModResponse = await updateMod({
       packageId,
-      recipe: newMod,
+      modDefinition: newMod,
     });
 
     if ("error" in updateModResponse) {

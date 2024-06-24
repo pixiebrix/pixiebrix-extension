@@ -41,7 +41,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import * as semver from "semver";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
-import { useGetRecipeQuery } from "@/data/service/api";
+import { useGetModDefinitionQuery } from "@/data/service/api";
 
 export type ModListItemProps = PropsWithChildren<{
   modMetadata: Metadata;
@@ -72,7 +72,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
 
   // TODO: Fix this so it pulls from registry, after registry single-item-api-fetch is implemented
   //        (See: https://github.com/pixiebrix/pixiebrix-extension/issues/7184)
-  const { data: modDefinition } = useGetRecipeQuery({ recipeId: modId });
+  const { data: modDefinition } = useGetModDefinitionQuery({ modId });
   const latestRecipeVersion = modDefinition?.metadata?.version;
 
   // Set the alternate background if a mod component in this mod is active

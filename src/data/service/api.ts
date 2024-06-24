@@ -30,7 +30,7 @@ import {
   type PackageUpsertResponse,
   type PackageVersionDeprecated,
   type PendingInvitation,
-  type RecipeResponse,
+  type RetrieveRecipeResponse,
   type RemoteIntegrationConfig,
   type StandaloneModDefinition,
   UserRole,
@@ -268,49 +268,57 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["StandaloneModDefinitions"],
     }),
-    getRecipe: builder.query<ModDefinition, { recipeId: RegistryId }>({
-      query: ({ recipeId }) => ({
-        url: `/api/recipes/${encodeURIComponent(recipeId)}/`,
+    getModDefinition: builder.query<ModDefinition, { modId: RegistryId }>({
+      query: ({ modId }) => ({
+        // TODO: switch endpoint https://github.com/pixiebrix/pixiebrix-app/issues/4355
+        url: `/api/recipes/${encodeURIComponent(modId)}/`,
         method: "get",
       }),
-      transformResponse(baseQueryReturnValue: RecipeResponse): ModDefinition {
+      transformResponse(
+        baseQueryReturnValue: RetrieveRecipeResponse,
+      ): ModDefinition {
         // Pull out sharing and updated_at from response and merge into the base
         // response to create a ModDefinition
         const {
           sharing,
           updated_at,
-          config: unsavedRecipeDefinition,
+          config: unsavedModDefinition,
         } = baseQueryReturnValue;
         return {
-          ...unsavedRecipeDefinition,
+          ...unsavedModDefinition,
           sharing,
           updated_at,
         };
       },
       // Reminder, RTK Query caching is per-endpoint, not across endpoints. So we want to list the tags here for which
       // we want to watch for invalidation.
-      providesTags: (result, error, { recipeId }) => [
-        { type: "Package", id: recipeId },
+      providesTags: (_result, _error, { modId }) => [
+        { type: "Package", id: modId },
         "EditablePackages",
       ],
     }),
-    createRecipe: builder.mutation<
+    createModDefinition: builder.mutation<
       PackageUpsertResponse,
       {
-        recipe: UnsavedModDefinition;
+        modDefinition: UnsavedModDefinition;
         organizations: UUID[];
         public: boolean;
         shareDependencies?: boolean;
       }
     >({
-      query({ recipe, organizations, public: isPublic, shareDependencies }) {
-        const recipeConfig = dumpBrickYaml(recipe);
+      query({
+        modDefinition,
+        organizations,
+        public: isPublic,
+        shareDependencies,
+      }) {
+        const config = dumpBrickYaml(modDefinition);
 
         return {
           url: "/api/bricks/",
           method: "post",
           data: {
-            config: recipeConfig,
+            config,
             kind: "recipe" as Kind,
             organizations,
             public: isPublic,
@@ -320,24 +328,27 @@ export const appApi = createApi({
       },
       invalidatesTags: ["EditablePackages"],
     }),
-    updateRecipe: builder.mutation<
+    updateModDefinition: builder.mutation<
       PackageUpsertResponse,
-      { packageId: UUID; recipe: UnsavedModDefinition }
+      { packageId: UUID; modDefinition: UnsavedModDefinition }
     >({
-      query({ packageId, recipe }) {
-        const recipeConfig = dumpBrickYaml(recipe);
+      query({ packageId, modDefinition }) {
+        const config = dumpBrickYaml(modDefinition);
+        const sharing = (modDefinition as ModDefinition).sharing ?? {
+          public: false,
+          organizations: [],
+        };
 
         return {
           url: `/api/bricks/${packageId}/`,
           method: "put",
           data: {
             id: packageId,
-            name: recipe.metadata.id,
-            config: recipeConfig,
+            name: modDefinition.metadata.id,
+            config,
             kind: "recipe" as Kind,
-            public: Boolean((recipe as ModDefinition).sharing?.public),
-            organizations:
-              (recipe as ModDefinition).sharing?.organizations ?? [],
+            public: sharing.public,
+            organizations: sharing.organizations,
           },
         };
       },
@@ -477,9 +488,9 @@ export const {
   useDeleteStandaloneModDefinitionMutation,
   useSaveStandaloneModDefinitionMutation,
   useGetEditablePackagesQuery,
-  useGetRecipeQuery,
-  useCreateRecipeMutation,
-  useUpdateRecipeMutation,
+  useGetModDefinitionQuery,
+  useCreateModDefinitionMutation,
+  useUpdateModDefinitionMutation,
   useGetInvitationsQuery,
   useGetPackageQuery,
   useCreatePackageMutation,

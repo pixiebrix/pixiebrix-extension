@@ -68,7 +68,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
     [modComponent.extensionPointId],
   );
 
-  const [getModDefinition] = appApi.endpoints.getRecipe.useLazyQuery();
+  const [getModDefinition] = appApi.endpoints.getModDefinition.useLazyQuery();
 
   const activeModId = useSelector(selectActiveModId);
   const activeModComponentFormState = useSelector(
@@ -95,7 +95,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
         // Initialize mod options schema if needed
         if (modComponent._recipe) {
           const { data: modDefinition } = await getModDefinition(
-            { recipeId: modComponent._recipe.id },
+            { modId: modComponent._recipe.id },
             true,
           );
           if (modDefinition) {

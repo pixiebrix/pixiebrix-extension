@@ -112,7 +112,7 @@ declare global {
     RUN_MAP_ARGS: typeof runMapArgs;
     GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
     SHOW_LOGIN_BANNER: typeof showBannerFromConfig;
-    RUN_SINGLE_BLOCK: typeof runBrickPreview;
+    RUN_BRICK_PREVIEW: typeof runBrickPreview;
     RUN_BRICK: typeof runBrick;
     RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
     RUN_RENDERER_BRICK: typeof runRendererBrick;
@@ -166,7 +166,7 @@ export default function registerMessenger(): void {
     RUN_MAP_ARGS: runMapArgs,
     GET_COPILOT_HOST_DATA: getCopilotHostData,
     SHOW_LOGIN_BANNER: showBannerFromConfig,
-    RUN_SINGLE_BLOCK: runBrickPreview,
+    RUN_BRICK_PREVIEW: runBrickPreview,
     RUN_BRICK: runBrick,
     RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
     RUN_RENDERER_BRICK: runRendererBrick,

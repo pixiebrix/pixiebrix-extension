@@ -24,7 +24,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import {
   useGetEditablePackagesQuery,
-  useUpdateRecipeMutation,
+  useUpdateModDefinitionMutation,
 } from "@/data/service/api";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
@@ -71,7 +71,7 @@ function useSaveMod(): ModSaver {
   } = useAllModDefinitions();
   const { data: editablePackages, isLoading: isEditablePackagesLoading } =
     useGetEditablePackagesQuery();
-  const [updateMod] = useUpdateRecipeMutation();
+  const [updateMod] = useUpdateModDefinitionMutation();
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
   );
@@ -146,7 +146,7 @@ function useSaveMod(): ModSaver {
 
     const upsertResponse = await updateMod({
       packageId,
-      recipe: newMod,
+      modDefinition: newMod,
     }).unwrap();
 
     const newModMetadata = selectModMetadata(newMod, upsertResponse);
