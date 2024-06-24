@@ -1036,7 +1036,7 @@ function validateNodeUIState(state: Draft<EditorState>) {
 
   assertNotNullish(
     nodeUIState,
-    `Node UI state not found for activeNodeId: ${brickPipelineUIState.activeNodeId}`,
+    `Brick Pipeline UI state not found for activeNodeId: ${brickPipelineUIState.activeNodeId}`,
   );
   return nodeUIState;
 }
