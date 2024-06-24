@@ -23,13 +23,13 @@ import ControlRoomOAuthForm from "@/extensionConsole/pages/onboarding/partner/Co
 import ControlRoomTokenForm from "@/extensionConsole/pages/onboarding/partner/ControlRoomTokenForm";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import { useGetMeQuery } from "@/data/service/api";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { getBaseURL } from "@/data/service/baseService";
-import { updateLocalPartnerTheme } from "@/store/settings/settingsSlice";
+import { useActivatePartnerTheme } from "@/store/settings/settingsSlice";
 import { useLocation } from "react-router";
 import {
   hostnameToUrl,
@@ -113,7 +113,7 @@ function usePartnerLoginMode(): "token" | "oauth2" {
  * Currently, supports the Automation Anywhere partner integration.
  */
 const PartnerSetupCard: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
+  const activatePartnerTheme = useActivatePartnerTheme();
   // Make sure to use useLocation because the location.search are on the hash route
   const location = useLocation();
   const mode = usePartnerLoginMode();
@@ -149,9 +149,8 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   };
 
   useEffect(() => {
-    // Ensure the partner branding is applied
-    dispatch(updateLocalPartnerTheme("automation-anywhere"));
-  }, [dispatch]);
+    activatePartnerTheme("automation-anywhere");
+  }, [activatePartnerTheme]);
 
   if (isLinkedLoading || isMeLoading) {
     return <Loader />;
