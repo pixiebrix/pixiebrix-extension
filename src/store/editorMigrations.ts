@@ -28,7 +28,9 @@ import {
 import {
   type EditorStateV2,
   type EditorStateV1,
+  type EditorStateV3,
 } from "@/pageEditor/pageEditorTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
@@ -36,6 +38,7 @@ export const migrations: MigrationManifest = {
   0: (state) => state,
   1: (state) => state,
   2: (state: EditorStateV1 & PersistedState) => migrateEditorStateV1(state),
+  3: (state: EditorStateV2 & PersistedState) => migrateEditorStateV2(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -74,5 +77,48 @@ export function migrateEditorStateV1(
       (formStates) =>
         formStates.map((formState) => migrateFormStateV1(formState)),
     ),
+  };
+}
+
+export function migrateEditorStateV2({
+  activeElementId,
+  activeRecipeId,
+  expandedRecipeId,
+  elements,
+  knownEditable,
+  elementUIStates,
+  copiedBlock,
+  dirtyRecipeOptionsById,
+  dirtyRecipeMetadataById,
+  addBlockLocation,
+  keepLocalCopyOnCreateRecipe,
+  deletedElementsByRecipeId,
+  availableInstalledIds,
+  isPendingInstalledExtensions,
+  availableDynamicIds,
+  isPendingDynamicExtensions,
+  ...rest
+}: EditorStateV2 & PersistedState): EditorStateV3 & PersistedState {
+  return {
+    ...rest,
+    activeModComponentId: activeElementId,
+    activeModId: activeRecipeId,
+    expandedModId: expandedRecipeId,
+    modComponentFormStates: elements as ModComponentFormState[],
+    knownEditableBrickIds: knownEditable,
+    brickPipelineUIStateById: elementUIStates,
+    copiedBrick: copiedBlock,
+    dirtyModOptionsById: dirtyRecipeOptionsById,
+    dirtyModMetadataById: dirtyRecipeMetadataById,
+    addBrickLocation: addBlockLocation,
+    keepLocalCopyOnCreateMod: keepLocalCopyOnCreateRecipe,
+    deletedModComponentFormStatesByModId: deletedElementsByRecipeId as Record<
+      string,
+      ModComponentFormState[]
+    >,
+    availableActivatedModComponentIds: availableInstalledIds,
+    isPendingAvailableActivatedModComponents: isPendingInstalledExtensions,
+    availableDraftModComponentIds: availableDynamicIds,
+    isPendingDraftModComponents: isPendingDynamicExtensions,
   };
 }
