@@ -358,7 +358,7 @@ describe("syncDeployments", () => {
     expect(activatedModComponents).toBeArrayOfSize(2);
     const foo = await getEditorState();
     // Expect unrelated draft mod component not to be removed
-    expect(foo.elements).toBeArrayOfSize(1);
+    expect(foo.modComponentFormStates).toBeArrayOfSize(1);
   });
 
   test("deactivate existing mod with no draft mod components", async () => {
@@ -463,9 +463,9 @@ describe("syncDeployments", () => {
 
     const { extensions: activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toBeArrayOfSize(1);
-    const { elements } = await getEditorState();
+    const { modComponentFormStates } = await getEditorState();
     // Expect draft mod component to be removed
-    expect(elements).toBeArrayOfSize(0);
+    expect(modComponentFormStates).toBeArrayOfSize(0);
     expect(activatedModComponents[0]._recipe.version).toBe(
       deployment.package.version,
     );
@@ -731,12 +731,14 @@ describe("syncDeployments", () => {
 
     let editorState = initialEditorState;
 
-    const personalElement = (await ADAPTERS.get(
+    const personalModComponentFormState = (await ADAPTERS.get(
       personalStarterBrick.definition.type,
     ).fromExtension(standaloneModComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
-      editorSlice.actions.addModComponentFormState(personalElement),
+      editorSlice.actions.addModComponentFormState(
+        personalModComponentFormState,
+      ),
     );
 
     const deploymentElement = (await ADAPTERS.get(
@@ -769,9 +771,9 @@ describe("syncDeployments", () => {
     expect(activatedModComponentIds).toContain(standaloneModComponent.id);
     expect(activatedModComponentIds).toContain(recipeModComponent.id);
 
-    const { elements } = await getEditorState();
-    expect(elements).toBeArrayOfSize(1);
-    expect(elements[0]).toEqual(personalElement);
+    const { modComponentFormStates } = await getEditorState();
+    expect(modComponentFormStates).toBeArrayOfSize(1);
+    expect(modComponentFormStates[0]).toEqual(personalModComponentFormState);
   });
 
   test("deactivates old mod when deployed mod id is changed", async () => {

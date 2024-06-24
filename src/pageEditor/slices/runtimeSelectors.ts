@@ -30,22 +30,22 @@ type EditorSelector<T> = (state: RootState) => T;
 
 const EMPTY_TRACE = freeze<TraceRecord[]>([]);
 
-export const selectActiveElementTraces: EditorSelector<TraceRecord[]> = ({
+export const selectActiveModComponentTraces: EditorSelector<TraceRecord[]> = ({
   runtime,
   editor,
 }) =>
-  editor.activeElementId
-    ? runtime.extensionTraces[editor.activeElementId] ?? EMPTY_TRACE
+  editor.activeModComponentId
+    ? runtime.extensionTraces[editor.activeModComponentId] ?? EMPTY_TRACE
     : EMPTY_TRACE;
 
 const activeElementTraceForBlockSelector = createSelector(
-  selectActiveElementTraces,
+  selectActiveModComponentTraces,
   (state: RootState, instanceId: UUID) => instanceId,
   (traces, instanceId) =>
     traces.find((trace) => trace.blockInstanceId === instanceId),
 );
 
-export const selectActiveElementTraceForBlock =
+export const selectActiveModComponentTraceForBrick =
   (instanceId: UUID) => (state: RootState) =>
     activeElementTraceForBlockSelector(state, instanceId);
 
@@ -59,17 +59,17 @@ export const selectActiveNodeTrace = createSelector(
  * Trace records corresponding to errors in the last run. May return multiple for because of sub-pipelines
  */
 export const selectTraceErrors = createSelector(
-  selectActiveElementTraces,
+  selectActiveModComponentTraces,
   // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference of isTraceError
   (records) => records.filter(isTraceError),
 );
 
-export function makeSelectBlockTrace(
+export function makeSelectBrickTrace(
   blockInstanceId: UUID,
 ): EditorSelector<{ record?: TraceRecord }> {
   return ({ runtime, editor }: RootState) => {
-    const records = editor.activeElementId
-      ? runtime.extensionTraces[editor.activeElementId] ?? []
+    const records = editor.activeModComponentId
+      ? runtime.extensionTraces[editor.activeModComponentId] ?? []
       : [];
 
     return {

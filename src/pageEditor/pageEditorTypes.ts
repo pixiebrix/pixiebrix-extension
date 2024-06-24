@@ -35,6 +35,10 @@ import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChan
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Except } from "type-fest";
+import {
+  type BaseFormStateV1,
+  type BaseFormStateV2,
+} from "@/pageEditor/baseFormStateTypes";
 
 export type AddBrickLocation = {
   /**
@@ -109,7 +113,7 @@ export type EditorStateV1 = {
   /**
    * Unsaved elements
    */
-  readonly elements: ModComponentFormState[];
+  readonly elements: BaseFormStateV1[];
 
   /**
    * Brick ids (not UUIDs) that are known to be editable by the current user
@@ -170,7 +174,7 @@ export type EditorStateV1 = {
   /**
    * Unsaved extensions that have been deleted from a recipe
    */
-  deletedElementsByRecipeId: Record<RegistryId, ModComponentFormState[]>;
+  deletedElementsByRecipeId: Record<RegistryId, BaseFormStateV1[]>;
 
   /**
    * The available installed extensions for the current tab
@@ -216,10 +220,21 @@ export type EditorStateV1 = {
 };
 
 /**
- * @deprecated - Do not use versioned state types directly
+ * @deprecated - Do not use versioned state types directly, exported for testing
  */
 export type EditorStateV2 = Except<
   EditorStateV1,
+  "elements" | "deletedElementsByRecipeId"
+> & {
+  elements: BaseFormStateV2[];
+  deletedElementsByRecipeId: Record<string, BaseFormStateV2[]>;
+};
+
+/**
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ */
+export type EditorStateV3 = Except<
+  EditorStateV2,
   | "activeElementId"
   | "activeRecipeId"
   | "expandedRecipeId"
@@ -245,7 +260,7 @@ export type EditorStateV2 = Except<
   /**
    * The registry id of the active mod, if a mod is selected
    */
-  activeRecipeId: RegistryId | null;
+  activeModId: RegistryId | null;
 
   /**
    * The registry id of the 'expanded' mod in the sidebar, if one is expanded
@@ -327,7 +342,7 @@ export type EditorStateV2 = Except<
   isPendingDraftModComponents: boolean;
 };
 
-export type EditorState = EditorStateV2;
+export type EditorState = EditorStateV3;
 
 export type EditorRootState = {
   editor: EditorState;

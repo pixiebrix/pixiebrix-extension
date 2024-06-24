@@ -71,7 +71,7 @@ export const selectActiveModComponentFormState = createSelector(
 );
 
 export const selectActiveModId = ({ editor }: EditorRootState) =>
-  editor.activeRecipeId;
+  editor.activeModId;
 
 export const selectIsInsertingNewStarterBrick = ({ editor }: EditorRootState) =>
   editor.inserting;

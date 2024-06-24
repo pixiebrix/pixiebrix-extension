@@ -47,7 +47,7 @@ function usePasteBrick():
     dispatch(
       actions.addNode({ block: normalizedBrick, pipelinePath, pipelineIndex }),
     );
-    dispatch(actions.clearCopiedBlockConfig());
+    dispatch(actions.clearCopiedBrickConfig());
   };
 }
 

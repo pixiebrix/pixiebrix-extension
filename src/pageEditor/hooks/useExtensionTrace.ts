@@ -20,7 +20,7 @@ import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { selectActiveModComponentId } from "@/pageEditor/slices/editorSelectors";
-import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraces } from "@/pageEditor/slices/runtimeSelectors";
 import { isEqual } from "lodash";
 import { useRef } from "react";
 import reportError from "@/telemetry/reportError";
@@ -48,7 +48,7 @@ function selectTraceMetadata(record: TraceRecord) {
 function useExtensionTrace() {
   const dispatch = useDispatch();
   const activeModComponentId = useSelector(selectActiveModComponentId);
-  const extensionTrace = useSelector(selectActiveElementTraces);
+  const extensionTrace = useSelector(selectActiveModComponentTraces);
 
   const checkingNewEntriesRef = useRef(false);
   const refreshTrace = async () => {
