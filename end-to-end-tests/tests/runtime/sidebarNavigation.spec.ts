@@ -111,8 +111,7 @@ test("sidebar mod panels are persistent during navigation", async ({
   });
 
   await test.step("Navigate to a page where all mod sidebar panels are not enabled", async () => {
-    await page.getByTestId("sidebarToggler").click();
-    await page.getByRole("link", { name: "Documentation" }).click();
+    await page.goto("https://docs.pixiebrix.com/quick-start");
     await expect(connectingOverlay2).toBeHidden();
     await expect(closeOverlayButton).toBeVisible();
     await closeOverlayButton.click();
