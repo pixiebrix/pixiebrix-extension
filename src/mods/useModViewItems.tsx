@@ -29,7 +29,7 @@ import {
   getSharingSource,
   getUpdatedAt,
   isDeployment,
-  isResolvedModComponent,
+  isStandaloneModComponent,
   isUnavailableMod,
   updateAvailable,
 } from "@/utils/modUtils";
@@ -70,7 +70,7 @@ function useModViewItems(mods: Mod[]): {
 
   const isActive = useCallback(
     (mod: Mod) => {
-      if (isResolvedModComponent(mod)) {
+      if (isStandaloneModComponent(mod)) {
         return activatedModComponentIds.has(mod.id);
       }
 
@@ -82,7 +82,7 @@ function useModViewItems(mods: Mod[]): {
   const getStatus = useCallback(
     (mod: Mod): ModStatus => {
       if (isDeployment(mod, activatedModComponents)) {
-        if (isResolvedModComponent(mod)) {
+        if (isStandaloneModComponent(mod)) {
           return isDeploymentActive(mod) ? "Active" : "Paused";
         }
 
@@ -125,8 +125,9 @@ function useModViewItems(mods: Mod[]): {
         }),
       );
 
-    // Pick any ModComponentBase from the mod to check for updates. All of their versions should be the same.
-    const extensionsMap = new Map(modComponentEntries);
+    // Map from mod registry id to any mod component for that mod. Used to check for updates.
+    // Can pick any mod component, because all their versions will be the same
+    const modIdComponentMap = new Map(modComponentEntries);
 
     return mods.map((mod) => {
       const packageId = getPackageId(mod);
@@ -152,7 +153,7 @@ function useModViewItems(mods: Mod[]): {
         },
         updatedAt: getUpdatedAt(mod),
         status: getStatus(mod),
-        hasUpdate: updateAvailable(modDefinitionMap, extensionsMap, mod),
+        hasUpdate: updateAvailable(modDefinitionMap, modIdComponentMap, mod),
         installedVersionNumber: getInstalledVersionNumber(
           activatedModComponents,
           mod,
@@ -174,8 +175,9 @@ function useModViewItems(mods: Mod[]): {
   return {
     modViewItems,
     // Don't wait for the marketplace listings to load. They're only used to determine the icon and sharing options.
-    // FIXME: when the marketplace data loads, it causes a re-render because the data is passed to React Table. So if
-    //  the user had a 3-dot menu open for one of the mods, it will close. This is a bit jarring.
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8458, when the marketplace data loads, it causes a
+    //  re-render because the data is passed to React Table. So if the user had a 3-dot menu open for one of the mods,
+    //  it will close. This is a bit jarring.
     isLoading: isRecipesLoading,
   };
 }

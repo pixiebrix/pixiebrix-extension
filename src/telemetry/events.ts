@@ -22,7 +22,6 @@ export const Events = {
   AUTH_WIDGET_HIDE_ADD_NEW: "AuthWidgetHideAddNew",
 
   BRICK_ADD: "BrickAdd",
-  BRICK_DELETE: "BrickDelete",
   BRICK_COMMENTS_UPDATE: "BrickCommentsUpdate",
 
   BROWSER_ACTION_RESTRICTED_URL: "BrowserActionRestrictedUrl",
@@ -42,8 +41,6 @@ export const Events = {
 
   DEVTOOLS_OPEN: "DevToolsOpen",
   DEVTOOLS_CLOSE: "DevToolsClose",
-
-  EXTENSION_CLOUD_DELETE: "ExtensionCloudDelete",
 
   FACTORY_RESET: "FactoryReset",
 
@@ -83,6 +80,8 @@ export const Events = {
   MOD_COMPONENT_CLOUD_ACTIVATE: "ExtensionCloudActivate",
   MOD_COMPONENT_REMOVE: "ExtensionRemove",
   MOD_REMOVE: "BlueprintRemove",
+
+  PACKAGE_DELETE: "BrickDelete",
 
   MODS_PAGE_VIEW: "BlueprintsPageView",
 
@@ -141,6 +140,8 @@ export const Events = {
 
   SNOOZE_UPDATES: "SnoozeUpdates",
   SETTINGS_EXPERIMENTAL_CONFIGURE: "SettingsExperimentalConfigure",
+
+  STANDALONE_MOD_DELETE: "ExtensionCloudDelete",
 
   START_MOD_ACTIVATE: "StartInstallBlueprint",
 

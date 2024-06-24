@@ -94,7 +94,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
     {
       successMessage: "Deleted brick",
       errorMessage: "Error deleting brick",
-      event: Events.BRICK_DELETE,
+      event: Events.PACKAGE_DELETE,
     },
     [dispatch, deletePackage, modals],
   );

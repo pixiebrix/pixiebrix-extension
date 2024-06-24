@@ -39,6 +39,12 @@ import {
   modComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { authActions } from "@/auth/authSlice";
+import {
+  authStateFactory,
+  organizationStateFactory,
+} from "@/testUtils/factories/authFactories";
+import { UserRole } from "@/types/contract";
 
 jest.mock("@/hooks/useFlags");
 jest.mock("@/mods/hooks/useModPermissions");
@@ -125,10 +131,7 @@ describe("useModsPageActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useModsPageActions(standaloneModDefinition));
-    expectActions(
-      ["viewPublish", "viewShare", "activate", "deleteExtension"],
-      actions,
-    );
+    expectActions(["viewPublish", "viewShare", "activate", "delete"], actions);
   });
 
   test("active personal mod component", () => {
@@ -160,7 +163,14 @@ describe("useModsPageActions", () => {
       result: { current: actions },
     } = renderHook(() => useModsPageActions(personalMod));
     expectActions(
-      ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
+      [
+        "viewPublish",
+        "viewShare",
+        "deactivate",
+        "viewLogs",
+        "editInWorkshop",
+        "reactivate",
+      ],
       actions,
     );
   });
@@ -176,7 +186,10 @@ describe("useModsPageActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useModsPageActions(personalMod));
-    expectActions(["viewPublish", "viewShare", "activate"], actions);
+    expectActions(
+      ["viewPublish", "viewShare", "editInWorkshop", "delete", "activate"],
+      actions,
+    );
   });
 
   test("active team mod", () => {
@@ -210,6 +223,38 @@ describe("useModsPageActions", () => {
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
+  test("inactive team mod with edit permissions", () => {
+    mockHooks();
+    const authState = authStateFactory({
+      organizations: [
+        organizationStateFactory({
+          role: UserRole.developer,
+        }),
+      ],
+    });
+
+    const teamMod = modViewItemFactory({
+      isExtension: false,
+      sharingType: "Team",
+      status: "Inactive",
+    });
+
+    ((teamMod.mod as ModDefinition).metadata as any).id =
+      authState.organizations[0].scope;
+
+    const {
+      result: { current: actions },
+    } = renderHook(() => useModsPageActions(teamMod), {
+      setupRedux(dispatch) {
+        dispatch(authActions.setAuth(authState));
+      },
+    });
+    expectActions(
+      ["viewPublish", "viewShare", "editInWorkshop", "delete", "activate"],
+      actions,
+    );
+  });
+
   test("public mod", () => {
     mockHooks();
     const publicMod = modViewItemFactory({
@@ -222,7 +267,14 @@ describe("useModsPageActions", () => {
       result: { current: actions },
     } = renderHook(() => useModsPageActions(publicMod));
     expectActions(
-      ["viewPublish", "viewShare", "reactivate", "viewLogs", "deactivate"],
+      [
+        "viewPublish",
+        "viewShare",
+        "reactivate",
+        "viewLogs",
+        "editInWorkshop",
+        "deactivate",
+      ],
       actions,
     );
   });
@@ -363,7 +415,14 @@ describe("useModsPageActions", () => {
         result: { current: actions },
       } = renderHook(() => useModsPageActions(modItem));
       expectActions(
-        ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
+        [
+          "viewPublish",
+          "viewShare",
+          "deactivate",
+          "viewLogs",
+          "editInWorkshop",
+          "reactivate",
+        ],
         actions,
       );
     });
@@ -380,6 +439,7 @@ describe("useModsPageActions", () => {
           "viewShare",
           "deactivate",
           "viewLogs",
+          "editInWorkshop",
           "reactivate",
         ],
         actions,

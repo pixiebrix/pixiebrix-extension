@@ -24,7 +24,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { type UnavailableMod } from "@/types/modTypes";
-import { selectUnavailableRecipe } from "@/mods/useMods";
+import { unavailableModFactory } from "@/mods/useMods";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import {
   modComponentFactory,
@@ -98,7 +98,7 @@ describe("useModViewItems", () => {
       _recipe: pickModDefinitionMetadata(recipe),
     });
 
-    const unavailableRecipe: UnavailableMod = selectUnavailableRecipe(
+    const unavailableRecipe: UnavailableMod = unavailableModFactory(
       activatedModComponent,
     );
 
