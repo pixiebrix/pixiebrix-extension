@@ -153,7 +153,7 @@ const DraftModComponentListItem: React.FunctionComponent<
       })}
       as="div"
       active={isActive}
-      key={`dynamic-${modComponentFormState.uuid}`}
+      key={`draft-${modComponentFormState.uuid}`}
       onMouseEnter={
         isButton
           ? async () => showOverlay(modComponentFormState.uuid)
