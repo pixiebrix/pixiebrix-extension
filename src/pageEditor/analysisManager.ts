@@ -30,7 +30,7 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "./slices/runtimeSlice";
 import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
-import { selectActiveModComponentTraces } from "./slices/runtimeSelectors";
+import { selectActiveElementTraces } from "./slices/runtimeSelectors";
 import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import analysisSlice from "@/analysis/analysisSlice";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
@@ -107,7 +107,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   ) => {
     // TraceAnalysis filter the trace errors, thus
     // selecting all records here to avoid double filtering
-    const records = selectActiveModComponentTraces(state);
+    const records = selectActiveElementTraces(state);
 
     return new TraceAnalysis(records);
   },
@@ -185,7 +185,7 @@ async function varAnalysisFactory(
   action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
   state: RootState,
 ) {
-  const trace = selectActiveModComponentTraces(state);
+  const trace = selectActiveElementTraces(state);
   const activeModComponentFormState = selectActiveModComponentFormState(state);
 
   // The potential mod known mod variables
