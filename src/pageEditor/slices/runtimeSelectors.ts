@@ -45,7 +45,7 @@ const activeElementTraceForBlockSelector = createSelector(
     traces.find((trace) => trace.blockInstanceId === instanceId),
 );
 
-export const selectActiveModComponentTraceForBrick =
+export const selectActiveElementTraceForBrick =
   (instanceId: UUID) => (state: RootState) =>
     activeElementTraceForBlockSelector(state, instanceId);
 
