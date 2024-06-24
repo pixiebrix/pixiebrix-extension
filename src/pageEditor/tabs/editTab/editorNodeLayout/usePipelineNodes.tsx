@@ -59,7 +59,7 @@ import {
 import { type Except } from "type-fest";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveModComponentTraces } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
@@ -199,7 +199,7 @@ const usePipelineNodes = (): {
     selectActiveModComponentFormState,
   );
   const activeNodeId = useSelector(selectActiveNodeId);
-  const traces = useSelector(selectActiveModComponentTraces);
+  const traces = useSelector(selectActiveElementTraces);
   const maybePipelineMap = useSelector(selectPipelineMap);
   const collapsedNodes = useSelector(selectCollapsedNodes);
 
