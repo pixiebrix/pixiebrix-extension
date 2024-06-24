@@ -32,7 +32,7 @@ import objectHash from "object-hash";
 import { isEmpty } from "lodash";
 import { type TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
-import { runBlock } from "@/contentScript/messenger/api";
+import { runBrickPreview } from "@/contentScript/messenger/api";
 import { useField, useFormikContext } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import getType from "@/runtime/getType";
@@ -172,7 +172,7 @@ const BrickPreview: React.FunctionComponent<{
       const { outputKey } = brickConfig;
 
       try {
-        const output = await runBlock(inspectedTab, {
+        const output = await runBrickPreview(inspectedTab, {
           apiVersion,
           blockConfig: {
             ...removeEmptyValues(brickConfig),
