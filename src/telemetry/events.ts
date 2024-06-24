@@ -42,8 +42,6 @@ export const Events = {
   DEVTOOLS_OPEN: "DevToolsOpen",
   DEVTOOLS_CLOSE: "DevToolsClose",
 
-  STANDALONE_MOD_DELETE: "ExtensionCloudDelete",
-
   FACTORY_RESET: "FactoryReset",
 
   FLOATING_ACTION_BUTTON_CLICK: "FloatingQuickBarButtonClick",
@@ -142,6 +140,8 @@ export const Events = {
 
   SNOOZE_UPDATES: "SnoozeUpdates",
   SETTINGS_EXPERIMENTAL_CONFIGURE: "SettingsExperimentalConfigure",
+
+  STANDALONE_MOD_DELETE: "ExtensionCloudDelete",
 
   START_MOD_ACTIVATE: "StartInstallBlueprint",
 
