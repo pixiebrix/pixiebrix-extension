@@ -574,12 +574,13 @@ export const editorSlice = createSlice({
       );
       if (modComponentFormStateIndex < 0) {
         throw new Error(
-          "Unable to add extension to mod, extension form state not found",
+          "Unable to add mod component to mod, mod component form state not found",
         );
       }
 
       const modComponentFormState =
-        state.modComponentFormStates[modComponentFormStateIndex];
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+        state.modComponentFormStates[modComponentFormStateIndex]!;
 
       const newId = uuidv4();
       state.modComponentFormStates.push({
@@ -613,22 +614,29 @@ export const editorSlice = createSlice({
       }>,
     ) {
       const { elementId, keepLocalCopy } = action.payload;
-      const elementIndex = state.modComponentFormStates.findIndex(
-        (element) => element.uuid === elementId,
+      const modComponentFormStateIndex = state.modComponentFormStates.findIndex(
+        (x) => x.uuid === elementId,
       );
-      if (elementIndex < 0) {
+      if (modComponentFormStateIndex < 0) {
         throw new Error(
           "Unable to remove mod component from mod, mod component form state not found",
         );
       }
 
-      const element = state.modComponentFormStates[elementIndex];
-      assertNotNullish(element.recipe, "Element has no recipe");
-      const recipeId = element.recipe.id;
-      state.deletedModComponentFormStatesByModId[recipeId] ??= [];
+      const modComponentFormState =
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+        state.modComponentFormStates[modComponentFormStateIndex]!;
+      assertNotNullish(
+        modComponentFormState.recipe,
+        "Mod component form state has no mod definition",
+      );
+      const modId = modComponentFormState.recipe.id;
+      state.deletedModComponentFormStatesByModId[modId] ??= [];
 
-      state.deletedModComponentFormStatesByModId[recipeId].push(element);
-      state.modComponentFormStates.splice(elementIndex, 1);
+      state.deletedModComponentFormStatesByModId[modId].push(
+        modComponentFormState,
+      );
+      state.modComponentFormStates.splice(modComponentFormStateIndex, 1);
       delete state.dirty[elementId];
       delete state.brickPipelineUIStateById[elementId];
       state.activeModComponentId = null;
@@ -636,7 +644,7 @@ export const editorSlice = createSlice({
       if (keepLocalCopy) {
         const newId = uuidv4();
         state.modComponentFormStates.push({
-          ...element,
+          ...modComponentFormState,
           uuid: newId,
           recipe: undefined,
         });
