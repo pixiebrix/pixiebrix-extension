@@ -285,8 +285,8 @@ export function clearEditorExtension(
 
   if (extensionId) {
     if (_editorExtensions.has(extensionId)) {
-      // Don't need to call _installedExtensionPoints.delete(extensionPoint) here because that tracks non-dynamic
-      // extension points
+      // Don't need to call _installedExtensionPoints.delete(extensionPoint) here because that tracks non-draft
+      // starter bricks
       console.debug(`lifecycle:clearEditorExtension: ${extensionId}`);
       const extensionPoint = _editorExtensions.get(extensionId);
       assertNotNullish(extensionPoint, "extensionPoint must be defined");
