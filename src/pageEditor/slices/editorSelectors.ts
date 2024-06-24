@@ -263,7 +263,7 @@ export const selectIsDataPanelExpanded = ({ editor }: EditorRootState) =>
   editor.isDataPanelExpanded;
 
 export const selectKeepLocalCopyOnCreateMod = ({ editor }: EditorRootState) =>
-  editor.keepLocalCopyOnCreateRecipe;
+  editor.keepLocalCopyOnCreateMod;
 
 export const selectExpandedModId = ({ editor }: EditorRootState) =>
   editor.expandedRecipeId;

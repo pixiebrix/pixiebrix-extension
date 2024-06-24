@@ -25,7 +25,7 @@ import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type BrickConfig } from "@/bricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import {
-  type AddBlockLocation,
+  type AddBrickLocation,
   type EditorRootState,
   type EditorState,
   ModalKey,
@@ -103,7 +103,7 @@ export const initialState: EditorState = {
   dirtyRecipeOptionsById: {},
   dirtyRecipeMetadataById: {},
   visibleModalKey: null,
-  keepLocalCopyOnCreateRecipe: false,
+  keepLocalCopyOnCreateMod: false,
   deletedElementsByRecipeId: {},
   availableInstalledIds: [],
   isPendingInstalledExtensions: false,
@@ -563,7 +563,7 @@ export const editorSlice = createSlice({
         );
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- index check
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- index check
       const element = state.elements[elementIndex]!;
 
       const newId = uuidv4();
@@ -607,7 +607,7 @@ export const editorSlice = createSlice({
         );
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- index check above
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- index check above
       const element = state.elements[elementIndex]!;
       assertNotNullish(element.recipe, "Element has no recipe");
       const recipeId = element.recipe.id;
@@ -663,7 +663,7 @@ export const editorSlice = createSlice({
       action: PayloadAction<{ keepLocalCopy: boolean }>,
     ) {
       state.visibleModalKey = ModalKey.CREATE_MOD;
-      state.keepLocalCopyOnCreateRecipe = action.payload.keepLocalCopy;
+      state.keepLocalCopyOnCreateMod = action.payload.keepLocalCopy;
     },
     addNode(
       state,
@@ -800,7 +800,7 @@ export const editorSlice = createSlice({
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
     },
-    showAddBlockModal(state, action: PayloadAction<AddBlockLocation>) {
+    showAddBlockModal(state, action: PayloadAction<AddBrickLocation>) {
       state.addBlockLocation = action.payload;
       state.visibleModalKey = ModalKey.ADD_BRICK;
     },
