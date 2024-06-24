@@ -58,7 +58,6 @@ const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
           activeElementId,
         },
         runtime: {
-          // @ts-expect-error -- TS is detecting the wrong type; ignoring since this is only for testing
           extensionTraces: {
             [activeElementId]: testTraces,
           },

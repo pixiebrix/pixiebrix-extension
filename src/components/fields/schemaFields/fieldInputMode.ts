@@ -84,7 +84,7 @@ export function inferInputMode(
       subSchemas
         .filter((x) => typeof x !== "boolean")
         .map((subSchema) =>
-          inferInputMode(fieldConfig, fieldName, subSchema as Schema, {
+          inferInputMode(fieldConfig, fieldName, subSchema, {
             safeDefault: false,
             isRequired: required.includes(fieldName),
           }),
