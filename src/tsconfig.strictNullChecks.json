@@ -1445,6 +1445,7 @@
     "./telemetry/performance.test.ts",
     "./telemetry/performance.ts",
     "./telemetry/reportError.ts",
+    "./telemetry/reportError.test.ts",
     "./telemetry/reportEvent.ts",
     "./telemetry/reportUncaughtErrors.ts",
     "./telemetry/telemetryHelpers.test.ts",
