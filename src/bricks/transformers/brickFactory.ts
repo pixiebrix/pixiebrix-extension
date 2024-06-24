@@ -42,7 +42,10 @@ import {
   type RegistryId,
   type SemVerString,
 } from "@/types/registryTypes";
-import { isPipelineExpression } from "@/utils/expressionUtils";
+import {
+  isPipelineExpression,
+  type PipelineClosureExpression,
+} from "@/utils/expressionUtils";
 import { isContentScript } from "webext-detect-page";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { uuidv4 } from "@/types/helpers";
@@ -305,7 +308,7 @@ class UserDefinedBrick extends BrickABC {
         // eslint-disable-next-line security/detect-object-injection -- from inputSchema
         if (Object.hasOwn(fresh, name) && isPipelineExpression(fresh[name])) {
           // eslint-disable-next-line security/detect-object-injection -- from inputSchema
-          fresh[name].__env__ = options.ctxt;
+          (fresh[name] as PipelineClosureExpression).__env__ = options.ctxt;
         }
       }
 

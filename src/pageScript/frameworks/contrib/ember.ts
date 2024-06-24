@@ -75,7 +75,7 @@ function getEmberApplication(): EmberApplication | undefined {
     // TODO: support multiple Ember applications on the page
     return namespaces.find(
       (namespace) => namespace instanceof Ember.Application,
-    ) as EmberApplication;
+    ) as unknown as EmberApplication;
   }
 
   return undefined;

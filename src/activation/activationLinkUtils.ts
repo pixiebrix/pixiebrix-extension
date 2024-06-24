@@ -121,7 +121,7 @@ export function getRegistryIdsFromActivateUrlSearchParams(
 ): RegistryId[] {
   const rawIds = [...searchParams.getAll("id"), ...searchParams.getAll("id[]")];
 
-  return uniq(rawIds.filter((x) => isRegistryId(x)) as RegistryId[]);
+  return uniq(rawIds.filter((x) => isRegistryId(x)));
 }
 
 export function getNextUrlFromActivateUrl(
