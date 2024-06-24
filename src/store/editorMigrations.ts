@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type MigrationManifest, type PersistedState } from "redux-persist";
-import { type Except } from "type-fest";
-import { type EditorState } from "@/pageEditor/pageEditorTypes";
+import { type PersistedState, type MigrationManifest } from "redux-persist";
 import { mapValues, omit } from "lodash";
 import {
   type BaseFormStateV1,
@@ -27,31 +25,20 @@ import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
 } from "@/integrations/integrationTypes";
-
-/**
- * @deprecated - Do not use versioned state types directly, exported for testing
- */
-export type PersistedEditorStateV1 = PersistedState &
-  Except<EditorState, "elements" | "deletedElementsByRecipeId"> & {
-    elements: BaseFormStateV1[];
-    deletedElementsByRecipeId: Record<string, BaseFormStateV1[]>;
-  };
-
-/**
- * @deprecated - Do not use versioned state types directly, exported for testing
- */
-export type PersistedEditorStateV2 = PersistedState &
-  Except<EditorState, "elements" | "deletedElementsByRecipeId"> & {
-    elements: BaseFormStateV2[];
-    deletedElementsByRecipeId: Record<string, BaseFormStateV2[]>;
-  };
+import {
+  type EditorStateV2,
+  type EditorStateV1,
+  type EditorStateV3,
+} from "@/pageEditor/pageEditorTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
   // state version to match state type names
   0: (state) => state,
   1: (state) => state,
-  2: (state: PersistedEditorStateV1) => migrateEditorStateV1(state),
+  2: (state: EditorStateV1 & PersistedState) => migrateEditorStateV1(state),
+  3: (state: EditorStateV2 & PersistedState) => migrateEditorStateV2(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -80,8 +67,8 @@ function migrateFormStateV1(state: BaseFormStateV1): BaseFormStateV2 {
 }
 
 export function migrateEditorStateV1(
-  state: PersistedEditorStateV1,
-): PersistedEditorStateV2 {
+  state: EditorStateV1 & PersistedState,
+): EditorStateV2 & PersistedState {
   return {
     ...state,
     elements: state.elements.map((formState) => migrateFormStateV1(formState)),
@@ -90,5 +77,48 @@ export function migrateEditorStateV1(
       (formStates) =>
         formStates.map((formState) => migrateFormStateV1(formState)),
     ),
+  };
+}
+
+export function migrateEditorStateV2({
+  activeElementId,
+  activeRecipeId,
+  expandedRecipeId,
+  elements,
+  knownEditable,
+  elementUIStates,
+  copiedBlock,
+  dirtyRecipeOptionsById,
+  dirtyRecipeMetadataById,
+  addBlockLocation,
+  keepLocalCopyOnCreateRecipe,
+  deletedElementsByRecipeId,
+  availableInstalledIds,
+  isPendingInstalledExtensions,
+  availableDynamicIds,
+  isPendingDynamicExtensions,
+  ...rest
+}: EditorStateV2 & PersistedState): EditorStateV3 & PersistedState {
+  return {
+    ...rest,
+    activeModComponentId: activeElementId,
+    activeModId: activeRecipeId,
+    expandedModId: expandedRecipeId,
+    modComponentFormStates: elements as ModComponentFormState[],
+    knownEditableBrickIds: knownEditable,
+    brickPipelineUIStateById: elementUIStates,
+    copiedBrick: copiedBlock,
+    dirtyModOptionsById: dirtyRecipeOptionsById,
+    dirtyModMetadataById: dirtyRecipeMetadataById,
+    addBrickLocation: addBlockLocation,
+    keepLocalCopyOnCreateMod: keepLocalCopyOnCreateRecipe,
+    deletedModComponentFormStatesByModId: deletedElementsByRecipeId as Record<
+      string,
+      ModComponentFormState[]
+    >,
+    availableActivatedModComponentIds: availableInstalledIds,
+    isPendingAvailableActivatedModComponents: isPendingInstalledExtensions,
+    availableDraftModComponentIds: availableDynamicIds,
+    isPendingDraftModComponents: isPendingDynamicExtensions,
   };
 }

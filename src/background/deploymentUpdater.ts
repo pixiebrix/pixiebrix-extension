@@ -218,7 +218,10 @@ async function deactivateMod(
   modId: RegistryId,
   optionsState: ModComponentState,
   editorState: EditorState | undefined,
-): Promise<{ options: ModComponentState; editor: EditorState | undefined }> {
+): Promise<{
+  options: ModComponentState;
+  editor: EditorState | undefined;
+}> {
   let _optionsState = optionsState;
   let _editorState = editorState;
 

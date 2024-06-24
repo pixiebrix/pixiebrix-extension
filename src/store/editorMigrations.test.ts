@@ -16,11 +16,10 @@
  */
 
 import {
-  migrateEditorStateV1,
-  type PersistedEditorStateV1,
-  type PersistedEditorStateV2,
-} from "@/store/editorMigrations";
-import { initialState } from "@/pageEditor/slices/editorSlice";
+  type EditorStateV3,
+  type EditorStateV1,
+  type EditorStateV2,
+} from "@/pageEditor/pageEditorTypes";
 import { mapValues, omit } from "lodash";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import {
@@ -35,18 +34,83 @@ import {
   type BaseFormStateV1,
   type BaseFormStateV2,
 } from "@/pageEditor/baseFormStateTypes";
+import { type PersistedState } from "redux-persist";
+import {
+  migrateEditorStateV1,
+  migrateEditorStateV2,
+} from "@/store/editorMigrations";
 
-const initialStateV1: PersistedEditorStateV1 = {
-  ...omit(initialState, "elements", "deletedElementsByRecipeId"),
+const initialStateV1: EditorStateV1 & PersistedState = {
+  selectionSeq: 0,
+  activeElementId: null,
+  activeRecipeId: null,
+  expandedRecipeId: null,
+  error: null,
+  beta: false,
   elements: [],
+  knownEditable: [],
+  dirty: {},
+  isBetaUI: false,
+  elementUIStates: {},
+  dirtyRecipeOptionsById: {},
+  dirtyRecipeMetadataById: {},
+  visibleModalKey: null,
+  keepLocalCopyOnCreateRecipe: false,
   deletedElementsByRecipeId: {},
+  availableInstalledIds: [],
+  isPendingInstalledExtensions: false,
+  availableDynamicIds: [],
+  isPendingDynamicExtensions: false,
+  isModListExpanded: true,
+  isDataPanelExpanded: true,
+  isDimensionsWarningDismissed: false,
+  inserting: null,
+  isVariablePopoverVisible: false,
   _persist: {
     version: 1,
     rehydrated: false,
   },
 };
-const initialStateV2: PersistedEditorStateV2 = {
-  ...initialState,
+
+const initialStateV2: EditorStateV2 & PersistedState = {
+  ...omit(initialStateV1, "elements", "deletedElementsByRecipeId"),
+  elements: [],
+  deletedElementsByRecipeId: {},
+  // Function under test does not handle updating the persistence, this is handled by redux-persist
+  _persist: {
+    version: 1,
+    rehydrated: false,
+  },
+};
+
+const initialStateV3: EditorStateV3 & PersistedState = {
+  selectionSeq: 0,
+  activeModComponentId: null,
+  activeModId: null,
+  expandedModId: null,
+  error: null,
+  beta: false,
+  modComponentFormStates: [],
+  knownEditableBrickIds: [],
+  dirty: {},
+  isBetaUI: false,
+  copiedBrick: undefined,
+  brickPipelineUIStateById: {},
+  dirtyModOptionsById: {},
+  dirtyModMetadataById: {},
+  visibleModalKey: null,
+  addBrickLocation: undefined,
+  keepLocalCopyOnCreateMod: false,
+  deletedModComponentFormStatesByModId: {},
+  availableActivatedModComponentIds: [],
+  isPendingAvailableActivatedModComponents: false,
+  availableDraftModComponentIds: [],
+  isPendingDraftModComponents: false,
+  isModListExpanded: true,
+  isDataPanelExpanded: true,
+  isDimensionsWarningDismissed: false,
+  inserting: null,
+  isVariablePopoverVisible: false,
   // Function under test does not handle updating the persistence, this is handled by redux-persist
   _persist: {
     version: 1,
@@ -88,9 +152,9 @@ describe("migrateEditorStateV1", () => {
     );
   }
 
-  function unmigrateEditorState(
-    state: PersistedEditorStateV2,
-  ): PersistedEditorStateV1 {
+  function unmigrateEditorStateV2(
+    state: EditorStateV2 & PersistedState,
+  ): EditorStateV1 & PersistedState {
     return {
       ...omit(state, "elements", "deletedElementsByRecipeId"),
       elements: state.elements.map((element) => unmigrateFormState(element)),
@@ -105,7 +169,7 @@ describe("migrateEditorStateV1", () => {
       ...initialStateV2,
       elements: [formStateFactory(), formStateFactory()],
     };
-    const unmigrated = unmigrateEditorState(expectedState);
+    const unmigrated = unmigrateEditorStateV2(expectedState);
     expect(migrateEditorStateV1(unmigrated)).toStrictEqual(expectedState);
   });
 
@@ -168,7 +232,13 @@ describe("migrateEditorStateV1", () => {
         bar: [barElement],
       },
     };
-    const unmigrated = unmigrateEditorState(expectedState);
+    const unmigrated = unmigrateEditorStateV2(expectedState);
     expect(migrateEditorStateV1(unmigrated)).toStrictEqual(expectedState);
+  });
+});
+
+describe("migrateEditorStateV2", () => {
+  it("migrates empty state", () => {
+    expect(migrateEditorStateV2(initialStateV2)).toStrictEqual(initialStateV3);
   });
 });

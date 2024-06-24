@@ -61,10 +61,11 @@ async function selectActiveModFormStates(
   const activeModComponentFormState = selectActiveModComponentFormState(state);
 
   if (activeModComponentFormState?.recipe) {
-    const dirtyElements = state.editor.elements.filter(
-      (x) => x.recipe?.id === activeModComponentFormState.recipe.id,
-    );
-    const dirtyIds = new Set(dirtyElements.map((x) => x.uuid));
+    const dirtyModComponentFormStates =
+      state.editor.modComponentFormStates.filter(
+        (x) => x.recipe?.id === activeModComponentFormState.recipe.id,
+      );
+    const dirtyIds = new Set(dirtyModComponentFormStates.map((x) => x.uuid));
 
     const activatedModComponents = selectActivatedModComponents(state);
     const otherModComponents = activatedModComponents.filter(
@@ -76,7 +77,7 @@ async function selectActiveModFormStates(
       otherModComponents.map(async (x) => modComponentToFormState(x)),
     );
 
-    return [...dirtyElements, ...otherElements];
+    return [...dirtyModComponentFormStates, ...otherElements];
   }
 
   if (activeModComponentFormState) {
