@@ -42,7 +42,7 @@ jest.mock("@/data/service/api", () => {
   return {
     ...originalModule,
     useGetAllStandaloneModDefinitionsQuery: jest.fn(),
-    useCreateRecipeMutation: jest.fn(),
+    useCreateModDefinitionMutation: jest.fn(),
     useDeleteStandaloneModDefinitionMutation: jest.fn(),
   };
 });
@@ -51,7 +51,9 @@ beforeEach(() => {
   jest.mocked(api.useGetAllStandaloneModDefinitionsQuery).mockReturnValue({
     data: [],
   } as any);
-  jest.mocked(api.useCreateRecipeMutation).mockReturnValue([jest.fn()] as any);
+  jest
+    .mocked(api.useCreateModDefinitionMutation)
+    .mockReturnValue([jest.fn()] as any);
   jest
     .mocked(api.useDeleteStandaloneModDefinitionMutation)
     .mockReturnValue([jest.fn()] as any);
@@ -128,7 +130,7 @@ describe("it renders", () => {
   ] as const)(
     "opens $name modal after converting extension to blueprint",
     async ({ sharingAction, contextToBeEmpty, sharingContext }) => {
-      jest.mocked(api.useCreateRecipeMutation).mockReturnValue([
+      jest.mocked(api.useCreateModDefinitionMutation).mockReturnValue([
         jest.fn().mockReturnValue({
           unwrap: jest.fn().mockResolvedValue({
             public: false,
@@ -183,7 +185,7 @@ describe("it renders", () => {
       data: [standaloneModDefinition],
     } as any);
     jest
-      .mocked(api.useCreateRecipeMutation)
+      .mocked(api.useCreateModDefinitionMutation)
       .mockReturnValue([
         jest.fn().mockReturnValue({ unwrap: jest.fn().mockResolvedValue({}) }),
       ] as any);

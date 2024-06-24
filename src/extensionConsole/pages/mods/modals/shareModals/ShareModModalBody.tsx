@@ -26,7 +26,7 @@ import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   useGetEditablePackagesQuery,
-  useUpdateRecipeMutation,
+  useUpdateModDefinitionMutation,
 } from "@/data/service/api";
 import { type FormikHelpers } from "formik";
 import notify from "@/utils/notify";
@@ -65,7 +65,7 @@ const ShareModModalBody: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { blueprintId: modId } = useSelector(selectShowShareContext);
   const organizationsForSelect = useSortOrganizations();
-  const [updateModDefinition] = useUpdateRecipeMutation();
+  const [updateModDefinition] = useUpdateModDefinitionMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
   const {
@@ -108,7 +108,7 @@ const ShareModModalBody: React.FunctionComponent = () => {
 
       await updateModDefinition({
         packageId,
-        recipe: newModDefinition,
+        modDefinition: newModDefinition,
       }).unwrap();
 
       notify.success("Shared mod");
