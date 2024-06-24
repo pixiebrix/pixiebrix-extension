@@ -268,22 +268,23 @@ export type EditorStateV3 = Except<
   expandedModId: RegistryId | null;
 
   /**
-   * Unsaved mod component form states
+   * When a mod component is selected in the Page Editor, a mod component form state is created for it and stored here;
+   * that is, "touched" mod component form states.
    */
   readonly modComponentFormStates: ModComponentFormState[];
 
   /**
-   * Brick ids (not UUIDs) that are known to be editable by the current user
+   * Brick ids (not UUIDs) that the user has access to edit
    */
   knownEditableBrickIds: RegistryId[];
 
   /**
-   * The current UI state of each brick pipeline, indexed by the brick pipeline id
+   * The current UI state of each brick pipeline, indexed by mod component id
    */
   brickPipelineUIStateById: Record<UUID, ModComponentUIState>;
 
   /**
-   * A clipboard-style-copy of a brick ready to paste into an extension
+   * A clipboard-style-copy of a brick ready to paste into a brick pipeline
    */
   copiedBrick?: BrickConfig;
 
