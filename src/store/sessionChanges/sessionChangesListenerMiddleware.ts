@@ -24,7 +24,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 const sessionChangesListenerMiddleware = createListenerMiddleware();
 sessionChangesListenerMiddleware.startListening({
   matcher: isAnyOf(
-    actions.editElement,
+    actions.syncModComponentFormState,
     actions.addNode,
     actions.moveNode,
     actions.removeNode,

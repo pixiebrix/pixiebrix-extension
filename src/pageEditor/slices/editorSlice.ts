@@ -421,10 +421,12 @@ export const editorSlice = createSlice({
       state.selectionSeq++;
     },
     /**
-     * Sync the redux state with the form state.
-     * Used on by the page editor to set changed version of the element in the store.
+     * Sync the formik mod component form state in the Page Editor with redux.
      */
-    editElement(state, action: PayloadAction<ModComponentFormState>) {
+    syncModComponentFormState(
+      state,
+      action: PayloadAction<ModComponentFormState>,
+    ) {
       const modComponentFormState = action.payload;
       const index = state.modComponentFormStates.findIndex(
         (x) => x.uuid === modComponentFormState.uuid,
