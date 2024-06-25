@@ -25,7 +25,7 @@ import { getIn, useField } from "formik";
 import { getAllowedChildTypes } from "@/pageEditor/documentBuilder/allowedElementTypes";
 import { useCallback } from "react";
 import useReduxState from "@/hooks/useReduxState";
-import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveDocumentOrFormPreviewElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 // https://stackoverflow.com/a/6470794/402560
@@ -111,7 +111,7 @@ function useMoveElement(documentBodyName: string) {
     useField<DocumentElement[]>(documentBodyName);
 
   const [, setActiveElement] = useReduxState(
-    selectNodePreviewActiveElement,
+    selectActiveDocumentOrFormPreviewElement,
     editorActions.setActiveDocumentOrFormPreviewElement,
   );
 

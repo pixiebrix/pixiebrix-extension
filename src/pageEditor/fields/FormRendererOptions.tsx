@@ -22,7 +22,7 @@ import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
-import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveDocumentOrFormPreviewElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useField, useFormikContext } from "formik";
 import { partial } from "lodash";
@@ -273,7 +273,7 @@ const FormRendererOptions: React.FC<{
   const configName = makeName();
 
   const [activeElement, setActiveElement] = useReduxState(
-    selectNodePreviewActiveElement,
+    selectActiveDocumentOrFormPreviewElement,
     editorActions.setActiveDocumentOrFormPreviewElement,
   );
 

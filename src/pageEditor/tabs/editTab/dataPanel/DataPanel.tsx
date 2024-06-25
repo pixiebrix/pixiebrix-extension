@@ -42,7 +42,7 @@ import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
   selectActiveNodeInfo,
-  selectNodePreviewActiveElement,
+  selectActiveDocumentOrFormPreviewElement,
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import Alert from "@/components/Alert";
@@ -174,7 +174,7 @@ const DataPanel: React.FC = () => {
   }, [activeTabKey]);
 
   const [nodePreviewActiveElement, setNodePreviewActiveElement] = useReduxState(
-    selectNodePreviewActiveElement,
+    selectActiveDocumentOrFormPreviewElement,
     editorActions.setActiveDocumentOrFormPreviewElement,
   );
 

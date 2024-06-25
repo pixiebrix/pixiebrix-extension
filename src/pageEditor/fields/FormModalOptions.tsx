@@ -23,7 +23,7 @@ import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
-import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveDocumentOrFormPreviewElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
@@ -63,7 +63,7 @@ const FormModalOptions: React.FC<{
   const configName = partial(joinName, baseName);
 
   const [activeElement, setActiveElement] = useReduxState(
-    selectNodePreviewActiveElement,
+    selectActiveDocumentOrFormPreviewElement,
     editorActions.setActiveDocumentOrFormPreviewElement,
   );
 

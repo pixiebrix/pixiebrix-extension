@@ -386,7 +386,7 @@ export function selectNodeDataPanelTabState(
 /**
  * Selects the activeElement of the Document or Form builder on the Preview tab
  */
-export function selectNodePreviewActiveElement(
+export function selectActiveDocumentOrFormPreviewElement(
   state: EditorRootState,
 ): Nullishable<string> {
   return selectNodeDataPanelTabState(state, DataPanelTabKey.Preview)

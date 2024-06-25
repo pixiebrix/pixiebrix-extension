@@ -64,7 +64,7 @@ import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
   selectCollapsedNodes,
-  selectNodePreviewActiveElement,
+  selectActiveDocumentOrFormPreviewElement,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
@@ -207,7 +207,7 @@ const usePipelineNodes = (): {
     selectExtensionAnnotations(activeModComponentFormState.uuid),
   );
   const activeNodePreviewElementId = useSelector(
-    selectNodePreviewActiveElement,
+    selectActiveDocumentOrFormPreviewElement,
   );
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
