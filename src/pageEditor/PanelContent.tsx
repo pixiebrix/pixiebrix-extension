@@ -54,7 +54,7 @@ const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
 // Issue doesn't apply to certain starter bricks, e.g. sidebar panels
 // See https://github.com/pixiebrix/pixiebrix-extension/pull/5047
 // and https://github.com/pixiebrix/pixiebrix-extension/pull/6372
-const cleanUpStarterBrickForElement = (
+const cleanUpStarterBrickForModComponentFormState = (
   modComponentFormState: EditorState["modComponentFormStates"][number],
 ) => {
   if (
@@ -106,7 +106,7 @@ const PanelContent: React.FC = () => {
       return;
     }
 
-    cleanUpStarterBrickForElement(activeModComponentFormState);
+    cleanUpStarterBrickForModComponentFormState(activeModComponentFormState);
   }, [activeModComponentFormState]);
 
   const authPersistenceContext: ReduxPersistenceContextType = {
