@@ -613,7 +613,7 @@ export const editorSlice = createSlice({
     showRemoveFromRecipeModal(state) {
       state.visibleModalKey = ModalKey.REMOVE_FROM_MOD;
     },
-    removeElementFromRecipe(
+    removeModComponentFormStateFromMod(
       state,
       action: PayloadAction<{
         elementId: UUID;
