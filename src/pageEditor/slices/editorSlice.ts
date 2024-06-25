@@ -203,7 +203,10 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
   // slice and remove installed mod components when they become draft form states
   const notDraftActivated = notDeletedModComponents.filter(
     (modComponent) =>
-      !notDeletedFormStates.some((element) => element.uuid === modComponent.id),
+      !notDeletedFormStates.some(
+        (modComponentFormState) =>
+          modComponentFormState.uuid === modComponent.id,
+      ),
   );
 
   const availableInstalledIds = notDraftActivated
