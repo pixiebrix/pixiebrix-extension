@@ -270,7 +270,7 @@ export async function hydrateModInnerDefinitions(
     return modComponentDefinitions as HydratedModComponentDefinition[];
   }
 
-  const extensionPointReferences = new Set<string>(
+  const starterBrickReferences = new Set<string>(
     modDefinition.extensionPoints.map((x) => x.id),
   );
 
@@ -279,8 +279,7 @@ export async function hydrateModInnerDefinitions(
   const relevantDefinitions = pickBy(
     modDefinition.definitions,
     (definition, name) =>
-      definition.kind !== "extensionPoint" ||
-      extensionPointReferences.has(name),
+      definition.kind !== "extensionPoint" || starterBrickReferences.has(name),
   );
 
   const hydratedDefinitions = await resolveObj(
