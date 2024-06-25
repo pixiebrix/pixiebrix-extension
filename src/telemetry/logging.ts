@@ -108,6 +108,9 @@ type IndexKey = keyof Except<
   | "serviceVersion"
   | "extensionLabel"
   | "platformName"
+  | "url"
+  | "connectionType"
+  | "referrer"
 >;
 
 const INDEX_KEYS = [
