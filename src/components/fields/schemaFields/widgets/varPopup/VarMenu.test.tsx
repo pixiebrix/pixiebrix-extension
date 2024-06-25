@@ -73,6 +73,11 @@ describe("VarMenu", () => {
         setupRedux(dispatch) {
           dispatch(editorActions.addModComponentFormState(formState));
           dispatch(editorActions.selectElement(formState.uuid));
+          dispatch(
+            editorActions.setElementActiveNodeId(
+              formState.extension.blockPipeline[0].instanceId,
+            ),
+          );
         },
       },
     );
