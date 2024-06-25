@@ -135,9 +135,9 @@ export const modDefinitionWithVersionedStarterBrickFactory = ({
   });
 
 /**
- * Factory to create a ModDefinition with a definitions section and resolved mod components
+ * Factory to create a ModDefinition with a definitions section and hydrated mod components
  */
-export const versionedModDefinitionWithResolvedModComponents = (
+export const versionedModDefinitionWithHydratedModComponents = (
   modComponentCount = 1,
 ) => {
   const modComponentDefinitions: ModComponentDefinition[] = [];

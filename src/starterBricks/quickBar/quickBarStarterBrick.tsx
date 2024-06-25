@@ -47,7 +47,7 @@ import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
@@ -106,7 +106,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
   );
 
   async getBricks(
-    modComponent: ResolvedModComponent<QuickBarConfig>,
+    modComponent: HydratedModComponent<QuickBarConfig>,
   ): Promise<Brick[]> {
     return collectAllBricks(modComponent.config.action);
   }
@@ -192,7 +192,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
    * Add a QuickBar action for a mod component.
    */
   private async registerModComponentAction(
-    modComponent: ResolvedModComponent<QuickBarConfig>,
+    modComponent: HydratedModComponent<QuickBarConfig>,
   ): Promise<void> {
     const {
       title: name,

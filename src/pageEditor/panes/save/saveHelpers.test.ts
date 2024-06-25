@@ -30,7 +30,7 @@ import {
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/starterBricks/base";
 import { produce } from "immer";
-import { makeInternalId } from "@/registry/internal";
+import { calculateInnerRegistryId } from "@/registry/hydrateInnerDefinitions";
 import { cloneDeep, range, uniq } from "lodash";
 import { type MenuItemDefinition } from "@/starterBricks/menuItem/menuItemTypes";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -48,7 +48,7 @@ import {
 } from "@/types/modDefinitionTypes";
 import {
   type ModComponentBase,
-  type UnresolvedModComponent,
+  type SerializedModComponent,
 } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
@@ -58,7 +58,7 @@ import {
   modDefinitionWithVersionedStarterBrickFactory,
   starterBrickDefinitionFactory,
   starterBrickInnerDefinitionFactory,
-  versionedModDefinitionWithResolvedModComponents,
+  versionedModDefinitionWithHydratedModComponents,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
@@ -191,7 +191,7 @@ describe("replaceModComponent round trip", () => {
     jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
-        id: makeInternalId(modDefinition.definitions.extensionPoint),
+        id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: normalizeSemVerString("1.0.0"),
       },
@@ -240,7 +240,7 @@ describe("replaceModComponent round trip", () => {
     jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
-        id: makeInternalId(modDefinition.definitions.extensionPoint),
+        id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: normalizeSemVerString("1.0.0"),
       },
@@ -284,7 +284,7 @@ describe("replaceModComponent round trip", () => {
     jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
-        id: makeInternalId(modDefinition.definitions.extensionPoint),
+        id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: normalizeSemVerString("1.0.0"),
       },
@@ -346,7 +346,7 @@ describe("replaceModComponent round trip", () => {
     jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
-        id: makeInternalId(modDefinition.definitions.extensionPoint),
+        id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: normalizeSemVerString("1.0.0"),
       },
@@ -616,7 +616,7 @@ describe("buildNewMod", () => {
   test("Clean mod component referencing extensionPoint registry package", async () => {
     const modComponent = modComponentFactory({
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    }) as UnresolvedModComponent;
+    }) as SerializedModComponent;
 
     // Call the function under test
     const newMod = buildNewMod({
@@ -642,7 +642,7 @@ describe("buildNewMod", () => {
         integrationDependencyFactory({ integrationId, outputKey }),
       ],
       extensionPointId: starterBrick.metadata.id,
-    }) as UnresolvedModComponent;
+    }) as SerializedModComponent;
 
     const adapter = ADAPTERS.get(starterBrick.definition.type);
 
@@ -678,7 +678,7 @@ describe("buildNewMod", () => {
     const modComponents = starterBricks.map((extensionPoint) => {
       const modComponent = modComponentFactory({
         apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-      }) as UnresolvedModComponent;
+      }) as SerializedModComponent;
 
       modComponent.definitions = {
         extensionPoint: {
@@ -720,7 +720,7 @@ describe("buildNewMod", () => {
     const modComponents = starterBricks.slice(0, 2).map((starterBrick) => {
       const modComponent = modComponentFactory({
         apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-      }) as UnresolvedModComponent;
+      }) as SerializedModComponent;
 
       modComponent.definitions = {
         extensionPoint: starterBrick,
@@ -751,7 +751,7 @@ describe("buildNewMod", () => {
     const modComponents = range(0, 2).map(() => {
       const modComponent = modComponentFactory({
         apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-      }) as UnresolvedModComponent;
+      }) as SerializedModComponent;
 
       modComponent.definitions = {
         extensionPoint: {
@@ -804,7 +804,7 @@ describe("buildNewMod", () => {
         cleanModComponentCount + dirtyModComponentCount;
 
       // Create a mod
-      const modDefinition = versionedModDefinitionWithResolvedModComponents(
+      const modDefinition = versionedModDefinitionWithHydratedModComponents(
         totalModComponentCount,
       )();
 

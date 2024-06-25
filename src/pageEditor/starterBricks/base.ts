@@ -38,7 +38,7 @@ import {
 } from "@/types/helpers";
 import { type BrickPipeline, type ReaderConfig } from "@/bricks/types";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { hasInnerExtensionPointRef } from "@/registry/internal";
+import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type ApiVersion } from "@/types/runtimeTypes";
@@ -258,7 +258,7 @@ export async function lookupExtensionPoint<
     throw new Error("config is required");
   }
 
-  if (hasInnerExtensionPointRef(config)) {
+  if (hasInnerStarterBrickRef(config)) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerExtensionPointRef
     const definition = config.definitions![config.extensionPointId];
     console.debug(

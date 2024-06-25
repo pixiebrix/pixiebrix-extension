@@ -32,8 +32,8 @@ import { createSelector } from "@reduxjs/toolkit";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import {
   type ModComponentBase,
-  type ResolvedModComponent,
-  type UnresolvedModComponent,
+  type HydratedModComponent,
+  type SerializedModComponent,
 } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -64,11 +64,11 @@ export function isUnavailableMod(mod: Mod): mod is UnavailableMod {
 }
 
 /**
- * Returns true if the mod is a standalone ResolvedModComponent, instead of a mod definition.
+ * Returns true if the mod is a standalone HydratedModComponent, instead of a mod definition.
  */
 export function isStandaloneModComponent(
   mod: Mod,
-): mod is ResolvedModComponent {
+): mod is HydratedModComponent {
   return "extensionPointId" in mod;
 }
 
@@ -178,7 +178,7 @@ function isPersonal(mod: Mod, userScope: Nullishable<string>): boolean {
 }
 
 export function getInstalledVersionNumber(
-  installedExtensions: UnresolvedModComponent[],
+  installedExtensions: SerializedModComponent[],
   mod: Mod,
 ): string | undefined {
   if (isStandaloneModComponent(mod)) {
@@ -186,7 +186,7 @@ export function getInstalledVersionNumber(
   }
 
   const installedExtension = installedExtensions.find(
-    (extension: UnresolvedModComponent) =>
+    (extension: SerializedModComponent) =>
       extension._recipe?.id === mod.metadata.id,
   );
 
@@ -195,7 +195,7 @@ export function getInstalledVersionNumber(
 
 export function isDeployment(
   mod: Mod,
-  installedComponents: UnresolvedModComponent[],
+  installedComponents: SerializedModComponent[],
 ): boolean {
   if (isStandaloneModComponent(mod)) {
     return Boolean(mod._deployment);
@@ -216,7 +216,7 @@ export function getSharingSource({
   mod: Mod;
   organizations: Organization[];
   scope: Nullishable<string>;
-  installedExtensions: UnresolvedModComponent[];
+  installedExtensions: SerializedModComponent[];
 }): SharingSource {
   let sharingType: SharingType | null = null;
   const organization = getOrganization(mod, organizations);
@@ -260,7 +260,7 @@ export function getSharingSource({
 
 export function updateAvailable(
   availableMods: Map<RegistryId, ModDefinition>,
-  activatedMods: Map<RegistryId, UnresolvedModComponent>,
+  activatedMods: Map<RegistryId, SerializedModComponent>,
   mod: Mod,
 ): boolean {
   if (isUnavailableMod(mod)) {
@@ -333,7 +333,7 @@ function getOrganization(
 }
 
 /**
- * Select UnresolvedModComponents currently activated from the mod.
+ * Select ActivatedModComponents currently activated from the mod.
  */
 export const selectComponentsFromMod = createSelector(
   [selectActivatedModComponents, (_state: unknown, mod: Mod) => mod],

@@ -25,7 +25,7 @@ import {
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type UnresolvedModComponent } from "@/types/modComponentTypes";
+import { type SerializedModComponent } from "@/types/modComponentTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { isNullOrBlank } from "@/utils/stringUtils";
 
@@ -48,7 +48,7 @@ function inferOptionsSchema(
 }
 
 export function makeBlueprint(
-  extension: UnresolvedModComponent,
+  extension: SerializedModComponent,
   metadata: Metadata,
 ): UnsavedModDefinition {
   const {

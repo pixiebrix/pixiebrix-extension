@@ -35,7 +35,7 @@ import {
   toggleQuickBar,
 } from "@/components/quickBar/QuickBarApp";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -77,9 +77,9 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const modComponentFactory = define<ResolvedModComponent<QuickBarConfig>>({
+const modComponentFactory = define<HydratedModComponent<QuickBarConfig>>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined as never,
+  _hydratedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),

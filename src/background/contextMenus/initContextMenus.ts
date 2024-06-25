@@ -21,7 +21,7 @@ import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { waitForContentScript } from "@/background/contentScript";
 import { expectContext } from "@/utils/expectContext";
 import { getModComponentState } from "@/store/extensionsStorage";
-import { resolveExtensionInnerDefinitions } from "@/registry/internal";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { type UUID } from "@/types/stringTypes";
 import { allSettled } from "@/utils/promiseUtils";
 import { MENU_PREFIX } from "@/background/contextMenus/makeMenuId";
@@ -84,7 +84,7 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
 async function preloadAllContextMenus(): Promise<void> {
   const { extensions } = await getModComponentState();
   const { fulfilled } = await allSettled(
-    extensions.map(async (x) => resolveExtensionInnerDefinitions(x)),
+    extensions.map(async (x) => hydrateModComponentInnerDefinitions(x)),
     { catch: "ignore" },
   );
   await preloadContextMenus(fulfilled);

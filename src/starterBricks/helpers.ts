@@ -20,7 +20,7 @@ import initialize from "@/vendors/jQueryInitialize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
 import {
   type ModComponentBase,
-  type ResolvedModComponent,
+  type HydratedModComponent,
 } from "@/types/modComponentTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { $safeFind } from "@/utils/domUtils";
@@ -186,7 +186,7 @@ export function acquireElement(
  * Returns the MessageContext associated with `modComponent`.
  */
 export function selectModComponentContext(
-  modComponent: ResolvedModComponent,
+  modComponent: HydratedModComponent,
 ): MessageContext {
   return {
     // The step label will be re-assigned later in reducePipeline

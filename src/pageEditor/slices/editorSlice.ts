@@ -66,7 +66,7 @@ import {
   getInstalledExtensionPoints,
   checkAvailable,
 } from "@/contentScript/messenger/api";
-import { resolveExtensionInnerDefinitions } from "@/registry/internal";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { testMatchPatterns } from "@/bricks/available";
 import { BusinessError } from "@/errors/businessErrors";
@@ -171,7 +171,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
   );
   const resolved = await Promise.all(
     notDeletedModComponents.map(async (modComponent) =>
-      resolveExtensionInnerDefinitions(modComponent),
+      hydrateModComponentInnerDefinitions(modComponent),
     ),
   );
   const tabUrl = await getCurrentInspectedURL();
