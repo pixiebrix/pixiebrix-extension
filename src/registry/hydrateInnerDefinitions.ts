@@ -151,7 +151,7 @@ async function hydrateStarterBrickDefinition(
 ): Promise<StarterBrick> {
   const innerDefinition = cloneDeep(originalInnerDefinition);
 
-  // We have to resolve the readers before computing the registry id, b/c otherwise different extension points could
+  // We have to hydrate the readers before computing the registry id, b/c otherwise different extension points could
   // clash if they use the same name for different readers
   innerDefinition.definition.reader = await hydrateReaderDefinition(
     definitions,
@@ -185,8 +185,8 @@ async function hydrateStarterBrickDefinition(
 
 /**
  * Ensure inner definitions are registered in the in-memory brick registry
- * @param definitions all of the definitions. Used to resolve references from innerDefinition
- * @param innerDefinition the inner definition to resolve
+ * @param definitions all of the definitions. Used to hydrate references from innerDefinition
+ * @param innerDefinition the inner definition to hydrate
  */
 async function hydrateInnerDefinition(
   definitions: InnerDefinitions,
@@ -257,7 +257,7 @@ export async function hydrateModComponentInnerDefinitions<
 
 /**
  * Hydrate inner starter brick definitions.
- * TODO: resolve other definitions (brick, service, etc.) within the mod definition
+ * TODO: hydrate other definitions (brick, service, etc.) within the mod definition
  */
 export async function hydrateModInnerDefinitions(
   modDefinition:
@@ -303,13 +303,13 @@ export async function hydrateModInnerDefinitions(
 /**
  * Returns true if the mod component is using an InnerDefinitionRef. _Returns false for HydratedModComponent._
  * @see InnerDefinitionRef
- * @see UnresolvedExtension
+ * @see SerializedModComponent
  * @see HydratedModComponent
  */
 export function hasInnerStarterBrickRef(
   modComponent: ModComponentBase,
 ): boolean {
   // XXX: should this also check for `@internal/` scope in the referenced id? The type ModComponentBase could receive a
-  // ResolvedExtension, which would have the id mapped to the internal registry id
+  // HydratedModComponent, which would have the id mapped to the internal registry id
   return modComponent.extensionPointId in (modComponent.definitions ?? {});
 }
