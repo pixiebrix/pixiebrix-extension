@@ -468,9 +468,9 @@ export const editorSlice = createSlice({
       const modComponentId = action.payload;
       removeModComponentFormState(state, modComponentId);
     },
-    selectRecipeId(state, action: PayloadAction<RegistryId>) {
-      const recipeId = action.payload;
-      selectRecipeId(state, recipeId);
+    makeModActive(state, action: PayloadAction<RegistryId>) {
+      const modId = action.payload;
+      selectRecipeId(state, modId);
     },
     setBetaUIEnabled(state, action: PayloadAction<boolean>) {
       state.isBetaUI = action.payload;

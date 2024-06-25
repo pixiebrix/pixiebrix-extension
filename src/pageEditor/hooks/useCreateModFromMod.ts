@@ -107,7 +107,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
             isReactivate: false,
           }),
         );
-        dispatch(editorActions.selectRecipeId(savedModDefinition.metadata.id));
+        dispatch(editorActions.makeModActive(savedModDefinition.metadata.id));
 
         reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
           copiedFrom: modId,
