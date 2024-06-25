@@ -30,7 +30,7 @@ import {
   removeModData,
   selectRecipeId,
   setActiveNodeId,
-  syncElementNodeUIStates,
+  syncNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { produce } from "immer";
 import {
@@ -161,7 +161,7 @@ describe("syncElementUIStates", () => {
       activeModComponentId: element.uuid,
     };
     const newEditorState = produce(editorState, (draft) => {
-      syncElementNodeUIStates(draft, element);
+      syncNodeUIStates(draft, element);
     });
 
     expect(selectActiveNodeId({ editor: newEditorState })).toEqual(
@@ -188,7 +188,7 @@ describe("syncElementUIStates", () => {
       },
     };
     const newEditorState = produce(editorState, (draft) => {
-      syncElementNodeUIStates(draft, element);
+      syncNodeUIStates(draft, element);
     });
 
     // Maintains the foundation node state and adds the block node state for both blocks in the pipeline

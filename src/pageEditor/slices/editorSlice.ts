@@ -57,7 +57,7 @@ import {
   removeModData,
   selectRecipeId,
   setActiveNodeId,
-  syncElementNodeUIStates,
+  syncNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
@@ -380,7 +380,7 @@ export const editorSlice = createSlice({
       // Make sure we're not keeping any private data around from Page Editor sessions
       void clearExtensionTraces(modComponentFormState.uuid);
 
-      syncElementNodeUIStates(state, modComponentFormState);
+      syncNodeUIStates(state, modComponentFormState);
     },
     showHomePane(state) {
       state.activeModComponentId = null;
@@ -439,7 +439,7 @@ export const editorSlice = createSlice({
         modComponentFormState as Draft<ModComponentFormState>;
       state.dirty[modComponentFormState.uuid] = true;
 
-      syncElementNodeUIStates(state, modComponentFormState);
+      syncNodeUIStates(state, modComponentFormState);
     },
     /**
      * Applies the update to the element
@@ -740,7 +740,7 @@ export const editorSlice = createSlice({
       }
 
       pipeline.splice(pipelineIndex, 0, block);
-      syncElementNodeUIStates(state, modComponentFormState);
+      syncNodeUIStates(state, modComponentFormState);
       assertNotNullish(block.instanceId, "Block instanceId not found");
       setActiveNodeId(state, block.instanceId);
       state.dirty[modComponentFormState.uuid] = true;
@@ -789,7 +789,7 @@ export const editorSlice = createSlice({
       }
 
       // Make sure the pipeline map is updated
-      syncElementNodeUIStates(state, activeModComponentFormState);
+      syncNodeUIStates(state, activeModComponentFormState);
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
@@ -833,7 +833,7 @@ export const editorSlice = createSlice({
 
       removeUnusedDependencies(activeModComponentFormState);
 
-      syncElementNodeUIStates(state, activeModComponentFormState);
+      syncNodeUIStates(state, activeModComponentFormState);
 
       activeModComponentUiState.activeNodeId =
         nextActiveNode?.instanceId ?? FOUNDATION_NODE_ID;

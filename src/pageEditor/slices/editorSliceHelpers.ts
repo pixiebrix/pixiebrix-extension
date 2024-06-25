@@ -64,7 +64,7 @@ export function ensureNodeUIState(
   state.nodeUIStates[nodeId] ??= makeInitialNodeUIState(nodeId);
 }
 
-export function syncElementNodeUIStates(
+export function syncNodeUIStates(
   state: Draft<EditorState>,
   modComponentFormState: ModComponentFormState,
 ) {
@@ -82,7 +82,7 @@ export function syncElementNodeUIStates(
 
   brickPipelineUIState.pipelineMap = pipelineMap;
 
-  // Pipeline block instance IDs may have changed
+  // Pipeline brick instance IDs may have changed
   if (pipelineMap[brickPipelineUIState.activeNodeId] == null) {
     brickPipelineUIState.activeNodeId = FOUNDATION_NODE_ID;
   }
