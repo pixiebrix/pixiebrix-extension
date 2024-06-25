@@ -47,7 +47,7 @@ import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/domConstants";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
@@ -161,7 +161,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   readonly capabilities: PlatformCapability[] = CONTENT_SCRIPT_CAPABILITIES;
 
   async getBricks(
-    modComponent: ResolvedModComponent<PanelConfig>,
+    modComponent: HydratedModComponent<PanelConfig>,
   ): Promise<Brick[]> {
     return collectAllBricks(modComponent.config.body);
   }
@@ -272,7 +272,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
   private async runModComponent(
     readerOutput: JsonObject,
-    modComponent: ResolvedModComponent<PanelConfig>,
+    modComponent: HydratedModComponent<PanelConfig>,
   ) {
     if (this.uninstalled) {
       throw new Error("panelStarterBrick has already been destroyed");

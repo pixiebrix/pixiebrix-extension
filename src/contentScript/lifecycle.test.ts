@@ -28,7 +28,7 @@ import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
-import { resolveExtensionInnerDefinitions } from "@/registry/internal";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type getModComponentState } from "@/store/extensionsStorage";
@@ -77,7 +77,7 @@ const activatedModComponentFactory = define<
   config: define<TriggerConfig>({
     action: () => [] as BrickPipeline,
   }),
-  _unresolvedModComponentBrand: null,
+  _serializedModComponentBrand: null,
   createTimestamp: new Date().toISOString(),
   updateTimestamp: new Date().toISOString(),
   active: true,
@@ -162,7 +162,7 @@ describe("lifecycle", () => {
     });
 
     starterBrick.registerModComponent(
-      await resolveExtensionInnerDefinitions(modComponent),
+      await hydrateModComponentInnerDefinitions(modComponent),
     );
 
     await lifecycleModule.runEditorExtension(modComponent.id, starterBrick);
@@ -199,7 +199,7 @@ describe("lifecycle", () => {
     expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
 
     starterBrick.registerModComponent(
-      await resolveExtensionInnerDefinitions(modComponent),
+      await hydrateModComponentInnerDefinitions(modComponent),
     );
 
     await lifecycleModule.runEditorExtension(modComponent.id, starterBrick);

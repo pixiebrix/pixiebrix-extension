@@ -76,14 +76,14 @@ export type ModComponentDefinition = {
 };
 
 /**
- * An ModComponentDefinition with all inner definition references resolved.
- * @see resolveDefinitions
+ * An ModComponentDefinition with all inner definition references hydrated.
+ * @see hydrateModInnerDefinitions
  */
-export type ResolvedModComponentDefinition = ModComponentDefinition & {
+export type HydratedModComponentDefinition = ModComponentDefinition & {
   // Known to be a registry id instead of an InnerDefinitionRef
   id: RegistryId;
 
-  _resolvedModComponentDefinitionBrand: never;
+  _hydratedModComponentDefinitionBrand: never;
 };
 
 /**

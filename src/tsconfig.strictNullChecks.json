@@ -1267,7 +1267,7 @@
     "./platform/platformTypes/toastProtocol.ts",
     "./platform/state/stateController.test.ts",
     "./platform/state/stateController.ts",
-    "./registry/internal.ts",
+    "./registry/hydrateInnerDefinitions.ts",
     "./registry/memoryRegistry.ts",
     "./registry/packageRegistry.ts",
     "./runtime/apiVersionOptions.ts",

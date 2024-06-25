@@ -16,13 +16,13 @@
  */
 
 import { ContextError } from "@/errors/genericErrors";
-import { resolveExtensionInnerDefinitions } from "@/registry/internal";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { type ContextMenuConfig } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { selectEventData } from "@/telemetry/deployments";
 import {
   type ModComponentBase,
-  type ResolvedModComponent,
+  type HydratedModComponent,
 } from "@/types/modComponentTypes";
 import { expectContext } from "@/utils/expectContext";
 import { allSettled } from "@/utils/promiseUtils";
@@ -38,14 +38,14 @@ export async function preloadContextMenus(
 ): Promise<void> {
   expectContext("background");
   const promises = extensions.map(async (definition) => {
-    const resolved = await resolveExtensionInnerDefinitions(definition);
+    const resolved = await hydrateModComponentInnerDefinitions(definition);
 
     const extensionPoint = await extensionPointRegistry.lookup(
       resolved.extensionPointId,
     );
     if (extensionPoint instanceof ContextMenuStarterBrickABC) {
       await extensionPoint.registerMenuItem(
-        definition as unknown as ResolvedModComponent<ContextMenuConfig>,
+        definition as unknown as HydratedModComponent<ContextMenuConfig>,
         () => {
           throw new ContextError(
             "Context menu was preloaded, but no handler was registered",

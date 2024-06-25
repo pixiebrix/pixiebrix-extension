@@ -96,7 +96,7 @@ export const activatedModComponentFactory = extend<
   createTimestamp: timestampFactory,
   updateTimestamp: timestampFactory,
   active: true,
-  _unresolvedModComponentBrand: undefined as never,
+  _serializedModComponentBrand: undefined as never,
 });
 
 // StandaloneModDefinition is a type in contract.ts. But it's really defined based on the ModComponentBase type not the backend API.

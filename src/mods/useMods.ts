@@ -19,7 +19,7 @@ import { type UUID } from "@/types/stringTypes";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
-import { resolveExtensionInnerDefinitions } from "@/registry/internal";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { useGetAllStandaloneModDefinitionsQuery } from "@/data/service/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
@@ -106,7 +106,7 @@ function useMods(): ModsState {
     async () =>
       Promise.all(
         allExtensions.map(async (extension) =>
-          resolveExtensionInnerDefinitions(extension),
+          hydrateModComponentInnerDefinitions(extension),
         ),
       ),
     [allExtensions],

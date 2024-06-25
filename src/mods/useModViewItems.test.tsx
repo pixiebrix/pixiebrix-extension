@@ -18,7 +18,7 @@
 import useModViewItems from "@/mods/useModViewItems";
 import {
   type ActivatedModComponent,
-  type ResolvedModComponent,
+  type HydratedModComponent,
 } from "@/types/modComponentTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import MockAdapter from "axios-mock-adapter";
@@ -42,7 +42,7 @@ describe("useModViewItems", () => {
   });
 
   it("creates entry for ModComponentBase", async () => {
-    const modComponent = modComponentFactory() as ResolvedModComponent;
+    const modComponent = modComponentFactory() as HydratedModComponent;
 
     const { waitForEffect, result } = renderHook(
       () => useModViewItems([modComponent]),

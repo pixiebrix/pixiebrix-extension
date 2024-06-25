@@ -23,7 +23,7 @@ import { type BrickPipeline } from "@/bricks/types";
 import { RootReader } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import { fromJS } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { RunReason } from "@/types/runtimeTypes";
 import {
@@ -62,9 +62,9 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const modComponentFactory = define<ResolvedModComponent<ContextMenuConfig>>({
+const modComponentFactory = define<HydratedModComponent<ContextMenuConfig>>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined as never,
+  _hydratedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
