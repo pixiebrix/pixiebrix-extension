@@ -25,7 +25,7 @@ import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
-import { type ModComponentUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { type BrickPipelineUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { type ModComponentFormState } from "./starterBricks/formStateTypes";
 import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
@@ -133,7 +133,7 @@ export type EditorStateV1 = {
   /**
    * The current UI state of each element, indexed by the element id
    */
-  elementUIStates: Record<UUID, ModComponentUIState>;
+  elementUIStates: Record<UUID, BrickPipelineUIState>;
 
   /**
    * A clipboard-style-copy of a block ready to paste into an extension
@@ -281,7 +281,7 @@ export type EditorStateV3 = Except<
   /**
    * The current UI state of each brick pipeline, indexed by mod component id
    */
-  brickPipelineUIStateById: Record<UUID, ModComponentUIState>;
+  brickPipelineUIStateById: Record<UUID, BrickPipelineUIState>;
 
   /**
    * A clipboard-style-copy of a brick ready to paste into a brick pipeline

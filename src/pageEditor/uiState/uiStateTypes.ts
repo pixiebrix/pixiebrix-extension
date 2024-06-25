@@ -102,7 +102,7 @@ export type NodeUIState = {
   collapsed: boolean;
 };
 
-export type ModComponentUIState = {
+export type BrickPipelineUIState = {
   /**
    * Flat map of all pipeline bricks including sub pipelines.
    * Key is the brick instanceId.

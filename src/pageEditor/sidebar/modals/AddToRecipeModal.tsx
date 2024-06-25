@@ -103,8 +103,8 @@ const AddToRecipeModal: React.FC = () => {
       assertNotNullish(modComponentId, "modComponentId must be defined");
       dispatch(
         editorActions.addModComponentFormStateToMod({
-          elementId: modComponentId,
-          recipeMetadata: modMetadata,
+          modComponentId: modComponentId,
+          modMetadata: modMetadata,
           keepLocalCopy,
         }),
       );

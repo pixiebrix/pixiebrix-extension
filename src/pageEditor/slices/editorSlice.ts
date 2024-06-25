@@ -52,7 +52,7 @@ import {
   setActiveModComponentId,
   editRecipeMetadata,
   editRecipeOptionsDefinitions,
-  ensureElementUIState,
+  ensureBrickPipelineUIState,
   removeModComponentFormState,
   removeModData,
   setActiveModId,
@@ -568,16 +568,16 @@ export const editorSlice = createSlice({
     addModComponentFormStateToMod(
       state,
       action: PayloadAction<{
-        elementId: UUID;
-        recipeMetadata: ModComponentBase["_recipe"];
+        modComponentId: UUID;
+        modMetadata: ModComponentBase["_recipe"];
         keepLocalCopy: boolean;
       }>,
     ) {
       const {
-        payload: { elementId, recipeMetadata, keepLocalCopy },
+        payload: { modComponentId, modMetadata, keepLocalCopy },
       } = action;
       const modComponentFormStateIndex = state.modComponentFormStates.findIndex(
-        (x) => x.uuid === elementId,
+        (x) => x.uuid === modComponentId,
       );
       if (modComponentFormStateIndex < 0) {
         throw new Error(
@@ -593,15 +593,15 @@ export const editorSlice = createSlice({
       state.modComponentFormStates.push({
         ...modComponentFormState,
         uuid: newId,
-        recipe: recipeMetadata,
+        recipe: modMetadata,
         installed: false, // Can't "reset" this, only remove or save
       });
       state.dirty[newId] = true;
 
-      state.expandedModId = recipeMetadata?.id ?? null;
+      state.expandedModId = modMetadata?.id ?? null;
 
       if (!keepLocalCopy) {
-        ensureElementUIState(state, newId);
+        ensureBrickPipelineUIState(state, newId);
         state.activeModComponentId = newId;
         state.modComponentFormStates.splice(modComponentFormStateIndex, 1);
         if (modComponentFormState?.uuid) {
@@ -656,7 +656,7 @@ export const editorSlice = createSlice({
           recipe: undefined,
         });
         state.dirty[newId] = true;
-        ensureElementUIState(state, newId);
+        ensureBrickPipelineUIState(state, newId);
         state.activeModComponentId = newId;
       }
     },
@@ -683,7 +683,7 @@ export const editorSlice = createSlice({
           (element) => element.uuid,
         )) {
           state.dirty[formStateId] = false;
-          ensureElementUIState(state, formStateId);
+          ensureBrickPipelineUIState(state, formStateId);
         }
 
         delete state.deletedModComponentFormStatesByModId[modId];
