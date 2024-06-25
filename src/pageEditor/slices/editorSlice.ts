@@ -443,14 +443,11 @@ export const editorSlice = createSlice({
 
       syncNodeUIStates(state, modComponentFormState);
     },
-    /**
-     * Applies the update to the element
-     */
-    updateElement(
+    partialUpdateModComponentFormState(
       state,
       action: PayloadAction<{ uuid: UUID } & Partial<ModComponentFormState>>,
     ) {
-      const { uuid, ...elementUpdate } = action.payload;
+      const { uuid, ...propertiesToUpdate } = action.payload;
       const index = state.modComponentFormStates.findIndex(
         (x) => x.uuid === uuid,
       );
@@ -461,7 +458,7 @@ export const editorSlice = createSlice({
       // @ts-expect-error -- Concrete variants of FromState are not mutually assignable.
       state.modComponentFormStates[index] = {
         ...state.modComponentFormStates.at(index),
-        ...elementUpdate,
+        ...propertiesToUpdate,
       };
 
       // Force reload of Formik state
