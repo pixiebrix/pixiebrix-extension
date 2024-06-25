@@ -32,7 +32,7 @@ describe("TriggerConfiguration", () => {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
-        dispatch(editorActions.selectElement(formState.uuid));
+        dispatch(editorActions.makeModComponentFormStateActive(formState.uuid));
         dispatch(editorActions.setElementActiveNodeId(null));
       },
     });

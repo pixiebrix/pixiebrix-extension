@@ -222,8 +222,8 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   },
   {
     matcher: isAnyOf(
-      // Must run whenever the active element changes in order to see changes from other mod components.
-      editorActions.selectElement,
+      // Must run whenever the active mod component form state changes in order to see changes from other mod components.
+      editorActions.makeModComponentFormStateActive,
       editorActions.editElement,
       ...nodeListMutationActions,
     ),
@@ -247,7 +247,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     matcher: isAnyOf(
       editorActions.showVariablePopover,
       // Include selectElement so that variable analysis is ready when user first types
-      editorActions.selectElement,
+      editorActions.makeModComponentFormStateActive,
       editorActions.editElement,
       runtimeActions.setExtensionTrace,
       ...nodeListMutationActions,

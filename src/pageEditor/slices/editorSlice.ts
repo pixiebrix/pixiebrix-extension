@@ -390,7 +390,7 @@ export const editorSlice = createSlice({
       state.beta = false;
       state.selectionSeq++;
     },
-    selectElement(state, action: PayloadAction<UUID>) {
+    makeModComponentFormStateActive(state, action: PayloadAction<UUID>) {
       const modComponentFormStateId = action.payload;
       const modComponentFormState = state.modComponentFormStates.find(
         (x) => x.uuid === modComponentFormStateId,

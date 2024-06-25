@@ -166,7 +166,9 @@ const DraftModComponentListItem: React.FunctionComponent<
           extensionId: modComponentFormState.uuid,
         });
 
-        dispatch(actions.selectElement(modComponentFormState.uuid));
+        dispatch(
+          actions.makeModComponentFormStateActive(modComponentFormState.uuid),
+        );
 
         if (modComponentFormState.type === "actionPanel") {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
