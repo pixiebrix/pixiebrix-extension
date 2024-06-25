@@ -27,7 +27,7 @@ import BrickPreview, {
 } from "@/pageEditor/tabs/effect/BrickPreview";
 import useReduxState from "@/hooks/useReduxState";
 import { useSelector } from "react-redux";
-import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraces } from "@/pageEditor/slices/runtimeSelectors";
 import { type JsonObject } from "type-fest";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
@@ -98,7 +98,7 @@ const DataPanel: React.FC = () => {
   const brick = allBricks.get(brickId);
   const brickType = brick?.type;
 
-  const traces = useSelector(selectActiveElementTraces);
+  const traces = useSelector(selectActiveModComponentTraces);
   const record = traces.find((trace) => trace.blockInstanceId === activeNodeId);
 
   const isInputStale = useMemo(() => {
