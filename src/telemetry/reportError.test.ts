@@ -55,7 +55,7 @@ describe("reportError", () => {
 
   it("should not report error if it should be ignored", () => {
     // "ResizeObserver loop limit exceeded" is an ignored error
-    const error = new Error("ResizeObserver loop limit exceeded");
+    const shouldBeIgnoredError = new Error("ResizeObserver loop limit exceeded");
     reportError(error);
     expect(_recordMock).not.toHaveBeenCalled();
   });
