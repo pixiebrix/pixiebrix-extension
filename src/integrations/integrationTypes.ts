@@ -240,7 +240,7 @@ export type OAuth2AuthenticationDefinition = {
   oauth2: {
     client_id: string;
     authorizeUrl: string;
-    tokenUrl: string;
+    tokenUrl?: string;
   };
   headers: Record<string, string>;
 };
