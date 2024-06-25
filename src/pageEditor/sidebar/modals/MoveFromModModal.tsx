@@ -72,7 +72,7 @@ const MoveFromModModal: React.FC = () => {
         assertNotNullish(elementId, "elementId not found for active element");
         dispatch(
           actions.removeModComponentFormStateFromMod({
-            elementId,
+            modComponentId: elementId,
             keepLocalCopy,
           }),
         );

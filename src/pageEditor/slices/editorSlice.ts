@@ -616,13 +616,13 @@ export const editorSlice = createSlice({
     removeModComponentFormStateFromMod(
       state,
       action: PayloadAction<{
-        elementId: UUID;
+        modComponentId: UUID;
         keepLocalCopy: boolean;
       }>,
     ) {
-      const { elementId, keepLocalCopy } = action.payload;
+      const { modComponentId, keepLocalCopy } = action.payload;
       const modComponentFormStateIndex = state.modComponentFormStates.findIndex(
-        (x) => x.uuid === elementId,
+        (x) => x.uuid === modComponentId,
       );
       if (modComponentFormStateIndex < 0) {
         throw new Error(
@@ -644,8 +644,8 @@ export const editorSlice = createSlice({
         modComponentFormState,
       );
       state.modComponentFormStates.splice(modComponentFormStateIndex, 1);
-      delete state.dirty[elementId];
-      delete state.brickPipelineUIStateById[elementId];
+      delete state.dirty[modComponentId];
+      delete state.brickPipelineUIStateById[modComponentId];
       state.activeModComponentId = null;
 
       if (keepLocalCopy) {
