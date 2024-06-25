@@ -28,7 +28,7 @@ import {
   ensureNodeUIState,
   removeModComponentFormState,
   removeModData,
-  makeModActive,
+  setActiveModId,
   setActiveNodeId,
   syncNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
@@ -449,7 +449,7 @@ describe("selectRecipeId", () => {
   test("select unselected recipe", () => {
     const recipe = modMetadataFactory();
     const newState = produce(initialState, (draft) => {
-      makeModActive(draft, recipe.id);
+      setActiveModId(draft, recipe.id);
     });
     expect(selectActiveModId({ editor: newState })).toEqual(recipe.id);
     expect(selectExpandedModId({ editor: newState })).toEqual(recipe.id);
@@ -463,7 +463,7 @@ describe("selectRecipeId", () => {
       expandedModId: recipe.id,
     };
     const newState = produce(state, (draft) => {
-      makeModActive(draft, recipe.id);
+      setActiveModId(draft, recipe.id);
     });
     expect(selectActiveModId({ editor: newState })).toEqual(recipe.id);
     expect(selectExpandedModId({ editor: newState })).toBeNull();

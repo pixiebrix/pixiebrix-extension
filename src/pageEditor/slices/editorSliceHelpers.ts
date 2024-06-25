@@ -172,7 +172,7 @@ export function removeModData(state: Draft<EditorState>, modId: RegistryId) {
   delete state.deletedModComponentFormStatesByModId[modId];
 }
 
-export function makeModActive(state: Draft<EditorState>, modId: RegistryId) {
+export function setActiveModId(state: Draft<EditorState>, modId: RegistryId) {
   state.error = null;
   state.beta = false;
   state.activeModComponentId = null;

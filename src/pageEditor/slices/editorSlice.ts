@@ -55,7 +55,7 @@ import {
   ensureElementUIState,
   removeModComponentFormState,
   removeModData,
-  makeModActive,
+  setActiveModId,
   setActiveNodeId,
   syncNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
@@ -468,9 +468,9 @@ export const editorSlice = createSlice({
       const modComponentId = action.payload;
       removeModComponentFormState(state, modComponentId);
     },
-    makeModActive(state, action: PayloadAction<RegistryId>) {
+    setActiveModId(state, action: PayloadAction<RegistryId>) {
       const modId = action.payload;
-      makeModActive(state, modId);
+      setActiveModId(state, modId);
     },
     setBetaUIEnabled(state, action: PayloadAction<boolean>) {
       state.isBetaUI = action.payload;
