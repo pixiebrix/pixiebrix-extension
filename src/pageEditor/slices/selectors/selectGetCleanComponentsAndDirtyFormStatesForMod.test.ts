@@ -221,7 +221,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       const state: EditorRootState & ModComponentsRootState = {
         editor: {
           ...editorInitialState,
-          elements: [
+          modComponentFormStates: [
             ...cleanFormStates,
             ...dirtyFormStates,
             ...newFormStates,
@@ -238,7 +238,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
               ...extraNewFormStates,
             ].map((formState) => [formState.uuid, true]),
           ),
-          deletedElementsByRecipeId: {
+          deletedModComponentFormStatesByModId: {
             [primaryModMetadata.id]: deletedDirtyFormStates,
           },
         },

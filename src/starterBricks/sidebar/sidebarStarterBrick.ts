@@ -41,7 +41,7 @@ import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
@@ -84,7 +84,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   private readonly debouncedRefreshPanel = new Map<
     UUID,
     (
-      modComponent: ResolvedModComponent<SidebarConfig>,
+      modComponent: HydratedModComponent<SidebarConfig>,
     ) => Promise<void> | undefined
   >();
 
@@ -124,7 +124,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   readonly capabilities: PlatformCapability[] = ["panel"];
 
   async getBricks(
-    modComponent: ResolvedModComponent<SidebarConfig>,
+    modComponent: HydratedModComponent<SidebarConfig>,
   ): Promise<Brick[]> {
     return collectAllBricks(modComponent.config.body);
   }
@@ -161,7 +161,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
   private async runModComponent(
     readerContext: JsonObject,
-    modComponent: ResolvedModComponent<SidebarConfig>,
+    modComponent: HydratedModComponent<SidebarConfig>,
   ): Promise<void> {
     // Generate our own run id so that we know it (to pass to upsertPanel)
     const runId = uuidv4();
@@ -247,7 +247,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    * @see debouncedRefreshPanels
    */
   private async refreshComponentPanel(
-    modComponent: ResolvedModComponent<SidebarConfig>,
+    modComponent: HydratedModComponent<SidebarConfig>,
   ): Promise<void> {
     // Read per-panel, because panels might be debounced on different schedules.
     const reader = await this.defaultReader();
@@ -271,7 +271,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    * @param componentsToRun the mod components to run
    */
   private async debouncedRefreshPanels(
-    componentsToRun: Array<ResolvedModComponent<SidebarConfig>>,
+    componentsToRun: Array<HydratedModComponent<SidebarConfig>>,
   ): Promise<void> {
     // Order doesn't matter because panel positions are already reserved
     await Promise.all(
@@ -287,7 +287,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
             // ModComponents are debounced on separate schedules because some ModComponents may ignore certain events
             // for performance (e.g., ModComponents ignore state change events from other mods.)
             debounced = debounce(
-              async (x: ResolvedModComponent<SidebarConfig>) =>
+              async (x: HydratedModComponent<SidebarConfig>) =>
                 this.refreshComponentPanel(x),
               waitMillis,
               options,

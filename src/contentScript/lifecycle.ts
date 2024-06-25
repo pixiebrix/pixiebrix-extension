@@ -24,7 +24,7 @@ import { testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
 import { compact, debounce, groupBy, intersection, uniq } from "lodash";
 import oneEvent from "one-event";
-import { resolveExtensionInnerDefinitions } from "@/registry/internal";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
@@ -33,7 +33,7 @@ import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import {
   getReloadOnNextNavigate,
@@ -375,7 +375,7 @@ export async function runEditorExtension(
  * used to do that clean up at a more appropriate time, e.g. upon navigation.
  */
 function cleanUpDeactivatedExtensionPoints(
-  activeExtensionMap: Record<RegistryId, ResolvedModComponent[]>,
+  activeExtensionMap: Record<RegistryId, HydratedModComponent[]>,
 ): void {
   for (const extensionPoint of _activeExtensionPoints) {
     const hasActiveExtensions = Object.hasOwn(
@@ -428,7 +428,7 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
   const resolvedActiveExtensions = await logPromiseDuration(
     "loadPersistedExtensions:resolveDefinitions",
     Promise.all(
-      activeExtensions.map(async (x) => resolveExtensionInnerDefinitions(x)),
+      activeExtensions.map(async (x) => hydrateModComponentInnerDefinitions(x)),
     ),
   );
 
@@ -446,7 +446,7 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
       Object.entries(activeExtensionMap).map(
         async ([extensionPointId, extensions]: [
           RegistryId,
-          ResolvedModComponent[],
+          HydratedModComponent[],
         ]) => {
           try {
             const extensionPoint =

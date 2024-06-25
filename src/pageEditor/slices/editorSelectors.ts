@@ -52,12 +52,13 @@ export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
     return null;
   }
 
-  return editor.activeElementId;
+  return editor.activeModComponentId;
 };
 
 export const selectModComponentFormStates = ({
   editor,
-}: EditorRootState): EditorState["elements"] => editor.elements;
+}: EditorRootState): EditorState["modComponentFormStates"] =>
+  editor.modComponentFormStates;
 
 export const selectActiveModComponentFormState = createSelector(
   selectActiveModComponentId,
@@ -65,12 +66,12 @@ export const selectActiveModComponentFormState = createSelector(
   (
     activeModComponentId,
     formStates,
-  ): Nullishable<EditorState["elements"][number]> =>
+  ): Nullishable<EditorState["modComponentFormStates"][number]> =>
     formStates.find((x) => x.uuid === activeModComponentId),
 );
 
 export const selectActiveModId = ({ editor }: EditorRootState) =>
-  editor.activeRecipeId;
+  editor.activeModId;
 
 export const selectIsInsertingNewStarterBrick = ({ editor }: EditorRootState) =>
   editor.inserting;
@@ -85,19 +86,19 @@ export const selectIsModComponentDirtyById = ({ editor }: EditorRootState) =>
 
 export const selectDeletedComponentFormStatesByModId = ({
   editor,
-}: EditorRootState) => editor.deletedElementsByRecipeId;
+}: EditorRootState) => editor.deletedModComponentFormStatesByModId;
 
 export const selectGetDeletedComponentIdsForMod =
   ({ editor }: EditorRootState) =>
   (modId: RegistryId) =>
     // eslint-disable-next-line security/detect-object-injection -- RegistryId
-    (editor.deletedElementsByRecipeId[modId] ?? []).map(
+    (editor.deletedModComponentFormStatesByModId[modId] ?? []).map(
       (formState) => formState.uuid,
     );
 
 const selectAllDeletedModComponentIds = ({ editor }: EditorRootState) =>
   new Set(
-    flatMap(editor.deletedElementsByRecipeId).map(
+    flatMap(editor.deletedModComponentFormStatesByModId).map(
       (formState) => formState.uuid,
     ),
   );
@@ -121,7 +122,7 @@ export const selectNotDeletedActivatedModComponents: ({
 );
 
 export const selectDirtyModOptionsDefinitions = ({ editor }: EditorRootState) =>
-  editor.dirtyRecipeOptionsById;
+  editor.dirtyModOptionsById;
 
 const dirtyOptionsDefinitionsForModIdSelector = createSelector(
   selectDirtyModOptionsDefinitions,
@@ -157,7 +158,7 @@ export const selectDirtyOptionValuesForModId =
     dirtyOptionValuesForModIdSelector(state, modId);
 
 export const selectDirtyModMetadata = ({ editor }: EditorRootState) =>
-  editor.dirtyRecipeMetadataById;
+  editor.dirtyModMetadataById;
 
 const dirtyMetadataForModIdSelector = createSelector(
   selectDirtyModMetadata,
@@ -191,7 +192,7 @@ const modIsDirtySelector = createSelector(
     // eslint-disable-next-line security/detect-object-injection -- RegistryId is a controlled string
     selectDeletedComponentFormStatesByModId(state)[modId],
   ({ editor }: EditorRootState, modId: RegistryId) =>
-    editor.elements
+    editor.modComponentFormStates
       .filter((formState) => formState.recipe?.id === modId)
       .map((formState) => formState.uuid),
   (
@@ -263,23 +264,23 @@ export const selectIsDataPanelExpanded = ({ editor }: EditorRootState) =>
   editor.isDataPanelExpanded;
 
 export const selectKeepLocalCopyOnCreateMod = ({ editor }: EditorRootState) =>
-  editor.keepLocalCopyOnCreateRecipe;
+  editor.keepLocalCopyOnCreateMod;
 
 export const selectExpandedModId = ({ editor }: EditorRootState) =>
-  editor.expandedRecipeId;
+  editor.expandedModId;
 
 // UI state
 export function selectActiveModComponentUIState({
   editor,
 }: EditorRootState): Nullishable<ModComponentUIState> {
-  if (editor.activeElementId == null) {
+  if (editor.activeModComponentId == null) {
     console.warn(
-      "selectActiveModComponentUIState called without activeElementId",
+      "selectActiveModComponentUIState called without activeModComponentId",
     );
     return null;
   }
 
-  return editor.elementUIStates[editor.activeElementId];
+  return editor.brickPipelineUIStateById[editor.activeModComponentId];
 }
 
 export const selectActiveNodeUIState = createSelector(
@@ -379,7 +380,7 @@ export function selectNodePreviewActiveElement(
 }
 
 export const selectAddBlockLocation = ({ editor }: EditorRootState) =>
-  editor.addBlockLocation;
+  editor.addBrickLocation;
 
 const activeModComponentAnalysisAnnotationsForPath = createSelector(
   selectActiveModComponentId,
@@ -431,18 +432,18 @@ export const selectActiveModComponentAnalysisAnnotationsForPath =
     activeModComponentAnalysisAnnotationsForPath(state, path);
 
 export const selectCopiedBrick = ({ editor }: EditorRootState) =>
-  editor.copiedBlock;
+  editor.copiedBrick;
 
 export const selectModComponentAvailability = ({
   editor: {
-    availableInstalledIds,
-    isPendingInstalledExtensions: isPendingInstalledModComponents,
-    availableDynamicIds: availableDraftModComponentIds,
-    isPendingDynamicExtensions: isPendingDraftModComponents,
+    availableActivatedModComponentIds,
+    isPendingAvailableActivatedModComponents,
+    availableDraftModComponentIds,
+    isPendingDraftModComponents,
   },
 }: EditorRootState) => ({
-  availableInstalledIds,
-  isPendingInstalledModComponents,
+  availableActivatedModComponentIds,
+  isPendingAvailableActivatedModComponents,
   availableDraftModComponentIds,
   isPendingDraftModComponents,
 });

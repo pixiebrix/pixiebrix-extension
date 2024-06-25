@@ -24,7 +24,7 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
 import { type Mod, type UnavailableMod } from "@/types/modTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
@@ -158,7 +158,7 @@ describe("getSharingType", () => {
 
 describe("isExtension", () => {
   it("returns true for an extension", () => {
-    const mod = modComponentFactory() as ResolvedModComponent;
+    const mod = modComponentFactory() as HydratedModComponent;
     expect(isStandaloneModComponent(mod)).toBe(true);
   });
 
@@ -182,7 +182,7 @@ describe("isUnavailableMod", () => {
   });
 
   it("returns false for an extension", () => {
-    const mod = modComponentFactory() as ResolvedModComponent;
+    const mod = modComponentFactory() as HydratedModComponent;
     expect(isUnavailableMod(mod)).toBe(false);
   });
 });

@@ -28,7 +28,7 @@ import {
   type StarterBrickType,
   type StarterBrick,
 } from "@/types/starterBrickTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
@@ -185,7 +185,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   /**
    * The current registered mod components.
    */
-  protected readonly modComponents: Array<ResolvedModComponent<TConfig>> = [];
+  protected readonly modComponents: Array<HydratedModComponent<TConfig>> = [];
 
   public abstract readonly inputSchema: Schema;
 
@@ -199,7 +199,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     return false;
   }
 
-  public get registeredModComponents(): Array<ResolvedModComponent<TConfig>> {
+  public get registeredModComponents(): Array<HydratedModComponent<TConfig>> {
     return [...this.modComponents];
   }
 
@@ -243,7 +243,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   ): void;
 
   synchronizeModComponents(
-    components: Array<ResolvedModComponent<TConfig>>,
+    components: Array<HydratedModComponent<TConfig>>,
   ): void {
     const before = this.modComponents.map((x) => x.id);
 
@@ -270,7 +270,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     );
   }
 
-  registerModComponent(component: ResolvedModComponent<TConfig>): void {
+  registerModComponent(component: HydratedModComponent<TConfig>): void {
     const index = this.modComponents.findIndex((x) => x.id === component.id);
     if (index >= 0) {
       console.warn(
@@ -291,7 +291,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   }
 
   abstract getBricks(
-    extension: ResolvedModComponent<TConfig>,
+    modComponent: HydratedModComponent<TConfig>,
   ): Promise<Brick[]>;
 
   abstract isAvailable(): Promise<boolean>;

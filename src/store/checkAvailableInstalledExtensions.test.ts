@@ -141,9 +141,10 @@ describe("checkAvailableInstalledExtensions", () => {
 
     const state = store.getState();
 
-    const { availableInstalledIds } = selectModComponentAvailability(state);
+    const { availableActivatedModComponentIds } =
+      selectModComponentAvailability(state);
 
-    expect(availableInstalledIds).toStrictEqual([
+    expect(availableActivatedModComponentIds).toStrictEqual([
       availableButton.id,
       availableQb.id,
     ]);

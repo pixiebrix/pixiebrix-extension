@@ -18,8 +18,8 @@
 import { type StandaloneModDefinition } from "@/types/contract";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
-import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { type ResolvedModComponentDefinition } from "@/types/modDefinitionTypes";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
+import { type HydratedModComponentDefinition } from "@/types/modDefinitionTypes";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 
 // Separate from extensionPermissionsHelpers.ts to avoid a circular dependency with modDefinitionPermissionsHelpers.ts
@@ -33,7 +33,7 @@ export async function checkCloudExtensionPermissions(
   extension: StandaloneModDefinition,
   integrationDependencies: IntegrationDependency[],
 ): Promise<PermissionsStatus> {
-  const resolved = await resolveExtensionInnerDefinitions({
+  const resolved = await hydrateModComponentInnerDefinitions({
     ...extension,
     integrationDependencies,
   });
@@ -52,7 +52,7 @@ export async function checkCloudExtensionPermissions(
             integrationId,
           ]),
         ),
-      } as ResolvedModComponentDefinition,
+      } as HydratedModComponentDefinition,
     ],
   };
 

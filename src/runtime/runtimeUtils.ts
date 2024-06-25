@@ -47,7 +47,7 @@ import {
 } from "@/types/runtimeTypes";
 import {
   type ModComponentBase,
-  type UnresolvedModComponent,
+  type SerializedModComponent,
 } from "@/types/modComponentTypes";
 import { excludeUndefined } from "@/utils/objectUtils";
 import { boolean } from "@/utils/typeUtils";
@@ -246,9 +246,9 @@ export function assertModComponentNotResolved<
   Config extends UnknownObject = UnknownObject,
 >(
   modComponent: ModComponentBase<Config>,
-): asserts modComponent is UnresolvedModComponent<Config> {
+): asserts modComponent is SerializedModComponent<Config> {
   if (isInnerDefinitionRegistryId(modComponent.extensionPointId)) {
-    throw new Error("Expected UnresolvedModComponent");
+    throw new Error("Expected SerializedModComponent");
   }
 }
 

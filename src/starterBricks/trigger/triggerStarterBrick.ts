@@ -64,7 +64,7 @@ import {
 import CompositeReader from "@/bricks/readers/CompositeReader";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
@@ -363,7 +363,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   );
 
   async getBricks(
-    modComponent: ResolvedModComponent<TriggerConfig>,
+    modComponent: HydratedModComponent<TriggerConfig>,
   ): Promise<Brick[]> {
     return collectAllBricks(modComponent.config.action);
   }
@@ -394,7 +394,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   private async runModComponent(
     ctxt: JsonObject,
-    modComponent: ResolvedModComponent<TriggerConfig>,
+    modComponent: HydratedModComponent<TriggerConfig>,
     root: SelectorRoot,
   ) {
     const componentLogger = this.logger.childLogger(

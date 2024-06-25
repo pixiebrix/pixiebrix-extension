@@ -41,7 +41,7 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 jest.mock("@/telemetry/reportEvent");
 
 const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
-  const activeElementId = uuidv4();
+  const activeModComponentId = uuidv4();
 
   const getTestStore = (testTraces: TraceRecord[]) =>
     // @ts-ignore-error -- ignoring "Type instantiation is excessively deep and possibly infinite" for test
@@ -55,11 +55,11 @@ const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
       preloadedState: {
         editor: {
           ...editorInitialState,
-          activeElementId,
+          activeModComponentId,
         },
         runtime: {
           extensionTraces: {
-            [activeElementId]: testTraces,
+            [activeModComponentId]: testTraces,
           },
         },
       },

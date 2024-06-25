@@ -27,7 +27,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import {
   type ModComponentBase,
-  type ResolvedModComponent,
+  type HydratedModComponent,
 } from "@/types/modComponentTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
@@ -44,7 +44,7 @@ describe("runSubTour", () => {
         id: uuidv4(),
         label: "Test Extension",
         _recipe: { id: blueprintId } as ModComponentBase["_recipe"],
-      } as ResolvedModComponent,
+      } as HydratedModComponent,
       allowUserRun: false,
       run: () => ({
         promise: deferredTour.promise,

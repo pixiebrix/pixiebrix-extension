@@ -40,17 +40,19 @@ export function ensureElementUIState(
   state: Draft<EditorState>,
   elementId: UUID,
 ) {
-  if (!state.elementUIStates[elementId]) {
-    state.elementUIStates[elementId] = makeInitialElementUIState();
-    const pipeline = state.elements.find((x) => x.uuid === elementId)?.extension
-      .blockPipeline;
+  if (!state.brickPipelineUIStateById[elementId]) {
+    state.brickPipelineUIStateById[elementId] = makeInitialElementUIState();
+    const pipeline = state.modComponentFormStates.find(
+      (x) => x.uuid === elementId,
+    )?.extension.blockPipeline;
 
     assertNotNullish(
       pipeline,
       `Pipeline not found for elementId: ${elementId}`,
     );
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
-    state.elementUIStates[elementId]!.pipelineMap = getPipelineMap(pipeline);
+
+    state.brickPipelineUIStateById[elementId].pipelineMap =
+      getPipelineMap(pipeline);
   }
 }
 
@@ -63,48 +65,54 @@ export function ensureNodeUIState(
 
 export function syncElementNodeUIStates(
   state: Draft<EditorState>,
-  element: ModComponentFormState,
+  modComponentFormState: ModComponentFormState,
 ) {
-  const elementUIState = state.elementUIStates[element.uuid];
+  const brickPipelineUIState =
+    state.brickPipelineUIStateById[modComponentFormState.uuid];
 
   assertNotNullish(
-    elementUIState,
-    `Element UI state not found for ${element.uuid}`,
+    brickPipelineUIState,
+    `Brick Pipeline UI State not found for ${modComponentFormState.uuid}`,
   );
 
-  const pipelineMap = getPipelineMap(element.extension.blockPipeline);
+  const pipelineMap = getPipelineMap(
+    modComponentFormState.extension.blockPipeline,
+  );
 
-  elementUIState.pipelineMap = pipelineMap;
+  brickPipelineUIState.pipelineMap = pipelineMap;
 
   // Pipeline block instance IDs may have changed
-  if (pipelineMap[elementUIState.activeNodeId] == null) {
-    elementUIState.activeNodeId = FOUNDATION_NODE_ID;
+  if (pipelineMap[brickPipelineUIState.activeNodeId] == null) {
+    brickPipelineUIState.activeNodeId = FOUNDATION_NODE_ID;
   }
 
   // Remove NodeUIStates for invalid IDs
-  for (const nodeId of Object.keys(elementUIState.nodeUIStates) as UUID[]) {
+  for (const nodeId of Object.keys(
+    brickPipelineUIState.nodeUIStates,
+  ) as UUID[]) {
     // Don't remove the foundation NodeUIState
     if (nodeId !== FOUNDATION_NODE_ID && pipelineMap[nodeId] == null) {
-      delete elementUIState.nodeUIStates[nodeId];
+      delete brickPipelineUIState.nodeUIStates[nodeId];
     }
   }
 
   // Add missing NodeUIStates
   for (const nodeId of Object.keys(pipelineMap) as UUID[]) {
-    ensureNodeUIState(elementUIState, nodeId);
+    ensureNodeUIState(brickPipelineUIState, nodeId);
   }
 }
 
 export function setActiveNodeId(state: Draft<EditorState>, nodeId: UUID) {
-  assertNotNullish(state.activeElementId, "No active element id set");
-  const elementUIState = state.elementUIStates[state.activeElementId];
+  assertNotNullish(state.activeModComponentId, "No active element id set");
+  const brickPipelineUIState =
+    state.brickPipelineUIStateById[state.activeModComponentId];
 
   assertNotNullish(
-    elementUIState,
-    `No element UI state found for active element: ${state.activeElementId}`,
+    brickPipelineUIState,
+    `No Brick Pipeline UI state found for active element: ${state.activeModComponentId}`,
   );
-  ensureNodeUIState(elementUIState, nodeId);
-  elementUIState.activeNodeId = nodeId;
+  ensureNodeUIState(brickPipelineUIState, nodeId);
+  brickPipelineUIState.activeNodeId = nodeId;
 }
 
 /**
@@ -117,24 +125,24 @@ export function removeModComponentFormState(
   state: Draft<EditorState>,
   uuid: UUID,
 ) {
-  if (state.activeElementId === uuid) {
-    state.activeElementId = null;
+  if (state.activeModComponentId === uuid) {
+    state.activeModComponentId = null;
   }
 
   // Some mod components in a mod may not have a corresponding mod component form state due to having never been selected
   // by the user in the UI. In this case, the mod component form state will not be in redux.
-  const index = state.elements.findIndex((x) => x.uuid === uuid);
+  const index = state.modComponentFormStates.findIndex((x) => x.uuid === uuid);
   if (index > -1) {
-    state.elements.splice(index, 1);
+    state.modComponentFormStates.splice(index, 1);
   }
 
   delete state.dirty[uuid];
-  delete state.elementUIStates[uuid];
+  delete state.brickPipelineUIStateById[uuid];
 
-  const draftIndex = state.availableDynamicIds.indexOf(uuid);
+  const draftIndex = state.availableDraftModComponentIds.indexOf(uuid);
   if (draftIndex > -1) {
     // Mod component is available, remove from list of available ids
-    state.availableDynamicIds.splice(draftIndex, 1);
+    state.availableDraftModComponentIds.splice(draftIndex, 1);
   }
 
   // Make sure we're not keeping any private data around from Page Editor sessions
@@ -144,23 +152,20 @@ export function removeModComponentFormState(
 /**
  * Remove a given recipe's extra data from a redux state object
  * @param state The editor redux state
- * @param recipeId The id of the recipe to remove
+ * @param modId The id of the recipe to remove
  */
-export function removeRecipeData(
-  state: Draft<EditorState>,
-  recipeId: RegistryId,
-) {
-  if (state.activeRecipeId === recipeId) {
-    state.activeRecipeId = null;
+export function removeModData(state: Draft<EditorState>, modId: RegistryId) {
+  if (state.activeModId === modId) {
+    state.activeModId = null;
   }
 
-  if (state.expandedRecipeId === recipeId) {
-    state.expandedRecipeId = null;
+  if (state.expandedModId === modId) {
+    state.expandedModId = null;
   }
 
-  delete state.dirtyRecipeOptionsById[recipeId];
-  delete state.dirtyRecipeMetadataById[recipeId];
-  delete state.deletedElementsByRecipeId[recipeId];
+  delete state.dirtyModOptionsById[modId];
+  delete state.dirtyModMetadataById[modId];
+  delete state.deletedModComponentFormStatesByModId[modId];
 }
 
 export function selectRecipeId(
@@ -169,19 +174,16 @@ export function selectRecipeId(
 ) {
   state.error = null;
   state.beta = false;
-  state.activeElementId = null;
+  state.activeModComponentId = null;
 
-  if (
-    state.expandedRecipeId === recipeId &&
-    state.activeRecipeId === recipeId
-  ) {
+  if (state.expandedModId === recipeId && state.activeModId === recipeId) {
     // "un-toggle" the recipe, if it's already selected
-    state.expandedRecipeId = null;
+    state.expandedModId = null;
   } else {
-    state.expandedRecipeId = recipeId;
+    state.expandedModId = recipeId;
   }
 
-  state.activeRecipeId = recipeId;
+  state.activeModId = recipeId;
   state.selectionSeq++;
 }
 
@@ -189,25 +191,24 @@ export function editRecipeMetadata(
   state: Draft<EditorState>,
   metadata: ModMetadataFormState,
 ) {
-  const recipeId = state.activeRecipeId;
+  const recipeId = state.activeModId;
   if (recipeId == null) {
     return;
   }
 
-  state.dirtyRecipeMetadataById[recipeId] = metadata;
+  state.dirtyModMetadataById[recipeId] = metadata;
 }
 
 export function editRecipeOptionsDefinitions(
   state: Draft<EditorState>,
   options: ModOptionsDefinition,
 ) {
-  const recipeId = state.activeRecipeId;
+  const recipeId = state.activeModId;
   if (recipeId == null) {
     return;
   }
 
-  state.dirtyRecipeOptionsById[recipeId] =
-    options as Draft<ModOptionsDefinition>;
+  state.dirtyModOptionsById[recipeId] = options as Draft<ModOptionsDefinition>;
 }
 
 export function makeModComponentFormStateActive(
@@ -216,9 +217,9 @@ export function makeModComponentFormStateActive(
 ) {
   state.error = null;
   state.beta = false;
-  state.activeElementId = element.uuid;
-  state.activeRecipeId = null;
-  state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
+  state.activeModComponentId = element.uuid;
+  state.activeModId = null;
+  state.expandedModId = element.recipe?.id ?? state.expandedModId;
   state.selectionSeq++;
 
   ensureElementUIState(state, element.uuid);

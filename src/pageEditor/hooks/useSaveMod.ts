@@ -183,7 +183,9 @@ function useSaveMod(): ModSaver {
 
     // Clear the dirty states
     dispatch(editorActions.resetMetadataAndOptionsForRecipe(newModMetadata.id));
-    dispatch(editorActions.clearDeletedElementsForRecipe(newModMetadata.id));
+    dispatch(
+      editorActions.clearDeletedModComponentFormStatesForMod(newModMetadata.id),
+    );
 
     reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
       modId: newMod.metadata.id,
