@@ -38,7 +38,7 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { selectActiveElementTraceForBrick } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraceForBrick } from "@/pageEditor/slices/runtimeSelectors";
 import ClickableElement from "@/components/ClickableElement";
 
 type DocumentPreviewProps = {
@@ -88,7 +88,7 @@ const DocumentPreview = ({
   } = useDocumentPreviewRunBlock(activeNodeId);
 
   const traceRecord = useSelector(
-    selectActiveElementTraceForBrick(activeNodeId),
+    selectActiveModComponentTraceForBrick(activeNodeId),
   );
   const doesNotHaveTrace = traceRecord == null;
 
