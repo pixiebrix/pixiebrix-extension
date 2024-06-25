@@ -565,7 +565,7 @@ export const editorSlice = createSlice({
     showAddToRecipeModal(state) {
       state.visibleModalKey = ModalKey.ADD_TO_MOD;
     },
-    addElementToRecipe(
+    addModComponentFormStateToMod(
       state,
       action: PayloadAction<{
         elementId: UUID;
