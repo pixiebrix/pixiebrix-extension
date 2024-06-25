@@ -475,7 +475,7 @@ export const editorSlice = createSlice({
     setBetaUIEnabled(state, action: PayloadAction<boolean>) {
       state.isBetaUI = action.payload;
     },
-    setElementActiveNodeId(state, action: PayloadAction<UUID>) {
+    setActiveNodeId(state, action: PayloadAction<UUID>) {
       setActiveNodeId(state, action.payload);
     },
     setNodeDataPanelTabSelected(state, action: PayloadAction<DataPanelTabKey>) {

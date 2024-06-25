@@ -205,7 +205,7 @@ describe("renders", () => {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
-        dispatch(editorActions.setElementActiveNodeId(instanceId));
+        dispatch(editorActions.setActiveNodeId(instanceId));
       },
     });
 
@@ -362,7 +362,7 @@ async function renderEditorPaneWithBasicFormState() {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(element));
         dispatch(editorActions.setActiveModComponentId(element.uuid));
-        dispatch(editorActions.setElementActiveNodeId(activeNodeId));
+        dispatch(editorActions.setActiveNodeId(activeNodeId));
       },
     },
   );
@@ -610,7 +610,7 @@ describe("validation", () => {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
-        dispatch(editorActions.setElementActiveNodeId(subEchoNode.instanceId));
+        dispatch(editorActions.setActiveNodeId(subEchoNode.instanceId));
       },
     });
 
@@ -653,7 +653,7 @@ describe("validation", () => {
           dispatch(editorActions.addModComponentFormState(modComponent1));
           dispatch(editorActions.addModComponentFormState(modComponent2));
           dispatch(editorActions.setActiveModComponentId(modComponent1.uuid));
-          dispatch(editorActions.setElementActiveNodeId(echoBlockInstanceId));
+          dispatch(editorActions.setActiveNodeId(echoBlockInstanceId));
         },
       },
     );
@@ -780,7 +780,7 @@ describe("validation", () => {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
-        dispatch(editorActions.setElementActiveNodeId(instanceId));
+        dispatch(editorActions.setActiveNodeId(instanceId));
       },
     });
 
@@ -832,9 +832,7 @@ describe("validation", () => {
             }),
           );
           dispatch(
-            editorActions.setElementActiveNodeId(
-              disallowedBlockConfig.instanceId,
-            ),
+            editorActions.setActiveNodeId(disallowedBlockConfig.instanceId),
           );
         },
       });

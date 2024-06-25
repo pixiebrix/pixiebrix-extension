@@ -65,7 +65,7 @@ function renderDocumentPreview(documentElement: DocumentElement) {
       dispatch(actions.addModComponentFormState(formState));
       dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
-        actions.setElementActiveNodeId(
+        actions.setActiveNodeId(
           formState.extension.blockPipeline[0].instanceId,
         ),
       );
@@ -189,7 +189,7 @@ describe("Show live preview", () => {
         dispatch(actions.addModComponentFormState(formState));
         dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
-          actions.setElementActiveNodeId(pipelineField.__value__[0].instanceId),
+          actions.setActiveNodeId(pipelineField.__value__[0].instanceId),
         );
       },
     });

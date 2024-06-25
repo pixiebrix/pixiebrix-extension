@@ -247,7 +247,7 @@ const usePipelineNodes = (): {
   // Inner function definitions start here
 
   function setActiveNodeId(nodeId: UUID) {
-    dispatch(actions.setElementActiveNodeId(nodeId));
+    dispatch(actions.setActiveNodeId(nodeId));
   }
 
   function moveBlockUp(nodeId: UUID) {

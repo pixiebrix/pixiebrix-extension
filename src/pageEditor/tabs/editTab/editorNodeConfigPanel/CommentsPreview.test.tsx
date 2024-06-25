@@ -31,7 +31,7 @@ const renderCommentsPreview = (comments: string) => {
       dispatch(actions.addModComponentFormState(formState));
       dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
-        actions.setElementActiveNodeId(
+        actions.setActiveNodeId(
           formState.extension.blockPipeline[0].instanceId,
         ),
       );

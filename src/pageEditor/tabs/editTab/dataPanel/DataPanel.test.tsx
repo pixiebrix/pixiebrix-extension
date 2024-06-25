@@ -44,7 +44,7 @@ const renderDataPanel = () => {
       dispatch(
         runtimeSlice.actions.setExtensionTrace({ extensionId, records }),
       );
-      dispatch(editorActions.setElementActiveNodeId(instanceId));
+      dispatch(editorActions.setActiveNodeId(instanceId));
       dispatch(
         editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Context),
       );
