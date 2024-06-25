@@ -112,7 +112,7 @@ function useMoveElement(documentBodyName: string) {
 
   const [, setActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
-    editorActions.setNodePreviewActiveElement,
+    editorActions.setActiveDocumentOrFormPreviewElement,
   );
 
   return useCallback(

@@ -77,7 +77,9 @@ describe("DocumentOptions", () => {
               formState.extension.blockPipeline[0].instanceId,
             ),
           );
-          dispatch(actions.setNodePreviewActiveElement(initialActiveElement));
+          dispatch(
+            actions.setActiveDocumentOrFormPreviewElement(initialActiveElement),
+          );
         },
       },
     );

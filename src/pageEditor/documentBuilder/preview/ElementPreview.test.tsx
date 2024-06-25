@@ -78,7 +78,7 @@ const renderElementPreview = (
           formState.extension.blockPipeline[0].instanceId,
         ),
       );
-      dispatch(actions.setNodePreviewActiveElement("0"));
+      dispatch(actions.setActiveDocumentOrFormPreviewElement("0"));
     },
   });
 };

@@ -511,11 +511,10 @@ export const editorSlice = createSlice({
       const nodeUIState = validateNodeUIState(state);
       nodeUIState.dataPanel[tabKey].treeExpandedState = expandedState;
     },
-
-    /**
-     * Updates the active element of a Document or Form builder on the Preview tab
-     */
-    setNodePreviewActiveElement(state, action: PayloadAction<string | null>) {
+    setActiveDocumentOrFormPreviewElement(
+      state,
+      action: PayloadAction<string | null>,
+    ) {
       const activeElement = action.payload;
       const nodeUIState = validateNodeUIState(state);
 

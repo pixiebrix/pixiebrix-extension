@@ -314,7 +314,7 @@ const usePipelineNodes = (): {
 
     const onClick = () => {
       if (activeNodePreviewElementId) {
-        dispatch(actions.setNodePreviewActiveElement(null));
+        dispatch(actions.setActiveDocumentOrFormPreviewElement(null));
 
         if (isNodeActive) {
           return;
@@ -516,7 +516,7 @@ const usePipelineNodes = (): {
                 focus() {
                   setActiveNodeId(blockConfig.instanceId);
                   dispatch(
-                    editorActions.setNodePreviewActiveElement(
+                    editorActions.setActiveDocumentOrFormPreviewElement(
                       nodePreviewElementId,
                     ),
                   );

@@ -36,7 +36,9 @@ function useSelectParentElement() {
   const dispatch = useDispatch();
   return (elementName: string) => {
     const parentElementName = getParentElementName(elementName);
-    dispatch(editorActions.setNodePreviewActiveElement(parentElementName));
+    dispatch(
+      editorActions.setActiveDocumentOrFormPreviewElement(parentElementName),
+    );
   };
 }
 
