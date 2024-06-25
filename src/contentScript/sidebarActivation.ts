@@ -116,7 +116,7 @@ export async function initSidebarActivation(): Promise<void> {
     return;
   }
 
-  const mods = await getActivatingMods();
+  const mods = (await getActivatingMods()) ?? [];
   if (mods.length === 0) {
     return;
   }
