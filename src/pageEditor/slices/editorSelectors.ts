@@ -309,7 +309,14 @@ export const selectActiveNodeInfo = createSelector(
     assertNotNullish(activeNodeId, "Active Node ID is undefined");
 
     // eslint-disable-next-line security/detect-object-injection -- UUID
-    return uiState.pipelineMap[activeNodeId];
+    const activeNodeInfo = uiState.pipelineMap[activeNodeId];
+
+    assertNotNullish(
+      activeNodeInfo,
+      `Active Node Info not found for node id: ${activeNodeId}`,
+    );
+
+    return activeNodeInfo;
   },
 );
 
