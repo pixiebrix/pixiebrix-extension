@@ -680,7 +680,7 @@ export const editorSlice = createSlice({
       if (deletedModComponentFormStates?.length) {
         state.modComponentFormStates.push(...deletedModComponentFormStates);
         for (const formStateId of deletedModComponentFormStates.map(
-          (element) => element.uuid,
+          (modComponentFormState) => modComponentFormState.uuid,
         )) {
           state.dirty[formStateId] = false;
           ensureBrickPipelineUIState(state, formStateId);
@@ -724,17 +724,23 @@ export const editorSlice = createSlice({
         pipelinePath,
       );
       if (pipeline == null) {
-        console.error("Invalid pipeline path for element: %s", pipelinePath, {
-          block,
-          invalidPath: getInvalidPath(
-            cloneDeep(modComponentFormState),
-            pipelinePath,
-          ),
-          element: cloneDeep(modComponentFormState),
+        console.error(
+          "Invalid pipeline path for mod component form state: %s",
           pipelinePath,
-          pipelineIndex,
-        });
-        throw new Error(`Invalid pipeline path for element: ${pipelinePath}`);
+          {
+            block,
+            invalidPath: getInvalidPath(
+              cloneDeep(modComponentFormState),
+              pipelinePath,
+            ),
+            element: cloneDeep(modComponentFormState),
+            pipelinePath,
+            pipelineIndex,
+          },
+        );
+        throw new Error(
+          `Invalid pipeline path for mod component form state: ${pipelinePath}`,
+        );
       }
 
       pipeline.splice(pipelineIndex, 0, block);
@@ -791,7 +797,7 @@ export const editorSlice = createSlice({
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
-      const activeModComponentId = validateactiveModComponentId(state);
+      const activeModComponentId = validateActiveModComponentId(state);
       state.dirty[activeModComponentId] = true;
     },
     removeNode(state, action: PayloadAction<UUID>) {
@@ -1010,16 +1016,16 @@ export const persistEditorConfig = {
   ],
 };
 
-function validateactiveModComponentId(state: Draft<EditorState>) {
+function validateActiveModComponentId(state: Draft<EditorState>) {
   const { activeModComponentId } = state;
-  assertNotNullish(activeModComponentId, "Active element not found");
+  assertNotNullish(activeModComponentId, "Active mod component not found");
 
   return activeModComponentId;
 }
 
 function validateBrickPipelineUIState(state: Draft<EditorState>) {
   const brickPipelineUIState =
-    state.brickPipelineUIStateById[validateactiveModComponentId(state)];
+    state.brickPipelineUIStateById[validateActiveModComponentId(state)];
 
   assertNotNullish(
     brickPipelineUIState,
