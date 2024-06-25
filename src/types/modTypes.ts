@@ -33,7 +33,7 @@ export type UnavailableMod = Pick<
   isStub: true;
 };
 
-// XXX: should this be UnresolvedModComponent instead of ResolvedModComponent? The old screens used ResolvedModComponent
+// XXX: should this be SerializedModComponent instead of HydratedModComponent? The old screens used ResolvedModComponent
 export type Mod = ModDefinition | HydratedModComponent | UnavailableMod;
 
 export type SharingType =

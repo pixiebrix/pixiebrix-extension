@@ -58,7 +58,7 @@ import {
   modDefinitionWithVersionedStarterBrickFactory,
   starterBrickDefinitionFactory,
   starterBrickInnerDefinitionFactory,
-  versionedModDefinitionWithResolvedModComponents,
+  versionedModDefinitionWithHydratedModComponents,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
@@ -804,7 +804,7 @@ describe("buildNewMod", () => {
         cleanModComponentCount + dirtyModComponentCount;
 
       // Create a mod
-      const modDefinition = versionedModDefinitionWithResolvedModComponents(
+      const modDefinition = versionedModDefinitionWithHydratedModComponents(
         totalModComponentCount,
       )();
 

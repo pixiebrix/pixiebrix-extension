@@ -33,7 +33,7 @@ import extensionsSlice, {
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
-  versionedModDefinitionWithResolvedModComponents,
+  versionedModDefinitionWithHydratedModComponents,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import produce from "immer";
@@ -90,7 +90,7 @@ describe("useBuildAndValidateMod", () => {
         cleanModComponentCount + dirtyModComponentCount;
 
       // Create a mod
-      const modDefinition = versionedModDefinitionWithResolvedModComponents(
+      const modDefinition = versionedModDefinitionWithHydratedModComponents(
         totalModComponentCount,
       )();
 

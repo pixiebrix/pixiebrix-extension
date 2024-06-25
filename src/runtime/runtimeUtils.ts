@@ -248,7 +248,7 @@ export function assertModComponentNotResolved<
   modComponent: ModComponentBase<Config>,
 ): asserts modComponent is SerializedModComponent<Config> {
   if (isInnerDefinitionRegistryId(modComponent.extensionPointId)) {
-    throw new Error("Expected UnresolvedModComponent");
+    throw new Error("Expected SerializedModComponent");
   }
 }
 

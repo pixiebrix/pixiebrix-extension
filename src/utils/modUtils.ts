@@ -64,7 +64,7 @@ export function isUnavailableMod(mod: Mod): mod is UnavailableMod {
 }
 
 /**
- * Returns true if the mod is a standalone ResolvedModComponent, instead of a mod definition.
+ * Returns true if the mod is a standalone HydratedModComponent, instead of a mod definition.
  */
 export function isStandaloneModComponent(
   mod: Mod,
@@ -333,7 +333,7 @@ function getOrganization(
 }
 
 /**
- * Select UnresolvedModComponents currently activated from the mod.
+ * Select ActivatedModComponents currently activated from the mod.
  */
 export const selectComponentsFromMod = createSelector(
   [selectActivatedModComponents, (_state: unknown, mod: Mod) => mod],
