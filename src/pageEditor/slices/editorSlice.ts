@@ -216,20 +216,20 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
   return { availableInstalledIds };
 });
 
-async function isElementAvailable(
+async function isStarterBrickFormStateAvailable(
   tabUrl: string,
-  elementExtensionPoint: BaseExtensionPointState,
+  starterBrickFormState: BaseExtensionPointState,
 ): Promise<boolean> {
-  if (isQuickBarExtensionPoint(elementExtensionPoint)) {
+  if (isQuickBarExtensionPoint(starterBrickFormState)) {
     return testMatchPatterns(
-      elementExtensionPoint.definition.documentUrlPatterns,
+      starterBrickFormState.definition.documentUrlPatterns,
       tabUrl,
     );
   }
 
   return checkAvailable(
     inspectedTab,
-    elementExtensionPoint.definition.isAvailable,
+    starterBrickFormState.definition.isAvailable,
     tabUrl,
   );
 }
@@ -250,7 +250,7 @@ const checkAvailableDraftModComponents = createAsyncThunk<
   const availableFormStateIds = await Promise.all(
     notDeletedFormStates.map(
       async ({ uuid, extensionPoint: formStateStarterBrick }) => {
-        const isAvailable = await isElementAvailable(
+        const isAvailable = await isStarterBrickFormStateAvailable(
           tabUrl,
           formStateStarterBrick,
         );
@@ -281,7 +281,7 @@ const checkActiveModComponentAvailability = createAsyncThunk<
     "Active mod component form state not found",
   );
   // Calculate new availability for the active mod component
-  const isAvailable = await isElementAvailable(
+  const isAvailable = await isStarterBrickFormStateAvailable(
     tabUrl,
     activeModComponentFormState.extensionPoint,
   );
