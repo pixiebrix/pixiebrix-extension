@@ -119,7 +119,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
 
         if (type === "actionPanel") {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
-          // frequently between extensions within the same blueprint.
+          // frequently between mod components within the same mod.
           await openSidePanel(inspectedTab.tabId);
           updateSidebar(inspectedTab, {
             extensionId: modComponent.id,

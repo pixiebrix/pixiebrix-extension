@@ -42,7 +42,7 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { selectKnownEventNames } from "@/analysis/analysisSelectors";
 import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
-import { type Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -301,9 +301,23 @@ export const selectPipelineMap = createSelector(
 export const selectActiveNodeInfo = createSelector(
   selectActiveModComponentUIState,
   selectActiveNodeId,
-  (uiState: ModComponentUIState, activeNodeId: UUID) =>
+  (uiState: Nullishable<ModComponentUIState>, activeNodeId?: UUID) => {
+    assertNotNullish(
+      uiState,
+      `UI state is ${typeof uiState === "object" ? "null" : "undefined"}`,
+    );
+    assertNotNullish(activeNodeId, "Active Node ID is undefined");
+
     // eslint-disable-next-line security/detect-object-injection -- UUID
-    uiState.pipelineMap[activeNodeId],
+    const activeNodeInfo = uiState.pipelineMap[activeNodeId];
+
+    assertNotNullish(
+      activeNodeInfo,
+      `Active Node Info not found for node id: ${activeNodeId}`,
+    );
+
+    return activeNodeInfo;
+  },
 );
 
 export const selectCollapsedNodes = createSelector(
