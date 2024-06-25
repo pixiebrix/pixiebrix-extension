@@ -30,7 +30,7 @@ import {
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/starterBricks/base";
 import { produce } from "immer";
-import { selectInnerRegistryId } from "@/registry/hydrateInnerDefinitions";
+import { calculateInnerRegistryId } from "@/registry/hydrateInnerDefinitions";
 import { cloneDeep, range, uniq } from "lodash";
 import { type MenuItemDefinition } from "@/starterBricks/menuItem/menuItemTypes";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -191,7 +191,7 @@ describe("replaceModComponent round trip", () => {
     jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
-        id: selectInnerRegistryId(modDefinition.definitions.extensionPoint),
+        id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: normalizeSemVerString("1.0.0"),
       },
@@ -240,7 +240,7 @@ describe("replaceModComponent round trip", () => {
     jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
-        id: selectInnerRegistryId(modDefinition.definitions.extensionPoint),
+        id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: normalizeSemVerString("1.0.0"),
       },
@@ -284,7 +284,7 @@ describe("replaceModComponent round trip", () => {
     jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
-        id: selectInnerRegistryId(modDefinition.definitions.extensionPoint),
+        id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: normalizeSemVerString("1.0.0"),
       },
@@ -346,7 +346,7 @@ describe("replaceModComponent round trip", () => {
     jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
-        id: selectInnerRegistryId(modDefinition.definitions.extensionPoint),
+        id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: normalizeSemVerString("1.0.0"),
       },

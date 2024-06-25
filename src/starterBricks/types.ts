@@ -291,7 +291,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   }
 
   abstract getBricks(
-    extension: HydratedModComponent<TConfig>,
+    modComponent: HydratedModComponent<TConfig>,
   ): Promise<Brick[]>;
 
   abstract isAvailable(): Promise<boolean>;

@@ -56,9 +56,9 @@ type BrickInnerDefinition<
 type InnerDefinition = StarterBrickInnerDefinition | BrickInnerDefinition;
 
 /**
- * Select a unique id for an inner definition. Definitions with the same structure will produce the same id.
+ * Calculate the unique id for an inner definition. Definitions with the same structure will produce the same id.
  */
-export function selectInnerRegistryId(obj: UnknownObject): RegistryId {
+export function calculateInnerRegistryId(obj: UnknownObject): RegistryId {
   const hash = objectHash(obj);
   return `${INNER_SCOPE}/${hash}` as RegistryId;
 }
@@ -74,7 +74,7 @@ async function hydrateBrickDefinition(
     "pipeline",
     "definition",
   ]);
-  const registryId = selectInnerRegistryId(obj);
+  const registryId = calculateInnerRegistryId(obj);
 
   try {
     return await brickRegistry.lookup(registryId);
@@ -159,7 +159,7 @@ async function hydrateStarterBrickDefinition(
   );
 
   const obj = pick(innerDefinition, ["kind", "definition"]);
-  const internalRegistryId = selectInnerRegistryId(obj);
+  const internalRegistryId = calculateInnerRegistryId(obj);
 
   try {
     return await starterBrickRegistry.lookup(internalRegistryId);
