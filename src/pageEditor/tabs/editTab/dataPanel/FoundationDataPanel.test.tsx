@@ -33,7 +33,7 @@ describe("FoundationDataPanel", () => {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
-        dispatch(editorActions.makeModComponentFormStateActive(formState.uuid));
+        dispatch(editorActions.setActiveModComponentId(formState.uuid));
         dispatch(
           runtimeSlice.actions.setExtensionTrace({ extensionId, records }),
         );

@@ -52,7 +52,7 @@ describe("AddBrickModal", () => {
     const { asFragment } = render(<AddBrickModal />, {
       setupRedux(dispatch) {
         dispatch(actions.addModComponentFormState(formState));
-        dispatch(actions.makeModComponentFormStateActive(formState.uuid));
+        dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
           actions.showAddBlockModal({
             path: "",
@@ -77,7 +77,7 @@ describe("AddBrickModal", () => {
     const { asFragment } = render(<AddBrickModal />, {
       setupRedux(dispatch) {
         dispatch(actions.addModComponentFormState(formState));
-        dispatch(actions.makeModComponentFormStateActive(formState.uuid));
+        dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
           actions.showAddBlockModal({
             path: PIPELINE_BLOCKS_FIELD_NAME,

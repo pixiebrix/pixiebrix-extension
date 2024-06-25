@@ -63,7 +63,7 @@ function renderDocumentPreview(documentElement: DocumentElement) {
     initialValues: formState,
     setupRedux(dispatch) {
       dispatch(actions.addModComponentFormState(formState));
-      dispatch(actions.makeModComponentFormStateActive(formState.uuid));
+      dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
         actions.setElementActiveNodeId(
           formState.extension.blockPipeline[0].instanceId,
@@ -187,7 +187,7 @@ describe("Show live preview", () => {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(actions.addModComponentFormState(formState));
-        dispatch(actions.makeModComponentFormStateActive(formState.uuid));
+        dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
           actions.setElementActiveNodeId(pipelineField.__value__[0].instanceId),
         );

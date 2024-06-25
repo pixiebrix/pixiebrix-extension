@@ -71,7 +71,7 @@ describe("DocumentOptions", () => {
         initialValues: formState,
         setupRedux(dispatch) {
           dispatch(actions.addModComponentFormState(formState));
-          dispatch(actions.makeModComponentFormStateActive(formState.uuid));
+          dispatch(actions.setActiveModComponentId(formState.uuid));
           dispatch(
             actions.setElementActiveNodeId(
               formState.extension.blockPipeline[0].instanceId,

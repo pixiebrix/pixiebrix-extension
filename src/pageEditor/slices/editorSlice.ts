@@ -49,7 +49,7 @@ import {
 } from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
-  makeModComponentFormStateActive,
+  setActiveModComponentId,
   editRecipeMetadata,
   editRecipeOptionsDefinitions,
   ensureElementUIState,
@@ -331,7 +331,7 @@ export const editorSlice = createSlice({
       state.modComponentFormStates.push(modComponentFormState);
       state.dirty[modComponentFormState.uuid] = true;
 
-      makeModComponentFormStateActive(state, modComponentFormState);
+      setActiveModComponentId(state, modComponentFormState);
     },
     betaError(state) {
       const error = new BusinessError("This feature is in private beta");
@@ -358,7 +358,7 @@ export const editorSlice = createSlice({
         state.modComponentFormStates.push(modComponentFormState);
       }
 
-      makeModComponentFormStateActive(state, modComponentFormState);
+      setActiveModComponentId(state, modComponentFormState);
     },
     resetInstalled(state, actions: PayloadAction<ModComponentFormState>) {
       const modComponentFormState =
@@ -390,16 +390,16 @@ export const editorSlice = createSlice({
       state.beta = false;
       state.selectionSeq++;
     },
-    makeModComponentFormStateActive(state, action: PayloadAction<UUID>) {
-      const modComponentFormStateId = action.payload;
+    setActiveModComponentId(state, action: PayloadAction<UUID>) {
+      const modComponentId = action.payload;
       const modComponentFormState = state.modComponentFormStates.find(
-        (x) => x.uuid === modComponentFormStateId,
+        (x) => x.uuid === modComponentId,
       );
       if (!modComponentFormState) {
         throw new Error(`Unknown draft mod component: ${action.payload}`);
       }
 
-      makeModComponentFormStateActive(state, modComponentFormState);
+      setActiveModComponentId(state, modComponentFormState);
     },
     markClean(state, action: PayloadAction<UUID>) {
       const modComponentFormState = state.modComponentFormStates.find(

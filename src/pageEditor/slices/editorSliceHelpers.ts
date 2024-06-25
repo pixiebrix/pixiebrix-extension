@@ -213,7 +213,7 @@ export function editRecipeOptionsDefinitions(
     options as Draft<ModOptionsDefinition>;
 }
 
-export function makeModComponentFormStateActive(
+export function setActiveModComponentId(
   state: Draft<EditorState>,
   modComponentFormState: ModComponentFormState,
 ) {

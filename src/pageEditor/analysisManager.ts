@@ -243,8 +243,8 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   },
   {
     matcher: isAnyOf(
-      // Must run whenever the active mod component form state changes in order to see changes from other mod components.
-      editorActions.makeModComponentFormStateActive,
+      // Must run whenever the active mod component changes in order to see changes from other mod components.
+      editorActions.setActiveModComponentId,
       editorActions.syncModComponentFormState,
       ...nodeListMutationActions,
     ),
@@ -267,8 +267,8 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   {
     matcher: isAnyOf(
       editorActions.showVariablePopover,
-      // Include selectElement so that variable analysis is ready when user first types
-      editorActions.makeModComponentFormStateActive,
+      // Include setActiveModComponentId so that variable analysis is ready when user first types
+      editorActions.setActiveModComponentId,
       editorActions.syncModComponentFormState,
       runtimeActions.setExtensionTrace,
       ...nodeListMutationActions,

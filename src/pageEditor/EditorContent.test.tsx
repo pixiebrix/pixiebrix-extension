@@ -54,7 +54,7 @@ describe("error alerting in the UI", () => {
     render(<EditorContent />, {
       async setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
-        dispatch(editorActions.makeModComponentFormStateActive(formState.uuid));
+        dispatch(editorActions.setActiveModComponentId(formState.uuid));
         await dispatch(editorActions.checkAvailableDraftModComponents());
       },
     });
@@ -74,7 +74,7 @@ describe("error alerting in the UI", () => {
     render(<EditorContent />, {
       async setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
-        dispatch(editorActions.makeModComponentFormStateActive(formState.uuid));
+        dispatch(editorActions.setActiveModComponentId(formState.uuid));
         await dispatch(editorActions.checkAvailableInstalledExtensions());
       },
     });
