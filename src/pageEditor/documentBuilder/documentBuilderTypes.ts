@@ -24,7 +24,7 @@ import { type ElementType, type MouseEventHandler, type Ref } from "react";
 import type { IconConfig } from "@/types/iconTypes";
 import { isObject } from "@/utils/objectUtils";
 
-export const DOCUMENT_ELEMENT_TYPES = [
+export const DOCUMENT_BUILDER_ELEMENT_TYPES = [
   "header",
   "text",
   "image",
@@ -42,58 +42,61 @@ export const DOCUMENT_ELEMENT_TYPES = [
   "header_3",
 ] as const;
 
-export type DocumentElementType = (typeof DOCUMENT_ELEMENT_TYPES)[number];
+export type DocumentBuilderElementType =
+  (typeof DOCUMENT_BUILDER_ELEMENT_TYPES)[number];
 
-export type DocumentElement<
-  TType extends DocumentElementType = DocumentElementType,
+export type DocumentBuilderElement<
+  TType extends DocumentBuilderElementType = DocumentBuilderElementType,
   TConfig = UnknownObject,
 > = {
   type: TType;
   config: TConfig;
-  children?: DocumentElement[];
+  children?: DocumentBuilderElement[];
 };
 
-function isDocumentElement(value: unknown): value is DocumentElement {
+function isDocumentBuilderElement(
+  value: unknown,
+): value is DocumentBuilderElement {
   return isObject(value) && "type" in value && "config" in value;
 }
 
-export function isDocumentElementArray(
+export function isDocumentBuilderElementArray(
   value: unknown,
-): value is DocumentElement[] {
+): value is DocumentBuilderElement[] {
   return (
-    Array.isArray(value) && value.every((element) => isDocumentElement(element))
+    Array.isArray(value) && value.every((x) => isDocumentBuilderElement(x))
   );
 }
 
-type ListDocumentConfig = {
+type ListElementConfig = {
   array: Expression;
   elementKey?: string;
-  element: DeferExpression<DocumentElement>;
+  element: DeferExpression<DocumentBuilderElement>;
 };
-export type ListDocumentElement = DocumentElement<"list", ListDocumentConfig>;
+export type ListElement = DocumentBuilderElement<"list", ListElementConfig>;
 
 export function isListElement(
-  element: DocumentElement,
-): element is ListDocumentElement {
+  element: DocumentBuilderElement,
+): element is ListElement {
   return element.type === "list";
 }
 
-export type PipelineDocumentConfig = {
+export type PipelineElementConfig = {
   label: string;
   pipeline: PipelineExpression;
 };
-type PipelineDocumentElement = DocumentElement<
+type PipelineElement = DocumentBuilderElement<
   "pipeline",
-  PipelineDocumentConfig
+  PipelineElementConfig
 >;
 
 export function isPipelineElement(
-  element: DocumentElement,
-): element is PipelineDocumentElement {
+  element: DocumentBuilderElement,
+): element is PipelineElement {
   return element.type === "pipeline";
 }
 
-export type ButtonDocumentConfig = {
+export type ButtonElementConfig = {
   title: string | Expression;
   tooltip?: string | Expression;
   icon?: IconConfig | Expression;
@@ -107,18 +110,18 @@ export type ButtonDocumentConfig = {
   className?: string | Expression;
   onClick: PipelineExpression;
 };
-export type ButtonDocumentElement = DocumentElement<
+export type ButtonElement = DocumentBuilderElement<
   "button",
-  ButtonDocumentConfig
+  ButtonElementConfig
 >;
 
 export function isButtonElement(
-  element: DocumentElement,
-): element is ButtonDocumentElement {
+  element: DocumentBuilderElement,
+): element is ButtonElement {
   return element.type === "button";
 }
 
-export type DocumentComponent = {
+export type DocumentBuilderComponent = {
   Component: ElementType;
   props?: UnknownObject | undefined;
 };
@@ -142,10 +145,10 @@ export type DynamicPath = {
   }>;
 };
 
-export type BuildDocumentBranch = (
-  root: DocumentElement,
+export type BuildDocumentBuilderBranch = (
+  root: DocumentBuilderElement,
   tracePath: DynamicPath,
-) => DocumentComponent | null;
+) => DocumentBuilderComponent | null;
 
 export type PreviewComponentProps = {
   className?: string;

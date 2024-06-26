@@ -21,15 +21,15 @@ import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { getAllowedChildTypes } from "@/pageEditor/documentBuilder/allowedElementTypes";
-import elementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import {
-  type DocumentElementType,
-  type ListDocumentElement,
+  type DocumentBuilderElementType,
+  type ListElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { produce } from "immer";
-import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import { useField } from "formik";
 import { joinName } from "@/utils/formUtils";
 
@@ -39,7 +39,7 @@ type ListOptionsProps = {
 
 const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
   const [{ value: documentElement }, , { setValue: setDocumentElement }] =
-    useField<ListDocumentElement>(elementName);
+    useField<ListElement>(elementName);
 
   const arraySourceEdit: SchemaFieldProps = {
     name: joinName(elementName, "config", "array"),
@@ -51,12 +51,13 @@ const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
   const onElementTypeChange: ChangeEventHandler<HTMLInputElement> = async (
     event,
   ) => {
-    const nextType = event.target.value as DocumentElementType;
+    const nextType = event.target.value as DocumentBuilderElementType;
 
     const nextDocumentElement = produce(
       documentElement,
-      (draft: ListDocumentElement) => {
-        draft.config.element.__value__ = createNewElement(nextType);
+      (draft: ListElement) => {
+        draft.config.element.__value__ =
+          createNewDocumentBuilderElement(nextType);
       },
     );
 
@@ -80,7 +81,7 @@ const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
         as={SelectWidget}
         options={getAllowedChildTypes(documentElement).map((x) => ({
           // eslint-disable-next-line security/detect-object-injection -- x is a know string
-          label: elementTypeLabels[x],
+          label: documentBuilderElementTypeLabels[x],
           value: x,
         }))}
       />

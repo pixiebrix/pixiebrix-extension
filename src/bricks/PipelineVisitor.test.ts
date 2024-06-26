@@ -18,7 +18,7 @@
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { type BrickPosition, type BrickConfig } from "@/bricks/types";
-import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import PipelineVisitor, { type VisitBlockExtra } from "./PipelineVisitor";
@@ -152,11 +152,11 @@ test("should invoke the callback for the sub pipeline bricks", () => {
 });
 
 test("should invoke the callback for the Document button pipeline", () => {
-  const buttonElement = createNewElement("button");
+  const buttonElement = createNewDocumentBuilderElement("button");
   const subPipeline = (buttonElement.config.onClick as PipelineExpression)
     .__value__;
   subPipeline.push(brickConfigFactory());
-  const containerElement = createNewElement("container");
+  const containerElement = createNewDocumentBuilderElement("container");
   containerElement.children[0].children[0].children.push(buttonElement);
   const documentBrick = brickConfigFactory({
     id: DocumentRenderer.BRICK_ID,

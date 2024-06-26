@@ -70,6 +70,10 @@ export async function _refreshPartnerToken(): Promise<void> {
     // https://axios-http.com/docs/urlencoded
     const params = new URLSearchParams();
     params.append("grant_type", "refresh_token");
+    assertNotNullish(
+      context.client_id,
+      "Client ID is required for grant_type: refresh_token",
+    );
     params.append("client_id", context.client_id);
     params.append("refresh_token", authData.refreshToken);
     params.append("hosturl", controlRoomUrl);

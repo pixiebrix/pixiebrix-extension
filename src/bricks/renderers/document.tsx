@@ -25,8 +25,8 @@ import {
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import {
-  DOCUMENT_ELEMENT_TYPES,
-  type DocumentElement,
+  DOCUMENT_BUILDER_ELEMENT_TYPES,
+  type DocumentBuilderElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import { type DocumentViewProps } from "./documentView/DocumentViewProps";
@@ -66,7 +66,7 @@ export const DOCUMENT_SCHEMA: Schema = {
       properties: {
         type: {
           type: "string",
-          enum: [...DOCUMENT_ELEMENT_TYPES],
+          enum: [...DOCUMENT_BUILDER_ELEMENT_TYPES],
         },
         config: {
           type: "object",
@@ -123,7 +123,7 @@ export class DocumentRenderer extends RendererABC {
       stylesheets = [],
       disableParentStyles = false,
     }: BrickArgs<{
-      body: DocumentElement[];
+      body: DocumentBuilderElement[];
       // Stylesheets array is validated to contain URIs in the brick input schema
       stylesheets: string[];
       disableParentStyles?: boolean;

@@ -17,7 +17,7 @@
 
 import React from "react";
 import { useField } from "formik";
-import { type DocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
@@ -40,7 +40,7 @@ const DocumentOptions: React.FC<{
   const activeElement = useSelector(selectActiveDocumentOrFormPreviewElement);
 
   const [{ value: bodyValue }, , { setValue: setBodyValue }] =
-    useField<DocumentElement[]>(documentBodyName);
+    useField<DocumentBuilderElement[]>(documentBodyName);
 
   useAsyncEffect(async () => {
     if (!Array.isArray(bodyValue)) {

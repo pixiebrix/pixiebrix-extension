@@ -23,7 +23,7 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { type TypedBrickPair } from "@/bricks/registry";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { getDocumentPipelinePaths } from "@/pageEditor/utils";
+import { getDocumentBuilderPipelinePaths } from "@/pageEditor/utils";
 import { get } from "lodash";
 import {
   getRootPipelineFlavor,
@@ -127,7 +127,7 @@ class PipelineVisitor {
     position: BrickPosition,
     blockConfig: BrickConfig,
   ): void {
-    const subPipelineProperties = getDocumentPipelinePaths(blockConfig);
+    const subPipelineProperties = getDocumentBuilderPipelinePaths(blockConfig);
     for (const subPipelineProperty of subPipelineProperties) {
       const subPipelineAccessor = joinPathParts(
         subPipelineProperty,

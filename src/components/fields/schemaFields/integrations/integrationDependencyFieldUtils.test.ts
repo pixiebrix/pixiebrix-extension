@@ -20,8 +20,8 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { validateRegistryId, validateUUID } from "@/types/helpers";
 import { selectIntegrationDependencyVariables } from "./integrationDependencyFieldUtils";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
-import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
-import { type ListDocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
+import { type ListElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -116,8 +116,8 @@ describe("selectVariables", () => {
   });
 
   test("handles list elements", () => {
-    const button = createNewElement("button");
-    button.config.onClick = toExpression("pipeline", [
+    const buttonElement = createNewDocumentBuilderElement("button");
+    buttonElement.config.onClick = toExpression("pipeline", [
       {
         id: validateRegistryId("@test/service"),
         instanceId: uuidSequence(2),
@@ -126,8 +126,8 @@ describe("selectVariables", () => {
         },
       },
     ]);
-    const listElement = createNewElement("list") as ListDocumentElement;
-    listElement.config.element.__value__ = button;
+    const listElement = createNewDocumentBuilderElement("list") as ListElement;
+    listElement.config.element.__value__ = buttonElement;
 
     const documentWithButtonConfig = {
       id: "@test/document",

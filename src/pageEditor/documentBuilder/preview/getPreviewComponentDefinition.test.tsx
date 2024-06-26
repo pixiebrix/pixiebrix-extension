@@ -17,17 +17,17 @@
 
 import React from "react";
 import {
-  type DocumentElement,
-  type DocumentElementType,
+  type DocumentBuilderElement,
+  type DocumentBuilderElementType,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
 import { render, screen } from "@testing-library/react";
-import elementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 
 test.each(["container", "row", "column"])(
   "shows name of an empty %s",
-  (elementType: DocumentElementType) => {
-    const element: DocumentElement = {
+  (elementType: DocumentBuilderElementType) => {
+    const element: DocumentBuilderElement = {
       type: elementType,
       config: {},
       children: [],
@@ -36,14 +36,16 @@ test.each(["container", "row", "column"])(
     const { Component, props } = getPreviewComponentDefinition(element);
 
     render(<Component {...props} />);
-    expect(screen.getByText(elementTypeLabels[elementType])).not.toBeNull();
+    expect(
+      screen.getByText(documentBuilderElementTypeLabels[elementType]),
+    ).not.toBeNull();
   },
 );
 
 test.each(["container", "row", "column"])(
   "doesn't show name of %s with children",
-  (elementType: DocumentElementType) => {
-    const element: DocumentElement = {
+  (elementType: DocumentBuilderElementType) => {
+    const element: DocumentBuilderElement = {
       type: elementType,
       config: {},
       children: [
@@ -59,6 +61,8 @@ test.each(["container", "row", "column"])(
     const { Component, props } = getPreviewComponentDefinition(element);
 
     render(<Component {...props} />);
-    expect(screen.queryByText(elementTypeLabels[elementType])).toBeNull();
+    expect(
+      screen.queryByText(documentBuilderElementTypeLabels[elementType]),
+    ).toBeNull();
   },
 );

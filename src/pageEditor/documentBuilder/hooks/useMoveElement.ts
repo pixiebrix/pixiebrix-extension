@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type DocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import {
   type TreeDestinationPosition,
   type TreeSourcePosition,
@@ -40,31 +40,34 @@ export function arrayMove(
 }
 
 export function acceptDrop(
-  element: DocumentElement,
-  parentElement: DocumentElement,
+  documentBuilderElement: DocumentBuilderElement,
+  parentElement: DocumentBuilderElement,
 ): boolean {
-  return getAllowedChildTypes(parentElement).includes(element.type);
+  return getAllowedChildTypes(parentElement).includes(
+    documentBuilderElement.type,
+  );
 }
 
 export function moveElement(
-  body: DocumentElement[],
+  body: DocumentBuilderElement[],
   source: TreeSourcePosition,
   destination: TreeDestinationPosition,
-): DocumentElement[] {
+): DocumentBuilderElement[] {
   return produce(body, (draft) => {
     const sourceParent = getIn(draft, source.parentId as string);
-    const destinationParent: DocumentElement = getIn(
+    const destinationParent: DocumentBuilderElement = getIn(
       draft,
       destination.parentId as string,
     );
 
-    const element: DocumentElement = sourceParent.children[source.index];
+    const documentBuilderElement: DocumentBuilderElement =
+      sourceParent.children[source.index];
 
-    if (!acceptDrop(element, destinationParent)) {
+    if (!acceptDrop(documentBuilderElement, destinationParent)) {
       console.warn(
         "Destination element does not support drop: %s for %s",
         destinationParent.type,
-        element.type,
+        documentBuilderElement.type,
         {
           sourceParent,
           destinationParent,
@@ -94,21 +97,21 @@ export function moveElement(
       destination,
     });
 
-    (getIn(sourceParent, "children") as DocumentElement[]).splice(
+    (getIn(sourceParent, "children") as DocumentBuilderElement[]).splice(
       source.index,
       1,
     );
-    (getIn(destinationParent, "children") as DocumentElement[]).splice(
+    (getIn(destinationParent, "children") as DocumentBuilderElement[]).splice(
       destination.index,
       0,
-      element,
+      documentBuilderElement,
     );
   });
 }
 
 function useMoveElement(documentBodyName: string) {
   const [{ value: body }, , { setValue }] =
-    useField<DocumentElement[]>(documentBodyName);
+    useField<DocumentBuilderElement[]>(documentBodyName);
 
   const [, setActiveElement] = useReduxState(
     selectActiveDocumentOrFormPreviewElement,

@@ -35,14 +35,14 @@ import {
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import {
   getBlockAnnotations,
-  getDocumentPipelinePaths,
+  getDocumentBuilderPipelinePaths,
   getFoundationNodeAnnotations,
   getVariableKeyForSubPipeline,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
 import { get, isEmpty } from "lodash";
 import {
-  type DocumentElement,
+  type DocumentBuilderElement,
   isButtonElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
@@ -135,17 +135,22 @@ function getSubPipelinesForBlock(
 ): SubPipeline[] {
   const subPipelines: SubPipeline[] = [];
   if (blockConfig.id === DocumentRenderer.BRICK_ID) {
-    for (const docPipelinePath of getDocumentPipelinePaths(blockConfig)) {
+    for (const docPipelinePath of getDocumentBuilderPipelinePaths(
+      blockConfig,
+    )) {
       const path = joinPathParts(docPipelinePath, "__value__");
       const pipeline: BrickPipeline = get(blockConfig, path) ?? [];
 
       // Removing the 'config.<pipelinePropName>' from the end of the docPipelinePath
       const elementPathParts = docPipelinePath.split(".").slice(0, -2);
-      const element = get(blockConfig, elementPathParts) as DocumentElement;
+      const docBuilderElement = get(
+        blockConfig,
+        elementPathParts,
+      ) as DocumentBuilderElement;
 
-      const isButton = isButtonElement(element);
+      const isButton = isButtonElement(docBuilderElement);
 
-      let subPipelineLabel = element.config.label as string;
+      let subPipelineLabel = docBuilderElement.config.label as string;
       if (isEmpty(subPipelineLabel)) {
         subPipelineLabel = isButton ? "button" : "brick";
       }

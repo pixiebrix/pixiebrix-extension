@@ -109,7 +109,7 @@ export function renderMustache(config: Args, ctxt: UnknownObject): unknown {
   }
 
   if (typeof config !== "string") {
-    throw new TypeError("Expected string");
+    throw new TypeError(`Expected string, received ${typeof config}`);
   }
 
   return Mustache.render(config, ctxt);

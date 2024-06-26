@@ -19,7 +19,7 @@ import {
   arrayMove,
   moveElement,
 } from "@/pageEditor/documentBuilder/hooks/useMoveElement";
-import { type DocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { toExpression } from "@/utils/expressionUtils";
 
 const data = {
@@ -95,7 +95,7 @@ describe("arrayMove", () => {
 describe("moveElement", () => {
   test("can move element between rows", () => {
     const result = moveElement(
-      data.config.body as DocumentElement[],
+      data.config.body as DocumentBuilderElement[],
       {
         parentId: "0.children.1.children.0",
         index: 0,
@@ -111,7 +111,7 @@ describe("moveElement", () => {
   });
 
   test("can move elements earlier in container", () => {
-    const original = data.config.body as DocumentElement[];
+    const original = data.config.body as DocumentBuilderElement[];
 
     const result = moveElement(
       original,
@@ -132,7 +132,7 @@ describe("moveElement", () => {
 
   test("can move elements later in container", () => {
     const result = moveElement(
-      data.config.body as DocumentElement[],
+      data.config.body as DocumentBuilderElement[],
       {
         parentId: "0",
         index: 0,
