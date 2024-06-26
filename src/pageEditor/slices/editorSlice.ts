@@ -38,7 +38,7 @@ import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveModComponentFormState,
-  selectActiveModComponentUIState,
+  selectActiveBrickPipelineUIState,
   selectActiveNodeUIState,
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
@@ -768,7 +768,7 @@ export const editorSlice = createSlice({
         "Active mod component form state not found",
       );
 
-      const activeModComponentUiState = selectActiveModComponentUIState({
+      const activeModComponentUiState = selectActiveBrickPipelineUIState({
         editor: state,
       });
       const node = activeModComponentUiState?.pipelineMap[nodeId];
@@ -810,7 +810,7 @@ export const editorSlice = createSlice({
         "Active mod component form state not found",
       );
 
-      const activeModComponentUiState = selectActiveModComponentUIState({
+      const activeModComponentUiState = selectActiveBrickPipelineUIState({
         editor: state,
       });
       assertNotNullish(
