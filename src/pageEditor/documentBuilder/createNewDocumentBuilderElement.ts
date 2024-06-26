@@ -16,69 +16,80 @@
  */
 
 import {
-  type DocumentElement,
-  type DocumentElementType,
+  type DocumentBuilderElement,
+  type DocumentBuilderElementType,
 } from "./documentBuilderTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type DeferExpression } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 
-const elementExtras: Record<"form", DocumentElementType> = {
-  form: "pipeline",
-};
+const documentBuilderElementExtras: Record<"form", DocumentBuilderElementType> =
+  {
+    form: "pipeline",
+  };
 
-export function createNewElement(
-  elementType: DocumentElementType | keyof typeof elementExtras,
-): DocumentElement {
-  const element: DocumentElement = {
+export function createNewDocumentBuilderElement(
+  documentBuilderElementType:
+    | DocumentBuilderElementType
+    | keyof typeof documentBuilderElementExtras,
+): DocumentBuilderElement {
+  const documentBuilderElement: DocumentBuilderElement = {
     // Writing as map to make it easier to add similar shortcuts in the future
-    // eslint-disable-next-line security/detect-object-injection -- check for valid element type
-    type: elementType === "form" ? elementExtras[elementType] : elementType,
+
+    type:
+      documentBuilderElementType === "form"
+        ? documentBuilderElementExtras[documentBuilderElementType]
+        : documentBuilderElementType,
     config: {},
   };
 
-  switch (elementType) {
+  switch (documentBuilderElementType) {
     case "header": {
-      element.config.title = "Header";
-      element.config.heading = "h1";
+      documentBuilderElement.config.title = "Header";
+      documentBuilderElement.config.heading = "h1";
       break;
     }
 
     case "text": {
-      element.config.text = "Paragraph text. **Markdown** is supported.";
-      element.config.enableMarkdown = true;
+      documentBuilderElement.config.text =
+        "Paragraph text. **Markdown** is supported.";
+      documentBuilderElement.config.enableMarkdown = true;
       break;
     }
 
     case "image": {
-      element.config.url = null;
+      documentBuilderElement.config.url = null;
       break;
     }
 
     case "container": {
-      element.children = [createNewElement("row")];
+      documentBuilderElement.children = [
+        createNewDocumentBuilderElement("row"),
+      ];
       break;
     }
 
     case "row": {
-      element.children = [createNewElement("column")];
+      documentBuilderElement.children = [
+        createNewDocumentBuilderElement("column"),
+      ];
       break;
     }
 
     case "column": {
-      element.children = [];
+      documentBuilderElement.children = [];
       break;
     }
 
     case "card": {
-      element.config.heading = "Header";
-      element.children = [];
+      documentBuilderElement.config.heading = "Header";
+      documentBuilderElement.children = [];
       break;
     }
 
     case "form": {
-      element.config.label = "Form";
-      element.config.pipeline = toExpression("pipeline", [
+      documentBuilderElement.config.label = "Form";
+      documentBuilderElement.config.pipeline = toExpression("pipeline", [
         {
           id: validateRegistryId("@pixiebrix/form"),
           // Assign instanceId. All bricks in Page Editor are expected to have a unique
@@ -113,42 +124,42 @@ export function createNewElement(
     }
 
     case "pipeline": {
-      element.config.label = "Brick";
-      element.config.pipeline = toExpression("pipeline", []);
+      documentBuilderElement.config.label = "Brick";
+      documentBuilderElement.config.pipeline = toExpression("pipeline", []);
       break;
     }
 
     case "button": {
-      element.config.label = "Button";
-      element.config.title = "Action";
-      element.config.size = "md";
-      element.config.variant = "primary";
-      element.config.fullWidth = false;
-      element.config.disabled = false;
-      element.config.hidden = false;
+      documentBuilderElement.config.label = "Button";
+      documentBuilderElement.config.title = "Action";
+      documentBuilderElement.config.size = "md";
+      documentBuilderElement.config.variant = "primary";
+      documentBuilderElement.config.fullWidth = false;
+      documentBuilderElement.config.disabled = false;
+      documentBuilderElement.config.hidden = false;
 
-      element.config.onClick = toExpression("pipeline", []);
+      documentBuilderElement.config.onClick = toExpression("pipeline", []);
 
       break;
     }
 
     case "list": {
       // ListElement uses "element" as the default. But be explicit
-      element.config.elementKey = "element";
+      documentBuilderElement.config.elementKey = "element";
 
-      element.config.element = toExpression(
+      documentBuilderElement.config.element = toExpression(
         "defer",
-        createNewElement("text"),
-      ) as DeferExpression<DocumentElement>;
+        createNewDocumentBuilderElement("text"),
+      ) as DeferExpression<DocumentBuilderElement>;
       break;
     }
 
     default: {
       throw new Error(
-        `Can't create new element. Type "${elementType} is not supported.`,
+        `Can't create new document builder element. Type "${documentBuilderElementType} is not supported.`,
       );
     }
   }
 
-  return element;
+  return documentBuilderElement;
 }

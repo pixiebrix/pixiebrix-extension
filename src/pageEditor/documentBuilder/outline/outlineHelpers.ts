@@ -16,7 +16,7 @@
  */
 
 import {
-  type DocumentElement,
+  type DocumentBuilderElement,
   isListElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
@@ -25,20 +25,20 @@ import { type TreeItem } from "@atlaskit/tree/types";
 import { PARENT_ELEMENT_TYPES } from "@/pageEditor/documentBuilder/allowedElementTypes";
 import { joinPathParts } from "@/utils/formUtils";
 
-type ElementArgs = {
-  element: DocumentElement;
+type DocumentBuilderElementArgs = {
+  element: DocumentBuilderElement;
   elementName: string;
   treeExpandedState: TreeExpandedState;
 };
 
 function getChildren(
-  element: DocumentElement,
+  documentBuilderElement: DocumentBuilderElement,
   elementName: string,
-): Array<{ element: DocumentElement; elementName: string }> {
-  if (isListElement(element)) {
+): Array<{ element: DocumentBuilderElement; elementName: string }> {
+  if (isListElement(documentBuilderElement)) {
     return [
       {
-        element: element.config.element.__value__,
+        element: documentBuilderElement.config.element.__value__,
         elementName: joinPathParts(
           elementName,
           "config",
@@ -49,7 +49,7 @@ function getChildren(
     ];
   }
 
-  const children = element?.children ?? [];
+  const children = documentBuilderElement?.children ?? [];
 
   return children.map((child, index) => ({
     element: child,
@@ -61,7 +61,7 @@ function selectTreeEntries({
   element,
   elementName,
   treeExpandedState,
-}: ElementArgs): Array<[ItemId, TreeItem]> {
+}: DocumentBuilderElementArgs): Array<[ItemId, TreeItem]> {
   const children = getChildren(element, elementName);
 
   return [
@@ -92,7 +92,7 @@ function selectTreeEntries({
 }
 
 export function selectTreeData(
-  body: DocumentElement[],
+  body: DocumentBuilderElement[],
   treeExpandedState: TreeExpandedState,
 ): TreeData {
   const children = body.flatMap((element, index) =>

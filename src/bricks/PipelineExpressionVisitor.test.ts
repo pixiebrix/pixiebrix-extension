@@ -17,7 +17,7 @@
 
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { type BrickPosition, type BrickPipeline } from "@/bricks/types";
-import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import { type Expression } from "@/types/runtimeTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import PipelineExpressionVisitor from "./PipelineExpressionVisitor";
@@ -65,10 +65,10 @@ test("should invoke the callback for a brick expression", () => {
 });
 
 test("should invoke the callback for a Document expression", () => {
-  const textElement = createNewElement("text");
+  const textElement = createNewDocumentBuilderElement("text");
   textElement.config.text = toExpression("nunjucks", "test");
 
-  const containerElement = createNewElement("container");
+  const containerElement = createNewDocumentBuilderElement("container");
   containerElement.children[0].children[0].children.push(textElement);
 
   const documentBrick = brickConfigFactory({

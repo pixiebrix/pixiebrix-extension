@@ -17,7 +17,7 @@
 
 import "@/vendors/bootstrapWithoutRem.css";
 import "@/sidebar/sidebarBootstrapOverrides.scss";
-import { buildDocumentBranch } from "@/pageEditor/documentBuilder/documentTree";
+import { buildDocumentBuilderBranch } from "@/pageEditor/documentBuilder/documentTree";
 import React from "react";
 import { type DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/pageEditor/documentBuilder/render/DocumentContext";
@@ -56,17 +56,20 @@ const DocumentView: React.FC<DocumentViewProps> = ({
       <StylesheetsContext.Provider value={{ stylesheets }}>
         <Stylesheets href={stylesheets}>
           {body.map((documentElement, index) => {
-            const documentBranch = buildDocumentBranch(documentElement, {
-              staticId: joinPathParts("body", "children"),
-              // Root of the document, so no branches taken yet
-              branches: [],
-            });
+            const documentBuilderBranch = buildDocumentBuilderBranch(
+              documentElement,
+              {
+                staticId: joinPathParts("body", "children"),
+                // Root of the document, so no branches taken yet
+                branches: [],
+              },
+            );
 
-            if (documentBranch == null) {
+            if (documentBuilderBranch == null) {
               return null;
             }
 
-            const { Component, props } = documentBranch;
+            const { Component, props } = documentBuilderBranch;
             // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
             return <Component key={index} {...props} />;
           })}

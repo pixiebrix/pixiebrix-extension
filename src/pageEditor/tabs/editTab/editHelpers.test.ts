@@ -17,7 +17,7 @@
 
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
-import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import { generateFreshOutputKey, getPipelineMap } from "./editHelpers";
@@ -102,10 +102,10 @@ describe("getPipelineMap", () => {
 
   test("should map pipeline with document and button", () => {
     const subPipeline = pipelineFactory();
-    const buttonElement = createNewElement("button");
+    const buttonElement = createNewDocumentBuilderElement("button");
     (buttonElement.config.onClick as PipelineExpression).__value__ =
       subPipeline;
-    const containerElement = createNewElement("container");
+    const containerElement = createNewDocumentBuilderElement("container");
     containerElement.children[0].children[0].children.push(buttonElement);
     const documentBrick = brickConfigFactory({
       id: DocumentRenderer.BRICK_ID,

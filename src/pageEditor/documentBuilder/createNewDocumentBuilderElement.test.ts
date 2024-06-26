@@ -16,37 +16,37 @@
  */
 
 import { isUUID } from "@/types/helpers";
-import { createNewElement } from "./createNewElement";
-import { DOCUMENT_ELEMENT_TYPES } from "./documentBuilderTypes";
+import { createNewDocumentBuilderElement } from "./createNewDocumentBuilderElement";
+import { DOCUMENT_BUILDER_ELEMENT_TYPES } from "./documentBuilderTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { toExpression } from "@/utils/expressionUtils";
 
 test.each(
-  DOCUMENT_ELEMENT_TYPES.filter(
+  DOCUMENT_BUILDER_ELEMENT_TYPES.filter(
     (x) => !["header_1", "header_2", "header_3"].includes(x),
   ),
 )("sets correct element type for %s", (elementType) => {
-  const actual = createNewElement(elementType);
+  const actual = createNewDocumentBuilderElement(elementType);
   expect(actual.type).toBe(elementType);
 });
 
 test("sets default config for header", () => {
-  const actual = createNewElement("header");
-  expect(actual.config).toEqual({ title: "Header", heading: "h1" });
+  const headerElement = createNewDocumentBuilderElement("header");
+  expect(headerElement.config).toEqual({ title: "Header", heading: "h1" });
 });
 
 test("sets default config for text", () => {
-  const actual = createNewElement("text");
-  expect(actual.config).toEqual({
+  const textElement = createNewDocumentBuilderElement("text");
+  expect(textElement.config).toEqual({
     text: "Paragraph text. **Markdown** is supported.",
     enableMarkdown: true,
   });
 });
 
 test("sets default config and children for container", () => {
-  const actual = createNewElement("container");
-  expect(actual.config).toEqual({});
-  expect(actual.children).toEqual([
+  const containerElement = createNewDocumentBuilderElement("container");
+  expect(containerElement.config).toEqual({});
+  expect(containerElement.children).toEqual([
     {
       type: "row",
       config: {},
@@ -56,23 +56,23 @@ test("sets default config and children for container", () => {
 });
 
 test("sets default config and children for row", () => {
-  const actual = createNewElement("row");
-  expect(actual.config).toEqual({});
-  expect(actual.children).toEqual([
+  const rowElement = createNewDocumentBuilderElement("row");
+  expect(rowElement.config).toEqual({});
+  expect(rowElement.children).toEqual([
     { type: "column", config: {}, children: [] },
   ]);
 });
 
 test("sets default config and children for column", () => {
-  const actual = createNewElement("column");
-  expect(actual.config).toEqual({});
-  expect(actual.children).toEqual([]);
+  const columnElement = createNewDocumentBuilderElement("column");
+  expect(columnElement.config).toEqual({});
+  expect(columnElement.children).toEqual([]);
 });
 
 test("sets default config and children for card", () => {
-  const actual = createNewElement("card");
-  expect(actual.config).toEqual({ heading: "Header" });
-  expect(actual.children).toEqual([]);
+  const cardElement = createNewDocumentBuilderElement("card");
+  expect(cardElement.config).toEqual({ heading: "Header" });
+  expect(cardElement.children).toEqual([]);
 });
 
 test("sets default config for block", () => {
@@ -80,9 +80,9 @@ test("sets default config for block", () => {
     label: "Brick",
     pipeline: toExpression("pipeline", []),
   };
-  const actual = createNewElement("pipeline");
+  const pipelineElement = createNewDocumentBuilderElement("pipeline");
 
-  expect(actual.config).toEqual(expectedConfig);
+  expect(pipelineElement.config).toEqual(expectedConfig);
 });
 
 test("sets default config for button", () => {
@@ -97,27 +97,27 @@ test("sets default config for button", () => {
     onClick: toExpression("pipeline", [] as BrickPipeline),
   };
 
-  const actual = createNewElement("button");
-  expect(actual.config).toEqual(expectedConfig);
+  const buttonElement = createNewDocumentBuilderElement("button");
+  expect(buttonElement.config).toEqual(expectedConfig);
 });
 
-test("throws on unknown elements", () => {
+test("throws on unknown components", () => {
   expect(() => {
     // @ts-expect-error intentionally testing an invalid value
-    createNewElement("unknown");
+    createNewDocumentBuilderElement("unknown");
   }).toThrow();
 });
 
 test("sets padding to zero for form", () => {
-  const actual = createNewElement("form");
-  expect(actual.type).toBe("pipeline");
-  expect((actual.config as any).pipeline.__value__[0].id).toBe(
+  const formElement = createNewDocumentBuilderElement("form");
+  expect(formElement.type).toBe("pipeline");
+  expect((formElement.config as any).pipeline.__value__[0].id).toBe(
     "@pixiebrix/form",
   );
-  expect(isUUID((actual.config as any).pipeline.__value__[0].instanceId)).toBe(
-    true,
-  );
-  expect((actual.config as any).pipeline.__value__[0].config.className).toBe(
-    "p-0",
-  );
+  expect(
+    isUUID((formElement.config as any).pipeline.__value__[0].instanceId),
+  ).toBe(true);
+  expect(
+    (formElement.config as any).pipeline.__value__[0].config.className,
+  ).toBe("p-0");
 });

@@ -32,11 +32,11 @@ import { SELF_EXISTENCE, VarExistence } from "./varMap";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import {
-  type ButtonDocumentElement,
-  type DocumentElement,
-  type ListDocumentElement,
+  type ButtonElement,
+  type DocumentBuilderElement,
+  type ListElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { services } from "@/background/messenger/api";
@@ -820,15 +820,17 @@ describe("Collecting available vars", () => {
 
   describe("document builder list element", () => {
     beforeAll(async () => {
-      const listElement = createNewElement("list") as ListDocumentElement;
-      const textElement = createNewElement("text");
+      const listElement = createNewDocumentBuilderElement(
+        "list",
+      ) as ListElement;
+      const textElement = createNewDocumentBuilderElement("text");
       textElement.config.text = toExpression(
         "nunjucks",
         "{{ @foo }} {{ @element }}",
       );
       listElement.config.element.__value__ = textElement;
 
-      const otherTextElement = createNewElement("text");
+      const otherTextElement = createNewDocumentBuilderElement("text");
       otherTextElement.config.text = toExpression("nunjucks", "{{ @element }}");
 
       const documentRendererBrick = {
@@ -878,11 +880,17 @@ describe("Collecting available vars", () => {
 
   describe("document builder list element with button", () => {
     beforeAll(async () => {
-      const listElement = createNewElement("list") as ListDocumentElement;
-      const rowElement = createNewElement("row") as DocumentElement<"row">;
+      const listElement = createNewDocumentBuilderElement(
+        "list",
+      ) as ListElement;
+      const rowElement = createNewDocumentBuilderElement(
+        "row",
+      ) as DocumentBuilderElement<"row">;
       listElement.config.element.__value__ = rowElement;
 
-      const buttonElement = createNewElement("button") as ButtonDocumentElement;
+      const buttonElement = createNewDocumentBuilderElement(
+        "button",
+      ) as ButtonElement;
       rowElement.children[0].children.push(buttonElement);
 
       buttonElement.config.onClick = toExpression("pipeline", [

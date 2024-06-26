@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import { type DocumentElementType } from "@/pageEditor/documentBuilder/documentBuilderTypes";
-import elementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
+import { type DocumentBuilderElementType } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 import cx from "classnames";
 import flapStyles from "./Flaps.module.scss";
 
 type HoveredFlapProps = {
   className?: string;
-  elementType: DocumentElementType;
+  elementType: DocumentBuilderElementType;
 };
 
 const HoveredFlap: React.FunctionComponent<HoveredFlapProps> = ({
@@ -31,7 +31,7 @@ const HoveredFlap: React.FunctionComponent<HoveredFlapProps> = ({
   elementType,
 }) => (
   <div className={cx(flapStyles.root, className)}>
-    {elementTypeLabels[elementType]}
+    {documentBuilderElementTypeLabels[elementType]}
   </div>
 );
 

@@ -17,7 +17,7 @@
 
 import React from "react";
 import {
-  type DocumentElement,
+  type DocumentBuilderElement,
   type PreviewComponentProps,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
@@ -27,7 +27,7 @@ import Flaps from "@/pageEditor/documentBuilder/preview/flaps/Flaps";
 import { isExpression } from "@/utils/expressionUtils";
 
 type ListProps = PreviewComponentProps & {
-  element: DocumentElement;
+  element: DocumentBuilderElement;
 };
 
 const List: React.FunctionComponent<ListProps> = ({

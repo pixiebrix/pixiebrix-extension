@@ -17,18 +17,18 @@
 
 import React from "react";
 import {
-  type DocumentComponent,
+  type DocumentBuilderComponent,
   type PreviewComponentProps,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "@/pageEditor/documentBuilder/preview/documentTree.module.scss";
 
 type UnknownProps = PreviewComponentProps & {
-  documentComponent: DocumentComponent;
+  documentBuilderComponent: DocumentBuilderComponent;
 };
 
 const Unknown: React.FunctionComponent<UnknownProps> = ({
-  documentComponent: { Component, props },
+  documentBuilderComponent: { Component, props },
   children,
   className,
   documentBodyName,

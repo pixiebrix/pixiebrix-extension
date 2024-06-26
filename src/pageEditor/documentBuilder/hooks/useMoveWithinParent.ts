@@ -19,7 +19,7 @@ import useReduxState from "@/hooks/useReduxState";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useField } from "formik";
-import { type DocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import getElementCollectionName from "@/pageEditor/documentBuilder/edit/getElementCollectionName";
 
 import { joinPathParts } from "@/utils/formUtils";
@@ -45,7 +45,7 @@ function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
   const fullCollectionName = joinPathParts(documentBodyName, collectionName);
 
   const [{ value: elementsCollection }, , { setValue: setElementsCollection }] =
-    useField<DocumentElement[]>(fullCollectionName);
+    useField<DocumentBuilderElement[]>(fullCollectionName);
 
   const canMoveUp = elementIndex > 0;
   const canMoveDown = elementIndex < elementsCollection.length - 1;
