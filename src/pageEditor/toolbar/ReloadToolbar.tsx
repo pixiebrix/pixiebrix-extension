@@ -87,9 +87,9 @@ export function shouldAutoRun(
 }
 
 /**
- * Element reload controls for the page editor toolbar.
+ * Mod component reload controls for the Page Editor toolbar.
  *
- * Automatically update elements that are safe to update because they require user interaction to trigger. For others,
+ * Automatically update draft mod components that are safe to update because they require user interaction to trigger. For others,
  * returns a set of UX controls for the user to control the updating:
  * - page load triggers
  * - element appear triggers
