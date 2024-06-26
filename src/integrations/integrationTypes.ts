@@ -238,9 +238,10 @@ export type BasicAuthenticationDefinition = {
 export type OAuth2AuthenticationDefinition = {
   baseURL?: string;
   oauth2: {
-    client_id: string;
-    authorizeUrl: string;
+    client_id?: string;
+    authorizeUrl?: string;
     tokenUrl?: string;
+    grantType?: string;
   };
   headers: Record<string, string>;
 };
@@ -284,9 +285,10 @@ export type OAuth2Context = {
   host?: string;
   authorizeUrl?: string;
   tokenUrl?: string;
-  client_id: string;
+  client_id?: string;
   client_secret?: string;
   code_challenge_method?: "S256";
+  grantType?: string;
 };
 
 /**
