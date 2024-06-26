@@ -28,7 +28,7 @@ import {
 } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import type React from "react";
-import { createSitePattern } from "@/permissions/patterns";
+import { createSitePattern, SITES_PATTERN } from "@/permissions/patterns";
 import { type Except } from "type-fest";
 import {
   isInnerDefinitionRegistryId,
@@ -47,7 +47,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
-import { deepPickBy } from "@/utils/objectUtils";
+import { deepPickBy, freeze } from "@/utils/objectUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
 import {
   type BaseExtensionState,
@@ -81,9 +81,23 @@ export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v3";
 export const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
 
 /**
- * Returns default availability for the given URL.
+ * Return availability for all sites.
+ * @see getDefaultAvailabilityForUrl
  */
-export function makeDefaultAvailability(url: string): NormalizedAvailability {
+// XXX: should technically need deep free here
+export const ALL_SITES_AVAILABILITY = freeze(
+  normalizeAvailability({
+    matchPatterns: [SITES_PATTERN],
+  }),
+);
+
+/**
+ * Returns default availability for the given URL.
+ * @see ALL_SITES_AVAILABILITY
+ */
+export function getDefaultAvailabilityForUrl(
+  url: string,
+): NormalizedAvailability {
   return normalizeAvailability({
     matchPatterns: [createSitePattern(url)],
   });
