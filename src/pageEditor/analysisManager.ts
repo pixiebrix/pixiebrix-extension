@@ -51,8 +51,7 @@ const runtimeActions = runtimeSlice.actions;
 const pageEditorAnalysisManager = new ReduxAnalysisManager();
 
 /**
- * Returns form states for the active mod. Includes both dirty elements tracked by the page editor, and other
- * components that are active on the page.
+ * Returns mod component form states for the active mod. Includes dirty mod component form states.
  * @param state the Page Editor Redux State
  */
 async function selectActiveModFormStates(
@@ -73,11 +72,11 @@ async function selectActiveModFormStates(
         x._recipe?.id === activeModComponentFormState.recipe.id &&
         !dirtyIds.has(x.id),
     );
-    const otherElements = await Promise.all(
+    const otherModComponentFormStates = await Promise.all(
       otherModComponents.map(async (x) => modComponentToFormState(x)),
     );
 
-    return [...dirtyModComponentFormStates, ...otherElements];
+    return [...dirtyModComponentFormStates, ...otherModComponentFormStates];
   }
 
   if (activeModComponentFormState) {
