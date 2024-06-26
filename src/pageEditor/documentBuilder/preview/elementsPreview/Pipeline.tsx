@@ -17,17 +17,17 @@
 
 import React from "react";
 import {
-  type DocumentElement,
+  type DocumentBuilderElement,
   type PreviewComponentProps,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
-import elementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 import cx from "classnames";
 import documentTreeStyles from "@/pageEditor/documentBuilder/preview/documentTree.module.scss";
 import Flaps from "@/pageEditor/documentBuilder/preview/flaps/Flaps";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 
 type PipelineProps = PreviewComponentProps & {
-  element: DocumentElement;
+  element: DocumentBuilderElement;
 };
 
 const Pipeline: React.FunctionComponent<PipelineProps> = ({
@@ -54,7 +54,7 @@ const Pipeline: React.FunctionComponent<PipelineProps> = ({
       isHovered={isHovered}
       isActive={isActive}
     />
-    <h3>{elementTypeLabels.pipeline}</h3>
+    <h3>{documentBuilderElementTypeLabels.pipeline}</h3>
     {(element.config?.pipeline as PipelineExpression)?.__value__.map(
       ({ id }) => <p key={id}>{id}</p>,
     )}

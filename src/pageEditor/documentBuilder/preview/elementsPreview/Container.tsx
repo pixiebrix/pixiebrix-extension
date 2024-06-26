@@ -17,23 +17,23 @@
 
 import React from "react";
 import {
-  type DocumentComponent,
-  type DocumentElement,
+  type DocumentBuilderComponent,
+  type DocumentBuilderElement,
   type PreviewComponentProps,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "@/pageEditor/documentBuilder/preview/documentTree.module.scss";
 import Flaps from "@/pageEditor/documentBuilder/preview/flaps/Flaps";
-import elementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 
 type ContainerProps = PreviewComponentProps & {
-  element: DocumentElement;
-  documentComponent: DocumentComponent;
+  element: DocumentBuilderElement;
+  documentBuilderComponent: DocumentBuilderComponent;
 };
 
 const Container: React.FunctionComponent<ContainerProps> = ({
   element,
-  documentComponent: { Component, props },
+  documentBuilderComponent: { Component, props },
   children,
   className,
   documentBodyName,
@@ -57,7 +57,9 @@ const Container: React.FunctionComponent<ContainerProps> = ({
       isActive={isActive}
     />
     {!element.children?.length && (
-      <span className="text-muted">{elementTypeLabels[element.type]}</span>
+      <span className="text-muted">
+        {documentBuilderElementTypeLabels[element.type]}
+      </span>
     )}
     {children}
   </Component>

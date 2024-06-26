@@ -27,8 +27,8 @@ import {
   faSquare,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import elementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
-import { type DocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { type TreeItem } from "@atlaskit/tree/types";
 import { acceptDrop } from "@/pageEditor/documentBuilder/hooks/useMoveElement";
 import { UnstyledButton } from "@/components/UnstyledButton";
@@ -56,9 +56,9 @@ const OutlineItem: React.FunctionComponent<
 }) => {
   const [hover, setHover] = useState(false);
 
-  const { element: dragElement }: { element: DocumentElement } =
+  const { element: dragElement }: { element: DocumentBuilderElement } =
     dragItem?.data ?? {};
-  const { element: itemElement }: { element: DocumentElement } =
+  const { element: itemElement }: { element: DocumentBuilderElement } =
     item.data ?? {};
 
   const allow = dragItem ? acceptDrop(dragElement, itemElement) : false;
@@ -111,7 +111,7 @@ const OutlineItem: React.FunctionComponent<
           )}
         </div>
         <div className="flex-grow-1">
-          <span>{elementTypeLabels[itemElement.type]}</span>
+          <span>{documentBuilderElementTypeLabels[itemElement.type]}</span>
         </div>
         {hover && (
           <div>

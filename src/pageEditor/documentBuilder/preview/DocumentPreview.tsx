@@ -20,7 +20,7 @@ import documentTreeStyles from "@/pageEditor/documentBuilder/preview/documentTre
 import styles from "./DocumentPreview.module.scss";
 import { useField } from "formik";
 import React, { type MouseEventHandler, useMemo, useState } from "react";
-import { type DocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import AddElementAction from "./AddElementAction";
 import ElementPreview from "./ElementPreview";
 import { ROOT_ELEMENT_TYPES } from "@/pageEditor/documentBuilder/allowedElementTypes";
@@ -54,7 +54,8 @@ const DocumentPreview = ({
   setActiveElement,
   menuBoundary,
 }: DocumentPreviewProps) => {
-  const [{ value: body }] = useField<DocumentElement[]>(documentBodyName);
+  const [{ value: body }] =
+    useField<DocumentBuilderElement[]>(documentBodyName);
   const bodyPreview = useMemo(() => getPreviewValues(body), [body]);
 
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);

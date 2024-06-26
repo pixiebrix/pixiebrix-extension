@@ -17,8 +17,8 @@
 
 import React from "react";
 import {
-  type DocumentComponent,
-  type DocumentElementType,
+  type DocumentBuilderComponent,
+  type DocumentBuilderElementType,
   type PreviewComponentProps,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
@@ -29,13 +29,13 @@ import Flaps from "@/pageEditor/documentBuilder/preview/flaps/Flaps";
 import { canParseUrl } from "@/utils/urlUtils";
 
 type ImageProps = PreviewComponentProps & {
-  elementType: DocumentElementType;
-  documentComponent: DocumentComponent;
+  elementType: DocumentBuilderElementType;
+  documentBuilderComponent: DocumentBuilderComponent;
 };
 
 const Image: React.FunctionComponent<ImageProps> = ({
   elementType,
-  documentComponent: { Component, props },
+  documentBuilderComponent: { Component, props },
   children,
   className,
   documentBodyName,

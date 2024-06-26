@@ -16,7 +16,7 @@
  */
 
 import PipelineExpressionVisitor, {
-  type VisitDocumentElementArgs,
+  type VisitDocumentBuilderElementArgs,
 } from "@/bricks/PipelineExpressionVisitor";
 import {
   nestedPosition,
@@ -37,8 +37,8 @@ import parseTemplateVariables from "./parseTemplateVariables";
 import recipesRegistry from "@/modDefinitions/registry";
 import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import {
-  isDocumentElementArray,
-  type ListDocumentElement,
+  isDocumentBuilderElementArray,
+  type ListElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { fromJS } from "@/starterBricks/factory";
@@ -716,16 +716,16 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   visitListElementBody({
     position,
     blockConfig,
-    element,
+    documentBuilderElement,
     pathInBlock,
-  }: VisitDocumentElementArgs) {
-    const listElement = element as ListDocumentElement;
+  }: VisitDocumentBuilderElementArgs) {
+    const listElement = documentBuilderElement as ListElement;
 
     // Variable name without the `@` prefix
     const variableKey = listElement.config.elementKey ?? "element";
     const listBodyExpression = listElement.config.element;
 
-    // `element` of ListElement will always be a deferred expression when using Page Editor. But guard just in case.
+    // `documentBuilderElement` of ListComponent will always be a deferred expression when using Page Editor. But guard just in case.
     if (isDeferExpression(listBodyExpression)) {
       const deferredExpressionVars = new VarMap();
 
@@ -759,10 +759,11 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
         blockOutputVars: new VarMap(),
       });
 
-      this.visitDocumentElement({
+      this.visitDocumentBuilderElement({
         position,
         blockConfig,
-        element: (element as ListDocumentElement).config.element.__value__,
+        documentBuilderElement: (documentBuilderElement as ListElement).config
+          .element.__value__,
         pathInBlock: joinPathParts(
           pathInBlock,
           "config",
@@ -779,14 +780,16 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     position: BrickPosition,
     blockConfig: BrickConfig,
   ): void {
-    if (isDocumentElementArray(blockConfig.config.body)) {
+    if (isDocumentBuilderElementArray(blockConfig.config.body)) {
       // Override because the base class extracts all pipelines directly. Instead, we need to visit the pipeline
       // in the context of their ancestor document builder elements (e.g., ListElement introduces a variable)
-      for (const [index, element] of Object.entries(blockConfig.config.body)) {
-        this.visitDocumentElement({
+      for (const [index, documentBuilderElement] of Object.entries(
+        blockConfig.config.body,
+      )) {
+        this.visitDocumentBuilderElement({
           position,
           blockConfig,
-          element,
+          documentBuilderElement,
           pathInBlock: `config.body.${index}`,
         });
       }
@@ -796,24 +799,26 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   /**
-   * Visit an element within a document builder brick.
-   * @see VisitDocumentElementArgs
+   * Visit a document builder element within a document builder brick.
+   * @see VisitDocumentBuilderElementArgs
    */
-  override visitDocumentElement({
+  override visitDocumentBuilderElement({
     position,
     blockConfig,
-    element,
+    documentBuilderElement,
     pathInBlock,
-  }: VisitDocumentElementArgs) {
-    switch (element.type) {
+  }: VisitDocumentBuilderElementArgs) {
+    switch (documentBuilderElement.type) {
       case "list": {
-        for (const [prop, value] of Object.entries(element.config)) {
+        for (const [prop, value] of Object.entries(
+          documentBuilderElement.config,
+        )) {
           // ListElement provides an elementKey to the deferred expression in its body
           if (prop === "element") {
             this.visitListElementBody({
               position,
               blockConfig,
-              element,
+              documentBuilderElement,
               pathInBlock,
             });
           } else if (isExpression(value)) {
@@ -828,10 +833,10 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       }
 
       default: {
-        super.visitDocumentElement({
+        super.visitDocumentBuilderElement({
           position,
           blockConfig,
-          element,
+          documentBuilderElement,
           pathInBlock,
         });
 

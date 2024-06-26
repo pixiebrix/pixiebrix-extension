@@ -20,8 +20,8 @@ import DocumentContext from "./DocumentContext";
 import { type Args } from "@/runtime/mapArgs";
 import Loader from "@/components/Loader";
 import {
-  type BuildDocumentBranch,
-  type DocumentElement,
+  type BuildDocumentBuilderBranch,
+  type DocumentBuilderElement,
   type DynamicPath,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { produce } from "immer";
@@ -41,7 +41,7 @@ type DocumentListProps = {
   array: UnknownObject[];
   elementKey?: string;
   config: Args;
-  buildDocumentBranch: BuildDocumentBranch;
+  buildDocumentBuilderBranch: BuildDocumentBuilderBranch;
   tracePath: DynamicPath;
 };
 
@@ -51,7 +51,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
   array = DEFAULT_ARRAY,
   elementKey,
   config,
-  buildDocumentBranch,
+  buildDocumentBuilderBranch,
   tracePath,
 }) => {
   const { staticId, branches } = tracePath;
@@ -95,7 +95,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
               options: apiVersionOptions("v3"),
               blueprintId: documentContext.options.logger.context.blueprintId,
             },
-          )) as DocumentElement;
+          )) as DocumentBuilderElement;
         } else {
           // Must be a constant at this point. Non-deferred templates would have already been rendered.
           documentElement = config;
@@ -138,10 +138,13 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
     <>
       {rootDefinitions?.map(({ documentElement, elementContext }, index) => {
         const { Component, props } =
-          buildDocumentBranch(documentElement as DocumentElement, {
-            staticId: joinPathParts(staticId, "list", "children"),
-            branches: [...branches, { staticId, index }],
-          }) ?? {};
+          buildDocumentBuilderBranch(
+            documentElement as DocumentBuilderElement,
+            {
+              staticId: joinPathParts(staticId, "list", "children"),
+              branches: [...branches, { staticId, index }],
+            },
+          ) ?? {};
 
         if (!Component) {
           return null;

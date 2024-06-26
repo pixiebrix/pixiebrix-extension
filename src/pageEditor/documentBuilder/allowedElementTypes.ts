@@ -16,12 +16,12 @@
  */
 
 import {
-  DOCUMENT_ELEMENT_TYPES,
-  type DocumentElement,
-  type DocumentElementType,
+  DOCUMENT_BUILDER_ELEMENT_TYPES,
+  type DocumentBuilderElement,
+  type DocumentBuilderElementType,
 } from "./documentBuilderTypes";
 
-export const ROOT_ELEMENT_TYPES: DocumentElementType[] = [
+export const ROOT_ELEMENT_TYPES: DocumentBuilderElementType[] = [
   "header",
   "text",
   "image",
@@ -32,7 +32,7 @@ export const ROOT_ELEMENT_TYPES: DocumentElementType[] = [
   "list",
 ];
 
-export const PARENT_ELEMENT_TYPES: DocumentElementType[] = [
+export const PARENT_ELEMENT_TYPES: DocumentBuilderElementType[] = [
   "row",
   "column",
   "container",
@@ -40,20 +40,20 @@ export const PARENT_ELEMENT_TYPES: DocumentElementType[] = [
   "list",
 ];
 
-const ALLOWED_CHILD_TYPES: Record<string, DocumentElementType[]> = {
+const ALLOWED_CHILD_TYPES: Record<string, DocumentBuilderElementType[]> = {
   container: ["row", "list"],
   row: ["column", "list"],
   column: ["header", "text", "image", "card", "pipeline", "button", "list"],
   card: ["header", "text", "image", "container", "pipeline", "button", "list"],
   // Any element we can add to the list
-  list: DOCUMENT_ELEMENT_TYPES as unknown as DocumentElementType[],
+  list: DOCUMENT_BUILDER_ELEMENT_TYPES as unknown as DocumentBuilderElementType[],
 };
 
 // HTML5/Bootstrap supports H1-H6: https://getbootstrap.com/docs/4.0/content/typography/
 export const VALID_HEADER_TAGS = ["h1", "h2", "h3", "h4", "h5", "h6"];
 
 export function getAllowedChildTypes(
-  parentElement: DocumentElement,
-): DocumentElementType[] {
+  parentElement: DocumentBuilderElement,
+): DocumentBuilderElementType[] {
   return ALLOWED_CHILD_TYPES[parentElement.type] ?? [];
 }

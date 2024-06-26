@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type DocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { type BrickArgsContext, type BrickOptions } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -28,7 +28,7 @@ export type DocumentViewProps = {
   /**
    * Top-level elements in the document.
    */
-  body: DocumentElement[];
+  body: DocumentBuilderElement[];
   /**
    * Remote stylesheets (URLs) to include in the document.
    */

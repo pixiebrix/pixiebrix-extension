@@ -17,10 +17,10 @@
 
 import { useField } from "formik";
 import React from "react";
-import { type DocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import RemoveElement from "./RemoveElement";
 import MoveElement from "./MoveElement";
-import elementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 import useElementOptions from "@/pageEditor/documentBuilder/edit/useElementOptions";
 import { useSelector } from "react-redux";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
@@ -36,11 +36,15 @@ type ElementEditorProps = {
 const ElementEditor: React.FC<ElementEditorProps> = ({ documentBodyName }) => {
   const activeElement = useSelector(selectNodePreviewActiveElement);
   const elementName = `${documentBodyName}.${activeElement}`;
-  const [{ value: documentElement }] = useField<DocumentElement>(elementName);
-  const ElementOptions = useElementOptions(documentElement, elementName);
+  const [{ value: documentBuilderElement }] =
+    useField<DocumentBuilderElement>(elementName);
+  const ElementOptions = useElementOptions(documentBuilderElement, elementName);
 
   const currentElementName: string =
-    getProperty(elementTypeLabels, documentElement.type) ?? "Unknown";
+    getProperty(
+      documentBuilderElementTypeLabels,
+      documentBuilderElement.type,
+    ) ?? "Unknown";
 
   return (
     <>

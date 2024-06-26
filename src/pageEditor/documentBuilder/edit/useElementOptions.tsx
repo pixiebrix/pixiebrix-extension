@@ -16,7 +16,7 @@
  */
 
 import {
-  type DocumentElement,
+  type DocumentBuilderElement,
   isButtonElement,
   isListElement,
   isPipelineElement,
@@ -29,28 +29,28 @@ import PipelineOptions from "@/pageEditor/documentBuilder/edit/PipelineOptions";
 import ButtonOptions from "@/pageEditor/documentBuilder/edit/ButtonOptions";
 
 const useElementOptions = (
-  element: DocumentElement,
+  documentBuilderElement: DocumentBuilderElement,
   elementName: string,
 ): React.FC => {
-  const elementType = element.type;
+  const elementType = documentBuilderElement.type;
 
   const ElementOptions = useMemo(
     () => {
-      if (isListElement(element)) {
+      if (isListElement(documentBuilderElement)) {
         const ListOptionsFields = () => (
           <ListOptions elementName={elementName} />
         );
         return ListOptionsFields;
       }
 
-      if (isPipelineElement(element)) {
+      if (isPipelineElement(documentBuilderElement)) {
         const PipelineOptionsFields = () => (
           <PipelineOptions elementName={elementName} />
         );
         return PipelineOptionsFields;
       }
 
-      if (isButtonElement(element)) {
+      if (isButtonElement(documentBuilderElement)) {
         const ButtonOptionsFields = () => (
           <ButtonOptions elementName={elementName} />
         );

@@ -17,8 +17,8 @@
 
 import React from "react";
 import {
-  type ButtonDocumentConfig,
-  type ButtonDocumentElement,
+  type ButtonElementConfig,
+  type ButtonElement,
   type PreviewComponentProps,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
@@ -29,8 +29,8 @@ import { Button as BsButton } from "react-bootstrap";
 import { isExpression } from "@/utils/expressionUtils";
 
 type ButtonProps = PreviewComponentProps & {
-  element: ButtonDocumentElement;
-  buttonProps: ButtonDocumentConfig;
+  element: ButtonElement;
+  buttonProps: ButtonElementConfig;
 };
 
 const Button: React.FunctionComponent<ButtonProps> = ({

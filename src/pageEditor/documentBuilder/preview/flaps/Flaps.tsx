@@ -16,13 +16,13 @@
  */
 
 import React from "react";
-import { type DocumentElementType } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type DocumentBuilderElementType } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import HoveredFlap from "./HoveredFlap";
 import ActiveElementFlap from "./ActiveElementFlap";
 
 type PopupLabelsProps = {
   className?: string;
-  elementType: DocumentElementType;
+  elementType: DocumentBuilderElementType;
   documentBodyName: string;
   elementName: string;
   isHovered: boolean;

@@ -17,8 +17,8 @@
 
 import React from "react";
 import {
-  type DocumentComponent,
-  type DocumentElement,
+  type DocumentBuilderComponent,
+  type DocumentBuilderElement,
   type PreviewComponentProps,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
@@ -27,13 +27,13 @@ import Flaps from "@/pageEditor/documentBuilder/preview/flaps/Flaps";
 import styles from "./Card.module.scss";
 
 type CardProps = PreviewComponentProps & {
-  element: DocumentElement;
-  documentComponent: DocumentComponent;
+  element: DocumentBuilderElement;
+  documentBuilderComponent: DocumentBuilderComponent;
 };
 
 const Card: React.FunctionComponent<CardProps> = ({
   element,
-  documentComponent: { Component, props },
+  documentBuilderComponent: { Component, props },
   children,
   className,
   isHovered,

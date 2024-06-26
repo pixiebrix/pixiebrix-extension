@@ -16,7 +16,7 @@
  */
 
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { type DocumentElementType } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type DocumentBuilderElementType } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import React from "react";
 import { VALID_HEADER_TAGS } from "@/pageEditor/documentBuilder/allowedElementTypes";
 import { joinName } from "@/utils/formUtils";
@@ -55,10 +55,10 @@ function getHiddenEdit(elementName: string): SchemaFieldProps {
 }
 
 function getElementEditSchemas(
-  elementType: DocumentElementType,
+  documentBuilderElementType: DocumentBuilderElementType,
   elementName: string,
 ): SchemaFieldProps[] {
-  switch (elementType) {
+  switch (documentBuilderElementType) {
     // Provide backwards compatibility for old elements
     case "header_1":
     case "header_2":
