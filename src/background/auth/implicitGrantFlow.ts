@@ -65,7 +65,9 @@ async function implicitGrantFlow(
     state,
     ...params,
   })) {
-    authorizeURL.searchParams.set(key, value);
+    if (value) {
+      authorizeURL.searchParams.set(key, value);
+    }
   }
 
   console.debug("Initiating implicit grant flow", {

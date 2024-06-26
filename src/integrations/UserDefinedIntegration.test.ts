@@ -17,6 +17,7 @@
 
 import automationAnywhere from "@contrib/integrations/automation-anywhere.yaml";
 import automationAnywhereOAuth2 from "@contrib/integrations/automation-anywhere-oauth2.yaml";
+import googleOAuth2Pkce from "@contrib/integrations/google-oauth2-pkce.yaml";
 import greenhouse from "@contrib/integrations/greenhouse.yaml";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
 import { BusinessError } from "@/errors/businessErrors";
@@ -26,6 +27,7 @@ import {
   type IntegrationDefinition,
 } from "@/integrations/integrationTypes";
 import { stringToBase64 } from "uint8array-extras";
+import { set } from "lodash";
 
 describe("UserDefinedIntegration", () => {
   test("includes version", () => {
@@ -81,6 +83,36 @@ describe("UserDefinedIntegration", () => {
       // `controlRoomUrl` not included because it's not a valid URL
       "https://oauthconfigapp.automationanywhere.digital/client/oauth/authorize?hosturl=&audience=https://controlroom",
       "https://oauthconfigapp.automationanywhere.digital/client/oauth/token",
+    ]);
+  });
+
+  test("handles undefined tokenUrl", () => {
+    const integrationWithTokenUrl = fromJS(
+      googleOAuth2Pkce as unknown as IntegrationDefinition,
+    );
+    const originsWithTokenUrl = integrationWithTokenUrl.getOrigins(
+      {} as unknown as SanitizedConfig,
+    );
+    expect(originsWithTokenUrl).toEqual([
+      "https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent",
+      "https://oauth2.googleapis.com/token",
+    ]);
+
+    const configWithoutTokenUrl = set(
+      googleOAuth2Pkce,
+      "authentication.oauth2.tokenUrl",
+      undefined,
+    );
+
+    const integrationWithoutTokenUrl = fromJS(
+      configWithoutTokenUrl as unknown as IntegrationDefinition,
+    );
+    const originsWithoutTokenUrl = integrationWithoutTokenUrl.getOrigins(
+      {} as unknown as SanitizedConfig,
+    );
+
+    expect(originsWithoutTokenUrl).toEqual([
+      "https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent",
     ]);
   });
 

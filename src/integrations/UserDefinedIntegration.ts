@@ -186,6 +186,7 @@ class UserDefinedIntegration<
 
       // Don't add wildcard because the URL can't change per request.
       const authUrls = [oauth.oauth2.authorizeUrl, oauth.oauth2.tokenUrl]
+        .filter((template) => template != null)
         .map((template) => renderMustache(template, integrationConfig))
         .filter((url) => canParseUrl(url));
       patterns.push(...authUrls);
