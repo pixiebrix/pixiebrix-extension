@@ -210,7 +210,7 @@ describe("useSaveMod", () => {
             isReactivate: false,
           }),
         );
-        dispatch(editorSlice.actions.selectRecipeId(modId));
+        dispatch(editorSlice.actions.setActiveModId(modId));
         dispatch(
           editorSlice.actions.editRecipeOptionsDefinitions({
             schema: {

@@ -59,9 +59,9 @@ function renderBrickConfiguration(
     initialValues,
     setupRedux(dispatch) {
       dispatch(actions.addModComponentFormState(initialValues));
-      dispatch(actions.selectElement(initialValues.uuid));
+      dispatch(actions.setActiveModComponentId(initialValues.uuid));
       dispatch(
-        actions.setElementActiveNodeId(
+        actions.setActiveNodeId(
           initialValues.extension.blockPipeline[0].instanceId,
         ),
       );

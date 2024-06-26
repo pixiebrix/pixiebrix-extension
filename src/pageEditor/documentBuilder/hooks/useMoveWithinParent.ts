@@ -34,7 +34,7 @@ type MoveWithinParent = {
 function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
   const [activeElement, setActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
-    actions.setNodePreviewActiveElement,
+    actions.setActiveDocumentOrFormPreviewElement,
   );
 
   assertNotNullish(activeElement, "No active element found");

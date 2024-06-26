@@ -32,7 +32,7 @@ function useDeleteElement(documentBodyName: string) {
 
   return useCallback(
     async (elementName: string) => {
-      dispatch(editorActions.setNodePreviewActiveElement(null));
+      dispatch(editorActions.setActiveDocumentOrFormPreviewElement(null));
 
       const { collectionName, elementIndex } = getElementCollectionName(
         [documentBodyName, elementName].join("."),

@@ -47,8 +47,8 @@ describe("FormRendererOptions", () => {
         initialValues,
         setupRedux(dispatch) {
           dispatch(editorActions.addModComponentFormState(initialValues));
-          dispatch(editorActions.selectElement(initialValues.uuid));
-          dispatch(editorActions.setElementActiveNodeId(brick.instanceId));
+          dispatch(editorActions.setActiveModComponentId(initialValues.uuid));
+          dispatch(editorActions.setActiveNodeId(brick.instanceId));
         },
       },
     );
@@ -72,8 +72,8 @@ describe("FormRendererOptions", () => {
         initialValues,
         setupRedux(dispatch) {
           dispatch(editorActions.addModComponentFormState(initialValues));
-          dispatch(editorActions.selectElement(initialValues.uuid));
-          dispatch(editorActions.setElementActiveNodeId(brick.instanceId));
+          dispatch(editorActions.setActiveModComponentId(initialValues.uuid));
+          dispatch(editorActions.setActiveNodeId(brick.instanceId));
         },
       },
     );
@@ -105,8 +105,8 @@ describe("FormRendererOptions", () => {
         initialValues,
         setupRedux(dispatch) {
           dispatch(editorActions.addModComponentFormState(initialValues));
-          dispatch(editorActions.selectElement(initialValues.uuid));
-          dispatch(editorActions.setElementActiveNodeId(brick.instanceId));
+          dispatch(editorActions.setActiveModComponentId(initialValues.uuid));
+          dispatch(editorActions.setActiveNodeId(brick.instanceId));
         },
       },
     );

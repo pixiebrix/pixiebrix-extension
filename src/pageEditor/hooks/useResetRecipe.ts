@@ -54,7 +54,7 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
 
       dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
       dispatch(actions.restoreDeletedModComponentFormStatesForMod(recipeId));
-      dispatch(actions.selectRecipeId(recipeId));
+      dispatch(actions.setActiveModId(recipeId));
     },
     [dispatch, modComponentFormStates, resetExtension, showConfirmation],
   );

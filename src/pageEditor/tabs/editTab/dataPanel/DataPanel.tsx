@@ -175,7 +175,7 @@ const DataPanel: React.FC = () => {
 
   const [nodePreviewActiveElement, setNodePreviewActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
-    editorActions.setNodePreviewActiveElement,
+    editorActions.setActiveDocumentOrFormPreviewElement,
   );
 
   const popupBoundary = showDocumentPreview

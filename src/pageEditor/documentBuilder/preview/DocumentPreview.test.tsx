@@ -63,9 +63,9 @@ function renderDocumentPreview(documentElement: DocumentElement) {
     initialValues: formState,
     setupRedux(dispatch) {
       dispatch(actions.addModComponentFormState(formState));
-      dispatch(actions.selectElement(formState.uuid));
+      dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
-        actions.setElementActiveNodeId(
+        actions.setActiveNodeId(
           formState.extension.blockPipeline[0].instanceId,
         ),
       );
@@ -187,9 +187,9 @@ describe("Show live preview", () => {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(actions.addModComponentFormState(formState));
-        dispatch(actions.selectElement(formState.uuid));
+        dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
-          actions.setElementActiveNodeId(pipelineField.__value__[0].instanceId),
+          actions.setActiveNodeId(pipelineField.__value__[0].instanceId),
         );
       },
     });

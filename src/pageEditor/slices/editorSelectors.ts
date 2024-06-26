@@ -26,7 +26,7 @@ import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { compact, flatMap, isEmpty, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
-  type ModComponentUIState,
+  type BrickPipelineUIState,
   type TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
@@ -272,7 +272,7 @@ export const selectExpandedModId = ({ editor }: EditorRootState) =>
 // UI state
 export function selectActiveModComponentUIState({
   editor,
-}: EditorRootState): Nullishable<ModComponentUIState> {
+}: EditorRootState): Nullishable<BrickPipelineUIState> {
   if (editor.activeModComponentId == null) {
     console.warn(
       "selectActiveModComponentUIState called without activeModComponentId",
@@ -295,13 +295,13 @@ export const selectActiveNodeId = createSelector(
 
 export const selectPipelineMap = createSelector(
   selectActiveModComponentUIState,
-  (uiState: ModComponentUIState) => uiState?.pipelineMap,
+  (uiState: BrickPipelineUIState) => uiState?.pipelineMap,
 );
 
 export const selectActiveNodeInfo = createSelector(
   selectActiveModComponentUIState,
   selectActiveNodeId,
-  (uiState: Nullishable<ModComponentUIState>, activeNodeId?: UUID) => {
+  (uiState: Nullishable<BrickPipelineUIState>, activeNodeId?: UUID) => {
     assertNotNullish(
       uiState,
       `UI state is ${typeof uiState === "object" ? "null" : "undefined"}`,
@@ -322,7 +322,7 @@ export const selectActiveNodeInfo = createSelector(
 
 export const selectCollapsedNodes = createSelector(
   selectActiveModComponentUIState,
-  (elementUIState: ModComponentUIState) =>
+  (elementUIState: BrickPipelineUIState) =>
     Object.entries(elementUIState.nodeUIStates)
       .map(([nodeId, { collapsed }]) => (collapsed ? nodeId : null))
       .filter((nodeId) => nodeId != null),
@@ -331,7 +331,7 @@ export const selectCollapsedNodes = createSelector(
 const activeModComponentNodeInfoSelector = createSelector(
   selectActiveModComponentUIState,
   (state: EditorRootState, instanceId: UUID) => instanceId,
-  (uiState: ModComponentUIState, instanceId: UUID) =>
+  (uiState: BrickPipelineUIState, instanceId: UUID) =>
     // eslint-disable-next-line security/detect-object-injection -- using a node uuid
     uiState.pipelineMap[instanceId],
 );
@@ -343,7 +343,7 @@ export const selectActiveModComponentNodeInfo =
 const parentBlockInfoSelector = createSelector(
   selectActiveModComponentUIState,
   (state: EditorRootState, instanceId: UUID) => instanceId,
-  (uiState: ModComponentUIState, instanceId: UUID) => {
+  (uiState: BrickPipelineUIState, instanceId: UUID) => {
     if (uiState == null) {
       return null;
     }
