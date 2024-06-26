@@ -32,18 +32,22 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
-function isPanelElement(element: ModComponentFormState | null): boolean {
-  return ["panel", "actionPanel"].includes(element?.type ?? "");
+function isPanel(modComponentFormState: ModComponentFormState | null): boolean {
+  return ["panel", "actionPanel"].includes(modComponentFormState?.type ?? "");
 }
 
 /**
  * Return true if the trigger runs automatically (not in response to a user action).
  */
-function isAutomaticTrigger(element: ModComponentFormState): boolean {
+function isAutomaticTrigger(
+  modComponentFormState: ModComponentFormState,
+): boolean {
   const automatic = ["load", "appear", "initialize", "interval"];
   return (
-    element?.type === "trigger" &&
-    automatic.includes(element?.extensionPoint.definition.trigger ?? "")
+    modComponentFormState?.type === "trigger" &&
+    automatic.includes(
+      modComponentFormState?.extensionPoint.definition.trigger ?? "",
+    )
   );
 }
 
@@ -66,17 +70,20 @@ const Controls: React.FunctionComponent<{
 );
 
 /**
- * Return true if the element should be automatically updated on the page.
- * @param element the Page Editor form element
+ * Return true if the mod component for the mod component form state should be automatically updated on the page.
+ * @param modComponentFormState the form state for the mod component to check
  */
-export function shouldAutoRun(element: ModComponentFormState): boolean {
-  // By default, don't automatically trigger (because it might be doing expensive operations such as hitting an API)
-  const isPanel = isPanelElement(element);
-  const isTrigger = isAutomaticTrigger(element);
-  const isTour = element.type === "tour";
-  const automaticUpdate = !(isTrigger || isPanel || isTour);
+export function shouldAutoRun(
+  modComponentFormState: ModComponentFormState,
+): boolean {
+  const isTour = modComponentFormState.type === "tour";
+  const automaticUpdate = !(
+    isAutomaticTrigger(modComponentFormState) || // By default, don't automatically trigger (because it might be doing expensive operations such as hitting an API)
+    isPanel(modComponentFormState) ||
+    isTour
+  );
 
-  return automaticUpdate || (element.autoReload ?? false);
+  return automaticUpdate || (modComponentFormState.autoReload ?? false);
 }
 
 /**
@@ -130,7 +137,6 @@ const ReloadToolbar: React.FunctionComponent<{
     trailing: true,
   });
 
-  const isPanel = isPanelElement(modComponentFormState);
   const isTrigger = isAutomaticTrigger(modComponentFormState);
   const isTour = modComponentFormState.type === "tour";
 
@@ -142,7 +148,7 @@ const ReloadToolbar: React.FunctionComponent<{
     void debouncedRun();
   }, [debouncedRun, modComponentFormState]);
 
-  if (isPanel) {
+  if (isPanel(modComponentFormState)) {
     return (
       <Controls
         autoLabel="Auto-Render"
