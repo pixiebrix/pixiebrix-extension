@@ -106,9 +106,10 @@ paths in `.auth`.
 End-to-end tests are integrated into the GitHub CI workflow, triggering on pull requests. The workflow steps are
 detailed in `.github/workflows/ci.yml`.
 
-If a test fails in CI, the test report is available in the GitHub Actions tab of the pull request. Download the
-artifact and uncompress using 7zip, with [the password from 1password](https://start.1password.com/open/i?a=INRFJCYAHREKFCNIGK4M7FYRHM&h=pixiebrix.1password.com&i=tlcba2tv4w3uygsbhfxtcr6zfi&v=os4xtpugongs7htmnsbvoeaujm):
-`7zz x -o./playwright-report ./playwright-report.7z`
+If a test fails in CI, the test report is available in the GitHub Actions tab of the pull request. You can
+view the report by running `./scripts/show-report.sh -p <pull-request-number>`. You will need to have
+`7zz` and `gh` installed to run this script (install using brew). In addition, you will need to set the `REPORT_ZIP_PASSWORD`
+environment variable to the password used to encrypt the report.
 (For context on why password encryption is necessary, see [this PR](https://github.com/pixiebrix/pixiebrix-extension/pull/8545))
 
 To view the test report in the browser. Run: `npx playwright show-report <path-to-downloaded-report>` to
