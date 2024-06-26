@@ -84,7 +84,8 @@ export const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
  * Return availability for all sites.
  * @see getDefaultAvailabilityForUrl
  */
-// XXX: should technically need deep free here
+// XXX: technically we need deep freeze here because of the sub-array. Freezing top-level should catch most
+//  accidental mutation, though
 export const ALL_SITES_AVAILABILITY = freeze(
   normalizeAvailability({
     matchPatterns: [SITES_PATTERN],
