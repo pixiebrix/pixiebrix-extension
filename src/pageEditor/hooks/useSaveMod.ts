@@ -155,7 +155,7 @@ function useSaveMod(): ModSaver {
     await Promise.all(
       dirtyModComponentFormStates.map(async (modComponentFormState) =>
         upsertModComponentFormState({
-          element: modComponentFormState,
+          modComponentFormState,
           options: {
             pushToCloud: false,
             // Permissions were already checked earlier in the save function here

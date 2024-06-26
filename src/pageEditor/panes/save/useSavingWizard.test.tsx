@@ -22,7 +22,7 @@ import { Provider } from "react-redux";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { savingExtensionSlice } from "./savingExtensionSlice";
 import useSavingWizard from "./useSavingWizard";
-import useUpsertFormElementMock from "@/pageEditor/hooks/useUpsertModComponentFormState";
+import useUpsertModComponentFormStateMock from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import useResetExtensionMock from "@/pageEditor/hooks/useResetExtension";
 import {
   useCreateModDefinitionMutation as useCreateModDefinitionMutationMock,
@@ -133,7 +133,9 @@ test("saves non packaged mod component form state", async () => {
   );
 
   const createMock = jest.fn();
-  jest.mocked(useUpsertFormElementMock).mockReturnValueOnce(createMock);
+  jest
+    .mocked(useUpsertModComponentFormStateMock)
+    .mockReturnValueOnce(createMock);
 
   const { result } = renderUseSavingWizard(store);
 
@@ -142,7 +144,7 @@ test("saves non packaged mod component form state", async () => {
   expect(result.current.isSaving).toBe(true);
   expect(createMock).toHaveBeenCalledTimes(1);
   expect(createMock).toHaveBeenCalledWith({
-    element: modComponentFormState,
+    modComponentFormState,
     options: {
       // Single ModComponentBase, so need to push as StandaloneModDefinition an handle all permissions/notifications/reactivation
       pushToCloud: true,
@@ -202,7 +204,7 @@ describe("saving a mod component", () => {
     );
 
     const createMock = jest.fn();
-    jest.mocked(useUpsertFormElementMock).mockReturnValue(createMock);
+    jest.mocked(useUpsertModComponentFormStateMock).mockReturnValue(createMock);
 
     const resetMock = jest.fn();
     jest.mocked(useResetExtensionMock).mockReturnValue(resetMock);
@@ -219,7 +221,7 @@ describe("saving a mod component", () => {
 
     return {
       store,
-      element: menuItemFormState,
+      modComponentFormState: menuItemFormState,
       recipe: modDefinition,
       createMock,
       resetMock,
@@ -241,13 +243,13 @@ describe("saving a mod component", () => {
     expect(result.current.isWizardOpen).toBe(true);
     expect(result.current.isSaving).toBe(false);
 
-    // These deferreds let us go through saveElementAsPersonalExtension step by step
+    // These defers let us go through saveAsPersonalModComponent step by step
     const resettingElementDeferred = pDefer<void>();
     resetMock.mockReturnValueOnce(resettingElementDeferred.promise);
     const creatingElementDeferred = pDefer<void>();
     createMock.mockReturnValueOnce(creatingElementDeferred.promise);
 
-    // Saving as personal extension
+    // Saving as personal mod component
     // Invoke the saveElementAsPersonalExtension but don't wait for it to resolve yet
     const savingElementPromise = act(async () =>
       result.current.saveElementAsPersonalExtension(),
@@ -287,7 +289,7 @@ describe("saving a mod component", () => {
     // Check new mod component form state is saved
     expect(createMock).toHaveBeenCalledTimes(1);
     expect(createMock).toHaveBeenCalledWith({
-      element: modComponentFormStates[1],
+      modComponentFormState: modComponentFormStates[1],
       options: {
         // Single ModComponentBase, so need to push as StandaloneModDefinition an handle all permissions/notifications/reactivation
         pushToCloud: true,
@@ -314,7 +316,8 @@ describe("saving a mod component", () => {
   });
 
   test("saves as new mod", async () => {
-    const { store, element, createMock, createModMock } = setupMocks();
+    const { store, modComponentFormState, createMock, createModMock } =
+      setupMocks();
     createModMock.mockReturnValueOnce({});
 
     // Render hook
@@ -345,7 +348,7 @@ describe("saving a mod component", () => {
 
     // Check the mod component form state is saved
     expect(createMock).toHaveBeenCalledWith({
-      element,
+      modComponentFormState,
       options: {
         pushToCloud: false,
         // New ModDefinition with single ModComponentDefinition, so let create handle permissions
@@ -410,7 +413,8 @@ describe("saving a mod component", () => {
   });
 
   test("updates the mod", async () => {
-    const { store, element, recipe, createMock, updateModMock } = setupMocks();
+    const { store, modComponentFormState, recipe, createMock, updateModMock } =
+      setupMocks();
     updateModMock.mockReturnValueOnce({});
 
     // Render hook
@@ -426,7 +430,7 @@ describe("saving a mod component", () => {
 
     // Saving with a new mod
     const newModMeta = metadataFactory({ id: recipe.metadata.id });
-    const savingElementPromise = act(async () =>
+    const savingModComponentFormStatePromise = act(async () =>
       result.current.saveElementAndUpdateRecipe(newModMeta),
     );
 
@@ -434,14 +438,14 @@ describe("saving a mod component", () => {
     expect(result.current.isWizardOpen).toBe(true);
     expect(result.current.isSaving).toBe(true);
 
-    await savingElementPromise;
+    await savingModComponentFormStatePromise;
 
     // Check new mod created
     expect(updateModMock).toHaveBeenCalledTimes(1);
 
     // Check the mod component form state is saved
     expect(createMock).toHaveBeenCalledWith({
-      element,
+      modComponentFormState,
       options: {
         // FIXME: is this correct?
         pushToCloud: true,

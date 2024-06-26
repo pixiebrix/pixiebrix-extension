@@ -48,7 +48,7 @@ describe("useUpsertModComponentFormState", () => {
   });
 
   it("should save form state to redux", async () => {
-    const modComponent = formStateFactory();
+    const modComponentFormState = formStateFactory();
 
     const { result, getReduxStore, waitForEffect } = renderHook(() =>
       useUpsertModComponentFormState(),
@@ -57,7 +57,7 @@ describe("useUpsertModComponentFormState", () => {
 
     const upsertModComponentFormState = result.current;
     await upsertModComponentFormState({
-      element: modComponent,
+      modComponentFormState: modComponentFormState,
       options: defaultOptions,
     });
 
@@ -68,15 +68,15 @@ describe("useUpsertModComponentFormState", () => {
     expect(extensions).toHaveLength(1);
     expect(extensions[0]).toEqual(
       expect.objectContaining({
-        id: modComponent.uuid,
-        extensionPointId: modComponent.extensionPoint.metadata.id,
+        id: modComponentFormState.uuid,
+        extensionPointId: modComponentFormState.extensionPoint.metadata.id,
         updateTimestamp: expectedUpdateDate.toISOString(),
       }),
     );
   });
 
   it("pushes mod component to the cloud with the same updateTimestamp that is saved to redux", async () => {
-    const modComponent = formStateFactory();
+    const modComponentFormState = formStateFactory();
 
     const { result, getReduxStore, waitForEffect } = renderHook(() =>
       useUpsertModComponentFormState(),
@@ -85,7 +85,7 @@ describe("useUpsertModComponentFormState", () => {
 
     const upsertModComponentFormState = result.current;
     await upsertModComponentFormState({
-      element: modComponent,
+      modComponentFormState,
       options: { ...defaultOptions, pushToCloud: true },
     });
 
@@ -94,8 +94,8 @@ describe("useUpsertModComponentFormState", () => {
     );
 
     const expectedFields = {
-      id: modComponent.uuid,
-      extensionPointId: modComponent.extensionPoint.metadata.id,
+      id: modComponentFormState.uuid,
+      extensionPointId: modComponentFormState.extensionPoint.metadata.id,
       updateTimestamp: expectedUpdateDate.toISOString(),
     };
 
@@ -104,7 +104,7 @@ describe("useUpsertModComponentFormState", () => {
 
     expect(axiosMock.history.put).toHaveLength(1);
     expect(axiosMock.history.put[0].url).toBe(
-      `/api/extensions/${modComponent.uuid}/`,
+      `/api/extensions/${modComponentFormState.uuid}/`,
     );
     expect(JSON.parse(axiosMock.history.put[0].data)).toEqual(
       expect.objectContaining(expectedFields),

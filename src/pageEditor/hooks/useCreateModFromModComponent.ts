@@ -90,7 +90,7 @@ function useCreateModFromModComponent(
           dispatch(editorActions.addModComponentFormState(newModComponent));
 
           await upsertModComponentFormState({
-            element: newModComponent,
+            modComponentFormState: newModComponent,
             options: {
               // Don't push to cloud since we're saving it with the mod
               pushToCloud: false,

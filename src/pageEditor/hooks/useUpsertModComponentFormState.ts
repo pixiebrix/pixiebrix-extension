@@ -95,11 +95,10 @@ type SaveOptions = {
 };
 
 /**
- * @param element the page editor formik state
  * @returns errorMessage an error message, or null if no error occurred
  */
 type SaveCallback = (config: {
-  element: ModComponentFormState;
+  modComponentFormState: ModComponentFormState;
   options: SaveOptions;
   modId?: RegistryId;
 }) => Promise<string | null>;
@@ -129,22 +128,27 @@ function useUpsertModComponentFormState(): SaveCallback {
   const [saveStandaloneModDefinition] =
     useSaveStandaloneModDefinitionMutation();
 
-  const saveElement = useCallback(
+  const saveModComponentFormState = useCallback(
     async (
-      element: ModComponentFormState,
+      modComponentFormState: ModComponentFormState,
       options: SaveOptions,
       modId?: RegistryId,
     ): Promise<string | null> => {
       if (options.checkPermissions) {
         // Good to prompt the creator for permissions if any is missing, but they're not actually required to save
-        void ensureModComponentFormStatePermissionsFromUserGesture(element);
+        void ensureModComponentFormStatePermissionsFromUserGesture(
+          modComponentFormState,
+        );
       }
 
-      const adapter = ADAPTERS.get(element.type);
+      const adapter = ADAPTERS.get(modComponentFormState.type);
 
-      assertNotNullish(adapter, `No adapter found for ${element.type}`);
+      assertNotNullish(
+        adapter,
+        `No adapter found for ${modComponentFormState.type}`,
+      );
 
-      const extensionPointId = element.extensionPoint.metadata.id;
+      const extensionPointId = modComponentFormState.extensionPoint.metadata.id;
       const hasInnerExtensionPoint =
         isInnerDefinitionRegistryId(extensionPointId);
 
@@ -158,13 +162,14 @@ function useUpsertModComponentFormState(): SaveCallback {
         isEditable =
           editablePackages.some((x) => x.name === extensionPointId) ?? false;
 
-        const isLocked = element.installed && !isEditable;
+        const isLocked = modComponentFormState.installed && !isEditable;
 
         if (!isLocked) {
           try {
-            const extensionPointConfig =
-              adapter.selectStarterBrickDefinition(element);
-            const packageId = element.installed
+            const extensionPointConfig = adapter.selectStarterBrickDefinition(
+              modComponentFormState,
+            );
+            const packageId = modComponentFormState.installed
               ? editablePackages.find(
                   // Bricks endpoint uses "name" instead of id
                   (x) => x.name === extensionPointConfig.metadata?.id,
@@ -184,18 +189,19 @@ function useUpsertModComponentFormState(): SaveCallback {
 
       reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_UPDATE, {
         sessionId,
-        type: element.type,
+        type: modComponentFormState.type,
         modId,
       });
 
       try {
-        let modComponent = adapter.selectExtension(element);
+        let modComponent = adapter.selectExtension(modComponentFormState);
         const updateTimestamp: Timestamp =
           new Date().toISOString() as Timestamp;
 
         if (hasInnerExtensionPoint) {
-          const extensionPointConfig =
-            adapter.selectStarterBrickDefinition(element);
+          const extensionPointConfig = adapter.selectStarterBrickDefinition(
+            modComponentFormState,
+          );
           modComponent = extensionWithInnerDefinitions(
             modComponent,
             extensionPointConfig.definition,
@@ -222,7 +228,7 @@ function useUpsertModComponentFormState(): SaveCallback {
           }).unwrap();
         }
 
-        dispatch(markClean(element.uuid));
+        dispatch(markClean(modComponentFormState.uuid));
       } catch (error) {
         return onStepError(error, "saving mod");
       }
@@ -241,9 +247,13 @@ function useUpsertModComponentFormState(): SaveCallback {
   );
 
   return useCallback(
-    async ({ element, options, modId }) => {
+    async ({ modComponentFormState, options, modId }) => {
       try {
-        return await saveElement(element, options, modId);
+        return await saveModComponentFormState(
+          modComponentFormState,
+          options,
+          modId,
+        );
       } catch (error) {
         console.error("Error saving mod", { error });
         notify.error({
@@ -253,7 +263,7 @@ function useUpsertModComponentFormState(): SaveCallback {
         return "Save error";
       }
     },
-    [saveElement],
+    [saveModComponentFormState],
   );
 }
 

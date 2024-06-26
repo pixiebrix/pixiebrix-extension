@@ -119,7 +119,7 @@ const useSavingWizard = () => {
   async function saveUnpackagedModComponent() {
     dispatch(savingExtensionActions.setSavingInProgress());
     const error = await upsertModComponentFormState({
-      element: activeModComponentFormState,
+      modComponentFormState: activeModComponentFormState,
       options: {
         pushToCloud: true,
         checkPermissions: true,
@@ -131,28 +131,30 @@ const useSavingWizard = () => {
   }
 
   /**
-   * Creates personal extension from a page editor element. It will not be a part of the mod
+   * Creates personal mod component from a mod component form state in the Page Editor.
    */
-  const saveElementAsPersonalExtension = async () => {
+  const saveAsPersonalModComponent = async () => {
     dispatch(savingExtensionActions.setSavingInProgress());
 
     // Stripping the mod-related data from the mod component form state
     const { recipe, optionsDefinition, ...rest } = activeModComponentFormState;
-    const personalElement: ModComponentFormState = {
+    const personalModComponentFormState: ModComponentFormState = {
       ...rest,
       uuid: uuidv4(),
       // Detach from the mod
       recipe: undefined,
     };
 
-    dispatch(editorActions.addModComponentFormState(personalElement));
+    dispatch(
+      editorActions.addModComponentFormState(personalModComponentFormState),
+    );
     await reset({
       extensionId: activeModComponentFormState.uuid,
       shouldShowConfirmation: false,
     });
 
     const error = await upsertModComponentFormState({
-      element: personalElement,
+      modComponentFormState: personalModComponentFormState,
       options: {
         pushToCloud: true,
         // Should already have permissions because it already exists
@@ -226,7 +228,7 @@ const useSavingWizard = () => {
     }
 
     const createExtensionError = await upsertModComponentFormState({
-      element: activeModComponentFormState,
+      modComponentFormState: activeModComponentFormState,
       options: {
         // `pushToCloud` to false because we don't want to save a copy of the individual extension to the user's account
         // because it will already be available via the blueprint
@@ -294,7 +296,7 @@ const useSavingWizard = () => {
     }
 
     const error = await upsertModComponentFormState({
-      element: activeModComponentFormState,
+      modComponentFormState: activeModComponentFormState,
       options: {
         pushToCloud: true,
         checkPermissions: true,
@@ -373,7 +375,7 @@ const useSavingWizard = () => {
     isSaving,
     element: activeModComponentFormState,
     save,
-    saveElementAsPersonalExtension,
+    saveElementAsPersonalExtension: saveAsPersonalModComponent,
     saveElementAndCreateNewRecipe: saveFormStateAndCreateNewMod,
     saveElementAndUpdateRecipe,
     closeWizard,
