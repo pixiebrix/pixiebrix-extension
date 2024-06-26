@@ -107,7 +107,7 @@ End-to-end tests are integrated into the GitHub CI workflow, triggering on pull 
 detailed in `.github/workflows/ci.yml`.
 
 If a test fails in CI, the test report is available in the GitHub Actions tab of the pull request. You can
-view the report by running `./scripts/show-report.sh -p <pull-request-number>`. You will need to have
+view the report by running `./scripts/show-pr-e2e-report.sh -p <pull-request-number>`. You will need to have
 `7zz` and `gh` installed to run this script (install using brew). In addition, you will need to set the `REPORT_ZIP_PASSWORD`
 environment variable to the password used to encrypt the report.
 (For context on why password encryption is necessary, see [this PR](https://github.com/pixiebrix/pixiebrix-extension/pull/8545))
