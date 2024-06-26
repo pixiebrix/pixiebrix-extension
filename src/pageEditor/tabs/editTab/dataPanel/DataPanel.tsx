@@ -173,7 +173,10 @@ const DataPanel: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- We only want to report when `activeTabKey` changes
   }, [activeTabKey]);
 
-  const [nodePreviewActiveElement, setNodePreviewActiveElement] = useReduxState(
+  const [
+    activeDocumentOrFormPreviewElement,
+    setActiveDocumentOrFormPreviewElement,
+  ] = useReduxState(
     selectActiveDocumentOrFormPreviewElement,
     editorActions.setActiveDocumentOrFormPreviewElement,
   );
@@ -369,14 +372,14 @@ const DataPanel: React.FC = () => {
                 {showFormPreview ? (
                   <FormPreview
                     rjsfSchema={brickConfig?.config as RJSFSchema}
-                    activeField={nodePreviewActiveElement}
-                    setActiveField={setNodePreviewActiveElement}
+                    activeField={activeDocumentOrFormPreviewElement}
+                    setActiveField={setActiveDocumentOrFormPreviewElement}
                   />
                 ) : (
                   <DocumentPreview
                     documentBodyName={documentBodyFieldName}
-                    activeElement={nodePreviewActiveElement}
-                    setActiveElement={setNodePreviewActiveElement}
+                    activeElement={activeDocumentOrFormPreviewElement}
+                    setActiveElement={setActiveDocumentOrFormPreviewElement}
                     menuBoundary={popupBoundary}
                   />
                 )}
@@ -409,8 +412,8 @@ const DataPanel: React.FC = () => {
               )}
               <DocumentOutline
                 documentBodyName={documentBodyFieldName}
-                activeElement={nodePreviewActiveElement}
-                setActiveElement={setNodePreviewActiveElement}
+                activeElement={activeDocumentOrFormPreviewElement}
+                setActiveElement={setActiveDocumentOrFormPreviewElement}
               />
             </ErrorBoundary>
           </DataTab>
