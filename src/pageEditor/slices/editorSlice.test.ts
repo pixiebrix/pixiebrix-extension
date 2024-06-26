@@ -115,7 +115,7 @@ describe("DataPanel state", () => {
   test("should set the active element", () => {
     const editorState = editorSlice.reducer(
       state,
-      actions.setNodePreviewActiveElement("test-field"),
+      actions.setActiveDocumentOrFormPreviewElement("test-field"),
     );
 
     expect(

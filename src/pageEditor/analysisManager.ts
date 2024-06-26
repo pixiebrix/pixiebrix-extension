@@ -142,42 +142,60 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new SelectorAnalysis(), {
   // Slow Selector Analysis currently checks the starter brick definition
-  matcher: isAnyOf(editorActions.editElement),
+  matcher: isAnyOf(editorActions.syncModComponentFormState),
 });
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
-  matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  matcher: isAnyOf(
+    editorActions.syncModComponentFormState,
+    ...nodeListMutationActions,
+  ),
 });
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new PageStateAnalysis(),
   {
-    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+    matcher: isAnyOf(
+      editorActions.syncModComponentFormState,
+      ...nodeListMutationActions,
+    ),
   },
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new ExtensionUrlPatternAnalysis(),
   {
-    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+    matcher: isAnyOf(
+      editorActions.syncModComponentFormState,
+      ...nodeListMutationActions,
+    ),
   },
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new RequestPermissionAnalysis(),
   {
-    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+    matcher: isAnyOf(
+      editorActions.syncModComponentFormState,
+      ...nodeListMutationActions,
+    ),
   },
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new RegexAnalysis(), {
-  matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  matcher: isAnyOf(
+    editorActions.syncModComponentFormState,
+    ...nodeListMutationActions,
+  ),
 });
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new HttpRequestAnalysis(),
   {
-    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+    matcher: isAnyOf(
+      editorActions.syncModComponentFormState,
+      ...nodeListMutationActions,
+    ),
   },
 );
 
@@ -210,7 +228,10 @@ async function varAnalysisFactory(
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new OutputKeyAnalysis(),
   {
-    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+    matcher: isAnyOf(
+      editorActions.syncModComponentFormState,
+      ...nodeListMutationActions,
+    ),
   },
 );
 
@@ -222,9 +243,9 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   },
   {
     matcher: isAnyOf(
-      // Must run whenever the active element changes in order to see changes from other mod components.
-      editorActions.selectElement,
-      editorActions.editElement,
+      // Must run whenever the active mod component changes in order to see changes from other mod components.
+      editorActions.setActiveModComponentId,
+      editorActions.syncModComponentFormState,
       ...nodeListMutationActions,
     ),
   },
@@ -246,9 +267,9 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   {
     matcher: isAnyOf(
       editorActions.showVariablePopover,
-      // Include selectElement so that variable analysis is ready when user first types
-      editorActions.selectElement,
-      editorActions.editElement,
+      // Include setActiveModComponentId so that variable analysis is ready when user first types
+      editorActions.setActiveModComponentId,
+      editorActions.syncModComponentFormState,
       runtimeActions.setExtensionTrace,
       ...nodeListMutationActions,
     ),

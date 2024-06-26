@@ -113,11 +113,11 @@ describe("checkActiveModComponentAvailability", () => {
     // Check both are unavailable
     expect(availability1.availableDraftModComponentIds).toBeEmpty();
 
-    // Make available element available
+    // Make mod component form state available
     const available = produce(availableDraftModComponent, (draft) => {
       draft.extensionPoint.definition.isAvailable.matchPatterns = [testUrl];
     });
-    store.dispatch(actions.editElement(available));
+    store.dispatch(actions.syncModComponentFormState(available));
 
     await store.dispatch(actions.checkActiveModComponentAvailability());
 

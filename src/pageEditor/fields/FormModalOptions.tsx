@@ -64,7 +64,7 @@ const FormModalOptions: React.FC<{
 
   const [activeElement, setActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
-    editorActions.setNodePreviewActiveElement,
+    editorActions.setActiveDocumentOrFormPreviewElement,
   );
 
   return (

@@ -24,11 +24,11 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   FOUNDATION_NODE_ID,
-  makeInitialElementUIState,
+  makeInitialBrickPipelineUIState,
   makeInitialNodeUIState,
 } from "@/pageEditor/uiState/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
-import { type ModComponentUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { type BrickPipelineUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
@@ -36,13 +36,13 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
-export function ensureElementUIState(
+export function ensureBrickPipelineUIState(
   state: Draft<EditorState>,
   modComponentId: UUID,
 ) {
   if (!state.brickPipelineUIStateById[modComponentId]) {
     state.brickPipelineUIStateById[modComponentId] =
-      makeInitialElementUIState();
+      makeInitialBrickPipelineUIState();
     const pipeline = state.modComponentFormStates.find(
       (x) => x.uuid === modComponentId,
     )?.extension.blockPipeline;
@@ -58,13 +58,13 @@ export function ensureElementUIState(
 }
 
 export function ensureNodeUIState(
-  state: Draft<ModComponentUIState>,
+  state: Draft<BrickPipelineUIState>,
   nodeId: UUID,
 ) {
   state.nodeUIStates[nodeId] ??= makeInitialNodeUIState(nodeId);
 }
 
-export function syncElementNodeUIStates(
+export function syncNodeUIStates(
   state: Draft<EditorState>,
   modComponentFormState: ModComponentFormState,
 ) {
@@ -82,7 +82,7 @@ export function syncElementNodeUIStates(
 
   brickPipelineUIState.pipelineMap = pipelineMap;
 
-  // Pipeline block instance IDs may have changed
+  // Pipeline brick instance IDs may have changed
   if (pipelineMap[brickPipelineUIState.activeNodeId] == null) {
     brickPipelineUIState.activeNodeId = FOUNDATION_NODE_ID;
   }
@@ -172,22 +172,19 @@ export function removeModData(state: Draft<EditorState>, modId: RegistryId) {
   delete state.deletedModComponentFormStatesByModId[modId];
 }
 
-export function selectRecipeId(
-  state: Draft<EditorState>,
-  recipeId: RegistryId,
-) {
+export function setActiveModId(state: Draft<EditorState>, modId: RegistryId) {
   state.error = null;
   state.beta = false;
   state.activeModComponentId = null;
 
-  if (state.expandedModId === recipeId && state.activeModId === recipeId) {
+  if (state.expandedModId === modId && state.activeModId === modId) {
     // "un-toggle" the mod, if it's already selected
     state.expandedModId = null;
   } else {
-    state.expandedModId = recipeId;
+    state.expandedModId = modId;
   }
 
-  state.activeModId = recipeId;
+  state.activeModId = modId;
   state.selectionSeq++;
 }
 
@@ -216,7 +213,7 @@ export function editRecipeOptionsDefinitions(
     options as Draft<ModOptionsDefinition>;
 }
 
-export function makeModComponentFormStateActive(
+export function setActiveModComponentId(
   state: Draft<EditorState>,
   modComponentFormState: ModComponentFormState,
 ) {
@@ -227,7 +224,7 @@ export function makeModComponentFormStateActive(
   state.expandedModId = modComponentFormState.recipe?.id ?? state.expandedModId;
   state.selectionSeq++;
 
-  ensureElementUIState(state, modComponentFormState.uuid);
+  ensureBrickPipelineUIState(state, modComponentFormState.uuid);
 }
 
 /* eslint-enable security/detect-object-injection */

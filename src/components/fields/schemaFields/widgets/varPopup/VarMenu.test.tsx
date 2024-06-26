@@ -72,9 +72,9 @@ describe("VarMenu", () => {
       {
         setupRedux(dispatch) {
           dispatch(editorActions.addModComponentFormState(formState));
-          dispatch(editorActions.selectElement(formState.uuid));
+          dispatch(editorActions.setActiveModComponentId(formState.uuid));
           dispatch(
-            editorActions.setElementActiveNodeId(
+            editorActions.setActiveNodeId(
               formState.extension.blockPipeline[0].instanceId,
             ),
           );
@@ -107,9 +107,9 @@ describe("VarMenu", () => {
       {
         async setupRedux(dispatch) {
           dispatch(editorActions.addModComponentFormState(formState));
-          dispatch(editorActions.selectElement(formState.uuid));
+          dispatch(editorActions.setActiveModComponentId(formState.uuid));
           dispatch(
-            editorActions.setElementActiveNodeId(
+            editorActions.setActiveNodeId(
               formState.extension.blockPipeline[0].instanceId,
             ),
           );
@@ -152,9 +152,9 @@ describe("VarMenu", () => {
       {
         async setupRedux(dispatch) {
           dispatch(editorActions.addModComponentFormState(formState));
-          dispatch(editorActions.selectElement(formState.uuid));
+          dispatch(editorActions.setActiveModComponentId(formState.uuid));
           dispatch(
-            editorActions.setElementActiveNodeId(
+            editorActions.setActiveNodeId(
               formState.extension.blockPipeline[0].instanceId,
             ),
           );

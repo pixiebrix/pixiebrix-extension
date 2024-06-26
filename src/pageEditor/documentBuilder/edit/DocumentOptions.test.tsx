@@ -71,13 +71,15 @@ describe("DocumentOptions", () => {
         initialValues: formState,
         setupRedux(dispatch) {
           dispatch(actions.addModComponentFormState(formState));
-          dispatch(actions.selectElement(formState.uuid));
+          dispatch(actions.setActiveModComponentId(formState.uuid));
           dispatch(
-            actions.setElementActiveNodeId(
+            actions.setActiveNodeId(
               formState.extension.blockPipeline[0].instanceId,
             ),
           );
-          dispatch(actions.setNodePreviewActiveElement(initialActiveElement));
+          dispatch(
+            actions.setActiveDocumentOrFormPreviewElement(initialActiveElement),
+          );
         },
       },
     );

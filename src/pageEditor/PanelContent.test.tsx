@@ -59,7 +59,7 @@ describe("Listen to navigationEvent", () => {
     render(<PanelContent />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
-        dispatch(editorActions.selectElement(formState.uuid));
+        dispatch(editorActions.setActiveModComponentId(formState.uuid));
       },
     });
     await waitForEffect();

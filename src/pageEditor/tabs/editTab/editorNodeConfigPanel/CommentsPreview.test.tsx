@@ -29,9 +29,9 @@ const renderCommentsPreview = (comments: string) => {
   return render(<CommentsPreview comments={comments} />, {
     setupRedux(dispatch) {
       dispatch(actions.addModComponentFormState(formState));
-      dispatch(actions.selectElement(formState.uuid));
+      dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
-        actions.setElementActiveNodeId(
+        actions.setActiveNodeId(
           formState.extension.blockPipeline[0].instanceId,
         ),
       );

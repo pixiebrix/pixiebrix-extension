@@ -343,12 +343,14 @@ const useSavingWizard = () => {
     );
 
     for (const modComponentFormState of formStatesForMod) {
-      const elementUpdate = {
+      const propertiesToUpdate = {
         uuid: modComponentFormState.uuid,
         recipe: modMetadata,
       };
 
-      dispatch(editorActions.updateElement(elementUpdate));
+      dispatch(
+        editorActions.partialUpdateModComponentFormState(propertiesToUpdate),
+      );
     }
   }
 
