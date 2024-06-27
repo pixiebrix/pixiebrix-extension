@@ -25,7 +25,7 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeDefaultAvailability,
+  getDefaultAvailabilityForUrl,
   readerTypeHack,
   removeEmptyValues,
   selectStarterBrickAvailability,
@@ -70,7 +70,7 @@ function fromNativeElement(
       definition: {
         ...panel.foundation,
         reader: getImplicitReader("panel"),
-        isAvailable: makeDefaultAvailability(url),
+        isAvailable: getDefaultAvailabilityForUrl(url),
       },
       traits: DEFAULT_TRAITS,
     },

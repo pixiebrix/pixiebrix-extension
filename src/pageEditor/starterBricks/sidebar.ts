@@ -25,15 +25,14 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeDefaultAvailability,
   readerTypeHack,
   removeEmptyValues,
   selectStarterBrickAvailability,
+  ALL_SITES_AVAILABILITY,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
-import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
@@ -48,7 +47,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const base = makeInitialBaseState();
 
-  const heading = `${getDomain(url)} side panel`;
+  const heading = "Sidebar Panel";
 
   return {
     type: "actionPanel",
@@ -59,7 +58,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
 
       definition: {
         type: "actionPanel",
-        isAvailable: makeDefaultAvailability(url),
+        isAvailable: ALL_SITES_AVAILABILITY,
         reader: getImplicitReader("actionPanel"),
 
         trigger: "load",
