@@ -22,6 +22,7 @@ import {
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type DeferExpression } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { StateNamespaces } from "@/platform/state/stateController";
 
 const documentBuilderElementExtras: Record<"form", DocumentBuilderElementType> =
   {
@@ -98,7 +99,7 @@ export function createNewDocumentBuilderElement(
           config: {
             storage: {
               type: "state",
-              namespace: "blueprint",
+              namespace: StateNamespaces.MOD,
             },
             submitCaption: "Save",
             schema: {

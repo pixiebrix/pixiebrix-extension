@@ -17,7 +17,7 @@
 import { define } from "cooky-cutter";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
-import { type Metadata } from "@/types/registryTypes";
+import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
 import {
   autoUUIDSequence,
@@ -33,7 +33,11 @@ import {
   sidebarShowEvents,
   isSidePanelOpen,
 } from "@/contentScript/sidebarController";
-import { setState } from "@/platform/state/stateController";
+import {
+  MergeStrategies,
+  setState,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import brickRegistry from "@/bricks/registry";
 import { sleep } from "@/utils/timeUtils";
@@ -54,7 +58,7 @@ const rootReader = new RootReader();
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickDefinitionLike<SidebarDefinition>>({
     apiVersion: "v3",
-    kind: "extensionPoint",
+    kind: DefinitionKinds.STARTER_BRICK,
     metadata: (n: number) =>
       ({
         id: validateRegistryId(`test/starter-brick-${n}`),
@@ -185,9 +189,9 @@ describe("sidebarExtension", () => {
     expect(rootReader.readCount).toBe(0);
 
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: {},
-      mergeStrategy: "replace",
+      mergeStrategy: MergeStrategies.REPLACE,
       extensionId: extension.id,
       blueprintId: extension._recipe!.id,
     });
@@ -205,10 +209,10 @@ describe("sidebarExtension", () => {
     expect(rootReader.readCount).toBe(1);
 
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       // Data needs to be different than previous to trigger a state change event
       data: { foo: 42 },
-      mergeStrategy: "replace",
+      mergeStrategy: MergeStrategies.REPLACE,
       extensionId: extension.id,
       blueprintId: extension._recipe!.id,
     });
@@ -219,9 +223,9 @@ describe("sidebarExtension", () => {
 
     // Should ignore state change from other mod
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: {},
-      mergeStrategy: "replace",
+      mergeStrategy: MergeStrategies.REPLACE,
       extensionId: autoUUIDSequence(),
       blueprintId: registryIdFactory(),
     });
@@ -268,9 +272,9 @@ describe("sidebarExtension", () => {
 
     for (let i = 0; i < 10; i++) {
       setState({
-        namespace: "blueprint",
+        namespace: StateNamespaces.MOD,
         data: { foo: i },
-        mergeStrategy: "replace",
+        mergeStrategy: MergeStrategies.REPLACE,
         extensionId: extension.id,
         blueprintId: extension._recipe!.id,
       });

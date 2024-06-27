@@ -17,12 +17,12 @@
 
 import { fromJS } from "@/starterBricks/factory";
 import BaseRegistry from "@/registry/memoryRegistry";
-import { type RegistryId } from "@/types/registryTypes";
+import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- OK to reinit on load
 const registry = new BaseRegistry<RegistryId, StarterBrick>(
-  ["foundation", "extensionPoint"],
+  [DefinitionKinds.STARTER_BRICK],
   fromJS,
 );
 

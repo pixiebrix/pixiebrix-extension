@@ -31,7 +31,7 @@ import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type StandaloneModDefinition } from "@/types/contract";
-import { type Metadata } from "@/types/registryTypes";
+import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 
 export const modMetadataFactory = extend<Metadata, ModMetadata>(
   metadataFactory,
@@ -43,7 +43,7 @@ export const modMetadataFactory = extend<Metadata, ModMetadata>(
 
 const modComponentConfigFactory = define<ModComponentBase["config"]>({
   apiVersion: "v3" as ApiVersion,
-  kind: "component",
+  kind: DefinitionKinds.BRICK,
   metadata: (n: number) =>
     metadataFactory({
       id: validateRegistryId(`test/component-${n}`),

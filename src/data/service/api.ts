@@ -16,7 +16,7 @@
  */
 
 import { type UUID } from "@/types/stringTypes";
-import { type Kind, type RegistryId } from "@/types/registryTypes";
+import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import {
   type Database,
@@ -319,7 +319,7 @@ export const appApi = createApi({
           method: "post",
           data: {
             config,
-            kind: "recipe" as Kind,
+            kind: DefinitionKinds.MOD,
             organizations,
             public: isPublic,
             share_dependencies: shareDependencies,
@@ -346,7 +346,7 @@ export const appApi = createApi({
             id: packageId,
             name: modDefinition.metadata.id,
             config,
-            kind: "recipe" as Kind,
+            kind: DefinitionKinds.MOD,
             public: sharing.public,
             organizations: sharing.organizations,
           },

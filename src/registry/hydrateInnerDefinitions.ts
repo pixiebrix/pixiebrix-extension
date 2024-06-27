@@ -31,6 +31,7 @@ import { type ReaderConfig } from "@/bricks/types";
 import {
   INNER_SCOPE,
   type InnerDefinitions,
+  DefinitionKinds,
   type RegistryId,
 } from "@/types/registryTypes";
 import {
@@ -107,7 +108,7 @@ async function hydrateReaderDefinition(
     if (Object.hasOwn(definitions, reader)) {
       // eslint-disable-next-line security/detect-object-injection -- checked hasOwn
       const definition = definitions[reader];
-      if (definition?.kind !== "reader") {
+      if (definition?.kind !== DefinitionKinds.READER) {
         throw new TypeError(
           // Keep extensionPoint terminology because that's what appears in the YAML/JSON
           "extensionPoint references definition that is not a reader",
@@ -197,15 +198,15 @@ async function hydrateInnerDefinition(
   }
 
   switch (innerDefinition.kind) {
-    case "extensionPoint": {
+    case DefinitionKinds.STARTER_BRICK: {
       return hydrateStarterBrickDefinition(
         definitions,
         innerDefinition as StarterBrickInnerDefinition,
       );
     }
 
-    case "reader":
-    case "component": {
+    case DefinitionKinds.READER:
+    case DefinitionKinds.BRICK: {
       return hydrateBrickDefinition(
         definitions,
         innerDefinition as BrickInnerDefinition,
@@ -238,7 +239,8 @@ export async function hydrateModComponentInnerDefinitions<
     const relevantDefinitions = pickBy(
       definitions,
       (definition, name) =>
-        definition.kind !== "extensionPoint" || draft.extensionPointId === name,
+        definition.kind !== DefinitionKinds.STARTER_BRICK ||
+        draft.extensionPointId === name,
     );
 
     const hydratedDefinitions = await resolveObj(
@@ -279,7 +281,8 @@ export async function hydrateModInnerDefinitions(
   const relevantDefinitions = pickBy(
     modDefinition.definitions,
     (definition, name) =>
-      definition.kind !== "extensionPoint" || starterBrickReferences.has(name),
+      definition.kind !== DefinitionKinds.STARTER_BRICK ||
+      starterBrickReferences.has(name),
   );
 
   const hydratedDefinitions = await resolveObj(

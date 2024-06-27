@@ -17,7 +17,7 @@
 
 import { fromJS } from "@/starterBricks/menuItem/menuItemStarterBrick";
 import { validateRegistryId } from "@/types/helpers";
-import { type Metadata } from "@/types/registryTypes";
+import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import blockRegistry from "@/bricks/registry";
@@ -58,7 +58,7 @@ const rootReaderId = validateRegistryId("test/root-reader");
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickDefinitionLike<MenuItemDefinition>>({
     apiVersion: "v3",
-    kind: "extensionPoint",
+    kind: DefinitionKinds.STARTER_BRICK,
     metadata: (n: number) =>
       ({
         id: validateRegistryId(`test/starter-brick-${n}`),

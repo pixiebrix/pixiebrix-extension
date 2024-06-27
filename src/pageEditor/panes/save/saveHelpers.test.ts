@@ -41,7 +41,10 @@ import {
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { type InnerDefinitionRef } from "@/types/registryTypes";
+import {
+  type InnerDefinitionRef,
+  DefinitionKinds,
+} from "@/types/registryTypes";
 import {
   type ModOptionsDefinition,
   type UnsavedModDefinition,
@@ -607,7 +610,7 @@ function selectExtensionPoints(
       apiVersion: modDefinition.apiVersion,
       metadata: internalStarterBrickMetaFactory(),
       definition,
-      kind: "extensionPoint",
+      kind: DefinitionKinds.STARTER_BRICK,
     };
   });
 }
@@ -682,7 +685,7 @@ describe("buildNewMod", () => {
 
       modComponent.definitions = {
         extensionPoint: {
-          kind: "extensionPoint",
+          kind: DefinitionKinds.STARTER_BRICK,
           definition: extensionPoint,
         },
       };
@@ -755,7 +758,7 @@ describe("buildNewMod", () => {
 
       modComponent.definitions = {
         extensionPoint: {
-          kind: "extensionPoint",
+          kind: DefinitionKinds.STARTER_BRICK,
           definition: starterBrick,
         },
       };

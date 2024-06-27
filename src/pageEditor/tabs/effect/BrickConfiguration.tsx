@@ -45,6 +45,7 @@ import CommentEffect from "@/bricks/effects/comment";
 import useAsyncState from "@/hooks/useAsyncState";
 import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
+import { BrickTypes } from "@/runtime/runtimeTypes";
 
 const BrickConfiguration: React.FunctionComponent<{
   name: string;
@@ -151,7 +152,8 @@ const BrickConfiguration: React.FunctionComponent<{
       "menuItem",
       "tour",
     ].includes(context.values.type);
-  const showIfAndTarget = brickType && brickType !== "renderer" && !isComment;
+  const showIfAndTarget =
+    brickType && brickType !== BrickTypes.RENDERER && !isComment;
   const noAdvancedOptions = (!showRootMode && !showIfAndTarget) || isComment;
 
   return (

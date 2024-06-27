@@ -18,6 +18,7 @@
 import {
   INNER_SCOPE,
   type Metadata,
+  DefinitionKinds,
   type RegistryId,
 } from "@/types/registryTypes";
 import { castArray, cloneDeep, isEmpty } from "lodash";
@@ -282,7 +283,7 @@ export async function lookupExtensionPoint<
     );
     const innerExtensionPoint = {
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-      kind: "extensionPoint",
+      kind: DefinitionKinds.STARTER_BRICK,
       metadata: internalStarterBrickMetaFactory(),
       ...definition,
     } as unknown as StarterBrickDefinitionLike<TDefinition> & {
@@ -318,7 +319,7 @@ export function baseSelectExtensionPoint(
 
   return {
     apiVersion: formState.apiVersion,
-    kind: "extensionPoint",
+    kind: DefinitionKinds.STARTER_BRICK,
     metadata: {
       id: metadata.id,
       // The server requires the version to save the brick, even though it's not marked as required
@@ -346,7 +347,7 @@ export function extensionWithInnerDefinitions(
     result.definitions = {
       ...result.definitions,
       [extensionPointId]: {
-        kind: "extensionPoint",
+        kind: DefinitionKinds.STARTER_BRICK,
         definition: extensionPointDefinition,
       },
     };

@@ -29,6 +29,7 @@ import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type ShouldExpandNodeInitially } from "react-json-tree";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import { StateNamespaces } from "@/platform/state/stateController";
 
 // We used to expand nodes initially. But makes state hard to read when using async state with long values, e.g.,
 // ChatGPT responses
@@ -52,11 +53,20 @@ const PageStateTab: React.VFC = () => {
       };
 
       const [shared, mod, local] = await Promise.all([
-        getPageState(inspectedTab, { namespace: "shared", ...context }),
+        getPageState(inspectedTab, {
+          namespace: StateNamespaces.PUBLIC,
+          ...context,
+        }),
         activeModComponentFormState?.recipe
-          ? getPageState(inspectedTab, { namespace: "blueprint", ...context })
+          ? getPageState(inspectedTab, {
+              namespace: StateNamespaces.MOD,
+              ...context,
+            })
           : Promise.resolve("Starter Brick is not in a mod"),
-        getPageState(inspectedTab, { namespace: "extension", ...context }),
+        getPageState(inspectedTab, {
+          namespace: StateNamespaces.PRIVATE,
+          ...context,
+        }),
       ]);
 
       return {

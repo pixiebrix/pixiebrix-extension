@@ -17,6 +17,7 @@
 
 import { brickToYaml } from "./objToYaml";
 import { normalizeSemVerString } from "@/types/helpers";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 describe("brickToYaml", () => {
   test("serializes arbitrary object", () => {
@@ -36,7 +37,7 @@ lorem: ipsum
 
   test("serializes a config with only known props", () => {
     const config = {
-      kind: "service",
+      kind: DefinitionKinds.INTEGRATION,
       metadata: {
         id: "google/api",
         name: "Google API",
@@ -100,7 +101,7 @@ outputSchema:
 
   test("sorts config root keys", () => {
     const config = {
-      kind: "service",
+      kind: DefinitionKinds.INTEGRATION,
       metadata: {
         id: "google/api",
         name: "Google API",

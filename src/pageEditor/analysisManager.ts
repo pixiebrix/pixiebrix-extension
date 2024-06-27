@@ -45,6 +45,7 @@ import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis
 import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import SelectorAnalysis from "@/analysis/analysisVisitors/selectorAnalysis";
+import { StateNamespaces } from "@/platform/state/stateController";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -212,7 +213,7 @@ async function varAnalysisFactory(
 
   // The actual mod variables
   const modState = await getPageState(inspectedTab, {
-    namespace: "blueprint",
+    namespace: StateNamespaces.MOD,
     extensionId: activeModComponentFormState.uuid,
     blueprintId: activeModComponentFormState.recipe?.id,
   });
