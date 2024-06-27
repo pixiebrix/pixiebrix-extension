@@ -37,7 +37,7 @@ function isPanel(modComponentFormState: ModComponentFormState | null): boolean {
 }
 
 function isTour(modComponentFormState: ModComponentFormState | null): boolean {
-  return modComponentFormState.type === "tour";
+  return modComponentFormState?.type === "tour";
 }
 
 /**

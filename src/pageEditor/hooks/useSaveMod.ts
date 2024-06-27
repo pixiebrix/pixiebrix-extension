@@ -63,7 +63,7 @@ export function isModEditable(
   return modId != null && editablePackages.some((x) => x.name === modId);
 }
 
-export function selectModMetadata(
+function selectModMetadata(
   unsavedModDefinition: UnsavedModDefinition,
   response: PackageUpsertResponse,
 ): ModComponentBase["_recipe"] {
