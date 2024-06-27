@@ -27,7 +27,10 @@ import {
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
-import { InnerDefinitionRef, DefinitionKinds } from "@/types/registryTypes";
+import {
+  type InnerDefinitionRef,
+  DefinitionKinds,
+} from "@/types/registryTypes";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 let extensionPointCount = 0;

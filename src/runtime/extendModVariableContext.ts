@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getState } from "@/platform/state/stateController";
+import { getState, StateNamespaces } from "@/platform/state/stateController";
 import { type RegistryId } from "@/types/registryTypes";
 import apiVersionOptions, {
   type ApiVersionOptions,
@@ -136,7 +136,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
   // Previously, we had considered using a proxy to lazily load the state. However, eagerly reading is simpler.
   // Additionally, in the future to pass the context to the sandbox we'd have to always load the state anyway.
   const modState = getState({
-    namespace: "blueprint",
+    namespace: StateNamespaces.MOD,
     blueprintId,
     // `extensionId` is not used because namespace is `blueprint`
     extensionId: null,

@@ -26,6 +26,7 @@ import { mapValues } from "lodash";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import {
+  MergeStrategies,
   type MergeStrategy,
   type StateNamespace,
   StateNamespaces,
@@ -84,15 +85,21 @@ export class SetPageState extends TransformerABC {
         title: "Merge Strategy",
         type: "string",
         oneOf: [
-          { const: "shallow", title: "Shallow: replace existing properties" },
-          { const: "replace", title: "Replace: replace the entire state" },
           {
-            const: "deep",
+            const: MergeStrategies.SHALLOW,
+            title: "Shallow: replace existing properties",
+          },
+          {
+            const: MergeStrategies.REPLACE,
+            title: "Replace: replace the entire state",
+          },
+          {
+            const: MergeStrategies.DEEP,
             title: "Deep: recursively merge data with existing state",
           },
         ],
         description: "Strategy for merging the data with existing state.",
-        default: "shallow",
+        default: MergeStrategies.SHALLOW,
       },
     },
     ["data"],
@@ -134,7 +141,7 @@ export class SetPageState extends TransformerABC {
   async transform(
     {
       data,
-      mergeStrategy = "shallow",
+      mergeStrategy = MergeStrategies.SHALLOW,
       namespace = StateNamespaces.MOD,
     }: BrickArgs<{
       data: JsonObject;

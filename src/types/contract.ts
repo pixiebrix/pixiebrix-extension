@@ -28,7 +28,7 @@ import {
   type SecretsConfig,
 } from "@/integrations/integrationTypes";
 import {
-  DefinitionKind,
+  type DefinitionKind,
   type Metadata,
   type RegistryId,
   type SemVerString,
@@ -135,8 +135,9 @@ export type EditablePackageMetadata = components["schemas"]["PackageMeta"] & {
   name: RegistryId;
 
   /**
-   * Backend display name for the Package.kind.
+   * Backend display name for the Package.kind. WARNING: different names/capitalization than the frontend types.
    * @see https://github.com/pixiebrix/pixiebrix-app/blob/be1c486eba393e3c8e2f99401f78af5958b4060b/api/models/registry.py#L210-L210
+   * @see DefinitionKind
    */
   kind: "Blueprint" | "Service" | "Block" | "Reader" | "Foundation";
 

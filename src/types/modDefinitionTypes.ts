@@ -20,7 +20,7 @@ import {
   type Definition,
   type InnerDefinitionRef,
   type InnerDefinitions,
-  DefinitionKinds,
+  type DefinitionKinds,
   type RegistryId,
 } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";

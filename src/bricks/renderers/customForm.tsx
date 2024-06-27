@@ -50,6 +50,11 @@ import {
   assumeNotNullish_UNSAFE,
   type Nullishable,
 } from "@/utils/nullishUtils";
+import {
+  MergeStrategies,
+  StateNamespace,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 
 interface DatabaseResult {
   success: boolean;
@@ -61,7 +66,7 @@ interface DatabaseResult {
  */
 export type StateStorage = {
   type: "state";
-  namespace?: "extension" | "blueprint" | "shared";
+  namespace?: StateNamespace;
 };
 
 /**
@@ -119,7 +124,7 @@ export const CUSTOM_FORM_SCHEMA: Schema = {
               description:
                 "The namespace for the state. If set to Mod and this Starter Brick is not part of a Mod, behaves as Public.",
               oneOf: namespaceOptions,
-              default: "blueprint",
+              default: StateNamespaces.MOD,
             },
           },
           required: ["type"],
@@ -400,7 +405,7 @@ async function getInitialData(
 ): Promise<UnknownObject> {
   switch (storage.type) {
     case "state": {
-      const namespace = storage.namespace ?? "blueprint";
+      const namespace = storage.namespace ?? StateNamespaces.MOD;
       const topLevelFrame = await getConnectedTarget();
       // XXX: CustomForm currently uses page state directly instead of the platform's state API. The platform state API
       // does not currently provide a way to specify which frame to read the data from. Calling the API would use
@@ -468,7 +473,7 @@ async function setData(
           // Using shallow strategy to support partial data forms
           // In case when a form contains (and submits) only a subset of all the fields of a record,
           // the fields missing in the form will not be removed from the DB record
-          merge_strategy: "shallow",
+          merge_strategy: MergeStrategies.SHALLOW,
         },
       });
       return;
@@ -479,9 +484,9 @@ async function setData(
       // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
       // sidebar which runs in the context of the top-level frame
       await setPageState(topLevelFrame, {
-        namespace: storage.namespace ?? "blueprint",
+        namespace: storage.namespace ?? StateNamespaces.MOD,
         data: cleanValues,
-        mergeStrategy: "shallow",
+        mergeStrategy: MergeStrategies.SHALLOW,
         extensionId,
         blueprintId,
       });
