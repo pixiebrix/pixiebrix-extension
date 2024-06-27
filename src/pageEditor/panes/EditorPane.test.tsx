@@ -265,7 +265,7 @@ describe("can add a node", () => {
   });
 
   test("to an empty mod component", async () => {
-    const element = formStateFactory(undefined, []);
+    const modComponentFormState = formStateFactory(undefined, []);
     render(
       <>
         <EditorPane />
@@ -273,8 +273,12 @@ describe("can add a node", () => {
       </>,
       {
         setupRedux(dispatch) {
-          dispatch(editorActions.addModComponentFormState(element));
-          dispatch(editorActions.setActiveModComponentId(element.uuid));
+          dispatch(
+            editorActions.addModComponentFormState(modComponentFormState),
+          );
+          dispatch(
+            editorActions.setActiveModComponentId(modComponentFormState.uuid),
+          );
         },
       },
     );
@@ -294,7 +298,7 @@ describe("can add a node", () => {
   });
 
   test("to sub pipeline", async () => {
-    const element = getFormStateWithSubPipelines();
+    const modComponentFormState = getFormStateWithSubPipelines();
     const { getReduxStore } = render(
       <div>
         <EditorPane />
@@ -302,8 +306,12 @@ describe("can add a node", () => {
       </div>,
       {
         setupRedux(dispatch) {
-          dispatch(editorActions.addModComponentFormState(element));
-          dispatch(editorActions.setActiveModComponentId(element.uuid));
+          dispatch(
+            editorActions.addModComponentFormState(modComponentFormState),
+          );
+          dispatch(
+            editorActions.setActiveModComponentId(modComponentFormState.uuid),
+          );
         },
       },
     );
@@ -351,8 +359,9 @@ describe("can add a node", () => {
 });
 
 async function renderEditorPaneWithBasicFormState() {
-  const element = getFormStateWithSubPipelines();
-  const activeNodeId = element.extension.blockPipeline[0].instanceId;
+  const modComponentFormState = getFormStateWithSubPipelines();
+  const activeNodeId =
+    modComponentFormState.extension.blockPipeline[0].instanceId;
   const utils = render(
     <div>
       <EditorPane />
@@ -360,8 +369,10 @@ async function renderEditorPaneWithBasicFormState() {
     </div>,
     {
       setupRedux(dispatch) {
-        dispatch(editorActions.addModComponentFormState(element));
-        dispatch(editorActions.setActiveModComponentId(element.uuid));
+        dispatch(editorActions.addModComponentFormState(modComponentFormState));
+        dispatch(
+          editorActions.setActiveModComponentId(modComponentFormState.uuid),
+        );
         dispatch(editorActions.setActiveNodeId(activeNodeId));
       },
     },
