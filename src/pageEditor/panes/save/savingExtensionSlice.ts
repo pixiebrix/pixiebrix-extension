@@ -55,5 +55,3 @@ export const savingExtensionSlice = createSlice({
     },
   },
 });
-
-export const { actions } = savingExtensionSlice;

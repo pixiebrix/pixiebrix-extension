@@ -38,7 +38,7 @@ import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveModComponentFormState,
-  selectActiveModComponentUIState,
+  selectActiveBrickPipelineUIState,
   selectActiveNodeUIState,
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
@@ -63,7 +63,7 @@ import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
-  getInstalledExtensionPoints,
+  getRunningStarterBricks,
   checkAvailable,
 } from "@/contentScript/messenger/api";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
@@ -165,7 +165,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
   const notDeletedModComponents = selectNotDeletedActivatedModComponents(
     thunkAPI.getState(),
   );
-  const starterBricks = await getInstalledExtensionPoints(inspectedTab);
+  const starterBricks = await getRunningStarterBricks(inspectedTab);
   const activatedStarterBricks = new Map(
     starterBricks.map((starterBrick) => [starterBrick.id, starterBrick]),
   );
@@ -768,10 +768,10 @@ export const editorSlice = createSlice({
         "Active mod component form state not found",
       );
 
-      const activeModComponentUiState = selectActiveModComponentUIState({
+      const activeBrickPipelineUIState = selectActiveBrickPipelineUIState({
         editor: state,
       });
-      const node = activeModComponentUiState?.pipelineMap[nodeId];
+      const node = activeBrickPipelineUIState?.pipelineMap[nodeId];
       assertNotNullish(node, `Node not found in pipeline map: ${nodeId}`);
       const { pipelinePath, index } = node;
       const pipeline = get(activeModComponentFormState, pipelinePath);
@@ -810,14 +810,14 @@ export const editorSlice = createSlice({
         "Active mod component form state not found",
       );
 
-      const activeModComponentUiState = selectActiveModComponentUIState({
+      const activeBrickPipelineUIState = selectActiveBrickPipelineUIState({
         editor: state,
       });
       assertNotNullish(
-        activeModComponentUiState,
+        activeBrickPipelineUIState,
         "Active mod component UI state not found",
       );
-      const node = activeModComponentUiState.pipelineMap[nodeIdToRemove];
+      const node = activeBrickPipelineUIState.pipelineMap[nodeIdToRemove];
       assertNotNullish(
         node,
         `Node not found in pipeline map: ${nodeIdToRemove}`,
@@ -839,7 +839,7 @@ export const editorSlice = createSlice({
 
       syncNodeUIStates(state, activeModComponentFormState);
 
-      activeModComponentUiState.activeNodeId =
+      activeBrickPipelineUIState.activeNodeId =
         nextActiveNode?.instanceId ?? FOUNDATION_NODE_ID;
 
       state.dirty[activeModComponentFormState.uuid] = true;

@@ -70,7 +70,7 @@ import {
   requestRunInTop,
 } from "@/background/executor";
 import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
+import { removeModComponentForEveryTab } from "@/background/removeModComponentForEveryTab";
 import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods";
 import { launchAuthIntegration } from "@/background/auth/partnerIntegrations/launchAuthIntegration";
 import { getPartnerPrincipals } from "@/background/auth/partnerIntegrations/getPartnerPrincipals";
@@ -142,7 +142,7 @@ declare global {
     REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInOtherTabs;
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
-    REMOVE_MOD_COMPONENT_EVERY_TAB: typeof removeExtensionForEveryTab;
+    REMOVE_MOD_COMPONENT_EVERY_TAB: typeof removeModComponentForEveryTab;
     INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
   }
 }
@@ -212,7 +212,7 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
-    REMOVE_MOD_COMPONENT_EVERY_TAB: removeExtensionForEveryTab,
+    REMOVE_MOD_COMPONENT_EVERY_TAB: removeModComponentForEveryTab,
     INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
   });
 }

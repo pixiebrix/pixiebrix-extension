@@ -22,7 +22,7 @@ import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
 import { useSelector } from "react-redux";
-import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveDocumentOrFormPreviewElement } from "@/pageEditor/slices/editorSelectors";
 import ElementEditor from "@/pageEditor/documentBuilder/edit/ElementEditor";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
@@ -37,7 +37,7 @@ const DocumentOptions: React.FC<{
   const documentConfigName = joinName(name, configKey);
   const documentBodyName = joinName(documentConfigName, "body");
 
-  const activeElement = useSelector(selectNodePreviewActiveElement);
+  const activeElement = useSelector(selectActiveDocumentOrFormPreviewElement);
 
   const [{ value: bodyValue }, , { setValue: setBodyValue }] =
     useField<DocumentBuilderElement[]>(documentBodyName);

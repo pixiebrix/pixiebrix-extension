@@ -30,7 +30,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
 import {
   updateDraftModComponent,
-  removeInstalledExtension,
+  removeActivatedModComponent,
 } from "@/contentScript/messenger/api";
 import { selectActiveModComponentFormState } from "./slices/editorSelectors";
 import { formStateToDraftModComponent } from "./starterBricks/adapter";
@@ -54,7 +54,7 @@ const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
 // Issue doesn't apply to certain starter bricks, e.g. sidebar panels
 // See https://github.com/pixiebrix/pixiebrix-extension/pull/5047
 // and https://github.com/pixiebrix/pixiebrix-extension/pull/6372
-const cleanUpStarterBrickForElement = (
+const cleanUpStarterBrickForModComponentFormState = (
   modComponentFormState: EditorState["modComponentFormStates"][number],
 ) => {
   if (
@@ -63,7 +63,10 @@ const cleanUpStarterBrickForElement = (
     return;
   }
 
-  removeInstalledExtension(allFramesInInspectedTab, modComponentFormState.uuid);
+  removeActivatedModComponent(
+    allFramesInInspectedTab,
+    modComponentFormState.uuid,
+  );
 };
 
 const PanelContent: React.FC = () => {
@@ -106,7 +109,7 @@ const PanelContent: React.FC = () => {
       return;
     }
 
-    cleanUpStarterBrickForElement(activeModComponentFormState);
+    cleanUpStarterBrickForModComponentFormState(activeModComponentFormState);
   }, [activeModComponentFormState]);
 
   const authPersistenceContext: ReduxPersistenceContextType = {

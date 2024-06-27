@@ -23,14 +23,14 @@ import { useDispatch, useSelector } from "react-redux";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import { selectModComponentFormStates } from "@/pageEditor/slices/editorSelectors";
 
-function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
+function useResetRecipe(): (modId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
   const dispatch = useDispatch();
   const resetExtension = useResetExtension();
   const modComponentFormStates = useSelector(selectModComponentFormStates);
 
   return useCallback(
-    async (recipeId: RegistryId) => {
+    async (modId: RegistryId) => {
       const confirmed = await showConfirmation({
         title: "Reset Mod?",
         message:
@@ -43,18 +43,21 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
 
       await Promise.all(
         modComponentFormStates
-          .filter((element) => element.recipe?.id === recipeId)
-          .map(async (element) =>
+          .filter(
+            (modComponentFormState) =>
+              modComponentFormState.recipe?.id === modId,
+          )
+          .map(async (modComponentFormState) =>
             resetExtension({
-              extensionId: element.uuid,
+              extensionId: modComponentFormState.uuid,
               shouldShowConfirmation: false,
             }),
           ),
       );
 
-      dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
-      dispatch(actions.restoreDeletedModComponentFormStatesForMod(recipeId));
-      dispatch(actions.setActiveModId(recipeId));
+      dispatch(actions.resetMetadataAndOptionsForRecipe(modId));
+      dispatch(actions.restoreDeletedModComponentFormStatesForMod(modId));
+      dispatch(actions.setActiveModId(modId));
     },
     [dispatch, modComponentFormStates, resetExtension, showConfirmation],
   );

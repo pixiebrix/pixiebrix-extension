@@ -59,12 +59,12 @@ import {
 import { type Except } from "type-fest";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraces } from "@/pageEditor/slices/runtimeSelectors";
 import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
   selectCollapsedNodes,
-  selectNodePreviewActiveElement,
+  selectActiveDocumentOrFormPreviewElement,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
@@ -204,7 +204,7 @@ const usePipelineNodes = (): {
     selectActiveModComponentFormState,
   );
   const activeNodeId = useSelector(selectActiveNodeId);
-  const traces = useSelector(selectActiveElementTraces);
+  const traces = useSelector(selectActiveModComponentTraces);
   const maybePipelineMap = useSelector(selectPipelineMap);
   const collapsedNodes = useSelector(selectCollapsedNodes);
 
@@ -212,7 +212,7 @@ const usePipelineNodes = (): {
     selectExtensionAnnotations(activeModComponentFormState.uuid),
   );
   const activeNodePreviewElementId = useSelector(
-    selectNodePreviewActiveElement,
+    selectActiveDocumentOrFormPreviewElement,
   );
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");

@@ -27,7 +27,7 @@ import BrickPreview, {
 } from "@/pageEditor/tabs/effect/BrickPreview";
 import useReduxState from "@/hooks/useReduxState";
 import { useSelector } from "react-redux";
-import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraces } from "@/pageEditor/slices/runtimeSelectors";
 import { type JsonObject } from "type-fest";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
@@ -42,7 +42,7 @@ import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
   selectActiveNodeInfo,
-  selectNodePreviewActiveElement,
+  selectActiveDocumentOrFormPreviewElement,
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import Alert from "@/components/Alert";
@@ -98,7 +98,7 @@ const DataPanel: React.FC = () => {
   const brick = allBricks.get(brickId);
   const brickType = brick?.type;
 
-  const traces = useSelector(selectActiveElementTraces);
+  const traces = useSelector(selectActiveModComponentTraces);
   const record = traces.find((trace) => trace.blockInstanceId === activeNodeId);
 
   const isInputStale = useMemo(() => {
@@ -173,8 +173,11 @@ const DataPanel: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- We only want to report when `activeTabKey` changes
   }, [activeTabKey]);
 
-  const [nodePreviewActiveElement, setNodePreviewActiveElement] = useReduxState(
-    selectNodePreviewActiveElement,
+  const [
+    activeDocumentOrFormPreviewElement,
+    setActiveDocumentOrFormPreviewElement,
+  ] = useReduxState(
+    selectActiveDocumentOrFormPreviewElement,
     editorActions.setActiveDocumentOrFormPreviewElement,
   );
 
@@ -369,14 +372,14 @@ const DataPanel: React.FC = () => {
                 {showFormPreview ? (
                   <FormPreview
                     rjsfSchema={brickConfig?.config as RJSFSchema}
-                    activeField={nodePreviewActiveElement}
-                    setActiveField={setNodePreviewActiveElement}
+                    activeField={activeDocumentOrFormPreviewElement}
+                    setActiveField={setActiveDocumentOrFormPreviewElement}
                   />
                 ) : (
                   <DocumentPreview
                     documentBodyName={documentBodyFieldName}
-                    activeElement={nodePreviewActiveElement}
-                    setActiveElement={setNodePreviewActiveElement}
+                    activeElement={activeDocumentOrFormPreviewElement}
+                    setActiveElement={setActiveDocumentOrFormPreviewElement}
                     menuBoundary={popupBoundary}
                   />
                 )}
@@ -409,8 +412,8 @@ const DataPanel: React.FC = () => {
               )}
               <DocumentOutline
                 documentBodyName={documentBodyFieldName}
-                activeElement={nodePreviewActiveElement}
-                setActiveElement={setNodePreviewActiveElement}
+                activeElement={activeDocumentOrFormPreviewElement}
+                setActiveElement={setActiveDocumentOrFormPreviewElement}
               />
             </ErrorBoundary>
           </DataTab>

@@ -43,7 +43,7 @@ const PermissionsToolbar: React.FunctionComponent<{
   modComponentFormState: ModComponentFormState;
   disabled: boolean;
 }> = ({ modComponentFormState, disabled }) => {
-  const [debouncedElement] = useDebounce(
+  const [debouncedModComponentFormState] = useDebounce(
     modComponentFormState,
     PERMISSION_UPDATE_MILLIS,
     {
@@ -53,8 +53,11 @@ const PermissionsToolbar: React.FunctionComponent<{
   );
 
   const state = useAsyncState(
-    async () => calculatePermissionsForModComponentFormState(debouncedElement),
-    [debouncedElement],
+    async () =>
+      calculatePermissionsForModComponentFormState(
+        debouncedModComponentFormState,
+      ),
+    [debouncedModComponentFormState],
   );
   const { refetch, data } = fallbackValue(state, fallbackState);
 

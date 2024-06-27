@@ -32,7 +32,7 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { revertAll } from "@/store/commonActions";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import { allSettled } from "@/utils/promiseUtils";
-import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 
 async function revokeAllAdditionalPermissions() {
   const permissions: Permissions.AnyPermissions =
@@ -98,7 +98,7 @@ const FactoryResetSettings: React.FunctionComponent = () => {
                 { catch: "ignore" },
               );
 
-              reactivateEveryTab();
+              reloadModsEveryTab();
 
               notify.success("Reset all mods and integration configurations");
             } catch (error) {

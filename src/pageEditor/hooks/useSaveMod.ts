@@ -29,7 +29,6 @@ import {
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
-import { selectModMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
@@ -37,11 +36,19 @@ import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import type { EditablePackageMetadata } from "@/types/contract";
-import type { ModDefinition } from "@/types/modDefinitionTypes";
+import type {
+  EditablePackageMetadata,
+  PackageUpsertResponse,
+} from "@/types/contract";
+import type {
+  ModDefinition,
+  UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
+import type { ModComponentBase } from "@/types/modComponentTypes";
+import { pick } from "lodash";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -54,6 +61,17 @@ export function isModEditable(
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
   const modId = modDefinition?.metadata?.id;
   return modId != null && editablePackages.some((x) => x.name === modId);
+}
+
+function selectModMetadata(
+  unsavedModDefinition: UnsavedModDefinition,
+  response: PackageUpsertResponse,
+): ModComponentBase["_recipe"] {
+  return {
+    ...unsavedModDefinition.metadata,
+    sharing: pick(response, ["public", "organizations"]),
+    ...pick(response, ["updated_at"]),
+  };
 }
 
 type ModSaver = {
@@ -155,7 +173,7 @@ function useSaveMod(): ModSaver {
     await Promise.all(
       dirtyModComponentFormStates.map(async (modComponentFormState) =>
         upsertModComponentFormState({
-          element: modComponentFormState,
+          modComponentFormState,
           options: {
             pushToCloud: false,
             // Permissions were already checked earlier in the save function here
@@ -213,7 +231,7 @@ function useSaveMod(): ModSaver {
       const success = await save(modId);
       if (success) {
         notify.success("Saved mod");
-        reactivateEveryTab();
+        reloadModsEveryTab();
       }
     } catch (error) {
       notify.error({
