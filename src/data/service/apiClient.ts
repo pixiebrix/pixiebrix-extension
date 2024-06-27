@@ -30,9 +30,9 @@ import {
 } from "@/errors/genericErrors";
 import { isUrlRelative } from "@/utils/urlUtils";
 import createAuthRefreshInterceptor from "axios-auth-refresh";
-import refreshPartnerAuthentication from "@/background/auth/partnerIntegrations/refreshPartnerAuthentication";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
+import { refreshPartnerAuthentication } from "@/background/messenger/api";
 
 /**
  * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL

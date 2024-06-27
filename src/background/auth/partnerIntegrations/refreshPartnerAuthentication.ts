@@ -67,7 +67,8 @@ export default async function refreshPartnerAuthentication(): Promise<void> {
 
   await setCachedAuthData(authId, data);
 
-  const { token: newSessionToken, refresh_token: newRefreshToken } = data;
+  const { access_token: newSessionToken, refresh_token: newRefreshToken } =
+    data;
 
   await setPartnerAuthData({
     ...partnerAuthData,

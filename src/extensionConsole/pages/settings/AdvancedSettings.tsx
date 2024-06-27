@@ -43,6 +43,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { reloadIfNewVersionIsReady } from "@/utils/extensionUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import { refreshPartnerAuthentication } from "@/background/messenger/api";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;
@@ -143,6 +144,17 @@ const AdvancedSettings: React.FunctionComponent = () => {
       });
     },
     [serviceURL, setServiceURL],
+  );
+
+  const testPartnerRefreshToken = useUserAction(
+    async () => {
+      await refreshPartnerAuthentication();
+    },
+    {
+      successMessage: "Successfully refreshed the partner token",
+      errorMessage: "Error refreshing the partner token",
+    },
+    [],
   );
 
   return (
@@ -250,6 +262,10 @@ const AdvancedSettings: React.FunctionComponent = () => {
             Clear OAuth2 Tokens
           </Button>
         )}
+
+        <Button variant="warning" onClick={testPartnerRefreshToken}>
+          Test Partner Refresh Token
+        </Button>
       </Card.Footer>
     </Card>
   );

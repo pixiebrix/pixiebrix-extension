@@ -153,3 +153,8 @@ export const installStarterBlueprints = getMethod(
   "INSTALL_STARTER_BLUEPRINTS",
   bg,
 );
+
+export const refreshPartnerAuthentication = getMethod(
+  "REFRESH_PARTNER_AUTHENTICATION",
+  bg,
+);
