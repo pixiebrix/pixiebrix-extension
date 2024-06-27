@@ -1118,7 +1118,6 @@
     "./pageEditor/panes/insert/InsertPanelPane.tsx",
     "./pageEditor/panes/save/SaveDataIntegrityErrorModal.tsx",
     "./pageEditor/panes/save/saveHelpers.ts",
-    "./pageEditor/panes/save/savingExtensionSelectors.ts",
     "./pageEditor/panes/save/savingExtensionSlice.ts",
     "./pageEditor/protocol.ts",
     "./pageEditor/sidebar/ActionMenu.stories.tsx",
