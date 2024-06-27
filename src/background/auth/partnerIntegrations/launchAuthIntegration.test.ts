@@ -230,8 +230,10 @@ describe("launchAuthIntegration", () => {
       refreshUrl:
         "https://oauthconfigapp.automationanywhere.digital/client/oauth/token",
       refreshParamPayload: {
+        grant_type: "refresh_token",
         client_id: "g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM",
         hosturl: "https://control-room.example.com",
+        refresh_token: "test_refresh_token",
       },
       refreshExtraHeaders: {
         Authorization: "Basic ZzJxckIyZnZ5TFlib3RrYjN6aTl3d081cWptamUzZU0=",
