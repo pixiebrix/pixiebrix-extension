@@ -27,7 +27,7 @@ import { type Metadata } from "@/types/registryTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -73,7 +73,7 @@ const activatedModComponentFactory = define<
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
   _recipe: null,
-  label: "Test Extension",
+  label: "Test Mod Component",
   config: define<TriggerConfig>({
     action: () => [] as BrickPipeline,
   }),
@@ -100,8 +100,8 @@ describe("lifecycle", () => {
 
     window.document.body.innerHTML = "";
     document.body.innerHTML = "";
-    blockRegistry.clear();
-    blockRegistry.register([rootReader]);
+    brickRegistry.clear();
+    brickRegistry.register([rootReader]);
     rootReader.readCount = 0;
     rootReader.ref = undefined;
   });
@@ -121,11 +121,11 @@ describe("lifecycle", () => {
     expect(getModComponentStateMock).toHaveBeenCalledTimes(1);
 
     await lifecycleModule.handleNavigate();
-    // Still only called once because loadPersistedExtensionsOnce is memoized
+    // Still only called once because loadActivatedModComponentsOnce is memoized
     expect(getModComponentStateMock).toHaveBeenCalledTimes(1);
   });
 
-  it("installs persisted trigger on first run", async () => {
+  it("installs activated trigger on first run", async () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickDefinitionFactory({
@@ -198,7 +198,7 @@ describe("lifecycle", () => {
 
     await tick();
 
-    // Ensure the persisted extension is loaded
+    // Ensure the activated mod component is loaded
     expect(
       lifecycleModule.TEST_getActivatedModComponentStarterBrickMap().size,
     ).toBe(1);
@@ -223,7 +223,7 @@ describe("lifecycle", () => {
     await lifecycleModule.handleNavigate({ force: true });
     await tick();
 
-    // Persisted mod component is not re-added on force-add
+    // Activated mod component is not re-added on force-add
     expect(
       lifecycleModule.TEST_getActivatedModComponentStarterBrickMap().size,
     ).toBe(0);
@@ -261,7 +261,7 @@ describe("lifecycle", () => {
       })(),
     );
 
-    // @ts-expect-error -- There's some weirdness going on with this extensionPointFactory;
+    // @ts-expect-error -- There's some weirdness going on with this starterBrickFactory;
     // it's not incrementing the starter brick id, nor is allowing the id to be passed as an override
     // https://github.com/pixiebrix/pixiebrix-extension/issues/5972
     updatedStarterBrick.id = "test/updated-starter-brick";
