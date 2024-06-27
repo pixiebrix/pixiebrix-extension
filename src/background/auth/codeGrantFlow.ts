@@ -68,6 +68,12 @@ async function codeGrantFlow(
     authorizeURL.searchParams.set(key, value);
   }
 
+  // The client_id param is not required for the authorization_code grant type for some integrations
+  // For an example, see the Slack API integration in the app project
+  if (client_id) {
+    authorizeURL.searchParams.set("client_id", client_id);
+  }
+
   let code_verifier: string | null = null;
   let code_challenge: string | null = null;
 
