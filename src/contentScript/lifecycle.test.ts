@@ -275,7 +275,7 @@ describe("lifecycle", () => {
     getModComponentStateMock.mockResolvedValue({
       extensions: [updatedModComponent],
     });
-    lifecycleModule.queueReloadFrame();
+    lifecycleModule.queueReloadFrameMods();
 
     await lifecycleModule.handleNavigate({ force: true });
     await tick();
