@@ -42,7 +42,7 @@ import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
   selectActiveNodeInfo,
-  selectActiveDocumentOrFormPreviewElement,
+  selectActiveBuilderPreviewElement,
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import Alert from "@/components/Alert";
@@ -174,13 +174,11 @@ const DataPanel: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- We only want to report when `activeTabKey` changes
   }, [activeTabKey]);
 
-  const [
-    activeDocumentOrFormPreviewElement,
-    setActiveDocumentOrFormPreviewElement,
-  ] = useReduxState(
-    selectActiveDocumentOrFormPreviewElement,
-    editorActions.setActiveDocumentOrFormPreviewElement,
-  );
+  const [activeBuilderPreviewElement, setActiveBuilderPreviewElement] =
+    useReduxState(
+      selectActiveBuilderPreviewElement,
+      editorActions.setActiveBuilderPreviewElement,
+    );
 
   const popupBoundary = showDocumentPreview
     ? document.querySelector(`.${dataPanelStyles.tabContent}`)
@@ -373,14 +371,14 @@ const DataPanel: React.FC = () => {
                 {showFormPreview ? (
                   <FormPreview
                     rjsfSchema={brickConfig?.config as RJSFSchema}
-                    activeField={activeDocumentOrFormPreviewElement}
-                    setActiveField={setActiveDocumentOrFormPreviewElement}
+                    activeField={activeBuilderPreviewElement}
+                    setActiveField={setActiveBuilderPreviewElement}
                   />
                 ) : (
                   <DocumentPreview
                     documentBodyName={documentBodyFieldName}
-                    activeElement={activeDocumentOrFormPreviewElement}
-                    setActiveElement={setActiveDocumentOrFormPreviewElement}
+                    activeElement={activeBuilderPreviewElement}
+                    setActiveElement={setActiveBuilderPreviewElement}
                     menuBoundary={popupBoundary}
                   />
                 )}
@@ -413,8 +411,8 @@ const DataPanel: React.FC = () => {
               )}
               <DocumentOutline
                 documentBodyName={documentBodyFieldName}
-                activeElement={activeDocumentOrFormPreviewElement}
-                setActiveElement={setActiveDocumentOrFormPreviewElement}
+                activeElement={activeBuilderPreviewElement}
+                setActiveElement={setActiveBuilderPreviewElement}
               />
             </ErrorBoundary>
           </DataTab>

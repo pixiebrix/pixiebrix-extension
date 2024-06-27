@@ -64,7 +64,7 @@ import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
   selectCollapsedNodes,
-  selectActiveDocumentOrFormPreviewElement,
+  selectActiveBuilderPreviewElement,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
@@ -213,7 +213,7 @@ const usePipelineNodes = (): {
     selectExtensionAnnotations(activeModComponentFormState.uuid),
   );
   const activeNodePreviewElementId = useSelector(
-    selectActiveDocumentOrFormPreviewElement,
+    selectActiveBuilderPreviewElement,
   );
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
@@ -320,7 +320,7 @@ const usePipelineNodes = (): {
 
     const onClick = () => {
       if (activeNodePreviewElementId) {
-        dispatch(actions.setActiveDocumentOrFormPreviewElement(null));
+        dispatch(actions.setActiveBuilderPreviewElement(null));
 
         if (isNodeActive) {
           return;
@@ -522,7 +522,7 @@ const usePipelineNodes = (): {
                 focus() {
                   setActiveNodeId(blockConfig.instanceId);
                   dispatch(
-                    editorActions.setActiveDocumentOrFormPreviewElement(
+                    editorActions.setActiveBuilderPreviewElement(
                       nodePreviewElementId,
                     ),
                   );

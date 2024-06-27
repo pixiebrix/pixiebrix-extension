@@ -30,7 +30,7 @@ import {
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { useSelector } from "react-redux";
-import { selectActiveDocumentOrFormPreviewElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/slices/editorSelectors";
 
 const useScrollIntoViewEffect = (
   active = false,
@@ -38,7 +38,7 @@ const useScrollIntoViewEffect = (
 ) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   const activeNodePreviewElementId = useSelector(
-    selectActiveDocumentOrFormPreviewElement,
+    selectActiveBuilderPreviewElement,
   );
 
   useEffect(() => {
