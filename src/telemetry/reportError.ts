@@ -69,8 +69,8 @@ export default function reportError(
         ? { url: "", referrer: "" } // In case of service worker.
         : {
             // Record original current url and referrer here before it is lost in the service worker.
-            url: window?.location.href,
-            referrer: document?.referrer,
+            url: window.location.href,
+            referrer: document.referrer,
           }),
       // Network speed. "4g", "3g", "2g", "slow-2g" https://developer.mozilla.org/en-US/docs/Glossary/Effective_connection_type
       connectionType:
