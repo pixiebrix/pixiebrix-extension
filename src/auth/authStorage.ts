@@ -133,9 +133,13 @@ export async function removeOAuth2Token(token: string) {
  * Clear all partner OAuth2 tokens and reset api query caches
  */
 export async function clearPartnerAuthData(): Promise<void> {
-  // // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
-  // await chromeP.identity.clearAllCachedAuthTokens();
+  // For now, we're just clearing all cached auth tokens in the chrome API
+  // See: https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
+  await chromeP.identity.clearAllCachedAuthTokens();
 
+  // We might be able to switch this to the following code that invalidates
+  // only the current partner token, but more testing is required here
+  /*
   const partnerAuthData = await partnerTokenStorage.get();
   if (partnerAuthData?.token) {
     console.debug(
@@ -143,6 +147,7 @@ export async function clearPartnerAuthData(): Promise<void> {
     );
     await removeOAuth2Token(partnerAuthData.token);
   }
+  */
 
   await partnerTokenStorage.remove();
 }

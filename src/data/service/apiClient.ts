@@ -83,6 +83,7 @@ async function setupApiClient(): Promise<void> {
       apiClientInstance,
       async () => {
         try {
+          console.info("Refreshing partner token");
           await refreshPartnerAuthentication();
         } catch (error) {
           console.warn("Failed to refresh partner token", error);
