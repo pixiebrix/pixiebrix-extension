@@ -30,7 +30,7 @@ type EditorSelector<T> = (state: RootState) => T;
 
 const EMPTY_TRACE = freeze<TraceRecord[]>([]);
 
-export const selectActiveElementTraces: EditorSelector<TraceRecord[]> = ({
+export const selectActiveModComponentTraces: EditorSelector<TraceRecord[]> = ({
   runtime,
   editor,
 }) =>
@@ -38,28 +38,28 @@ export const selectActiveElementTraces: EditorSelector<TraceRecord[]> = ({
     ? runtime.extensionTraces[editor.activeModComponentId] ?? EMPTY_TRACE
     : EMPTY_TRACE;
 
-const activeElementTraceForBlockSelector = createSelector(
-  selectActiveElementTraces,
+const activeModComponentTraceForBrickSelector = createSelector(
+  selectActiveModComponentTraces,
   (state: RootState, instanceId: UUID) => instanceId,
   (traces, instanceId) =>
     traces.find((trace) => trace.blockInstanceId === instanceId),
 );
 
-export const selectActiveElementTraceForBrick =
+export const selectActiveModComponentTraceForBrick =
   (instanceId: UUID) => (state: RootState) =>
-    activeElementTraceForBlockSelector(state, instanceId);
+    activeModComponentTraceForBrickSelector(state, instanceId);
 
 export const selectActiveNodeTrace = createSelector(
   (state: RootState) => state,
   selectActiveNodeId,
-  activeElementTraceForBlockSelector,
+  activeModComponentTraceForBrickSelector,
 );
 
 /**
  * Trace records corresponding to errors in the last run. May return multiple for because of sub-pipelines
  */
 export const selectTraceErrors = createSelector(
-  selectActiveElementTraces,
+  selectActiveModComponentTraces,
   // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference of isTraceError
   (records) => records.filter(isTraceError),
 );

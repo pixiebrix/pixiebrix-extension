@@ -25,7 +25,7 @@ import notify from "@/utils/notify";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 type ExtensionSaver = {
-  save: (element: ModComponentFormState) => Promise<void>;
+  save: (modComponentFormState: ModComponentFormState) => Promise<void>;
   isSaving: boolean;
 };
 
@@ -34,12 +34,14 @@ function useSaveStandaloneModComponent(): ExtensionSaver {
   const upsertModComponentFormState = useUpsertModComponentFormState();
   const sessionId = useSelector(selectSessionId);
 
-  async function save(element: ModComponentFormState): Promise<void> {
+  async function save(
+    modComponentFormState: ModComponentFormState,
+  ): Promise<void> {
     setIsSaving(true);
 
     try {
       const error = await upsertModComponentFormState({
-        element,
+        modComponentFormState,
         options: {
           pushToCloud: true,
           checkPermissions: true,
@@ -53,7 +55,7 @@ function useSaveStandaloneModComponent(): ExtensionSaver {
       } else {
         reportEvent(Events.PAGE_EDITOR_STANDALONE_MOD_COMPONENT_UPDATE, {
           sessionId,
-          extensionId: element.uuid,
+          extensionId: modComponentFormState.uuid,
         });
       }
     } finally {

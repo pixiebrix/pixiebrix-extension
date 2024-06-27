@@ -108,8 +108,10 @@ export const selectNotDeletedModComponentFormStates: ({
 }: EditorRootState) => ModComponentFormState[] = createSelector(
   selectModComponentFormStates,
   selectAllDeletedModComponentIds,
-  (elements, deletedElementIds) =>
-    elements.filter(({ uuid }) => !deletedElementIds.has(uuid)),
+  (modComponentFormStates, deletedModComponentIds) =>
+    modComponentFormStates.filter(
+      ({ uuid }) => !deletedModComponentIds.has(uuid),
+    ),
 );
 
 export const selectNotDeletedActivatedModComponents: ({
@@ -117,8 +119,8 @@ export const selectNotDeletedActivatedModComponents: ({
 }: ModComponentsRootState) => ActivatedModComponent[] = createSelector(
   selectActivatedModComponents,
   selectAllDeletedModComponentIds,
-  (extensions, deletedElementIds) =>
-    extensions.filter(({ id }) => !deletedElementIds.has(id)),
+  (activatedModComponents, deletedModComponentIds) =>
+    activatedModComponents.filter(({ id }) => !deletedModComponentIds.has(id)),
 );
 
 export const selectDirtyModOptionsDefinitions = ({ editor }: EditorRootState) =>
@@ -270,12 +272,12 @@ export const selectExpandedModId = ({ editor }: EditorRootState) =>
   editor.expandedModId;
 
 // UI state
-export function selectActiveModComponentUIState({
+export function selectActiveBrickPipelineUIState({
   editor,
 }: EditorRootState): Nullishable<BrickPipelineUIState> {
   if (editor.activeModComponentId == null) {
     console.warn(
-      "selectActiveModComponentUIState called without activeModComponentId",
+      "selectActiveBrickPipelineUIState called without activeModComponentId",
     );
     return null;
   }
@@ -284,22 +286,23 @@ export function selectActiveModComponentUIState({
 }
 
 export const selectActiveNodeUIState = createSelector(
-  selectActiveModComponentUIState,
-  (elementUIState) => elementUIState?.nodeUIStates[elementUIState.activeNodeId],
+  selectActiveBrickPipelineUIState,
+  (brickPipelineUIState) =>
+    brickPipelineUIState?.nodeUIStates[brickPipelineUIState.activeNodeId],
 );
 
 export const selectActiveNodeId = createSelector(
-  selectActiveModComponentUIState,
-  (elementUIState) => elementUIState?.activeNodeId,
+  selectActiveBrickPipelineUIState,
+  (brickPipelineUIState) => brickPipelineUIState?.activeNodeId,
 );
 
 export const selectPipelineMap = createSelector(
-  selectActiveModComponentUIState,
+  selectActiveBrickPipelineUIState,
   (uiState: BrickPipelineUIState) => uiState?.pipelineMap,
 );
 
 export const selectActiveNodeInfo = createSelector(
-  selectActiveModComponentUIState,
+  selectActiveBrickPipelineUIState,
   selectActiveNodeId,
   (uiState: Nullishable<BrickPipelineUIState>, activeNodeId?: UUID) => {
     assertNotNullish(
@@ -321,15 +324,15 @@ export const selectActiveNodeInfo = createSelector(
 );
 
 export const selectCollapsedNodes = createSelector(
-  selectActiveModComponentUIState,
-  (elementUIState: BrickPipelineUIState) =>
-    Object.entries(elementUIState.nodeUIStates)
+  selectActiveBrickPipelineUIState,
+  (brickPipelineUIState: BrickPipelineUIState) =>
+    Object.entries(brickPipelineUIState.nodeUIStates)
       .map(([nodeId, { collapsed }]) => (collapsed ? nodeId : null))
       .filter((nodeId) => nodeId != null),
 );
 
 const activeModComponentNodeInfoSelector = createSelector(
-  selectActiveModComponentUIState,
+  selectActiveBrickPipelineUIState,
   (state: EditorRootState, instanceId: UUID) => instanceId,
   (uiState: BrickPipelineUIState, instanceId: UUID) =>
     // eslint-disable-next-line security/detect-object-injection -- using a node uuid
@@ -341,7 +344,7 @@ export const selectActiveModComponentNodeInfo =
     activeModComponentNodeInfoSelector(state, instanceId);
 
 const parentBlockInfoSelector = createSelector(
-  selectActiveModComponentUIState,
+  selectActiveBrickPipelineUIState,
   (state: EditorRootState, instanceId: UUID) => instanceId,
   (uiState: BrickPipelineUIState, instanceId: UUID) => {
     if (uiState == null) {
@@ -384,9 +387,9 @@ export function selectNodeDataPanelTabState(
 }
 
 /**
- * Selects the activeElement of the Document or Form builder on the Preview tab
+ * Selects the active element of the Document or Form builder on the Preview tab
  */
-export function selectNodePreviewActiveElement(
+export function selectActiveDocumentOrFormPreviewElement(
   state: EditorRootState,
 ): Nullishable<string> {
   return selectNodeDataPanelTabState(state, DataPanelTabKey.Preview)
@@ -401,15 +404,16 @@ const activeModComponentAnalysisAnnotationsForPath = createSelector(
   ({ analysis }: AnalysisRootState) => analysis.extensionAnnotations,
   (state: RootState, path?: string) => path,
   ({ editor }: EditorRootState) => editor.isVariablePopoverVisible,
-  (activeElementId, annotations, path, isVariablePopoverVisible) => {
-    if (activeElementId == null) {
+  (activeModComponentId, annotations, path, isVariablePopoverVisible) => {
+    if (activeModComponentId == null) {
       return [];
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- UUID
-    const elementAnnotations = annotations?.[activeElementId] ?? [];
+    const modComponentFormStateAnnotations =
+      // eslint-disable-next-line security/detect-object-injection -- non-user generated UUID
+      annotations?.[activeModComponentId] ?? [];
 
-    const filteredAnnotations = elementAnnotations.filter(
+    const filteredAnnotations = modComponentFormStateAnnotations.filter(
       ({ analysisId, position }) =>
         position.path === path &&
         // Hide variable/template annotations while the popover is open because the user is editing the field
@@ -465,13 +469,13 @@ export const selectModComponentAvailability = ({
 export const selectKnownEventNamesForActiveModComponent = createSelector(
   selectActiveModComponentId,
   selectKnownEventNames,
-  (activeElementId, knownEventNameMap) => {
-    if (activeElementId == null) {
+  (activeModComponentId, knownEventNameMap) => {
+    if (activeModComponentId == null) {
       return [];
     }
 
     // eslint-disable-next-line security/detect-object-injection -- is a UUID
-    return knownEventNameMap[activeElementId] ?? [];
+    return knownEventNameMap[activeModComponentId] ?? [];
   },
 );
 
