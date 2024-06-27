@@ -34,7 +34,7 @@ test("#8104: Do not automatically close the sidebar when saving in the Page Edit
 
   const sidebar = await getSidebarPage(page, extensionId);
   await expect(
-    sidebar.getByRole("tab", { name: "pbx.vercel.app side panel" }),
+    sidebar.getByRole("tab", { name: "Sidebar Panel" }),
   ).toBeVisible();
 
   const updatedTabTitle = "Updated Tab Title";
