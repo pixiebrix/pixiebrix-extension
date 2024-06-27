@@ -26,7 +26,7 @@ import { normalizeSemVerString, validateRegistryId } from "@/types/helpers";
 import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
 import {
   internalStarterBrickMetaFactory,
-  lookupExtensionPoint,
+  lookupStarterBrick,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/starterBricks/base";
 import { produce } from "immer";
@@ -72,7 +72,7 @@ import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
-  lookupExtensionPoint: jest.fn(),
+  lookupStarterBrick: jest.fn(),
 }));
 
 describe("generatePersonalBrickId", () => {
@@ -108,7 +108,7 @@ describe("replaceModComponent round trip", () => {
       }),
     );
 
-    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
+    jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
     const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0],
@@ -152,7 +152,7 @@ describe("replaceModComponent round trip", () => {
       }),
     );
 
-    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
+    jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
     const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0],
@@ -187,8 +187,7 @@ describe("replaceModComponent round trip", () => {
       }),
     );
 
-    // Mimic what would come back via internal.ts:resolveRecipe
-    jest.mocked(lookupExtensionPoint).mockResolvedValue({
+    jest.mocked(lookupStarterBrick).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
         id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
@@ -236,8 +235,7 @@ describe("replaceModComponent round trip", () => {
       }),
     );
 
-    // Mimic what would come back via internal.ts:resolveRecipe
-    jest.mocked(lookupExtensionPoint).mockResolvedValue({
+    jest.mocked(lookupStarterBrick).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
         id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
@@ -280,8 +278,7 @@ describe("replaceModComponent round trip", () => {
       }),
     );
 
-    // Mimic what would come back via internal.ts:resolveRecipe
-    jest.mocked(lookupExtensionPoint).mockResolvedValue({
+    jest.mocked(lookupStarterBrick).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
         id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
@@ -342,8 +339,7 @@ describe("replaceModComponent round trip", () => {
       }),
     );
 
-    // Mimic what would come back via internal.ts:resolveRecipe
-    jest.mocked(lookupExtensionPoint).mockResolvedValue({
+    jest.mocked(lookupStarterBrick).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
         id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
@@ -399,7 +395,7 @@ describe("replaceModComponent round trip", () => {
       }),
     );
 
-    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
+    jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
     const modComponentFormState = await menuItemExtensionAdapter.fromExtension({
       ...state.extensions[0],
@@ -448,7 +444,7 @@ describe("replaceModComponent round trip", () => {
       }),
     );
 
-    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
+    jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
     const modComponentFormState = await menuItemExtensionAdapter.fromExtension({
       ...state.extensions[0],
@@ -647,7 +643,7 @@ describe("buildNewMod", () => {
     const adapter = ADAPTERS.get(starterBrick.definition.type);
 
     // Mock this lookup for the adapter call that follows
-    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
+    jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
     // Use the adapter to convert to ModComponentFormState
     const modComponentFormState = (await adapter.fromExtension(
@@ -827,7 +823,7 @@ describe("buildNewMod", () => {
         for (let i = 0; i < dirtyModComponentCount; i++) {
           const extensionPoint = extensionPoints[i];
           // Mock this lookup for the adapter call that follows
-          jest.mocked(lookupExtensionPoint).mockResolvedValue(extensionPoint);
+          jest.mocked(lookupStarterBrick).mockResolvedValue(extensionPoint);
 
           // Mod was installed, so get the mod component from state
           const modComponent = state.extensions[i];

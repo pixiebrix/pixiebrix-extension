@@ -118,7 +118,7 @@ function useSaveMod(): ModSaver {
     }
 
     if (!isModEditable(editablePackages, modDefinition)) {
-      dispatch(editorActions.showSaveAsNewRecipeModal());
+      dispatch(editorActions.showSaveAsNewModModal());
       return false;
     }
 
@@ -200,7 +200,7 @@ function useSaveMod(): ModSaver {
     }
 
     // Clear the dirty states
-    dispatch(editorActions.resetMetadataAndOptionsForRecipe(newModMetadata.id));
+    dispatch(editorActions.resetMetadataAndOptionsForMod(newModMetadata.id));
     dispatch(
       editorActions.clearDeletedModComponentFormStatesForMod(newModMetadata.id),
     );

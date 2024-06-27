@@ -44,7 +44,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseStarterBrickState } from "@/pageEditor/baseFormStateTypes";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -141,7 +141,7 @@ const previewSlice = createSlice({
 
 const BrickPreview: React.FunctionComponent<{
   brickConfig: BrickConfig;
-  extensionPoint: BaseExtensionPointState;
+  extensionPoint: BaseStarterBrickState;
   traceRecord: TraceRecord;
   previewRefreshMillis?: 250;
   // eslint-disable-next-line complexity -- complex due to formik

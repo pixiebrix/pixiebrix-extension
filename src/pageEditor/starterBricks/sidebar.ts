@@ -18,12 +18,12 @@
 import { type Metadata } from "@/types/registryTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
-  baseFromExtension,
-  baseSelectExtension,
-  baseSelectExtensionPoint,
-  extensionWithNormalizedPipeline,
+  baseFromModComponent,
+  baseSelectModComponent,
+  baseSelectStarterBrick,
+  modComponentWithNormalizedPipeline,
   getImplicitReader,
-  lookupExtensionPoint,
+  lookupStarterBrick,
   makeInitialBaseState,
   readerTypeHack,
   removeEmptyValues,
@@ -87,7 +87,7 @@ function selectStarterBrickDefinition(
     definition: { isAvailable, reader, trigger, debounce, customEvent },
   } = extensionPoint;
   return removeEmptyValues({
-    ...baseSelectExtensionPoint(formState),
+    ...baseSelectStarterBrick(formState),
     definition: {
       type: "actionPanel",
       reader,
@@ -111,7 +111,7 @@ function selectExtension(
       : omitEditorMetadata(extension.blockPipeline),
   };
   return removeEmptyValues({
-    ...baseSelectExtension(state),
+    ...baseSelectModComponent(state),
     config,
   });
 }
@@ -129,14 +129,14 @@ function asDraftModComponent(
 async function fromExtension(
   config: ModComponentBase<SidebarConfig>,
 ): Promise<SidebarFormState> {
-  const extensionPoint = await lookupExtensionPoint<
+  const extensionPoint = await lookupStarterBrick<
     SidebarDefinition,
     SidebarConfig,
     "actionPanel"
   >(config, "actionPanel");
 
-  const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = await extensionWithNormalizedPipeline(
+  const base = baseFromModComponent(config, extensionPoint.definition.type);
+  const extension = await modComponentWithNormalizedPipeline(
     config.config,
     "body",
   );

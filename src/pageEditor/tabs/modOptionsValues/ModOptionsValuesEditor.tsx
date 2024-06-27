@@ -57,11 +57,11 @@ const ModOptionsValuesContent: React.FC = () => {
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
   const {
-    data: recipe,
-    isFetching: isLoadingRecipe,
-    error: recipeError,
+    data: mod,
+    isFetching: isFetchingMod,
+    error: modError,
   } = useOptionalModDefinition(activeModId);
-  const dirtyRecipeOptions = useSelector(
+  const dirtyModOptions = useSelector(
     selectDirtyOptionsDefinitionsForModId(activeModId),
   );
   const modifiedOptionValues = useSelector(
@@ -74,12 +74,12 @@ const ModOptionsValuesContent: React.FC = () => {
     getCleanComponentsAndDirtyFormStatesForMod(activeModId);
 
   const optionsDefinition = useMemo(() => {
-    if (dirtyRecipeOptions) {
-      return dirtyRecipeOptions;
+    if (dirtyModOptions) {
+      return dirtyModOptions;
     }
 
-    return recipe?.options ?? emptyModOptionsDefinitionFactory();
-  }, [dirtyRecipeOptions, recipe?.options]);
+    return mod?.options ?? emptyModOptionsDefinitionFactory();
+  }, [dirtyModOptions, mod?.options]);
 
   const {
     data: validationSchema,
@@ -120,16 +120,16 @@ const ModOptionsValuesContent: React.FC = () => {
 
   const updateRedux = useCallback(
     (options: OptionsArgs) => {
-      dispatch(actions.editRecipeOptionsValues(options));
+      dispatch(actions.editModOptionsValues(options));
     },
     [dispatch],
   );
 
-  if (isLoadingSchema || isLoadingRecipe) {
+  if (isLoadingSchema || isFetchingMod) {
     return <Loader />;
   }
 
-  const error = recipeError ?? schemaError;
+  const error = modError ?? schemaError;
   if (error) {
     console.error(error);
     return <Alert variant="danger">{getErrorMessage(error)}</Alert>;
@@ -158,7 +158,7 @@ const ModOptionsValuesContent: React.FC = () => {
         renderBody={renderBody}
         onSubmit={() => {
           console.error(
-            "The form's submit should not be called to save recipe option values, they are automatically synced with redux",
+            "The form's submit should not be called to save mod option values, they are automatically synced with redux",
           );
         }}
         renderSubmit={() => null}

@@ -17,12 +17,12 @@
 
 import { type Metadata } from "@/types/registryTypes";
 import {
-  baseFromExtension,
-  baseSelectExtension,
-  baseSelectExtensionPoint,
-  extensionWithNormalizedPipeline,
+  baseFromModComponent,
+  baseSelectModComponent,
+  baseSelectStarterBrick,
+  modComponentWithNormalizedPipeline,
   getImplicitReader,
-  lookupExtensionPoint,
+  lookupStarterBrick,
   makeInitialBaseState,
   getDefaultAvailabilityForUrl,
   readerTypeHack,
@@ -105,7 +105,7 @@ function selectStarterBrickDefinition(
     },
   } = extensionPoint;
   return removeEmptyValues({
-    ...baseSelectExtensionPoint(formState),
+    ...baseSelectStarterBrick(formState),
     definition: {
       type: "trigger",
       reader,
@@ -136,7 +136,7 @@ function selectExtension(
       : omitEditorMetadata(extension.blockPipeline),
   };
   return removeEmptyValues({
-    ...baseSelectExtension(state),
+    ...baseSelectModComponent(state),
     config,
   });
 }
@@ -154,7 +154,7 @@ function asDraftModComponent(
 async function fromExtension(
   config: ModComponentBase<TriggerConfig>,
 ): Promise<TriggerFormState> {
-  const extensionPoint = await lookupExtensionPoint<
+  const extensionPoint = await lookupStarterBrick<
     TriggerDefinition,
     TriggerConfig,
     "trigger"
@@ -174,8 +174,8 @@ async function fromExtension(
     customEvent,
   } = extensionPoint.definition;
 
-  const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = await extensionWithNormalizedPipeline(
+  const base = baseFromModComponent(config, extensionPoint.definition.type);
+  const extension = await modComponentWithNormalizedPipeline(
     config.config,
     "action",
   );

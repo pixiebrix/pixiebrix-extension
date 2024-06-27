@@ -1103,7 +1103,7 @@
     "./pageEditor/hooks/useExtensionTrace.ts",
     "./pageEditor/hooks/useRemoveModComponentFromStorage.tsx",
     "./pageEditor/hooks/useResetExtension.ts",
-    "./pageEditor/hooks/useResetRecipe.ts",
+    "./pageEditor/hooks/useResetMod.ts",
     "./pageEditor/hooks/useSaveStandaloneModComponent.ts",
     "./pageEditor/hooks/useUpsertModComponentFormState.ts",
     "./pageEditor/pageEditorTypes.ts",

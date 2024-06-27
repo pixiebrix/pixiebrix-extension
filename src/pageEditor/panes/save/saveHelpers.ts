@@ -31,7 +31,7 @@ import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
-  DEFAULT_EXTENSION_POINT_VAR,
+  DEFAULT_STARTER_BRICK_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/starterBricks/base";
 import { type Except } from "type-fest";
@@ -565,7 +565,7 @@ export function buildModComponents(
 
       const newInnerId = needsFreshStarterBrickId
         ? freshIdentifier(
-            DEFAULT_EXTENSION_POINT_VAR as SafeString,
+            DEFAULT_STARTER_BRICK_VAR as SafeString,
             currentStarterBrickIds,
           )
         : componentInnerDefinitionId;

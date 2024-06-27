@@ -48,10 +48,10 @@ import sidebar from "@/pageEditor/starterBricks/sidebar";
 import { traceRecordFactory } from "@/testUtils/factories/traceFactories";
 import { pipelineFactory } from "@/testUtils/factories/brickFactories";
 import { type DerivedFunction } from "cooky-cutter/dist/derive";
-import { type BaseExtensionState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseModComponentState } from "@/pageEditor/baseFormStateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-export const baseExtensionStateFactory = define<BaseExtensionState>({
+export const baseExtensionStateFactory = define<BaseModComponentState>({
   blockPipeline: () => pipelineFactory(),
 });
 

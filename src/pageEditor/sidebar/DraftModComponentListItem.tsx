@@ -108,7 +108,7 @@ const DraftModComponentListItem: React.FunctionComponent<
     isSaving: isSavingStandaloneModComponent,
   } = useSaveStandaloneModComponent();
   const resetExtension = useResetExtension();
-  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveMod();
+  const { save: saveMod, isSaving: isSavingMod } = useSaveMod();
 
   const deleteModComponent = async () =>
     removeModComponentFromStorage({
@@ -125,14 +125,14 @@ const DraftModComponentListItem: React.FunctionComponent<
 
   const onSave = async () => {
     if (modComponentFormState.recipe) {
-      await saveRecipe(modComponentFormState.recipe?.id);
+      await saveMod(modComponentFormState.recipe?.id);
     } else {
       await saveStandaloneModComponent(modComponentFormState);
     }
   };
 
   const isSaving = modComponentFormState.recipe
-    ? isSavingRecipe
+    ? isSavingMod
     : isSavingStandaloneModComponent;
 
   const onReset = async () =>
@@ -149,7 +149,7 @@ const DraftModComponentListItem: React.FunctionComponent<
   return (
     <ListGroup.Item
       className={cx(styles.root, {
-        [styles.recipeBackground ?? ""]: isRelativeOfActiveListItem,
+        [styles.modBackground]: isRelativeOfActiveListItem,
       })}
       as="div"
       active={isActive}
@@ -170,7 +170,7 @@ const DraftModComponentListItem: React.FunctionComponent<
 
         if (modComponentFormState.type === "actionPanel") {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
-          // frequently between extensions within the same blueprint.
+          // frequently between mod components within the same mod.
           await openSidePanel(inspectedTab.tabId);
           updateSidebar(inspectedTab, {
             extensionId: modComponentFormState.uuid,
@@ -207,17 +207,17 @@ const DraftModComponentListItem: React.FunctionComponent<
           onClone={onClone}
           onReset={modComponentFormState.installed ? onReset : undefined}
           isDirty={isDirty}
-          onAddToRecipe={
+          onAddToMod={
             modComponentFormState.recipe
               ? undefined
               : async () => {
-                  dispatch(actions.showAddToRecipeModal());
+                  dispatch(actions.showAddToModModal());
                 }
           }
-          onRemoveFromRecipe={
+          onRemoveFromMod={
             modComponentFormState.recipe
               ? async () => {
-                  dispatch(actions.showRemoveFromRecipeModal());
+                  dispatch(actions.showRemoveFromModModal());
                 }
               : undefined
           }

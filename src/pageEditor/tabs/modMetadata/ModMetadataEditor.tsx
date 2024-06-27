@@ -45,10 +45,10 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { type RegistryId } from "@/types/registryTypes";
 import { getActivateModHashRoute } from "@/extensionConsole/shared/routeHelpers";
 
-// TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
+// TODO: This should be yup.SchemaOf<ModMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
 const editModSchema = object({
-  id: string().required(), // Recipe id is readonly here
+  id: string().required(), // Mod id is readonly here
   name: string().required(),
   version: string()
     .test(
@@ -130,7 +130,7 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
   const dispatch = useDispatch();
   const updateRedux = useCallback(
     (metadata: ModMetadataFormState) => {
-      dispatch(actions.editRecipeMetadata(metadata));
+      dispatch(actions.editModMetadata(metadata));
     },
     [dispatch],
   );
@@ -196,7 +196,7 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
           initialValues={initialFormState}
           onSubmit={() => {
             console.error(
-              "The form's submit should not be called to save recipe metadata. Use 'saveRecipe' from 'useRecipeSaver' instead.",
+              "The form's submit should not be called to save mod metadata. Use 'saveMod' from 'useSaveMod' instead.",
             );
           }}
           renderBody={renderBody}
