@@ -139,11 +139,10 @@ export async function launchAuthIntegration({
     let refreshParamPayload: Record<string, string> | null = null;
     let refreshExtraHeaders: Record<string, string> | null = null;
     if (refreshToken) {
-      if (oAuth2Context.client_id == null) {
-        throw new Error(
-          "OAuth2 client_id is required for partner refresh token, but not found in the oAuth2Context",
-        );
-      }
+      assertNotNullish(
+        oAuth2Context.client_id,
+        "OAuth2 client_id is required for partner refresh token, but was not found in the oAuth2Context",
+      );
 
       refreshParamPayload = {
         hosturl: controlRoomUrl,
