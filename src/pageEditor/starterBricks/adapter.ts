@@ -87,12 +87,12 @@ export async function modComponentToFormState(
 }
 
 export function formStateToDraftModComponent(
-  formState: ModComponentFormState,
+  modComponentFormState: ModComponentFormState,
 ): DraftModComponent {
-  const elementConfig = ADAPTERS.get(formState.type);
+  const adapter = ADAPTERS.get(modComponentFormState.type);
   assertNotNullish(
-    elementConfig,
-    `No adapter found for starter brick type: ${formState.type}`,
+    adapter,
+    `No adapter found for starter brick type: ${modComponentFormState.type}`,
   );
-  return elementConfig.asDraftModComponent(formState);
+  return adapter.asDraftModComponent(modComponentFormState);
 }
