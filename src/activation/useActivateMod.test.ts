@@ -36,7 +36,7 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
-import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { appApiMock } from "@/testUtils/appApiMock";
 import type MockAdapter from "axios-mock-adapter";
 
@@ -44,7 +44,7 @@ jest.mock("@/contentScript/messenger/api");
 
 const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
 const uninstallModMock = jest.mocked(uninstallMod);
-const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
+const reactivateEveryTabMock = jest.mocked(reloadModsEveryTab);
 
 function setupInputs(): {
   formValues: WizardValues;

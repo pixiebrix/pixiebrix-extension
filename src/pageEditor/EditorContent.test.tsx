@@ -20,7 +20,7 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import React from "react";
 import EditorContent from "@/pageEditor/EditorContent";
-import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
+import { getRunningStarterBricks } from "@/contentScript/messenger/api";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 
@@ -66,7 +66,7 @@ describe("error alerting in the UI", () => {
 
   test("shows error when checkAvailableInstalledExtensions fails", async () => {
     const message = "testing error";
-    jest.mocked(getInstalledExtensionPoints).mockImplementation(() => {
+    jest.mocked(getRunningStarterBricks).mockImplementation(() => {
       throw new Error(message);
     });
 

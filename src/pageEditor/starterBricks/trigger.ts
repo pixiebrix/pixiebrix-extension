@@ -24,7 +24,7 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeDefaultAvailability,
+  getDefaultAvailabilityForUrl,
   readerTypeHack,
   removeEmptyValues,
   selectStarterBrickAvailability,
@@ -75,7 +75,7 @@ function fromNativeElement(
         debounce: undefined,
         customEvent: undefined,
         reader: getImplicitReader("trigger"),
-        isAvailable: makeDefaultAvailability(url),
+        isAvailable: getDefaultAvailabilityForUrl(url),
       },
     },
     extension: {

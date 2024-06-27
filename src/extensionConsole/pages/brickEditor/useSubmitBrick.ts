@@ -40,7 +40,7 @@ import { type Definition } from "@/types/registryTypes";
 import useUserAction from "@/hooks/useUserAction";
 import { useModals } from "@/components/ConfirmationModal";
 import { CancelError } from "@/errors/businessErrors";
-import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 
 type SubmitOptions = {
   create: boolean;
@@ -146,7 +146,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
               await clearServiceCache();
             }
 
-            reactivateEveryTab();
+            reloadModsEveryTab();
           } catch (error) {
             notify.warning({
               message: "Error re-activating bricks",

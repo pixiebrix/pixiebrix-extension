@@ -28,7 +28,7 @@ import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { useCreateDatabaseMutation } from "@/data/service/api";
 import { Events } from "@/telemetry/events";
-import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { autoCreateDatabaseOptionsArgsInPlace } from "@/activation/modOptionsHelpers";
 
 export type ActivateResult = {
@@ -159,7 +159,7 @@ function useActivateMod(
           }),
         );
 
-        reactivateEveryTab();
+        reloadModsEveryTab();
       } catch (error) {
         const errorMessage = getErrorMessage(error);
 

@@ -39,7 +39,7 @@ import { type Timestamp, type UUID } from "@/types/stringTypes";
 
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import type { RegistryId } from "@/types/registryTypes";
-import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 const { saveModComponent } = extensionsSlice.actions;
@@ -228,7 +228,7 @@ function useUpsertModComponentFormState(): SaveCallback {
       }
 
       if (options.reactivateEveryTab) {
-        reactivateEveryTab();
+        reloadModsEveryTab();
       }
 
       if (options.notifySuccess) {

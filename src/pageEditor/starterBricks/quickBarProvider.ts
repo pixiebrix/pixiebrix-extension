@@ -26,9 +26,9 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeDefaultAvailability,
   removeEmptyValues,
   selectStarterBrickAvailability,
+  ALL_SITES_AVAILABILITY,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
@@ -51,7 +51,7 @@ function fromNativeElement(
 ): QuickBarProviderFormState {
   const base = makeInitialBaseState();
 
-  const isAvailable = makeDefaultAvailability(url);
+  const isAvailable = ALL_SITES_AVAILABILITY;
 
   const title = "Dynamic Quick Bar";
 

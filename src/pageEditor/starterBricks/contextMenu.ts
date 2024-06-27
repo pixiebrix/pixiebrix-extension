@@ -26,9 +26,9 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeDefaultAvailability,
   removeEmptyValues,
   selectStarterBrickAvailability,
+  ALL_SITES_AVAILABILITY,
 } from "@/pageEditor/starterBricks/base";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
@@ -51,7 +51,7 @@ function fromNativeElement(
 ): ContextMenuFormState {
   const base = makeInitialBaseState();
 
-  const isAvailable = makeDefaultAvailability(url);
+  const isAvailable = ALL_SITES_AVAILABILITY;
 
   const title = "Context menu item";
 

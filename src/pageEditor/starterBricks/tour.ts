@@ -24,7 +24,7 @@ import {
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
-  makeDefaultAvailability,
+  getDefaultAvailabilityForUrl,
   readerTypeHack,
   removeEmptyValues,
   selectStarterBrickAvailability,
@@ -62,7 +62,7 @@ function fromNativeElement(
         allowUserRun: true,
         autoRunSchedule: "never",
         reader: getImplicitReader("tour"),
-        isAvailable: makeDefaultAvailability(url),
+        isAvailable: getDefaultAvailabilityForUrl(url),
       },
     },
     extension: {
