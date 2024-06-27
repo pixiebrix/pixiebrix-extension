@@ -34,7 +34,7 @@ export async function removeModComponentForEveryTab(
   await forEachTab(async ({ tabId }) => {
     const allFrames = { tabId, frameId: "allFrames" } as const;
     removeActivatedModComponent(allFrames, modComponentId);
-    removeDraftModComponents(allFrames, { uuid: modComponentId });
+    removeDraftModComponents(allFrames, modComponentId);
     await removeSidebars({ tabId }, [modComponentId]);
   });
   await uninstallContextMenu({ extensionId: modComponentId });

@@ -109,9 +109,7 @@ export function useRemoveModComponentFromStorage(): (
 
         // Remove from the host page
         try {
-          removeDraftModComponents(allFramesInInspectedTab, {
-            uuid: modComponentId,
-          });
+          removeDraftModComponents(allFramesInInspectedTab, modComponentId);
         } catch (error) {
           // Element might not be on the page anymore
           console.info("Cannot clear draft mod component from page", { error });

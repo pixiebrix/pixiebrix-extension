@@ -52,8 +52,9 @@ test("useRemoveModComponentFromStorage", async () => {
   expect(dispatch).toHaveBeenCalledWith(
     extensionsActions.removeModComponent({ modComponentId }),
   );
-  expect(removeDraftModComponents).toHaveBeenCalledWith(expect.any(Object), {
-    uuid: modComponentId,
-  });
+  expect(removeDraftModComponents).toHaveBeenCalledWith(
+    expect.any(Object),
+    modComponentId,
+  );
   expect(removeModComponentsFromAllTabs).toHaveBeenCalledWith([modComponentId]);
 });

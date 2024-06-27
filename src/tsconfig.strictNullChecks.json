@@ -675,7 +675,6 @@
     "./contentScript/messenger/runBrickTypes.ts",
     "./contentScript/modalDom.tsx",
     "./contentScript/pageEditor/beautify.ts",
-    "./contentScript/pageEditor/draft/removeDraftModComponents.ts",
     "./contentScript/pageEditor/draft/overlay.ts",
     "./contentScript/pageEditor/draft/runStarterBrickReaderPreview.ts",
     "./contentScript/pageEditor/draft/updateDraftModComponent.ts",

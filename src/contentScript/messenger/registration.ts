@@ -70,8 +70,8 @@ import {
   queueReloadFrameMods,
   reloadFrameMods,
   removeActivatedModComponent,
+  removeDraftModComponents,
 } from "@/contentScript/lifecycle";
-import { removeDraftModComponents } from "@/contentScript/pageEditor/draft/removeDraftModComponents";
 import { updateDraftModComponent } from "@/contentScript/pageEditor/draft/updateDraftModComponent";
 import { resetTab } from "@/contentScript/pageEditor/resetTab";
 
