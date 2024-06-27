@@ -52,7 +52,7 @@ import {
 } from "@/utils/nullishUtils";
 import {
   MergeStrategies,
-  StateNamespace,
+  type StateNamespace,
   StateNamespaces,
 } from "@/platform/state/stateController";
 
