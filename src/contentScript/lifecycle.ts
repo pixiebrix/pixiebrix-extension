@@ -435,12 +435,12 @@ async function loadActivatedModComponents(): Promise<StarterBrick[]> {
   // - draft mod components: these are already installed on the page via the Page Editor
   const activeModComponents = options.extensions.filter((modComponent) => {
     if (_draftModComponentStarterBrickMap.has(modComponent.id)) {
-      const editorExtension = _draftModComponentStarterBrickMap.get(
+      const draftStarterBrick = _draftModComponentStarterBrickMap.get(
         modComponent.id,
       );
       // Include sidebar (i.e. "actionPanel") starter brick kind as those are replaced
       // by the sidebar itself, automatically replacing old panels keyed by mod component id
-      return editorExtension?.kind === "actionPanel";
+      return draftStarterBrick?.kind === "actionPanel";
     }
 
     // Exclude disabled deployments
