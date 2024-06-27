@@ -55,7 +55,7 @@ import { locator } from "@/background/locator";
 import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
+import { removeModComponentForEveryTab } from "@/background/removeModComponentForEveryTab";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBricks from "@/contrib/registerContribBricks";
 import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
@@ -134,7 +134,7 @@ async function deactivateModComponentsAndSaveState(
 
   await allSettled(
     modComponentsToDeactivate.map(async ({ id }) =>
-      removeExtensionForEveryTab(id),
+      removeModComponentForEveryTab(id),
     ),
     { catch: "ignore" },
   );

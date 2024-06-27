@@ -149,7 +149,7 @@
     "./background/refreshRegistries.ts",
     "./background/refreshToken.test.ts",
     "./background/refreshToken.ts",
-    "./background/removeExtensionForEveryTab.ts",
+    "./background/removeModComponentForEveryTab.ts",
     "./background/requests.test.ts",
     "./background/requests.ts",
     "./background/restrictUnauthenticatedUrlAccess.test.ts",
