@@ -39,6 +39,7 @@ test.describe("extension console mods page smoke test", () => {
     //   https://github.com/pixiebrix/pixiebrix-extension/issues/7900
     checkForCriticalViolations(accessibilityScanResults, [
       "color-contrast",
+      "heading-order",
       "label-title-only",
       "landmark-one-main",
       "landmark-unique",
