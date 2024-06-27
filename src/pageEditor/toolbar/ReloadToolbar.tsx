@@ -81,7 +81,8 @@ export function shouldAutoRun(
   modComponentFormState: ModComponentFormState,
 ): boolean {
   const automaticUpdate = !(
-    isAutomaticTrigger(modComponentFormState) || // By default, don't automatically trigger (because it might be doing expensive operations such as hitting an API)
+    isAutomaticTrigger(modComponentFormState) ||
+    // By default, don't automatically trigger (because it might be doing expensive operations such as hitting an API)
     isPanel(modComponentFormState) ||
     isTour(modComponentFormState)
   );
