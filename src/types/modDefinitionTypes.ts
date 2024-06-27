@@ -20,6 +20,7 @@ import {
   type Definition,
   type InnerDefinitionRef,
   type InnerDefinitions,
+  DefinitionKinds,
   type RegistryId,
 } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -96,7 +97,7 @@ export type HydratedModComponentDefinition = ModComponentDefinition & {
  * @see PackageUpsertResponse
  */
 export interface UnsavedModDefinition extends Definition {
-  kind: "recipe";
+  kind: typeof DefinitionKinds.MOD;
   extensionPoints: ModComponentDefinition[];
   definitions?: InnerDefinitions;
   options?: ModOptionsDefinition;

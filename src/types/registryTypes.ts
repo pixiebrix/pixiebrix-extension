@@ -17,6 +17,7 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
+import { type ValueOf } from "type-fest";
 
 /**
  * A brick registry id conforming to `@scope/collection/name`
@@ -32,14 +33,22 @@ export type RegistryId = string & {
 export const INNER_SCOPE = "@internal";
 
 /**
- * The kind of definition in the external registry
+ * Constants for the different kinds of top-level definitions in the registry.
+ *
+ * See https://github.com/pixiebrix/pixiebrix-extension/tree/main/schemas
  */
-export type Kind =
-  | "recipe"
-  | "service"
-  | "reader"
-  | "component"
-  | "extensionPoint";
+export const DefinitionKinds = {
+  STARTER_BRICK: "extensionPoint",
+  MOD: "recipe",
+  INTEGRATION: "service",
+  BRICK: "component",
+  READER: "reader",
+} as const;
+
+/**
+ * The type for of definition in the external package registry.
+ */
+export type DefinitionKind = ValueOf<typeof DefinitionKinds>;
 
 /**
  * Simple semantic version number, major.minor.patch
@@ -93,7 +102,7 @@ export type Sharing = {
 /**
  * A definition in the PixieBrix registry
  */
-export interface Definition<K extends Kind = Kind> {
+export interface Definition<K extends DefinitionKind = DefinitionKind> {
   apiVersion: ApiVersion;
   kind: K;
   metadata: Metadata;

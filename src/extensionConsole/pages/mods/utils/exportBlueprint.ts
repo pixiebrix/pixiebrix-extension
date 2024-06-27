@@ -16,7 +16,7 @@
  */
 
 import { isEmpty } from "lodash";
-import { type Metadata } from "@/types/registryTypes";
+import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 import GenerateSchema from "generate-schema";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import {
@@ -85,7 +85,7 @@ export function makeBlueprint(
 
   const modDefinition: UnsavedModDefinition = {
     apiVersion,
-    kind: "recipe",
+    kind: DefinitionKinds.MOD,
     metadata,
     definitions,
     extensionPoints: [extensionPoint],

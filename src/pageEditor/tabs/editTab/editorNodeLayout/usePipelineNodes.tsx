@@ -81,6 +81,7 @@ import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName, joinPathParts } from "@/utils/formUtils";
 import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/pageEditor/documentBuilder/preview/ElementPreview";
 import { getBrickOutlineSummary } from "@/pageEditor/brickSummary";
+import { BrickTypes } from "@/runtime/runtimeTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -620,7 +621,8 @@ const usePipelineNodes = (): {
     const lastIndex = pipeline.length - 1;
     const lastBlockId = pipeline.at(lastIndex)?.id;
     const lastBlock = lastBlockId ? allBricks.get(lastBlockId) : undefined;
-    const showAppend = !lastBlock?.block || lastBlock.type !== "renderer";
+    const showAppend =
+      !lastBlock?.block || lastBlock.type !== BrickTypes.RENDERER;
     const nodes: EditorNodeProps[] = [];
 
     // Determine which execution of the pipeline to show. Currently, getting the latest execution

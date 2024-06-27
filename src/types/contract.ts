@@ -28,6 +28,7 @@ import {
   type SecretsConfig,
 } from "@/integrations/integrationTypes";
 import {
+  DefinitionKind,
   type Metadata,
   type RegistryId,
   type SemVerString,
@@ -155,7 +156,7 @@ export type RegistryPackage = Pick<
    * Note that EditablePackageMetadata uses the backend's display name for this field
    * @see https://github.com/pixiebrix/pixiebrix-app/blob/43f0a4b81d8b7aaaf11adbe7fd8e4530ca4b8bf0/api/serializers/brick.py#L204-L204
    */
-  kind: "component" | "extensionPoint" | "recipe" | "service" | "reader";
+  kind: DefinitionKind;
 
   // PackageConfigListSerializer adds updated_at and sharing to the PackageConfigList response:
   // https://github.com/pixiebrix/pixiebrix-app/blob/368a0116edad2c115ae370b651f109619e621745/api/serializers/brick.py#L139-L139

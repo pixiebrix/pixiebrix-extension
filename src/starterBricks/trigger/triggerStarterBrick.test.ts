@@ -18,7 +18,7 @@
 import { validateRegistryId } from "@/types/helpers";
 import { define, derive } from "cooky-cutter";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { type Metadata } from "@/types/registryTypes";
+import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import {
   getDocument,
@@ -81,7 +81,7 @@ const notifyContextInvalidatedMock = jest.mocked(notifyContextInvalidated);
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickDefinitionLike<TriggerDefinition>>({
     apiVersion: "v3",
-    kind: "extensionPoint",
+    kind: DefinitionKinds.STARTER_BRICK,
     metadata: (n: number) =>
       ({
         id: validateRegistryId(`test/starter-brick-${n}`),

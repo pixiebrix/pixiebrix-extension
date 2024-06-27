@@ -30,6 +30,7 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 
@@ -148,7 +149,7 @@ describe("useMods", () => {
     expect(wrapper.result.current).toEqual({
       mods: [
         expect.objectContaining({
-          kind: "recipe",
+          kind: DefinitionKinds.MOD,
         }),
       ],
       error: undefined,

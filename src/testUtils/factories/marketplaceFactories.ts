@@ -19,6 +19,7 @@ import { define } from "cooky-cutter";
 import { type MarketplaceListing, type MarketplaceTag } from "@/types/contract";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 export const marketplaceTagFactory = define<MarketplaceTag>({
   id: uuidSequence,
@@ -39,7 +40,7 @@ export function modDefinitionToMarketplacePackage(
     description: modDefinition.metadata.description ?? "",
     version: modDefinition.metadata.version,
     config: modDefinition as unknown as UnknownObject,
-    kind: "recipe",
+    kind: DefinitionKinds.MOD,
     author: {},
     organization: {},
   };

@@ -22,8 +22,16 @@ import {
   type OutputKey,
   VARIABLE_REFERENCE_PREFIX,
 } from "@/types/runtimeTypes";
+import { type ValueOf } from "type-fest";
 
-export type BrickType = "reader" | "effect" | "transform" | "renderer";
+export const BrickTypes = {
+  READER: "reader",
+  EFFECT: "effect",
+  TRANSFORM: "transform",
+  RENDERER: "renderer",
+} as const;
+
+export type BrickType = ValueOf<typeof BrickTypes>;
 
 /**
  * A block configuration with the corresponding resolved Brick and BrickType.

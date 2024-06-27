@@ -36,7 +36,7 @@ import {
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type UUID } from "@/types/stringTypes";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
-import { type Definition } from "@/types/registryTypes";
+import { type Definition, DefinitionKinds } from "@/types/registryTypes";
 import useUserAction from "@/hooks/useUserAction";
 import { useModals } from "@/components/ConfirmationModal";
 import { CancelError } from "@/errors/businessErrors";
@@ -126,9 +126,9 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
         // We attach the handler below, and don't want it to block the save
         void (async () => {
           try {
-            if (kind === "recipe" && reinstallBlueprint) {
-              // TypeScript doesn't have enough information to kind === "recipe" distinguishes ModDefinition from
-              // Definition
+            if (kind === DefinitionKinds.MOD && reinstallBlueprint) {
+              // TypeScript doesn't have enough information to kind === PackageKinds.MOD distinguishes ModDefinition
+              // from Definition
               const unsavedRecipeDefinition =
                 unsavedBrickJson as UnsavedModDefinition;
               await reinstall({
@@ -140,7 +140,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
               await refresh();
             }
 
-            if (kind === "service") {
+            if (kind === DefinitionKinds.INTEGRATION) {
               // Clear the background page's service cache after refreshing so
               // it's forced to read the updated service definition.
               await clearServiceCache();

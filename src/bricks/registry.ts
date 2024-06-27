@@ -39,7 +39,7 @@ export type TypedBrickMap = Map<RegistryId, TypedBrickPair>;
  */
 class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
   constructor() {
-    super(["block", "component", "effect", "reader"], null);
+    super(["component", "reader"], null);
     // Can't reference "this" before the call to "super"
     this.setDeserialize(partial(fromJS, this));
 

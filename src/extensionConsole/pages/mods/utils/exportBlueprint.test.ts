@@ -19,6 +19,7 @@ import { makeBlueprint } from "@/extensionConsole/pages/mods/utils/exportBluepri
 import { validateRegistryId } from "@/types/helpers";
 import { type SerializedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 describe("makeBlueprint", () => {
   it("smoke test", () => {
@@ -32,7 +33,7 @@ describe("makeBlueprint", () => {
 
     expect(result).toEqual(
       expect.objectContaining({
-        kind: "recipe",
+        kind: DefinitionKinds.MOD,
       }),
     );
   });
@@ -51,7 +52,7 @@ describe("makeBlueprint", () => {
 
     expect(result).toEqual(
       expect.objectContaining({
-        kind: "recipe",
+        kind: DefinitionKinds.MOD,
         options: {
           schema: {
             $schema: "http://json-schema.org/draft-04/schema#",
