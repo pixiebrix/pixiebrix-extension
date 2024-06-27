@@ -36,6 +36,10 @@ function isPanel(modComponentFormState: ModComponentFormState | null): boolean {
   return ["panel", "actionPanel"].includes(modComponentFormState?.type ?? "");
 }
 
+function isTour(modComponentFormState: ModComponentFormState | null): boolean {
+  return modComponentFormState.type === "tour";
+}
+
 /**
  * Return true if the trigger runs automatically (not in response to a user action).
  */
@@ -76,11 +80,10 @@ const Controls: React.FunctionComponent<{
 export function shouldAutoRun(
   modComponentFormState: ModComponentFormState,
 ): boolean {
-  const isTour = modComponentFormState.type === "tour";
   const automaticUpdate = !(
     isAutomaticTrigger(modComponentFormState) || // By default, don't automatically trigger (because it might be doing expensive operations such as hitting an API)
     isPanel(modComponentFormState) ||
-    isTour
+    isTour(modComponentFormState)
   );
 
   return automaticUpdate || (modComponentFormState.autoReload ?? false);
@@ -137,9 +140,6 @@ const ReloadToolbar: React.FunctionComponent<{
     trailing: true,
   });
 
-  const isTrigger = isAutomaticTrigger(modComponentFormState);
-  const isTour = modComponentFormState.type === "tour";
-
   useEffect(() => {
     if (!shouldAutoRun(modComponentFormState)) {
       return;
@@ -158,7 +158,7 @@ const ReloadToolbar: React.FunctionComponent<{
     );
   }
 
-  if (isTrigger) {
+  if (isAutomaticTrigger(modComponentFormState)) {
     return (
       <Controls
         autoLabel="Auto-Run"
@@ -168,7 +168,7 @@ const ReloadToolbar: React.FunctionComponent<{
     );
   }
 
-  if (isTour) {
+  if (isTour(modComponentFormState)) {
     return <Controls manualRun={manualRun} buttonCaption="Run Tour" />;
   }
 
