@@ -27,7 +27,7 @@ import {
   selectModComponentsForMod,
 } from "@/store/extensionsSelectors";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
-import { queueReactivateTab } from "@/contentScript/messenger/api";
+import { queueReloadFrameMods } from "@/contentScript/messenger/api";
 import { forEachTab, getExtensionVersion } from "@/utils/extensionUtils";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
 import { type ModComponentState } from "@/store/extensionsTypes";
@@ -93,7 +93,7 @@ async function saveModComponentStateAndReactivateTabs(
   state: ModComponentState,
 ): Promise<void> {
   await saveModComponentState(state);
-  await forEachTab(queueReactivateTab);
+  await forEachTab(queueReloadFrameMods);
 }
 
 function deactivateModComponentFromStates(

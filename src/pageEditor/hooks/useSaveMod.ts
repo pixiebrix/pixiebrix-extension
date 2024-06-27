@@ -41,7 +41,7 @@ import type { EditablePackageMetadata } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -213,7 +213,7 @@ function useSaveMod(): ModSaver {
       const success = await save(modId);
       if (success) {
         notify.success("Saved mod");
-        reactivateEveryTab();
+        reloadModsEveryTab();
       }
     } catch (error) {
       notify.error({

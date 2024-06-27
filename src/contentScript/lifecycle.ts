@@ -288,7 +288,7 @@ export function removePersistedModComponent(modComponentId: UUID): void {
  *
  * @param modComponentId an optional draft mod component id, or undefined to remove all draft mod components
  * @param options options to control clear behavior
- * @see reloadFrame
+ * @see reloadFrameMods
  */
 export function removeDraftModComponents(
   modComponentId?: UUID,
@@ -649,7 +649,7 @@ export async function handleNavigate({
 /**
  * Mark that mods should be reloaded on next navigation, e.g., because a mod was updated/activated.
  */
-export async function queueReloadFrame(): Promise<void> {
+export async function queueReloadFrameMods(): Promise<void> {
   console.debug("contentScript will reload mod components on next navigation");
   setReloadOnNextNavigate(true);
 }
@@ -657,7 +657,7 @@ export async function queueReloadFrame(): Promise<void> {
 /**
  * Reload persisted mods from storage, and re-install/run all mods on the current frame.
  */
-export async function reloadFrame(): Promise<void> {
+export async function reloadFrameMods(): Promise<void> {
   await loadPersistedModComponents();
   // Force navigate event even though the href hasn't changed
   await handleNavigate({ force: true });

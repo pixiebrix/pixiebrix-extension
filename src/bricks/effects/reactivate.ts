@@ -17,7 +17,7 @@
 
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { reloadFrame } from "@/contentScript/lifecycle";
+import { reloadFrameMods } from "@/contentScript/lifecycle";
 import { expectContext } from "@/utils/expectContext";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type JsonObject } from "type-fest";
@@ -43,6 +43,6 @@ export class ReactivateEffect extends EffectABC {
     expectContext("contentScript");
     console.debug("Sending reactivateTab signal");
     logger.debug("Sending reactivateTab signal");
-    await reloadFrame();
+    await reloadFrameMods();
   }
 }

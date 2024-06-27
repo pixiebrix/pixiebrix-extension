@@ -19,18 +19,21 @@
 import { getMethod, getNotifier } from "webext-messenger";
 import { forEachTab } from "@/utils/extensionUtils";
 
-export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
+export const queueReloadFrameMods = getNotifier("QUEUE_RELOAD_FRAME_MODS");
 
-// Not exported because currently only used by reactivateEveryTab
-const reactivateTab = getNotifier("REACTIVATE_TAB");
+// Not exported because currently only used by reloadModsEveryTab
+const reloadFrameMods = getNotifier("RELOAD_FRAME_MODS");
 
 /**
- * Convenience method to reactivate mods in every/all tabs.
- * @see reactivateTab
+ * Convenience method to reload mods in every/all tabs.
+ *
+ * XXX: only reloads mods in the top-level frame.
+ *
+ * @see reloadFrameMods
  */
-export function reactivateEveryTab(): void {
-  console.debug("Reactivate all tabs");
-  void forEachTab(reactivateTab);
+export function reloadModsEveryTab(): void {
+  console.debug("Reload mods in every tab");
+  void forEachTab(reloadFrameMods);
 }
 
 export const showSidebar = getMethod("SHOW_SIDEBAR");
