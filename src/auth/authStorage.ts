@@ -30,7 +30,7 @@ import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { StorageItem } from "webext-storage";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { ReusableAbortController } from "abort-utils";
-import chromeP from "webext-polyfill-kinda";
+import { removeOAuth2Token } from "@/background/messenger/api";
 
 const extensionKeyStorage = new StorageItem("extensionKey", {
   defaultValue: {} as Partial<TokenAuthData>,
@@ -95,20 +95,13 @@ export async function getExtensionToken(): Promise<string | undefined> {
 export async function getPartnerAuthData(): Promise<
   PartnerAuthData | undefined
 > {
-  let isError = false;
-  let storageValue: PartnerAuthData | undefined;
-  try {
-    storageValue = await partnerTokenStorage.get();
-  } catch {
-    isError = true;
-  }
-
+  const storageValue = await partnerTokenStorage.get();
   if (storageValue == null) {
     return undefined;
   }
 
-  // Backwards compatibility with old, looser type
-  if (isError || !storageValue?.authId || !storageValue?.token) {
+  // Backwards compatibility with old, looser type -- just clear the bad data and let the user log in again
+  if (!storageValue?.authId || !storageValue?.token) {
     await clearPartnerAuthData();
     return undefined;
   }
@@ -129,21 +122,15 @@ export async function setPartnerAuthData(data: PartnerAuthData): Promise<void> {
   return partnerTokenStorage.set(data);
 }
 
-export async function removeOAuth2Token(token: string) {
-  await chromeP.identity.removeCachedAuthToken({ token });
-}
-
 /**
  * Clear all partner OAuth2 tokens and reset api query caches
  */
 export async function clearPartnerAuthData(): Promise<void> {
-  // For now, we're just clearing all cached auth tokens in the chrome API
+  // Old code that clears all cached auth tokens
+  // There is an issue with this api in Edge: https://github.com/w3c/webextensions/issues/648
   // See: https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
-  await chromeP.identity.clearAllCachedAuthTokens();
+  // await chromeP.identity.clearAllCachedAuthTokens();
 
-  // We might be able to switch this to the following code that invalidates
-  // only the current partner token, but more testing is required here
-  /*
   const partnerAuthData = await partnerTokenStorage.get();
   if (partnerAuthData?.token) {
     console.debug(
@@ -151,7 +138,6 @@ export async function clearPartnerAuthData(): Promise<void> {
     );
     await removeOAuth2Token(partnerAuthData.token);
   }
-  */
 
   await partnerTokenStorage.remove();
 }

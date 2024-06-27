@@ -158,3 +158,4 @@ export const refreshPartnerAuthentication = getMethod(
   "REFRESH_PARTNER_AUTHENTICATION",
   bg,
 );
+export const removeOAuth2Token = getMethod("REMOVE_OAUTH2_TOKEN", bg);

@@ -24,11 +24,12 @@ import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 import { canParseUrl } from "@/utils/urlUtils";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { removeOAuth2Token, setPartnerAuthData } from "@/auth/authStorage";
+import { setPartnerAuthData } from "@/auth/authStorage";
 import { stringToBase64 } from "uint8array-extras";
 import { getApiClient } from "@/data/service/apiClient";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
+import { removeOAuth2Token } from "@/background/messenger/api";
 
 /**
  * Launch the browser's web auth flow get a partner token for communicating with the PixieBrix server.

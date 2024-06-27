@@ -32,6 +32,7 @@ import {
   deleteCachedAuthData,
   getCachedAuthData,
   hasCachedAuthData,
+  removeOAuth2Token,
 } from "@/background/auth/authStorage";
 import { setToolbarBadge } from "@/background/toolbarBadge";
 import { rememberFocus } from "@/utils/focusTracker";
@@ -147,6 +148,7 @@ declare global {
     INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
 
     REFRESH_PARTNER_AUTHENTICATION: typeof refreshPartnerAuthentication;
+    REMOVE_OAUTH2_TOKEN: typeof removeOAuth2Token;
   }
 }
 
@@ -219,5 +221,6 @@ export default function registerMessenger(): void {
     INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
 
     REFRESH_PARTNER_AUTHENTICATION: refreshPartnerAuthentication,
+    REMOVE_OAUTH2_TOKEN: removeOAuth2Token,
   });
 }
