@@ -41,8 +41,8 @@ const CHANGE_DETECT_DELAY_MILLIS = 100;
 const REDUX_SYNC_WAIT_MILLIS = 500;
 
 const EditorPaneContent: React.VoidFunctionComponent<{
-  element: ModComponentFormState;
-}> = ({ element }) => {
+  modComponentFormState: ModComponentFormState;
+}> = ({ modComponentFormState }) => {
   const dispatch = useDispatch();
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
@@ -57,20 +57,24 @@ const EditorPaneContent: React.VoidFunctionComponent<{
 
   useEffect(() => {
     const messageContext = {
-      extensionId: element.uuid,
-      blueprintId: element.recipe ? element.recipe.id : undefined,
+      extensionId: modComponentFormState.uuid,
+      blueprintId: modComponentFormState.recipe
+        ? modComponentFormState.recipe.id
+        : undefined,
     };
     dispatch(logActions.setContext(messageContext));
-  }, [element.uuid, element.recipe, dispatch]);
+  }, [modComponentFormState.uuid, modComponentFormState.recipe, dispatch]);
 
   return (
     <IntegrationsSliceModIntegrationsContextAdapter>
       <Effect
-        values={element}
+        values={modComponentFormState}
         onChange={syncReduxState}
         delayMillis={CHANGE_DETECT_DELAY_MILLIS}
       />
-      <ModComponentFormStateWizard modComponentFormState={element} />
+      <ModComponentFormStateWizard
+        modComponentFormState={modComponentFormState}
+      />
     </IntegrationsSliceModIntegrationsContextAdapter>
   );
 };
@@ -80,7 +84,7 @@ const EditorPane: React.VFC = () => {
     selectActiveModComponentFormState,
   );
   const editorUpdateKey = useSelector(selectEditorUpdateKey);
-  // Key to force reload of component when user selects a different element from the sidebar
+  // Key to force reload of component when user selects a different mod component from the sidebar
   const key = `${activeModComponentFormState.uuid}-${activeModComponentFormState.installed}-${editorUpdateKey}`;
 
   return (
@@ -98,7 +102,9 @@ const EditorPane: React.VFC = () => {
         validateOnChange={false}
         validateOnBlur={false}
       >
-        {({ values: element }) => <EditorPaneContent element={element} />}
+        {({ values: modComponentFormState }) => (
+          <EditorPaneContent modComponentFormState={modComponentFormState} />
+        )}
       </Formik>
     </ErrorBoundary>
   );
