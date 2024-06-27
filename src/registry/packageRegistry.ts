@@ -125,15 +125,13 @@ function latestVersion(
  * Replace the local database with the packages from the registry.
  *
  * Memoized to avoid multiple network requests across tabs.
+ * Consecutive calls are not an issue since the first call is unauthenticated and the
+ * second is after the user authenticates, because the extension reloads on linking
  */
 export const syncPackages = memoizeUntilSettled(async () => {
   // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
   const timestamp = new Date();
-
-  // XXX: we currently don't have to worry about consecutive calls where the first call is unauthenticated and the
-  // second is after the user authenticates, because the extension reloads on linking
   const client = await getApiClient();
-  // In the future, use the paginated endpoint?
   const { data } = await client.get<RegistryPackage[]>("/api/registry/bricks/");
 
   const packages = data.map((x) => ({
