@@ -136,22 +136,33 @@ export async function launchAuthIntegration({
 
     console.info("Setting partner auth for Control Room %s", controlRoomUrl);
 
+    let refreshParamPayload: Record<string, string> | null = null;
+    let refreshExtraHeaders: Record<string, string> | null = null;
+    if (refreshToken) {
+      if (oAuth2Context.client_id == null) {
+        throw new Error(
+          "OAuth2 client_id is required for partner refresh token, but not found in the oAuth2Context",
+        );
+      }
+
+      refreshParamPayload = {
+        hosturl: controlRoomUrl,
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+        client_id: oAuth2Context.client_id,
+      };
+      refreshExtraHeaders = {
+        Authorization: `Basic ${stringToBase64(oAuth2Context.client_id)}`,
+      };
+    }
+
     await setPartnerAuthData({
       authId: integrationConfig.id,
       token,
       refreshToken,
       refreshUrl,
-      refreshParamPayload: refreshToken
-        ? {
-            client_id: oAuth2Context.client_id,
-            hosturl: controlRoomUrl,
-          }
-        : null,
-      refreshExtraHeaders: refreshToken
-        ? {
-            Authorization: `Basic ${stringToBase64(oAuth2Context.client_id)}`,
-          }
-        : null,
+      refreshParamPayload,
+      refreshExtraHeaders,
       extraHeaders: {
         "X-Control-Room": controlRoomUrl,
       },
