@@ -102,9 +102,7 @@ const EditorPane: React.VFC = () => {
         validateOnChange={false}
         validateOnBlur={false}
       >
-        {({ values: modComponentFormState }) => (
-          <EditorPaneContent modComponentFormState={modComponentFormState} />
-        )}
+        {({ values }) => <EditorPaneContent modComponentFormState={values} />}
       </Formik>
     </ErrorBoundary>
   );

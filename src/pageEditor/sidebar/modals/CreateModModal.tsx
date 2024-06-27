@@ -137,15 +137,19 @@ function useFormSchema() {
 
 const CreateModModalBody: React.FC = () => {
   const dispatch = useDispatch();
-  const activeModComponent = useSelector(selectActiveModComponentFormState);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const { createModFromMod } = useCreateModFromMod();
-  const { createModFromComponent } =
-    useCreateModFromModComponent(activeModComponent);
+  const { createModFromComponent } = useCreateModFromModComponent(
+    activeModComponentFormState,
+  );
 
   // `selectActiveModId` returns the mod id if a mod is selected. Assumption: if the CreateModal
   // is open, and a mod is active, then we're performing a "Save as New" on that mod.
   const directlyActiveModId = useSelector(selectActiveModId);
-  const activeModId = directlyActiveModId ?? activeModComponent?.recipe?.id;
+  const activeModId =
+    directlyActiveModId ?? activeModComponentFormState?.recipe?.id;
   const { data: activeMod, isFetching: isRecipeFetching } =
     useOptionalModDefinition(activeModId);
 
@@ -156,7 +160,7 @@ const CreateModModalBody: React.FC = () => {
   }, [dispatch]);
 
   const initialModMetadataFormState = useInitialFormState({
-    activeModComponentFormState: activeModComponent,
+    activeModComponentFormState,
     activeMod,
   });
 
@@ -166,8 +170,8 @@ const CreateModModalBody: React.FC = () => {
       // activeMod will be the mod of the active mod component if in a "Save as New" workflow for an existing mod
       if (activeMod) {
         await createModFromMod(activeMod, values);
-      } else if (activeModComponent) {
-        await createModFromComponent(activeModComponent, values);
+      } else if (activeModComponentFormState) {
+        await createModFromComponent(activeModComponentFormState, values);
       } else {
         // Should not happen in practice
         // noinspection ExceptionCaughtLocallyJS
