@@ -409,8 +409,8 @@ const activeModComponentAnalysisAnnotationsForPath = createSelector(
       return [];
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- non-user generated UUID
     const modComponentFormStateAnnotations =
+      // eslint-disable-next-line security/detect-object-injection -- non-user generated UUID
       annotations?.[activeModComponentId] ?? [];
 
     const filteredAnnotations = modComponentFormStateAnnotations.filter(

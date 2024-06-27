@@ -57,7 +57,7 @@ describe("useUpsertModComponentFormState", () => {
 
     const upsertModComponentFormState = result.current;
     await upsertModComponentFormState({
-      modComponentFormState: modComponentFormState,
+      modComponentFormState,
       options: defaultOptions,
     });
 
