@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/themes/colors.scss";
+
 .root {
   text-align: center;
   padding: 10px;
@@ -35,6 +37,6 @@
 }
 
 .danger {
-  color: #721c24;
-  background-color: #f8d7da;
+  background-color: #b4183f;
+  background-color: $D600;
 }
