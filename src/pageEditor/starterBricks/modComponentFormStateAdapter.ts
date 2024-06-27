@@ -101,10 +101,10 @@ export interface ModComponentFormStateAdapter<
   readonly fromExtension: (extension: ModComponentBase) => Promise<TState>;
 
   /**
-   * Returns the starter brick definition corresponding to the FormState.
+   * Returns the starter brick definition corresponding to the mod component form state.
    */
   readonly selectStarterBrickDefinition: (
-    element: TState,
+    modComponentFormState: TState,
   ) => StarterBrickDefinitionLike;
 
   /**
@@ -116,5 +116,5 @@ export interface ModComponentFormStateAdapter<
    * @see isInnerExtensionPoint
    * @see extensionWithInnerDefinitions
    */
-  readonly selectExtension: (element: TState) => ModComponentBase;
+  readonly selectExtension: (modComponentFormState: TState) => ModComponentBase;
 }
