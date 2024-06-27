@@ -20,7 +20,7 @@ import {
   runEditorExtension,
 } from "@/contentScript/lifecycle";
 import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
-import { resolveExtensionInnerDefinitions } from "@/registry/internal";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { expectContext } from "@/utils/expectContext";
 import { type TriggerDefinition } from "@/starterBricks/trigger/triggerStarterBrick";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
@@ -70,7 +70,7 @@ export async function updateDraftModComponent({
   }
 
   // In practice, should be a no-op because the Page Editor handles the extensionPoint
-  const resolved = await resolveExtensionInnerDefinitions(extensionConfig);
+  const resolved = await hydrateModComponentInnerDefinitions(extensionConfig);
 
   starterBrick.registerModComponent(resolved);
   await runEditorExtension(extensionConfig.id, starterBrick);

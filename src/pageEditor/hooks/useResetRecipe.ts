@@ -53,8 +53,8 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
       );
 
       dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
-      dispatch(actions.restoreDeletedElementsForRecipe(recipeId));
-      dispatch(actions.selectRecipeId(recipeId));
+      dispatch(actions.restoreDeletedModComponentFormStatesForMod(recipeId));
+      dispatch(actions.setActiveModId(recipeId));
     },
     [dispatch, modComponentFormStates, resetExtension, showConfirmation],
   );

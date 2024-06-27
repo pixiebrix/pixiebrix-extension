@@ -49,7 +49,7 @@ import {
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -164,7 +164,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   );
 
   async getBricks(
-    modComponent: ResolvedModComponent<ContextMenuConfig>,
+    modComponent: HydratedModComponent<ContextMenuConfig>,
   ): Promise<Brick[]> {
     return collectAllBricks(modComponent.config.action);
   }
@@ -234,7 +234,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
   async registerMenuItem(
     modComponent: Pick<
-      ResolvedModComponent<ContextMenuConfig>,
+      HydratedModComponent<ContextMenuConfig>,
       "id" | "config" | "_deployment"
     >,
     handler: (clickData: Menus.OnClickData) => Promise<void>,
@@ -322,7 +322,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   }
 
   private async registerModComponentItem(
-    modComponent: ResolvedModComponent<ContextMenuConfig>,
+    modComponent: HydratedModComponent<ContextMenuConfig>,
   ): Promise<void> {
     const {
       action: actionConfig,

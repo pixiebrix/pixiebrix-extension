@@ -28,7 +28,7 @@ import {
 } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import type React from "react";
-import { createSitePattern } from "@/permissions/patterns";
+import { createSitePattern, SITES_PATTERN } from "@/permissions/patterns";
 import { type Except } from "type-fest";
 import {
   isInnerDefinitionRegistryId,
@@ -38,7 +38,7 @@ import {
 } from "@/types/helpers";
 import { type BrickPipeline, type ReaderConfig } from "@/bricks/types";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { hasInnerExtensionPointRef } from "@/registry/internal";
+import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type ApiVersion } from "@/types/runtimeTypes";
@@ -47,7 +47,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
-import { deepPickBy } from "@/utils/objectUtils";
+import { deepPickBy, freeze } from "@/utils/objectUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
 import {
   type BaseExtensionState,
@@ -81,9 +81,24 @@ export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v3";
 export const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
 
 /**
- * Returns default availability for the given URL.
+ * Return availability for all sites.
+ * @see getDefaultAvailabilityForUrl
  */
-export function makeDefaultAvailability(url: string): NormalizedAvailability {
+// XXX: technically we need deep freeze here because of the sub-array. Freezing top-level should catch most
+//  accidental mutation, though
+export const ALL_SITES_AVAILABILITY = freeze(
+  normalizeAvailability({
+    matchPatterns: [SITES_PATTERN],
+  }),
+);
+
+/**
+ * Returns default availability for the given URL.
+ * @see ALL_SITES_AVAILABILITY
+ */
+export function getDefaultAvailabilityForUrl(
+  url: string,
+): NormalizedAvailability {
   return normalizeAvailability({
     matchPatterns: [createSitePattern(url)],
   });
@@ -258,7 +273,7 @@ export async function lookupExtensionPoint<
     throw new Error("config is required");
   }
 
-  if (hasInnerExtensionPointRef(config)) {
+  if (hasInnerStarterBrickRef(config)) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerExtensionPointRef
     const definition = config.definitions![config.extensionPointId];
     console.debug(

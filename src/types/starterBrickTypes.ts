@@ -18,7 +18,7 @@
 import { type Permissions } from "webextension-polyfill";
 import { type Schema } from "@/types/schemaTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type RunArgs } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
@@ -120,7 +120,7 @@ export interface StarterBrick extends Metadata {
    * @see runModComponents
    * @see synchronizeModComponents
    */
-  registerModComponent(component: ResolvedModComponent): void;
+  registerModComponent(component: HydratedModComponent): void;
 
   /**
    * Run all registered ModComponents for this StarterBrick and/or add their UI to the page.
@@ -160,7 +160,7 @@ export interface StarterBrick extends Metadata {
    * @see removeModComponent
    * @see registerModComponent
    */
-  synchronizeModComponents(modComponents: ResolvedModComponent[]): void;
+  synchronizeModComponents(modComponents: HydratedModComponent[]): void;
 
   /**
    * Returns all bricks configured in provided ModComponentBase, including sub-pipelines.
@@ -168,11 +168,11 @@ export interface StarterBrick extends Metadata {
    * @param modComponent the ModComponent to get bricks for
    * @see PipelineExpression
    */
-  getBricks: (modComponent: ResolvedModComponent) => Promise<Brick[]>;
+  getBricks: (modComponent: HydratedModComponent) => Promise<Brick[]>;
 
   /**
    * The mod components currently registered with the StarterBrick.
    * @since 1.7.34
    */
-  registeredModComponents: readonly ResolvedModComponent[];
+  registeredModComponents: readonly HydratedModComponent[];
 }

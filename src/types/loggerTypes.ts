@@ -48,6 +48,9 @@ export type MessageContext = {
   readonly serviceVersion?: SemVerString;
   readonly authId?: UUID;
   readonly pageName?: ContextName | "unknown";
+  readonly url?: string;
+  readonly connectionType?: string;
+  readonly referrer?: string;
   /**
    * The platform name
    * @since 1.8.10

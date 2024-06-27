@@ -17,7 +17,7 @@
 
 import { useField } from "formik";
 import React, { useCallback, useMemo, useState } from "react";
-import { type DocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import Tree, {
   type ItemId,
   type RenderItemParams,
@@ -54,7 +54,8 @@ const DocumentOutline = ({
 
   const [dragItemId, setDragItemId] = useState<ItemId | null>();
 
-  const [{ value: body }] = useField<DocumentElement[]>(documentBodyName);
+  const [{ value: body }] =
+    useField<DocumentBuilderElement[]>(documentBodyName);
 
   const { treeExpandedState } = useSelector((state: RootState) =>
     selectNodeDataPanelTabState(state, DataPanelTabKey.Outline),

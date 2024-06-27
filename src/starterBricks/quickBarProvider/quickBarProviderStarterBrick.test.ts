@@ -36,7 +36,7 @@ import defaultActions, {
   pageEditorAction,
 } from "@/components/quickBar/defaultActions";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -67,9 +67,9 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<ResolvedModComponent<QuickBarProviderConfig>>({
+const extensionFactory = define<HydratedModComponent<QuickBarProviderConfig>>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined as never,
+  _hydratedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),

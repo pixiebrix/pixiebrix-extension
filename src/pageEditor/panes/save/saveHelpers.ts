@@ -43,7 +43,7 @@ import {
 } from "@/types/modDefinitionTypes";
 import {
   type ModComponentBase,
-  type UnresolvedModComponent,
+  type SerializedModComponent,
 } from "@/types/modComponentTypes";
 import { type SafeString } from "@/types/stringTypes";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
@@ -367,7 +367,7 @@ function selectModComponentDefinition(
 
 export type ModParts = {
   sourceMod?: ModDefinition;
-  cleanModComponents: UnresolvedModComponent[];
+  cleanModComponents: SerializedModComponent[];
   dirtyModComponentFormStates: ModComponentFormState[];
   /**
    * Dirty/new options to save. Undefined if there are no changes.

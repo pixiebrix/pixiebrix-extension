@@ -21,6 +21,7 @@ import EllipsisMenu, {
 } from "@/components/ellipsisMenu/EllipsisMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faHammer,
   faList,
   faShare,
   faStore,
@@ -67,6 +68,12 @@ const ModsPageActions: React.FunctionComponent<{
         hide: !actions.viewLogs,
       },
       {
+        title: "Edit in Workshop",
+        icon: <FontAwesomeIcon fixedWidth icon={faHammer} />,
+        action: actions.editInWorkshop,
+        hide: !actions.editInWorkshop,
+      },
+      {
         title: hasUpdate ? "Update" : "Reactivate",
         icon: <FontAwesomeIcon fixedWidth icon={faSyncAlt} />,
         action: actions.reactivate,
@@ -83,8 +90,8 @@ const ModsPageActions: React.FunctionComponent<{
       {
         title: "Delete",
         icon: <FontAwesomeIcon fixedWidth icon={faTrash} />,
-        action: actions.deleteExtension,
-        hide: !actions.deleteExtension,
+        action: actions.delete,
+        hide: !actions.delete,
         className: "text-danger",
       },
     ],

@@ -79,7 +79,7 @@ jest.mock("@/starterBricks/starterBrickModUtils", () => {
 
 const includesQuickBarMock = jest.mocked(includesQuickBarStarterBrick);
 
-jest.mock("@/registry/internal", () => ({
+jest.mock("@/registry/hydrateInnerDefinitions", () => ({
   // We're also mocking all the functions that this output is passed to, so we can return empty array
   resolveRecipe: jest.fn().mockResolvedValue([]),
 }));

@@ -21,7 +21,7 @@ import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { produce } from "immer";
 import {
   removeModComponentFormState,
-  removeRecipeData,
+  removeModData,
 } from "@/pageEditor/slices/editorSliceHelpers";
 import {
   readReduxStorage,
@@ -111,12 +111,12 @@ export async function removeDraftModComponentsForMod(
   }
 
   const newState = produce(state, (draft) => {
-    removeRecipeData(draft, modId);
+    removeModData(draft, modId);
 
-    for (const element of state.elements) {
-      if (element.recipe?.id === modId) {
-        removedDraftModComponents.push(element.uuid);
-        removeModComponentFormState(draft, element.uuid);
+    for (const modComponentFormState of state.modComponentFormStates) {
+      if (modComponentFormState.recipe?.id === modId) {
+        removedDraftModComponents.push(modComponentFormState.uuid);
+        removeModComponentFormState(draft, modComponentFormState.uuid);
       }
     }
   });

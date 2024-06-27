@@ -141,6 +141,7 @@ export type BaseFormStateV2<
    */
   integrationDependencies: IntegrationDependencyV2[];
 };
+
 export type BaseFormState<
   TExtension extends BaseExtensionState = BaseExtensionState,
   TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState,

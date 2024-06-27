@@ -16,10 +16,10 @@
  */
 
 import React, { useState } from "react";
-import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import {
-  type DocumentElement,
-  type ListDocumentElement,
+  type DocumentBuilderElement,
+  type ListElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { fireEvent, screen } from "@testing-library/react";
 import DocumentPreview from "@/pageEditor/documentBuilder/preview/DocumentPreview";
@@ -37,12 +37,12 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { uuidv4 } from "@/types/helpers";
 
-function renderDocumentPreview(documentElement: DocumentElement) {
+function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
   const formState = formStateFactory(undefined, [
     {
       id: DocumentRenderer.BRICK_ID,
       config: {
-        body: [documentElement],
+        body: [documentBuilderElement],
       },
       instanceId: uuidv4(),
     },
@@ -63,9 +63,9 @@ function renderDocumentPreview(documentElement: DocumentElement) {
     initialValues: formState,
     setupRedux(dispatch) {
       dispatch(actions.addModComponentFormState(formState));
-      dispatch(actions.selectElement(formState.uuid));
+      dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
-        actions.setElementActiveNodeId(
+        actions.setActiveNodeId(
           formState.extension.blockPipeline[0].instanceId,
         ),
       );
@@ -86,9 +86,10 @@ describe("Add new element", () => {
   // TODO: find a better way to access the elements so we can remove the linting exceptions
   test("Dropdown 'Add new element' stays open on hovering different elements", async () => {
     // Create a container with a list with a container inside
-    const listElement = createNewElement("list") as ListDocumentElement;
-    listElement.config.element.__value__ = createNewElement("container");
-    const containerElement = createNewElement("container");
+    const listElement = createNewDocumentBuilderElement("list") as ListElement;
+    listElement.config.element.__value__ =
+      createNewDocumentBuilderElement("container");
+    const containerElement = createNewDocumentBuilderElement("container");
     // eslint-disable-next-line testing-library/no-node-access -- There's a row in the container and a column in the row.
     containerElement.children[0].children[0].children[0] = listElement;
 
@@ -122,7 +123,9 @@ describe("Add new element", () => {
   });
 
   test("can add an element to a container", async () => {
-    const { container } = renderDocumentPreview(createNewElement("container"));
+    const { container } = renderDocumentPreview(
+      createNewDocumentBuilderElement("container"),
+    );
 
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
     await userEvent.click(container.querySelector(".col .addElement button"));
@@ -149,7 +152,7 @@ describe("Show live preview", () => {
   });
 
   function renderPreviewInTemporaryDisplayPipeline() {
-    const documentElement = createNewElement("container");
+    const containerElement = createNewDocumentBuilderElement("container");
     const formState = formStateFactory(undefined, [
       {
         id: DisplayTemporaryInfo.BRICK_ID,
@@ -161,7 +164,7 @@ describe("Show live preview", () => {
               id: DocumentRenderer.BRICK_ID,
               instanceId: uuidSequence(2),
               config: {
-                body: [documentElement],
+                body: [containerElement],
               },
             },
           ]),
@@ -187,9 +190,9 @@ describe("Show live preview", () => {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(actions.addModComponentFormState(formState));
-        dispatch(actions.selectElement(formState.uuid));
+        dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
-          actions.setElementActiveNodeId(pipelineField.__value__[0].instanceId),
+          actions.setActiveNodeId(pipelineField.__value__[0].instanceId),
         );
       },
     });

@@ -22,6 +22,7 @@ import {
 } from "@/auth/authTypes";
 import { type Me } from "@/data/model/Me";
 import selectAuthUserOrganizations from "@/auth/selectAuthUserOrganizations";
+import { UserRole } from "@/types/contract";
 
 export function selectUserDataUpdate({
   email,
@@ -101,4 +102,12 @@ export function selectExtensionAuthState({
     partner,
     enforceUpdateMillis,
   };
+}
+
+/**
+ * Returns true if the role corresponds to permission to edit a package.
+ * See https://docs.pixiebrix.com/managing-teams/access-control/roles
+ */
+export function isPackageEditorRole(role: UserRole): boolean {
+  return [UserRole.admin, UserRole.manager, UserRole.developer].includes(role);
 }

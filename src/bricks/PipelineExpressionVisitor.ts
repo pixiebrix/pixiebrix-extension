@@ -26,14 +26,14 @@ import PipelineVisitor, {
   type VisitBlockExtra,
 } from "./PipelineVisitor";
 import {
-  isDocumentElementArray,
-  type DocumentElement,
+  isDocumentBuilderElementArray,
+  type DocumentBuilderElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { BusinessError } from "@/errors/businessErrors";
 
-export type VisitDocumentElementArgs = {
+export type VisitDocumentBuilderElementArgs = {
   /**
    * The position of document builder block within the mod
    */
@@ -43,11 +43,11 @@ export type VisitDocumentElementArgs = {
    */
   blockConfig: BrickConfig;
   /**
-   * The element at path `pathInBlock` within the document builder config
+   * The document builder element at path `pathInBlock` within the document builder config
    */
-  element: DocumentElement;
+  documentBuilderElement: DocumentBuilderElement;
   /**
-   * The path to the element within the document builder config
+   * The path to the document builder element within the document builder config
    */
   pathInBlock: string;
 };
@@ -80,12 +80,14 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
     blockConfig: BrickConfig,
   ): void {
     super.visitDocument(position, blockConfig);
-    if (isDocumentElementArray(blockConfig.config.body)) {
-      for (const [index, element] of Object.entries(blockConfig.config.body)) {
-        this.visitDocumentElement({
+    if (isDocumentBuilderElementArray(blockConfig.config.body)) {
+      for (const [index, documentBuilderElement] of Object.entries(
+        blockConfig.config.body,
+      )) {
+        this.visitDocumentBuilderElement({
           position,
           blockConfig,
-          element,
+          documentBuilderElement,
           pathInBlock: `config.body.${index}`,
         });
       }
@@ -94,8 +96,10 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
     }
   }
 
-  private getPipelineFlavor(elementType: string): PipelineFlavor {
-    switch (elementType) {
+  private getPipelineFlavor(
+    documentBuilderElementType: string,
+  ): PipelineFlavor {
+    switch (documentBuilderElementType) {
       case "block": {
         return PipelineFlavor.NoEffect;
       }
@@ -110,20 +114,20 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
     }
   }
 
-  public visitDocumentElement({
+  public visitDocumentBuilderElement({
     position,
     blockConfig,
-    element,
+    documentBuilderElement,
     pathInBlock,
-  }: VisitDocumentElementArgs) {
-    for (const [prop, value] of Object.entries(element.config)) {
+  }: VisitDocumentBuilderElementArgs) {
+    for (const [prop, value] of Object.entries(documentBuilderElement.config)) {
       if (isPipelineExpression(value)) {
         this.visitPipeline(
           // For pipelines, need to include the __value__ when constructing the position
           nestedPosition(position, pathInBlock, "config", prop, "__value__"),
           value.__value__,
           {
-            flavor: this.getPipelineFlavor(element.type),
+            flavor: this.getPipelineFlavor(documentBuilderElement.type),
             parentNode: blockConfig,
           },
         );
@@ -135,12 +139,14 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
       }
     }
 
-    if (element.children?.length) {
-      for (const [index, childElement] of Object.entries(element.children)) {
-        this.visitDocumentElement({
+    if (documentBuilderElement.children?.length) {
+      for (const [index, childElement] of Object.entries(
+        documentBuilderElement.children,
+      )) {
+        this.visitDocumentBuilderElement({
           position,
           blockConfig,
-          element: childElement,
+          documentBuilderElement: childElement,
           pathInBlock: joinPathParts(pathInBlock, "children", index),
         });
       }

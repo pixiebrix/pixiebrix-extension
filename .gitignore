@@ -61,3 +61,4 @@ storybook-static
 /playwright/.cache/
 /end-to-end-tests/blob-report.7z
 /playwright-report/
+.playwright-report/

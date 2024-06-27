@@ -53,9 +53,8 @@ const Extensions: React.FunctionComponent = () => {
   const modComponentFormStates = useSelector(
     selectNotDeletedModComponentFormStates,
   );
-  const { availableInstalledIds, availableDraftModComponentIds } = useSelector(
-    selectModComponentAvailability,
-  );
+  const { availableActivatedModComponentIds, availableDraftModComponentIds } =
+    useSelector(selectModComponentAvailability);
 
   const [filterQuery, setFilterQuery] = useState("");
   const [debouncedFilterQuery] = useDebounce(filterQuery.toLowerCase(), 250, {
@@ -117,7 +116,9 @@ const Extensions: React.FunctionComponent = () => {
             <ModComponentListItem
               key={getModComponentItemId(modComponentSidebarItem)}
               modComponentSidebarItem={modComponentSidebarItem}
-              availableInstalledIds={availableInstalledIds}
+              availableActivatedModComponentIds={
+                availableActivatedModComponentIds
+              }
               availableDraftModComponentIds={availableDraftModComponentIds}
               isNested
             />
@@ -130,7 +131,7 @@ const Extensions: React.FunctionComponent = () => {
       <ModComponentListItem
         key={getModComponentItemId(sidebarItem)}
         modComponentSidebarItem={sidebarItem}
-        availableInstalledIds={availableInstalledIds}
+        availableActivatedModComponentIds={availableActivatedModComponentIds}
         availableDraftModComponentIds={availableDraftModComponentIds}
       />
     );

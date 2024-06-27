@@ -48,6 +48,7 @@ async function codeGrantFlow(
 
   const {
     code_challenge_method,
+    client_id,
     client_secret,
     authorizeUrl: rawAuthorizeUrl,
     tokenUrl: rawTokenUrl,
@@ -119,8 +120,11 @@ async function codeGrantFlow(
     redirect_uri,
     grant_type: "authorization_code",
     code,
-    client_id: params.client_id,
   };
+
+  if (client_id) {
+    tokenBody.client_id = client_id;
+  }
 
   if (client_secret) {
     tokenBody.client_secret = client_secret;

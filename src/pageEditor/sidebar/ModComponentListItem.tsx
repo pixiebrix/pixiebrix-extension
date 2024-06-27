@@ -23,7 +23,7 @@ import { type UUID } from "@/types/stringTypes";
 
 type ModComponentListItemProps = {
   modComponentSidebarItem: ModComponentSidebarItem;
-  availableInstalledIds: UUID[];
+  availableActivatedModComponentIds: UUID[];
   availableDraftModComponentIds: UUID[];
   isNested?: boolean;
 };
@@ -32,7 +32,7 @@ const ModComponentListItem: React.FunctionComponent<
   ModComponentListItemProps
 > = ({
   modComponentSidebarItem,
-  availableInstalledIds,
+  availableActivatedModComponentIds,
   availableDraftModComponentIds,
   isNested = false,
 }) =>
@@ -40,8 +40,8 @@ const ModComponentListItem: React.FunctionComponent<
     <ActivatedModComponentListItem
       modComponent={modComponentSidebarItem}
       isAvailable={
-        !availableInstalledIds ||
-        availableInstalledIds.includes(modComponentSidebarItem.id)
+        !availableActivatedModComponentIds ||
+        availableActivatedModComponentIds.includes(modComponentSidebarItem.id)
       }
       isNested={isNested}
     />

@@ -63,19 +63,19 @@ describe("draftModComponentStorage", () => {
     };
     const state: EditorState = {
       ...initialState,
-      activeElementId: element.uuid,
-      elements: [element],
+      activeModComponentId: element.uuid,
+      modComponentFormStates: [element],
       dirty: {
         [element.uuid]: true,
       },
-      elementUIStates: {
+      brickPipelineUIStateById: {
         [element.uuid]: {
           pipelineMap: getPipelineMap(element.extension.blockPipeline),
           activeNodeId: element.extension.blockPipeline[0].instanceId,
           nodeUIStates,
         },
       },
-      availableDynamicIds: [element.uuid],
+      availableDraftModComponentIds: [element.uuid],
     };
     readReduxStorageMock.mockResolvedValue(state);
 
@@ -109,33 +109,36 @@ describe("draftModComponentStorage", () => {
     };
     const baseState: EditorState = {
       ...initialState,
-      activeElementId: activeElement.uuid,
-      elements: [activeElement],
+      activeModComponentId: activeElement.uuid,
+      modComponentFormStates: [activeElement],
       dirty: {
         [activeElement.uuid]: true,
       },
-      elementUIStates: {
+      brickPipelineUIStateById: {
         [activeElement.uuid]: {
           pipelineMap: getPipelineMap(activeElement.extension.blockPipeline),
           activeNodeId: activeElement.extension.blockPipeline[0].instanceId,
           nodeUIStates: activeNodeUIStates,
         },
       },
-      availableDynamicIds: [activeElement.uuid],
+      availableDraftModComponentIds: [activeElement.uuid],
     };
     const stateWithInactive: EditorState = {
       ...baseState,
-      elements: [...baseState.elements, inactiveElement],
-      elementUIStates: {
-        ...baseState.elementUIStates,
+      modComponentFormStates: [
+        ...baseState.modComponentFormStates,
+        inactiveElement,
+      ],
+      brickPipelineUIStateById: {
+        ...baseState.brickPipelineUIStateById,
         [inactiveElement.uuid]: {
           pipelineMap: getPipelineMap(inactiveElement.extension.blockPipeline),
           activeNodeId: inactiveElement.extension.blockPipeline[0].instanceId,
           nodeUIStates: inactiveNodeUIStates,
         },
       },
-      availableDynamicIds: [
-        ...baseState.availableDynamicIds,
+      availableDraftModComponentIds: [
+        ...baseState.availableDraftModComponentIds,
         inactiveElement.uuid,
       ],
     };
@@ -185,31 +188,35 @@ describe("draftModComponentStorage", () => {
     };
     const baseState: EditorState = {
       ...initialState,
-      elements: [element3],
-      elementUIStates: {
+      modComponentFormStates: [element3],
+      brickPipelineUIStateById: {
         [element3.uuid]: {
           pipelineMap: getPipelineMap(element3.extension.blockPipeline),
           activeNodeId: element3.extension.blockPipeline[0].instanceId,
           nodeUIStates: element3NodeUIStates,
         },
       },
-      availableDynamicIds: [element3.uuid],
+      availableDraftModComponentIds: [element3.uuid],
     };
     const stateWithRecipe: EditorState = {
       ...baseState,
-      activeRecipeId: recipe.id,
-      elements: [...baseState.elements, element1, element2],
+      activeModId: recipe.id,
+      modComponentFormStates: [
+        ...baseState.modComponentFormStates,
+        element1,
+        element2,
+      ],
       dirty: {
         [element1.uuid]: true,
       },
-      dirtyRecipeMetadataById: {
+      dirtyModMetadataById: {
         [recipe.id]: {
           ...recipe,
           description: "new description",
         },
       },
-      elementUIStates: {
-        ...baseState.elementUIStates,
+      brickPipelineUIStateById: {
+        ...baseState.brickPipelineUIStateById,
         [element1.uuid]: {
           pipelineMap: getPipelineMap(element1.extension.blockPipeline),
           activeNodeId: element1.extension.blockPipeline[1].instanceId,
@@ -221,8 +228,8 @@ describe("draftModComponentStorage", () => {
           nodeUIStates: element2NodeUIStates,
         },
       },
-      availableDynamicIds: [
-        ...baseState.availableDynamicIds,
+      availableDraftModComponentIds: [
+        ...baseState.availableDraftModComponentIds,
         element1.uuid,
         element2.uuid,
       ],
@@ -273,31 +280,35 @@ describe("draftModComponentStorage", () => {
     };
     const baseState: EditorState = {
       ...initialState,
-      activeElementId: element3.uuid,
-      elements: [element3],
-      elementUIStates: {
+      activeModComponentId: element3.uuid,
+      modComponentFormStates: [element3],
+      brickPipelineUIStateById: {
         [element3.uuid]: {
           pipelineMap: getPipelineMap(element3.extension.blockPipeline),
           activeNodeId: element3.extension.blockPipeline[0].instanceId,
           nodeUIStates: element3NodeUIStates,
         },
       },
-      availableDynamicIds: [element3.uuid],
+      availableDraftModComponentIds: [element3.uuid],
     };
     const stateWithRecipe: EditorState = {
       ...baseState,
-      elements: [...baseState.elements, element1, element2],
+      modComponentFormStates: [
+        ...baseState.modComponentFormStates,
+        element1,
+        element2,
+      ],
       dirty: {
         [element1.uuid]: true,
       },
-      dirtyRecipeMetadataById: {
+      dirtyModMetadataById: {
         [recipe.id]: {
           ...recipe,
           description: "new description",
         },
       },
-      elementUIStates: {
-        ...baseState.elementUIStates,
+      brickPipelineUIStateById: {
+        ...baseState.brickPipelineUIStateById,
         [element1.uuid]: {
           pipelineMap: getPipelineMap(element1.extension.blockPipeline),
           activeNodeId: element1.extension.blockPipeline[1].instanceId,
@@ -309,8 +320,8 @@ describe("draftModComponentStorage", () => {
           nodeUIStates: element2NodeUIStates,
         },
       },
-      availableDynamicIds: [
-        ...baseState.availableDynamicIds,
+      availableDraftModComponentIds: [
+        ...baseState.availableDraftModComponentIds,
         element1.uuid,
         element2.uuid,
       ],

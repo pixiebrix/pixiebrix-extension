@@ -28,7 +28,7 @@ import sidebarExtension from "@/pageEditor/starterBricks/sidebar";
 import quickBarProviderExtension from "@/pageEditor/starterBricks/quickBarProvider";
 import tourExtension from "@/pageEditor/starterBricks/tour";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
-import { hasInnerExtensionPointRef } from "@/registry/internal";
+import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type DraftModComponent } from "@/contentScript/pageEditor/types";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -49,7 +49,7 @@ export const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>(
 export async function selectType(
   extension: ModComponentBase,
 ): Promise<StarterBrickType> {
-  if (hasInnerExtensionPointRef(extension)) {
+  if (hasInnerStarterBrickRef(extension)) {
     const { extensionPointId, definitions } = extension;
     return (
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerExtensionPointRef

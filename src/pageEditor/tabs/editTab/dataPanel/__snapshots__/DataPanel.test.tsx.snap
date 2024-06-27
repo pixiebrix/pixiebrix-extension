@@ -5,9 +5,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
   <form
     action="#"
   >
-    <div
-      class="tabContainer"
-    >
+    <div>
       <div
         class="nav nav-tabs"
         role="tablist"

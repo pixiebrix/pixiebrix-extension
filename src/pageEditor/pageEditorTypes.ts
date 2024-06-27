@@ -25,7 +25,7 @@ import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
-import { type ModComponentUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { type BrickPipelineUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { type ModComponentFormState } from "./starterBricks/formStateTypes";
 import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
@@ -34,8 +34,13 @@ import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
+import { type Except } from "type-fest";
+import {
+  type BaseFormStateV1,
+  type BaseFormStateV2,
+} from "@/pageEditor/baseFormStateTypes";
 
-export type AddBlockLocation = {
+export type AddBrickLocation = {
   /**
    * The object property path to the pipeline where a block will be added by the add block modal
    */
@@ -67,7 +72,10 @@ export type ModMetadataFormState = Pick<
   "id" | "name" | "version" | "description"
 >;
 
-export interface EditorState {
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type EditorStateV1 = {
   /**
    * A sequence number that changes whenever a new element is selected.
    *
@@ -105,7 +113,7 @@ export interface EditorState {
   /**
    * Unsaved elements
    */
-  readonly elements: ModComponentFormState[];
+  readonly elements: BaseFormStateV1[];
 
   /**
    * Brick ids (not UUIDs) that are known to be editable by the current user
@@ -125,7 +133,7 @@ export interface EditorState {
   /**
    * The current UI state of each element, indexed by the element id
    */
-  elementUIStates: Record<UUID, ModComponentUIState>;
+  elementUIStates: Record<UUID, BrickPipelineUIState>;
 
   /**
    * A clipboard-style-copy of a block ready to paste into an extension
@@ -152,9 +160,9 @@ export interface EditorState {
    *
    * Note: This will only have a value when visibleModalKey === "addBlock"
    *
-   * @see AddBlockLocation
+   * @see AddBrickLocation
    */
-  addBlockLocation?: AddBlockLocation;
+  addBlockLocation?: AddBrickLocation;
 
   /**
    * When creating a new blueprint from an existing extension, should we keep a separate copy of the extension?
@@ -166,7 +174,7 @@ export interface EditorState {
   /**
    * Unsaved extensions that have been deleted from a recipe
    */
-  deletedElementsByRecipeId: Record<RegistryId, ModComponentFormState[]>;
+  deletedElementsByRecipeId: Record<RegistryId, BaseFormStateV1[]>;
 
   /**
    * The available installed extensions for the current tab
@@ -209,7 +217,133 @@ export interface EditorState {
    * Since 1.8.4
    */
   isDimensionsWarningDismissed: boolean;
-}
+};
+
+/**
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ */
+export type EditorStateV2 = Except<
+  EditorStateV1,
+  "elements" | "deletedElementsByRecipeId"
+> & {
+  elements: BaseFormStateV2[];
+  deletedElementsByRecipeId: Record<string, BaseFormStateV2[]>;
+};
+
+/**
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ */
+export type EditorStateV3 = Except<
+  EditorStateV2,
+  | "activeElementId"
+  | "activeRecipeId"
+  | "expandedRecipeId"
+  | "elements"
+  | "knownEditable"
+  | "elementUIStates"
+  | "copiedBlock"
+  | "dirtyRecipeOptionsById"
+  | "dirtyRecipeMetadataById"
+  | "addBlockLocation"
+  | "keepLocalCopyOnCreateRecipe"
+  | "deletedElementsByRecipeId"
+  | "availableInstalledIds"
+  | "isPendingInstalledExtensions"
+  | "availableDynamicIds"
+  | "isPendingDynamicExtensions"
+> & {
+  /**
+   * The uuid of the active mod component, if a mod component is selected
+   */
+  activeModComponentId: UUID | null;
+
+  /**
+   * The registry id of the active mod, if a mod is selected
+   */
+  activeModId: RegistryId | null;
+
+  /**
+   * The registry id of the 'expanded' mod in the sidebar, if one is expanded
+   */
+  expandedModId: RegistryId | null;
+
+  /**
+   * When a mod component is selected in the Page Editor, a mod component form state is created for it and stored here;
+   * that is, "touched" mod component form states.
+   */
+  readonly modComponentFormStates: ModComponentFormState[];
+
+  /**
+   * Brick ids (not UUIDs) that the user has access to edit
+   */
+  knownEditableBrickIds: RegistryId[];
+
+  /**
+   * The current UI state of each brick pipeline, indexed by mod component id
+   */
+  brickPipelineUIStateById: Record<UUID, BrickPipelineUIState>;
+
+  /**
+   * A clipboard-style-copy of a brick ready to paste into a brick pipeline
+   */
+  copiedBrick?: BrickConfig;
+
+  /**
+   * Unsaved, changed mod options definitions
+   */
+  dirtyModOptionsById: Record<RegistryId, ModOptionsDefinition>;
+
+  /**
+   * Unsaved, changed mod metadata
+   */
+  dirtyModMetadataById: Record<RegistryId, ModMetadataFormState>;
+
+  /**
+   * The pipeline location where a new brick will be added.
+   *
+   * Note: This will only have a value when visibleModalKey === "addBlock"
+   *
+   * @see AddBrickLocation
+   */
+  addBrickLocation?: AddBrickLocation;
+
+  /**
+   * When creating a new mod from an existing mod component, should we keep a separate copy of the mod component?
+   */
+  // XXX: refactor & remove from top-level Redux state. This is a property of the create recipe workflow:
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/3264
+  keepLocalCopyOnCreateMod: boolean;
+
+  /**
+   * Unsaved mod components that have been deleted from a mod
+   */
+  deletedModComponentFormStatesByModId: Record<
+    RegistryId,
+    ModComponentFormState[]
+  >;
+
+  /**
+   * The available activated mod components for the current tab
+   */
+  availableActivatedModComponentIds: UUID[];
+
+  /**
+   * The availableActivatedModComponentIds are being calculated
+   */
+  isPendingAvailableActivatedModComponents: boolean;
+
+  /**
+   * The available draft mod components for the current tab
+   */
+  availableDraftModComponentIds: UUID[];
+
+  /**
+   * The availableDraftModComponentIds are being calculated
+   */
+  isPendingDraftModComponents: boolean;
+};
+
+export type EditorState = EditorStateV3;
 
 export type EditorRootState = {
   editor: EditorState;

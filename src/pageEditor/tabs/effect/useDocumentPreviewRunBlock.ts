@@ -30,7 +30,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
 import { runRendererBrick } from "@/contentScript/messenger/api";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
-import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveElementTraceForBrick } from "@/pageEditor/slices/runtimeSelectors";
 import { type UUID } from "@/types/stringTypes";
 import { type BrickArgsContext } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
@@ -137,7 +137,7 @@ export default function useDocumentPreviewRunBlock(
   }, [blockError]);
 
   const traceRecord = useSelector(
-    selectActiveElementTraceForBlock(blockInstanceId),
+    selectActiveElementTraceForBrick(blockInstanceId),
   );
   const { data: serviceContext, isLoading: isLoadingServiceContext } =
     useAsyncState(

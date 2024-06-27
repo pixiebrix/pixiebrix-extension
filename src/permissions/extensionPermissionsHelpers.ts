@@ -17,7 +17,7 @@
 
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Permissions } from "webextension-polyfill";
-import { resolveExtensionInnerDefinitions } from "@/registry/internal";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { castArray, compact } from "lodash";
 import { mergePermissions } from "@/permissions/permissionsUtils";
@@ -58,7 +58,7 @@ export async function collectExtensionPermissions(
   options: PermissionOptions = {},
 ): Promise<Permissions.Permissions> {
   const { includeExtensionPoint = true, includeServices = true } = options;
-  const resolved = await resolveExtensionInnerDefinitions(extension);
+  const resolved = await hydrateModComponentInnerDefinitions(extension);
 
   const extensionPoint =
     options.extensionPoint ??

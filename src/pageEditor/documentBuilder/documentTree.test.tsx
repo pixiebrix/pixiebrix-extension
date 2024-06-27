@@ -23,10 +23,10 @@ import blockRegistry from "@/bricks/registry";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import { buildDocumentBranch } from "./documentTree";
+import { buildDocumentBuilderBranch } from "./documentTree";
 import {
-  type DocumentElement,
-  type DocumentElementType,
+  type DocumentBuilderElement,
+  type DocumentBuilderElementType,
 } from "./documentBuilderTypes";
 import DocumentContext, {
   initialValue,
@@ -45,8 +45,8 @@ describe("When rendered in panel", () => {
     blockRegistry.register([markdownBlock]);
   });
 
-  const renderDocument = (config: DocumentElement) => {
-    const branch = buildDocumentBranch(config, {
+  const renderDocument = (config: DocumentBuilderElement) => {
+    const branch = buildDocumentBuilderBranch(config, {
       staticId: "body",
       branches: [],
     });
@@ -72,7 +72,13 @@ describe("When rendered in panel", () => {
     ${"header_3"} | ${"h3"}
   `(
     "renders $tagName for $type",
-    ({ type, tagName }: { type: DocumentElementType; tagName: string }) => {
+    ({
+      type,
+      tagName,
+    }: {
+      type: DocumentBuilderElementType;
+      tagName: string;
+    }) => {
       const config = {
         type,
         config: {
@@ -108,7 +114,7 @@ describe("When rendered in panel", () => {
   });
 
   test("renders paragraph text", () => {
-    const config: DocumentElement = {
+    const config: DocumentBuilderElement = {
       type: "text",
       config: {
         text: "Test Paragraph",
@@ -125,7 +131,7 @@ describe("When rendered in panel", () => {
 
   test("does not render hidden element at root", () => {
     const text = "Test Paragraph";
-    const config: DocumentElement = {
+    const config: DocumentBuilderElement = {
       type: "text",
       config: {
         text,
@@ -139,7 +145,7 @@ describe("When rendered in panel", () => {
   });
 
   test("renders markdown", () => {
-    const config: DocumentElement = {
+    const config: DocumentBuilderElement = {
       type: "text",
       config: {
         text: "Test ~~Paragraph~~",
@@ -152,7 +158,7 @@ describe("When rendered in panel", () => {
   });
 
   test("renders unknown type", () => {
-    const config: DocumentElement = {
+    const config: DocumentBuilderElement = {
       // @ts-expect-error testing with invalid type
       type: "TheTypeForWhichAComponentIsNotDefined",
       className: "test-class",
@@ -223,7 +229,7 @@ describe("When rendered in panel", () => {
           ],
         },
       ],
-    } as DocumentElement;
+    } as DocumentBuilderElement;
 
     renderDocument(config);
 
@@ -253,7 +259,7 @@ describe("When rendered in panel", () => {
 
   describe("button", () => {
     test("renders button", () => {
-      const config: DocumentElement = {
+      const config: DocumentBuilderElement = {
         type: "button",
         config: {
           title: "Button under test",
@@ -275,7 +281,7 @@ describe("When rendered in panel", () => {
     });
 
     test("renders full width button", () => {
-      const config: DocumentElement = {
+      const config: DocumentBuilderElement = {
         type: "button",
         config: {
           title: "Button under test",
@@ -297,7 +303,7 @@ describe("When rendered in panel", () => {
     `(
       "applies button variant: $variant",
       ({ variant, className }: { variant: string; className: string }) => {
-        const config: DocumentElement = {
+        const config: DocumentBuilderElement = {
           type: "button",
           config: {
             title: "Button under test",
@@ -313,7 +319,7 @@ describe("When rendered in panel", () => {
     );
 
     test.each([true, "y"])("renders disabled button for %s", (disabled) => {
-      const config: DocumentElement = {
+      const config: DocumentBuilderElement = {
         type: "button",
         config: {
           title: "Button under test",
@@ -334,7 +340,7 @@ describe("When rendered in panel", () => {
 
   describe("card", () => {
     test("renders card", () => {
-      const config: DocumentElement = {
+      const config: DocumentBuilderElement = {
         type: "card",
         config: {
           className: "test-class",
@@ -354,7 +360,7 @@ describe("When rendered in panel", () => {
       expect(cardBody).toBeInTheDocument();
     });
     test("renders card children", () => {
-      const config: DocumentElement = {
+      const config: DocumentBuilderElement = {
         type: "card",
         config: {
           className: "test-class",
@@ -398,7 +404,7 @@ config:
       config:
         markdown: ${markdown}`;
 
-    const config = loadBrickYaml(yamlConfig) as DocumentElement;
+    const config = loadBrickYaml(yamlConfig) as DocumentBuilderElement;
     renderDocument(config);
 
     // Wait for useAsyncState inside the PipelineComponent

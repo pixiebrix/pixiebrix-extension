@@ -175,7 +175,7 @@ const DataPanel: React.FC = () => {
 
   const [nodePreviewActiveElement, setNodePreviewActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
-    editorActions.setNodePreviewActiveElement,
+    editorActions.setActiveDocumentOrFormPreviewElement,
   );
 
   const popupBoundary = showDocumentPreview
@@ -212,7 +212,7 @@ const DataPanel: React.FC = () => {
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
-      <div className={dataPanelStyles.tabContainer}>
+      <div>
         <Nav variant="tabs">
           <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey={DataPanelTabKey.Context}>Context</Nav.Link>

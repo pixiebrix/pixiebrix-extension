@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
-import { type DocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -44,7 +44,7 @@ beforeAll(() => {
 
 describe("DocumentOptions", () => {
   function basicFormState(
-    documentElements: DocumentElement[],
+    documentElements: DocumentBuilderElement[],
     stylesheets: string[] = [],
   ): ModComponentFormState {
     return formStateFactory({
@@ -71,13 +71,15 @@ describe("DocumentOptions", () => {
         initialValues: formState,
         setupRedux(dispatch) {
           dispatch(actions.addModComponentFormState(formState));
-          dispatch(actions.selectElement(formState.uuid));
+          dispatch(actions.setActiveModComponentId(formState.uuid));
           dispatch(
-            actions.setElementActiveNodeId(
+            actions.setActiveNodeId(
               formState.extension.blockPipeline[0].instanceId,
             ),
           );
-          dispatch(actions.setNodePreviewActiveElement(initialActiveElement));
+          dispatch(
+            actions.setActiveDocumentOrFormPreviewElement(initialActiveElement),
+          );
         },
       },
     );
@@ -86,8 +88,8 @@ describe("DocumentOptions", () => {
   describe("move element", () => {
     test("can move text element down", async () => {
       const documentElements = [
-        createNewElement("text"),
-        createNewElement("text"),
+        createNewDocumentBuilderElement("text"),
+        createNewDocumentBuilderElement("text"),
       ];
       documentElements[0].config.text = "test text 1";
       documentElements[1].config.text = "test text 2";
@@ -116,8 +118,8 @@ describe("DocumentOptions", () => {
 
     test("can move text element up", async () => {
       const documentElements = [
-        createNewElement("text"),
-        createNewElement("text"),
+        createNewDocumentBuilderElement("text"),
+        createNewDocumentBuilderElement("text"),
       ];
       documentElements[0].config.text = "test text 1";
       documentElements[1].config.text = "test text 2";
@@ -198,8 +200,8 @@ describe("DocumentOptions", () => {
   describe("stylesheets field", () => {
     test("renders correctly", async () => {
       const documentElements = [
-        createNewElement("text"),
-        createNewElement("text"),
+        createNewDocumentBuilderElement("text"),
+        createNewDocumentBuilderElement("text"),
       ];
       documentElements[0].config.text = "test text 1";
       documentElements[1].config.text = "test text 2";

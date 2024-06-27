@@ -50,12 +50,12 @@ const EditorContent: React.FC = () => {
   const activeModComponentId = useSelector(selectActiveModComponentId);
   const activeModId = useSelector(selectActiveModId);
   const {
-    isPendingInstalledModComponents,
-    isPendingDraftModComponents: isPendingDynamicModComponents,
+    isPendingAvailableActivatedModComponents,
+    isPendingDraftModComponents,
   } = useSelector(selectModComponentAvailability);
 
   const isPendingModComponents =
-    isPendingInstalledModComponents || isPendingDynamicModComponents;
+    isPendingAvailableActivatedModComponents || isPendingDraftModComponents;
 
   // Fetch-and-cache marketplace content for rendering in the Brick Selection modal
   useGetMarketplaceListingsQuery();

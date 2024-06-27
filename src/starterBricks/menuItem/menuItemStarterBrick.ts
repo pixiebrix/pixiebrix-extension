@@ -61,7 +61,7 @@ import {
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import {
@@ -293,7 +293,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 
   async getBricks(
-    modComponent: ResolvedModComponent<MenuItemStarterBrickConfig>,
+    modComponent: HydratedModComponent<MenuItemStarterBrickConfig>,
   ): Promise<Brick[]> {
     return collectAllBricks(modComponent.config.action);
   }
@@ -449,13 +449,13 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
   protected abstract makeItem(
     html: string,
-    modComponent: ResolvedModComponent<MenuItemStarterBrickConfig>,
+    modComponent: HydratedModComponent<MenuItemStarterBrickConfig>,
   ): JQuery;
 
   private async runModComponent(
     menu: HTMLElement,
     ctxtPromise: Promise<JsonObject> | undefined,
-    modComponent: ResolvedModComponent<MenuItemStarterBrickConfig>,
+    modComponent: HydratedModComponent<MenuItemStarterBrickConfig>,
   ) {
     if (!modComponent.id) {
       this.logger.error(`Refusing to run mod without id for ${this.id}`);
@@ -928,7 +928,7 @@ export class RemoteMenuItemStarterBrick extends MenuItemStarterBrickABC {
 
   protected makeItem(
     unsanitizedHTML: string,
-    modComponent: ResolvedModComponent<MenuItemStarterBrickConfig>,
+    modComponent: HydratedModComponent<MenuItemStarterBrickConfig>,
   ): JQuery {
     const sanitizedHTML = sanitize(unsanitizedHTML);
 

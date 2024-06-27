@@ -17,8 +17,8 @@
 
 import React from "react";
 import {
-  type DocumentComponent,
-  type DocumentElementType,
+  type DocumentBuilderComponent,
+  type DocumentBuilderElementType,
   type PreviewComponentProps,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
@@ -26,13 +26,13 @@ import documentTreeStyles from "@/pageEditor/documentBuilder/preview/documentTre
 import Flaps from "@/pageEditor/documentBuilder/preview/flaps/Flaps";
 
 type BasicProps = PreviewComponentProps & {
-  elementType: DocumentElementType;
-  documentComponent: DocumentComponent;
+  elementType: DocumentBuilderElementType;
+  documentBuilderComponent: DocumentBuilderComponent;
 };
 
 const Basic: React.FunctionComponent<BasicProps> = ({
   elementType,
-  documentComponent: { Component, props },
+  documentBuilderComponent: { Component, props },
   children,
   className,
   documentBodyName,

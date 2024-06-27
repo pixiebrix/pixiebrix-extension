@@ -17,7 +17,7 @@
 
 import React from "react";
 import { useSelector } from "react-redux";
-import { makeSelectBlockTrace } from "@/pageEditor/slices/runtimeSelectors";
+import { makeSelectBrickTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import ExtensionPointPreview from "@/pageEditor/tabs/effect/ExtensionPointPreview";
@@ -44,7 +44,7 @@ const FoundationDataPanel: React.FC = () => {
   const firstBlockInstanceId = blockPipeline[0]?.instanceId;
 
   const { record: firstBlockTraceRecord } = useSelector(
-    makeSelectBlockTrace(firstBlockInstanceId),
+    makeSelectBrickTrace(firstBlockInstanceId),
   );
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(

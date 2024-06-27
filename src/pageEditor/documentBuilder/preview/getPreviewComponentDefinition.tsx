@@ -17,13 +17,13 @@
 
 import documentTreeStyles from "./documentTree.module.scss";
 import {
-  type ButtonDocumentConfig,
-  type DocumentComponent,
-  type DocumentElement,
+  type ButtonElementConfig,
+  type DocumentBuilderComponent,
+  type DocumentBuilderElement,
   type DynamicPath,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { get } from "lodash";
-import { getComponentDefinition } from "@/pageEditor/documentBuilder/documentTree";
+import { getDocumentBuilderComponent } from "@/pageEditor/documentBuilder/documentTree";
 import Unknown from "./elementsPreview/Unknown";
 import Basic from "./elementsPreview/Basic";
 import Image from "./elementsPreview/Image";
@@ -54,9 +54,9 @@ function filterCssClassesForPreview(props: UnknownObject | undefined): void {
 }
 
 function getPreviewComponentDefinition(
-  element: DocumentElement,
-): DocumentComponent {
-  const previewElement = produce(element, (draft) => {
+  documentBuilderElement: DocumentBuilderElement,
+): DocumentBuilderComponent {
+  const previewElement = produce(documentBuilderElement, (draft) => {
     // Don't hide elements in the preview
     delete draft.config.hidden;
   });
@@ -70,34 +70,34 @@ function getPreviewComponentDefinition(
     case "header_3":
     case "header":
     case "text": {
-      const documentComponent = getComponentDefinition(
+      const documentBuilderComponent = getDocumentBuilderComponent(
         previewElement,
         DUMMY_TRACE_PATH,
       );
 
-      filterCssClassesForPreview(documentComponent.props);
+      filterCssClassesForPreview(documentBuilderComponent.props);
 
       return {
         Component: Basic,
         props: {
           elementType: previewElement.type,
-          documentComponent,
+          documentBuilderComponent,
         },
       };
     }
 
     case "image": {
-      const documentComponent = getComponentDefinition(
+      const documentBuilderComponent = getDocumentBuilderComponent(
         previewElement,
         DUMMY_TRACE_PATH,
       );
-      filterCssClassesForPreview(documentComponent.props);
+      filterCssClassesForPreview(documentBuilderComponent.props);
 
       return {
         Component: Image,
         props: {
           elementType: previewElement.type,
-          documentComponent,
+          documentBuilderComponent,
         },
       };
     }
@@ -105,17 +105,17 @@ function getPreviewComponentDefinition(
     case "container":
     case "row":
     case "column": {
-      const documentComponent = getComponentDefinition(
+      const documentBuilderComponent = getDocumentBuilderComponent(
         previewElement,
         DUMMY_TRACE_PATH,
       );
-      filterCssClassesForPreview(documentComponent.props);
+      filterCssClassesForPreview(documentBuilderComponent.props);
 
       return {
         Component: Container,
         props: {
           element: previewElement,
-          documentComponent,
+          documentBuilderComponent,
         },
       };
     }
@@ -125,17 +125,17 @@ function getPreviewComponentDefinition(
         draft.config.bodyClassName = documentTreeStyles.container;
       });
 
-      const documentComponent = getComponentDefinition(
+      const documentBuilderComponent = getDocumentBuilderComponent(
         cardPreviewElement,
         DUMMY_TRACE_PATH,
       );
-      filterCssClassesForPreview(documentComponent.props);
+      filterCssClassesForPreview(documentBuilderComponent.props);
 
       return {
         Component: Card,
         props: {
           element: previewElement,
-          documentComponent,
+          documentBuilderComponent,
         },
       };
     }
@@ -150,11 +150,13 @@ function getPreviewComponentDefinition(
     }
 
     case "button": {
-      const buttonProps = { ...(config as ButtonDocumentConfig) };
+      const buttonProps = {
+        ...(config as ButtonElementConfig),
+      };
       filterCssClassesForPreview(buttonProps);
       const {
         props: { children, tooltip },
-      } = getComponentDefinition(previewElement, DUMMY_TRACE_PATH);
+      } = getDocumentBuilderComponent(previewElement, DUMMY_TRACE_PATH);
 
       return {
         Component: Button,
@@ -172,16 +174,16 @@ function getPreviewComponentDefinition(
     }
 
     default: {
-      const documentComponent = getComponentDefinition(
-        element,
+      const documentBuilderComponent = getDocumentBuilderComponent(
+        documentBuilderElement,
         DUMMY_TRACE_PATH,
       );
-      filterCssClassesForPreview(documentComponent.props);
+      filterCssClassesForPreview(documentBuilderComponent.props);
 
       return {
         Component: Unknown,
         props: {
-          documentComponent,
+          documentBuilderComponent,
         },
       };
     }

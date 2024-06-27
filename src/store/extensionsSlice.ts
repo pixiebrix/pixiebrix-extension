@@ -228,7 +228,7 @@ const extensionsSlice = createSlice({
 
       const modComponent: Except<
         ActivatedModComponent,
-        "_unresolvedModComponentBrand"
+        "_serializedModComponentBrand"
       > = {
         id,
         apiVersion,

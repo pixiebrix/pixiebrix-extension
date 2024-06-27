@@ -30,7 +30,7 @@ import defaultActions, {
 } from "@/components/quickBar/defaultActions";
 import {
   type ModMetadata,
-  type ResolvedModComponent,
+  type HydratedModComponent,
 } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
@@ -70,9 +70,9 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<ResolvedModComponent<TourConfig>>({
+const extensionFactory = define<HydratedModComponent<TourConfig>>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined,
+  _hydratedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),

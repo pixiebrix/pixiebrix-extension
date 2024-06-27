@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type DocumentElementType } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type DocumentBuilderElementType } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 
-const elementTypeLabels: Record<DocumentElementType, string> = {
+const documentBuilderElementTypeLabels: Record<
+  DocumentBuilderElementType,
+  string
+> = {
   header: "Header",
   container: "Container",
   row: "Row",
@@ -35,4 +38,4 @@ const elementTypeLabels: Record<DocumentElementType, string> = {
   header_3: "Header 3",
 };
 
-export default elementTypeLabels;
+export default documentBuilderElementTypeLabels;

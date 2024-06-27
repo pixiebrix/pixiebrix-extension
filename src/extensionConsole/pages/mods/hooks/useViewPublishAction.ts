@@ -19,7 +19,7 @@ import { type ModViewItem } from "@/types/modTypes";
 import { useDispatch } from "react-redux";
 import {
   getPackageId,
-  isResolvedModComponent,
+  isStandaloneModComponent,
   isModDefinition,
 } from "@/utils/modUtils";
 import {
@@ -53,7 +53,7 @@ function useViewPublishAction(modViewItem: ModViewItem): (() => void) | null {
     // Deployment sharing is controlled via the Admin Console
     !isDeployment &&
     // Extensions can be published
-    (isResolvedModComponent(mod) ||
+    (isStandaloneModComponent(mod) ||
       // In case of blueprint, skip if it is already published
       sharing.listingId == null);
 

@@ -37,7 +37,7 @@ import { getReferenceForElement } from "@/contentScript/elementReference";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
@@ -100,9 +100,9 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const modComponentFactory = define<ResolvedModComponent<TriggerConfig>>({
+const modComponentFactory = define<HydratedModComponent<TriggerConfig>>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined as never,
+  _hydratedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),

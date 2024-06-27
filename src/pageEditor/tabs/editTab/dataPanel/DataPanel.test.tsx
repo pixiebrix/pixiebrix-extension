@@ -40,11 +40,11 @@ const renderDataPanel = () => {
     initialValues: formState,
     setupRedux(dispatch) {
       dispatch(editorActions.addModComponentFormState(formState));
-      dispatch(editorActions.selectElement(formState.uuid));
+      dispatch(editorActions.setActiveModComponentId(formState.uuid));
       dispatch(
         runtimeSlice.actions.setExtensionTrace({ extensionId, records }),
       );
-      dispatch(editorActions.setElementActiveNodeId(instanceId));
+      dispatch(editorActions.setActiveNodeId(instanceId));
       dispatch(
         editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Context),
       );

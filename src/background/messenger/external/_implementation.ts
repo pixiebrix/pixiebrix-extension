@@ -36,7 +36,7 @@ const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 /**
  * Chrome Storage key for tracking the mod id(s) that PixieBrix should start activation for.
  */
-const activationStorage = new StorageItem<ModActivationConfig[]>(
+const activationStorage = new StorageItem<ModActivationConfig[] | null>(
   // Keeping key for backwards compatibility
   "activatingBlueprintId",
   { defaultValue: [] },
@@ -137,7 +137,9 @@ export async function setActivatingMods(
  *
  * @see setActivatingMods
  */
-export async function getActivatingMods(): Promise<ModActivationConfig[]> {
+export async function getActivatingMods(): Promise<
+  ModActivationConfig[] | null
+> {
   return activationStorage.get();
 }
 

@@ -30,6 +30,7 @@ import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   PIXIEBRIX_INTEGRATION_ID,
 } from "@/integrations/constants";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Refresh an OAuth2 PKCE token. NOOP if a refresh token is not available.
@@ -98,6 +99,10 @@ export default async function refreshPKCEToken(
 
     params.append("grant_type", "refresh_token");
     params.append("refresh_token", cachedAuthData.refresh_token as string);
+    assertNotNullish(
+      client_id,
+      "Client ID is required for grant_type: refresh_token",
+    );
     params.append("client_id", client_id);
 
     // Google PKCE requires a client secret, see https://developers.google.com/identity/protocols/oauth2/native-app

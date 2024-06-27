@@ -70,7 +70,12 @@ const MoveFromModModal: React.FC = () => {
       try {
         const elementId = activeElement?.uuid;
         assertNotNullish(elementId, "elementId not found for active element");
-        dispatch(actions.removeElementFromRecipe({ elementId, keepLocalCopy }));
+        dispatch(
+          actions.removeModComponentFormStateFromMod({
+            modComponentId: elementId,
+            keepLocalCopy,
+          }),
+        );
         hideModal();
       } catch (error) {
         notify.error({

@@ -17,11 +17,11 @@
 
 import React from "react";
 import {
-  DOCUMENT_ELEMENT_TYPES,
-  type DocumentElement,
-  type DocumentElementType,
+  DOCUMENT_BUILDER_ELEMENT_TYPES,
+  type DocumentBuilderElement,
+  type DocumentBuilderElementType,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
-import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import ElementPreview, {
   type ElementPreviewProps,
 } from "@/pageEditor/documentBuilder/preview/ElementPreview";
@@ -42,7 +42,7 @@ import { validateRegistryId } from "@/types/helpers";
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 const renderElementPreview = (
-  element: DocumentElement,
+  element: DocumentBuilderElement,
   elementPreviewProps?: Partial<ElementPreviewProps>,
 ) => {
   const props: ElementPreviewProps = {
@@ -72,21 +72,21 @@ const renderElementPreview = (
     initialValues: formState,
     setupRedux(dispatch) {
       dispatch(actions.addModComponentFormState(formState));
-      dispatch(actions.selectElement(formState.uuid));
+      dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
-        actions.setElementActiveNodeId(
+        actions.setActiveNodeId(
           formState.extension.blockPipeline[0].instanceId,
         ),
       );
-      dispatch(actions.setNodePreviewActiveElement("0"));
+      dispatch(actions.setActiveDocumentOrFormPreviewElement("0"));
     },
   });
 };
 
 test("calls setActiveElement callback on click", async () => {
   const setActiveElementMock = jest.fn();
-  const element = createNewElement("text");
-  renderElementPreview(element, {
+  const textElement = createNewDocumentBuilderElement("text");
+  renderElementPreview(textElement, {
     setActiveElement: setActiveElementMock,
   });
 
@@ -97,9 +97,10 @@ test("calls setActiveElement callback on click", async () => {
 test("prevents navigation on link click", async () => {
   const consoleError = jest.spyOn(global.console, "error");
 
-  const element = createNewElement("text");
-  element.config.text = "Link in markdown [www.google.com](https://google.com)";
-  renderElementPreview(element, {
+  const textElement = createNewDocumentBuilderElement("text");
+  textElement.config.text =
+    "Link in markdown [www.google.com](https://google.com)";
+  renderElementPreview(textElement, {
     setActiveElement: jest.fn(),
   });
 
@@ -113,8 +114,8 @@ test("prevents navigation on link click", async () => {
 });
 
 test("adds a CSS class to an active element", async () => {
-  const element = createNewElement("text");
-  const { container } = renderElementPreview(element, {
+  const textElement = createNewDocumentBuilderElement("text");
+  const { container } = renderElementPreview(textElement, {
     activeElement: "element",
   });
 
@@ -125,8 +126,8 @@ test("adds a CSS class to an active element", async () => {
 
 test("calls setHoveredElement callback on hover", async () => {
   const setHoveredElementMock = jest.fn();
-  const element = createNewElement("text");
-  renderElementPreview(element, {
+  const textElement = createNewDocumentBuilderElement("text");
+  renderElementPreview(textElement, {
     setHoveredElement: setHoveredElementMock,
   });
 
@@ -138,8 +139,8 @@ test("calls setHoveredElement callback on hover", async () => {
 
 test("calls setHoveredElement callback when mouse leaves", async () => {
   const setHoveredElementMock = jest.fn();
-  const element = createNewElement("text");
-  renderElementPreview(element, {
+  const textElement = createNewDocumentBuilderElement("text");
+  renderElementPreview(textElement, {
     hoveredElement: "element",
     setHoveredElement: setHoveredElementMock,
   });
@@ -149,8 +150,8 @@ test("calls setHoveredElement callback when mouse leaves", async () => {
 });
 
 test("adds a CSS class to a hovered element", async () => {
-  const element = createNewElement("text");
-  const { container } = renderElementPreview(element, {
+  const textElement = createNewDocumentBuilderElement("text");
+  const { container } = renderElementPreview(textElement, {
     hoveredElement: "element",
   });
 
@@ -159,11 +160,11 @@ test("adds a CSS class to a hovered element", async () => {
 });
 
 test.each(
-  DOCUMENT_ELEMENT_TYPES.filter(
+  DOCUMENT_BUILDER_ELEMENT_TYPES.filter(
     (x) => !["header_1", "header_2", "header_3"].includes(x),
   ),
-)("can preview default %s", (elementType: DocumentElementType) => {
-  const element = createNewElement(elementType);
+)("can preview default %s", (elementType: DocumentBuilderElementType) => {
+  const element = createNewDocumentBuilderElement(elementType);
   const { asFragment } = renderElementPreview(element);
   expect(asFragment()).toMatchSnapshot();
 });
@@ -179,10 +180,10 @@ test("can preview pipeline element with bricks", () => {
     config: defaultBrickConfig(markdownBlock.inputSchema),
   });
 
-  const element = createNewElement("pipeline");
-  const pipeline = element.config.pipeline as PipelineExpression;
+  const pipelineElement = createNewDocumentBuilderElement("pipeline");
+  const pipeline = pipelineElement.config.pipeline as PipelineExpression;
   pipeline.__value__.push(testBrick, markdownConfig);
-  const { asFragment } = renderElementPreview(element);
+  const { asFragment } = renderElementPreview(pipelineElement);
 
   expect(asFragment()).toMatchSnapshot();
 });

@@ -34,8 +34,8 @@ export const selectActiveElementTraces: EditorSelector<TraceRecord[]> = ({
   runtime,
   editor,
 }) =>
-  editor.activeElementId
-    ? runtime.extensionTraces[editor.activeElementId] ?? EMPTY_TRACE
+  editor.activeModComponentId
+    ? runtime.extensionTraces[editor.activeModComponentId] ?? EMPTY_TRACE
     : EMPTY_TRACE;
 
 const activeElementTraceForBlockSelector = createSelector(
@@ -45,7 +45,7 @@ const activeElementTraceForBlockSelector = createSelector(
     traces.find((trace) => trace.blockInstanceId === instanceId),
 );
 
-export const selectActiveElementTraceForBlock =
+export const selectActiveElementTraceForBrick =
   (instanceId: UUID) => (state: RootState) =>
     activeElementTraceForBlockSelector(state, instanceId);
 
@@ -64,12 +64,12 @@ export const selectTraceErrors = createSelector(
   (records) => records.filter(isTraceError),
 );
 
-export function makeSelectBlockTrace(
+export function makeSelectBrickTrace(
   blockInstanceId: UUID,
 ): EditorSelector<{ record?: TraceRecord }> {
   return ({ runtime, editor }: RootState) => {
-    const records = editor.activeElementId
-      ? runtime.extensionTraces[editor.activeElementId] ?? []
+    const records = editor.activeModComponentId
+      ? runtime.extensionTraces[editor.activeModComponentId] ?? []
       : [];
 
     return {

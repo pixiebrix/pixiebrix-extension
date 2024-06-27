@@ -19,7 +19,7 @@ import React, { type MouseEventHandler, useEffect, useMemo } from "react";
 import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
 import {
-  type DocumentElement,
+  type DocumentBuilderElement,
   isButtonElement,
   isListElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
@@ -45,7 +45,7 @@ export type ElementPreviewProps = {
    */
   elementName: string;
   // An element config having all expressions unwrapped, different from what is stored in Formik
-  previewElement: DocumentElement;
+  previewElement: DocumentBuilderElement;
 
   /**
    * The active element relative to the root element (i.e. "name" is not included)

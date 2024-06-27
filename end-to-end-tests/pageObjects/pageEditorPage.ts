@@ -237,7 +237,7 @@ export class PageEditorPage {
     const modsPage = new ModsPage(this.page, this.extensionId);
     await modsPage.goto();
     for (const standaloneModName of this.savedStandaloneModNames) {
-      await modsPage.deleteStandaloneModByName(standaloneModName);
+      await modsPage.deleteModByName(standaloneModName);
     }
 
     const workshopPage = new WorkshopPage(this.page, this.extensionId);

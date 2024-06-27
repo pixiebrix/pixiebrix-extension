@@ -17,10 +17,10 @@
 
 import {
   type ModDefinition,
-  type ResolvedModComponentDefinition,
+  type HydratedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { resolveRecipeInnerDefinitions } from "@/registry/internal";
+import { hydrateModInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { mergePermissions } from "@/permissions/permissionsUtils";
 import { isEmpty } from "lodash";
 import { type Permissions } from "webextension-polyfill";
@@ -32,7 +32,7 @@ import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import type { Manifest } from "webextension-polyfill/namespaces/manifest";
 
 async function collectModComponentDefinitionPermissions(
-  modComponentDefinitions: ResolvedModComponentDefinition[],
+  modComponentDefinitions: HydratedModComponentDefinition[],
   configuredDependencies: IntegrationDependency[],
 ): Promise<Permissions.Permissions> {
   const integrationsPromises = configuredDependencies.map(async (dependency) =>
@@ -44,7 +44,7 @@ async function collectModComponentDefinitionPermissions(
       id,
       permissions = {},
       config,
-    }: ResolvedModComponentDefinition) => {
+    }: HydratedModComponentDefinition) => {
       const extensionPoint = await extensionPointRegistry.lookup(id);
 
       let inner: Permissions.Permissions = {};
@@ -95,8 +95,7 @@ export async function checkModDefinitionPermissions(
     optionalPermissions?: Manifest.OptionalPermission[];
   } = {},
 ): Promise<PermissionsStatus> {
-  const extensionDefinitions =
-    await resolveRecipeInnerDefinitions(modDefinition);
+  const extensionDefinitions = await hydrateModInnerDefinitions(modDefinition);
 
   const permissions = await collectModComponentDefinitionPermissions(
     extensionDefinitions,

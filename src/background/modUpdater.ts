@@ -34,7 +34,7 @@ import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import type {
   ActivatedModComponent,
-  UnresolvedModComponent,
+  SerializedModComponent,
 } from "@/types/modComponentTypes";
 import { collectModOptions } from "@/store/extensionsUtils";
 import type { ModComponentState } from "@/store/extensionsTypes";
@@ -146,7 +146,7 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
  * @returns the new redux state with the mod component deactivated
  */
 function deactivateModComponent(
-  modComponent: UnresolvedModComponent,
+  modComponent: SerializedModComponent,
   reduxState: ActivatedModState,
 ): ActivatedModState {
   let { options: newOptionsState, editor: newEditorState } = reduxState;

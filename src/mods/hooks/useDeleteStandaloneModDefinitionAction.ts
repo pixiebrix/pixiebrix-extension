@@ -20,14 +20,17 @@ import { useModals } from "@/components/ConfirmationModal";
 import { useDeleteStandaloneModDefinitionMutation } from "@/data/service/api";
 import {
   getLabel,
-  isResolvedModComponent,
+  isStandaloneModComponent,
   isModDefinition,
 } from "@/utils/modUtils";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors/businessErrors";
 import { Events } from "@/telemetry/events";
 
-function useDeleteExtensionAction(
+/**
+ * Hook returning a user action to delete a standalone mod definition, or null if mod is not a standalone mod.
+ */
+function useDeleteStandaloneModDefinitionAction(
   modViewItem: ModViewItem,
 ): (() => void) | null {
   const { mod, sharing, status } = modViewItem;
@@ -36,14 +39,14 @@ function useDeleteExtensionAction(
     useDeleteStandaloneModDefinitionMutation();
   const isActive = status === "Active" || status === "Paused";
 
-  const isCloudExtension =
-    isResolvedModComponent(mod) &&
+  const canDelete =
+    isStandaloneModComponent(mod) &&
     sharing.source.type === "Personal" &&
-    // If the status is active, there is still likely a copy of the extension saved on our server. But the point
-    // this check is for extensions that aren't also installed locally
+    // If the status is active, there is still likely a copy of the mod component saved on our server.
+    // However, we want the user to have to deactivate the mod before deleting it from the server
     !isActive;
 
-  const deleteExtension = useUserAction(
+  const deleteMod = useUserAction(
     async () => {
       if (isModDefinition(mod)) {
         return;
@@ -51,7 +54,7 @@ function useDeleteExtensionAction(
 
       const confirmed = await modals.showConfirmation({
         title: "Permanently Delete?",
-        message: "Permanently delete the brick from your account?",
+        message: "Permanently delete the mod from your account?",
         submitCaption: "Delete",
         cancelCaption: "Back to Safety",
       });
@@ -65,12 +68,12 @@ function useDeleteExtensionAction(
     {
       successMessage: `Deleted mod ${getLabel(mod)} from your account`,
       errorMessage: `Error deleting mod ${getLabel(mod)} from your account`,
-      event: Events.EXTENSION_CLOUD_DELETE,
+      event: Events.STANDALONE_MOD_DELETE,
     },
     [modals],
   );
 
-  return isCloudExtension ? deleteExtension : null;
+  return canDelete ? deleteMod : null;
 }
 
-export default useDeleteExtensionAction;
+export default useDeleteStandaloneModDefinitionAction;

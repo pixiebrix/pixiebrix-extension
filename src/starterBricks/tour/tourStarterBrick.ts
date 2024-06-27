@@ -48,7 +48,7 @@ import {
 } from "@/starterBricks/tour/tourController";
 import { getAll } from "@/tours/tourRunDatabase";
 import { type UUID } from "@/types/stringTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
@@ -121,13 +121,13 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
   );
 
   async getBricks(
-    modComponent: ResolvedModComponent<TourConfig>,
+    modComponent: HydratedModComponent<TourConfig>,
   ): Promise<Brick[]> {
     return collectAllBricks(modComponent.config.tour);
   }
 
   private async runModComponentTour(
-    modComponent: ResolvedModComponent<TourConfig>,
+    modComponent: HydratedModComponent<TourConfig>,
     abortController: AbortController,
   ): Promise<void> {
     const reader = await this.defaultReader();
@@ -158,7 +158,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
    * Register a tour with the tour controller.
    */
   private async registerTour(
-    modComponent: ResolvedModComponent<TourConfig>,
+    modComponent: HydratedModComponent<TourConfig>,
   ): Promise<void> {
     assertNotNullish(
       modComponent._recipe?.id,
@@ -190,7 +190,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
    * @see autoRunSchedule
    */
   async decideAutoRunTour(): Promise<
-    Nullishable<ResolvedModComponent<TourConfig>>
+    Nullishable<HydratedModComponent<TourConfig>>
   > {
     const modComponentIds = new Set(this.modComponents.map((x) => x.id));
 

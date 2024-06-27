@@ -21,7 +21,7 @@ import { type BrickConfig } from "@/bricks/types";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 import {
-  type DocumentElement,
+  type DocumentBuilderElement,
   isButtonElement,
   isListElement,
   isPipelineElement,
@@ -195,34 +195,36 @@ export function getVariableKeyForSubPipeline(
 /**
  * Returns Formik path names to pipeline expressions
  * @param parentPath the parent Formik path
- * @param elements the document element or elements
+ * @param documentBuilderElements the document element or elements
  */
-function getElementsPipelinePropNames(
+function getDocumentBuilderElementsPipelinePropNames(
   parentPath: string,
-  elements: DocumentElement | DocumentElement[],
+  documentBuilderElements: DocumentBuilderElement | DocumentBuilderElement[],
 ): string[] {
-  const isArray = Array.isArray(elements);
+  const isArray = Array.isArray(documentBuilderElements);
 
   const propNames: string[] = [];
-  for (const [elementIndex, element] of Object.entries(castArray(elements))) {
+  for (const [elementIndex, documentBuilderElement] of Object.entries(
+    castArray(documentBuilderElements),
+  )) {
     const index = isArray ? elementIndex : null;
 
-    if (isButtonElement(element)) {
+    if (isButtonElement(documentBuilderElement)) {
       propNames.push(joinPathParts(parentPath, index, "config", "onClick"));
-    } else if (isPipelineElement(element)) {
+    } else if (isPipelineElement(documentBuilderElement)) {
       propNames.push(joinPathParts(parentPath, index, "config", "pipeline"));
-    } else if (isListElement(element)) {
+    } else if (isListElement(documentBuilderElement)) {
       propNames.push(
-        ...getElementsPipelinePropNames(
+        ...getDocumentBuilderElementsPipelinePropNames(
           joinPathParts(parentPath, index, "config", "element", "__value__"),
-          element.config.element.__value__,
+          documentBuilderElement.config.element.__value__,
         ),
       );
-    } else if (element.children?.length) {
+    } else if (documentBuilderElement.children?.length) {
       propNames.push(
-        ...getElementsPipelinePropNames(
+        ...getDocumentBuilderElementsPipelinePropNames(
           joinPathParts(parentPath, index, "children"),
-          element.children,
+          documentBuilderElement.children,
         ),
       );
     }
@@ -231,10 +233,10 @@ function getElementsPipelinePropNames(
   return propNames;
 }
 
-export function getDocumentPipelinePaths(block: BrickConfig): string[] {
-  return getElementsPipelinePropNames(
+export function getDocumentBuilderPipelinePaths(block: BrickConfig): string[] {
+  return getDocumentBuilderElementsPipelinePropNames(
     "config.body",
-    (block.config.body ?? []) as DocumentElement[],
+    (block.config.body ?? []) as DocumentBuilderElement[],
   );
 }
 

@@ -40,7 +40,7 @@ import { type Nullishable } from "@/utils/nullishUtils";
  * ModMetadata that includes sharing information.
  *
  * We created this type as an alternative to Metadata in order to include information about the origin of a ModComponent,
- * e.g. on the ActiveBricks page.
+ * e.g. on the mods screen.
  *
  * @see optionsSlice
  * @see ModComponentBase._recipe
@@ -49,12 +49,12 @@ import { type Nullishable } from "@/utils/nullishUtils";
 // XXX: Usage may be clearer, but the ergonomics of (ModMetadata | undefined) are terrible to handle with strict null checks
 export type ModMetadata = Metadata & {
   /**
-   * `undefined` for recipes that were activated prior to the field being added
+   * `undefined` for mods that were activated prior to the field being added
    */
   sharing: Sharing | null;
 
   /**
-   * `undefined` for recipes that were activated prior to the field being added
+   * `undefined` for mods that were activated prior to the field being added
    * @since 1.4.8
    */
   updated_at: Timestamp | null;
@@ -142,7 +142,7 @@ export type ModComponentBaseV1<Config extends UnknownObject = UnknownObject> = {
    * - components
    * - readers
    *
-   * @see ResolvedModComponent
+   * @see HydratedModComponent
    */
   definitions?: InnerDefinitions;
 
@@ -186,31 +186,31 @@ export type ModComponentBaseV2<Config extends UnknownObject = UnknownObject> =
 export type ModComponentBase<Config extends UnknownObject = UnknownObject> =
   ModComponentBaseV2<Config>;
 
-export type UnresolvedModComponentV1<
+export type SerializedModComponentV1<
   Config extends UnknownObject = UnknownObject,
 > = ModComponentBaseV1<Config> & {
-  _unresolvedModComponentBrand: never;
+  _serializedModComponentBrand: never;
 };
 
-export type UnresolvedModComponentV2<
+export type SerializedModComponentV2<
   Config extends UnknownObject = UnknownObject,
 > = ModComponentBaseV2<Config> & {
-  _unresolvedModComponentBrand: never;
+  _serializedModComponentBrand: never;
 };
 
 /**
- * An ModComponentBase that is known not to have had its definitions resolved.
+ * An ModComponentBase that is known not to have had its inner definitions hydrated.
  *
  * NOTE: it might be the case that the ModComponent does not have a definitions section/inner definitions. This nominal
- * type is just tracking whether we've passed the instance through resolution yet.
+ * type is just tracking whether we've passed the instance through hydration yet.
  *
  * @see ModComponentBase
- * @see ResolvedModComponent
+ * @see HydratedModComponent
  */
-export type UnresolvedModComponent<
+export type SerializedModComponent<
   Config extends UnknownObject = UnknownObject,
 > = ModComponentBase<Config> & {
-  _unresolvedModComponentBrand: never;
+  _serializedModComponentBrand: never;
 };
 
 type ActivatedModComponentBase = {
@@ -236,14 +236,14 @@ type ActivatedModComponentBase = {
 
 export type ActivatedModComponentV1<
   Config extends UnknownObject = UnknownObject,
-> = UnresolvedModComponentV1<Config> & ActivatedModComponentBase;
+> = SerializedModComponentV1<Config> & ActivatedModComponentBase;
 
 export type ActivatedModComponentV2<
   Config extends UnknownObject = UnknownObject,
-> = UnresolvedModComponentV2<Config> & ActivatedModComponentBase;
+> = SerializedModComponentV2<Config> & ActivatedModComponentBase;
 
 /**
- * A ModComponent that has been saved locally
+ * A ModComponent that has been activated locally
  * @see ModComponentBase
  * @see UserExtension
  */
@@ -252,25 +252,26 @@ export type ActivatedModComponent<
 > = ActivatedModComponentV2<Config>;
 
 /**
- * An `ModComponentBase` with all inner definitions resolved.
- * @see resolveDefinitions
+ * An `ModComponentBase` with all inner definitions hydrated.
+ * @see SerializedModComponent
+ * @see hydrateModComponentInnerDefinitions
  */
-export type ResolvedModComponent<Config extends UnknownObject = UnknownObject> =
+export type HydratedModComponent<Config extends UnknownObject = UnknownObject> =
   Except<
     ModComponentBase<Config>,
-    // There's no definition section after resolution
+    // There's no definition section after hydration
     "definitions"
   > & {
     /**
-     * The registry id of the StarterBrick (will be an `@internal` scope, if the StarterBrick was originally defined
-     * internally.
+     * The registry id of the StarterBrick. Is an `@internal` scope, if the StarterBrick was defined using an
+     * internal definition.
      */
     extensionPointId: RegistryId;
 
     /**
      * Brand for nominal typing.
      */
-    _resolvedModComponentBrand: never;
+    _hydratedModComponentBrand: never;
   };
 
 /**

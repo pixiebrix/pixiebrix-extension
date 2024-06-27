@@ -2185,9 +2185,7 @@ exports[`renders the first selected node 1`] = `
               <div
                 class="dataPanel"
               >
-                <div
-                  class="tabContainer"
-                >
+                <div>
                   <div
                     class="nav nav-tabs"
                     role="tablist"

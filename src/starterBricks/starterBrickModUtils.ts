@@ -24,7 +24,7 @@ import { type StarterBrickType } from "@/types/starterBrickTypes";
 import starterBrickRegistry from "@/starterBricks/registry";
 import { type RegistryId } from "@/types/registryTypes";
 import { compact, uniq } from "lodash";
-import { resolveRecipeInnerDefinitions } from "@/registry/internal";
+import { hydrateModInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProvider/quickBarProviderStarterBrick";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
@@ -86,7 +86,7 @@ export async function includesQuickBarStarterBrick(
   modDefinition?: ModDefinition,
 ): Promise<boolean> {
   const resolvedExtensionDefinitions =
-    (await resolveRecipeInnerDefinitions(modDefinition)) ?? [];
+    (await hydrateModInnerDefinitions(modDefinition)) ?? [];
 
   for (const { id } of resolvedExtensionDefinitions) {
     // eslint-disable-next-line no-await-in-loop -- can break when we find one

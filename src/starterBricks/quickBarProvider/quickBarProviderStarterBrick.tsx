@@ -47,7 +47,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
@@ -108,7 +108,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   );
 
   async getBricks(
-    modComponent: ResolvedModComponent<QuickBarProviderConfig>,
+    modComponent: HydratedModComponent<QuickBarProviderConfig>,
   ): Promise<Brick[]> {
     return collectAllBricks(modComponent.config.generator);
   }
@@ -220,7 +220,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
    * Add a QuickBar action for mod component
    */
   private async registerActionProvider(
-    modComponent: ResolvedModComponent<QuickBarProviderConfig>,
+    modComponent: HydratedModComponent<QuickBarProviderConfig>,
   ): Promise<void> {
     const { generator, rootAction } = modComponent.config;
 

@@ -19,44 +19,44 @@ import { useField } from "formik";
 import React from "react";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import {
-  type DocumentElement,
-  type DocumentElementType,
-  DOCUMENT_ELEMENT_TYPES,
+  type DocumentBuilderElement,
+  type DocumentBuilderElementType,
+  DOCUMENT_BUILDER_ELEMENT_TYPES,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import styles from "./AddElementAction.module.scss";
-import { createNewElement } from "@/pageEditor/documentBuilder/createNewElement";
-import elementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 
 type AddElementActionProps = {
   /**
    * Formik field name for the collection to add the element to (including the path of the Document root)
    */
   elementsCollectionName: string;
-  allowedTypes?: DocumentElementType[];
+  allowedTypes?: DocumentBuilderElementType[];
   className?: string;
   menuBoundary?: Element;
 };
 
 const AddElementAction: React.FC<AddElementActionProps> = ({
   elementsCollectionName,
-  allowedTypes = DOCUMENT_ELEMENT_TYPES,
+  allowedTypes = DOCUMENT_BUILDER_ELEMENT_TYPES,
   className,
   menuBoundary,
 }) => {
   const [{ value: elementsCollection }, , { setValue }] = useField<
-    DocumentElement[]
+    DocumentBuilderElement[]
   >(elementsCollectionName);
 
   const addElement = async (
-    elementType: Parameters<typeof createNewElement>[0],
+    elementType: Parameters<typeof createNewDocumentBuilderElement>[0],
   ) => {
-    const element = createNewElement(elementType);
-    await setValue([...elementsCollection, element]);
+    const documentBuilderElement = createNewDocumentBuilderElement(elementType);
+    await setValue([...elementsCollection, documentBuilderElement]);
   };
 
   const elementItems = allowedTypes.map((elementType) => ({
     // eslint-disable-next-line security/detect-object-injection -- type checked
-    title: elementTypeLabels[elementType],
+    title: documentBuilderElementTypeLabels[elementType],
     async action() {
       await addElement(elementType);
     },

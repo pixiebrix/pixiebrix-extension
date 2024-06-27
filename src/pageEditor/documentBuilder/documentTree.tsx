@@ -20,12 +20,12 @@ import BlockElement from "@/pageEditor/documentBuilder/render/BlockElement";
 import { get } from "lodash";
 import { Col, Container, Row, Image } from "react-bootstrap";
 import {
-  type BuildDocumentBranch,
-  type ButtonDocumentConfig,
-  type DocumentComponent,
-  type DocumentElement,
+  type BuildDocumentBuilderBranch,
+  type ButtonElementConfig,
+  type DocumentBuilderComponent,
+  type DocumentBuilderElement,
   type DynamicPath,
-  type PipelineDocumentConfig,
+  type PipelineElementConfig,
 } from "./documentBuilderTypes";
 import ButtonElement from "@/pageEditor/documentBuilder/render/ButtonElement";
 import ListElement from "@/pageEditor/documentBuilder/render/ListElement";
@@ -59,7 +59,10 @@ const UnknownType: React.FC<{ componentType: string }> = ({
   <div className="text-danger">Unknown component type: {componentType}</div>
 );
 
-export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
+export const buildDocumentBuilderBranch: BuildDocumentBuilderBranch = (
+  root,
+  tracePath,
+) => {
   const { staticId, branches } = tracePath;
 
   const { hidden: rawHidden } = root.config ?? {};
@@ -72,40 +75,46 @@ export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
     return null;
   }
 
-  const componentDefinition = getComponentDefinition(root, tracePath);
+  const documentBuilderComponent = getDocumentBuilderComponent(root, tracePath);
 
   if (
     root.children?.length &&
     root.children.length > 0 &&
-    componentDefinition.props
+    documentBuilderComponent.props
   ) {
-    componentDefinition.props.children = root.children.map((child, index) => {
-      const branch = buildDocumentBranch(child, {
-        staticId: joinPathParts(staticId, root.type, "children"),
-        branches: [...branches, { staticId, index }],
-      });
+    documentBuilderComponent.props.children = root.children.map(
+      (child, index) => {
+        const branch = buildDocumentBuilderBranch(child, {
+          staticId: joinPathParts(staticId, root.type, "children"),
+          branches: [...branches, { staticId, index }],
+        });
 
-      if (branch == null) {
-        return null;
-      }
+        if (branch == null) {
+          return null;
+        }
 
-      const { Component, props } = branch;
-      // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
-      return <Component key={index} {...props} />;
-    });
+        const { Component, props } = branch;
+        // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
+        return <Component key={index} {...props} />;
+      },
+    );
   }
 
-  return componentDefinition;
+  return documentBuilderComponent;
 };
 
 // eslint-disable-next-line complexity -- We're handling a lot of different element types
-export function getComponentDefinition(
-  element: DocumentElement,
+export function getDocumentBuilderComponent(
+  documentComponentDefinition: DocumentBuilderElement,
   tracePath: DynamicPath,
-): DocumentComponent {
-  const componentType = element.type;
+): DocumentBuilderComponent {
+  const componentType = documentComponentDefinition.type;
   // Destructure hidden from config, so we don't spread it onto components
-  const { hidden, ...config } = get(element, "config", {} as UnknownObject);
+  const { hidden, ...config } = get(
+    documentComponentDefinition,
+    "config",
+    {} as UnknownObject,
+  );
 
   switch (componentType) {
     // Provide backwards compatibility for old elements
@@ -180,7 +189,7 @@ export function getComponentDefinition(
     }
 
     case "pipeline": {
-      const { pipeline } = config as PipelineDocumentConfig;
+      const { pipeline } = config as PipelineElementConfig;
 
       if (pipeline !== undefined && !isPipelineExpression(pipeline)) {
         console.debug("Expected pipeline expression for pipeline", {
@@ -210,7 +219,7 @@ export function getComponentDefinition(
         fullWidth,
         className,
         disabled,
-      } = config as ButtonDocumentConfig;
+      } = config as ButtonElementConfig;
       if (onClick !== undefined && !isPipelineExpression(onClick)) {
         throw new BusinessError("Expected pipeline expression for onClick");
       }
@@ -256,7 +265,7 @@ export function getComponentDefinition(
         elementKey: config.elementKey,
         config: config.element,
         tracePath,
-        buildDocumentBranch,
+        buildDocumentBuilderBranch,
       };
 
       return {

@@ -29,7 +29,7 @@ import {
 } from "@/starterBricks/starterBrickTestUtils";
 import { type BrickPipeline } from "@/bricks/types";
 import { reduceModComponentPipeline } from "@/runtime/reducePipeline";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -76,9 +76,9 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const modComponentFactory = define<ResolvedModComponent>({
+const modComponentFactory = define<HydratedModComponent>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined as never,
+  _hydratedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),

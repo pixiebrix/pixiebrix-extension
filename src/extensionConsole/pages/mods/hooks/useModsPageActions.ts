@@ -19,12 +19,14 @@ import useActivateAction from "@/extensionConsole/pages/mods/hooks/useActivateAc
 import useViewPublishAction from "@/extensionConsole/pages/mods/hooks/useViewPublishAction";
 import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
 import useViewShareAction from "@/extensionConsole/pages/mods/hooks/useViewShareAction";
-import useDeleteExtensionAction from "@/mods/hooks/useDeleteExtensionAction";
+import useDeleteStandaloneModDefinitionAction from "@/mods/hooks/useDeleteStandaloneModDefinitionAction";
 import useReactivateAction from "@/extensionConsole/pages/mods/hooks/useReactivateAction";
 import { type ModViewItem } from "@/types/modTypes";
 import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
 import useViewLogsAction from "@/extensionConsole/pages/mods/hooks/useViewLogsAction";
 import useDeactivateAction from "@/mods/hooks/useDeactivateAction";
+import useDeleteModDefinitionAction from "@/mods/hooks/useDeleteModDefinitionAction";
+import useEditInWorkshopAction from "@/mods/hooks/useEditInWorkshopAction";
 
 type ActionCallback = () => void;
 
@@ -34,28 +36,33 @@ export type ModsPageActions = {
   viewPublish: ActionCallback | null;
   viewInMarketplaceHref: string | null;
   viewShare: ActionCallback | null;
-  deleteExtension: ActionCallback | null;
+  delete: ActionCallback | null;
+  editInWorkshop: ActionCallback | null;
   deactivate: ActionCallback | null;
   viewLogs: ActionCallback | null;
   requestPermissions: ActionCallback | null;
 };
 
 function useModsPageActions(modViewItem: ModViewItem): ModsPageActions {
-  const marketplaceListingUrl = useMarketplaceUrl(modViewItem);
+  const viewInMarketplaceHref = useMarketplaceUrl(modViewItem);
   const viewPublish = useViewPublishAction(modViewItem);
   const viewShare = useViewShareAction(modViewItem);
   const reactivate = useReactivateAction(modViewItem);
   const viewLogs = useViewLogsAction(modViewItem);
   const activate = useActivateAction(modViewItem);
   const deactivate = useDeactivateAction(modViewItem);
-  const deleteExtension = useDeleteExtensionAction(modViewItem);
+  const deleteStandaloneModDefinition =
+    useDeleteStandaloneModDefinitionAction(modViewItem);
+  const deleteMod = useDeleteModDefinitionAction(modViewItem);
   const requestPermissions = useRequestPermissionsAction(modViewItem);
+  const editInWorkshop = useEditInWorkshopAction(modViewItem);
 
   return {
     viewPublish,
-    viewInMarketplaceHref: marketplaceListingUrl,
+    viewInMarketplaceHref,
     viewShare,
-    deleteExtension,
+    editInWorkshop,
+    delete: deleteStandaloneModDefinition ?? deleteMod,
     deactivate,
     reactivate,
     viewLogs,

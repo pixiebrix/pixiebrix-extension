@@ -20,7 +20,7 @@ import documentTreeStyles from "@/pageEditor/documentBuilder/preview/documentTre
 import styles from "./DocumentPreview.module.scss";
 import { useField } from "formik";
 import React, { type MouseEventHandler, useMemo, useState } from "react";
-import { type DocumentElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import AddElementAction from "./AddElementAction";
 import ElementPreview from "./ElementPreview";
 import { ROOT_ELEMENT_TYPES } from "@/pageEditor/documentBuilder/allowedElementTypes";
@@ -38,7 +38,7 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveElementTraceForBrick } from "@/pageEditor/slices/runtimeSelectors";
 import ClickableElement from "@/components/ClickableElement";
 
 type DocumentPreviewProps = {
@@ -54,7 +54,8 @@ const DocumentPreview = ({
   setActiveElement,
   menuBoundary,
 }: DocumentPreviewProps) => {
-  const [{ value: body }] = useField<DocumentElement[]>(documentBodyName);
+  const [{ value: body }] =
+    useField<DocumentBuilderElement[]>(documentBodyName);
   const bodyPreview = useMemo(() => getPreviewValues(body), [body]);
 
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
@@ -88,7 +89,7 @@ const DocumentPreview = ({
   } = useDocumentPreviewRunBlock(activeNodeId);
 
   const traceRecord = useSelector(
-    selectActiveElementTraceForBlock(activeNodeId),
+    selectActiveElementTraceForBrick(activeNodeId),
   );
   const doesNotHaveTrace = traceRecord == null;
 

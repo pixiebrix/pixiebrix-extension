@@ -43,7 +43,7 @@ describe("PageStateTab", () => {
       {
         setupRedux(dispatch) {
           dispatch(actions.addModComponentFormState(formState));
-          dispatch(actions.selectElement(formState.uuid));
+          dispatch(actions.setActiveModComponentId(formState.uuid));
         },
       },
     );

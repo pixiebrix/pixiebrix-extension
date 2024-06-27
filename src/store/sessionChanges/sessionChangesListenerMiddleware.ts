@@ -24,7 +24,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 const sessionChangesListenerMiddleware = createListenerMiddleware();
 sessionChangesListenerMiddleware.startListening({
   matcher: isAnyOf(
-    actions.editElement,
+    actions.syncModComponentFormState,
     actions.addNode,
     actions.moveNode,
     actions.removeNode,
@@ -34,8 +34,8 @@ sessionChangesListenerMiddleware.startListening({
     actions.editRecipeOptionsDefinitions,
     actions.editRecipeOptionsValues,
     actions.resetMetadataAndOptionsForRecipe,
-    actions.addElementToRecipe,
-    actions.removeElementFromRecipe,
+    actions.addModComponentFormStateToMod,
+    actions.removeModComponentFormStateFromMod,
     actions.removeRecipeData,
 
     extensionsSlice.actions.activateStandaloneModDefinition,

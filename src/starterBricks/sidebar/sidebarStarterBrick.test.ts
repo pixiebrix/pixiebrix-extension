@@ -18,7 +18,7 @@ import { define } from "cooky-cutter";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
-import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
 import {
   autoUUIDSequence,
   registryIdFactory,
@@ -70,9 +70,9 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const modComponentFactory = define<ResolvedModComponent<SidebarConfig>>({
+const modComponentFactory = define<HydratedModComponent<SidebarConfig>>({
   apiVersion: "v3",
-  _resolvedModComponentBrand: undefined as never,
+  _hydratedModComponentBrand: undefined as never,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),

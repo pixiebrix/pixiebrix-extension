@@ -153,7 +153,7 @@ const DraftModComponentListItem: React.FunctionComponent<
       })}
       as="div"
       active={isActive}
-      key={`dynamic-${modComponentFormState.uuid}`}
+      key={`draft-${modComponentFormState.uuid}`}
       onMouseEnter={
         isButton
           ? async () => showOverlay(modComponentFormState.uuid)
@@ -166,7 +166,7 @@ const DraftModComponentListItem: React.FunctionComponent<
           extensionId: modComponentFormState.uuid,
         });
 
-        dispatch(actions.selectElement(modComponentFormState.uuid));
+        dispatch(actions.setActiveModComponentId(modComponentFormState.uuid));
 
         if (modComponentFormState.type === "actionPanel") {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
