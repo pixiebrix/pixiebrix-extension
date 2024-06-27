@@ -19,7 +19,7 @@ import MemoryRegistry from "@/registry/memoryRegistry";
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import getType from "@/runtime/getType";
-import { type RegistryId } from "@/types/registryTypes";
+import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { partial } from "lodash";
 import { allSettled } from "@/utils/promiseUtils";
@@ -39,7 +39,8 @@ export type TypedBrickMap = Map<RegistryId, TypedBrickPair>;
  */
 class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
   constructor() {
-    super(["component", "reader"], null);
+    // A reader is a special kind of brick. So we keep them in the same in-memory registry.
+    super([DefinitionKinds.BRICK, DefinitionKinds.READER], null);
     // Can't reference "this" before the call to "super"
     this.setDeserialize(partial(fromJS, this));
 
