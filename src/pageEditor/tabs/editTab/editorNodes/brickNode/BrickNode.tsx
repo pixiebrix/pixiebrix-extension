@@ -37,15 +37,15 @@ const useScrollIntoViewEffect = (
   isSubPipelineHeaderActive = false,
 ) => {
   const nodeRef = useRef<HTMLDivElement>(null);
-  const activeNodePreviewElementId = useSelector(
+  const activeBuilderPreviewElementId = useSelector(
     selectActiveBuilderPreviewElement,
   );
 
   useEffect(() => {
-    if (active && !isSubPipelineHeaderActive && activeNodePreviewElementId) {
+    if (active && !isSubPipelineHeaderActive && activeBuilderPreviewElementId) {
       nodeRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
     }
-  }, [activeNodePreviewElementId, isSubPipelineHeaderActive, active]);
+  }, [activeBuilderPreviewElementId, isSubPipelineHeaderActive, active]);
 
   return nodeRef;
 };

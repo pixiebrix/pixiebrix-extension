@@ -108,7 +108,7 @@ type SubPipeline = {
   inputKey?: string;
 };
 
-function getNodePreviewElementId(
+function getBuilderPreviewElementId(
   brickConfig: BrickConfig,
   path: string,
 ): string | null {
@@ -212,7 +212,7 @@ const usePipelineNodes = (): {
   const annotations = useSelector(
     selectExtensionAnnotations(activeModComponentFormState.uuid),
   );
-  const activeNodePreviewElementId = useSelector(
+  const activeBuilderPreviewElementId = useSelector(
     selectActiveBuilderPreviewElement,
   );
 
@@ -319,7 +319,7 @@ const usePipelineNodes = (): {
     const expanded = hasSubPipelines && !collapsed;
 
     const onClick = () => {
-      if (activeNodePreviewElementId) {
+      if (activeBuilderPreviewElementId) {
         dispatch(actions.setActiveBuilderPreviewElement(null));
 
         if (isNodeActive) {
@@ -430,12 +430,12 @@ const usePipelineNodes = (): {
     }
 
     const isSubPipelineHeaderActive =
-      activeNodePreviewElementId == null
+      activeBuilderPreviewElementId == null
         ? false
         : subPipelines.some(
             ({ path }) =>
-              activeNodePreviewElementId ===
-              getNodePreviewElementId(blockConfig, path),
+              activeBuilderPreviewElementId ===
+              getBuilderPreviewElementId(blockConfig, path),
           );
 
     const restBrickNodeProps: Except<
@@ -474,10 +474,13 @@ const usePipelineNodes = (): {
       } of subPipelines) {
         const headerName = `${nodeId}-header`;
         const fullSubPath = joinPathParts(pipelinePath, index, path);
-        const nodePreviewElementId = getNodePreviewElementId(blockConfig, path);
+        const builderPreviewElementId = getBuilderPreviewElementId(
+          blockConfig,
+          path,
+        );
         const isHeaderNodeActive =
-          activeNodePreviewElementId &&
-          nodePreviewElementId === activeNodePreviewElementId;
+          activeBuilderPreviewElementId &&
+          builderPreviewElementId === activeBuilderPreviewElementId;
         const isSiblingHeaderActive = isSubPipelineHeaderActive;
 
         const headerActions: NodeAction[] = [
@@ -516,23 +519,24 @@ const usePipelineNodes = (): {
           active: isHeaderNodeActive,
           isParentActive: !isSiblingHeaderActive && isNodeActive,
           isAncestorActive: !isSiblingHeaderActive && isParentActive,
-          nodePreviewElement: nodePreviewElementId
+          builderPreviewElement: builderPreviewElementId
             ? {
-                name: nodePreviewElementId,
+                name: builderPreviewElementId,
                 focus() {
                   setActiveNodeId(blockConfig.instanceId);
                   dispatch(
                     editorActions.setActiveBuilderPreviewElement(
-                      nodePreviewElementId,
+                      builderPreviewElementId,
                     ),
                   );
                   window.dispatchEvent(
                     new Event(
-                      `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${nodePreviewElementId}`,
+                      `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${builderPreviewElementId}`,
                     ),
                   );
                 },
-                active: nodePreviewElementId === activeNodePreviewElementId,
+                active:
+                  builderPreviewElementId === activeBuilderPreviewElementId,
               }
             : null,
           isPipelineLoading: isLoading,
