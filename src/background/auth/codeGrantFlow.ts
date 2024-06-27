@@ -57,10 +57,12 @@ async function codeGrantFlow(
 
   assertNotNullish(rawAuthorizeUrl, "`authorizeUrl` was not provided");
   assertNotNullish(rawTokenUrl, "`tokenUrl` was not provided");
+  assertNotNullish(client_id, "`client_id` was not provided");
 
   const authorizeURL = new URL(rawAuthorizeUrl);
   for (const [key, value] of Object.entries({
     redirect_uri,
+    client_id,
     response_type: "code",
     display: "page",
     ...params,
