@@ -280,16 +280,17 @@ export function removePersistedModComponent(modComponentId: UUID): void {
 /**
  * Remove draft mod components(s) from the frame.
  *
- * NOTE: if the draft mod component was taking the place of a persisted mod component, call `reload` or a similar
+ * NOTE: if the draft mod component was taking the place of a persisted mod component, call `reloadFrame` or a similar
  * method for the mod component to be reloaded.
  *
- * NOTE: this works by removing all mod components attached to the starter brick. Call `reload` or a similar
+ * NOTE: this works by removing all mod components attached to the starter brick. Call `reloadFrame` or a similar
  * method to re-install/run the persisted mod components.
  *
- * @param modComponentId the uuid of the draft mod component, or undefined to clear all draft mod components
+ * @param modComponentId an optional draft mod component id, or undefined to remove all draft mod components
  * @param options options to control clear behavior
+ * @see reloadFrame
  */
-export function removeDraftModComponent(
+export function removeDraftModComponents(
   modComponentId?: UUID,
   options?: { clearTrace?: boolean; preserveSidebar?: boolean },
 ): void {
@@ -366,7 +367,7 @@ export async function runDraftModComponent(
   // Uninstall the previous starter brick instance in favor of the updated starter brick
   if (_draftModComponentStarterBrickMap.has(modComponentId)) {
     // Pass preserveSidebar to avoid flickering permanent sidebars
-    removeDraftModComponent(modComponentId, {
+    removeDraftModComponents(modComponentId, {
       clearTrace: false,
       preserveSidebar: true,
     });

@@ -15,16 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { removeDraftModComponent } from "@/contentScript/lifecycle";
+import { removeDraftModComponents as _removeDraftModComponents } from "@/contentScript/lifecycle";
 import { type UUID } from "@/types/stringTypes";
 import { expectContext } from "@/utils/expectContext";
 
 /**
  * A version of `removeDraftModComponent` that takes an object instead of a positional UUID argument.
- * @param uuid the uuid of the mod component, or null/undefined to clear all page editor mod components
- * @see removeDraftModComponent
+ * @param uuid an optional mod component id, or null/undefined to clear all page editor mod components
  */
-// XXX: why does this method need to exist?
+// XXX: why does this method need to exist? Because messenger expects an object?
 export async function removeDraftModComponents({
   uuid,
 }: {
@@ -32,5 +31,5 @@ export async function removeDraftModComponents({
 }): Promise<void> {
   expectContext("contentScript");
 
-  removeDraftModComponent(uuid);
+  _removeDraftModComponents(uuid);
 }

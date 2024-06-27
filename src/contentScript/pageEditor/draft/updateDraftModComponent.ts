@@ -16,7 +16,7 @@
  */
 
 import {
-  removeDraftModComponent,
+  removeDraftModComponents,
   runDraftModComponent,
 } from "@/contentScript/lifecycle";
 import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
@@ -66,7 +66,7 @@ export async function updateDraftModComponent({
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated draft mod component
   // will automatically replace the old panel because the panels are keyed by extension id
   if (starterBrick.kind !== "actionPanel") {
-    removeDraftModComponent(extensionConfig.id, { clearTrace: false });
+    removeDraftModComponents(extensionConfig.id, { clearTrace: false });
   }
 
   // In practice, should be a no-op because the Page Editor handles the extensionPoint
