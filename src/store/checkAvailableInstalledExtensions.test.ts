@@ -21,7 +21,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
-import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
+import { getRunningStarterBricks } from "@/contentScript/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { RemoteMenuItemStarterBrick } from "@/starterBricks/menuItem/menuItemStarterBrick";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
@@ -113,7 +113,7 @@ describe("checkAvailableInstalledExtensions", () => {
       availableQuickbarStarterBrickDefinition,
     );
     jest
-      .mocked(getInstalledExtensionPoints)
+      .mocked(getRunningStarterBricks)
       .mockResolvedValue([
         availableButtonExtensionPoint,
         availableQuickbarExtensionPoint,
