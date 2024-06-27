@@ -89,22 +89,22 @@ export const runBrick = getMethod("RUN_BRICK");
 export const runHeadlessPipeline = getMethod("RUN_HEADLESS_PIPELINE");
 export const runRendererBrick = getMethod("RUN_RENDERER_BRICK");
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
-export const runExtensionPointReader = getMethod("RUN_EXTENSION_POINT_READER");
-export const ensureExtensionPointsInstalled = getMethod(
-  "ENSURE_EXTENSION_POINTS_INSTALLED",
+export const runStarterBrickReaderPreview = getMethod(
+  "RUN_STARTER_BRICK_READER_PREVIEW",
 );
-export const removeInstalledExtension = getNotifier(
-  "REMOVE_INSTALLED_EXTENSION",
+export const ensureStarterBricksInstalled = getMethod(
+  "ENSURE_STARTER_BRICKS_INSTALLED",
+);
+export const getRunningStarterBricks = getMethod("GET_RUNNING_STARTER_BRICKS");
+export const removePersistedModComponent = getNotifier(
+  "REMOVE_PERSISTED_MOD_COMPONENT",
 );
 // Notifies the content script that it can activate mods for a prerendered tab (no-op if the tab is already active)
 export const activatePrerenderedTab = getNotifier("ACTIVATE_PRERENDERED_TAB");
-export const getInstalledExtensionPoints = getMethod(
-  "INSTALLED_EXTENSION_POINTS",
-);
 export const resetTab = getNotifier("RESET_TAB");
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
-export const clearDraftModComponents = getNotifier(
-  "CLEAR_DRAFT_MOD_COMPONENTS",
+export const removeDraftModComponents = getNotifier(
+  "REMOVE_DRAFT_MOD_COMPONENTS",
 );
 export const updateDraftModComponent = getNotifier(
   "UPDATE_DRAFT_MOD_COMPONENT",

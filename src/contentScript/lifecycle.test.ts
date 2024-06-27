@@ -106,8 +106,8 @@ describe("lifecycle", () => {
     rootReader.ref = undefined;
   });
 
-  it("getActiveExtensionPoints smoke test", () => {
-    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([]);
+  it("getRunningStarterBricks smoke test", () => {
+    expect(lifecycleModule.getRunningStarterBricks()).toEqual([]);
   });
 
   it("first navigation no extensions smoke test", async () => {
@@ -146,10 +146,10 @@ describe("lifecycle", () => {
 
     await tick();
 
-    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
+    expect(lifecycleModule.getRunningStarterBricks()).toEqual([starterBrick]);
   });
 
-  it("runEditorExtension", async () => {
+  it("runDraftModComponent", async () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickDefinitionFactory({
@@ -165,14 +165,18 @@ describe("lifecycle", () => {
       await hydrateModComponentInnerDefinitions(modComponent),
     );
 
-    await lifecycleModule.runEditorExtension(modComponent.id, starterBrick);
+    await lifecycleModule.runDraftModComponent(modComponent.id, starterBrick);
 
-    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
-    expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(0);
-    expect(lifecycleModule.TEST_getEditorExtensions().size).toBe(1);
+    expect(lifecycleModule.getRunningStarterBricks()).toEqual([starterBrick]);
+    expect(
+      lifecycleModule.TEST_getPersistedModComponentStarterBrickMap().size,
+    ).toBe(0);
+    expect(
+      lifecycleModule.TEST_getDraftModComponentStarterBrickMap().size,
+    ).toBe(1);
   });
 
-  it("runEditorExtension removes existing", async () => {
+  it("runDraftModComponent removes existing", async () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickDefinitionFactory({
@@ -195,27 +199,37 @@ describe("lifecycle", () => {
     await tick();
 
     // Ensure the persisted extension is loaded
-    expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(1);
-    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
+    expect(
+      lifecycleModule.TEST_getPersistedModComponentStarterBrickMap().size,
+    ).toBe(1);
+    expect(lifecycleModule.getRunningStarterBricks()).toEqual([starterBrick]);
 
     starterBrick.registerModComponent(
       await hydrateModComponentInnerDefinitions(modComponent),
     );
 
-    await lifecycleModule.runEditorExtension(modComponent.id, starterBrick);
+    await lifecycleModule.runDraftModComponent(modComponent.id, starterBrick);
 
     // Still only a single starter brick
-    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
+    expect(lifecycleModule.getRunningStarterBricks()).toEqual([starterBrick]);
 
-    expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(0);
-    expect(lifecycleModule.TEST_getEditorExtensions().size).toBe(1);
+    expect(
+      lifecycleModule.TEST_getPersistedModComponentStarterBrickMap().size,
+    ).toBe(0);
+    expect(
+      lifecycleModule.TEST_getDraftModComponentStarterBrickMap().size,
+    ).toBe(1);
 
     await lifecycleModule.handleNavigate({ force: true });
     await tick();
 
-    // Persisted extension is not re-added on force-add
-    expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(0);
-    expect(lifecycleModule.TEST_getEditorExtensions().size).toBe(1);
+    // Persisted mod component is not re-added on force-add
+    expect(
+      lifecycleModule.TEST_getPersistedModComponentStarterBrickMap().size,
+    ).toBe(0);
+    expect(
+      lifecycleModule.TEST_getDraftModComponentStarterBrickMap().size,
+    ).toBe(1);
   });
 
   it("Removes starter bricks from deactivated mods", async () => {
@@ -238,7 +252,7 @@ describe("lifecycle", () => {
 
     await tick();
 
-    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
+    expect(lifecycleModule.getRunningStarterBricks()).toEqual([starterBrick]);
 
     const updatedStarterBrick = fromJS(
       getPlatform(),
@@ -261,14 +275,16 @@ describe("lifecycle", () => {
     getModComponentStateMock.mockResolvedValue({
       extensions: [updatedModComponent],
     });
-    lifecycleModule.queueReactivateTab();
+    lifecycleModule.queueReloadFrame();
 
     await lifecycleModule.handleNavigate({ force: true });
     await tick();
 
     // New starter brick is installed, old starter brick is removed
-    expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(1);
-    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
+    expect(
+      lifecycleModule.TEST_getPersistedModComponentStarterBrickMap().size,
+    ).toBe(1);
+    expect(lifecycleModule.getRunningStarterBricks()).toEqual([
       updatedStarterBrick,
     ]);
   });

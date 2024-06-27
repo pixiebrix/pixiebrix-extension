@@ -16,7 +16,7 @@
  */
 
 import { getModComponentState } from "@/store/extensionsStorage";
-import extensionPointRegistry from "@/starterBricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
@@ -54,42 +54,48 @@ import pDefer from "p-defer";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
- * True if handling the initial page load.
- * @see loadPersistedExtensionsOnce
+ * True if handling the initial frame load.
+ * @see loadPersistedModComponentsOnce
  */
-let _initialLoad = true;
+let _initialFrameLoad = true;
 
 /**
- * Promise to memoize fetching extension points and extensions from storage
- * @see loadPersistedExtensionsOnce
+ * Promise to memoize loading starter bricks and mod components from storage
+ * @see loadPersistedModComponentsOnce
  */
-let pendingLoadPromise: Promise<StarterBrick[]> | null;
+let pendingFrameLoadPromise: Promise<StarterBrick[]> | null;
 
 /**
- * Map from persisted extension IDs to their extension points.
+ * Map from persisted mod component IDs to their starter bricks.
  *
- * Mutually exclusive with _editorExtensions.
+ * Mutually exclusive with _draftModComponentStarterBrickMap.
  *
- * @see _editorExtensions
+ * @see _draftModComponentStarterBrickMap
  */
 // eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
-const _persistedExtensions = new Map<UUID, StarterBrick>();
+const _persistedModComponentStarterBrickMap = new Map<UUID, StarterBrick>();
 
 /**
- * Map from extension IDs currently being edited in the Page Editor to their extension points.
+ * Map from draft mod component IDs currently being edited in the Page Editor to their starter bricks.
  *
- * Mutually exclusive with _persistedExtensions.
+ * Mutually exclusive with _persistedModComponentStarterBrickMap.
  *
- * @see _persistedExtensions
+ * @see _persistedModComponentStarterBrickMap
  */
 // eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
-const _editorExtensions = new Map<UUID, StarterBrick>();
+const _draftModComponentStarterBrickMap = new Map<UUID, StarterBrick>();
 
 /**
- * Extension points active/installed on the page.
+ * Starter bricks running in the frame.
+ *
+ * NOTE: the meaning of "run" varies by starter brick. For example, running a button starter brick means adding the
+ * button to the page, i.e., as opposed to when the button is clicked.
+ *
+ * @see runStarterBrick
+ * @see StarterBrick.runModComponents
  */
 // eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
-const _activeExtensionPoints = new Set<StarterBrick>();
+const _runningStarterBricks = new Set<StarterBrick>();
 
 /**
  * Used to ignore navigation events that don't change the URL.
@@ -104,50 +110,51 @@ const navigationListeners = new ReusableAbortController();
 const WAIT_LOADED_INTERVAL_MS = 25;
 
 /**
- * Run an extension point and specified ModComponentBases.
- * @param extensionPoint the extension point to install/run
+ * Install and run a starter brick and specified mod components.
+ * @param starterBrick the starter to install and run
  * @param reason the reason code for the run
- * @param extensionIds the ModComponentBases to run on the extension point, or undefined to run all ModComponentBases
- * @param abortSignal abort signal to cancel the install/run
+ * @param extensionIds the mod components to run on the starter brick, or undefined to run all mod components
+ * @param abortSignal abort signal to cancel the installation/run
+ * @see StarterBrick.runModComponents
  */
-async function runExtensionPoint(
-  extensionPoint: StarterBrick,
+async function runStarterBrick(
+  starterBrick: StarterBrick,
   {
     reason,
     extensionIds,
     abortSignal,
   }: { reason: RunReason; extensionIds?: UUID[]; abortSignal: AbortSignal },
 ): Promise<void> {
-  // Could potentially call _activeExtensionPoints.delete here, but assume the extension point is still available
+  // Could potentially call _runningStarterBricks.delete here, but assume the starter brick is still available
   // until we know for sure that it's not
 
-  if (!(await extensionPoint.isAvailable())) {
-    // `extensionPoint.install` should short-circuit return false if it's not available. But be defensive.
+  if (!(await starterBrick.isAvailable())) {
+    // `starterBrick.install` should short-circuit return false if it's not available. But be defensive.
     return;
   }
 
   let installed = false;
 
-  // Details to make it easier to debug extension point lifecycle
+  // Details to make it easier to debug starer brick lifecycle
   const details = {
-    extensionPointId: extensionPoint.id,
-    kind: extensionPoint.kind,
-    name: extensionPoint.name,
-    permissions: extensionPoint.permissions,
-    extensionIds,
+    starterBrickId: starterBrick.id,
+    kind: starterBrick.kind,
+    name: starterBrick.name,
+    permissions: starterBrick.permissions,
+    modComponentIds: extensionIds,
     reason,
   };
 
   try {
-    installed = await extensionPoint.install();
+    installed = await starterBrick.install();
   } catch (error) {
     if (error instanceof PromiseCancelled) {
       console.debug(
-        `Skipping ${extensionPoint.kind} ${extensionPoint.id} because user navigated away from the page`,
+        `Skipping ${starterBrick.kind} ${starterBrick.id} because user navigated away from the page`,
         details,
       );
 
-      _activeExtensionPoints.delete(extensionPoint);
+      _runningStarterBricks.delete(starterBrick);
       return;
     }
 
@@ -156,58 +163,58 @@ async function runExtensionPoint(
 
   if (!installed) {
     console.debug(
-      `Skipping ${extensionPoint.kind} ${extensionPoint.id} because it was not installed on the page`,
+      `Skipping ${starterBrick.kind} ${starterBrick.id} because it was not installed on the page`,
       details,
     );
 
-    _activeExtensionPoints.delete(extensionPoint);
+    _runningStarterBricks.delete(starterBrick);
     return;
   }
 
   if (abortSignal.aborted) {
     console.debug(
-      `Skipping ${extensionPoint.kind} ${extensionPoint.id} because user navigated away from the page`,
+      `Skipping ${starterBrick.kind} ${starterBrick.id} because user navigated away from the page`,
       details,
     );
 
-    _activeExtensionPoints.delete(extensionPoint);
+    _runningStarterBricks.delete(starterBrick);
     return;
   }
 
   console.debug(
-    `Installed extension point ${extensionPoint.kind}: ${extensionPoint.id}`,
+    `Installed starter brick ${starterBrick.kind}: ${starterBrick.id}`,
     details,
   );
 
-  await extensionPoint.runModComponents({ reason, extensionIds });
-  _activeExtensionPoints.add(extensionPoint);
+  await starterBrick.runModComponents({ reason, extensionIds });
+  _runningStarterBricks.add(starterBrick);
 
   console.debug(
-    `Ran extension point ${extensionPoint.kind}: ${extensionPoint.id}`,
+    `Ran starter brick ${starterBrick.kind}: ${starterBrick.id}`,
     details,
   );
 }
 
 /**
- * Ensure all extension points are installed that have StarterBrick.syncInstall set to true.
+ * Ensure all starter bricks are installed that have StarterBrick.syncInstall set to true.
  *
- * Currently, includes:
- * - Sidebar Extension Points
- * - Context Menu Extension Points
+ * Currently, starter bricks with sync installation are:
+ * - Sidebar Panel
+ * - Context Menu
  *
- * Used to ensure all sidebar extension points have had a chance to reserve panels before showing the sidebar.
+ * Used to ensure all sidebar starter bricks have had a chance to reserve panels before showing the sidebar.
  *
  * @see StarterBrick.isSyncInstall
  */
-export async function ensureInstalled(): Promise<void> {
-  const extensionPoints = await loadPersistedExtensionsOnce();
-  const sidebarExtensionPoints = extensionPoints.filter((x) => x.isSyncInstall);
+export async function ensureStarterBricksInstalled(): Promise<void> {
+  const starterBricks = await loadPersistedModComponentsOnce();
+  const syncStarterBricks = starterBricks.filter((x) => x.isSyncInstall);
   // Log to help debug race conditions
   console.debug("lifecycle:ensureInstalled", {
-    sidebarExtensionPoints,
+    syncStarterBricks,
   });
   await allSettled(
-    sidebarExtensionPoints.map(async (x) => x.install()),
+    syncStarterBricks.map(async (x) => x.install()),
     { catch: "ignore" },
   );
 }
@@ -216,65 +223,74 @@ export async function ensureInstalled(): Promise<void> {
  * Warn if any lifecycle state assumptions are violated.
  */
 function checkLifecycleInvariants(): void {
-  const installedIds = [..._persistedExtensions.keys()];
-  const editorIds = [..._editorExtensions.keys()];
+  const persistedIds = [..._persistedModComponentStarterBrickMap.keys()];
+  const draftIds = [..._draftModComponentStarterBrickMap.keys()];
 
-  if (intersection(installedIds, editorIds).length > 0) {
-    console.warn("Installed and editor extensions are not mutually exclusive", {
-      installedIds,
-      editorIds,
+  if (intersection(persistedIds, draftIds).length > 0) {
+    console.warn("Persisted and draft ids are not mutually exclusive", {
+      persistedIds,
+      draftIds,
     });
   }
 }
 
 /**
- * Returns all the extension points currently running on the page. Includes both persisted extensions and extensions
- * being edited in the Page Editor.
+ * Returns all the starter bricks currently running on the page. Includes both persisted and draft mod components.
+ *
+ * NOTE: the meaning of "run" varies by starter brick. For example, running a button starter brick means adding the
+ * button to the page, i.e., as opposed to when the button is clicked.
  */
-export function getActiveExtensionPoints(): StarterBrick[] {
-  return [..._activeExtensionPoints];
+export function getRunningStarterBricks(): StarterBrick[] {
+  return [..._runningStarterBricks];
 }
 
 /**
- * Test helper to get internal persisted extension state
+ * Test helper to get internal persisted mod component state
  * @knip used in tests, see lifecycle.test.ts
  */
-export function TEST_getPersistedExtensions(): Map<UUID, StarterBrick> {
-  return _persistedExtensions;
+export function TEST_getPersistedModComponentStarterBrickMap(): Map<
+  UUID,
+  StarterBrick
+> {
+  return _persistedModComponentStarterBrickMap;
 }
 
 /**
- * Test helper to get internal editor extension state
+ * Test helper to get internal draft mod component state
  * @knip used in tests, see lifecycle.test.ts
  */
-export function TEST_getEditorExtensions(): Map<UUID, StarterBrick> {
-  return _editorExtensions;
+export function TEST_getDraftModComponentStarterBrickMap(): Map<
+  UUID,
+  StarterBrick
+> {
+  return _draftModComponentStarterBrickMap;
 }
 
 /**
- * Remove an extension from an extension point on the page if a persisted extension (i.e. in extensionsSlice)
+ * Remove a mod component on the page if a persisted mod component (i.e. in extensionsSlice)
  */
-export function removePersistedExtension(extensionId: UUID): void {
-  // Leaving the extension point in _activeExtensionPoints. Could consider removing if this was the last extension
-  const extensionPoint = _persistedExtensions.get(extensionId);
-  extensionPoint?.removeModComponent(extensionId);
-  _persistedExtensions.delete(extensionId);
+export function removePersistedModComponent(modComponentId: UUID): void {
+  // Leaving the starter brick in _runningStarterBricks. Could consider removing if this was the last mod component
+  const starterBrick =
+    _persistedModComponentStarterBrickMap.get(modComponentId);
+  starterBrick?.removeModComponent(modComponentId);
+  _persistedModComponentStarterBrickMap.delete(modComponentId);
 }
 
 /**
- * Remove a page editor extensions extension(s) from the page.
+ * Remove draft mod components(s) from the frame.
  *
- * NOTE: if the draft mod component was taking the place of a "permanent" extension, call `reactivate` or a similar
- * method for the extension to be reloaded.
+ * NOTE: if the draft mod component was taking the place of a persisted mod component, call `reload` or a similar
+ * method for the mod component to be reloaded.
  *
- * NOTE: this works by removing all extensions attached to the extension point. Call `reactivate` or a similar
- * method to re-install the installed extensions.
+ * NOTE: this works by removing all mod components attached to the starter brick. Call `reload` or a similar
+ * method to re-install/run the persisted mod components.
  *
- * @param extensionId the uuid of the draft mod component, or undefined to clear all draft mod components
+ * @param modComponentId the uuid of the draft mod component, or undefined to clear all draft mod components
  * @param options options to control clear behavior
  */
-export function clearEditorExtension(
-  extensionId?: UUID,
+export function removeDraftModComponent(
+  modComponentId?: UUID,
   options?: { clearTrace?: boolean; preserveSidebar?: boolean },
 ): void {
   const { clearTrace, preserveSidebar } = {
@@ -283,43 +299,44 @@ export function clearEditorExtension(
     ...options,
   };
 
-  if (extensionId) {
-    if (_editorExtensions.has(extensionId)) {
-      // Don't need to call _installedExtensionPoints.delete(extensionPoint) here because that tracks non-draft
-      // starter bricks
-      console.debug(`lifecycle:clearEditorExtension: ${extensionId}`);
-      const extensionPoint = _editorExtensions.get(extensionId);
-      assertNotNullish(extensionPoint, "extensionPoint must be defined");
+  if (modComponentId) {
+    if (_draftModComponentStarterBrickMap.has(modComponentId)) {
+      console.debug(`lifecycle:clearDraftModComponent: ${modComponentId}`);
+      const starterBrick =
+        _draftModComponentStarterBrickMap.get(modComponentId);
+      assertNotNullish(starterBrick, "extensionPoint must be defined");
 
-      if (extensionPoint.kind === "actionPanel" && preserveSidebar) {
-        const sidebar = extensionPoint as SidebarStarterBrickABC;
-        sidebar.HACK_uninstallExceptModComponent(extensionId);
+      if (starterBrick.kind === "actionPanel" && preserveSidebar) {
+        const sidebar = starterBrick as SidebarStarterBrickABC;
+        sidebar.HACK_uninstallExceptModComponent(modComponentId);
       } else {
-        extensionPoint.uninstall({ global: true });
+        starterBrick.uninstall({ global: true });
       }
 
-      _activeExtensionPoints.delete(extensionPoint);
-      _editorExtensions.delete(extensionId);
-      sidebar.removeExtensions([extensionId]);
+      _runningStarterBricks.delete(starterBrick);
+      _draftModComponentStarterBrickMap.delete(modComponentId);
+      sidebar.removeExtensions([modComponentId]);
     } else {
-      console.debug(`No draft mod component exists for uuid: ${extensionId}`);
+      console.debug(
+        `No draft mod component exists for uuid: ${modComponentId}`,
+      );
     }
 
     if (clearTrace) {
-      void traces.clear(extensionId);
+      void traces.clear(modComponentId);
     }
   } else {
-    for (const extensionPoint of _editorExtensions.values()) {
+    for (const starterBrick of _draftModComponentStarterBrickMap.values()) {
       try {
-        extensionPoint.uninstall({ global: true });
-        _activeExtensionPoints.delete(extensionPoint);
-        sidebar.removeExtensionPoint(extensionPoint.id);
+        starterBrick.uninstall({ global: true });
+        _runningStarterBricks.delete(starterBrick);
+        sidebar.removeExtensionPoint(starterBrick.id);
       } catch (error) {
         reportError(error);
       }
     }
 
-    _editorExtensions.clear();
+    _draftModComponentStarterBrickMap.clear();
 
     if (clearTrace) {
       traces.clearAll();
@@ -335,32 +352,32 @@ function notifyNavigationListeners(): void {
 }
 
 /**
- * Run an extension including unsaved changes from the Page Editor
+ * Register and run a draft mod component from the Page Editor.
  */
-export async function runEditorExtension(
-  extensionId: UUID,
-  extensionPoint: StarterBrick,
+export async function runDraftModComponent(
+  modComponentId: UUID,
+  starterBrick: StarterBrick,
 ): Promise<void> {
-  // Uninstall the installed extension point instance in favor of the draft mod componentPoint
-  if (_persistedExtensions.has(extensionId)) {
-    removePersistedExtension(extensionId);
+  // Uninstall the persisted mod component instance in favor of the draft mod component
+  if (_persistedModComponentStarterBrickMap.has(modComponentId)) {
+    removePersistedModComponent(modComponentId);
   }
 
-  // Uninstall the previous extension point instance in favor of the updated extensionPoint
-  if (_editorExtensions.has(extensionId)) {
+  // Uninstall the previous starter brick instance in favor of the updated starter brick
+  if (_draftModComponentStarterBrickMap.has(modComponentId)) {
     // Pass preserveSidebar to avoid flickering permanent sidebars
-    clearEditorExtension(extensionId, {
+    removeDraftModComponent(modComponentId, {
       clearTrace: false,
       preserveSidebar: true,
     });
   }
 
-  _editorExtensions.set(extensionId, extensionPoint);
+  _draftModComponentStarterBrickMap.set(modComponentId, starterBrick);
 
-  await runExtensionPoint(extensionPoint, {
+  await runStarterBrick(starterBrick, {
     // The Page Editor is the only caller for runDynamic
     reason: RunReason.PAGE_EDITOR,
-    extensionIds: [extensionId],
+    extensionIds: [modComponentId],
     abortSignal: navigationListeners.signal,
   });
 
@@ -368,28 +385,28 @@ export async function runEditorExtension(
 }
 
 /**
- * Uninstall any extension points for mods that are no longer active.
+ * Uninstall any starter bricks for mods that are no longer active.
  *
  * When mods are updated in the background script (i.e. via the Deployment updater), we don't remove
- * extension points from the current tab in order to not interrupt the user's workflow. This function can be
+ * starter bricks from the current tab in order to not interrupt the user's workflow. This function can be
  * used to do that clean up at a more appropriate time, e.g. upon navigation.
  */
-function cleanUpDeactivatedExtensionPoints(
-  activeExtensionMap: Record<RegistryId, HydratedModComponent[]>,
+function uninstallDeactivatedStarterBricks(
+  activeModComponentMap: Record<RegistryId, HydratedModComponent[]>,
 ): void {
-  for (const extensionPoint of _activeExtensionPoints) {
-    const hasActiveExtensions = Object.hasOwn(
-      activeExtensionMap,
-      extensionPoint.id,
+  for (const starterBrick of _runningStarterBricks) {
+    const hasActiveModComponents = Object.hasOwn(
+      activeModComponentMap,
+      starterBrick.id,
     );
 
-    if (hasActiveExtensions) {
+    if (hasActiveModComponents) {
       continue;
     }
 
     try {
-      extensionPoint.uninstall({ global: true });
-      _activeExtensionPoints.delete(extensionPoint);
+      starterBrick.uninstall({ global: true });
+      _runningStarterBricks.delete(starterBrick);
     } catch (error) {
       reportError(error);
     }
@@ -397,75 +414,82 @@ function cleanUpDeactivatedExtensionPoints(
 }
 
 /**
- * Add extensions to their respective extension points.
+ * Add mod components to their respective starter bricks.
  *
  * Includes starter bricks that are not available on the page.
  *
  * NOTE: Excludes draft mod components that are already on the page via the Page Editor.
  */
-async function loadPersistedExtensions(): Promise<StarterBrick[]> {
-  console.debug("lifecycle:loadPersistedExtensions");
+async function loadPersistedModComponents(): Promise<StarterBrick[]> {
+  console.debug("lifecycle:loadPersistedModComponents");
   const options = await logPromiseDuration(
-    "loadPersistedExtensions:loadOptions",
+    "loadPersistedModComponents:loadOptions",
     getModComponentState(),
   );
 
   // Exclude the following:
   // - disabled deployments: the organization admin might have disabled the deployment because via Admin Console
   // - draft mod components: these are already installed on the page via the Page Editor
-  const activeExtensions = options.extensions.filter((extension) => {
-    if (_editorExtensions.has(extension.id)) {
-      const editorExtension = _editorExtensions.get(extension.id);
-      // Include sidebar (i.e. "actionPanel") starterbrick kind as those are replaced
-      // by the sidebar itself, automatically replacing old panels keyed by extension id
+  const activeModComponents = options.extensions.filter((modComponent) => {
+    if (_draftModComponentStarterBrickMap.has(modComponent.id)) {
+      const editorExtension = _draftModComponentStarterBrickMap.get(
+        modComponent.id,
+      );
+      // Include sidebar (i.e. "actionPanel") starter brick kind as those are replaced
+      // by the sidebar itself, automatically replacing old panels keyed by mod component id
       return editorExtension?.kind === "actionPanel";
     }
 
     // Exclude disabled deployments
-    return isDeploymentActive(extension);
+    return isDeploymentActive(modComponent);
   });
 
-  const resolvedActiveExtensions = await logPromiseDuration(
-    "loadPersistedExtensions:resolveDefinitions",
+  const hydratedActiveModComponents = await logPromiseDuration(
+    "loadPersistedModComponents:hydrateDefinitions",
     Promise.all(
-      activeExtensions.map(async (x) => hydrateModComponentInnerDefinitions(x)),
+      activeModComponents.map(async (x) =>
+        hydrateModComponentInnerDefinitions(x),
+      ),
     ),
   );
 
-  const activeExtensionMap = groupBy(
-    resolvedActiveExtensions,
-    (extension) => extension.extensionPointId,
+  const activeModComponentMap = groupBy(
+    hydratedActiveModComponents,
+    (x) => x.extensionPointId,
   );
 
-  cleanUpDeactivatedExtensionPoints(activeExtensionMap);
+  uninstallDeactivatedStarterBricks(activeModComponentMap);
 
-  _persistedExtensions.clear();
+  _persistedModComponentStarterBrickMap.clear();
 
   const added = compact(
     await Promise.all(
-      Object.entries(activeExtensionMap).map(
-        async ([extensionPointId, extensions]: [
+      Object.entries(activeModComponentMap).map(
+        async ([starterBrickId, modComponents]: [
           RegistryId,
           HydratedModComponent[],
         ]) => {
           try {
-            const extensionPoint =
-              await extensionPointRegistry.lookup(extensionPointId);
+            const starterBrick =
+              await starterBrickRegistry.lookup(starterBrickId);
 
-            // It's tempting to call extensionPoint.isAvailable here and skip if it's not available.
-            // However, that would cause the extension point to be unavailable for the entire session
+            // It's tempting to call starterBrick.isAvailable here and skip if it's not available.
+            // However, that would cause the starter brick to be unavailable for the entire frame session
             // even if the SPA redirects to a page that matches.
 
-            extensionPoint.synchronizeModComponents(extensions);
+            starterBrick.synchronizeModComponents(modComponents);
 
-            // Mark the extensions as installed
-            for (const extension of extensions) {
-              _persistedExtensions.set(extension.id, extensionPoint);
+            // Mark the mod components as registered
+            for (const modComponent of modComponents) {
+              _persistedModComponentStarterBrickMap.set(
+                modComponent.id,
+                starterBrick,
+              );
             }
 
-            return extensionPoint;
+            return starterBrick;
           } catch (error) {
-            console.warn(`Error adding extension point: ${extensionPointId}`, {
+            console.warn(`Error adding starter brick: ${starterBrickId}`, {
               error,
             });
           }
@@ -480,43 +504,43 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
 }
 
 /**
- * Add the extensions to their respective extension points, and return the extension points with any extensions.
+ * Add the mod components to their respective starter bricks. Returns the starter bricks with any mod components.
  *
- * Syncs the extensions, but does not call StarterBrick.install or StarterBrick.run.
+ * Syncs the mod components, but does not call StarterBrick.install or StarterBrick.run.
  *
- * @see runExtensionPoint
+ * @see runStarterBrick
  */
-async function loadPersistedExtensionsOnce(): Promise<StarterBrick[]> {
+async function loadPersistedModComponentsOnce(): Promise<StarterBrick[]> {
   // Enforce fresh view for _reloadOnNextNavigate
-  if (_initialLoad || getReloadOnNextNavigate()) {
-    _initialLoad = false;
+  if (_initialFrameLoad || getReloadOnNextNavigate()) {
+    _initialFrameLoad = false;
     setReloadOnNextNavigate(false);
-    // XXX: could also include _editorExtensions to handle case where user activates a mod while the page editor
-    // is open. However, that would require handling corner case where the user reactivating a mod that has dirty
-    // changes. It's not worth the complexity of handling the corner case.
+    // XXX: could also include _draftModComponentStarterBrickMap to handle case where user activates a mod while
+    // the page editor is open. However, that would require handling corner case where the user reactivating a
+    // mod that has dirty changes. It's not worth the complexity of handling the corner case.
 
-    pendingLoadPromise = logPromiseDuration(
-      "loadPersistedExtensionsOnce:loadPersistedExtensions",
-      loadPersistedExtensions(),
+    pendingFrameLoadPromise = logPromiseDuration(
+      "loadPersistedModComponentsOnce:loadPersistedModComponents",
+      loadPersistedModComponents(),
     );
 
     try {
-      return await pendingLoadPromise;
+      return await pendingFrameLoadPromise;
     } finally {
       // MemoizedUntilSettled behavior
-      pendingLoadPromise = null;
+      pendingFrameLoadPromise = null;
     }
   }
 
-  if (pendingLoadPromise != null) {
-    return pendingLoadPromise;
+  if (pendingFrameLoadPromise != null) {
+    return pendingFrameLoadPromise;
   }
 
-  // NOTE: don't want _activeExtensionPoints, because we also want extension points that weren't active for the
-  // previous page/navigation. (Because they may now be active)
+  // NOTE: don't want _runningStarterBricks, because we also want starter bricks that weren't installed/running for the
+  // previous frame navigation. (Because they may now be installed/running)
   return uniq([
-    ..._persistedExtensions.values(),
-    ..._editorExtensions.values(),
+    ..._persistedModComponentStarterBrickMap.values(),
+    ..._draftModComponentStarterBrickMap.values(),
   ]);
 }
 
@@ -554,7 +578,7 @@ function decideRunReason({ force }: { force?: boolean }): RunReason {
     return RunReason.MANUAL;
   }
 
-  if (_initialLoad) {
+  if (_initialFrameLoad) {
     return RunReason.INITIAL_LOAD;
   }
 
@@ -584,8 +608,8 @@ export async function handleNavigate({
   updateNavigationId();
   notifyNavigationListeners();
 
-  const extensionPoints = await loadPersistedExtensionsOnce();
-  if (extensionPoints.length > 0) {
+  const starterBricks = await loadPersistedModComponentsOnce();
+  if (starterBricks.length > 0) {
     // Wait for document to load, to ensure any selector-based availability rules are ready to be applied.
     await logPromiseDuration(
       "handleNavigate:waitDocumentLoad",
@@ -594,27 +618,27 @@ export async function handleNavigate({
 
     // Safe to use Promise.all because the inner method can't throw
     await logPromiseDuration(
-      "handleNavigate:runExtensionPoints",
+      "handleNavigate:runStarterBricks",
       Promise.all(
-        extensionPoints.map(async (extensionPoint) => {
-          // Don't await each extension point since the extension point may never appear. For example, an
-          // extension point that runs on the contact information modal on LinkedIn
-          const runPromise = runExtensionPoint(extensionPoint, {
+        starterBricks.map(async (starterBrick) => {
+          // Don't await each starter brick because the starter brick may never appear. For example, an
+          // starter brick that runs on the contact information modal on LinkedIn
+          const runPromise = runStarterBrick(starterBrick, {
             reason: runReason,
             abortSignal: navigationListeners.signal,
           }).catch((error) => {
-            console.error("Error installing/running: %s", extensionPoint.id, {
+            console.error("Error installing/running: %s", starterBrick.id, {
               error,
             });
           });
 
-          if (extensionPoint.isSyncInstall) {
+          if (starterBrick.isSyncInstall) {
             await runPromise;
           }
         }),
       ),
     );
-    // After all extension points have been installed, notify the sidebar that it is complete.
+    // After all starter bricks have been installed, notify the sidebar that it is complete.
     if (!isLoadedInIframe()) {
       void notifyNavigationComplete();
     }
@@ -624,16 +648,16 @@ export async function handleNavigate({
 /**
  * Mark that mods should be reloaded on next navigation, e.g., because a mod was updated/activated.
  */
-export async function queueReactivateTab(): Promise<void> {
-  console.debug("contentScript will reload extensions on next navigation");
+export async function queueReloadFrame(): Promise<void> {
+  console.debug("contentScript will reload mod components on next navigation");
   setReloadOnNextNavigate(true);
 }
 
 /**
- * Reload and re-activate all mods on the current page.
+ * Reload persisted mods from storage, and re-install/run all mods on the current frame.
  */
-export async function reactivateTab(): Promise<void> {
-  await loadPersistedExtensions();
+export async function reloadFrame(): Promise<void> {
+  await loadPersistedModComponents();
   // Force navigate event even though the href hasn't changed
   await handleNavigate({ force: true });
 }
@@ -692,18 +716,18 @@ export async function initNavigation() {
   );
 
   onContextInvalidated.addListener(() => {
-    for (const [extensionId, extensionPoint] of [
-      ..._persistedExtensions,
-      ..._editorExtensions,
+    for (const [modComponentId, starterBrick] of [
+      ..._persistedModComponentStarterBrickMap,
+      ..._draftModComponentStarterBrickMap,
     ]) {
-      // Exclude context menu extensions because they try to contact the (non-connectable) background page.
+      // Exclude context menu mod components because they try to contact the (non-connectable) background page.
       // They're already removed by the browser anyway.
-      if (!(extensionPoint instanceof ContextMenuStarterBrickABC)) {
-        extensionPoint.removeModComponent(extensionId);
+      if (!(starterBrick instanceof ContextMenuStarterBrickABC)) {
+        starterBrick.removeModComponent(modComponentId);
       }
     }
 
-    _persistedExtensions.clear();
-    _editorExtensions.clear();
+    _persistedModComponentStarterBrickMap.clear();
+    _draftModComponentStarterBrickMap.clear();
   });
 }

@@ -62,16 +62,16 @@ import { runBrick } from "@/contentScript/executor";
 import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadlessPipeline";
 import { runRendererBrick } from "@/contentScript/pageEditor/runRendererBrick";
 import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline";
-import { runStarterBrickReader } from "@/contentScript/pageEditor/draft/runStarterBrickReader";
+import { runStarterBrickReaderPreview } from "@/contentScript/pageEditor/draft/runStarterBrickReaderPreview";
 import {
   activatePrerenderedTab,
-  ensureInstalled,
-  getActiveExtensionPoints,
-  queueReactivateTab,
-  reactivateTab,
-  removePersistedExtension,
+  ensureStarterBricksInstalled,
+  getRunningStarterBricks,
+  queueReloadFrame,
+  reloadFrame,
+  removePersistedModComponent,
 } from "@/contentScript/lifecycle";
-import { clearDraftModComponents } from "@/contentScript/pageEditor/draft/clearDraftModComponents";
+import { removeDraftModComponents } from "@/contentScript/pageEditor/draft/removeDraftModComponents";
 import { updateDraftModComponent } from "@/contentScript/pageEditor/draft/updateDraftModComponent";
 import { resetTab } from "@/contentScript/pageEditor/resetTab";
 
@@ -117,15 +117,15 @@ declare global {
     RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
     RUN_RENDERER_BRICK: typeof runRendererBrick;
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
-    RUN_EXTENSION_POINT_READER: typeof runStarterBrickReader;
-    QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
-    REACTIVATE_TAB: typeof reactivateTab;
-    REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
+    RUN_STARTER_BRICK_READER_PREVIEW: typeof runStarterBrickReaderPreview;
+    QUEUE_REACTIVATE_TAB: typeof queueReloadFrame;
+    REACTIVATE_TAB: typeof reloadFrame;
+    REMOVE_PERSISTED_MOD_COMPONENT: typeof removePersistedModComponent;
     ACTIVATE_PRERENDERED_TAB: typeof activatePrerenderedTab;
-    INSTALLED_EXTENSION_POINTS: typeof getActiveExtensionPoints;
-    ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
+    GET_RUNNING_STARTER_BRICKS: typeof getRunningStarterBricks;
+    ENSURE_STARTER_BRICKS_INSTALLED: typeof ensureStarterBricksInstalled;
     RESET_TAB: typeof resetTab;
-    CLEAR_DRAFT_MOD_COMPONENTS: typeof clearDraftModComponents;
+    REMOVE_DRAFT_MOD_COMPONENTS: typeof removeDraftModComponents;
     UPDATE_DRAFT_MOD_COMPONENT: typeof updateDraftModComponent;
   }
 }
@@ -171,15 +171,15 @@ export default function registerMessenger(): void {
     RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
     RUN_RENDERER_BRICK: runRendererBrick,
     RUN_RENDERER_PIPELINE: runRendererPipeline,
-    RUN_EXTENSION_POINT_READER: runStarterBrickReader,
-    QUEUE_REACTIVATE_TAB: queueReactivateTab,
-    REACTIVATE_TAB: reactivateTab,
-    REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
+    RUN_STARTER_BRICK_READER_PREVIEW: runStarterBrickReaderPreview,
+    QUEUE_REACTIVATE_TAB: queueReloadFrame,
+    REACTIVATE_TAB: reloadFrame,
+    REMOVE_PERSISTED_MOD_COMPONENT: removePersistedModComponent,
     ACTIVATE_PRERENDERED_TAB: activatePrerenderedTab,
-    INSTALLED_EXTENSION_POINTS: getActiveExtensionPoints,
-    ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
+    GET_RUNNING_STARTER_BRICKS: getRunningStarterBricks,
+    ENSURE_STARTER_BRICKS_INSTALLED: ensureStarterBricksInstalled,
     RESET_TAB: resetTab,
-    CLEAR_DRAFT_MOD_COMPONENTS: clearDraftModComponents,
+    REMOVE_DRAFT_MOD_COMPONENTS: removeDraftModComponents,
     UPDATE_DRAFT_MOD_COMPONENT: updateDraftModComponent,
   });
 }

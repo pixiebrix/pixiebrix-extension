@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { reactivateTab } from "@/contentScript/lifecycle";
-import { clearDraftModComponents } from "@/contentScript/pageEditor/draft/clearDraftModComponents";
+import { reloadFrame } from "@/contentScript/lifecycle";
+import { removeDraftModComponents } from "@/contentScript/pageEditor/draft/removeDraftModComponents";
 import { stopInspectingNativeHandler } from "@/contentScript/pageEditor/elementPicker";
 
 export async function resetTab(): Promise<void> {
   stopInspectingNativeHandler();
-  await clearDraftModComponents({});
-  await reactivateTab();
+  await removeDraftModComponents({});
+  await reloadFrame();
 }

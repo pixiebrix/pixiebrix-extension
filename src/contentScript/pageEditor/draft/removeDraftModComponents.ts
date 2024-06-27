@@ -15,21 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { clearEditorExtension } from "@/contentScript/lifecycle";
+import { removeDraftModComponent } from "@/contentScript/lifecycle";
 import { type UUID } from "@/types/stringTypes";
 import { expectContext } from "@/utils/expectContext";
 
 /**
- * A version of `clearEditorExtension` that takes an object instead of a positional UUID argument.
- * @param uuid the uuid of the mod component, or null to clear all page editor mod components
- * @see clearEditorExtension
+ * A version of `removeDraftModComponent` that takes an object instead of a positional UUID argument.
+ * @param uuid the uuid of the mod component, or null/undefined to clear all page editor mod components
+ * @see removeDraftModComponent
  */
-export async function clearDraftModComponents({
+// XXX: why does this method need to exist?
+export async function removeDraftModComponents({
   uuid,
 }: {
   uuid?: UUID;
 }): Promise<void> {
   expectContext("contentScript");
 
-  clearEditorExtension(uuid);
+  removeDraftModComponent(uuid);
 }

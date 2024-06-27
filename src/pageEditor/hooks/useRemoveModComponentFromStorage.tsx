@@ -28,7 +28,7 @@ import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
-import { clearDraftModComponents } from "@/contentScript/messenger/api";
+import { removeDraftModComponents } from "@/contentScript/messenger/api";
 import { removeModComponentsFromAllTabs } from "@/store/uninstallUtils";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 
@@ -109,7 +109,7 @@ export function useRemoveModComponentFromStorage(): (
 
         // Remove from the host page
         try {
-          clearDraftModComponents(allFramesInInspectedTab, {
+          removeDraftModComponents(allFramesInInspectedTab, {
             uuid: modComponentId,
           });
         } catch (error) {

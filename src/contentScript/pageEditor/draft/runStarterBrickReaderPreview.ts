@@ -23,7 +23,10 @@ import { expectContext } from "@/utils/expectContext";
 import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-export async function runStarterBrickReader(
+/**
+ * Returns a preview of the output of the reader for a DraftModComponent.
+ */
+export async function runStarterBrickReaderPreview(
   { extensionPointConfig }: Pick<DraftModComponent, "extensionPointConfig">,
   rootSelector: Nullishable<string>,
 ): Promise<JsonObject> {

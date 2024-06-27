@@ -39,7 +39,7 @@ import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import {
-  ensureExtensionPointsInstalled,
+  ensureStarterBricksInstalled,
   getReservedSidebarEntries,
 } from "@/contentScript/messenger/api";
 import {
@@ -137,7 +137,7 @@ const ConnectedSidebar: React.VFC = () => {
     const topFrame = await getConnectedTarget();
 
     // Ensure persistent sidebar extension points have been installed to have reserve their panels for the sidebar
-    await ensureExtensionPointsInstalled(topFrame);
+    await ensureStarterBricksInstalled(topFrame);
 
     const { panels, temporaryPanels, forms, modActivationPanel } =
       await getReservedSidebarEntries(topFrame);

@@ -16,8 +16,8 @@
  */
 
 import {
-  clearEditorExtension,
-  runEditorExtension,
+  removeDraftModComponent,
+  runDraftModComponent,
 } from "@/contentScript/lifecycle";
 import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
@@ -66,14 +66,14 @@ export async function updateDraftModComponent({
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated draft mod component
   // will automatically replace the old panel because the panels are keyed by extension id
   if (starterBrick.kind !== "actionPanel") {
-    clearEditorExtension(extensionConfig.id, { clearTrace: false });
+    removeDraftModComponent(extensionConfig.id, { clearTrace: false });
   }
 
   // In practice, should be a no-op because the Page Editor handles the extensionPoint
   const resolved = await hydrateModComponentInnerDefinitions(extensionConfig);
 
   starterBrick.registerModComponent(resolved);
-  await runEditorExtension(extensionConfig.id, starterBrick);
+  await runDraftModComponent(extensionConfig.id, starterBrick);
 
   if (starterBrick.kind === "actionPanel") {
     await showSidebar();

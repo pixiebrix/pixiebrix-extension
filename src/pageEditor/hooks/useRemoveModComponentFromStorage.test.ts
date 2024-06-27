@@ -20,7 +20,7 @@ import { removeModComponentsFromAllTabs } from "@/store/uninstallUtils";
 import { useRemoveModComponentFromStorage } from "./useRemoveModComponentFromStorage";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
-import { clearDraftModComponents } from "@/contentScript/messenger/api";
+import { removeDraftModComponents } from "@/contentScript/messenger/api";
 
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
@@ -52,7 +52,7 @@ test("useRemoveModComponentFromStorage", async () => {
   expect(dispatch).toHaveBeenCalledWith(
     extensionsActions.removeModComponent({ modComponentId }),
   );
-  expect(clearDraftModComponents).toHaveBeenCalledWith(expect.any(Object), {
+  expect(removeDraftModComponents).toHaveBeenCalledWith(expect.any(Object), {
     uuid: modComponentId,
   });
   expect(removeModComponentsFromAllTabs).toHaveBeenCalledWith([modComponentId]);
