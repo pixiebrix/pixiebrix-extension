@@ -30,7 +30,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
 import {
   updateDraftModComponent,
-  removePersistedModComponent,
+  removeActivatedModComponent,
 } from "@/contentScript/messenger/api";
 import { selectActiveModComponentFormState } from "./slices/editorSelectors";
 import { formStateToDraftModComponent } from "./starterBricks/adapter";
@@ -63,7 +63,7 @@ const cleanUpStarterBrickForElement = (
     return;
   }
 
-  removePersistedModComponent(
+  removeActivatedModComponent(
     allFramesInInspectedTab,
     modComponentFormState.uuid,
   );

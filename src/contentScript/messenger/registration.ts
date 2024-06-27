@@ -69,7 +69,7 @@ import {
   getRunningStarterBricks,
   queueReloadFrameMods,
   reloadFrameMods,
-  removePersistedModComponent,
+  removeActivatedModComponent,
 } from "@/contentScript/lifecycle";
 import { removeDraftModComponents } from "@/contentScript/pageEditor/draft/removeDraftModComponents";
 import { updateDraftModComponent } from "@/contentScript/pageEditor/draft/updateDraftModComponent";
@@ -120,7 +120,7 @@ declare global {
     RUN_STARTER_BRICK_READER_PREVIEW: typeof runStarterBrickReaderPreview;
     QUEUE_RELOAD_FRAME_MODS: typeof queueReloadFrameMods;
     RELOAD_FRAME_MODS: typeof reloadFrameMods;
-    REMOVE_PERSISTED_MOD_COMPONENT: typeof removePersistedModComponent;
+    REMOVE_ACTIVATED_MOD_COMPONENT: typeof removeActivatedModComponent;
     ACTIVATE_PRERENDERED_TAB: typeof activatePrerenderedTab;
     GET_RUNNING_STARTER_BRICKS: typeof getRunningStarterBricks;
     ENSURE_STARTER_BRICKS_INSTALLED: typeof ensureStarterBricksInstalled;
@@ -174,7 +174,7 @@ export default function registerMessenger(): void {
     RUN_STARTER_BRICK_READER_PREVIEW: runStarterBrickReaderPreview,
     QUEUE_RELOAD_FRAME_MODS: queueReloadFrameMods,
     RELOAD_FRAME_MODS: reloadFrameMods,
-    REMOVE_PERSISTED_MOD_COMPONENT: removePersistedModComponent,
+    REMOVE_ACTIVATED_MOD_COMPONENT: removeActivatedModComponent,
     ACTIVATE_PRERENDERED_TAB: activatePrerenderedTab,
     GET_RUNNING_STARTER_BRICKS: getRunningStarterBricks,
     ENSURE_STARTER_BRICKS_INSTALLED: ensureStarterBricksInstalled,

@@ -99,8 +99,8 @@ export const ensureStarterBricksInstalled = getMethod(
   "ENSURE_STARTER_BRICKS_INSTALLED",
 );
 export const getRunningStarterBricks = getMethod("GET_RUNNING_STARTER_BRICKS");
-export const removePersistedModComponent = getNotifier(
-  "REMOVE_PERSISTED_MOD_COMPONENT",
+export const removeActivatedModComponent = getNotifier(
+  "REMOVE_ACTIVATED_MOD_COMPONENT",
 );
 // Notifies the content script that it can activate mods for a prerendered tab (no-op if the tab is already active)
 export const activatePrerenderedTab = getNotifier("ACTIVATE_PRERENDERED_TAB");

@@ -55,32 +55,32 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * True if handling the initial frame load.
- * @see loadPersistedModComponentsOnce
+ * @see loadActivatedModComponentsOnce
  */
 let _initialFrameLoad = true;
 
 /**
  * Promise to memoize loading starter bricks and mod components from storage
- * @see loadPersistedModComponentsOnce
+ * @see loadActivatedModComponentsOnce
  */
 let pendingFrameLoadPromise: Promise<StarterBrick[]> | null;
 
 /**
- * Map from persisted mod component IDs to their starter bricks.
+ * Map from activated mod component IDs to their starter bricks.
  *
  * Mutually exclusive with _draftModComponentStarterBrickMap.
  *
  * @see _draftModComponentStarterBrickMap
  */
 // eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
-const _persistedModComponentStarterBrickMap = new Map<UUID, StarterBrick>();
+const _activatedModComponentStarterBrickMap = new Map<UUID, StarterBrick>();
 
 /**
  * Map from draft mod component IDs currently being edited in the Page Editor to their starter bricks.
  *
- * Mutually exclusive with _persistedModComponentStarterBrickMap.
+ * Mutually exclusive with _activatedModComponentStarterBrickMap.
  *
- * @see _persistedModComponentStarterBrickMap
+ * @see _activatedModComponentStarterBrickMap
  */
 // eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const _draftModComponentStarterBrickMap = new Map<UUID, StarterBrick>();
@@ -207,7 +207,7 @@ async function runStarterBrick(
  * @see StarterBrick.isSyncInstall
  */
 export async function ensureStarterBricksInstalled(): Promise<void> {
-  const starterBricks = await loadPersistedModComponentsOnce();
+  const starterBricks = await loadActivatedModComponentsOnce();
   const syncStarterBricks = starterBricks.filter((x) => x.isSyncInstall);
   // Log to help debug race conditions
   console.debug("lifecycle:ensureInstalled", {
@@ -223,19 +223,19 @@ export async function ensureStarterBricksInstalled(): Promise<void> {
  * Warn if any lifecycle state assumptions are violated.
  */
 function checkLifecycleInvariants(): void {
-  const persistedIds = [..._persistedModComponentStarterBrickMap.keys()];
+  const activatedIds = [..._activatedModComponentStarterBrickMap.keys()];
   const draftIds = [..._draftModComponentStarterBrickMap.keys()];
 
-  if (intersection(persistedIds, draftIds).length > 0) {
-    console.warn("Persisted and draft ids are not mutually exclusive", {
-      persistedIds,
+  if (intersection(activatedIds, draftIds).length > 0) {
+    console.warn("Activated and draft ids are not mutually exclusive", {
+      activatedIds,
       draftIds,
     });
   }
 }
 
 /**
- * Returns all the starter bricks currently running on the page. Includes both persisted and draft mod components.
+ * Returns all the starter bricks currently running on the page. Includes both activated and draft mod components.
  *
  * NOTE: the meaning of "run" varies by starter brick. For example, running a button starter brick means adding the
  * button to the page, i.e., as opposed to when the button is clicked.
@@ -245,14 +245,14 @@ export function getRunningStarterBricks(): StarterBrick[] {
 }
 
 /**
- * Test helper to get internal persisted mod component state
+ * Test helper to get internal activated mod component state
  * @knip used in tests, see lifecycle.test.ts
  */
-export function TEST_getPersistedModComponentStarterBrickMap(): Map<
+export function TEST_getActivatedModComponentStarterBrickMap(): Map<
   UUID,
   StarterBrick
 > {
-  return _persistedModComponentStarterBrickMap;
+  return _activatedModComponentStarterBrickMap;
 }
 
 /**
@@ -267,24 +267,26 @@ export function TEST_getDraftModComponentStarterBrickMap(): Map<
 }
 
 /**
- * Remove a mod component on the page if a persisted mod component (i.e. in extensionsSlice)
+ * Remove a mod component on the page if a activated mod component (i.e. in extensionsSlice).
+ *
+ * @see removeDraftModComponents
  */
-export function removePersistedModComponent(modComponentId: UUID): void {
+export function removeActivatedModComponent(modComponentId: UUID): void {
   // Leaving the starter brick in _runningStarterBricks. Could consider removing if this was the last mod component
   const starterBrick =
-    _persistedModComponentStarterBrickMap.get(modComponentId);
+    _activatedModComponentStarterBrickMap.get(modComponentId);
   starterBrick?.removeModComponent(modComponentId);
-  _persistedModComponentStarterBrickMap.delete(modComponentId);
+  _activatedModComponentStarterBrickMap.delete(modComponentId);
 }
 
 /**
  * Remove draft mod components(s) from the frame.
  *
- * NOTE: if the draft mod component was taking the place of a persisted mod component, call `reloadFrame` or a similar
+ * NOTE: if the draft mod component was taking the place of a activated mod component, call `reloadFrame` or a similar
  * method for the mod component to be reloaded.
  *
  * NOTE: this works by removing all mod components attached to the starter brick. Call `reloadFrame` or a similar
- * method to re-install/run the persisted mod components.
+ * method to re-install/run the activated mod components.
  *
  * @param modComponentId an optional draft mod component id, or undefined to remove all draft mod components
  * @param options options to control clear behavior
@@ -359,9 +361,9 @@ export async function runDraftModComponent(
   modComponentId: UUID,
   starterBrick: StarterBrick,
 ): Promise<void> {
-  // Uninstall the persisted mod component instance in favor of the draft mod component
-  if (_persistedModComponentStarterBrickMap.has(modComponentId)) {
-    removePersistedModComponent(modComponentId);
+  // Uninstall the activated mod component instance in favor of the draft mod component
+  if (_activatedModComponentStarterBrickMap.has(modComponentId)) {
+    removeActivatedModComponent(modComponentId);
   }
 
   // Uninstall the previous starter brick instance in favor of the updated starter brick
@@ -421,10 +423,10 @@ function uninstallDeactivatedStarterBricks(
  *
  * NOTE: Excludes draft mod components that are already on the page via the Page Editor.
  */
-async function loadPersistedModComponents(): Promise<StarterBrick[]> {
-  console.debug("lifecycle:loadPersistedModComponents");
+async function loadActivatedModComponents(): Promise<StarterBrick[]> {
+  console.debug("lifecycle:loadActivatedModComponents");
   const options = await logPromiseDuration(
-    "loadPersistedModComponents:loadOptions",
+    "loadActivatedModComponents:loadOptions",
     getModComponentState(),
   );
 
@@ -446,7 +448,7 @@ async function loadPersistedModComponents(): Promise<StarterBrick[]> {
   });
 
   const hydratedActiveModComponents = await logPromiseDuration(
-    "loadPersistedModComponents:hydrateDefinitions",
+    "loadActivatedModComponents:hydrateDefinitions",
     Promise.all(
       activeModComponents.map(async (x) =>
         hydrateModComponentInnerDefinitions(x),
@@ -461,7 +463,7 @@ async function loadPersistedModComponents(): Promise<StarterBrick[]> {
 
   uninstallDeactivatedStarterBricks(activeModComponentMap);
 
-  _persistedModComponentStarterBrickMap.clear();
+  _activatedModComponentStarterBrickMap.clear();
 
   const added = compact(
     await Promise.all(
@@ -482,7 +484,7 @@ async function loadPersistedModComponents(): Promise<StarterBrick[]> {
 
             // Mark the mod components as registered
             for (const modComponent of modComponents) {
-              _persistedModComponentStarterBrickMap.set(
+              _activatedModComponentStarterBrickMap.set(
                 modComponent.id,
                 starterBrick,
               );
@@ -511,7 +513,7 @@ async function loadPersistedModComponents(): Promise<StarterBrick[]> {
  *
  * @see runStarterBrick
  */
-async function loadPersistedModComponentsOnce(): Promise<StarterBrick[]> {
+async function loadActivatedModComponentsOnce(): Promise<StarterBrick[]> {
   // Enforce fresh view for _reloadOnNextNavigate
   if (_initialFrameLoad || getReloadOnNextNavigate()) {
     _initialFrameLoad = false;
@@ -521,8 +523,8 @@ async function loadPersistedModComponentsOnce(): Promise<StarterBrick[]> {
     // mod that has dirty changes. It's not worth the complexity of handling the corner case.
 
     pendingFrameLoadPromise = logPromiseDuration(
-      "loadPersistedModComponentsOnce:loadPersistedModComponents",
-      loadPersistedModComponents(),
+      "loadActivatedModComponentsOnce:loadActivatedModComponents",
+      loadActivatedModComponents(),
     );
 
     try {
@@ -540,7 +542,7 @@ async function loadPersistedModComponentsOnce(): Promise<StarterBrick[]> {
   // NOTE: don't want _runningStarterBricks, because we also want starter bricks that weren't installed/running for the
   // previous frame navigation. (Because they may now be installed/running)
   return uniq([
-    ..._persistedModComponentStarterBrickMap.values(),
+    ..._activatedModComponentStarterBrickMap.values(),
     ..._draftModComponentStarterBrickMap.values(),
   ]);
 }
@@ -609,7 +611,7 @@ export async function handleNavigate({
   updateNavigationId();
   notifyNavigationListeners();
 
-  const starterBricks = await loadPersistedModComponentsOnce();
+  const starterBricks = await loadActivatedModComponentsOnce();
   if (starterBricks.length > 0) {
     // Wait for document to load, to ensure any selector-based availability rules are ready to be applied.
     await logPromiseDuration(
@@ -655,10 +657,10 @@ export async function queueReloadFrameMods(): Promise<void> {
 }
 
 /**
- * Reload persisted mods from storage, and re-install/run all mods on the current frame.
+ * Reload activated mods from storage, and re-install/run all mods on the current frame.
  */
 export async function reloadFrameMods(): Promise<void> {
-  await loadPersistedModComponents();
+  await loadActivatedModComponents();
   // Force navigate event even though the href hasn't changed
   await handleNavigate({ force: true });
 }
@@ -718,7 +720,7 @@ export async function initNavigation() {
 
   onContextInvalidated.addListener(() => {
     for (const [modComponentId, starterBrick] of [
-      ..._persistedModComponentStarterBrickMap,
+      ..._activatedModComponentStarterBrickMap,
       ..._draftModComponentStarterBrickMap,
     ]) {
       // Exclude context menu mod components because they try to contact the (non-connectable) background page.
@@ -728,7 +730,7 @@ export async function initNavigation() {
       }
     }
 
-    _persistedModComponentStarterBrickMap.clear();
+    _activatedModComponentStarterBrickMap.clear();
     _draftModComponentStarterBrickMap.clear();
   });
 }

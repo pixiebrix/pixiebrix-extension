@@ -16,7 +16,7 @@
  */
 
 import {
-  removePersistedModComponent,
+  removeActivatedModComponent,
   removeSidebars,
   removeDraftModComponents,
 } from "@/contentScript/messenger/api";
@@ -33,7 +33,7 @@ export async function removeExtensionForEveryTab(
 
   await forEachTab(async ({ tabId }) => {
     const allFrames = { tabId, frameId: "allFrames" } as const;
-    removePersistedModComponent(allFrames, extensionId);
+    removeActivatedModComponent(allFrames, extensionId);
     removeDraftModComponents(allFrames, { uuid: extensionId });
     await removeSidebars({ tabId }, [extensionId]);
   });

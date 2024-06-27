@@ -169,7 +169,7 @@ describe("lifecycle", () => {
 
     expect(lifecycleModule.getRunningStarterBricks()).toEqual([starterBrick]);
     expect(
-      lifecycleModule.TEST_getPersistedModComponentStarterBrickMap().size,
+      lifecycleModule.TEST_getActivatedModComponentStarterBrickMap().size,
     ).toBe(0);
     expect(
       lifecycleModule.TEST_getDraftModComponentStarterBrickMap().size,
@@ -200,7 +200,7 @@ describe("lifecycle", () => {
 
     // Ensure the persisted extension is loaded
     expect(
-      lifecycleModule.TEST_getPersistedModComponentStarterBrickMap().size,
+      lifecycleModule.TEST_getActivatedModComponentStarterBrickMap().size,
     ).toBe(1);
     expect(lifecycleModule.getRunningStarterBricks()).toEqual([starterBrick]);
 
@@ -214,7 +214,7 @@ describe("lifecycle", () => {
     expect(lifecycleModule.getRunningStarterBricks()).toEqual([starterBrick]);
 
     expect(
-      lifecycleModule.TEST_getPersistedModComponentStarterBrickMap().size,
+      lifecycleModule.TEST_getActivatedModComponentStarterBrickMap().size,
     ).toBe(0);
     expect(
       lifecycleModule.TEST_getDraftModComponentStarterBrickMap().size,
@@ -225,7 +225,7 @@ describe("lifecycle", () => {
 
     // Persisted mod component is not re-added on force-add
     expect(
-      lifecycleModule.TEST_getPersistedModComponentStarterBrickMap().size,
+      lifecycleModule.TEST_getActivatedModComponentStarterBrickMap().size,
     ).toBe(0);
     expect(
       lifecycleModule.TEST_getDraftModComponentStarterBrickMap().size,
@@ -282,7 +282,7 @@ describe("lifecycle", () => {
 
     // New starter brick is installed, old starter brick is removed
     expect(
-      lifecycleModule.TEST_getPersistedModComponentStarterBrickMap().size,
+      lifecycleModule.TEST_getActivatedModComponentStarterBrickMap().size,
     ).toBe(1);
     expect(lifecycleModule.getRunningStarterBricks()).toEqual([
       updatedStarterBrick,
