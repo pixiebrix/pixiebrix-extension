@@ -25,7 +25,7 @@ import notify from "@/utils/notify";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 type ExtensionSaver = {
-  save: (element: ModComponentFormState) => Promise<void>;
+  save: (modComponentFormState: ModComponentFormState) => Promise<void>;
   isSaving: boolean;
 };
 
