@@ -103,6 +103,10 @@ export async function getPartnerAuthData(): Promise<
     isError = true;
   }
 
+  if (storageValue == null) {
+    return undefined;
+  }
+
   // Backwards compatibility with old, looser type
   if (isError || !storageValue?.authId || !storageValue?.token) {
     await clearPartnerAuthData();
