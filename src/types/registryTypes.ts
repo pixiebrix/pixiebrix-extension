@@ -46,7 +46,7 @@ export const DefinitionKinds = {
 } as const;
 
 /**
- * The type of definition in the external package registry.
+ * The kind of definition in the external package registry.
  */
 export type DefinitionKind = ValueOf<typeof DefinitionKinds>;
 
