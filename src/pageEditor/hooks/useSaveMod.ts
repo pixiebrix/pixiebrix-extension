@@ -46,7 +46,7 @@ import type {
 } from "@/types/modDefinitionTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { reactivateEveryTab } from "@/contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import type { ModComponentBase } from "@/types/modComponentTypes";
 import { pick } from "lodash";
 
@@ -231,7 +231,7 @@ function useSaveMod(): ModSaver {
       const success = await save(modId);
       if (success) {
         notify.success("Saved mod");
-        reactivateEveryTab();
+        reloadModsEveryTab();
       }
     } catch (error) {
       notify.error({

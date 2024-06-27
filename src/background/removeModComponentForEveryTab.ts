@@ -16,9 +16,9 @@
  */
 
 import {
-  removeInstalledExtension,
+  removeActivatedModComponent,
   removeSidebars,
-  clearDraftModComponents,
+  removeDraftModComponents,
 } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/utils/extensionUtils";
 import { type UUID } from "@/types/stringTypes";
@@ -26,18 +26,18 @@ import { uninstallContextMenu } from "./contextMenus/uninstallContextMenu";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { clearLog } from "@/telemetry/logging";
 
-export async function removeExtensionForEveryTab(
-  extensionId: UUID,
+export async function removeModComponentForEveryTab(
+  modComponentId: UUID,
 ): Promise<void> {
-  console.debug("Remove extension for all tabs", { extensionId });
+  console.debug("Remove mod component for all tabs", { modComponentId });
 
   await forEachTab(async ({ tabId }) => {
     const allFrames = { tabId, frameId: "allFrames" } as const;
-    removeInstalledExtension(allFrames, extensionId);
-    clearDraftModComponents(allFrames, { uuid: extensionId });
-    await removeSidebars({ tabId }, [extensionId]);
+    removeActivatedModComponent(allFrames, modComponentId);
+    removeDraftModComponents(allFrames, modComponentId);
+    await removeSidebars({ tabId }, [modComponentId]);
   });
-  await uninstallContextMenu({ extensionId });
-  await clearExtensionTraces(extensionId);
-  await clearLog({ extensionId });
+  await uninstallContextMenu({ extensionId: modComponentId });
+  await clearExtensionTraces(modComponentId);
+  await clearLog({ extensionId: modComponentId });
 }

@@ -19,7 +19,7 @@ import React, { useCallback, useEffect, useReducer } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { runExtensionPointReader } from "@/contentScript/messenger/api";
+import { runStarterBrickReaderPreview } from "@/contentScript/messenger/api";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
@@ -92,7 +92,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
           .rootSelector;
       }
 
-      const data = await runExtensionPointReader(
+      const data = await runStarterBrickReaderPreview(
         inspectedTab,
         factory(element),
         rootSelector,

@@ -25,6 +25,7 @@ describe("contextMenu", () => {
       internalStarterBrickMetaFactory(),
       null,
     );
+
     expect(config.selectExtension(formState)).toEqual(
       expect.objectContaining({
         config: {
@@ -34,5 +35,22 @@ describe("contextMenu", () => {
         },
       }),
     );
+  });
+
+  it("defaults to all sites", () => {
+    const formState = config.fromNativeElement(
+      "https://example.com",
+      internalStarterBrickMetaFactory(),
+      null,
+    );
+
+    expect(
+      config.selectStarterBrickDefinition(formState).definition.isAvailable,
+    ).toStrictEqual({
+      allFrames: true,
+      matchPatterns: ["*://*/*"],
+      selectors: [],
+      urlPatterns: [],
+    });
   });
 });

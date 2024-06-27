@@ -63,7 +63,7 @@ import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
-  getInstalledExtensionPoints,
+  getRunningStarterBricks,
   checkAvailable,
 } from "@/contentScript/messenger/api";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
@@ -165,7 +165,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
   const notDeletedModComponents = selectNotDeletedActivatedModComponents(
     thunkAPI.getState(),
   );
-  const starterBricks = await getInstalledExtensionPoints(inspectedTab);
+  const starterBricks = await getRunningStarterBricks(inspectedTab);
   const activatedStarterBricks = new Map(
     starterBricks.map((starterBrick) => [starterBrick.id, starterBrick]),
   );
