@@ -35,6 +35,10 @@ import CommentEffect from "@/bricks/effects/comment";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
+import {
+  MergeStrategies,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 
 /**
  * Get an example brick config for a given brick id.
@@ -101,7 +105,7 @@ export function getExampleBrickConfig(
       return {
         storage: {
           type: "state",
-          namespace: "blueprint",
+          namespace: StateNamespaces.MOD,
         },
         submitCaption: "Submit",
         successMessage: "Successfully submitted form",
@@ -178,15 +182,15 @@ export function getExampleBrickConfig(
 
     case "@pixiebrix/state/set": {
       return {
-        namespace: "blueprint",
-        mergeStrategy: "shallow",
+        namespace: StateNamespaces.MOD,
+        mergeStrategy: MergeStrategies.SHALLOW,
         data: {},
       };
     }
 
     case "@pixiebrix/state/get": {
       return {
-        namespace: "blueprint",
+        namespace: StateNamespaces.MOD,
       };
     }
 

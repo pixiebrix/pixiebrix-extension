@@ -43,6 +43,7 @@ import { array } from "cooky-cutter";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { normalizeModDefinition } from "@/utils/modUtils";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
@@ -60,7 +61,7 @@ describe("useBuildAndValidateMod", () => {
         apiVersion: modDefinition.apiVersion,
         metadata: internalStarterBrickMetaFactory(),
         definition,
-        kind: "extensionPoint",
+        kind: DefinitionKinds.STARTER_BRICK,
       };
     });
   }

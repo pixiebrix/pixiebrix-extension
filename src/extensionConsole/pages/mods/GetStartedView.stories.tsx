@@ -33,6 +33,7 @@ import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { type Timestamp } from "@/types/stringTypes";
 import { validateRegistryId } from "@/types/helpers";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 export default {
   title: "ModsPage/GetStartedView",
@@ -65,7 +66,7 @@ const testRecipe = {
     organizations: [],
   },
   updated_at: "2022-01-01T00:00:00Z" as Timestamp,
-  kind: "recipe",
+  kind: DefinitionKinds.MOD,
   apiVersion: "v3" as ApiVersion,
 } as ModDefinition;
 

@@ -45,6 +45,7 @@ import { isEmpty } from "lodash";
 import { getSelectedLineVirtualElement } from "@/components/fields/schemaFields/widgets/varPopup/utils";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import useEventListener from "@/hooks/useEventListener";
+import { StateNamespaces } from "@/platform/state/stateController";
 
 const emptyVarMap = new VarMap();
 
@@ -172,7 +173,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   const { data: modVariables } = useAsyncState(
     async () =>
       getPageState(inspectedTab, {
-        namespace: "blueprint",
+        namespace: StateNamespaces.MOD,
         extensionId: null,
         blueprintId: activeModComponentFormState.recipe?.id,
       }),

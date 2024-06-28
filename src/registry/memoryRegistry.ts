@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Kind } from "@/registry/packageRegistry";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import {
+  type DefinitionKind,
   DoesNotExistError,
   type EnumerableRegistryProtocol,
   type RegistryId,
@@ -91,13 +91,16 @@ class MemoryRegistry<
    */
   private _cacheInitialized = false;
 
-  public readonly kinds: Set<Kind>;
+  public readonly kinds: Set<DefinitionKind>;
 
   private deserialize: ((raw: unknown) => Item) | null;
 
   onChange = new SimpleEventTarget();
 
-  constructor(kinds: Kind[], deserialize: ((raw: unknown) => Item) | null) {
+  constructor(
+    kinds: DefinitionKind[],
+    deserialize: ((raw: unknown) => Item) | null,
+  ) {
     this.kinds = new Set(kinds);
     this.deserialize = deserialize;
 

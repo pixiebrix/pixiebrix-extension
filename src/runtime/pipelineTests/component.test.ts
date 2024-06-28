@@ -29,6 +29,7 @@ import { fromJS } from "@/bricks/transformers/brickFactory";
 import { normalizeSemVerString } from "@/types/helpers";
 import { TEST_setContext } from "webext-detect-page";
 import { toExpression } from "@/utils/expressionUtils";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 TEST_setContext("contentScript");
 
@@ -39,7 +40,7 @@ beforeEach(() => {
 
 const componentBlock = fromJS(blockRegistry, {
   apiVersion: "v1",
-  kind: "component",
+  kind: DefinitionKinds.BRICK,
   metadata: {
     id: "test/component",
     name: "Component Brick",

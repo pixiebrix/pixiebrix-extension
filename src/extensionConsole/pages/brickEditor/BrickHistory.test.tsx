@@ -27,6 +27,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/extensionConsole/testHelpers";
 import { type Package, type PackageVersionDeprecated } from "@/types/contract";
 import { type Timestamp } from "@/types/stringTypes";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -67,7 +68,7 @@ describe("BrickHistory", () => {
     const testPackage: Package = {
       id: testBrickId,
       name: "@pixies/ai/chatgpt-sidebar",
-      kind: "Blueprint",
+      kind: DefinitionKinds.MOD,
       version: "1.0.1",
       config: "some config yaml",
       public: true,
