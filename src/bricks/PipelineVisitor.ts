@@ -29,7 +29,7 @@ import {
   getRootPipelineFlavor,
   getSubPipelineFlavor,
 } from "@/bricks/brickFilterHelpers";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { type StarterBrickKind } from "@/types/starterBrickTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { joinPathParts } from "@/utils/formUtils";
@@ -79,7 +79,7 @@ export type VisitPipelineExtra = {
   pipelinePropName?: string | undefined;
 };
 type VisitRootPipelineExtra = {
-  extensionPointType: StarterBrickType;
+  extensionPointType: StarterBrickKind;
 };
 
 /**

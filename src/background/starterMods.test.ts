@@ -48,7 +48,7 @@ import {
 import produce from "immer";
 import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { type StarterBrickKind } from "@/types/starterBrickTypes";
 import {
   PIXIEBRIX_INTEGRATION_ID,
   PIXIEBRIX_INTEGRATION_CONFIG_ID,
@@ -93,7 +93,7 @@ beforeEach(async () => {
 describe("debouncedActivateStarterMods", () => {
   function overrideStarterBrickType(
     modDefinition: ModDefinition,
-    type: StarterBrickType,
+    type: StarterBrickKind,
   ) {
     return produce(modDefinition, (draft) => {
       (

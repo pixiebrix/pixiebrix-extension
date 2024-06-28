@@ -49,7 +49,7 @@ import {
   type ButtonStarterBrickConfig,
 } from "@/starterBricks/button/buttonStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { StarterBrickKinds } from "@/types/starterBrickTypes";
 
 function fromNativeElement(
   url: string,
@@ -57,7 +57,7 @@ function fromNativeElement(
   button: ButtonSelectionResult,
 ): ActionFormState {
   return {
-    type: StarterBrickTypes.BUTTON,
+    type: StarterBrickKinds.BUTTON,
     label: `My ${getDomain(url)} button`,
     ...makeInitialBaseState(button.uuid),
     containerInfo: button.containerInfo,
@@ -65,8 +65,8 @@ function fromNativeElement(
       metadata,
       definition: {
         ...button.menu,
-        type: StarterBrickTypes.BUTTON,
-        reader: getImplicitReader(StarterBrickTypes.BUTTON),
+        type: StarterBrickKinds.BUTTON,
+        reader: getImplicitReader(StarterBrickKinds.BUTTON),
         isAvailable: getDefaultAvailabilityForUrl(url),
         targetMode: "document",
         attachMode: "once",
@@ -105,7 +105,7 @@ function selectStarterBrickDefinition(
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
-      type: StarterBrickTypes.BUTTON,
+      type: StarterBrickKinds.BUTTON,
       reader,
       isAvailable: cleanIsAvailable(isAvailable),
       containerSelector,
@@ -144,8 +144,8 @@ async function fromExtension(
   const extensionPoint = await lookupExtensionPoint<
     ButtonDefinition,
     ButtonStarterBrickConfig,
-    typeof StarterBrickTypes.BUTTON
-  >(config, StarterBrickTypes.BUTTON);
+    typeof StarterBrickKinds.BUTTON
+  >(config, StarterBrickKinds.BUTTON);
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
@@ -178,7 +178,7 @@ function asDraftModComponent(
   actionFormState: ActionFormState,
 ): DraftButtonModComponent {
   return {
-    type: StarterBrickTypes.BUTTON,
+    type: StarterBrickKinds.BUTTON,
     extension: selectExtension(actionFormState, { includeInstanceIds: true }),
     extensionPointConfig: selectStarterBrickDefinition(actionFormState),
   };
@@ -189,7 +189,7 @@ const config: ModComponentFormStateAdapter<
   ActionFormState
 > = {
   displayOrder: 0,
-  elementType: StarterBrickTypes.BUTTON,
+  elementType: StarterBrickKinds.BUTTON,
   label: "Button",
   icon: faMousePointer,
   baseClass: ButtonStarterBrickABC,

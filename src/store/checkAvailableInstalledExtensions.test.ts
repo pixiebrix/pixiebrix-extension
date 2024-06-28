@@ -34,7 +34,7 @@ import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { getPlatform } from "@/platform/platformContext";
 import { type ButtonDefinition } from "@/starterBricks/button/buttonStarterBrickTypes";
 import { type QuickBarDefinition } from "@/starterBricks/quickBar/quickBarTypes";
-import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { StarterBrickKinds } from "@/types/starterBrickTypes";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -73,7 +73,7 @@ describe("checkAvailableInstalledExtensions", () => {
         },
         definition(): ButtonDefinition {
           return {
-            type: StarterBrickTypes.BUTTON,
+            type: StarterBrickKinds.BUTTON,
             containerSelector: "",
             template: "",
             isAvailable: {

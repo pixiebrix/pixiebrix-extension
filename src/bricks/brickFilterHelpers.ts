@@ -16,7 +16,7 @@
  */
 
 import { type TypedBrickPair } from "@/bricks/registry";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { type StarterBrickKind } from "@/types/starterBrickTypes";
 import { stubTrue } from "lodash";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
@@ -39,7 +39,7 @@ const ALWAYS_SHOW = new Set([
 
 export type IsBrickAllowedPredicate = (block: TypedBrickPair) => boolean;
 
-export function getRootPipelineFlavor(starterBrickType: StarterBrickType) {
+export function getRootPipelineFlavor(starterBrickType: StarterBrickKind) {
   if (PANEL_TYPES.includes(starterBrickType)) {
     return PipelineFlavor.NoEffect;
   }

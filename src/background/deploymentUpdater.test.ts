@@ -60,7 +60,7 @@ import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories
 import { type RegistryPackage } from "@/types/contract";
 import { resetMeApiMocks } from "@/testUtils/userMock";
 import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
-import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { StarterBrickKinds } from "@/types/starterBrickTypes";
 
 TEST_setContext("background");
 
@@ -439,7 +439,7 @@ describe("syncDeployments", () => {
     });
 
     let editorState = initialEditorState;
-    const element = (await ADAPTERS.get(StarterBrickTypes.BUTTON).fromExtension(
+    const element = (await ADAPTERS.get(StarterBrickKinds.BUTTON).fromExtension(
       modComponent,
     )) as ActionFormState;
     editorState = editorSlice.reducer(

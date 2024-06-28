@@ -27,7 +27,7 @@ import {
 import extensionPointRegistry from "@/starterBricks/registry";
 import {
   type StarterBrick,
-  StarterBrickTypes,
+  StarterBrickKinds,
 } from "@/types/starterBrickTypes";
 import { activatedModComponentFactory } from "@/testUtils/factories/modComponentFactories";
 
@@ -43,7 +43,7 @@ describe("starterBrickModUtils", () => {
       const result = await getContainedStarterBrickTypes(
         defaultModDefinitionFactory(),
       );
-      expect(result).toStrictEqual([StarterBrickTypes.BUTTON]);
+      expect(result).toStrictEqual([StarterBrickKinds.BUTTON]);
     });
 
     test("returns only unique types", async () => {
@@ -55,12 +55,12 @@ describe("starterBrickModUtils", () => {
           ],
         }),
       );
-      expect(result).toStrictEqual([StarterBrickTypes.BUTTON]);
+      expect(result).toStrictEqual([StarterBrickKinds.BUTTON]);
     });
 
     test("gets types without inner definitions", async () => {
       extensionPointRegistryLookupMock.mockResolvedValue({
-        kind: StarterBrickTypes.BUTTON,
+        kind: StarterBrickKinds.BUTTON,
       } as StarterBrick);
 
       const result = await getContainedStarterBrickTypes(
@@ -70,7 +70,7 @@ describe("starterBrickModUtils", () => {
         }),
       );
 
-      expect(result).toStrictEqual([StarterBrickTypes.BUTTON]);
+      expect(result).toStrictEqual([StarterBrickKinds.BUTTON]);
     });
 
     test("returns non-null values", async () => {
@@ -110,7 +110,7 @@ describe("starterBrickModUtils", () => {
 
       const result = getAllModComponentDefinitionsWithType(
         modDefinition,
-        StarterBrickTypes.BUTTON,
+        StarterBrickKinds.BUTTON,
       );
 
       expect(result).toStrictEqual([button]);

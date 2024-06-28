@@ -38,7 +38,7 @@ import {
   type ButtonDefinition,
   type ButtonStarterBrickConfig,
 } from "@/starterBricks/button/buttonStarterBrickTypes";
-import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { StarterBrickKinds } from "@/types/starterBrickTypes";
 
 jest.mock("@/runtime/reducePipeline");
 
@@ -66,7 +66,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
         name: "Test Starter Brick",
       }) as Metadata,
     definition: define<ButtonDefinition>({
-      type: StarterBrickTypes.BUTTON,
+      type: StarterBrickKinds.BUTTON,
       template: "<button>{{caption}}</button>",
       containerSelector: "div",
       isAvailable: () => ({

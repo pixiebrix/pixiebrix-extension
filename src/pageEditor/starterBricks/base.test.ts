@@ -21,8 +21,8 @@ import {
   selectStarterBrickAvailability,
 } from "./base";
 import {
-  type StarterBrickType,
-  StarterBrickTypes,
+  type StarterBrickKind,
+  StarterBrickKinds,
 } from "@/types/starterBrickTypes";
 import { type ReaderConfig } from "@/bricks/types";
 import { validateRegistryId } from "@/types/helpers";
@@ -97,30 +97,30 @@ describe("selectIsAvailable", () => {
 
 describe("getImplicitReader", () => {
   it.each([
-    [StarterBrickTypes.BUTTON],
-    [StarterBrickTypes.QUICK_BAR],
-    [StarterBrickTypes.QUICK_BAR_PROVIDER],
-    [StarterBrickTypes.CONTEXT_MENU],
-    [StarterBrickTypes.TRIGGER],
-    [StarterBrickTypes.INLINE_PANEL],
-    [StarterBrickTypes.SIDEBAR_PANEL],
-  ])("includes metadata reader for %s", (type: StarterBrickType) => {
+    [StarterBrickKinds.BUTTON],
+    [StarterBrickKinds.QUICK_BAR_ACTION],
+    [StarterBrickKinds.DYNAMIC_QUICK_BAR],
+    [StarterBrickKinds.CONTEXT_MENU],
+    [StarterBrickKinds.TRIGGER],
+    [StarterBrickKinds.INLINE_PANEL],
+    [StarterBrickKinds.SIDEBAR_PANEL],
+  ])("includes metadata reader for %s", (type: StarterBrickKind) => {
     expect(getImplicitReader(type)).toContainEqual(
       "@pixiebrix/document-metadata",
     );
   });
 
   it.each([
-    [StarterBrickTypes.BUTTON],
-    [StarterBrickTypes.QUICK_BAR],
-    [StarterBrickTypes.QUICK_BAR_PROVIDER],
-    [StarterBrickTypes.CONTEXT_MENU],
-    [StarterBrickTypes.TRIGGER],
-    [StarterBrickTypes.INLINE_PANEL],
-    [StarterBrickTypes.SIDEBAR_PANEL],
+    [StarterBrickKinds.BUTTON],
+    [StarterBrickKinds.QUICK_BAR_ACTION],
+    [StarterBrickKinds.DYNAMIC_QUICK_BAR],
+    [StarterBrickKinds.CONTEXT_MENU],
+    [StarterBrickKinds.TRIGGER],
+    [StarterBrickKinds.INLINE_PANEL],
+    [StarterBrickKinds.SIDEBAR_PANEL],
   ])(
     "overrides url from metadata reader with current URL from context reader",
-    (type: StarterBrickType) => {
+    (type: StarterBrickKind) => {
       const readerArray = getImplicitReader(type) as ReaderConfig[];
 
       const metadataIndex = readerArray.indexOf(
@@ -137,21 +137,21 @@ describe("getImplicitReader", () => {
   );
 
   it.each([
-    [StarterBrickTypes.BUTTON],
-    [StarterBrickTypes.QUICK_BAR],
-    [StarterBrickTypes.QUICK_BAR_PROVIDER],
-    [StarterBrickTypes.CONTEXT_MENU],
-    [StarterBrickTypes.TRIGGER],
-  ])("includes element reader for %s", (type: StarterBrickType) => {
+    [StarterBrickKinds.BUTTON],
+    [StarterBrickKinds.QUICK_BAR_ACTION],
+    [StarterBrickKinds.DYNAMIC_QUICK_BAR],
+    [StarterBrickKinds.CONTEXT_MENU],
+    [StarterBrickKinds.TRIGGER],
+  ])("includes element reader for %s", (type: StarterBrickKind) => {
     expect(getImplicitReader(type)).toContainEqual({
       element: "@pixiebrix/html/element",
     });
   });
 
   it.each([
-    [StarterBrickTypes.INLINE_PANEL],
-    [StarterBrickTypes.SIDEBAR_PANEL],
-  ])("does not include element reader for %s", (type: StarterBrickType) => {
+    [StarterBrickKinds.INLINE_PANEL],
+    [StarterBrickKinds.SIDEBAR_PANEL],
+  ])("does not include element reader for %s", (type: StarterBrickKind) => {
     expect(getImplicitReader(type)).not.toContainEqual({
       element: "@pixiebrix/html/element",
     });

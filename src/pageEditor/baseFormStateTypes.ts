@@ -23,7 +23,7 @@ import {
 } from "@/integrations/integrationTypes";
 import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { type StarterBrickKind } from "@/types/starterBrickTypes";
 import { type Permissions } from "webextension-polyfill";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
@@ -43,7 +43,7 @@ export type SingleLayerReaderConfig =
 export type BaseExtensionPointState = {
   metadata: Metadata;
   definition: {
-    type: StarterBrickType;
+    type: StarterBrickKind;
     // We're currently not allowing users to modify readers in the page editor
     reader: SingleLayerReaderConfig;
     isAvailable: NormalizedAvailability;
@@ -75,7 +75,7 @@ export interface BaseFormStateV1<
   /**
    * The type of the extensionPoint
    */
-  readonly type: StarterBrickType;
+  readonly type: StarterBrickKind;
 
   /**
    * True if the extensionPoint exists in the registry

@@ -46,8 +46,8 @@ import {
   type DebounceOptions,
 } from "@/starterBricks/types";
 import {
-  type StarterBrickType,
-  StarterBrickTypes,
+  type StarterBrickKind,
+  StarterBrickKinds,
 } from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
 import { type Menus } from "webextension-polyfill";
@@ -70,7 +70,7 @@ type ActionExtensionState = BaseExtensionState &
   Except<ButtonStarterBrickConfig, "action">;
 type ActionExtensionPointState = BaseExtensionPointState & {
   definition: {
-    type: StarterBrickType;
+    type: StarterBrickKind;
     containerSelector: string;
     position?: ButtonPosition;
     template: string;
@@ -94,7 +94,7 @@ type ActionExtensionPointState = BaseExtensionPointState & {
 
 export interface ActionFormState
   extends BaseFormState<ActionExtensionState, ActionExtensionPointState> {
-  type: typeof StarterBrickTypes.BUTTON;
+  type: typeof StarterBrickKinds.BUTTON;
   containerInfo: ElementInfo | null;
 }
 
@@ -131,7 +131,7 @@ export interface SidebarFormState
 // TriggerFormState
 type TriggerExtensionPointState = BaseExtensionPointState & {
   definition: {
-    type: StarterBrickType;
+    type: StarterBrickKind;
     rootSelector?: string;
     trigger?: TriggerTrigger;
     reader: SingleLayerReaderConfig;
@@ -178,7 +178,7 @@ export type PanelTraits = {
 type PanelExtensionState = BaseExtensionState & Except<PanelConfig, "body">;
 type PanelExtensionPointState = BaseExtensionPointState & {
   definition: {
-    type: StarterBrickType;
+    type: StarterBrickKind;
     containerSelector: string;
     position?: ButtonPosition;
     template: string;
@@ -200,7 +200,7 @@ type ContextMenuExtensionState = BaseExtensionState &
   Except<ContextMenuConfig, "action">;
 type ContextMenuExtensionPointState = BaseExtensionPointState & {
   definition: {
-    type: StarterBrickType;
+    type: StarterBrickKind;
     defaultOptions: ContextMenuDefaultOptions;
     documentUrlPatterns: string[];
     contexts: Menus.ContextType[];
@@ -223,7 +223,7 @@ type QuickBarExtensionState = BaseExtensionState &
   Except<QuickBarConfig, "action">;
 type QuickBarExtensionPointState = BaseExtensionPointState & {
   definition: {
-    type: StarterBrickType;
+    type: StarterBrickKind;
     defaultOptions: QuickBarDefaultOptions;
     documentUrlPatterns: string[];
     contexts: Menus.ContextType[];
@@ -240,7 +240,7 @@ type QuickBarProviderExtensionState = BaseExtensionState &
   };
 type QuickBarProviderExtensionPointState = BaseExtensionPointState & {
   definition: {
-    type: StarterBrickType;
+    type: StarterBrickKind;
     defaultOptions: QuickBarProviderDefaultOptions;
     documentUrlPatterns: string[];
     reader: SingleLayerReaderConfig;
@@ -272,7 +272,7 @@ export interface QuickBarProviderFormState
 // TourFormState
 type TourExtensionPointState = BaseExtensionPointState & {
   definition: {
-    type: StarterBrickType;
+    type: StarterBrickKind;
     isAvailable: NormalizedAvailability;
     allowUserRun?: TourDefinition["allowUserRun"];
     autoRunSchedule?: TourDefinition["autoRunSchedule"];

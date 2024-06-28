@@ -19,7 +19,7 @@ import type React from "react";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Metadata } from "@/types/registryTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { type StarterBrickKind } from "@/types/starterBrickTypes";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Target } from "@/types/messengerTypes";
@@ -36,7 +36,7 @@ export interface ModComponentFormStateAdapter<
   /**
    * The internal starter brick type, e.g., menuItem, contextMenu, etc.
    */
-  readonly elementType: StarterBrickType;
+  readonly elementType: StarterBrickKind;
 
   /**
    * The StarterBrickConfig class corresponding to the extension point

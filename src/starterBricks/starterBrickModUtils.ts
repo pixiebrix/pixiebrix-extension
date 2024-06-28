@@ -20,7 +20,7 @@ import {
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { type StarterBrickKind } from "@/types/starterBrickTypes";
 import starterBrickRegistry from "@/starterBricks/registry";
 import { type RegistryId } from "@/types/registryTypes";
 import { compact, uniq } from "lodash";
@@ -33,7 +33,7 @@ import { type UUID } from "@/types/stringTypes";
 async function getStarterBrickType(
   modComponentDefinition: ModComponentDefinition,
   modDefinition: ModDefinition,
-): Promise<StarterBrickType | null> {
+): Promise<StarterBrickKind | null> {
   // Look up the extension point in recipe inner definitions first
   if (modDefinition.definitions?.[modComponentDefinition.id]) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
@@ -57,7 +57,7 @@ async function getStarterBrickType(
 
 export function getAllModComponentDefinitionsWithType(
   modDefinition: ModDefinition,
-  type: StarterBrickType,
+  type: StarterBrickKind,
 ): ModComponentDefinition[] {
   return modDefinition.extensionPoints.filter((extensionPoint) => {
     const definition: StarterBrickDefinitionProp = modDefinition.definitions?.[
@@ -69,7 +69,7 @@ export function getAllModComponentDefinitionsWithType(
 
 export async function getContainedStarterBrickTypes(
   modDefinition: ModDefinition,
-): Promise<StarterBrickType[]> {
+): Promise<StarterBrickKind[]> {
   const extensionPointTypes = await Promise.all(
     modDefinition.extensionPoints.map(async (extensionPoint) =>
       getStarterBrickType(extensionPoint, modDefinition),

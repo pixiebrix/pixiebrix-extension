@@ -23,7 +23,7 @@ import {
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type BrickConfig } from "@/bricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { type StarterBrickKind } from "@/types/starterBrickTypes";
 import {
   type AddBrickLocation,
   type EditorRootState,
@@ -313,7 +313,7 @@ export const editorSlice = createSlice({
     resetEditor() {
       return initialState;
     },
-    toggleInsert(state, action: PayloadAction<StarterBrickType | null>) {
+    toggleInsert(state, action: PayloadAction<StarterBrickKind | null>) {
       state.inserting = action.payload;
       state.beta = false;
       state.error = null;

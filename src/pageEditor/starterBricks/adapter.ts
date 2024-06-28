@@ -19,8 +19,8 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { registry } from "@/background/messenger/api";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import {
-  type StarterBrickType,
-  StarterBrickTypes,
+  type StarterBrickKind,
+  StarterBrickKinds,
 } from "@/types/starterBrickTypes";
 import menuItemExtension from "@/pageEditor/starterBricks/menuItem";
 import quickBarExtension from "@/pageEditor/starterBricks/quickBar";
@@ -36,22 +36,22 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { type DraftModComponent } from "@/contentScript/pageEditor/types";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-export const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>(
+export const ADAPTERS = new Map<StarterBrickKind, ModComponentFormStateAdapter>(
   [
-    [StarterBrickTypes.TRIGGER, triggerExtension],
-    [StarterBrickTypes.INLINE_PANEL, panelExtension],
-    [StarterBrickTypes.CONTEXT_MENU, contextMenuExtension],
-    [StarterBrickTypes.SIDEBAR_PANEL, sidebarExtension],
-    [StarterBrickTypes.BUTTON, menuItemExtension],
-    [StarterBrickTypes.QUICK_BAR, quickBarExtension],
-    [StarterBrickTypes.QUICK_BAR_PROVIDER, quickBarProviderExtension],
-    [StarterBrickTypes.TOUR, tourExtension],
+    [StarterBrickKinds.TRIGGER, triggerExtension],
+    [StarterBrickKinds.INLINE_PANEL, panelExtension],
+    [StarterBrickKinds.CONTEXT_MENU, contextMenuExtension],
+    [StarterBrickKinds.SIDEBAR_PANEL, sidebarExtension],
+    [StarterBrickKinds.BUTTON, menuItemExtension],
+    [StarterBrickKinds.QUICK_BAR_ACTION, quickBarExtension],
+    [StarterBrickKinds.DYNAMIC_QUICK_BAR, quickBarProviderExtension],
+    [StarterBrickKinds.TOUR, tourExtension],
   ],
 );
 
 export async function selectType(
   extension: ModComponentBase,
-): Promise<StarterBrickType> {
+): Promise<StarterBrickKind> {
   if (hasInnerStarterBrickRef(extension)) {
     const { extensionPointId, definitions } = extension;
     return (

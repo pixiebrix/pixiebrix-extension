@@ -24,7 +24,7 @@ import { findContainer } from "@/utils/inference/selectorInference";
 import { PRIVATE_ATTRIBUTES_SELECTOR } from "@/domConstants";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
 import { inferButtonHTML } from "@/utils/inference/markupInference";
-import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { StarterBrickKinds } from "@/types/starterBrickTypes";
 
 const DEFAULT_ACTION_CAPTION = "Action";
 
@@ -75,7 +75,7 @@ export async function insertButton(
       caption: DEFAULT_ACTION_CAPTION,
     },
     menu: {
-      type: StarterBrickTypes.BUTTON,
+      type: StarterBrickKinds.BUTTON,
       containerSelector: containerSelectors[0],
       template: beautifyHTML(inferButtonHTML(container, selected), {
         indent_handlebars: true,

@@ -16,7 +16,7 @@
  */
 
 import { type BrickPipeline } from "@/bricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { type StarterBrickKind } from "@/types/starterBrickTypes";
 import { validateRegistryId } from "@/types/helpers";
 import {
   createNewConfiguredBrick,
@@ -29,7 +29,7 @@ const documentBrickId = validateRegistryId("@pixiebrix/document");
 const quickbarActionId = validateRegistryId("@pixiebrix/quickbar/add");
 const tourStepBrickId = validateRegistryId("@pixiebrix/tour/step");
 
-export function getExampleBrickPipeline(type: StarterBrickType): BrickPipeline {
+export function getExampleBrickPipeline(type: StarterBrickKind): BrickPipeline {
   if (type === "actionPanel") {
     const documentBuilderBlock = createNewConfiguredBrick(documentBrickId);
     return [documentBuilderBlock];

@@ -26,18 +26,22 @@ import { type Metadata } from "@/types/registryTypes";
 import { type PlatformCapability } from "@/platform/capabilities";
 import { type ValueOf } from "type-fest";
 
-export const StarterBrickTypes = {
+export const StarterBrickKinds = {
+  // Match terminology in the UI
   INLINE_PANEL: "panel",
   SIDEBAR_PANEL: "actionPanel",
   BUTTON: "menuItem",
   TRIGGER: "trigger",
   CONTEXT_MENU: "contextMenu",
-  QUICK_BAR: "quickBar",
-  QUICK_BAR_PROVIDER: "quickBarProvider",
+  QUICK_BAR_ACTION: "quickBar",
+  DYNAMIC_QUICK_BAR: "quickBarProvider",
   TOUR: "tour",
 } as const;
 
-export type StarterBrickType = ValueOf<typeof StarterBrickTypes>;
+/**
+ * @see StarterBrick.kind
+ */
+export type StarterBrickKind = ValueOf<typeof StarterBrickKinds>;
 
 /**
  * A location where content (e.g., form, temporary panel) can be added to the page.
@@ -53,7 +57,7 @@ export interface StarterBrick extends Metadata {
   /**
    * The kind of StarterBrick.
    */
-  kind: StarterBrickType;
+  kind: StarterBrickKind;
 
   /**
    * The input schema for StarterBrick-specific configuration.

@@ -51,7 +51,7 @@ import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { type Schema } from "@/types/schemaTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
-import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { StarterBrickKinds } from "@/types/starterBrickTypes";
 
 /**
  * A sidebar menu entry corresponding to an untouched mod component
@@ -136,7 +136,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
     [sessionId, dispatch, type, getModDefinition],
   );
 
-  const isButton = type === StarterBrickTypes.BUTTON;
+  const isButton = type === StarterBrickKinds.BUTTON;
 
   const showOverlay = useCallback(async (uuid: UUID) => {
     await enableOverlay(inspectedTab, `[data-pb-uuid="${uuid}"]`);

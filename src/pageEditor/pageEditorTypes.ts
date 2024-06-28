@@ -21,7 +21,7 @@ import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
 import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { type StarterBrickKind } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
@@ -86,7 +86,7 @@ export type EditorStateV1 = {
   /**
    * The element type, if the page editor is in "insertion-mode"
    */
-  inserting: StarterBrickType | null;
+  inserting: StarterBrickKind | null;
 
   /**
    * The uuid of the active element, if an extension is selected

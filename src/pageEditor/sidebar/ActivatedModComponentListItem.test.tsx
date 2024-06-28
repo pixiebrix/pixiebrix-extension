@@ -24,13 +24,13 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { screen, waitFor } from "@testing-library/react";
 import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
 import userEvent from "@testing-library/user-event";
-import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { StarterBrickKinds } from "@/types/starterBrickTypes";
 
 jest.mock("@/pageEditor/starterBricks/adapter", () => {
   const actual = jest.requireActual("@/pageEditor/starterBricks/adapter");
   return {
     ...actual,
-    selectType: jest.fn(async () => StarterBrickTypes.BUTTON),
+    selectType: jest.fn(async () => StarterBrickKinds.BUTTON),
   };
 });
 

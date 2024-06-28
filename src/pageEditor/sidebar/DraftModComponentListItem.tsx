@@ -55,7 +55,7 @@ import {
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { selectIsModComponentSavedOnCloud } from "@/store/extensionsSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
-import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { StarterBrickKinds } from "@/types/starterBrickTypes";
 
 type DraftModComponentListItemProps = {
   modComponentFormState: ModComponentFormState;
@@ -94,7 +94,7 @@ const DraftModComponentListItem: React.FunctionComponent<
     selectIsModComponentSavedOnCloud(modComponentFormState.uuid),
   );
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
-  const isButton = modComponentFormState.type === StarterBrickTypes.BUTTON;
+  const isButton = modComponentFormState.type === StarterBrickKinds.BUTTON;
 
   const showOverlay = useCallback(async (uuid: UUID) => {
     await enableOverlay(inspectedTab, `[data-pb-uuid="${uuid}"]`);
