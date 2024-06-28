@@ -140,9 +140,6 @@ const CreateModModalBody: React.FC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
-  const activeModComponentFormState = useSelector(
-    selectActiveModComponentFormState,
-  );
   const { createModFromMod } = useCreateModFromMod();
   const { createModFromComponent } = useCreateModFromModComponent(
     activeModComponentFormState,
@@ -154,7 +151,7 @@ const CreateModModalBody: React.FC = () => {
   const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId =
     directlyActiveModId ?? activeModComponentFormState?.recipe?.id;
-  const { data: activeMod, isFetching: isRecipeFetching } =
+  const { data: activeMod, isFetching: isModFetching } =
     useOptionalModDefinition(activeModId);
 
   const formSchema = useFormSchema();
