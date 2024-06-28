@@ -2,6 +2,7 @@ import { test, expect } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type BrowserContext, type Page, test as base } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
+import { ModsPage } from "../../pageObjects/extensionConsole/modsPage";
 
 async function waitForBackgroundPageRequest(
   context: BrowserContext,
@@ -122,7 +123,7 @@ test("can report a service worker error to telemetry service", async ({
   extensionId,
 }) => {
   const endpointCalledFromServiceWorker =
-    "https://app.pixiebrix.com/api/registry/bricks/";
+    "https://app.pixiebrix.com/api/events/";
 
   await test.step("Mock the registry endpoint to return a bad response, and mock errorService calls", async () => {
     await context.route(endpointCalledFromServiceWorker, async (route) => {
@@ -139,8 +140,8 @@ test("can report a service worker error to telemetry service", async ({
     );
   });
 
-  await page.goto(getBaseExtensionConsoleUrl(extensionId));
-  await expect(page.getByText("An error occurred")).toBeVisible();
+  const modsPage = new ModsPage(page, extensionId);
+  await modsPage.goto();
 
   const sentErrors = await getErrorsFromRequest(extensionId, context);
 
@@ -152,12 +153,12 @@ test("can report a service worker error to telemetry service", async ({
       date: expect.any(Number),
       error: expect.objectContaining({
         kind: "AxiosError",
-        message: expect.any(String),
+        message: "Request failed with status code 500",
         stack: expect.any(String),
       }),
       extensionVersion: expect.any(String),
       manifestVersion: 3,
-      message: expect.any(String),
+      message: "Request failed with status code 500",
       name: "AxiosError",
       origin: "logger",
       pageName: "background",
@@ -167,7 +168,7 @@ test("can report a service worker error to telemetry service", async ({
       session_id: expect.any(String),
       stack: expect.any(String),
       status: "error",
-      url: "https://app.pixiebrix.com/api/registry/bricks/",
+      url: "https://app.pixiebrix.com/api/events/",
       usr: {
         email: "extension-e2e-test.unaffiliated@pixiebrix.test",
         id: "3f7ac0b4-5029-442c-b537-5de9f1dfdfd9",
