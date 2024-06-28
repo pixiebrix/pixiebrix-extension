@@ -188,8 +188,8 @@ describe("sidebarExtension", () => {
       namespace: "blueprint",
       data: {},
       mergeStrategy: "replace",
-      extensionId: extension.id,
-      blueprintId: extension._recipe!.id,
+      modComponentId: extension.id,
+      modId: extension._recipe!.id,
     });
 
     // Doesn't run because sidebar is not visible
@@ -209,8 +209,8 @@ describe("sidebarExtension", () => {
       // Data needs to be different than previous to trigger a state change event
       data: { foo: 42 },
       mergeStrategy: "replace",
-      extensionId: extension.id,
-      blueprintId: extension._recipe!.id,
+      modComponentId: extension.id,
+      modId: extension._recipe!.id,
     });
 
     await tick();
@@ -222,8 +222,8 @@ describe("sidebarExtension", () => {
       namespace: "blueprint",
       data: {},
       mergeStrategy: "replace",
-      extensionId: autoUUIDSequence(),
-      blueprintId: registryIdFactory(),
+      modComponentId: autoUUIDSequence(),
+      modId: registryIdFactory(),
     });
 
     await tick();
@@ -271,8 +271,8 @@ describe("sidebarExtension", () => {
         namespace: "blueprint",
         data: { foo: i },
         mergeStrategy: "replace",
-        extensionId: extension.id,
-        blueprintId: extension._recipe!.id,
+        modComponentId: extension.id,
+        modId: extension._recipe!.id,
       });
     }
 

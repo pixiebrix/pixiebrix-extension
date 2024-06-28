@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ListGroup } from "react-bootstrap";
 import { getLabel } from "@/pageEditor/sidebar/common";
 import {
-  ExtensionIcon,
+  ModComponentIcon,
   NotAvailableIcon,
   UnsavedChangesIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
@@ -185,7 +185,7 @@ const DraftModComponentListItem: React.FunctionComponent<
           [styles.nested]: isNested,
         })}
       >
-        <ExtensionIcon type={modComponentFormState.type} />
+        <ModComponentIcon type={modComponentFormState.type} />
       </span>
       <span className={styles.name}>{getLabel(modComponentFormState)}</span>
       {!isAvailable && (

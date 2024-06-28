@@ -197,8 +197,8 @@ export class WithAsyncModVariable extends TransformerABC {
         },
         // Using shallow will replace the state key, but keep other keys
         mergeStrategy: strategy === "put" ? "shallow" : "deep",
-        extensionId,
-        blueprintId,
+        modComponentId: extensionId,
+        modId: blueprintId,
       });
     };
 
@@ -208,8 +208,8 @@ export class WithAsyncModVariable extends TransformerABC {
     // Get/set page state calls are synchronous from the content script, so safe to call sequentially
     const currentState = getState({
       namespace: "blueprint",
-      extensionId,
-      blueprintId,
+      modComponentId: extensionId,
+      modId: blueprintId,
     });
 
     // eslint-disable-next-line security/detect-object-injection -- user provided value that's readonly

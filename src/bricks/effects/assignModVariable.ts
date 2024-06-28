@@ -98,8 +98,8 @@ class AssignModVariable extends EffectABC {
       namespace: "blueprint",
       data: { [variableName]: value },
       mergeStrategy: "shallow",
-      extensionId,
-      blueprintId,
+      modComponentId: extensionId,
+      modId: blueprintId,
     });
   }
 }

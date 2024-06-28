@@ -59,7 +59,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
       const { cleanModComponents, dirtyModComponentFormStates } =
         getCleanComponentsAndDirtyFormStatesForMod(modId);
 
-      // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
+      // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
       const modOptions = dirtyModOptions[modId];
 
       try {

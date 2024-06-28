@@ -47,8 +47,8 @@ const PageStateTab: React.VFC = () => {
   }>(
     async () => {
       const context = {
-        extensionId: activeModComponentFormState?.uuid,
-        blueprintId: activeModComponentFormState?.recipe?.id,
+        modComponentId: activeModComponentFormState?.uuid,
+        modId: activeModComponentFormState?.recipe?.id,
       };
 
       const [shared, mod, local] = await Promise.all([

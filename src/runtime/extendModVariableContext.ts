@@ -137,9 +137,9 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
   // Additionally, in the future to pass the context to the sandbox we'd have to always load the state anyway.
   const modState = getState({
     namespace: "blueprint",
-    blueprintId,
+    modId: blueprintId,
     // `extensionId` is not used because namespace is `blueprint`
-    extensionId: null,
+    modComponentId: null,
   });
 
   return {

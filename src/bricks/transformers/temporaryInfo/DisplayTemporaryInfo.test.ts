@@ -379,8 +379,8 @@ describe("DisplayTemporaryInfo", () => {
       namespace: "blueprint",
       data: { foo: 42 },
       mergeStrategy: "replace",
-      extensionId,
-      blueprintId: null,
+      modComponentId: extensionId,
+      modId: null,
     });
 
     await tick();

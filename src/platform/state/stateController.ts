@@ -94,15 +94,15 @@ export function setState({
   namespace,
   data,
   mergeStrategy,
-  extensionId,
+  modComponentId,
   // Normalize undefined to null for lookup
-  blueprintId = null,
+  modId = null,
 }: {
   namespace: StateNamespace;
   data: JsonObject;
   mergeStrategy: MergeStrategy;
-  extensionId: Nullishable<UUID>;
-  blueprintId: Nullishable<RegistryId>;
+  modComponentId: Nullishable<UUID>;
+  modId: Nullishable<RegistryId>;
 }) {
   assertPlatformCapability("state");
 
@@ -111,8 +111,8 @@ export function setState({
       previous,
       next,
       namespace,
-      extensionId,
-      blueprintId,
+      extensionId: modComponentId,
+      blueprintId: modId,
     });
   };
 
@@ -126,18 +126,21 @@ export function setState({
     }
 
     case "blueprint": {
-      const previous = modState.get(blueprintId) ?? {};
+      const previous = modState.get(modId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      modState.set(blueprintId, next);
+      modState.set(modId, next);
       notifyOnChange(previous, next);
       return next;
     }
 
     case "extension": {
-      assertNotNullish(extensionId, "Invalid context: extensionId not found");
-      const previous = privateState.get(extensionId) ?? {};
+      assertNotNullish(
+        modComponentId,
+        "Invalid context: extensionId not found",
+      );
+      const previous = privateState.get(modComponentId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      privateState.set(extensionId, next);
+      privateState.set(modComponentId, next);
       notifyOnChange(previous, next);
       return next;
     }
@@ -151,13 +154,13 @@ export function setState({
 
 export function getState({
   namespace,
-  extensionId,
+  modComponentId,
   // Normalize undefined to null for lookup
-  blueprintId = null,
+  modId = null,
 }: {
   namespace: StateNamespace;
-  extensionId: Nullishable<UUID>;
-  blueprintId: Nullishable<RegistryId>;
+  modComponentId: Nullishable<UUID>;
+  modId: Nullishable<RegistryId>;
 }): JsonObject {
   assertPlatformCapability("state");
 
@@ -167,12 +170,15 @@ export function getState({
     }
 
     case "blueprint": {
-      return modState.get(blueprintId) ?? {};
+      return modState.get(modId) ?? {};
     }
 
     case "extension": {
-      assertNotNullish(extensionId, "Invalid context: extensionId not found");
-      return privateState.get(extensionId) ?? {};
+      assertNotNullish(
+        modComponentId,
+        "Invalid context: extensionId not found",
+      );
+      return privateState.get(modComponentId) ?? {};
     }
 
     default: {

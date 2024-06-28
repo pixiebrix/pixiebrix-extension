@@ -31,8 +31,8 @@ describe("pageState", () => {
       namespace: "blueprint",
       data: { foo: { bar: "baz" } },
       mergeStrategy: "deep",
-      extensionId: uuidv4(),
-      blueprintId,
+      modComponentId: uuidv4(),
+      modId: blueprintId,
     });
 
     expect(listener).toHaveBeenCalledTimes(1);
@@ -52,16 +52,16 @@ describe("pageState", () => {
         asyncState: { isFetching: false, data: "foo", currentData: "foo" },
       },
       mergeStrategy: "deep",
-      extensionId: uuidv4(),
-      blueprintId,
+      modComponentId: uuidv4(),
+      modId: blueprintId,
     });
 
     const updatedState = setState({
       namespace: "blueprint",
       data: { asyncState: { isFetching: true, currentData: null } },
       mergeStrategy: "deep",
-      extensionId,
-      blueprintId,
+      modComponentId: extensionId,
+      modId: blueprintId,
     });
 
     expect(listener).toHaveBeenCalledTimes(2);

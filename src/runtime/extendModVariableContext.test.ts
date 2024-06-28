@@ -29,8 +29,8 @@ describe("createModVariableProxy", () => {
     setState({
       namespace: "blueprint",
       data: {},
-      extensionId: autoUUIDSequence(),
-      blueprintId: null,
+      modComponentId: autoUUIDSequence(),
+      modId: null,
       mergeStrategy: "replace",
     });
   });
@@ -47,8 +47,8 @@ describe("createModVariableProxy", () => {
     setState({
       namespace: "blueprint",
       data: { foo: 42 },
-      extensionId: autoUUIDSequence(),
-      blueprintId: null,
+      modComponentId: autoUUIDSequence(),
+      modId: null,
       mergeStrategy: "replace",
     });
 
@@ -103,8 +103,8 @@ describe("createModVariableProxy", () => {
     setState({
       namespace: "blueprint",
       data: { foo: 42 },
-      extensionId: autoUUIDSequence(),
-      blueprintId: null,
+      modComponentId: autoUUIDSequence(),
+      modId: null,
       mergeStrategy: "replace",
     });
 
@@ -125,8 +125,8 @@ describe("createModVariableProxy", () => {
     setState({
       namespace: "blueprint",
       data: { foo: 42 },
-      extensionId: autoUUIDSequence(),
-      blueprintId: null,
+      modComponentId: autoUUIDSequence(),
+      modId: null,
       mergeStrategy: "replace",
     });
 

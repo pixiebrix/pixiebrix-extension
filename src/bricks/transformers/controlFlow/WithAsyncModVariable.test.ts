@@ -69,8 +69,8 @@ const logger = new ConsoleLogger({
 function expectPageState(expectedState: UnknownObject) {
   const pageState = getState({
     namespace: "blueprint",
-    extensionId,
-    blueprintId,
+    modComponentId: extensionId,
+    modId: blueprintId,
   });
 
   expect(pageState).toStrictEqual(expectedState);
@@ -85,8 +85,8 @@ describe("WithAsyncModVariable", () => {
     setState({
       namespace: "blueprint",
       data: {},
-      blueprintId,
-      extensionId,
+      modId: blueprintId,
+      modComponentId: extensionId,
       mergeStrategy: "replace",
     });
 

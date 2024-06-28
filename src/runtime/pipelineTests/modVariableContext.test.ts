@@ -39,8 +39,8 @@ describe("modVariableContext", () => {
       namespace: "blueprint" as const,
       data: { run: true },
       mergeStrategy: "replace",
-      extensionId: null,
-      blueprintId: null,
+      modComponentId: null,
+      modId: null,
     });
 
     const pipeline = [
@@ -65,8 +65,8 @@ describe("modVariableContext", () => {
       namespace: "blueprint",
       data: { run: true },
       mergeStrategy: "replace",
-      extensionId: autoUUIDSequence(),
-      blueprintId: undefined,
+      modComponentId: autoUUIDSequence(),
+      modId: undefined,
     });
 
     const pipeline = [
@@ -91,8 +91,8 @@ describe("modVariableContext", () => {
       namespace: "blueprint",
       data: { name: "Bob" },
       mergeStrategy: "replace",
-      extensionId: autoUUIDSequence(),
-      blueprintId: undefined,
+      modComponentId: autoUUIDSequence(),
+      modId: undefined,
     });
 
     const pipeline = [
@@ -118,8 +118,8 @@ describe("modVariableContext", () => {
       namespace: "blueprint",
       data: { name: "Bob" },
       mergeStrategy: "replace",
-      extensionId: autoUUIDSequence(),
-      blueprintId: undefined,
+      modComponentId: autoUUIDSequence(),
+      modId: undefined,
     });
 
     const pipeline = [
@@ -143,8 +143,8 @@ describe("modVariableContext", () => {
       namespace: "blueprint",
       data: { name: "Bob" },
       mergeStrategy: "replace",
-      extensionId: autoUUIDSequence(),
-      blueprintId: undefined,
+      modComponentId: autoUUIDSequence(),
+      modId: undefined,
     });
 
     const pipeline = [

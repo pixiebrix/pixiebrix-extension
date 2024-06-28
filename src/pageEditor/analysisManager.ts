@@ -213,8 +213,8 @@ async function varAnalysisFactory(
   // The actual mod variables
   const modState = await getPageState(inspectedTab, {
     namespace: "blueprint",
-    extensionId: activeModComponentFormState.uuid,
-    blueprintId: activeModComponentFormState.recipe?.id,
+    modComponentId: activeModComponentFormState.uuid,
+    modId: activeModComponentFormState.recipe?.id,
   });
 
   return new VarAnalysis({
