@@ -146,12 +146,11 @@ describe("getImplicitReader", () => {
     });
   });
 
-  it.each([[StarterBrickTypes.SIDEBAR_PANEL]])(
-    "does not include element reader for %s",
-    (type: StarterBrickType) => {
-      expect(getImplicitReader(type)).not.toContainEqual({
-        element: "@pixiebrix/html/element",
-      });
-    },
-  );
+  it(`does not include element reader for ${StarterBrickTypes.SIDEBAR_PANEL}`, () => {
+    expect(
+      getImplicitReader(StarterBrickTypes.SIDEBAR_PANEL),
+    ).not.toContainEqual({
+      element: "@pixiebrix/html/element",
+    });
+  });
 });
