@@ -150,9 +150,8 @@ export const selectDirtyOptionsDefinitionsForModId =
 const dirtyOptionValuesForModIdSelector = createSelector(
   selectNotDeletedModComponentFormStates,
   (_state: EditorRootState, modId: RegistryId) => modId,
-  (formStates, modIdId) =>
-    formStates.find((formState) => formState.recipe?.id === modIdId)
-      ?.optionsArgs,
+  (formStates, modId) =>
+    formStates.find((formState) => formState.recipe?.id === modId)?.optionsArgs,
 );
 
 export const selectDirtyOptionValuesForModId =
