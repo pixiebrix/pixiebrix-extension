@@ -511,7 +511,7 @@ export const editorSlice = createSlice({
       const nodeUIState = validateNodeUIState(state);
       nodeUIState.dataPanel[tabKey].treeExpandedState = expandedState;
     },
-    setActiveDocumentOrFormPreviewElement(
+    setActiveBuilderPreviewElement(
       state,
       action: PayloadAction<string | null>,
     ) {

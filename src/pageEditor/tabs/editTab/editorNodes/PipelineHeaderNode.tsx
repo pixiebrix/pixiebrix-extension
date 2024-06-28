@@ -32,7 +32,7 @@ export type PipelineHeaderNodeProps = {
   headerLabel: string;
   nestingLevel: number;
   nodeActions: NodeAction[];
-  nodePreviewElement: {
+  builderPreviewElement: {
     name: string;
     focus: () => void;
     active: boolean;
@@ -52,7 +52,7 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   active,
   isParentActive,
   isAncestorActive,
-  nodePreviewElement,
+  builderPreviewElement,
   isPipelineLoading,
 }) => {
   const nodeRef = useRef<HTMLAnchorElement | null>(null);
@@ -65,22 +65,22 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   };
 
   useEffect(() => {
-    if (!nodePreviewElement || isPipelineLoading) {
+    if (!builderPreviewElement || isPipelineLoading) {
       return;
     }
 
     window.addEventListener(
-      `${SCROLL_TO_HEADER_NODE_EVENT}-${nodePreviewElement.name}`,
+      `${SCROLL_TO_HEADER_NODE_EVENT}-${builderPreviewElement.name}`,
       scrollIntoView,
     );
 
-    if (nodePreviewElement?.active) {
+    if (builderPreviewElement?.active) {
       scrollIntoView();
     }
 
     return () => {
       window.removeEventListener(
-        `${SCROLL_TO_HEADER_NODE_EVENT}-${nodePreviewElement.name}`,
+        `${SCROLL_TO_HEADER_NODE_EVENT}-${builderPreviewElement.name}`,
         scrollIntoView,
       );
     };
@@ -92,11 +92,11 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
       <ListGroup.Item
         active={active}
         className={cx(styles.root, {
-          [styles.clickable ?? ""]: Boolean(nodePreviewElement),
+          [styles.clickable ?? ""]: Boolean(builderPreviewElement),
           [styles.parentNodeActive ?? ""]: isParentActive,
           [styles.ancestorActive ?? ""]: isAncestorActive,
         })}
-        onClick={nodePreviewElement?.focus}
+        onClick={builderPreviewElement?.focus}
         ref={nodeRef}
       >
         <PipelineOffsetView nestingLevel={nestingLevel} active={active} />
@@ -120,7 +120,7 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
                 </div>
               )}
             </div>
-            {nodePreviewElement && (
+            {builderPreviewElement && (
               <FontAwesomeIcon
                 icon={faSignInAlt}
                 size="sm"

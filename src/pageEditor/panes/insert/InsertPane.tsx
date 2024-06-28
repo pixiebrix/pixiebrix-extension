@@ -21,7 +21,6 @@ import {
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import InsertMenuItemPane from "@/pageEditor/panes/insert/InsertMenuItemPane";
-import InsertPanelPane from "@/pageEditor/panes/insert/InsertPanelPane";
 import { useDispatch } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
@@ -48,10 +47,6 @@ const InsertPane: React.FC<{ inserting: StarterBrickType }> = ({
   switch (inserting) {
     case StarterBrickTypes.BUTTON: {
       return <InsertMenuItemPane cancel={cancelInsert} />;
-    }
-
-    case StarterBrickTypes.INLINE_PANEL: {
-      return <InsertPanelPane cancel={cancelInsert} />;
     }
 
     default: {

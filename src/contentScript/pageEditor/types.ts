@@ -22,10 +22,6 @@ import {
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
 import {
-  type PanelConfig,
-  type PanelDefinition,
-} from "@/starterBricks/panel/panelStarterBrickTypes";
-import {
   type ButtonDefinition,
   type ButtonStarterBrickConfig,
 } from "@/starterBricks/button/buttonStarterBrickTypes";
@@ -46,15 +42,6 @@ export interface DraftModComponent<
 }
 
 export type SelectMode = "element" | "container";
-export type PanelSelectionResult = {
-  uuid: UUID;
-  foundation: Except<
-    PanelDefinition,
-    "defaultOptions" | "isAvailable" | "reader"
-  >;
-  panel: Except<PanelConfig, "body">;
-  containerInfo: ElementInfo;
-};
 export type DraftButtonModComponent = DraftModComponent<
   ButtonDefinition,
   ButtonStarterBrickConfig
