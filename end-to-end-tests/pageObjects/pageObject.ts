@@ -17,33 +17,57 @@
 
 import { type Locator, type Page } from "playwright";
 
-class BasePageObject implements Partial<Locator> {
-  private readonly baseLocator: Locator;
-  constructor(locatorOrPage: Locator | Page) {
-    if ("page" in locatorOrPage) {
-      this.baseLocator = locatorOrPage;
+type LocatorMethod =
+  | "locator"
+  | "getByAltText"
+  | "getByLabel"
+  | "getByPlaceholder"
+  | "getByRole"
+  | "getByTestId"
+  | "getByText"
+  | "getByTitle";
+
+export class BasePageObject {
+  protected readonly root: Locator;
+  protected readonly page: Page;
+
+  protected locator: Pick<Locator, "locator">;
+  protected getByAltText: Pick<Locator, "getByAltText">;
+  protected getByLabel: Pick<Locator, "getByLabel">;
+  protected getByPlaceholder: Pick<Locator, "getByPlaceholder">;
+  protected getByRole: Pick<Locator, "getByRole">;
+  protected getByTestId: Pick<Locator, "getByTestId">;
+  protected getByText: Pick<Locator, "getByText">;
+  protected getByTitle: Pick<Locator, "getByTitle">;
+
+  constructor(rootLocatorOrPage: Locator | Page) {
+    if ("page" in rootLocatorOrPage) {
+      this.root = rootLocatorOrPage;
+      this.page = rootLocatorOrPage.page();
     } else {
-      this.baseLocator = locatorOrPage.locator("body");
+      this.root = rootLocatorOrPage.locator("body");
+      this.page = rootLocatorOrPage;
     }
 
-    return new Proxy(this, {
-      get: function (target, prop, receiver) {
-        if (Reflect.has(target, prop)) {
-          return Reflect.get(target, prop, receiver);
-        } else if (Reflect.has(target.baseLocator, prop)) {
-          if (typeof target.baseLocator[prop] === "function") {
-            return function (...args) {
-              return target.baseLocator[prop].apply(target.baseLocator, args);
-            };
-          } else {
-            return target.baseLocator[prop];
-          }
-        }
-      },
-    });
+    this.locator = this.passThroughMethod("locator");
+    this.getByAltText = this.passThroughMethod("getByAltText");
+    this.getByLabel = this.passThroughMethod("getByLabel");
+    this.getByPlaceholder = this.passThroughMethod("getByPlaceholder");
+    this.getByRole = this.passThroughMethod("getByRole");
+    this.getByTestId = this.passThroughMethod("getByTestId");
+    this.getByText = this.passThroughMethod("getByText");
+    this.getByTitle = this.passThroughMethod("getByTitle");
+  }
+
+  private passThroughMethod<T extends LocatorMethod>(method: T): Locator[T] {
+    // const enhanced: LocatorMethod<T> = (
+    //   arg,
+    //   { frame, portal, ...options } = {},
+    // ) => {
+    //   return this.getParent(frame, portal)[method](arg as any, options);
+    // };
+
+    // eslint-disable-next-line security/detect-object-injection -- passthrough method
+    return this.root[method];
   }
 }
-
-export default BasePageObject as unknown as new (
-  locatorOrPage: Locator | Page,
-) => Locator;
