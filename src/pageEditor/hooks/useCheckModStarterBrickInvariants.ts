@@ -52,7 +52,7 @@ function useCheckModStarterBrickInvariants(): (
    * Checks the following invariants:
    *  - For each clean mod component, every entry in definitions should exist
    *    in the {modDefinition.definitions} object
-   *  - For each dirty mod component with @internal extensionPoint definition,
+   *  - For each dirty mod component with @internal starter brick definition,
    *    formState.extensionPoint.definition should exist in the
    *    {modDefinition.definitions} object, but the key may be different,
    *    e.g. "extensionPoint" vs. "extensionPoint3" in the modDefinition,
@@ -103,8 +103,8 @@ function useCheckModStarterBrickInvariants(): (
         }
       }
 
-      const { extensionPoints } = buildModComponents(cleanModComponents);
-      const referencedIds = new Set(extensionPoints.map((x) => x.id));
+      const { modComponents } = buildModComponents(cleanModComponents);
+      const referencedIds = new Set(modComponents.map((x) => x.id));
 
       // @see saveHelpers.ts:deleteUnusedStarterBrickDefinitions
       const normalizedModComponents = cleanModComponents.map((modComponent) =>

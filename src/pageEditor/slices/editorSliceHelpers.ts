@@ -30,7 +30,7 @@ import {
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { type BrickPipelineUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { clearExtensionTraces } from "@/telemetry/trace";
+import { clearModComponentTraces } from "@/telemetry/trace";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
@@ -150,7 +150,7 @@ export function removeModComponentFormState(
   }
 
   // Make sure we're not keeping any private data around from Page Editor sessions
-  void clearExtensionTraces(uuid);
+  void clearModComponentTraces(uuid);
 }
 
 /**

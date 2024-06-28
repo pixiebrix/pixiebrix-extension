@@ -24,7 +24,7 @@ import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransfo
 import { screen } from "@testing-library/react";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import {
-  baseExtensionStateFactory,
+  baseModComponentStateFactory,
   formStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 
@@ -37,7 +37,7 @@ describe("FormModalOptions", () => {
     const brick = createNewConfiguredBrick(FormTransformer.BRICK_ID);
 
     const initialValues = formStateFactory({
-      extension: baseExtensionStateFactory({
+      extension: baseModComponentStateFactory({
         blockPipeline: [brick],
       }),
     });

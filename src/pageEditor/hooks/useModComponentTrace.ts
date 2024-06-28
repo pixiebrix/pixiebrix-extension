@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getLatestRunByExtensionId, type TraceRecord } from "@/telemetry/trace";
+import {
+  getLatestRunByModComponentId,
+  type TraceRecord,
+} from "@/telemetry/trace";
 import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
@@ -25,7 +28,7 @@ import { isEqual } from "lodash";
 import { useRef } from "react";
 import reportError from "@/telemetry/reportError";
 
-const { setExtensionTrace } = runtimeSlice.actions;
+const { setModComponentTrace } = runtimeSlice.actions;
 
 const TRACE_RELOAD_MILLIS = 350;
 
@@ -45,10 +48,10 @@ function selectTraceMetadata(record: TraceRecord) {
 /**
  * Hook that refreshes the trace information in the Redux store
  */
-function useExtensionTrace() {
+function useModComponentTrace() {
   const dispatch = useDispatch();
   const activeModComponentId = useSelector(selectActiveModComponentId);
-  const extensionTrace = useSelector(selectActiveModComponentTraces);
+  const modComponentTrace = useSelector(selectActiveModComponentTraces);
 
   const checkingNewEntriesRef = useRef(false);
   const refreshTrace = async () => {
@@ -58,22 +61,22 @@ function useExtensionTrace() {
 
     checkingNewEntriesRef.current = true;
     try {
-      const lastRun = await getLatestRunByExtensionId(activeModComponentId);
-      // Keep the Redux log clean. Don't setExtensionTrace unless we have to
+      const lastRun = await getLatestRunByModComponentId(activeModComponentId);
+      // Keep the Redux log clean. Don't setModComponentTrace unless we have to
       if (
         activeModComponentId &&
         !isEqual(
           lastRun.map((x) => selectTraceMetadata(x)),
-          extensionTrace.map((x) => selectTraceMetadata(x)),
+          modComponentTrace.map((x) => selectTraceMetadata(x)),
         )
       ) {
         console.debug(
-          "Updating extension trace in Redux slice: %s",
+          "Updating mod component trace in Redux slice: %s",
           activeModComponentId,
         );
         dispatch(
-          setExtensionTrace({
-            extensionId: activeModComponentId,
+          setModComponentTrace({
+            modComponentId: activeModComponentId,
             records: lastRun,
           }),
         );
@@ -89,4 +92,4 @@ function useExtensionTrace() {
   useInterval(refreshTrace, TRACE_RELOAD_MILLIS);
 }
 
-export default useExtensionTrace;
+export default useModComponentTrace;

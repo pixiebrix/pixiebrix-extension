@@ -14,9 +14,11 @@ import {
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import notify from "@/utils/notify";
 import {
+  allFramesInInspectedTab,
   getCurrentInspectedURL,
   inspectedTab,
 } from "@/pageEditor/context/connection";
+import { updateDraftModComponent } from "@/contentScript/messenger/api";
 
 const { addModComponentFormState, toggleInsert } = actions;
 
@@ -50,12 +52,17 @@ function useAutoInsert(type: StarterBrickType): void {
       dispatch(addModComponentFormState(formState));
       dispatch(actions.checkActiveModComponentAvailability());
 
+      updateDraftModComponent(
+        allFramesInInspectedTab,
+        config.asDraftModComponent(formState),
+      );
+
       // TODO: report if created new, or using existing foundation
       reportEvent(Events.PAGE_EDITOR_START, {
         type: config.elementType,
       });
 
-      if (config.elementType === "actionPanel") {
+      if (config.elementType === StarterBrickTypes.SIDEBAR_PANEL) {
         // For convenience, open the side panel if it's not already open so that the user doesn't
         // have to manually toggle it
         void openSidePanel(inspectedTab.tabId);

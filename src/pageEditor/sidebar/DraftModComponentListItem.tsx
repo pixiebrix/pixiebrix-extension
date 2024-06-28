@@ -25,7 +25,7 @@ import {
   ModComponentIcon,
   NotAvailableIcon,
   UnsavedChangesIcon,
-} from "@/pageEditor/sidebar/ExtensionIcons";
+} from "@/pageEditor/sidebar/ModComponentIcons";
 import { type UUID } from "@/types/stringTypes";
 import {
   disableOverlay,
@@ -45,7 +45,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 import useSaveStandaloneModComponent from "@/pageEditor/hooks/useSaveStandaloneModComponent";
-import useResetExtension from "@/pageEditor/hooks/useResetExtension";
+import useResetModComponent from "@/pageEditor/hooks/useResetModComponent";
 import {
   useRemoveModComponentFromStorage,
   DEACTIVATE_MOD_MODAL_PROPS,
@@ -108,7 +108,7 @@ const DraftModComponentListItem: React.FunctionComponent<
     save: saveStandaloneModComponent,
     isSaving: isSavingStandaloneModComponent,
   } = useSaveStandaloneModComponent();
-  const resetExtension = useResetExtension();
+  const resetModComponent = useResetModComponent();
   const { save: saveMod, isSaving: isSavingMod } = useSaveMod();
 
   const deleteModComponent = async () =>
@@ -137,14 +137,14 @@ const DraftModComponentListItem: React.FunctionComponent<
     : isSavingStandaloneModComponent;
 
   const onReset = async () =>
-    resetExtension({ extensionId: modComponentFormState.uuid });
+    resetModComponent({ modComponentId: modComponentFormState.uuid });
 
   const onDelete = modId || !isSavedOnCloud ? deleteModComponent : undefined;
 
   const onDeactivate = onDelete ? undefined : deactivateModComponent;
 
   const onClone = async () => {
-    dispatch(actions.cloneActiveExtension());
+    dispatch(actions.cloneActiveModComponent());
   };
 
   return (

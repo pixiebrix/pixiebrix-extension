@@ -17,7 +17,7 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
-export type SavingExtensionState = {
+export type SavingModComponentState = {
   /**
    * Defines the state of the Modal window.
    * This includes loading and saving states, and user dialogs.
@@ -31,12 +31,12 @@ export type SavingExtensionState = {
   isSaving: boolean;
 };
 
-const INITIAL_STATE: SavingExtensionState = {
+const INITIAL_STATE: SavingModComponentState = {
   isWizardOpen: false,
   isSaving: false,
 };
 
-export const savingExtensionSlice = createSlice({
+export const savingModComponentSlice = createSlice({
   name: "savingExtension",
   initialState: INITIAL_STATE,
   reducers: {

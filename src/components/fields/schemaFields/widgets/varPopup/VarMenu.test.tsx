@@ -120,7 +120,7 @@ describe("VarMenu", () => {
 
           dispatch(
             analysisSlice.actions.setKnownVars({
-              extensionId: formState.uuid,
+              modComponentId: formState.uuid,
               vars: analysis.getKnownVars(),
             }),
           );
@@ -165,7 +165,7 @@ describe("VarMenu", () => {
 
           dispatch(
             analysisSlice.actions.setKnownVars({
-              extensionId: formState.uuid,
+              modComponentId: formState.uuid,
               vars: analysis.getKnownVars(),
             }),
           );

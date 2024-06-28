@@ -124,9 +124,9 @@ jest.mock("@/modDefinitions/modDefinitionPermissionsHelpers", () => {
   };
 });
 
-jest.mock("@/permissions/extensionPermissionsHelpers", () => {
+jest.mock("@/permissions/modComponentPermissionsHelpers", () => {
   const originalModule = jest.requireActual(
-    "@/permissions/extensionPermissionsHelpers",
+    "@/permissions/modComponentPermissionsHelpers",
   );
   return {
     ...originalModule,

@@ -22,7 +22,7 @@ import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPan
 import styles from "./EditTab.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
-import useExtensionTrace from "@/pageEditor/hooks/useExtensionTrace";
+import useModComponentTrace from "@/pageEditor/hooks/useModComponentTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
@@ -51,7 +51,7 @@ const EditTab: React.FC<{
 }> = ({ eventKey }) => {
   const dispatch = useDispatch();
 
-  useExtensionTrace();
+  useModComponentTrace();
   useReportTraceError();
 
   const isRuntimeVersionSupported = useApiVersionAtLeast("v3");

@@ -310,7 +310,9 @@ export async function recreateDB(): Promise<void> {
   db.close();
 }
 
-export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
+export async function clearModComponentTraces(
+  extensionId: UUID,
+): Promise<void> {
   let cnt = 0;
 
   const db = await openTraceDB();
@@ -324,7 +326,7 @@ export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
     }
 
     console.debug(
-      "Cleared %d trace entries for extension %s",
+      "Cleared %d trace entries for mod component %s",
       cnt,
       extensionId,
     );
@@ -333,10 +335,10 @@ export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
   }
 }
 
-export async function getLatestRunByExtensionId(
-  extensionId: UUID | null,
+export async function getLatestRunByModComponentId(
+  modComponentId: UUID | null,
 ): Promise<TraceRecord[]> {
-  if (extensionId == null) {
+  if (modComponentId == null) {
     return [];
   }
 
@@ -347,7 +349,7 @@ export async function getLatestRunByExtensionId(
       .transaction(ENTRY_OBJECT_STORE, "readonly")
       .objectStore(ENTRY_OBJECT_STORE)
       .index("extensionId")
-      .getAll(extensionId);
+      .getAll(modComponentId);
 
     // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
     const sorted = sortBy(

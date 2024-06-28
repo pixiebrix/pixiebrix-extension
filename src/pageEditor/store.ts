@@ -25,13 +25,13 @@ import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { appApi } from "@/data/service/api";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
-import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
+import { savingModComponentSlice } from "@/pageEditor/panes/save/savingModComponentSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
+import { persistModComponentOptionsConfig } from "@/store/extensionsStorage";
 import integrationsSlice, {
   persistIntegrationsConfig,
 } from "@/integrations/store/integrationsSlice";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/extensionsSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
@@ -70,8 +70,8 @@ const store = configureStore({
   reducer: {
     auth: persistReducer(persistAuthConfig, authSlice.reducer),
     options: persistReducer(
-      persistExtensionOptionsConfig,
-      extensionsSlice.reducer,
+      persistModComponentOptionsConfig,
+      modComponentsSlice.reducer,
     ),
     integrations: persistReducer(
       persistIntegrationsConfig,
@@ -84,7 +84,7 @@ const store = configureStore({
       persistSessionChangesConfig,
       sessionChangesSlice.reducer,
     ),
-    savingExtension: savingExtensionSlice.reducer,
+    savingModComponent: savingModComponentSlice.reducer,
     runtime: runtimeSlice.reducer,
     logs: logSlice.reducer,
     analysis: analysisSlice.reducer,

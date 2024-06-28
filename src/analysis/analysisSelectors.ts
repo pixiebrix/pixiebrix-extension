@@ -25,12 +25,12 @@ import { type UUID } from "@/types/stringTypes";
 // Serves to avoid creating new arrays and ensure reference equality for empty annotations
 const EMPTY_ANNOTATIONS = freeze<AnalysisAnnotation[]>([]);
 
-export function selectExtensionAnnotations(
-  extensionId: UUID,
+export function selectModComponentAnnotations(
+  modComponentId: UUID,
 ): (state: AnalysisRootState) => AnalysisAnnotation[] {
   return ({ analysis }: AnalysisRootState) =>
-    // eslint-disable-next-line security/detect-object-injection -- extensionId is supposed to be UUID, not from user input
-    analysis.extensionAnnotations[extensionId] ?? EMPTY_ANNOTATIONS;
+    // eslint-disable-next-line security/detect-object-injection -- starter brick id is supposed to be UUID, not from user input
+    analysis.extensionAnnotations[modComponentId] ?? EMPTY_ANNOTATIONS;
 }
 
 export function selectKnownVars(state: AnalysisRootState) {

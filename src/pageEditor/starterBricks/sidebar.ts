@@ -82,10 +82,10 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
 function selectStarterBrickDefinition(
   formState: SidebarFormState,
 ): StarterBrickDefinitionLike {
-  const { extensionPoint } = formState;
+  const { extensionPoint: starterBrick } = formState;
   const {
     definition: { isAvailable, reader, trigger, debounce, customEvent },
-  } = extensionPoint;
+  } = starterBrick;
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
     definition: {
@@ -99,16 +99,16 @@ function selectStarterBrickDefinition(
   });
 }
 
-function selectExtension(
+function selectModComponent(
   state: SidebarFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<SidebarConfig> {
-  const { extension } = state;
+  const { extension: modComponent } = state;
   const config: SidebarConfig = {
-    heading: extension.heading,
+    heading: modComponent.heading,
     body: options.includeInstanceIds
-      ? extension.blockPipeline
-      : omitEditorMetadata(extension.blockPipeline),
+      ? modComponent.blockPipeline
+      : omitEditorMetadata(modComponent.blockPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),
@@ -121,12 +121,14 @@ function asDraftModComponent(
 ): DraftModComponent {
   return {
     type: "actionPanel",
-    extension: selectExtension(sidebarFormState, { includeInstanceIds: true }),
+    extension: selectModComponent(sidebarFormState, {
+      includeInstanceIds: true,
+    }),
     extensionPointConfig: selectStarterBrickDefinition(sidebarFormState),
   };
 }
 
-async function fromExtension(
+async function fromModComponent(
   config: ModComponentBase<SidebarConfig>,
 ): Promise<SidebarFormState> {
   const starterBrick = await lookupStarterBrick<
@@ -177,8 +179,8 @@ const config: ModComponentFormStateAdapter<never, SidebarFormState> = {
   fromNativeElement,
   asDraftModComponent,
   selectStarterBrickDefinition,
-  selectExtension,
-  fromExtension,
+  selectModComponent,
+  fromModComponent,
   EditorNode: SidebarConfiguration,
 };
 

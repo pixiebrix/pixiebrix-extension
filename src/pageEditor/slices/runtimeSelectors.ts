@@ -35,7 +35,7 @@ export const selectActiveModComponentTraces: EditorSelector<TraceRecord[]> = ({
   editor,
 }) =>
   editor.activeModComponentId
-    ? runtime.extensionTraces[editor.activeModComponentId] ?? EMPTY_TRACE
+    ? runtime.modComponentTraces[editor.activeModComponentId] ?? EMPTY_TRACE
     : EMPTY_TRACE;
 
 const activeModComponentTraceForBrickSelector = createSelector(
@@ -69,7 +69,7 @@ export function makeSelectBrickTrace(
 ): EditorSelector<{ record?: TraceRecord }> {
   return ({ runtime, editor }: RootState) => {
     const records = editor.activeModComponentId
-      ? runtime.extensionTraces[editor.activeModComponentId] ?? []
+      ? runtime.modComponentTraces[editor.activeModComponentId] ?? []
       : [];
 
     return {
