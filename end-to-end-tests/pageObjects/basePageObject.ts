@@ -24,8 +24,9 @@ import { type Locator, type Page } from "playwright";
  *
  * @example
  * class LoginPage extends BasePageObject {
- *   const usernameInput = this.getByPlaceholder('Username');
- *   const passwordInput = this.getByPlaceholder('Password');
+ *   // define common locators at the top.
+ *   usernameInput = this.getByPlaceholder('Username');
+ *   passwordInput = this.getByPlaceholder('Password');
  *
  *   async login(username, password) {
  *     await usernameInput.fill(username);

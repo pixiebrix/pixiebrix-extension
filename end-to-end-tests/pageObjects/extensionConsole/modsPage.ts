@@ -18,14 +18,16 @@
 import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
 import { ensureVisibility } from "../../utils";
+import { BasePageObject } from "../basePageObject";
 
-export class ModsPage {
+export class ModsPage extends BasePageObject {
   private readonly extensionConsoleUrl: string;
 
-  constructor(
-    private readonly page: Page,
-    extensionId: string,
-  ) {
+  modTableItems = this.getByRole("table").locator(".list-group-item");
+  searchModsInput = this.getByTestId("blueprints-search-input");
+
+  constructor(page: Page, extensionId: string) {
+    super(page);
     this.extensionConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
   }
 
@@ -40,39 +42,30 @@ export class ModsPage {
         request.url().includes("/api/registry/bricks/"),
       );
     await this.page.goto(this.extensionConsoleUrl);
-    await expect(this.page.getByText("Extension Console")).toBeVisible();
+    await expect(this.getByText("Extension Console")).toBeVisible();
     await registryPromise;
 
     // Check that the page is stable, and that the content has finished loading
-    const activeModsHeading = this.page.getByRole("heading", {
+    const activeModsHeading = this.getByRole("heading", {
       name: "Active Mods",
     });
     await ensureVisibility(activeModsHeading, { timeout: 10_000 });
-    const modTableItems = this.modTableItems();
-    const contentLoadedLocator = this.page
-      .getByText("Welcome to PixieBrix!")
-      .or(modTableItems.nth(0));
+    const contentLoadedLocator = this.getByText("Welcome to PixieBrix!").or(
+      this.modTableItems.nth(0),
+    );
     await expect(contentLoadedLocator).toBeVisible();
   }
 
   async viewAllMods() {
-    await this.page.getByTestId("all-mods-mod-tab").click();
+    await this.getByTestId("all-mods-mod-tab").click();
   }
 
   async viewActiveMods() {
-    await this.page.getByTestId("active-mod-tab").click();
-  }
-
-  modTableItems() {
-    return this.page.getByRole("table").locator(".list-group-item");
+    await this.getByTestId("active-mod-tab").click();
   }
 
   modTableItemById(modId: string) {
-    return this.modTableItems().filter({ hasText: modId });
-  }
-
-  searchModsInput() {
-    return this.page.getByTestId("blueprints-search-input");
+    return this.modTableItems.filter({ hasText: modId });
   }
 
   /**
@@ -83,10 +76,10 @@ export class ModsPage {
    */
   async actionForModByName(modName: string, actionName: string): Promise<void> {
     await this.page.bringToFront();
-    await this.searchModsInput().fill(modName);
-    await expect(this.page.getByText(`results for "${modName}`)).toBeVisible();
+    await this.searchModsInput.fill(modName);
+    await expect(this.getByText(`results for "${modName}`)).toBeVisible();
 
-    const modSearchResult = this.page.locator(".list-group-item", {
+    const modSearchResult = this.locator(".list-group-item", {
       hasText: modName,
     });
     await expect(modSearchResult).toBeVisible();
@@ -95,7 +88,7 @@ export class ModsPage {
     await modSearchResult.locator(".dropdown").click();
 
     // Click the delete button in the delete confirmation modal
-    await this.page.getByRole("button", { name: actionName }).click();
+    await this.getByRole("button", { name: actionName }).click();
   }
 
   /**
@@ -106,9 +99,9 @@ export class ModsPage {
    */
   async deleteModByName(modName: string) {
     await this.page.bringToFront();
-    await this.searchModsInput().fill(modName);
-    await expect(this.page.getByText(`results for "${modName}`)).toBeVisible();
-    const modToDelete = this.page.locator(".list-group-item", {
+    await this.searchModsInput.fill(modName);
+    await expect(this.getByText(`results for "${modName}`)).toBeVisible();
+    const modToDelete = this.locator(".list-group-item", {
       hasText: modName,
     });
     await expect(modToDelete).toBeVisible();
@@ -124,9 +117,7 @@ export class ModsPage {
       await deactivateOption.click({
         timeout: 3000,
       });
-      await expect(
-        this.page.getByText(`Deactivated mod: ${modName}`),
-      ).toBeVisible();
+      await expect(this.getByText(`Deactivated mod: ${modName}`)).toBeVisible();
       // Re-open the dropdown action menu to stay in the same state
       await modToDelete.locator(".dropdown").click();
     }
@@ -137,23 +128,32 @@ export class ModsPage {
     });
 
     // Click the delete button in the delete confirmation modal
-    await this.page.getByRole("button", { name: "Delete" }).click();
+    await this.getByRole("button", { name: "Delete" }).click();
     await expect(
       // Exact text varies by standalone mod vs. mod package
-      this.page.getByText(`Deleted mod ${modName}`),
+      this.getByText(`Deleted mod ${modName}`),
     ).toBeVisible();
   }
 }
 
-export class ActivateModPage {
+export class ActivateModPage extends BasePageObject {
   private readonly baseConsoleUrl: string;
   private readonly activateModUrl: string;
 
+  activateButton = this.getByRole("button", { name: "Activate" });
+  keyboardShortcutDocumentationLink = this.getByRole("link", {
+    name: "configuring keyboard shortcuts",
+  });
+  configureQuickbarShortcutLink = this.getByRole("link", {
+    name: "configured your Quick Bar",
+  });
+
   constructor(
-    private readonly page: Page,
+    page: Page,
     private readonly extensionId: string,
     private readonly modId: string,
   ) {
+    super(page);
     this.baseConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
     this.activateModUrl = `${
       this.baseConsoleUrl
@@ -163,35 +163,21 @@ export class ActivateModPage {
   async goto() {
     await this.page.goto(this.activateModUrl);
 
-    await expect(this.page.getByText("Activate Mod")).toBeVisible();
+    await expect(this.getByText("Activate Mod")).toBeVisible();
     // Loading the mod details may take more than 5 seconds
-    await expect(this.page.getByText(this.modId)).toBeVisible({
+    await expect(this.getByText(this.modId)).toBeVisible({
       timeout: 10_000,
-    });
-  }
-
-  activateButton() {
-    return this.page.getByRole("button", { name: "Activate" });
-  }
-
-  configureQuickbarShortcutLink() {
-    return this.page.getByRole("link", { name: "configured your Quick Bar" });
-  }
-
-  keyboardShortcutDocumentationLink() {
-    return this.page.getByRole("link", {
-      name: "configuring keyboard shortcuts",
     });
   }
 
   /** Successfully activating the mod will navigate to the "All Mods" page. */
   async clickActivateAndWaitForModsPageRedirect() {
-    await this.activateButton().click();
+    await this.activateButton.click();
     await this.page.waitForURL(`${this.baseConsoleUrl}#/mods`);
     const modsPage = new ModsPage(this.page, this.extensionId);
     await modsPage.viewActiveMods();
-    // Loading mods sometimes takes upwards of 5s
-    await expect(modsPage.modTableItems().getByText(this.modId)).toBeVisible({
+    // Loading mods sometimes takes upwards of 10s
+    await expect(modsPage.modTableItems.getByText(this.modId)).toBeVisible({
       timeout: 10_000,
     });
     return modsPage;
