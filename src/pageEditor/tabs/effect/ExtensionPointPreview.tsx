@@ -67,52 +67,60 @@ const previewSlice = createSlice({
 });
 
 const ExtensionPointPreview: React.FunctionComponent<{
-  element: ModComponentFormState;
+  modComponentFormState: ModComponentFormState;
   previewRefreshMillis?: 250;
-}> = ({ element, previewRefreshMillis }) => {
+}> = ({ modComponentFormState, previewRefreshMillis }) => {
   const [{ isRunning, output, error }, dispatch] = useReducer(
     previewSlice.reducer,
     initialState,
   );
 
-  const run = useCallback(async (element: ModComponentFormState) => {
-    dispatch(previewSlice.actions.startRun());
-    try {
-      const adapter = ADAPTERS.get(element.type);
-      assertNotNullish(adapter, `Adapter not found for ${element.type}`);
-      const { asDraftModComponent: factory } = adapter;
+  const run = useCallback(
+    async (modComponentFormState: ModComponentFormState) => {
+      dispatch(previewSlice.actions.startRun());
+      try {
+        const adapter = ADAPTERS.get(modComponentFormState.type);
+        assertNotNullish(
+          adapter,
+          `Adapter not found for ${modComponentFormState.type}`,
+        );
+        const { asDraftModComponent: factory } = adapter;
 
-      // Handle click/blur/etc.-based triggers which expect to be run a subset of elements on the page and pass through
-      // data about the element that caused the trigger
-      let rootSelector: Nullishable<string> = null;
-      if (
-        (element as TriggerFormState).extensionPoint.definition.rootSelector
-      ) {
-        rootSelector = (element as TriggerFormState).extensionPoint.definition
-          .rootSelector;
+        // Handle click/blur/etc.-based triggers which expect to be run a subset of elements on the page and pass through
+        // data about the element that caused the trigger
+        let rootSelector: Nullishable<string> = null;
+        if (
+          (modComponentFormState as TriggerFormState).extensionPoint.definition
+            .rootSelector
+        ) {
+          rootSelector = (modComponentFormState as TriggerFormState)
+            .extensionPoint.definition.rootSelector;
+        }
+
+        const data = await runStarterBrickReaderPreview(
+          inspectedTab,
+          factory(modComponentFormState),
+          rootSelector,
+        );
+        dispatch(previewSlice.actions.runSuccess({ "@input": data }));
+      } catch (error) {
+        dispatch(previewSlice.actions.runError(error));
       }
-
-      const data = await runStarterBrickReaderPreview(
-        inspectedTab,
-        factory(element),
-        rootSelector,
-      );
-      dispatch(previewSlice.actions.runSuccess({ "@input": data }));
-    } catch (error) {
-      dispatch(previewSlice.actions.runError(error));
-    }
-  }, []);
+    },
+    [],
+  );
 
   const debouncedRun = useDebouncedCallback(
-    async (element: ModComponentFormState) => run(element),
+    async (modComponentFormState: ModComponentFormState) =>
+      run(modComponentFormState),
     previewRefreshMillis,
     { trailing: true, leading: false },
   );
 
   useEffect(() => {
-    void debouncedRun(element);
+    void debouncedRun(modComponentFormState);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
-  }, [debouncedRun, element.extensionPoint]);
+  }, [debouncedRun, modComponentFormState.extensionPoint]);
 
   if (isRunning) {
     return (
@@ -123,14 +131,14 @@ const ExtensionPointPreview: React.FunctionComponent<{
   }
 
   const reloadTrigger =
-    element.type === "trigger" &&
-    element.extensionPoint.definition.trigger !== "load" ? (
+    modComponentFormState.type === "trigger" &&
+    modComponentFormState.extensionPoint.definition.trigger !== "load" ? (
       <div className="text-info">
         <AsyncButton
           variant="info"
           size="sm"
           className="mr-2"
-          onClick={async () => run(element)}
+          onClick={async () => run(modComponentFormState)}
         >
           <FontAwesomeIcon icon={faSync} /> Refresh
         </AsyncButton>
@@ -139,13 +147,13 @@ const ExtensionPointPreview: React.FunctionComponent<{
     ) : null;
 
   const reloadContextMenu =
-    element.type === "contextMenu" ? (
+    modComponentFormState.type === "contextMenu" ? (
       <div className="text-info">
         <AsyncButton
           variant="info"
           size="sm"
           className="mr-2"
-          onClick={async () => run(element)}
+          onClick={async () => run(modComponentFormState)}
         >
           <FontAwesomeIcon icon={faSync} /> Refresh
         </AsyncButton>

@@ -24,16 +24,28 @@ import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { type PlatformCapability } from "@/platform/capabilities";
+import { type ValueOf } from "type-fest";
 
-export type StarterBrickType =
-  | "panel"
-  | "menuItem"
-  | "trigger"
-  | "contextMenu"
-  | "actionPanel"
-  | "quickBar"
-  | "quickBarProvider"
-  | "tour";
+/**
+ * Constants for starter brick types/kinds. Used to update names in code to match UI display names without migrating
+ * persisted values.
+ */
+export const StarterBrickTypes = {
+  // Match terminology in the Page Editor UI
+  INLINE_PANEL: "panel",
+  SIDEBAR_PANEL: "actionPanel",
+  BUTTON: "menuItem",
+  TRIGGER: "trigger",
+  CONTEXT_MENU: "contextMenu",
+  QUICK_BAR_ACTION: "quickBar",
+  DYNAMIC_QUICK_BAR: "quickBarProvider",
+  TOUR: "tour",
+} as const;
+
+/**
+ * @see StarterBrick.kind
+ */
+export type StarterBrickType = ValueOf<typeof StarterBrickTypes>;
 
 /**
  * A location where content (e.g., form, temporary panel) can be added to the page.

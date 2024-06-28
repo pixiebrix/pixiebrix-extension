@@ -19,6 +19,7 @@ import {
   type InnerDefinitionRef,
   type InnerDefinitions,
   type Metadata,
+  DefinitionKinds,
   type RegistryId,
 } from "@/types/registryTypes";
 import {
@@ -318,7 +319,7 @@ export function replaceModComponent(
           ) as InnerDefinitionRef;
           // eslint-disable-next-line security/detect-object-injection -- generated with freshIdentifier
           draft.definitions[newInnerId] = {
-            kind: "extensionPoint",
+            kind: DefinitionKinds.STARTER_BRICK,
             definition: starterBrickDefinition.definition,
           } satisfies StarterBrickDefinitionLike;
         }
@@ -326,7 +327,7 @@ export function replaceModComponent(
         // There's only one, can re-use without breaking the other definition
         // eslint-disable-next-line security/detect-object-injection -- existing id
         draft.definitions[originalInnerId] = {
-          kind: "extensionPoint",
+          kind: DefinitionKinds.STARTER_BRICK,
           definition: starterBrickDefinition.definition,
         } satisfies StarterBrickDefinitionLike;
       }
@@ -381,7 +382,7 @@ export type ModParts = {
 
 const emptyModDefinition: UnsavedModDefinition = {
   apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-  kind: "recipe",
+  kind: DefinitionKinds.MOD,
   metadata: {
     id: "" as RegistryId,
     name: "",
@@ -464,7 +465,7 @@ export function buildNewMod({
           );
           unsavedModComponent.definitions = {
             [unsavedModComponent.extensionPointId]: {
-              kind: "extensionPoint",
+              kind: DefinitionKinds.STARTER_BRICK,
               definition: extensionPointConfig.definition,
             } satisfies StarterBrickDefinitionLike,
           };

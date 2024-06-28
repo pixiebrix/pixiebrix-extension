@@ -19,7 +19,11 @@ import extendModVariableContext, {
   contextAsPlainObject,
   isModVariableContext,
 } from "@/runtime/extendModVariableContext";
-import { setState } from "@/platform/state/stateController";
+import {
+  MergeStrategies,
+  setState,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type ApiVersion } from "@/types/runtimeTypes";
@@ -27,11 +31,11 @@ import { type ApiVersion } from "@/types/runtimeTypes";
 describe("createModVariableProxy", () => {
   beforeEach(() => {
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: {},
       modComponentId: autoUUIDSequence(),
       modId: null,
-      mergeStrategy: "replace",
+      mergeStrategy: MergeStrategies.REPLACE,
     });
   });
 
@@ -45,11 +49,11 @@ describe("createModVariableProxy", () => {
 
   it("reads from page state", () => {
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       modComponentId: autoUUIDSequence(),
       modId: null,
-      mergeStrategy: "replace",
+      mergeStrategy: MergeStrategies.REPLACE,
     });
 
     const ctxt = extendModVariableContext(
@@ -101,11 +105,11 @@ describe("createModVariableProxy", () => {
     );
 
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       modComponentId: autoUUIDSequence(),
       modId: null,
-      mergeStrategy: "replace",
+      mergeStrategy: MergeStrategies.REPLACE,
     });
 
     const ctxt2 = extendModVariableContext(ctxt1, {
@@ -123,11 +127,11 @@ describe("createModVariableProxy", () => {
     );
 
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       modComponentId: autoUUIDSequence(),
       modId: null,
-      mergeStrategy: "replace",
+      mergeStrategy: MergeStrategies.REPLACE,
     });
 
     const ctxt2 = extendModVariableContext(ctxt1, {

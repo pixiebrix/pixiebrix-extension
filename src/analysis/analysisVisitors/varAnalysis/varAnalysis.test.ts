@@ -21,7 +21,7 @@ import VarAnalysis, {
   NO_VARIABLE_PROVIDED_MESSAGE,
 } from "./varAnalysis";
 import { validateRegistryId } from "@/types/helpers";
-import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { BrickTypes, validateOutputKey } from "@/runtime/runtimeTypes";
 import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
@@ -786,7 +786,7 @@ describe("Collecting available vars", () => {
           [
             IdentityTransformer.BRICK_ID,
             {
-              type: "transform",
+              type: BrickTypes.TRANSFORM,
               block: new IdentityTransformer(),
             },
           ],

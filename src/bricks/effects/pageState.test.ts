@@ -21,7 +21,10 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
-import { TEST_resetState } from "@/platform/state/stateController";
+import {
+  MergeStrategies,
+  TEST_resetState,
+} from "@/platform/state/stateController";
 
 beforeEach(() => {
   TEST_resetState();
@@ -61,7 +64,10 @@ describe("@pixiebrix/state/set", () => {
     expect(result).toStrictEqual({ foo: 42, bar: 42 });
 
     result = await brick.transform(
-      unsafeAssumeValidArg({ data: { foo: 1 }, mergeStrategy: "shallow" }),
+      unsafeAssumeValidArg({
+        data: { foo: 1 },
+        mergeStrategy: MergeStrategies.SHALLOW,
+      }),
       brickOptionsFactory({ logger }),
     );
     expect(result).toStrictEqual({ foo: 1, bar: 42 });
@@ -97,7 +103,7 @@ describe("@pixiebrix/state/set", () => {
           obj: { b: 1 },
           objectArray: [{ b: 1 }, { a: 2 }],
         },
-        mergeStrategy: "deep",
+        mergeStrategy: MergeStrategies.DEEP,
       }),
       brickOptionsFactory({ logger }),
     );

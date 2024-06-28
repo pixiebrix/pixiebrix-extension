@@ -54,3 +54,5 @@ export const performConfiguredRequestInBackground = getMethod(
 ) => Promise<RemoteResponse<TData>>;
 
 export const clearServiceCache = jest.fn();
+
+export const removeOAuth2Token = jest.fn();

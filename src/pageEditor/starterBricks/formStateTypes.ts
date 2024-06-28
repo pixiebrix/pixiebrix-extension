@@ -22,9 +22,9 @@ import {
   type MenuDefaultOptions as ContextMenuDefaultOptions,
 } from "@/starterBricks/contextMenu/contextMenuTypes";
 import {
-  type MenuItemStarterBrickConfig,
-  type MenuPosition,
-} from "@/starterBricks/menuItem/menuItemTypes";
+  type ButtonStarterBrickConfig,
+  type ButtonPosition,
+} from "@/starterBricks/button/buttonStarterBrickTypes";
 import { type PanelConfig } from "@/starterBricks/panel/panelStarterBrickTypes";
 import {
   type QuickBarConfig,
@@ -45,7 +45,10 @@ import {
   type CustomEventOptions,
   type DebounceOptions,
 } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  type StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
 import { type Menus } from "webextension-polyfill";
 import {
@@ -64,12 +67,12 @@ import { type Nullishable } from "@/utils/nullishUtils";
 
 // ActionFormState
 type ActionExtensionState = BaseModComponentState &
-  Except<MenuItemStarterBrickConfig, "action">;
+  Except<ButtonStarterBrickConfig, "action">;
 type ActionExtensionPointState = BaseStarterBrickState & {
   definition: {
     type: StarterBrickType;
     containerSelector: string;
-    position?: MenuPosition;
+    position?: ButtonPosition;
     template: string;
     /**
      * @since 1.7.16
@@ -91,7 +94,7 @@ type ActionExtensionPointState = BaseStarterBrickState & {
 
 export interface ActionFormState
   extends BaseFormState<ActionExtensionState, ActionExtensionPointState> {
-  type: "menuItem";
+  type: typeof StarterBrickTypes.BUTTON;
   containerInfo: ElementInfo | null;
 }
 
@@ -178,7 +181,7 @@ type PanelExtensionPointState = BaseStarterBrickState & {
   definition: {
     type: StarterBrickType;
     containerSelector: string;
-    position?: MenuPosition;
+    position?: ButtonPosition;
     template: string;
     reader: SingleLayerReaderConfig;
     isAvailable: NormalizedAvailability;

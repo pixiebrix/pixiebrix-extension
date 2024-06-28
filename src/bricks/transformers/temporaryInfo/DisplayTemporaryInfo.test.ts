@@ -50,7 +50,11 @@ import { tick } from "@/starterBricks/starterBrickTestUtils";
 import pDefer from "p-defer";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type RendererErrorPayload } from "@/types/rendererTypes";
-import { setState } from "@/platform/state/stateController";
+import {
+  MergeStrategies,
+  setState,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";
@@ -376,9 +380,9 @@ describe("DisplayTemporaryInfo", () => {
     expect(jest.mocked(showTemporarySidebarPanel)).toHaveBeenCalled();
 
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { foo: 42 },
-      mergeStrategy: "replace",
+      mergeStrategy: MergeStrategies.REPLACE,
       modComponentId: extensionId,
       modId: null,
     });

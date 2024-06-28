@@ -23,6 +23,7 @@ import {
   type RegistryId,
   type Metadata,
   type Definition,
+  DefinitionKinds,
 } from "@/types/registryTypes";
 import {
   type StarterBrickType,
@@ -92,7 +93,7 @@ export interface StarterBrickDefinitionLike<
   apiVersion?: Definition["apiVersion"];
   metadata?: Definition["metadata"];
   definition: T;
-  kind: "extensionPoint";
+  kind: typeof DefinitionKinds.STARTER_BRICK;
 }
 
 export function isStarterBrickDefinitionProp(
@@ -144,7 +145,7 @@ export function assertStarterBrickDefinitionLike(
 
   const config = value as UnknownObject;
 
-  if (config.kind !== "extensionPoint") {
+  if (config.kind !== DefinitionKinds.STARTER_BRICK) {
     console.warn("Expected extension point", errorContext);
     throw new TypeError(
       "Expected kind 'extensionPoint' for StarterBrickDefinitionLike",

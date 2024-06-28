@@ -36,7 +36,7 @@ import { runBrickPreview } from "@/contentScript/messenger/api";
 import { useField, useFormikContext } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import getType from "@/runtime/getType";
-import { type BrickType } from "@/runtime/runtimeTypes";
+import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { type RegistryId } from "@/types/registryTypes";
@@ -63,7 +63,7 @@ function isTraceOptional(
   blockId: RegistryId,
   { type }: { type: BrickType | null },
 ): boolean {
-  return type === "reader" || HACK_TRACE_OPTIONAL.has(blockId);
+  return type === BrickTypes.READER || HACK_TRACE_OPTIONAL.has(blockId);
 }
 
 type PreviewInfo = {
@@ -207,7 +207,7 @@ const BrickPreview: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, brickConfig, brickInfo, objectHash(context ?? {})]);
 
-  if (brickInfo?.type === "renderer") {
+  if (brickInfo?.type === BrickTypes.RENDERER) {
     return (
       <div className="text-muted">
         Output previews are not currently supported for renderers

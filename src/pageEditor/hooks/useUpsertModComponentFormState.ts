@@ -38,7 +38,7 @@ import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEdi
 import { type Timestamp, type UUID } from "@/types/stringTypes";
 
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
-import type { RegistryId } from "@/types/registryTypes";
+import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
@@ -178,7 +178,7 @@ function useUpsertModComponentFormState(): SaveCallback {
 
             await upsertPackageConfig(
               packageId,
-              "extensionPoint",
+              DefinitionKinds.STARTER_BRICK,
               extensionPointConfig,
             );
           } catch (error) {

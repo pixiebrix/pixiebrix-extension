@@ -43,6 +43,7 @@ import {
 } from "@/runtime/runtimeUtils";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import {
+  BrickTypes,
   type ResolvedBrickConfig,
   unsafeAssumeValidArg,
 } from "@/runtime/runtimeTypes";
@@ -463,7 +464,7 @@ async function renderBrickArg(
   // Support YAML shorthand of leaving of `config:` directive for bricks that don't have parameters
   const stageTemplate = config.config ?? {};
 
-  if (type === "reader") {
+  if (type === BrickTypes.READER) {
     // `reducePipeline` is responsible for passing the correct root into runStage based on the BrickConfig
     if ((config.window ?? "self") === "self") {
       return { root: state.root } as unknown as RenderedArgs;
@@ -565,7 +566,7 @@ async function runBrick(
     });
   }
 
-  if (type === "renderer" && headless) {
+  if (type === BrickTypes.RENDERER && headless) {
     if (selectTraceEnabled(trace)) {
       getPlatform().debugger.traces.exit({
         ...trace,
@@ -777,7 +778,7 @@ export async function brickReducer(
     window: brickConfig.window,
   });
 
-  if (resolvedConfig.type === "effect") {
+  if (resolvedConfig.type === BrickTypes.EFFECT) {
     if (brickConfig.outputKey) {
       logger.warn(`Ignoring output key for effect ${brickConfig.id}`);
     }

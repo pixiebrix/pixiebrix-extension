@@ -44,6 +44,7 @@ import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedColla
 import type { PipelineExpression } from "@/types/runtimeTypes";
 import { Collapse } from "react-bootstrap";
 import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
+import { StateNamespaces } from "@/platform/state/stateController";
 
 const recordIdSchema: Schema = {
   type: "string",
@@ -98,7 +99,7 @@ const FormDataBindingOptions: React.FC<{
     if (nextStorageType === "state") {
       await setStorageValue({
         type: "state",
-        namespace: "blueprint",
+        namespace: StateNamespaces.MOD,
       } as Storage);
     } else {
       await setStorageValue({ type: nextStorageType } as Storage);

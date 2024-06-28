@@ -18,6 +18,7 @@
 import {
   INNER_SCOPE,
   type Metadata,
+  DefinitionKinds,
   type RegistryId,
 } from "@/types/registryTypes";
 import { castArray, cloneDeep, isEmpty } from "lodash";
@@ -138,17 +139,20 @@ export function baseFromModComponent<T extends StarterBrickType>(
 /**
  * Add the mod options to the form state if the mod component is a part of a mod
  */
-export function initModOptionsIfNeeded<TElement extends BaseFormState>(
-  element: TElement,
-  mods: ModDefinition[],
+export function initModOptionsIfNeeded<TFormState extends BaseFormState>(
+  modComponentFormState: TFormState,
+  modDefinitions: ModDefinition[],
 ) {
-  if (element.recipe?.id) {
-    const mod = mods?.find((x) => x.metadata.id === element.recipe?.id);
+  if (modComponentFormState.recipe?.id) {
+    const mod = modDefinitions?.find(
+      (x) => x.metadata.id === modComponentFormState.recipe?.id,
+    );
 
     if (mod?.options == null) {
-      element.optionsDefinition = emptyModOptionsDefinitionFactory();
+      modComponentFormState.optionsDefinition =
+        emptyModOptionsDefinitionFactory();
     } else {
-      element.optionsDefinition = {
+      modComponentFormState.optionsDefinition = {
         schema: mod.options.schema.properties
           ? mod.options.schema
           : ({
@@ -282,7 +286,7 @@ export async function lookupStarterBrick<
     );
     const innerStarterBrick = {
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-      kind: "extensionPoint",
+      kind: DefinitionKinds.STARTER_BRICK,
       metadata: internalStarterBrickMetaFactory(),
       ...definition,
     } as unknown as StarterBrickDefinitionLike<TDefinition> & {
@@ -318,7 +322,7 @@ export function baseSelectStarterBrick(
 
   return {
     apiVersion: formState.apiVersion,
-    kind: "extensionPoint",
+    kind: DefinitionKinds.STARTER_BRICK,
     metadata: {
       id: metadata.id,
       // The server requires the version to save the brick, even though it's not marked as required
@@ -346,7 +350,7 @@ export function modComponentWithInnerDefinitions(
     result.definitions = {
       ...result.definitions,
       [starterBrick]: {
-        kind: "extensionPoint",
+        kind: DefinitionKinds.STARTER_BRICK,
         definition: starterBrickDefinition,
       },
     };

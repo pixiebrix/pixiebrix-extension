@@ -35,7 +35,7 @@ import {
   type HydratedModComponent,
   type SerializedModComponent,
 } from "@/types/modComponentTypes";
-import { type RegistryId } from "@/types/registryTypes";
+import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { InvalidTypeError } from "@/errors/genericErrors";
 import { assertNotNullish, type Nullishable } from "./nullishUtils";
@@ -85,7 +85,9 @@ export function isModComponentFromMod(mod: Mod): boolean {
 export function isModDefinition(
   mod: Mod,
 ): mod is ModDefinition | UnavailableMod {
-  return mod && "kind" in mod && mod.kind === "recipe" && "sharing" in mod;
+  return (
+    mod && "kind" in mod && mod.kind === DefinitionKinds.MOD && "sharing" in mod
+  );
 }
 
 /**

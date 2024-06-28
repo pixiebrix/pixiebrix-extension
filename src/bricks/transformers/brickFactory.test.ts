@@ -39,6 +39,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 
 import { toExpression } from "@/utils/expressionUtils";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 TEST_setContext("contentScript");
 
@@ -119,7 +120,7 @@ describe("isUserDefinedBrick", () => {
 test("inner pipelines receive correct context", async () => {
   const json = {
     apiVersion: "v3",
-    kind: "component",
+    kind: DefinitionKinds.BRICK,
     metadata: {
       id: "test/pipeline-echo",
       name: "Pipeline Echo brick",
@@ -202,7 +203,7 @@ describe("getModVariableSchema", () => {
   it("unions mod variables", async () => {
     const json = {
       apiVersion: "v3",
-      kind: "component",
+      kind: DefinitionKinds.BRICK,
       metadata: {
         id: "test/pipeline-echo",
         name: "State Brick",
@@ -262,7 +263,7 @@ describe("isPageStateAware", () => {
   it("detects any page state aware blocks", async () => {
     const json = {
       apiVersion: "v3",
-      kind: "component",
+      kind: DefinitionKinds.BRICK,
       metadata: {
         id: "test/pipeline-echo",
         name: "State Brick",
@@ -295,7 +296,7 @@ describe("isPageStateAware", () => {
   it("requires at least one page state brick", async () => {
     const json = {
       apiVersion: "v3",
-      kind: "component",
+      kind: DefinitionKinds.BRICK,
       metadata: {
         id: "test/pipeline-echo",
         name: "State Brick",
@@ -324,7 +325,7 @@ describe("tracing", () => {
   it("passes branches to inner blocks", async () => {
     const json = {
       apiVersion: "v3",
-      kind: "component",
+      kind: DefinitionKinds.BRICK,
       metadata: {
         id: "test/pipeline-echo",
         name: "Pipeline Echo brick",

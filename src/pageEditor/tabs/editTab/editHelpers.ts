@@ -16,7 +16,7 @@
  */
 
 import getType from "@/runtime/getType";
-import { type BrickType } from "@/runtime/runtimeTypes";
+import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
 import {
   type BrickConfig,
   type BrickPipeline,
@@ -43,7 +43,7 @@ const DEFAULT_OUTPUT_KEY = "output" as SafeString;
 export function showOutputKey(brickType: BrickType): boolean {
   // Output keys for effects are ignored by the runtime (and generate a warning at runtime)
   // Renderers are always the last brick in a pipeline, so they don't need an output key
-  return brickType !== "effect" && brickType !== "renderer";
+  return brickType !== BrickTypes.EFFECT && brickType !== BrickTypes.RENDERER;
 }
 
 /**

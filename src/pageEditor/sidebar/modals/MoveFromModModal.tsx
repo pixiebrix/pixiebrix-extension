@@ -56,9 +56,7 @@ const MoveFromModModal: React.FC = () => {
   const { isRemoveFromModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
-  const activeModComponentFormState = useSelector(
-    selectActiveModComponentFormState,
-  );
+  const modComponentFormState = useSelector(selectActiveModComponentFormState);
 
   const dispatch = useDispatch();
   const hideModal = useCallback(() => {
@@ -70,11 +68,14 @@ const MoveFromModModal: React.FC = () => {
       const keepLocalCopy = moveOrRemove === "move";
 
       try {
-        const elementId = activeModComponentFormState?.uuid;
-        assertNotNullish(elementId, "elementId not found for active element");
+        const modComponentId = modComponentFormState?.uuid;
+        assertNotNullish(
+          modComponentId,
+          "mod component id not found for active mod component",
+        );
         dispatch(
           actions.removeModComponentFormStateFromMod({
-            modComponentId: elementId,
+            modComponentId,
             keepLocalCopy,
           }),
         );
@@ -88,7 +89,7 @@ const MoveFromModModal: React.FC = () => {
         helpers.setSubmitting(false);
       }
     },
-    [activeModComponentFormState?.uuid, dispatch, hideModal],
+    [modComponentFormState?.uuid, dispatch, hideModal],
   );
 
   const radioItems: RadioItem[] = [
@@ -143,8 +144,8 @@ const MoveFromModModal: React.FC = () => {
     <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>
-          Remove <em>{activeModComponentFormState?.label}</em> from mod{" "}
-          <em>{activeModComponentFormState?.recipe?.name}</em>?
+          Remove <em>{modComponentFormState?.label}</em> from mod{" "}
+          <em>{modComponentFormState?.recipe?.name}</em>?
         </Modal.Title>
       </Modal.Header>
       <Form

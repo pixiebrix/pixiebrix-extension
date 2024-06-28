@@ -25,18 +25,17 @@ import {
 } from "./authTypes";
 import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
-import { isEmpty, omit } from "lodash";
+import { omit } from "lodash";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { StorageItem } from "webext-storage";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { ReusableAbortController } from "abort-utils";
+import { removeOAuth2Token } from "@/background/messenger/api";
 
 const extensionKeyStorage = new StorageItem("extensionKey", {
   defaultValue: {} as Partial<TokenAuthData>,
 });
-const partnerTokenStorage = new StorageItem("partnerToken", {
-  defaultValue: {} as Partial<PartnerAuthData>,
-});
+const partnerTokenStorage = new StorageItem<PartnerAuthData>("partnerToken");
 
 type AuthListener = (auth: Partial<TokenAuthData | PartnerAuthData>) => void;
 
@@ -48,11 +47,11 @@ const authChanges = new SimpleEventTarget<
 >();
 
 // Use listeners to allow inversion of control and avoid circular dependency with error reporter.
-export function addListener(handler: AuthListener): void {
+export function addAuthListener(handler: AuthListener): void {
   authChanges.add(handler, { signal: controller.signal });
 }
 
-export function removeListener(handler: AuthListener): void {
+export function removeAuthListener(handler: AuthListener): void {
   authChanges.remove(handler);
 }
 
@@ -93,17 +92,29 @@ export async function getExtensionToken(): Promise<string | undefined> {
   return token;
 }
 
-export async function getPartnerAuthData(): Promise<Partial<PartnerAuthData>> {
-  return partnerTokenStorage.get();
+export async function getPartnerAuthData(): Promise<
+  PartnerAuthData | undefined
+> {
+  const storageValue = await partnerTokenStorage.get();
+  if (storageValue == null) {
+    return undefined;
+  }
+
+  // Backwards compatibility with old, looser type -- just clear the bad data and let the user log in again
+  if (!storageValue?.authId || !storageValue?.token) {
+    await clearPartnerAuthData();
+    return undefined;
+  }
+
+  return storageValue;
 }
 
 /**
  * Set authentication data when using the partner JWT to authenticate.
- *
- * @see clearPartnerAuth
  */
 export async function setPartnerAuthData(data: PartnerAuthData): Promise<void> {
-  if (!isEmpty(data.authId) && isEmpty(data.token)) {
+  // Backwards compatibility with old, looser type
+  if (data.token == null) {
     // Should use clearPartnerAuth for clearing the partner integration JWT
     throw new Error("Received null/blank token for partner integration");
   }
@@ -112,12 +123,23 @@ export async function setPartnerAuthData(data: PartnerAuthData): Promise<void> {
 }
 
 /**
- * Clear authentication data when using the partner JWT to authenticate.
- *
- * @see setPartnerAuthData
+ * Clear all partner OAuth2 tokens and reset api query caches
  */
-export async function clearPartnerAuth(): Promise<void> {
-  return partnerTokenStorage.set({});
+export async function clearPartnerAuthData(): Promise<void> {
+  // Old code that clears all cached auth tokens
+  // There is an issue with this api in Edge: https://github.com/w3c/webextensions/issues/648
+  // See: https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
+  // await chromeP.identity.clearAllCachedAuthTokens();
+
+  const partnerAuthData = await partnerTokenStorage.get();
+  if (partnerAuthData?.token) {
+    console.debug(
+      "Clearing partner auth for authId: " + partnerAuthData.authId,
+    );
+    await removeOAuth2Token(partnerAuthData.token);
+  }
+
+  await partnerTokenStorage.remove();
 }
 
 /**
@@ -139,7 +161,7 @@ export async function getAuthHeaders(): Promise<UnknownObject | null> {
     };
   }
 
-  if (partnerAuth?.token) {
+  if (partnerAuth) {
     return {
       ...partnerAuth.extraHeaders,
       // Put Authorization second to avoid overriding Authorization header. (Is defensive for now, currently
@@ -153,12 +175,6 @@ export async function getAuthHeaders(): Promise<UnknownObject | null> {
 
 /**
  * Return `true` if the extension is linked to the API. I.e., that the user is "logged in".
- *
- * NOTE: do not use this as a check before making an authenticated API call. Instead, use `maybeGetLinkedApiClient`
- * which avoids a race condition between the time the check is made and underlying `getExtensionToken` call to get
- * the token.
- *
- * @see maybeGetLinkedApiClient
  */
 export async function isLinked(): Promise<boolean> {
   return (await getAuthHeaders()) != null;

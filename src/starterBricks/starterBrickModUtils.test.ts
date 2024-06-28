@@ -25,7 +25,10 @@ import {
   modComponentDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import extensionPointRegistry from "@/starterBricks/registry";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrick,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { activatedModComponentFactory } from "@/testUtils/factories/modComponentFactories";
 
 extensionPointRegistry.lookup = jest.fn();
@@ -40,7 +43,7 @@ describe("starterBrickModUtils", () => {
       const result = await getContainedStarterBrickTypes(
         defaultModDefinitionFactory(),
       );
-      expect(result).toStrictEqual(["menuItem"]);
+      expect(result).toStrictEqual([StarterBrickTypes.BUTTON]);
     });
 
     test("returns only unique types", async () => {
@@ -52,12 +55,12 @@ describe("starterBrickModUtils", () => {
           ],
         }),
       );
-      expect(result).toStrictEqual(["menuItem"]);
+      expect(result).toStrictEqual([StarterBrickTypes.BUTTON]);
     });
 
     test("gets types without inner definitions", async () => {
       extensionPointRegistryLookupMock.mockResolvedValue({
-        kind: "menuItem",
+        kind: StarterBrickTypes.BUTTON,
       } as StarterBrick);
 
       const result = await getContainedStarterBrickTypes(
@@ -67,7 +70,7 @@ describe("starterBrickModUtils", () => {
         }),
       );
 
-      expect(result).toStrictEqual(["menuItem"]);
+      expect(result).toStrictEqual([StarterBrickTypes.BUTTON]);
     });
 
     test("returns non-null values", async () => {
@@ -99,18 +102,18 @@ describe("starterBrickModUtils", () => {
 
   describe("getAllModComponenetDefinitionsWithType", () => {
     test("returns definitions with type", () => {
-      const menuItem = modComponentDefinitionFactory();
+      const button = modComponentDefinitionFactory();
 
       const modDefinition = defaultModDefinitionFactory({
-        extensionPoints: [menuItem],
+        extensionPoints: [button],
       });
 
       const result = getAllModComponentDefinitionsWithType(
         modDefinition,
-        "menuItem",
+        StarterBrickTypes.BUTTON,
       );
 
-      expect(result).toStrictEqual([menuItem]);
+      expect(result).toStrictEqual([button]);
     });
 
     test("returns empty array if no definitions with type", () => {

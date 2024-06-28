@@ -19,13 +19,25 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { cloneDeep, isEqual, merge } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { type JsonObject } from "type-fest";
+import { type JsonObject, type ValueOf } from "type-fest";
 import { assertPlatformCapability } from "@/platform/platformContext";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
-type MergeStrategy = "shallow" | "replace" | "deep";
+export const MergeStrategies = {
+  SHALLOW: "shallow",
+  REPLACE: "replace",
+  DEEP: "deep",
+} as const;
 
-type StateNamespace = "blueprint" | "extension" | "shared";
+export type MergeStrategy = ValueOf<typeof MergeStrategies>;
+
+export const StateNamespaces = {
+  MOD: "blueprint",
+  PRIVATE: "extension",
+  PUBLIC: "shared",
+} as const;
+
+export type StateNamespace = ValueOf<typeof StateNamespaces>;
 
 const privateState = new Map<UUID, JsonObject>();
 
@@ -42,16 +54,16 @@ function mergeState(
   const cloned = cloneDeep(update);
 
   switch (strategy) {
-    case "replace": {
+    case MergeStrategies.REPLACE: {
       return cloned;
     }
 
-    case "deep": {
+    case MergeStrategies.DEEP: {
       // `merge` mutates the first argument, so we clone it first
       return merge(cloneDeep(previous), cloned);
     }
 
-    case "shallow": {
+    case MergeStrategies.SHALLOW: {
       return { ...previous, ...cloned };
     }
 
@@ -117,7 +129,7 @@ export function setState({
   };
 
   switch (namespace) {
-    case "shared": {
+    case StateNamespaces.PUBLIC: {
       const previous = modState.get(null) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
       modState.set(null, next);
@@ -125,7 +137,7 @@ export function setState({
       return next;
     }
 
-    case "blueprint": {
+    case StateNamespaces.MOD: {
       const previous = modState.get(modId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
       modState.set(modId, next);
@@ -133,7 +145,7 @@ export function setState({
       return next;
     }
 
-    case "extension": {
+    case StateNamespaces.PRIVATE: {
       assertNotNullish(
         modComponentId,
         "Invalid context: extensionId not found",
@@ -165,15 +177,15 @@ export function getState({
   assertPlatformCapability("state");
 
   switch (namespace) {
-    case "shared": {
+    case StateNamespaces.PUBLIC: {
       return modState.get(null) ?? {};
     }
 
-    case "blueprint": {
+    case StateNamespaces.MOD: {
       return modState.get(modId) ?? {};
     }
 
-    case "extension": {
+    case StateNamespaces.PRIVATE: {
       assertNotNullish(
         modComponentId,
         "Invalid context: extensionId not found",

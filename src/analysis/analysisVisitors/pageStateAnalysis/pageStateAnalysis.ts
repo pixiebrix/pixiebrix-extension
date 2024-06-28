@@ -26,6 +26,7 @@ import {
   type StateStorage,
   type Storage,
 } from "@/bricks/renderers/customForm";
+import { StateNamespaces } from "@/platform/state/stateController";
 
 const fallbackMessage =
   "This brick is not in a Mod. It will fall back to Public state, which other Mods can read and overwrite.";
@@ -53,14 +54,17 @@ class PageStateVisitor extends AnalysisVisitorWithResolvedBricksABC {
       blockConfig.id === SetPageState.BRICK_ID ||
       blockConfig.id === GetPageState.BRICK_ID
     ) {
-      if (blockConfig.config.namespace === "blueprint" && !this.isInMod) {
+      if (
+        blockConfig.config.namespace === StateNamespaces.MOD &&
+        !this.isInMod
+      ) {
         this.annotations.push({
           position: nestedPosition(position, "config", "namespace"),
           message: fallbackMessage,
           analysisId: this.id,
           type: AnnotationType.Warning,
         });
-      } else if (blockConfig.config.namespace === "shared") {
+      } else if (blockConfig.config.namespace === StateNamespaces.PUBLIC) {
         this.annotations.push({
           position: nestedPosition(position, "config", "namespace"),
           message: publicMessage,
@@ -75,14 +79,14 @@ class PageStateVisitor extends AnalysisVisitorWithResolvedBricksABC {
       (blockConfig.config.storage as Storage)?.type === "state"
     ) {
       const storage = blockConfig.config.storage as StateStorage;
-      if (storage.namespace === "blueprint" && !this.isInMod) {
+      if (storage.namespace === StateNamespaces.MOD && !this.isInMod) {
         this.annotations.push({
           position: nestedPosition(position, "config", "storage", "namespace"),
           message: fallbackMessage,
           analysisId: this.id,
           type: AnnotationType.Warning,
         });
-      } else if (storage.namespace === "shared") {
+      } else if (storage.namespace === StateNamespaces.PUBLIC) {
         this.annotations.push({
           position: nestedPosition(position, "config", "storage", "namespace"),
           message: publicMessage,

@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setState } from "@/platform/state/stateController";
+import {
+  MergeStrategies,
+  setState,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 import { uuidv4 } from "@/types/helpers";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
@@ -28,9 +32,9 @@ describe("pageState", () => {
     const blueprintId = registryIdFactory();
 
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { foo: { bar: "baz" } },
-      mergeStrategy: "deep",
+      mergeStrategy: MergeStrategies.DEEP,
       modComponentId: uuidv4(),
       modId: blueprintId,
     });
@@ -47,19 +51,19 @@ describe("pageState", () => {
     const extensionId = uuidv4();
 
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: {
         asyncState: { isFetching: false, data: "foo", currentData: "foo" },
       },
-      mergeStrategy: "deep",
+      mergeStrategy: MergeStrategies.DEEP,
       modComponentId: uuidv4(),
       modId: blueprintId,
     });
 
     const updatedState = setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { asyncState: { isFetching: true, currentData: null } },
-      mergeStrategy: "deep",
+      mergeStrategy: MergeStrategies.DEEP,
       modComponentId: extensionId,
       modId: blueprintId,
     });

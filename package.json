@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "2.0.4-alpha.0",
+  "version": "2.0.5-alpha.0",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "TZ=UTC jest",
@@ -59,6 +59,7 @@
     "ace-builds": "^1.35.0",
     "autocompleter": "^9.2.1",
     "axios": "^0.28.1",
+    "axios-auth-refresh": "^3.3.6",
     "batched-function": "^2.0.1",
     "bootstrap": "^4.6.0",
     "bootstrap-icons": "^1.11.3",
