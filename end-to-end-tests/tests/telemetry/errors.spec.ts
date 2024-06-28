@@ -28,7 +28,10 @@ async function waitForBackgroundPageRequest(
 
 const ERROR_SERVICE_ENDPOINT = "https://browser-intake-datadoghq.com/api/v2/*";
 
-async function getSentErrors(extensionId: string, context: BrowserContext) {
+async function getErrorsFromRequest(
+  extensionId: string,
+  context: BrowserContext,
+) {
   // TODO: due to Datadog SDK implementation, it will take ~30 seconds for the
   //  request to be sent. We should figure out a way to induce the request to be sent sooner.
   //  See this datadog support request: https://help.datadoghq.com/hc/en-us/requests/1754158
@@ -76,7 +79,7 @@ test("can report errors to telemetry service", async ({
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
   await expect(page.getByText("Something went wrong.")).toBeVisible();
 
-  const sentErrors = await getSentErrors(extensionId, context);
+  const sentErrors = await getErrorsFromRequest(extensionId, context);
 
   expect(sentErrors).toContainEqual(
     expect.objectContaining({
@@ -139,7 +142,7 @@ test("can report a service worker error to telemetry service", async ({
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
   await expect(page.getByText("An error occurred")).toBeVisible();
 
-  const sentErrors = await getSentErrors(extensionId, context);
+  const sentErrors = await getErrorsFromRequest(extensionId, context);
 
   expect(sentErrors).toContainEqual(
     expect.objectContaining({
