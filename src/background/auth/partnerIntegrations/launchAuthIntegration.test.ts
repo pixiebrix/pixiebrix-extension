@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { registry } from "@/background/messenger/api";
+import { registry, removeOAuth2Token } from "@/background/messenger/api";
 import oauth2IntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import { launchAuthIntegration } from "@/background/auth/partnerIntegrations/launchAuthIntegration";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -27,7 +27,7 @@ import {
 } from "@/testUtils/factories/integrationFactories";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { type Metadata } from "@/types/registryTypes";
-import { removeOAuth2Token, setPartnerAuthData } from "@/auth/authStorage";
+import { setPartnerAuthData } from "@/auth/authStorage";
 
 jest.mock("@/integrations/util/readRawConfigurations");
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);

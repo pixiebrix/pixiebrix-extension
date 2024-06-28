@@ -68,6 +68,8 @@ describe("refreshPartnerAuthentication", () => {
       refreshToken: "test_refresh_token",
       refreshUrl: "https://my.testrefreshurl.com",
       refreshParamPayload: {
+        hosturl: "https://control-room.example.com",
+        grant_type: "refresh_token",
         client_id: "1234556",
         refresh_token: "test_refresh_token",
       },
@@ -86,7 +88,7 @@ describe("refreshPartnerAuthentication", () => {
     expect(axiosRequestConfig).toMatchObject({
       method: "post",
       url: "https://my.testrefreshurl.com",
-      data: "client_id=1234556&refresh_token=test_refresh_token",
+      data: "hosturl=https%3A%2F%2Fcontrol-room.example.com&grant_type=refresh_token&client_id=1234556&refresh_token=test_refresh_token",
       headers: {
         refresh_header_1: "baz",
         refresh_header_2: "qux",
@@ -102,6 +104,8 @@ describe("refreshPartnerAuthentication", () => {
       refreshToken: "test_refresh_token",
       refreshUrl: "https://my.testrefreshurl.com",
       refreshParamPayload: {
+        hosturl: "https://control-room.example.com",
+        grant_type: "refresh_token",
         client_id: "1234556",
         refresh_token: "test_refresh_token",
       },
@@ -129,6 +133,8 @@ describe("refreshPartnerAuthentication", () => {
       refreshToken: "test_refresh_token",
       refreshUrl: "https://my.testrefreshurl.com",
       refreshParamPayload: {
+        hosturl: "https://control-room.example.com",
+        grant_type: "refresh_token",
         client_id: "1234556",
         refresh_token: "test_refresh_token",
       },
@@ -136,7 +142,7 @@ describe("refreshPartnerAuthentication", () => {
     };
     getPartnerAuthDataMock.mockResolvedValue(partnerAuthData);
     axiosMock.onPost("https://my.testrefreshurl.com").reply(200, {
-      token: "new_test_token",
+      access_token: "new_test_token",
       refresh_token: "new_test_refresh_token",
       other_auth_data_value: 123,
       foo: "bar",
@@ -147,6 +153,8 @@ describe("refreshPartnerAuthentication", () => {
       token: "new_test_token",
       refreshToken: "new_test_refresh_token",
       refreshParamPayload: {
+        hosturl: "https://control-room.example.com",
+        grant_type: "refresh_token",
         client_id: "1234556",
         refresh_token: "new_test_refresh_token",
       },
