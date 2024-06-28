@@ -18,17 +18,17 @@
 import { type Locator, type Page } from "playwright";
 
 export class BasePageObject {
-  protected readonly root: Locator;
-  protected readonly page: Page;
+  readonly root: Locator;
+  readonly page: Page;
 
-  protected locator: Locator["locator"];
-  protected getByAltText: Locator["getByAltText"];
-  protected getByLabel: Locator["getByLabel"];
-  protected getByPlaceholder: Locator["getByPlaceholder"];
-  protected getByRole: Locator["getByRole"];
-  protected getByTestId: Locator["getByTestId"];
-  protected getByText: Locator["getByText"];
-  protected getByTitle: Locator["getByTitle"];
+  readonly locator: Locator["locator"];
+  readonly getByAltText: Locator["getByAltText"];
+  readonly getByLabel: Locator["getByLabel"];
+  readonly getByPlaceholder: Locator["getByPlaceholder"];
+  readonly getByRole: Locator["getByRole"];
+  readonly getByTestId: Locator["getByTestId"];
+  readonly getByText: Locator["getByText"];
+  readonly getByTitle: Locator["getByTitle"];
 
   constructor(rootLocatorOrPage: Locator | Page) {
     if ("page" in rootLocatorOrPage) {
@@ -39,13 +39,13 @@ export class BasePageObject {
       this.page = rootLocatorOrPage;
     }
 
-    this.locator = this.root.locator;
-    this.getByAltText = this.root.getByAltText;
-    this.getByLabel = this.root.getByLabel;
-    this.getByPlaceholder = this.root.getByPlaceholder;
-    this.getByRole = this.root.getByRole;
-    this.getByTestId = this.root.getByTestId;
-    this.getByText = this.root.getByText;
-    this.getByTitle = this.root.getByTitle;
+    this.locator = this.root.locator.bind(this.root);
+    this.getByAltText = this.root.getByAltText.bind(this.root);
+    this.getByLabel = this.root.getByLabel.bind(this.root);
+    this.getByPlaceholder = this.root.getByPlaceholder.bind(this.root);
+    this.getByRole = this.root.getByRole.bind(this.root);
+    this.getByTestId = this.root.getByTestId.bind(this.root);
+    this.getByText = this.root.getByText.bind(this.root);
+    this.getByTitle = this.root.getByTitle.bind(this.root);
   }
 }
