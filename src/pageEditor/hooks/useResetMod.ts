@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import { selectModComponentFormStates } from "@/pageEditor/slices/editorSelectors";
 
-function useResetRecipe(): (modId: RegistryId) => Promise<void> {
+function useResetMod(): (modId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
   const dispatch = useDispatch();
   const resetExtension = useResetExtension();
@@ -55,7 +55,7 @@ function useResetRecipe(): (modId: RegistryId) => Promise<void> {
           ),
       );
 
-      dispatch(actions.resetMetadataAndOptionsForRecipe(modId));
+      dispatch(actions.resetMetadataAndOptionsForMod(modId));
       dispatch(actions.restoreDeletedModComponentFormStatesForMod(modId));
       dispatch(actions.setActiveModId(modId));
     },
@@ -63,4 +63,4 @@ function useResetRecipe(): (modId: RegistryId) => Promise<void> {
   );
 }
 
-export default useResetRecipe;
+export default useResetMod;

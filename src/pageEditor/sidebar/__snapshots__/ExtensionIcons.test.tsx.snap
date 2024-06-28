@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`RecipeHasUpdateIcon 1`] = `
+exports[`ModHasUpdateIcon 1`] = `
 <DocumentFragment>
   <svg
     aria-labelledby="svg-inline--fa-title-000000000000"

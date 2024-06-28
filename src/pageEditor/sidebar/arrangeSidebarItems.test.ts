@@ -26,16 +26,16 @@ import {
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // Mods
-const ID_FOO = validateRegistryId("test/recipe-foo");
+const ID_FOO = validateRegistryId("test/mod-foo");
 const modMetadataFoo = modMetadataFactory({
   id: ID_FOO,
   name: "Foo Mod",
 });
 
-const ID_BAR = validateRegistryId("test/recipe-bar");
+const ID_BAR = validateRegistryId("test/mod-bar");
 const modMetadataBar = modMetadataFactory({
   id: ID_BAR,
-  name: "Bar Recipe",
+  name: "Bar Mod",
 });
 
 // Mod Components
@@ -98,7 +98,7 @@ const formStateModComponentOrphanH: ActionFormState = menuItemFormStateFactory({
 });
 
 describe("arrangeSidebarItems()", () => {
-  test("sort orphaned recipes by metadata.name", () => {
+  test("sort orphaned mods by metadata.name", () => {
     const sidebarItems = arrangeSidebarItems({
       modComponentFormStates: [formStateModComponentOrphanC],
       cleanModComponents: [cleanModComponentOrphanH, cleanModComponentOrphanG],
@@ -111,7 +111,7 @@ describe("arrangeSidebarItems()", () => {
     ]);
   });
 
-  test("groups recipes and sorts mod components by label", () => {
+  test("groups mods and sorts mod components by label", () => {
     const sidebarItems = arrangeSidebarItems({
       modComponentFormStates: [
         formStateModComponentBarE,

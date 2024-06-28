@@ -94,12 +94,12 @@ export type EditorStateV1 = {
   activeElementId: UUID | null;
 
   /**
-   * The registry id of the active recipe, if a recipe is selected
+   * The registry id of the active mod, if a mod is selected
    */
   activeRecipeId: RegistryId | null;
 
   /**
-   * The registry id of the 'expanded' recipe in the sidebar, if one is expanded
+   * The registry id of the 'expanded' mod in the sidebar, if one is expanded
    */
   expandedRecipeId: RegistryId | null;
 
@@ -141,12 +141,12 @@ export type EditorStateV1 = {
   copiedBlock?: BrickConfig;
 
   /**
-   * Unsaved, changed recipe options definitions
+   * Unsaved, changed mod options definitions
    */
   dirtyRecipeOptionsById: Record<RegistryId, ModOptionsDefinition>;
 
   /**
-   * Unsaved, changed recipe metadata
+   * Unsaved, changed mod metadata
    */
   dirtyRecipeMetadataById: Record<RegistryId, ModMetadataFormState>;
 
@@ -165,14 +165,14 @@ export type EditorStateV1 = {
   addBlockLocation?: AddBrickLocation;
 
   /**
-   * When creating a new blueprint from an existing extension, should we keep a separate copy of the extension?
+   * When creating a new mod from an existing mod component, should we keep a separate copy of the mod component?
    */
-  // XXX: refactor & remove from top-level Redux state. This is a property of the create recipe workflow:
+  // XXX: refactor & remove from top-level Redux state. This is a property of the create mod workflow:
   // https://github.com/pixiebrix/pixiebrix-extension/issues/3264
   keepLocalCopyOnCreateRecipe: boolean;
 
   /**
-   * Unsaved extensions that have been deleted from a recipe
+   * Unsaved extensions that have been deleted from a mod
    */
   deletedElementsByRecipeId: Record<RegistryId, BaseFormStateV1[]>;
 
@@ -310,7 +310,7 @@ export type EditorStateV3 = Except<
   /**
    * When creating a new mod from an existing mod component, should we keep a separate copy of the mod component?
    */
-  // XXX: refactor & remove from top-level Redux state. This is a property of the create recipe workflow:
+  // XXX: refactor & remove from top-level Redux state. This is a property of the create mod workflow:
   // https://github.com/pixiebrix/pixiebrix-extension/issues/3264
   keepLocalCopyOnCreateMod: boolean;
 

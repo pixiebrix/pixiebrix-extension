@@ -25,7 +25,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/data/service/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
-import { extensionWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
+import { modComponentWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
 import {
   useGetEditablePackagesQuery,
   useSaveStandaloneModDefinitionMutation,
@@ -202,7 +202,7 @@ function useUpsertModComponentFormState(): SaveCallback {
           const extensionPointConfig = adapter.selectStarterBrickDefinition(
             modComponentFormState,
           );
-          modComponent = extensionWithInnerDefinitions(
+          modComponent = modComponentWithInnerDefinitions(
             modComponent,
             extensionPointConfig.definition,
           );

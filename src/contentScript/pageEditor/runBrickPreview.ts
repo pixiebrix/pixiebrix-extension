@@ -39,10 +39,10 @@ export async function runBrickPreview({
   blockConfig,
   context,
   apiVersion,
-  blueprintId,
+  modId,
   rootSelector,
 }: RunBrickArgs & {
-  blueprintId: Nullishable<RegistryId>;
+  modId: Nullishable<RegistryId>;
 }): Promise<unknown> {
   const versionOptions = apiVersionOptions(apiVersion);
 
@@ -54,7 +54,7 @@ export async function runBrickPreview({
 
   const state: IntermediateState = {
     context: extendModVariableContext(context, {
-      blueprintId,
+      modId,
       update: true,
       options: versionOptions,
     }),

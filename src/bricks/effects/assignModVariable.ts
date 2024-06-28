@@ -96,14 +96,14 @@ class AssignModVariable extends EffectABC {
     }>,
     { logger }: BrickOptions,
   ): Promise<void> {
-    const { blueprintId, extensionId } = logger.context;
+    const { blueprintId: modId, extensionId: modComponentId } = logger.context;
 
     setState({
       namespace: StateNamespaces.MOD,
       data: { [variableName]: value },
       mergeStrategy: MergeStrategies.SHALLOW,
-      extensionId,
-      blueprintId,
+      modComponentId,
+      modId,
     });
   }
 }

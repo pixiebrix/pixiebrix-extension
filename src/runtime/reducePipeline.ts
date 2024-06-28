@@ -962,7 +962,7 @@ export async function reducePipeline(
       isLastBlock: index === pipelineArray.length - 1,
       previousOutput: output,
       context: extendModVariableContext(localVariableContext, {
-        blueprintId: pipelineLogger.context.blueprintId,
+        modId: pipelineLogger.context.blueprintId,
         options,
         // Mod variable is updated when each block is run
         update: true,
@@ -1035,7 +1035,7 @@ async function reducePipelineExpression(
       previousOutput: legacyOutput,
       // Assume @input and @options are present
       context: extendModVariableContext(context as BrickArgsContext, {
-        blueprintId: pipelineLogger.context.blueprintId,
+        modId: pipelineLogger.context.blueprintId,
         options,
         // Update mod variable when each block is run
         update: true,

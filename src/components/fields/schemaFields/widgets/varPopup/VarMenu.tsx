@@ -174,8 +174,8 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     async () =>
       getPageState(inspectedTab, {
         namespace: StateNamespaces.MOD,
-        extensionId: null,
-        blueprintId: activeModComponentFormState.recipe?.id,
+        modComponentId: null,
+        modId: activeModComponentFormState.recipe?.id,
       }),
     [],
   );

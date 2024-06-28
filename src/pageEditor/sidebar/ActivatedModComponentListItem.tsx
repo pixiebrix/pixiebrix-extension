@@ -27,7 +27,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import reportError from "@/telemetry/reportError";
 import { ListGroup } from "react-bootstrap";
 import {
-  ExtensionIcon,
+  ModComponentIcon,
   NotAvailableIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
 import {
@@ -78,7 +78,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   const isActive = activeModComponentFormState?.uuid === modComponent.id;
   // Get the selected mod id, or the mod id of the selected mod component
   const modId = activeModId ?? activeModComponentFormState?.recipe?.id;
-  // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
+  // Set the alternate background if this item isn't active, but either its mod or another item in its mod is active
   const hasActiveModBackground =
     !isActive && modId && modComponent._recipe?.id === modId;
 
@@ -149,7 +149,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   return (
     <ListGroup.Item
       className={cx(styles.root, {
-        [styles.recipeBackground ?? ""]: hasActiveModBackground,
+        [styles.modBackground ?? ""]: hasActiveModBackground,
       })}
       action
       active={isActive}
@@ -165,7 +165,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           [styles.nested ?? ""]: isNested,
         })}
       >
-        {type ? <ExtensionIcon type={type} /> : null}
+        {type ? <ModComponentIcon type={type} /> : null}
       </span>
       <span className={styles.name}>
         {modComponent.label ?? modComponent.id}

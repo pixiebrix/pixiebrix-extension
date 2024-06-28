@@ -383,8 +383,8 @@ describe("DisplayTemporaryInfo", () => {
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       mergeStrategy: MergeStrategies.REPLACE,
-      extensionId,
-      blueprintId: null,
+      modComponentId: extensionId,
+      modId: null,
     });
 
     await tick();

@@ -39,8 +39,8 @@ type ActionMenuProps = {
   onClone: () => Promise<void>;
   onReset?: () => Promise<void>;
   isDirty?: boolean;
-  onAddToRecipe?: () => Promise<void>;
-  onRemoveFromRecipe?: () => Promise<void>;
+  onAddToMod?: () => Promise<void>;
+  onRemoveFromMod?: () => Promise<void>;
   disabled?: boolean;
 };
 
@@ -52,8 +52,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   onClone,
   onReset,
   isDirty,
-  onAddToRecipe,
-  onRemoveFromRecipe,
+  onAddToMod,
+  onRemoveFromMod,
   disabled,
 }) => {
   const menuItems: EllipsisMenuItem[] = [
@@ -63,7 +63,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       action: onReset,
       disabled: !isDirty || disabled,
     },
-    onAddToRecipe && {
+    onAddToMod && {
       title: "Add to mod",
       icon: (
         <FontAwesomeIcon
@@ -72,10 +72,10 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
           className={styles.addIcon}
         />
       ),
-      action: onAddToRecipe,
+      action: onAddToMod,
       disabled,
     },
-    onRemoveFromRecipe && {
+    onRemoveFromMod && {
       title: "Move from mod",
       icon: (
         <FontAwesomeIcon
@@ -84,7 +84,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
           className={styles.removeIcon}
         />
       ),
-      action: onRemoveFromRecipe,
+      action: onRemoveFromMod,
       disabled,
     },
     {
