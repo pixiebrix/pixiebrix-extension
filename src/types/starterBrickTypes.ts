@@ -24,16 +24,20 @@ import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { type PlatformCapability } from "@/platform/capabilities";
+import { type ValueOf } from "type-fest";
 
-export type StarterBrickType =
-  | "panel"
-  | "menuItem"
-  | "trigger"
-  | "contextMenu"
-  | "actionPanel"
-  | "quickBar"
-  | "quickBarProvider"
-  | "tour";
+export const StarterBrickTypes = {
+  INLINE_PANEL: "panel",
+  SIDEBAR_PANEL: "actionPanel",
+  BUTTON: "menuItem",
+  TRIGGER: "trigger",
+  CONTEXT_MENU: "contextMenu",
+  QUICK_BAR: "quickBar",
+  QUICK_BAR_PROVIDER: "quickBarProvider",
+  TOUR: "tour",
+} as const;
+
+export type StarterBrickType = ValueOf<typeof StarterBrickTypes>;
 
 /**
  * A location where content (e.g., form, temporary panel) can be added to the page.

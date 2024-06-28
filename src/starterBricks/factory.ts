@@ -16,7 +16,7 @@
  */
 
 import { fromJS as deserializePanel } from "@/starterBricks/panel/panelStarterBrick";
-import { fromJS as deserializeMenuItem } from "@/starterBricks/menuItem/menuItemStarterBrick";
+import { fromJS as deserializeMenuItem } from "@/starterBricks/button/buttonStarterBrick";
 import { fromJS as deserializeTrigger } from "@/starterBricks/trigger/triggerStarterBrick";
 import { fromJS as deserializeContextMenu } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { fromJS as deserializeSidebar } from "@/starterBricks/sidebar/sidebarStarterBrick";
