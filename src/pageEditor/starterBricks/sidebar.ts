@@ -129,14 +129,14 @@ function asDraftModComponent(
 async function fromExtension(
   config: ModComponentBase<SidebarConfig>,
 ): Promise<SidebarFormState> {
-  const extensionPoint = await lookupStarterBrick<
+  const starterBrick = await lookupStarterBrick<
     SidebarDefinition,
     SidebarConfig,
     "actionPanel"
   >(config, "actionPanel");
 
-  const base = baseFromModComponent(config, extensionPoint.definition.type);
-  const extension = await modComponentWithNormalizedPipeline(
+  const base = baseFromModComponent(config, starterBrick.definition.type);
+  const modComponent = await modComponentWithNormalizedPipeline(
     config.config,
     "body",
   );
@@ -146,25 +146,22 @@ async function fromExtension(
     debounce,
     customEvent,
     reader,
-  } = extensionPoint.definition;
+  } = starterBrick.definition;
 
-  assertNotNullish(
-    extensionPoint.metadata,
-    "Starter brick metadata is required",
-  );
+  assertNotNullish(starterBrick.metadata, "Starter brick metadata is required");
 
   return {
     ...base,
-    extension,
+    extension: modComponent,
     extensionPoint: {
-      metadata: extensionPoint.metadata,
+      metadata: starterBrick.metadata,
       definition: {
-        ...extensionPoint.definition,
+        ...starterBrick.definition,
         trigger,
         debounce,
         customEvent,
         reader: readerTypeHack(reader),
-        isAvailable: selectStarterBrickAvailability(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(starterBrick),
       },
     },
   };

@@ -115,34 +115,31 @@ function asDraftModComponent(tourFormState: TourFormState): DraftModComponent {
 async function fromExtension(
   config: ModComponentBase<TourConfig>,
 ): Promise<TourFormState> {
-  const extensionPoint = await lookupStarterBrick<
+  const starterBrick = await lookupStarterBrick<
     TourDefinition,
     TourConfig,
     "tour"
   >(config, "tour");
 
-  const { reader } = extensionPoint.definition;
+  const { reader } = starterBrick.definition;
 
-  const base = baseFromModComponent(config, extensionPoint.definition.type);
-  const extension = await modComponentWithNormalizedPipeline(
+  const base = baseFromModComponent(config, starterBrick.definition.type);
+  const modComponent = await modComponentWithNormalizedPipeline(
     config.config,
     "tour",
   );
 
-  assertNotNullish(
-    extensionPoint.metadata,
-    "Starter brick metadata is required",
-  );
+  assertNotNullish(starterBrick.metadata, "Starter brick metadata is required");
 
   return {
     ...base,
-    extension,
+    extension: modComponent,
     extensionPoint: {
-      metadata: extensionPoint.metadata,
+      metadata: starterBrick.metadata,
       definition: {
-        ...extensionPoint.definition,
+        ...starterBrick.definition,
         reader: readerTypeHack(reader),
-        isAvailable: selectStarterBrickAvailability(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(starterBrick),
       },
     },
   };

@@ -74,25 +74,25 @@ function mergeState(
   }
 }
 
-function dispatchStageChangeEventOnChange({
+function dispatchStateChangeEventOnChange({
   previous,
   next,
   namespace,
-  extensionId,
-  blueprintId,
+  modComponentId,
+  modId: modid,
 }: {
   previous: unknown;
   next: unknown;
   namespace: string;
-  extensionId: Nullishable<UUID>;
-  blueprintId: Nullishable<RegistryId>;
+  modComponentId: Nullishable<UUID>;
+  modId: Nullishable<RegistryId>;
 }) {
   if (!isEqual(previous, next)) {
     // For now, leave off the event data because we're using a public channel
     const detail = {
       namespace,
-      extensionId,
-      blueprintId,
+      extensionId: modComponentId,
+      blueprintId: modid,
     };
 
     console.debug("Dispatching statechange", detail);
@@ -119,12 +119,12 @@ export function setState({
   assertPlatformCapability("state");
 
   const notifyOnChange = (previous: JsonObject, next: JsonObject) => {
-    dispatchStageChangeEventOnChange({
+    dispatchStateChangeEventOnChange({
       previous,
       next,
       namespace,
-      extensionId: modComponentId,
-      blueprintId: modId,
+      modComponentId,
+      modId,
     });
   };
 
@@ -148,7 +148,7 @@ export function setState({
     case StateNamespaces.PRIVATE: {
       assertNotNullish(
         modComponentId,
-        "Invalid context: extensionId not found",
+        "Invalid context: mod component id not found",
       );
       const previous = privateState.get(modComponentId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
@@ -188,7 +188,7 @@ export function getState({
     case StateNamespaces.PRIVATE: {
       assertNotNullish(
         modComponentId,
-        "Invalid context: extensionId not found",
+        "Invalid context: mod component id not found",
       );
       return privateState.get(modComponentId) ?? {};
     }

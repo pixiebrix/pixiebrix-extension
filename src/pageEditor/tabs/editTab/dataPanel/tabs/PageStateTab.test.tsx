@@ -53,7 +53,7 @@ describe("PageStateTab", () => {
     return utils;
   }
 
-  test("it renders with orphan mod component", async () => {
+  test("it renders with standalone mod component", async () => {
     const formState = formStateFactory();
     const { asFragment } = await renderPageStateTab(formState);
     expect(asFragment()).toMatchSnapshot();
