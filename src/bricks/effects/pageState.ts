@@ -157,8 +157,8 @@ export class SetPageState extends TransformerABC {
       data,
       mergeStrategy,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7891
-      extensionId: extensionId!,
-      blueprintId,
+      modComponentId: extensionId!,
+      modId: blueprintId,
     });
   }
 }
@@ -205,12 +205,12 @@ export class GetPageState extends TransformerABC {
     }: BrickArgs<{ namespace?: StateNamespace }>,
     { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
-    const { blueprintId, extensionId } = logger.context;
+    const { blueprintId: modId, extensionId: modComponentId } = logger.context;
 
     return platform.state.getState({
       namespace,
-      blueprintId,
-      extensionId,
+      modId,
+      modComponentId,
     });
   }
 }

@@ -50,8 +50,8 @@ import {
 import reportError from "@/telemetry/reportError";
 import {
   setActiveModComponentId,
-  editRecipeMetadata,
-  editRecipeOptionsDefinitions,
+  editModMetadata,
+  editModOptionsDefinitions,
   ensureBrickPipelineUIState,
   removeModComponentFormState,
   removeModData,
@@ -81,7 +81,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { createMigrate } from "redux-persist";
 import { migrations } from "@/store/editorMigrations";
-import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseStarterBrickState } from "@/pageEditor/baseFormStateTypes";
 import {
   getCurrentInspectedURL,
   inspectedTab,
@@ -132,7 +132,7 @@ const cloneActiveExtension = createAsyncThunk<
       assertNotNullish(draft, "Active mod component form state not found");
       draft.uuid = uuidv4();
       draft.label += " (Copy)";
-      // Remove from its recipe, if any (the user can add it to any recipe after creation)
+      // Remove from its mod, if any (the user can add it to any mod after creation)
       delete draft.recipe;
       // Re-generate instance IDs for all the bricks in the extension
       draft.extension.blockPipeline = await normalizePipelineForEditor(
@@ -218,7 +218,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
 
 async function isStarterBrickFormStateAvailable(
   tabUrl: string,
-  starterBrickFormState: BaseExtensionPointState,
+  starterBrickFormState: BaseStarterBrickState,
 ): Promise<boolean> {
   if (isQuickBarExtensionPoint(starterBrickFormState)) {
     return testMatchPatterns(
@@ -533,21 +533,21 @@ export const editorSlice = createSlice({
     clearCopiedBrickConfig(state) {
       delete state.copiedBrick;
     },
-    editRecipeOptionsDefinitions(
+    editModOptionsDefinitions(
       state,
       action: PayloadAction<ModOptionsDefinition>,
     ) {
       const { payload: options } = action;
-      editRecipeOptionsDefinitions(state, options);
+      editModOptionsDefinitions(state, options);
     },
-    editRecipeMetadata(state, action: PayloadAction<ModMetadataFormState>) {
+    editModMetadata(state, action: PayloadAction<ModMetadataFormState>) {
       const { payload: metadata } = action;
-      editRecipeMetadata(state, metadata);
+      editModMetadata(state, metadata);
     },
-    resetMetadataAndOptionsForRecipe(state, action: PayloadAction<RegistryId>) {
-      const { payload: recipeId } = action;
-      delete state.dirtyModMetadataById[recipeId];
-      delete state.dirtyModOptionsById[recipeId];
+    resetMetadataAndOptionsForMod(state, action: PayloadAction<RegistryId>) {
+      const { payload: modId } = action;
+      delete state.dirtyModMetadataById[modId];
+      delete state.dirtyModOptionsById[modId];
     },
     updateModMetadataOnModComponentFormStates(
       state,
@@ -562,7 +562,7 @@ export const editorSlice = createSlice({
         formState.recipe = modMetadata;
       }
     },
-    showAddToRecipeModal(state) {
+    showAddToModModal(state) {
       state.visibleModalKey = ModalKey.ADD_TO_MOD;
     },
     addModComponentFormStateToMod(
@@ -610,7 +610,7 @@ export const editorSlice = createSlice({
         }
       }
     },
-    showRemoveFromRecipeModal(state) {
+    showRemoveFromModModal(state) {
       state.visibleModalKey = ModalKey.REMOVE_FROM_MOD;
     },
     removeModComponentFormStateFromMod(
@@ -660,7 +660,7 @@ export const editorSlice = createSlice({
         state.activeModComponentId = newId;
       }
     },
-    showSaveAsNewRecipeModal(state) {
+    showSaveAsNewModModal(state) {
       state.visibleModalKey = ModalKey.SAVE_AS_NEW_MOD;
     },
     clearDeletedModComponentFormStatesForMod(
@@ -689,11 +689,11 @@ export const editorSlice = createSlice({
         delete state.deletedModComponentFormStatesByModId[modId];
       }
     },
-    removeRecipeData(state, action: PayloadAction<RegistryId>) {
-      const recipeId = action.payload;
-      removeModData(state, recipeId);
+    removeModData(state, action: PayloadAction<RegistryId>) {
+      const modId = action.payload;
+      removeModData(state, modId);
     },
-    showCreateRecipeModal(
+    showCreateModModal(
       state,
       action: PayloadAction<{ keepLocalCopy: boolean }>,
     ) {
@@ -859,9 +859,9 @@ export const editorSlice = createSlice({
         state.visibleModalKey = null;
       }
     },
-    editRecipeOptionsValues(state, action: PayloadAction<OptionsArgs>) {
-      const recipeId = state.activeModId;
-      if (recipeId == null) {
+    editModOptionsValues(state, action: PayloadAction<OptionsArgs>) {
+      const modId = state.activeModId;
+      if (modId == null) {
         return;
       }
 
@@ -869,7 +869,7 @@ export const editorSlice = createSlice({
         editor: state,
       });
       const modFormStates = notDeletedFormStates.filter(
-        (formState) => formState.recipe?.id === recipeId,
+        (formState) => formState.recipe?.id === modId,
       );
       for (const formState of modFormStates) {
         formState.optionsArgs = action.payload;

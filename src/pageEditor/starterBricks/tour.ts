@@ -17,12 +17,12 @@
 
 import { type Metadata } from "@/types/registryTypes";
 import {
-  baseFromExtension,
-  baseSelectExtension,
-  baseSelectExtensionPoint,
-  extensionWithNormalizedPipeline,
+  baseFromModComponent,
+  baseSelectModComponent,
+  baseSelectStarterBrick,
+  modComponentWithNormalizedPipeline,
   getImplicitReader,
-  lookupExtensionPoint,
+  lookupStarterBrick,
   makeInitialBaseState,
   getDefaultAvailabilityForUrl,
   readerTypeHack,
@@ -79,7 +79,7 @@ function selectStarterBrickDefinition(
     definition: { isAvailable, reader },
   } = extensionPoint;
   return removeEmptyValues({
-    ...baseSelectExtensionPoint(formState),
+    ...baseSelectStarterBrick(formState),
     definition: {
       type: "tour",
       reader,
@@ -99,7 +99,7 @@ function selectExtension(
       : omitEditorMetadata(extension.blockPipeline),
   };
   return removeEmptyValues({
-    ...baseSelectExtension(state),
+    ...baseSelectModComponent(state),
     config,
   });
 }
@@ -115,34 +115,31 @@ function asDraftModComponent(tourFormState: TourFormState): DraftModComponent {
 async function fromExtension(
   config: ModComponentBase<TourConfig>,
 ): Promise<TourFormState> {
-  const extensionPoint = await lookupExtensionPoint<
+  const starterBrick = await lookupStarterBrick<
     TourDefinition,
     TourConfig,
     "tour"
   >(config, "tour");
 
-  const { reader } = extensionPoint.definition;
+  const { reader } = starterBrick.definition;
 
-  const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = await extensionWithNormalizedPipeline(
+  const base = baseFromModComponent(config, starterBrick.definition.type);
+  const modComponent = await modComponentWithNormalizedPipeline(
     config.config,
     "tour",
   );
 
-  assertNotNullish(
-    extensionPoint.metadata,
-    "Starter brick metadata is required",
-  );
+  assertNotNullish(starterBrick.metadata, "Starter brick metadata is required");
 
   return {
     ...base,
-    extension,
+    extension: modComponent,
     extensionPoint: {
-      metadata: extensionPoint.metadata,
+      metadata: starterBrick.metadata,
       definition: {
-        ...extensionPoint.definition,
+        ...starterBrick.definition,
         reader: readerTypeHack(reader),
-        isAvailable: selectStarterBrickAvailability(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(starterBrick),
       },
     },
   };

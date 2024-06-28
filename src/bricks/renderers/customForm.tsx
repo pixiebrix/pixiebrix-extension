@@ -423,8 +423,8 @@ async function getInitialData(
       // is rendered in. And for the PixieBrix sidebar, target the top-level frame.
       return getPageState(topLevelFrame, {
         namespace,
-        blueprintId,
-        extensionId,
+        modId: blueprintId,
+        modComponentId: extensionId,
       });
     }
 
@@ -487,8 +487,8 @@ async function setData(
         namespace: storage.namespace ?? StateNamespaces.MOD,
         data: cleanValues,
         mergeStrategy: MergeStrategies.SHALLOW,
-        extensionId,
-        blueprintId,
+        modComponentId: extensionId,
+        modId: blueprintId,
       });
       return;
     }

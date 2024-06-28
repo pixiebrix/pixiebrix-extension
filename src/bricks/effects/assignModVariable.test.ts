@@ -29,14 +29,14 @@ import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
-const extensionId = autoUUIDSequence();
-const blueprintId = validateRegistryId("test/123");
+const modComponentId = autoUUIDSequence();
+const modId = validateRegistryId("test/123");
 
 const brick = new AssignModVariable();
 
 const logger = new ConsoleLogger({
-  extensionId,
-  blueprintId,
+  extensionId: modComponentId,
+  blueprintId: modId,
 });
 
 const brickOptions = brickOptionsFactory({ logger });
@@ -44,8 +44,8 @@ const brickOptions = brickOptionsFactory({ logger });
 beforeEach(() => {
   setState({
     namespace: StateNamespaces.MOD,
-    blueprintId,
-    extensionId,
+    modId,
+    modComponentId,
     mergeStrategy: MergeStrategies.REPLACE,
     data: {},
   });
@@ -64,7 +64,11 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     expect(
-      getState({ namespace: StateNamespaces.MOD, blueprintId, extensionId }),
+      getState({
+        namespace: StateNamespaces.MOD,
+        modId,
+        modComponentId,
+      }),
     ).toEqual({ foo: { bar: 42 } });
   });
 
@@ -94,7 +98,11 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     expect(
-      getState({ namespace: StateNamespaces.MOD, blueprintId, extensionId }),
+      getState({
+        namespace: StateNamespaces.MOD,
+        modId,
+        modComponentId,
+      }),
     ).toEqual({ foo: null });
   });
 
@@ -110,7 +118,11 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     expect(
-      getState({ namespace: StateNamespaces.MOD, blueprintId, extensionId }),
+      getState({
+        namespace: StateNamespaces.MOD,
+        modId,
+        modComponentId,
+      }),
     ).toEqual({ foo: 42, bar: 0 });
   });
 

@@ -74,25 +74,25 @@ function mergeState(
   }
 }
 
-function dispatchStageChangeEventOnChange({
+function dispatchStateChangeEventOnChange({
   previous,
   next,
   namespace,
-  extensionId,
-  blueprintId,
+  modComponentId,
+  modId: modid,
 }: {
   previous: unknown;
   next: unknown;
   namespace: string;
-  extensionId: Nullishable<UUID>;
-  blueprintId: Nullishable<RegistryId>;
+  modComponentId: Nullishable<UUID>;
+  modId: Nullishable<RegistryId>;
 }) {
   if (!isEqual(previous, next)) {
     // For now, leave off the event data because we're using a public channel
     const detail = {
       namespace,
-      extensionId,
-      blueprintId,
+      extensionId: modComponentId,
+      blueprintId: modid,
     };
 
     console.debug("Dispatching statechange", detail);
@@ -106,25 +106,25 @@ export function setState({
   namespace,
   data,
   mergeStrategy,
-  extensionId,
+  modComponentId,
   // Normalize undefined to null for lookup
-  blueprintId = null,
+  modId = null,
 }: {
   namespace: StateNamespace;
   data: JsonObject;
   mergeStrategy: MergeStrategy;
-  extensionId: Nullishable<UUID>;
-  blueprintId: Nullishable<RegistryId>;
+  modComponentId: Nullishable<UUID>;
+  modId: Nullishable<RegistryId>;
 }) {
   assertPlatformCapability("state");
 
   const notifyOnChange = (previous: JsonObject, next: JsonObject) => {
-    dispatchStageChangeEventOnChange({
+    dispatchStateChangeEventOnChange({
       previous,
       next,
       namespace,
-      extensionId,
-      blueprintId,
+      modComponentId,
+      modId,
     });
   };
 
@@ -138,18 +138,21 @@ export function setState({
     }
 
     case StateNamespaces.MOD: {
-      const previous = modState.get(blueprintId) ?? {};
+      const previous = modState.get(modId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      modState.set(blueprintId, next);
+      modState.set(modId, next);
       notifyOnChange(previous, next);
       return next;
     }
 
     case StateNamespaces.PRIVATE: {
-      assertNotNullish(extensionId, "Invalid context: extensionId not found");
-      const previous = privateState.get(extensionId) ?? {};
+      assertNotNullish(
+        modComponentId,
+        "Invalid context: mod component id not found",
+      );
+      const previous = privateState.get(modComponentId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      privateState.set(extensionId, next);
+      privateState.set(modComponentId, next);
       notifyOnChange(previous, next);
       return next;
     }
@@ -163,13 +166,13 @@ export function setState({
 
 export function getState({
   namespace,
-  extensionId,
+  modComponentId,
   // Normalize undefined to null for lookup
-  blueprintId = null,
+  modId = null,
 }: {
   namespace: StateNamespace;
-  extensionId: Nullishable<UUID>;
-  blueprintId: Nullishable<RegistryId>;
+  modComponentId: Nullishable<UUID>;
+  modId: Nullishable<RegistryId>;
 }): JsonObject {
   assertPlatformCapability("state");
 
@@ -179,12 +182,15 @@ export function getState({
     }
 
     case StateNamespaces.MOD: {
-      return modState.get(blueprintId) ?? {};
+      return modState.get(modId) ?? {};
     }
 
     case StateNamespaces.PRIVATE: {
-      assertNotNullish(extensionId, "Invalid context: extensionId not found");
-      return privateState.get(extensionId) ?? {};
+      assertNotNullish(
+        modComponentId,
+        "Invalid context: mod component id not found",
+      );
+      return privateState.get(modComponentId) ?? {};
     }
 
     default: {

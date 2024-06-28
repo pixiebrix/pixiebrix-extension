@@ -9600,7 +9600,7 @@ exports[`Storyshots Panels/RootErrorPanel No Renderer Error Example 1`] = `
 </div>
 `;
 
-exports[`Storyshots Sidebar/ActionMenu Blueprint 1`] = `
+exports[`Storyshots Sidebar/ActionMenu Mod 1`] = `
 <div
   className="d-flex"
 >
@@ -9665,7 +9665,7 @@ exports[`Storyshots Sidebar/ActionMenu Blueprint 1`] = `
 </div>
 `;
 
-exports[`Storyshots Sidebar/ActionMenu New Extension 1`] = `
+exports[`Storyshots Sidebar/ActionMenu New Mod Component 1`] = `
 <div
   className="d-flex"
 >
@@ -9730,7 +9730,7 @@ exports[`Storyshots Sidebar/ActionMenu New Extension 1`] = `
 </div>
 `;
 
-exports[`Storyshots Sidebar/ActionMenu New Extension In Blueprint 1`] = `
+exports[`Storyshots Sidebar/ActionMenu New Mod Component In Mod 1`] = `
 <div
   className="d-flex"
 >
@@ -9795,7 +9795,7 @@ exports[`Storyshots Sidebar/ActionMenu New Extension In Blueprint 1`] = `
 </div>
 `;
 
-exports[`Storyshots Sidebar/ActionMenu Old Extension 1`] = `
+exports[`Storyshots Sidebar/ActionMenu Old Mod Component 1`] = `
 <div
   className="d-flex"
 >
@@ -9860,7 +9860,7 @@ exports[`Storyshots Sidebar/ActionMenu Old Extension 1`] = `
 </div>
 `;
 
-exports[`Storyshots Sidebar/ActionMenu Old Extension In Blueprint 1`] = `
+exports[`Storyshots Sidebar/ActionMenu Old Mod Component In Mod 1`] = `
 <div
   className="d-flex"
 >

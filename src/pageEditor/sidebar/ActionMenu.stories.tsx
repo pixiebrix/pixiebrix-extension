@@ -40,31 +40,31 @@ const Template: ComponentStory<typeof ActionMenu> = (args) => (
   </div>
 );
 
-export const NewExtension = Template.bind({});
-NewExtension.args = {
+export const NewModComponent = Template.bind({});
+NewModComponent.args = {
   onReset: undefined,
-  onRemoveFromRecipe: undefined,
+  onRemoveFromMod: undefined,
   isDirty: true,
 };
 
-export const OldExtension = Template.bind({});
-OldExtension.args = {
-  onRemoveFromRecipe: undefined,
+export const OldModComponent = Template.bind({});
+OldModComponent.args = {
+  onRemoveFromMod: undefined,
 };
 
-export const Blueprint = Template.bind({});
-Blueprint.args = {
-  onAddToRecipe: undefined,
-  onRemoveFromRecipe: undefined,
+export const Mod = Template.bind({});
+Mod.args = {
+  onAddToMod: undefined,
+  onRemoveFromMod: undefined,
 };
 
-export const NewExtensionInBlueprint = Template.bind({});
-NewExtensionInBlueprint.args = {
+export const NewModComponentInMod = Template.bind({});
+NewModComponentInMod.args = {
   onReset: undefined,
-  onAddToRecipe: undefined,
+  onAddToMod: undefined,
 };
 
-export const OldExtensionInBlueprint = Template.bind({});
-OldExtensionInBlueprint.args = {
-  onAddToRecipe: undefined,
+export const OldModComponentInMod = Template.bind({});
+OldModComponentInMod.args = {
+  onAddToMod: undefined,
 };

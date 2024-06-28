@@ -40,7 +40,7 @@ export type SingleLayerReaderConfig =
   | RegistryId[]
   | Record<string, RegistryId>;
 
-export type BaseExtensionPointState = {
+export type BaseStarterBrickState = {
   metadata: Metadata;
   definition: {
     type: StarterBrickType;
@@ -50,7 +50,7 @@ export type BaseExtensionPointState = {
   };
 };
 
-export interface BaseExtensionState {
+export interface BaseModComponentState {
   blockPipeline: BrickPipeline;
 }
 
@@ -58,8 +58,8 @@ export interface BaseExtensionState {
  * @deprecated - Do not use versioned state types directly
  */
 export interface BaseFormStateV1<
-  TExtension extends BaseExtensionState = BaseExtensionState,
-  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState,
+  TExtension extends BaseModComponentState = BaseModComponentState,
+  TExtensionPoint extends BaseStarterBrickState = BaseStarterBrickState,
 > {
   /**
    * The apiVersion of the brick definition, controlling how PixieBrix interprets brick definitions
@@ -68,33 +68,33 @@ export interface BaseFormStateV1<
   readonly apiVersion: ApiVersion;
 
   /**
-   * The extension uuid
+   * The mod component uuid
    */
   readonly uuid: UUID;
 
   /**
-   * The type of the extensionPoint
+   * The type of the starter brick
    */
   readonly type: StarterBrickType;
 
   /**
-   * True if the extensionPoint exists in the registry
+   * True if the starter brick exists in the registry
    */
   installed?: boolean;
 
   /**
-   * True if the extension should be allowed to auto-reload. In general, only extensions that require user
+   * True if the mod component should be allowed to auto-reload. In general, only mod components that require user
    * interaction to trigger should be allowed to auto-reload. Otherwise, PixieBrix might end up spamming an API
    */
   autoReload?: boolean;
 
   /**
-   * User-provided name to identify the extension
+   * User-provided name to identify the mod component
    */
   label: string;
 
   /**
-   * The input options from the extension's blueprint
+   * The input options from the mod component's mod
    * @since 1.4.3
    */
   optionsArgs: OptionsArgs;
@@ -102,7 +102,7 @@ export interface BaseFormStateV1<
   services: IntegrationDependencyV1[];
 
   /**
-   * The extra permissions required by the extension
+   * The extra permissions required by the mod component
    * @since 1.7.0
    */
   permissions: Permissions.Permissions;
@@ -112,15 +112,15 @@ export interface BaseFormStateV1<
   extension: TExtension;
 
   /**
-   * Information about the recipe (i.e., blueprint) used to install the extension, or `undefined` if the extension
-   * is not part of a recipe.
+   * Information about the mod used to install the mod component, or `undefined`
+   * if the mod component is not part of a mod.
    * @see ModComponentBase._recipe
    */
   recipe: ModComponentBase["_recipe"] | undefined;
 
   /**
-   * Information about the recipe (i.e., blueprint) options,
-   * or `undefined` if the extension is not part of a recipe.
+   * Information about the mod options or `undefined`
+   * if the mod component is not part of a mod.
    * @see ModDefinition.options
    */
   optionsDefinition?: ModOptionsDefinition;
@@ -130,11 +130,11 @@ export interface BaseFormStateV1<
  * @deprecated - Do not use versioned state types directly
  */
 export type BaseFormStateV2<
-  TExtension extends BaseExtensionState = BaseExtensionState,
-  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState,
+  TExtension extends BaseModComponentState = BaseModComponentState,
+  TExtensionPoint extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<BaseFormStateV1<TExtension, TExtensionPoint>, "services"> & {
   /**
-   * The integration dependencies configured for the extension
+   * The integration dependencies configured for the mod component
    *
    * @since 1.7.41 renamed from `services` to `integrationDependencies`, also
    * changed from IntegrationDependencyV1 to IntegrationDependencyV2
@@ -143,8 +143,8 @@ export type BaseFormStateV2<
 };
 
 export type BaseFormState<
-  TExtension extends BaseExtensionState = BaseExtensionState,
-  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState,
+  TExtension extends BaseModComponentState = BaseModComponentState,
+  TExtensionPoint extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<
   BaseFormStateV2<TExtension, TExtensionPoint>,
   "integrationDependencies"

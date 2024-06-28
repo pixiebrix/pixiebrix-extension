@@ -18,12 +18,12 @@
 import { type Metadata } from "@/types/registryTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
-  baseFromExtension,
-  baseSelectExtension,
-  baseSelectExtensionPoint,
-  extensionWithNormalizedPipeline,
+  baseFromModComponent,
+  baseSelectModComponent,
+  baseSelectStarterBrick,
+  modComponentWithNormalizedPipeline,
   getImplicitReader,
-  lookupExtensionPoint,
+  lookupStarterBrick,
   makeInitialBaseState,
   getDefaultAvailabilityForUrl,
   readerTypeHack,
@@ -103,7 +103,7 @@ function selectStarterBrickDefinition(
     },
   } = extensionPoint;
   return removeEmptyValues({
-    ...baseSelectExtensionPoint(formState),
+    ...baseSelectStarterBrick(formState),
     definition: {
       type: StarterBrickTypes.BUTTON,
       reader,
@@ -133,7 +133,7 @@ function selectExtension(
     synchronous: extension.synchronous,
   };
   return removeEmptyValues({
-    ...baseSelectExtension(state),
+    ...baseSelectModComponent(state),
     config,
   });
 }
@@ -141,14 +141,14 @@ function selectExtension(
 async function fromExtension(
   config: ModComponentBase<ButtonStarterBrickConfig>,
 ): Promise<ActionFormState> {
-  const extensionPoint = await lookupExtensionPoint<
+  const extensionPoint = await lookupStarterBrick<
     ButtonDefinition,
     ButtonStarterBrickConfig,
     typeof StarterBrickTypes.BUTTON
   >(config, StarterBrickTypes.BUTTON);
 
-  const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = await extensionWithNormalizedPipeline(
+  const base = baseFromModComponent(config, extensionPoint.definition.type);
+  const extension = await modComponentWithNormalizedPipeline(
     config.config,
     "action",
   );

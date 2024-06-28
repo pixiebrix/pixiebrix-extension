@@ -16,7 +16,7 @@
  */
 
 import testItRenders from "@/testUtils/testItRenders";
-import { RecipeHasUpdateIcon } from "./ExtensionIcons";
+import { ModHasUpdateIcon } from "./ExtensionIcons";
 
 beforeAll(() => {
   // When a FontAwesomeIcon gets a title, it generates a random id, which breaks the snapshot.
@@ -27,7 +27,7 @@ afterAll(() => {
 });
 
 testItRenders({
-  testName: "RecipeHasUpdateIcon",
-  Component: RecipeHasUpdateIcon,
+  testName: "ModHasUpdateIcon",
+  Component: ModHasUpdateIcon,
   props: { title: "test" },
 });

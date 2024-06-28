@@ -42,23 +42,23 @@ import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveMo
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 type FormState = {
-  recipeId: RegistryId | null;
+  modId: RegistryId | null;
   moveOrCopy: "move" | "copy";
 };
 
 const initialFormState: FormState = {
-  recipeId: null,
+  modId: null,
   moveOrCopy: "move",
 };
 
-const NEW_RECIPE_ID = "@new" as RegistryId;
+const NEW_MOD_ID = "@new" as RegistryId;
 
 const formStateSchema = object({
-  recipeId: string().required(),
+  modId: string().required(),
   moveOrCopy: string().oneOf(["move", "copy"]).required(),
 });
 
-const AddToRecipeModal: React.FC = () => {
+const AddToModModal: React.FC = () => {
   const { isAddToModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
@@ -84,19 +84,19 @@ const AddToRecipeModal: React.FC = () => {
   }, [dispatch]);
 
   const onSubmit: OnSubmit<FormState> = async (
-    { recipeId, moveOrCopy },
+    { modId, moveOrCopy },
     helpers,
   ) => {
-    assertNotNullish(recipeId, "recipeId must be defined");
+    assertNotNullish(modId, "Mod id must be defined");
     const keepLocalCopy = moveOrCopy === "copy";
 
-    if (recipeId === NEW_RECIPE_ID) {
-      dispatch(editorActions.showCreateRecipeModal({ keepLocalCopy }));
+    if (modId === NEW_MOD_ID) {
+      dispatch(editorActions.showCreateModModal({ keepLocalCopy }));
       return;
     }
 
     // eslint-disable-next-line security/detect-object-injection -- mod id is from select options
-    const modMetadata = modMetadataById[recipeId];
+    const modMetadata = modMetadataById[modId];
 
     try {
       const modComponentId = activeModComponentFormState?.uuid;
@@ -136,7 +136,7 @@ const AddToRecipeModal: React.FC = () => {
 
   const selectOptions = useMemo(
     () => [
-      { label: "➕ Create new mod...", value: NEW_RECIPE_ID },
+      { label: "➕ Create new mod...", value: NEW_MOD_ID },
       ...activatedModMetadatas.map((metadata) => ({
         label: metadata.name,
         value: metadata.id,
@@ -163,7 +163,7 @@ const AddToRecipeModal: React.FC = () => {
     () => (
       <Modal.Body>
         <ConnectedFieldTemplate
-          name="recipeId"
+          name="modId"
           hideLabel
           description="Choose a mod"
           as={SelectWidget}
@@ -219,4 +219,4 @@ const AddToRecipeModal: React.FC = () => {
   );
 };
 
-export default AddToRecipeModal;
+export default AddToModModal;

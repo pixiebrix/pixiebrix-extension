@@ -22,7 +22,7 @@ import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import reportError from "@/telemetry/reportError";
-import { initRecipeOptionsIfNeeded } from "@/pageEditor/starterBricks/base";
+import { initModOptionsIfNeeded } from "@/pageEditor/starterBricks/base";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -34,11 +34,12 @@ type Config = {
   extensionId: UUID;
   shouldShowConfirmation?: boolean;
 };
+
 function useResetExtension(): (useResetConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const installed = useSelector(selectActivatedModComponents);
-  const { data: recipes } = useAllModDefinitions();
+  const { data: mods } = useAllModDefinitions();
   const { showConfirmation } = useModals();
 
   return useCallback(
@@ -66,7 +67,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
           dispatch(actions.removeModComponentFormState(extensionId));
         } else {
           const formState = await modComponentToFormState(extension);
-          initRecipeOptionsIfNeeded(formState, compact(recipes));
+          initModOptionsIfNeeded(formState, compact(mods));
           dispatch(actions.resetInstalled(formState));
         }
       } catch (error) {
@@ -74,7 +75,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
         dispatch(actions.adapterError({ uuid: extensionId, error }));
       }
     },
-    [dispatch, recipes, sessionId, installed, showConfirmation],
+    [dispatch, mods, sessionId, installed, showConfirmation],
   );
 }
 
