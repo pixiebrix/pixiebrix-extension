@@ -37,7 +37,7 @@ import {
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
+import { DEFAULT_STARTER_BRICK_VAR } from "@/pageEditor/starterBricks/base";
 import { type SafeString } from "@/types/stringTypes";
 import {
   remoteIntegrationConfigurationFactory,
@@ -147,7 +147,7 @@ export const versionedModDefinitionWithHydratedModComponents = (
     // test execution behavior.
     const modComponent = modComponentDefinitionFactory();
     const ids = modComponentDefinitions.map((x) => x.id);
-    const id = freshIdentifier(DEFAULT_EXTENSION_POINT_VAR as SafeString, ids);
+    const id = freshIdentifier(DEFAULT_STARTER_BRICK_VAR as SafeString, ids);
     modComponentDefinitions.push({
       ...modComponent,
       id: id as InnerDefinitionRef,

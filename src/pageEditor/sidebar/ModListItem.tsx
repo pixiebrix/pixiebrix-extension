@@ -19,7 +19,7 @@ import React, { type PropsWithChildren } from "react";
 import { type Metadata } from "@/types/registryTypes";
 import styles from "./Entry.module.scss";
 import {
-  RecipeHasUpdateIcon,
+  ModHasUpdateIcon,
   UnsavedChangesIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
 import { Accordion, ListGroup } from "react-bootstrap";
@@ -73,7 +73,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
   // TODO: Fix this so it pulls from registry, after registry single-item-api-fetch is implemented
   //        (See: https://github.com/pixiebrix/pixiebrix-extension/issues/7184)
   const { data: modDefinition } = useGetModDefinitionQuery({ modId });
-  const latestRecipeVersion = modDefinition?.metadata?.version;
+  const latestModVersion = modDefinition?.metadata?.version;
 
   // Set the alternate background if a mod component in this mod is active
   const hasModBackground = activeModComponentFormState?.recipe?.id === modId;
@@ -83,9 +83,9 @@ const ModListItem: React.FC<ModListItemProps> = ({
   const isDirty = useSelector(selectModIsDirty(modId));
 
   const hasUpdate =
-    latestRecipeVersion != null &&
+    latestModVersion != null &&
     installedVersion != null &&
-    semver.gt(latestRecipeVersion, installedVersion);
+    semver.gt(latestModVersion, installedVersion);
 
   const caretIcon = expandedModId === modId ? faCaretDown : faCaretRight;
 
@@ -95,11 +95,11 @@ const ModListItem: React.FC<ModListItemProps> = ({
         eventKey={modId}
         as={ListGroup.Item}
         className={cx(styles.root, "list-group-item-action", {
-          [styles.recipeBackground ?? ""]: hasModBackground,
+          [styles.modBackground ?? ""]: hasModBackground,
         })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}
-        key={`recipe-${modId}`}
+        key={`mod-${modId}`}
         onClick={() => modId != null && dispatch(actions.setActiveModId(modId))}
       >
         <span className={styles.icon}>
@@ -113,8 +113,8 @@ const ModListItem: React.FC<ModListItemProps> = ({
         )}
         {hasUpdate && (
           <span className={cx(styles.icon, "text-warning")}>
-            <RecipeHasUpdateIcon
-              title={`You are editing version ${installedVersion} of this mod, the latest version is ${latestRecipeVersion}.`}
+            <ModHasUpdateIcon
+              title={`You are editing version ${installedVersion} of this mod, the latest version is ${latestModVersion}.`}
             />
           </span>
         )}

@@ -192,8 +192,8 @@ describe("sidebarExtension", () => {
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
-      extensionId: extension.id,
-      blueprintId: extension._recipe!.id,
+      modComponentId: extension.id,
+      modId: extension._recipe!.id,
     });
 
     // Doesn't run because sidebar is not visible
@@ -213,8 +213,8 @@ describe("sidebarExtension", () => {
       // Data needs to be different than previous to trigger a state change event
       data: { foo: 42 },
       mergeStrategy: MergeStrategies.REPLACE,
-      extensionId: extension.id,
-      blueprintId: extension._recipe!.id,
+      modComponentId: extension.id,
+      modId: extension._recipe!.id,
     });
 
     await tick();
@@ -226,8 +226,8 @@ describe("sidebarExtension", () => {
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
-      extensionId: autoUUIDSequence(),
-      blueprintId: registryIdFactory(),
+      modComponentId: autoUUIDSequence(),
+      modId: registryIdFactory(),
     });
 
     await tick();
@@ -275,8 +275,8 @@ describe("sidebarExtension", () => {
         namespace: StateNamespaces.MOD,
         data: { foo: i },
         mergeStrategy: MergeStrategies.REPLACE,
-        extensionId: extension.id,
-        blueprintId: extension._recipe!.id,
+        modComponentId: extension.id,
+        modId: extension._recipe!.id,
       });
     }
 

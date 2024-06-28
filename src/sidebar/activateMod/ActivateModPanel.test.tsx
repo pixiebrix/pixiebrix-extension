@@ -79,11 +79,6 @@ jest.mock("@/starterBricks/starterBrickModUtils", () => {
 
 const includesQuickBarMock = jest.mocked(includesQuickBarStarterBrick);
 
-jest.mock("@/registry/hydrateInnerDefinitions", () => ({
-  // We're also mocking all the functions that this output is passed to, so we can return empty array
-  resolveRecipe: jest.fn().mockResolvedValue([]),
-}));
-
 const useQuickbarShortcutMock = jest.mocked(useQuickbarShortcut);
 
 jest.mock("@/activation/useActivateMod", () => ({
@@ -91,9 +86,9 @@ jest.mock("@/activation/useActivateMod", () => ({
   default: jest.fn().mockReturnValue(async () => ({ success: true })),
 }));
 
-const useActivateRecipeMock = jest.mocked(useActivateMod);
-let activateRecipeSpy: jest.MockedFunction<
-  (formValues: WizardValues, recipe: ModDefinition) => Promise<ActivateResult>
+const useActivateModMock = jest.mocked(useActivateMod);
+let activateModSpy: jest.MockedFunction<
+  (formValues: WizardValues, mod: ModDefinition) => Promise<ActivateResult>
 >;
 
 beforeAll(() => {
@@ -104,18 +99,18 @@ beforeAll(() => {
   jest.mocked(registry.find).mockImplementation(find);
   jest.mocked(registry.clear).mockImplementation(clear);
 
-  activateRecipeSpy = jest.fn(async (formValues, recipeDefinition) => ({
+  activateModSpy = jest.fn(async (formValues, modDefinition) => ({
     success: true,
   }));
 });
 
 beforeEach(() => {
   appApiMock.reset();
-  activateRecipeSpy.mockReset();
+  activateModSpy.mockReset();
 
-  activateRecipeSpy.mockResolvedValue({ success: true });
+  activateModSpy.mockResolvedValue({ success: true });
 
-  useActivateRecipeMock.mockReturnValue(activateRecipeSpy);
+  useActivateModMock.mockReturnValue(activateModSpy);
   includesQuickBarMock.mockResolvedValue(false);
 
   useQuickbarShortcutMock.mockReturnValue({
@@ -287,7 +282,7 @@ describe("ActivateModPanel", () => {
       screen.findByText("Well done", { exact: false }),
     ).resolves.toBeVisible();
     expect(screen.getByRole("button", { name: "Ok" })).toBeVisible();
-    expect(activateRecipeSpy).toHaveBeenCalledWith(
+    expect(activateModSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         integrationDependencies: expect.arrayContaining([
           expect.objectContaining({
@@ -331,7 +326,7 @@ describe("ActivateModPanel", () => {
       screen.findByText("Well done", { exact: false }),
     ).resolves.toBeVisible();
     expect(screen.getByRole("button", { name: "Ok" })).toBeVisible();
-    expect(activateRecipeSpy).toHaveBeenCalledWith(
+    expect(activateModSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         integrationDependencies: expect.arrayContaining([
           expect.objectContaining({
@@ -376,7 +371,7 @@ describe("ActivateModPanel", () => {
       screen.findByText("Well done", { exact: false }),
     ).resolves.toBeVisible();
     expect(screen.getByRole("button", { name: "Ok" })).toBeVisible();
-    expect(activateRecipeSpy).toHaveBeenCalledWith(
+    expect(activateModSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         integrationDependencies: expect.arrayContaining([
           expect.objectContaining({
@@ -425,7 +420,7 @@ describe("ActivateModPanel", () => {
     expect(
       screen.getByRole("button", { name: "Finish Activating" }),
     ).toBeVisible();
-    expect(activateRecipeSpy).not.toHaveBeenCalled();
+    expect(activateModSpy).not.toHaveBeenCalled();
   });
 
   it("does not activate mod automatically when one integration is required and one is not", async () => {
@@ -471,7 +466,7 @@ describe("ActivateModPanel", () => {
     expect(
       screen.getByRole("button", { name: "Finish Activating" }),
     ).toBeVisible();
-    expect(activateRecipeSpy).not.toHaveBeenCalled();
+    expect(activateModSpy).not.toHaveBeenCalled();
   });
 
   it("does not activate mod automatically when one options is required", async () => {

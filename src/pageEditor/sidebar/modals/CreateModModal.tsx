@@ -78,8 +78,8 @@ function useInitialFormState({
   );
   const modMetadata = dirtyModMetadata ?? activeMod?.metadata;
 
-  // Handle the "Save As New" case, where an existing recipe, or an
-  // extension within an existing recipe, is selected
+  // Handle the "Save As New" case, where an existing mod, or an
+  // extension within an existing mod, is selected
   if (modMetadata) {
     let newModId = generateScopeBrickId(scope, modMetadata.id);
     if (newModId === modMetadata.id) {
@@ -113,7 +113,7 @@ function useFormSchema() {
     (x) => x.metadata.id,
   );
 
-  // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
+  // TODO: This should be yup.SchemaOf<ModMetadataFormState> but we can't set the `id` property to `RegistryId`
   // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
   return object({
     id: string()
@@ -146,11 +146,12 @@ const CreateModModalBody: React.FC = () => {
   );
 
   // `selectActiveModId` returns the mod id if a mod is selected. Assumption: if the CreateModal
+  // `selectActiveModId` returns the mod id if a mod is selected. Assumption: if the CreateModal
   // is open, and a mod is active, then we're performing a "Save as New" on that mod.
   const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId =
     directlyActiveModId ?? activeModComponentFormState?.recipe?.id;
-  const { data: activeMod, isFetching: isRecipeFetching } =
+  const { data: activeMod, isFetching: isModFetching } =
     useOptionalModDefinition(activeModId);
 
   const formSchema = useFormSchema();
@@ -245,7 +246,7 @@ const CreateModModalBody: React.FC = () => {
 
   return (
     <RequireScope scopeSettingsDescription="To create a mod, you must first set an account alias for your PixieBrix account">
-      {isRecipeFetching ? (
+      {isModFetching ? (
         <Loader />
       ) : (
         <Form

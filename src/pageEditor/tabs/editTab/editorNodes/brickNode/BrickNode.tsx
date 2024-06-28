@@ -30,22 +30,22 @@ import {
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { useSelector } from "react-redux";
-import { selectActiveDocumentOrFormPreviewElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/slices/editorSelectors";
 
 const useScrollIntoViewEffect = (
   active = false,
   isSubPipelineHeaderActive = false,
 ) => {
   const nodeRef = useRef<HTMLDivElement>(null);
-  const activeNodePreviewElementId = useSelector(
-    selectActiveDocumentOrFormPreviewElement,
+  const activeBuilderPreviewElementId = useSelector(
+    selectActiveBuilderPreviewElement,
   );
 
   useEffect(() => {
-    if (active && !isSubPipelineHeaderActive && activeNodePreviewElementId) {
+    if (active && !isSubPipelineHeaderActive && activeBuilderPreviewElementId) {
       nodeRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
     }
-  }, [activeNodePreviewElementId, isSubPipelineHeaderActive, active]);
+  }, [activeBuilderPreviewElementId, isSubPipelineHeaderActive, active]);
 
   return nodeRef;
 };

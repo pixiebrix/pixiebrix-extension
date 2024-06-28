@@ -72,7 +72,7 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
         blueprintId: modId,
       });
 
-      dispatch(actions.removeRecipeData(modId));
+      dispatch(actions.removeModData(modId));
     },
     [
       dispatch,

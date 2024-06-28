@@ -17,12 +17,12 @@
 
 import { type Metadata } from "@/types/registryTypes";
 import {
-  baseFromExtension,
-  baseSelectExtension,
-  baseSelectExtensionPoint,
-  extensionWithNormalizedPipeline,
+  baseFromModComponent,
+  baseSelectModComponent,
+  baseSelectStarterBrick,
+  modComponentWithNormalizedPipeline,
   getImplicitReader,
-  lookupExtensionPoint,
+  lookupStarterBrick,
   makeInitialBaseState,
   getDefaultAvailabilityForUrl,
   readerTypeHack,
@@ -105,7 +105,7 @@ function selectStarterBrickDefinition(
     },
   } = extensionPoint;
   return removeEmptyValues({
-    ...baseSelectExtensionPoint(formState),
+    ...baseSelectStarterBrick(formState),
     definition: {
       type: "trigger",
       reader,
@@ -136,7 +136,7 @@ function selectExtension(
       : omitEditorMetadata(extension.blockPipeline),
   };
   return removeEmptyValues({
-    ...baseSelectExtension(state),
+    ...baseSelectModComponent(state),
     config,
   });
 }
@@ -154,7 +154,7 @@ function asDraftModComponent(
 async function fromExtension(
   config: ModComponentBase<TriggerConfig>,
 ): Promise<TriggerFormState> {
-  const extensionPoint = await lookupExtensionPoint<
+  const starterBrick = await lookupStarterBrick<
     TriggerDefinition,
     TriggerConfig,
     "trigger"
@@ -172,26 +172,23 @@ async function fromExtension(
     intervalMillis,
     debounce,
     customEvent,
-  } = extensionPoint.definition;
+  } = starterBrick.definition;
 
-  const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = await extensionWithNormalizedPipeline(
+  const base = baseFromModComponent(config, starterBrick.definition.type);
+  const modComponent = await modComponentWithNormalizedPipeline(
     config.config,
     "action",
   );
 
-  assertNotNullish(
-    extensionPoint.metadata,
-    "Starter brick metadata is required",
-  );
+  assertNotNullish(starterBrick.metadata, "Starter brick metadata is required");
 
   return {
     ...base,
-    extension,
+    extension: modComponent,
     extensionPoint: {
-      metadata: extensionPoint.metadata,
+      metadata: starterBrick.metadata,
       definition: {
-        type: extensionPoint.definition.type,
+        type: starterBrick.definition.type,
         rootSelector,
         trigger,
         attachMode,
@@ -203,7 +200,7 @@ async function fromExtension(
         background,
         intervalMillis,
         reader: readerTypeHack(reader),
-        isAvailable: selectStarterBrickAvailability(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(starterBrick),
       },
     },
   };

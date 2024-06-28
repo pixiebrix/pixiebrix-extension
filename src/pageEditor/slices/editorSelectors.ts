@@ -128,9 +128,9 @@ export const selectDirtyModOptionsDefinitions = ({ editor }: EditorRootState) =>
 
 const dirtyOptionsDefinitionsForModIdSelector = createSelector(
   selectDirtyModOptionsDefinitions,
-  (_state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (_state: EditorRootState, modId: RegistryId) => modId,
   (dirtyOptionsDefinitionsByModId, modId) => {
-    // eslint-disable-next-line security/detect-object-injection -- RegistryId for recipe
+    // eslint-disable-next-line security/detect-object-injection -- RegistryId for mod
     const options = dirtyOptionsDefinitionsByModId[modId];
 
     if (options) {
@@ -150,9 +150,8 @@ export const selectDirtyOptionsDefinitionsForModId =
 const dirtyOptionValuesForModIdSelector = createSelector(
   selectNotDeletedModComponentFormStates,
   (_state: EditorRootState, modId: RegistryId) => modId,
-  (formStates, recipeId) =>
-    formStates.find((formState) => formState.recipe?.id === recipeId)
-      ?.optionsArgs,
+  (formStates, modId) =>
+    formStates.find((formState) => formState.recipe?.id === modId)?.optionsArgs,
 );
 
 export const selectDirtyOptionValuesForModId =
@@ -389,7 +388,7 @@ export function selectNodeDataPanelTabState(
 /**
  * Selects the active element of the Document or Form builder on the Preview tab
  */
-export function selectActiveDocumentOrFormPreviewElement(
+export function selectActiveBuilderPreviewElement(
   state: EditorRootState,
 ): Nullishable<string> {
   return selectNodeDataPanelTabState(state, DataPanelTabKey.Preview)

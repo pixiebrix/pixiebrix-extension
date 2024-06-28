@@ -351,7 +351,7 @@ describe("removeElement", () => {
 });
 
 describe("removeModData", () => {
-  test("removes expanded active recipe", () => {
+  test("removes expanded active mod", () => {
     const modMetadata = modMetadataFactory();
     const modComponentFormState1 = formStateFactory({ recipe: modMetadata });
     const modComponentFormState2 = formStateFactory({ recipe: modMetadata });
@@ -445,27 +445,27 @@ describe("removeModData", () => {
   });
 });
 
-describe("selectRecipeId", () => {
-  test("select unselected recipe", () => {
-    const recipe = modMetadataFactory();
+describe("selectActiveModId", () => {
+  test("select unselected mod", () => {
+    const mod = modMetadataFactory();
     const newState = produce(initialState, (draft) => {
-      setActiveModId(draft, recipe.id);
+      setActiveModId(draft, mod.id);
     });
-    expect(selectActiveModId({ editor: newState })).toEqual(recipe.id);
-    expect(selectExpandedModId({ editor: newState })).toEqual(recipe.id);
+    expect(selectActiveModId({ editor: newState })).toEqual(mod.id);
+    expect(selectExpandedModId({ editor: newState })).toEqual(mod.id);
   });
 
-  test("re-select selected recipe", () => {
-    const recipe = modMetadataFactory();
+  test("re-select selected mod", () => {
+    const mod = modMetadataFactory();
     const state: EditorState = {
       ...initialState,
-      activeModId: recipe.id,
-      expandedModId: recipe.id,
+      activeModId: mod.id,
+      expandedModId: mod.id,
     };
     const newState = produce(state, (draft) => {
-      setActiveModId(draft, recipe.id);
+      setActiveModId(draft, mod.id);
     });
-    expect(selectActiveModId({ editor: newState })).toEqual(recipe.id);
+    expect(selectActiveModId({ editor: newState })).toEqual(mod.id);
     expect(selectExpandedModId({ editor: newState })).toBeNull();
   });
 });

@@ -35,7 +35,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
-import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
+import useResetMod from "@/pageEditor/hooks/useResetMod";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -87,8 +87,8 @@ const Extensions: React.FunctionComponent = () => {
     ],
   );
 
-  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveMod();
-  const resetRecipe = useResetRecipe();
+  const { save: saveMod, isSaving: isSavingMod } = useSaveMod();
+  const resetMod = useResetMod();
   const deactivateMod = useDeactivateMod();
 
   const listItems = filteredSidebarItems.map((sidebarItem) => {
@@ -99,17 +99,17 @@ const Extensions: React.FunctionComponent = () => {
           key={modMetadata.id}
           modMetadata={modMetadata}
           onSave={async () => {
-            await saveRecipe(activeModId);
+            await saveMod(activeModId);
           }}
-          isSaving={isSavingRecipe}
+          isSaving={isSavingMod}
           onReset={async () => {
-            await resetRecipe(activeModId);
+            await resetMod(activeModId);
           }}
           onDeactivate={async () => {
             await deactivateMod({ modId: activeModId });
           }}
           onClone={async () => {
-            dispatch(actions.showCreateRecipeModal({ keepLocalCopy: true }));
+            dispatch(actions.showCreateModModal({ keepLocalCopy: true }));
           }}
         >
           {modComponents.map((modComponentSidebarItem) => (
