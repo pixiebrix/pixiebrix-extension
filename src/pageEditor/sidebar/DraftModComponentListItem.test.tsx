@@ -39,6 +39,11 @@ afterAll(() => {
 });
 
 describe("DraftModComponentListItem", () => {
+  beforeEach(() => {
+    // :barf: these Jest snapshot contains sequence UUIDs
+    formStateFactory.resetSequence();
+  });
+
   test("it renders not active element", () => {
     const formState = formStateFactory();
     expect(

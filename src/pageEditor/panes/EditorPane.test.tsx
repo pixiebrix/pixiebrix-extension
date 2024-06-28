@@ -202,8 +202,6 @@ describe("renders", () => {
   beforeEach(() => {
     // :barf: these Jest snapshot contains sequence UUIDs
     formStateFactory.resetSequence();
-    brickConfigFactory.resetSequence();
-    starterBrickDefinitionFactory.resetSequence();
   });
 
   test("the first selected node", async () => {
