@@ -17,7 +17,7 @@
 
 import { expect, type Page } from "@playwright/test";
 import { getModifierKey, getModifierSymbol } from "end-to-end-tests/utils";
-import BasePageObject from "./pageObject";
+import { BasePageObject } from "./basePageObject";
 
 function getExtensionShortcutsUrl(chromiumChannel: "chrome" | "msedge") {
   switch (chromiumChannel) {
@@ -59,7 +59,7 @@ export class ExtensionsShortcutsPage extends BasePageObject {
   }
 
   async goto() {
-    await this.page().goto(this.pageUrl);
+    await this.page.goto(this.pageUrl);
 
     if (this.chromiumChannel === "chrome") {
       await expect(
@@ -71,12 +71,12 @@ export class ExtensionsShortcutsPage extends BasePageObject {
   }
 
   async clearQuickbarShortcut() {
-    await this.page().bringToFront();
+    await this.page.bringToFront();
 
-    const shortcut = await getShortcut(this.page());
+    const shortcut = await getShortcut(this.page);
 
     if (this.chromiumChannel === "chrome") {
-      await expect(this.page().getByPlaceholder(/shortcut set: /i)).toHaveValue(
+      await expect(this.page.getByPlaceholder(/shortcut set: /i)).toHaveValue(
         shortcut,
       );
 
@@ -107,10 +107,10 @@ export class ExtensionsShortcutsPage extends BasePageObject {
   }
 
   async setQuickbarShortcut() {
-    await this.page().bringToFront();
+    await this.page.bringToFront();
 
-    const modifierKey = await getModifierKey(this.page());
-    const shortcut = await getShortcut(this.page());
+    const modifierKey = await getModifierKey(this.page);
+    const shortcut = await getShortcut(this.page);
 
     if (this.chromiumChannel === "chrome") {
       await expect(
