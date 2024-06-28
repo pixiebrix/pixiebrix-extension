@@ -35,7 +35,7 @@ import {
 import { produce } from "immer";
 import {
   type BrickPipelineUIState,
-  type NodeUIState,
+  type BrickConfigurationUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -94,7 +94,7 @@ describe("ensureNodeUIState", () => {
       pipelineMap: getPipelineMap(element.extension.blockPipeline),
       activeNodeId: nodeId,
     };
-    const nodeState: NodeUIState = makeInitialNodeUIState(nodeId);
+    const nodeState: BrickConfigurationUIState = makeInitialNodeUIState(nodeId);
     uiState.nodeUIStates = {
       ...uiState.nodeUIStates,
       [nodeId]: {

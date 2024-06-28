@@ -18,7 +18,7 @@
 import { type UUID } from "@/types/stringTypes";
 import {
   type BrickPipelineUIState,
-  type NodeUIState,
+  type BrickConfigurationUIState,
   type TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
@@ -33,8 +33,10 @@ function makeInitialDataTabState(): TabUIState {
   };
 }
 
-export function makeInitialNodeUIState(nodeId: UUID): NodeUIState {
-  const nodeUIState: NodeUIState = {
+export function makeInitialNodeUIState(
+  nodeId: UUID,
+): BrickConfigurationUIState {
+  const nodeUIState: BrickConfigurationUIState = {
     nodeId,
     // @ts-expect-error -- initializing the Tab states down below
     dataPanel: {

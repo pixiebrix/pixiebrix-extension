@@ -18,7 +18,7 @@
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { initialState } from "@/pageEditor/slices/editorSlice";
 import { type UUID } from "@/types/stringTypes";
-import { type NodeUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { type BrickConfigurationUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   getEditorState,
@@ -53,13 +53,13 @@ const currentPersistenceVersion = getMaxMigrationsVersion(migrations);
 describe("draftModComponentStorage", () => {
   test("removes one active element", async () => {
     const element = formStateFactory();
-    const nodeUIStates: Record<UUID, NodeUIState> = {
+    const nodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [element.uuid]: {
         nodeId: element.extension.blockPipeline[0].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
-      } as NodeUIState,
+      } as BrickConfigurationUIState,
     };
     const state: EditorState = {
       ...initialState,
@@ -90,22 +90,22 @@ describe("draftModComponentStorage", () => {
 
   test("removes inactive element", async () => {
     const inactiveElement = formStateFactory();
-    const inactiveNodeUIStates: Record<UUID, NodeUIState> = {
+    const inactiveNodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [inactiveElement.uuid]: {
         nodeId: inactiveElement.extension.blockPipeline[1].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
-      } as NodeUIState,
+      } as BrickConfigurationUIState,
     };
     const activeElement = formStateFactory();
-    const activeNodeUIStates: Record<UUID, NodeUIState> = {
+    const activeNodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [activeElement.uuid]: {
         nodeId: activeElement.extension.blockPipeline[0].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
-      } as NodeUIState,
+      } as BrickConfigurationUIState,
     };
     const baseState: EditorState = {
       ...initialState,
@@ -158,33 +158,33 @@ describe("draftModComponentStorage", () => {
     const element1 = formStateFactory({
       recipe,
     });
-    const element1NodeUIStates: Record<UUID, NodeUIState> = {
+    const element1NodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [element1.uuid]: {
         nodeId: element1.extension.blockPipeline[0].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
-      } as NodeUIState,
+      } as BrickConfigurationUIState,
     };
     const element2 = formStateFactory({
       recipe,
     });
-    const element2NodeUIStates: Record<UUID, NodeUIState> = {
+    const element2NodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [element2.uuid]: {
         nodeId: element2.extension.blockPipeline[0].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
-      } as NodeUIState,
+      } as BrickConfigurationUIState,
     };
     const element3 = formStateFactory();
-    const element3NodeUIStates: Record<UUID, NodeUIState> = {
+    const element3NodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [element3.uuid]: {
         nodeId: element3.extension.blockPipeline[1].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
-      } as NodeUIState,
+      } as BrickConfigurationUIState,
     };
     const baseState: EditorState = {
       ...initialState,
@@ -250,33 +250,33 @@ describe("draftModComponentStorage", () => {
     const element1 = formStateFactory({
       recipe,
     });
-    const element1NodeUIStates: Record<UUID, NodeUIState> = {
+    const element1NodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [element1.uuid]: {
         nodeId: element1.extension.blockPipeline[0].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
-      } as NodeUIState,
+      } as BrickConfigurationUIState,
     };
     const element2 = formStateFactory({
       recipe,
     });
-    const element2NodeUIStates: Record<UUID, NodeUIState> = {
+    const element2NodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [element2.uuid]: {
         nodeId: element2.extension.blockPipeline[0].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
-      } as NodeUIState,
+      } as BrickConfigurationUIState,
     };
     const element3 = formStateFactory();
-    const element3NodeUIStates: Record<UUID, NodeUIState> = {
+    const element3NodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [element3.uuid]: {
         nodeId: element3.extension.blockPipeline[1].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
-      } as NodeUIState,
+      } as BrickConfigurationUIState,
     };
     const baseState: EditorState = {
       ...initialState,

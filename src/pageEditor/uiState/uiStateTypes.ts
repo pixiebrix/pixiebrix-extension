@@ -75,7 +75,7 @@ export type TabUIState = {
   activeElement: string | null;
 };
 
-export type NodeUIState = {
+export type BrickConfigurationUIState = {
   /**
    * Identifier for the node in the editor, either the foundation or a block uuid
    */
@@ -119,5 +119,5 @@ export type BrickPipelineUIState = {
   /**
    * UI state of bricks in the mod component pipeline, including the starter brick
    */
-  nodeUIStates: Record<UUID, NodeUIState>;
+  nodeUIStates: Record<UUID, BrickConfigurationUIState>;
 };
