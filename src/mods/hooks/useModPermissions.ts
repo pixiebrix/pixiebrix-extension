@@ -17,7 +17,7 @@
 
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
-import { checkExtensionPermissions } from "@/permissions/modComponentPermissionHelpers";
+import { checkExtensionPermissions } from "@/permissions/modComponentPermissionsHelpers";
 import useAsyncState from "@/hooks/useAsyncState";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";

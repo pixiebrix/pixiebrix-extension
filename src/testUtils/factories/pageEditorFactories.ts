@@ -111,7 +111,7 @@ export const formStateFactory = (
 // Define a method to reset the sequence for formStateFactory given that it's not a factory definition
 formStateFactory.resetSequence = () => {
   // Reset the sequence for the internal factories
-  baseExtensionStateFactory.resetSequence();
+  baseModComponentStateFactory.resetSequence();
   internalFormStateFactory.resetSequence();
   brickConfigFactory.resetSequence();
   starterBrickDefinitionFactory.resetSequence();

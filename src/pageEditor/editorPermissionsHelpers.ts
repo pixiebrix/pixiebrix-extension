@@ -18,7 +18,7 @@
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
-import { collectModComponentPermissions } from "@/permissions/modComponentPermissionHelpers";
+import { collectModComponentPermissions } from "@/permissions/modComponentPermissionsHelpers";
 import {
   ensurePermissionsFromUserGesture,
   mergePermissionsStatuses,

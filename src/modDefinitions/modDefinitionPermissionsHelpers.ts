@@ -27,7 +27,7 @@ import { type Permissions } from "webextension-polyfill";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { collectIntegrationOriginPermissions } from "@/integrations/util/permissionsHelpers";
-import { collectModComponentPermissions } from "@/permissions/modComponentPermissionHelpers";
+import { collectModComponentPermissions } from "@/permissions/modComponentPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import type { Manifest } from "webextension-polyfill/namespaces/manifest";
 

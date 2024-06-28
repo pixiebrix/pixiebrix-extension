@@ -24,7 +24,7 @@ import { getRunningStarterBricks } from "@/contentScript/messenger/api";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 
-jest.mock("@/permissions/modComponentPermissionHelpers", () => ({
+jest.mock("@/permissions/modComponentPermissionsHelpers", () => ({
   collectModComponentPermissions: jest.fn().mockResolvedValue({}),
 }));
 

@@ -22,7 +22,7 @@ import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefi
 import { type HydratedModComponentDefinition } from "@/types/modDefinitionTypes";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 
-// Separate from extensionPermissionsHelpers.ts to avoid a circular dependency with modDefinitionPermissionsHelpers.ts
+// Separate from modComponentPermissionsHelpers.ts to avoid a circular dependency with modDefinitionPermissionsHelpers.ts
 
 /**
  * Return permissions status for a StandaloneModDefinition and the user's selected dependencies
