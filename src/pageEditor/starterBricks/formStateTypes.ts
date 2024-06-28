@@ -47,7 +47,7 @@ import {
 } from "@/starterBricks/types";
 import {
   type StarterBrickKind,
-  StarterBrickKinds,
+  type StarterBrickKinds,
 } from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
 import { type Menus } from "webextension-polyfill";

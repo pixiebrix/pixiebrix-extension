@@ -27,7 +27,7 @@ import { type PlatformCapability } from "@/platform/capabilities";
 import { type ValueOf } from "type-fest";
 
 export const StarterBrickKinds = {
-  // Match terminology in the UI
+  // Match terminology in the Page Editor UI
   INLINE_PANEL: "panel",
   SIDEBAR_PANEL: "actionPanel",
   BUTTON: "menuItem",
