@@ -17,6 +17,47 @@
 
 import { type Locator, type Page } from "playwright";
 
+/**
+ * BasePageObject is the base class for all page objects.
+ * It acts as a way to scope locators to a specific root locator and provides
+ * shortcuts to common locator functions.
+ *
+ * @example
+ * class LoginPage extends BasePageObject {
+ *   const usernameInput = this.getByPlaceholder('Username');
+ *   const passwordInput = this.getByPlaceholder('Password');
+ *
+ *   async login(username, password) {
+ *     await usernameInput.fill(username);
+ *     await passwordInput.fill(password);
+ *     await this.getByRole('button', { name: /log in/i }).click();
+ *   }
+ * }
+ *
+ * // in the test
+ * const loginPage = new LoginPage(page);
+ * await loginPage.login('testUser', 'testPassword');
+ *
+ * @example
+ * // Nested Page Objects
+ * class UserProfile extends BasePageObject {
+ *   async getUsername() {
+ *     return await this.getByTestId('username').innerText();
+ *   }
+ * }
+ *
+ * class DashboardPage extends BasePageObject {
+ *   const userProfile = new UserProfile(this.getByTestId('user-profile'));
+ *   // other methods
+ * }
+ *
+ * // in the test
+ * const dashboardPage = new DashboardPage(page);
+ * const username = await dashboardPage.userProfile.getUsername();
+ *
+ * @param {Locator|Page} rootLocatorOrPage The root locator scoping this page object.
+ * If a Page is provided, the root locator will be the body.
+ */
 export class BasePageObject {
   readonly root: Locator;
   readonly page: Page;

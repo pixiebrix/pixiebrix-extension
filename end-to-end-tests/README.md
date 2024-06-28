@@ -42,7 +42,10 @@ One-time setup:
 Adhere to these principles, based on the [Playwright Best Practices](https://playwright.dev/docs/best-practices):
 
 - Utilize `test` from `testBase.ts` for test environment setup and extension interaction.
-- Employ page objects from `./end-to-end-tests/pageObjects` for web page interactions.
+- Employ page objects from `./end-to-end-tests/pageObjects` for interactions. These objects contain
+  reusable locators and methods for interacting with different parts of the extension. For more details
+  see the [Playwright page object pattern](https://playwright.dev/docs/page-objects) and our custom base
+  [page object object](`./end-to-end-tests/pageObjects/basePageObject.ts`).
 - Ensure tests are self-contained, leveraging [Playwright fixtures](https://playwright.dev/docs/test-fixtures) for shared setup/teardown.
 - Use the [recommended built-in locator methods](https://playwright.dev/docs/locators#quick-guide) that have auto-waiting and retry features.
 
