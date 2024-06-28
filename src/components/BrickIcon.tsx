@@ -32,7 +32,6 @@ import {
 import { TriggerStarterBrickABC } from "@/starterBricks/trigger/triggerStarterBrick";
 import { ButtonStarterBrickABC } from "@/starterBricks/button/buttonStarterBrick";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
-import { PanelStarterBrickABC } from "@/starterBricks/panel/panelStarterBrick";
 import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
@@ -81,10 +80,6 @@ function getDefaultBrickIcon<T extends Metadata>(
 
   if (brick instanceof ContextMenuStarterBrickABC) {
     return faBars;
-  }
-
-  if (brick instanceof PanelStarterBrickABC) {
-    return faWindowMaximize;
   }
 
   if (brick instanceof SidebarStarterBrickABC) {

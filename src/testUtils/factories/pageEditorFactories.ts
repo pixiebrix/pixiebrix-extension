@@ -71,7 +71,7 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
     return [];
   },
   recipe: undefined,
-  type: StarterBrickTypes.INLINE_PANEL,
+  type: StarterBrickTypes.SIDEBAR_PANEL,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   // @ts-expect-error -- TODO: verify typings

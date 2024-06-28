@@ -79,7 +79,6 @@ const panelEntryFactory = define<PanelEntry>({
   extensionPointId: (n: number) =>
     validateRegistryId(`@test/panel-extension-point-test-${n}`),
 });
-
 export function sidebarEntryFactory<T = PanelEntry>(
   type: "panel",
   override?: FactoryConfig<T>,

@@ -32,7 +32,6 @@ import { type ValueOf } from "type-fest";
  */
 export const StarterBrickTypes = {
   // Match terminology in the Page Editor UI
-  INLINE_PANEL: "panel",
   SIDEBAR_PANEL: "actionPanel",
   BUTTON: "menuItem",
   TRIGGER: "trigger",

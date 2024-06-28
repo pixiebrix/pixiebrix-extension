@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromJS as deserializePanel } from "@/starterBricks/panel/panelStarterBrick";
 import { fromJS as deserializeMenuItem } from "@/starterBricks/button/buttonStarterBrick";
 import { fromJS as deserializeTrigger } from "@/starterBricks/trigger/triggerStarterBrick";
 import { fromJS as deserializeContextMenu } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
@@ -29,7 +28,6 @@ import { getPlatform } from "@/platform/platformContext";
 import { DefinitionKinds } from "@/types/registryTypes";
 
 const TYPE_MAP = {
-  panel: deserializePanel,
   menuItem: deserializeMenuItem,
   trigger: deserializeTrigger,
   contextMenu: deserializeContextMenu,
