@@ -137,19 +137,22 @@ export function baseFromExtension<T extends StarterBrickType>(
 }
 
 /**
- * Add the recipe options to the form state if the extension is a part of a recipe
+ * Add the mod options to the form state if the mod component is a part of a mod
  */
-export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
-  element: TElement,
-  recipes: ModDefinition[],
+export function initRecipeOptionsIfNeeded<TFormState extends BaseFormState>(
+  modComponentFormState: TFormState,
+  modDefinitions: ModDefinition[],
 ) {
-  if (element.recipe?.id) {
-    const recipe = recipes?.find((x) => x.metadata.id === element.recipe?.id);
+  if (modComponentFormState.recipe?.id) {
+    const recipe = modDefinitions?.find(
+      (x) => x.metadata.id === modComponentFormState.recipe?.id,
+    );
 
     if (recipe?.options == null) {
-      element.optionsDefinition = emptyModOptionsDefinitionFactory();
+      modComponentFormState.optionsDefinition =
+        emptyModOptionsDefinitionFactory();
     } else {
-      element.optionsDefinition = {
+      modComponentFormState.optionsDefinition = {
         schema: recipe.options.schema.properties
           ? recipe.options.schema
           : ({

@@ -99,12 +99,12 @@ const formStateModComponentOrphanH: ActionFormState = menuItemFormStateFactory({
 
 describe("arrangeSidebarItems()", () => {
   test("sort orphaned recipes by metadata.name", () => {
-    const elements = arrangeSidebarItems({
+    const sidebarItems = arrangeSidebarItems({
       modComponentFormStates: [formStateModComponentOrphanC],
       cleanModComponents: [cleanModComponentOrphanH, cleanModComponentOrphanG],
     });
 
-    expect(elements).toStrictEqual([
+    expect(sidebarItems).toStrictEqual([
       formStateModComponentOrphanC,
       cleanModComponentOrphanG,
       cleanModComponentOrphanH,
@@ -140,12 +140,12 @@ describe("arrangeSidebarItems()", () => {
     ]);
   });
 
-  test("do not duplicate extension/element pairs in the results", () => {
-    const elements = arrangeSidebarItems({
+  test("do not duplicate modComponent/modComponentFormState pairs in the results", () => {
+    const sidebarItems = arrangeSidebarItems({
       modComponentFormStates: [formStateModComponentOrphanH],
       cleanModComponents: [cleanModComponentOrphanH],
     });
 
-    expect(elements).toStrictEqual([formStateModComponentOrphanH]);
+    expect(sidebarItems).toStrictEqual([formStateModComponentOrphanH]);
   });
 });
