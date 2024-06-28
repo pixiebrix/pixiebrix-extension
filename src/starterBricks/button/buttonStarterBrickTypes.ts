@@ -19,7 +19,7 @@ import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type IconConfig } from "@/types/iconTypes";
 import { type MessageConfig } from "@/utils/notify";
-import { type StarterBrickKinds } from "@/types/starterBrickTypes";
+import { type StarterBrickTypes } from "@/types/starterBrickTypes";
 
 /**
  * @since 1.7.8
@@ -102,7 +102,7 @@ interface ButtonDefaultOptions {
  */
 export interface ButtonDefinition extends StarterBrickDefinitionProp {
   // Using `menuItem` as the type for backward compatibility
-  type: typeof StarterBrickKinds.BUTTON;
+  type: typeof StarterBrickTypes.BUTTON;
   /**
    * The HTML template to render the button.
    */

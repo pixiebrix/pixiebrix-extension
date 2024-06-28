@@ -71,7 +71,7 @@ import {
 } from "@/types/runtimeTypes";
 import {
   type StarterBrick,
-  StarterBrickKinds,
+  StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
@@ -168,8 +168,8 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
     },
   ) as PlatformProtocol["toasts"]["showNotification"]; // `debounce` loses the overloads
 
-  public get kind(): typeof StarterBrickKinds.BUTTON {
-    return StarterBrickKinds.BUTTON;
+  public get kind(): typeof StarterBrickTypes.BUTTON {
+    return StarterBrickTypes.BUTTON;
   }
 
   readonly capabilities: PlatformCapability[] = CONTENT_SCRIPT_CAPABILITIES;
@@ -975,10 +975,10 @@ export function fromJS(
   config: StarterBrickDefinitionLike<ButtonDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
-  if (type !== StarterBrickKinds.BUTTON) {
+  if (type !== StarterBrickTypes.BUTTON) {
     // `type` is `never` here due to the if-statement
     throw new Error(
-      `Expected type=${StarterBrickKinds.BUTTON}, got ${type as string}`,
+      `Expected type=${StarterBrickTypes.BUTTON}, got ${type as string}`,
     );
   }
 

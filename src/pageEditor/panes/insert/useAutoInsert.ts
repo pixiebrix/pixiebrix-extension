@@ -9,8 +9,8 @@ import { openSidePanel } from "@/utils/sidePanelUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import {
-  type StarterBrickKind,
-  StarterBrickKinds,
+  type StarterBrickType,
+  StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import notify from "@/utils/notify";
@@ -22,14 +22,14 @@ import {
 
 const { addModComponentFormState, toggleInsert } = actions;
 
-function useAutoInsert(type: StarterBrickKind): void {
+function useAutoInsert(type: StarterBrickType): void {
   const dispatch = useDispatch();
 
   useAsyncEffect(async () => {
     // These have their own UI, so don't auto-insert
     if (
-      type === StarterBrickKinds.BUTTON ||
-      type === StarterBrickKinds.INLINE_PANEL ||
+      type === StarterBrickTypes.BUTTON ||
+      type === StarterBrickTypes.INLINE_PANEL ||
       type == null
     ) {
       return;

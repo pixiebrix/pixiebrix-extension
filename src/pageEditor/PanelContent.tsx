@@ -38,13 +38,13 @@ import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
-import type { StarterBrickKind } from "@/types/starterBrickTypes";
+import type { StarterBrickType } from "@/types/starterBrickTypes";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import DimensionGate from "@/pageEditor/components/DimensionGate";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 
-const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickKind[] = [
+const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
   "actionPanel",
   "panel",
 ];

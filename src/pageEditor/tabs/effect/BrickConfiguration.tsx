@@ -46,7 +46,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { BrickTypes } from "@/runtime/runtimeTypes";
-import { StarterBrickKinds } from "@/types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 const BrickConfiguration: React.FunctionComponent<{
   name: string;
@@ -146,12 +146,12 @@ const BrickConfiguration: React.FunctionComponent<{
     isRootAware &&
     !isComment &&
     [
-      StarterBrickKinds.TRIGGER,
-      StarterBrickKinds.CONTEXT_MENU,
-      StarterBrickKinds.QUICK_BAR_ACTION,
-      StarterBrickKinds.DYNAMIC_QUICK_BAR,
-      StarterBrickKinds.BUTTON,
-      StarterBrickKinds.TOUR,
+      StarterBrickTypes.TRIGGER,
+      StarterBrickTypes.CONTEXT_MENU,
+      StarterBrickTypes.QUICK_BAR_ACTION,
+      StarterBrickTypes.DYNAMIC_QUICK_BAR,
+      StarterBrickTypes.BUTTON,
+      StarterBrickTypes.TOUR,
     ].includes(context.values.type);
   const showIfAndTarget =
     brickType && brickType !== BrickTypes.RENDERER && !isComment;

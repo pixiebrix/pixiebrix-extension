@@ -33,7 +33,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";
-import { StarterBrickKinds } from "@/types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -60,7 +60,7 @@ describe("checkAvailableDraftModComponents", () => {
           name: "Test Starter Brick 1",
         },
         definition: {
-          type: StarterBrickKinds.BUTTON,
+          type: StarterBrickTypes.BUTTON,
           reader: [] as RegistryId[],
           isAvailable: normalizeAvailability({
             matchPatterns: [testUrl],
@@ -78,7 +78,7 @@ describe("checkAvailableDraftModComponents", () => {
           name: "Test Starter Brick 2",
         },
         definition: {
-          type: StarterBrickKinds.BUTTON,
+          type: StarterBrickTypes.BUTTON,
           reader: [] as RegistryId[],
           isAvailable: normalizeAvailability({
             matchPatterns: ["https://www.otherUrl.com/"],

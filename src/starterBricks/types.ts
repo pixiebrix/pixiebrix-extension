@@ -26,7 +26,7 @@ import {
   DefinitionKinds,
 } from "@/types/registryTypes";
 import {
-  type StarterBrickKind,
+  type StarterBrickType,
   type StarterBrick,
 } from "@/types/starterBrickTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
@@ -75,7 +75,7 @@ export type CustomEventOptions = {
  * @see StarterBrickDefinitionLike
  */
 export type StarterBrickDefinitionProp = {
-  type: StarterBrickKind;
+  type: StarterBrickType;
   isAvailable: Availability;
   reader: ReaderConfig;
 };
@@ -194,7 +194,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   protected readonly logger: Logger;
 
-  public abstract get kind(): StarterBrickKind;
+  public abstract get kind(): StarterBrickType;
 
   public get isSyncInstall() {
     return false;

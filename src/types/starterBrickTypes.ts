@@ -26,7 +26,11 @@ import { type Metadata } from "@/types/registryTypes";
 import { type PlatformCapability } from "@/platform/capabilities";
 import { type ValueOf } from "type-fest";
 
-export const StarterBrickKinds = {
+/**
+ * Constants for starter brick types/kinds. Used to update names in code to match UI display names without migrating
+ * persisted values.
+ */
+export const StarterBrickTypes = {
   // Match terminology in the Page Editor UI
   INLINE_PANEL: "panel",
   SIDEBAR_PANEL: "actionPanel",
@@ -41,7 +45,7 @@ export const StarterBrickKinds = {
 /**
  * @see StarterBrick.kind
  */
-export type StarterBrickKind = ValueOf<typeof StarterBrickKinds>;
+export type StarterBrickType = ValueOf<typeof StarterBrickTypes>;
 
 /**
  * A location where content (e.g., form, temporary panel) can be added to the page.
@@ -57,7 +61,7 @@ export interface StarterBrick extends Metadata {
   /**
    * The kind of StarterBrick.
    */
-  kind: StarterBrickKind;
+  kind: StarterBrickType;
 
   /**
    * The input schema for StarterBrick-specific configuration.

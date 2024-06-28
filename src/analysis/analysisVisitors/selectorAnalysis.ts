@@ -33,7 +33,7 @@ import { guessUsefulness } from "@/utils/detectRandomString";
 import type { Schema } from "@/types/schemaTypes";
 import { isObject } from "@/utils/objectUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { StarterBrickKinds } from "@/types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 // `jQuery` selector extension: https://api.jquery.com/category/selectors/jquery-selector-extensions/
 const jQueryExtensions = new Set([
@@ -91,12 +91,12 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
 
   override async run(component: ModComponentFormState): Promise<void> {
     switch (component.type) {
-      case StarterBrickKinds.BUTTON: {
+      case StarterBrickTypes.BUTTON: {
         this.checkAction(component);
         break;
       }
 
-      case StarterBrickKinds.TRIGGER: {
+      case StarterBrickTypes.TRIGGER: {
         this.checkTrigger(component);
         break;
       }

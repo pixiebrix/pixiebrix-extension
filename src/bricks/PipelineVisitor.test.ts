@@ -27,7 +27,7 @@ import {
   pipelineFactory,
 } from "@/testUtils/factories/brickFactories";
 import { toExpression } from "@/utils/expressionUtils";
-import { StarterBrickKinds } from "@/types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 test("should invoke the callback for the pipeline bricks", () => {
   const pipeline = pipelineFactory();
@@ -46,7 +46,7 @@ test("should invoke the callback for the pipeline bricks", () => {
 
   const visitor = new Visitor();
   visitor.visitRootPipeline(pipeline, {
-    extensionPointType: StarterBrickKinds.BUTTON,
+    extensionPointType: StarterBrickTypes.BUTTON,
   });
 
   expect(visitBlock).toHaveBeenCalledTimes(pipeline.length);
@@ -104,7 +104,7 @@ test("should invoke the callback for the sub pipeline bricks", () => {
   }
   const visitor = new Visitor();
   visitor.visitRootPipeline(pipeline, {
-    extensionPointType: StarterBrickKinds.BUTTON,
+    extensionPointType: StarterBrickTypes.BUTTON,
   });
 
   expect(visitBlock).toHaveBeenCalledTimes(
@@ -186,7 +186,7 @@ test("should invoke the callback for the Document button pipeline", () => {
   }
   const visitor = new Visitor();
   visitor.visitRootPipeline(pipeline, {
-    extensionPointType: StarterBrickKinds.INLINE_PANEL,
+    extensionPointType: StarterBrickTypes.INLINE_PANEL,
   });
 
   expect(visitBlock).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline

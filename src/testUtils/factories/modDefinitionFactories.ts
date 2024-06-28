@@ -36,7 +36,7 @@ import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
-import { StarterBrickKinds } from "@/types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
 import { type SafeString } from "@/types/stringTypes";
 import {
@@ -81,7 +81,7 @@ export const starterBrickDefinitionFactory = define<StarterBrickDefinitionLike>(
       }),
     definition(n: number) {
       const definition: StarterBrickDefinitionProp = {
-        type: StarterBrickKinds.BUTTON,
+        type: StarterBrickTypes.BUTTON,
         isAvailable: {
           matchPatterns: [`https://www.mySite${n}.com/*`],
         },
@@ -98,7 +98,7 @@ export const starterBrickInnerDefinitionFactory = define<UnknownObject>({
   kind: DefinitionKinds.STARTER_BRICK,
   definition(n: number) {
     const definition: StarterBrickDefinitionProp = {
-      type: StarterBrickKinds.BUTTON,
+      type: StarterBrickTypes.BUTTON,
       isAvailable: {
         matchPatterns: [`https://www.mySite${n}.com/*`],
       },

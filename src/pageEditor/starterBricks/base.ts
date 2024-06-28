@@ -27,7 +27,7 @@ import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
-import { type StarterBrickKind } from "@/types/starterBrickTypes";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import type React from "react";
 import { createSitePattern, SITES_PATTERN } from "@/permissions/patterns";
 import { type Except } from "type-fest";
@@ -108,7 +108,7 @@ export function getDefaultAvailabilityForUrl(
 /**
  * Return common extension properties for the Page Editor form state
  */
-export function baseFromExtension<T extends StarterBrickKind>(
+export function baseFromExtension<T extends StarterBrickType>(
   config: ModComponentBase,
   type: T,
 ): Pick<
@@ -383,7 +383,7 @@ export function removeEmptyValues<T extends object>(obj: T): T {
  * Return a composite reader to automatically include in new extensions created with the Page Editor.
  */
 export function getImplicitReader(
-  type: StarterBrickKind,
+  type: StarterBrickType,
 ): SingleLayerReaderConfig {
   // Reminder: when providing a composite array reader, the later entries override the earlier ones
 

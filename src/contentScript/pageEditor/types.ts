@@ -19,7 +19,7 @@ import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
-import { type StarterBrickKind } from "@/types/starterBrickTypes";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
 import {
   type PanelConfig,
@@ -40,7 +40,7 @@ export interface DraftModComponent<
     StarterBrickDefinitionProp = StarterBrickDefinitionProp,
   TExtension extends UnknownObject = UnknownObject,
 > {
-  type: StarterBrickKind;
+  type: StarterBrickType;
   extensionPointConfig: StarterBrickDefinitionLike<TExtensionPoint>;
   extension: ModComponentBase<TExtension>;
 }

@@ -17,8 +17,8 @@
 
 import React, { useCallback } from "react";
 import {
-  type StarterBrickKind,
-  StarterBrickKinds,
+  type StarterBrickType,
+  StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import InsertMenuItemPane from "@/pageEditor/panes/insert/InsertMenuItemPane";
 import InsertPanelPane from "@/pageEditor/panes/insert/InsertPanelPane";
@@ -29,7 +29,7 @@ import useAutoInsert from "@/pageEditor/panes/insert/useAutoInsert";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { cancelSelect } from "@/contentScript/messenger/api";
 
-const InsertPane: React.FC<{ inserting: StarterBrickKind }> = ({
+const InsertPane: React.FC<{ inserting: StarterBrickType }> = ({
   inserting,
 }) => {
   // Auto-insert if the StarterBrickType supports it
@@ -46,11 +46,11 @@ const InsertPane: React.FC<{ inserting: StarterBrickKind }> = ({
   useEscapeHandler(cancelInsert, inserting != null);
 
   switch (inserting) {
-    case StarterBrickKinds.BUTTON: {
+    case StarterBrickTypes.BUTTON: {
       return <InsertMenuItemPane cancel={cancelInsert} />;
     }
 
-    case StarterBrickKinds.INLINE_PANEL: {
+    case StarterBrickTypes.INLINE_PANEL: {
       return <InsertPanelPane cancel={cancelInsert} />;
     }
 
