@@ -129,7 +129,7 @@ describe("Add/Remove Bricks", () => {
 
   const source = formStateFactory(
     {
-      label: "Test Extension",
+      label: "Test Mod Component",
       integrationDependencies: [
         integrationDependencyFactory({
           integrationId: GOOGLE_SHEET_SERVICE_ID,
@@ -213,11 +213,11 @@ describe("Add/Remove Bricks", () => {
     ).toBeArrayOfSize(initialIntegrationDependencies.length);
   });
 
-  test("Can clone an extension", async () => {
+  test("Can clone a mod compoenent", async () => {
     const dispatch = jest.fn();
     const getState: () => EditorRootState = () => ({ editor });
 
-    await actions.cloneActiveExtension()(dispatch, getState, undefined);
+    await actions.cloneActiveModComponent()(dispatch, getState, undefined);
 
     // Dispatch call args (actions) should be:
     //  1. thunk pending
@@ -229,7 +229,7 @@ describe("Add/Remove Bricks", () => {
     const action1 = dispatch.mock.calls[0][0];
     expect(action1).toHaveProperty(
       "type",
-      "editor/cloneActiveExtension/pending",
+      "editor/cloneActiveModComponent/pending",
     );
 
     const action2 = dispatch.mock.calls[1][0];
@@ -237,7 +237,7 @@ describe("Add/Remove Bricks", () => {
     expect(action2.payload).toEqual(
       expect.objectContaining({
         uuid: expect.not.stringMatching(source.uuid),
-        label: "Test Extension (Copy)",
+        label: "Test Mod Component (Copy)",
       }),
     );
     expect(action2.payload).not.toHaveProperty("recipe");
@@ -245,7 +245,7 @@ describe("Add/Remove Bricks", () => {
     const action3 = dispatch.mock.calls[2][0];
     expect(action3).toHaveProperty(
       "type",
-      "editor/cloneActiveExtension/fulfilled",
+      "editor/cloneActiveModComponent/fulfilled",
     );
   });
 });

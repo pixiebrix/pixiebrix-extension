@@ -22,7 +22,7 @@ import {
 import { initialState } from "@/store/extensionsSliceInitialState";
 import {
   getModComponentState,
-  persistExtensionOptionsConfig,
+  persistModComponentOptionsConfig,
 } from "@/store/extensionsStorage";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 import {
@@ -60,6 +60,6 @@ describe("getModComponentState", () => {
 describe("persistExtensionOptionsConfig", () => {
   test("version is the highest migration version", () => {
     const maxVersion = getMaxMigrationsVersion(migrations);
-    expect(persistExtensionOptionsConfig.version).toBe(maxVersion);
+    expect(persistModComponentOptionsConfig.version).toBe(maxVersion);
   });
 });

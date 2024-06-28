@@ -31,11 +31,11 @@ import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { compact } from "lodash";
 
 type Config = {
-  extensionId: UUID;
+  modComponentId: UUID;
   shouldShowConfirmation?: boolean;
 };
 
-function useResetExtension(): (useResetConfig: Config) => Promise<void> {
+function useResetModComponent(): (useResetConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const installed = useSelector(selectActivatedModComponents);
@@ -43,7 +43,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ extensionId, shouldShowConfirmation = true }) => {
+    async ({ modComponentId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
           title: "Reset Brick?",
@@ -58,25 +58,25 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
 
       reportEvent(Events.PAGE_EDITOR_RESET, {
         sessionId,
-        extensionId,
+        extensionId: modComponentId,
       });
 
       try {
-        const extension = installed.find((x) => x.id === extensionId);
-        if (extension == null) {
-          dispatch(actions.removeModComponentFormState(extensionId));
+        const modComponent = installed.find((x) => x.id === modComponentId);
+        if (modComponent == null) {
+          dispatch(actions.removeModComponentFormState(modComponentId));
         } else {
-          const formState = await modComponentToFormState(extension);
+          const formState = await modComponentToFormState(modComponent);
           initModOptionsIfNeeded(formState, compact(mods));
           dispatch(actions.resetInstalled(formState));
         }
       } catch (error) {
         reportError(error);
-        dispatch(actions.adapterError({ uuid: extensionId, error }));
+        dispatch(actions.adapterError({ uuid: modComponentId, error }));
       }
     },
     [dispatch, mods, sessionId, installed, showConfirmation],
   );
 }
 
-export default useResetExtension;
+export default useResetModComponent;

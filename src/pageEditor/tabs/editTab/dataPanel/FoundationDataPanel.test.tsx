@@ -27,7 +27,7 @@ import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorF
 describe("FoundationDataPanel", () => {
   test("it renders with form state and trace data", async () => {
     const { formState, records } = formStateWithTraceDataFactory();
-    const extensionId = formState.uuid;
+    const modComponentId = formState.uuid;
     const { instanceId } = formState.extension.blockPipeline[0];
     const { asFragment } = render(<FoundationDataPanel />, {
       initialValues: formState,
@@ -35,7 +35,10 @@ describe("FoundationDataPanel", () => {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
         dispatch(
-          runtimeSlice.actions.setExtensionTrace({ extensionId, records }),
+          runtimeSlice.actions.setModComponentTrace({
+            modComponentId,
+            records,
+          }),
         );
         dispatch(editorActions.setActiveNodeId(instanceId));
         dispatch(

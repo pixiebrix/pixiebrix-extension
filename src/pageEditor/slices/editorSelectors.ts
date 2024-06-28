@@ -440,7 +440,7 @@ const activeModComponentAnalysisAnnotationsForPath = createSelector(
 
 /**
  * Selects the analysis annotations for the given path
- * @param path A path relative to the root of the extension or root pipeline
+ * @param path A path relative to the root of the mod component or root pipeline
  *
  * @note This should NOT be used outside the page editor, it is tightly coupled with editorSlice
  */

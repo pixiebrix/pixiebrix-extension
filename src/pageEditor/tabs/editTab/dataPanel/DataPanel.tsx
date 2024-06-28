@@ -66,7 +66,7 @@ import { BrickTypes } from "@/runtime/runtimeTypes";
  * Exclude irrelevant top-level keys.
  */
 const contextFilter = (value: unknown, key: string) => {
-  // `@options` comes from marketplace-installed extensions. There's a chance the user might add a brick that has
+  // `@options` comes from marketplace-installed mod components. There's a chance the user might add a brick that has
   // @options as an output key. In that case, we'd expect values to flow into it. So just checking to see if there's
   // any data is a good compromise even though we miss the corner-case where @options is user-defined but empty
   if (key === "@options" && isEmpty(value)) {
@@ -187,7 +187,7 @@ const DataPanel: React.FC = () => {
     : undefined;
 
   const isRenderedPanelStale = useMemo(() => {
-    // Only show alert for Panel and Side Panel extensions
+    // Only show alert for Panel and Side Panel mod components
     if (
       activeModComponentFormState.type !== "panel" &&
       activeModComponentFormState.type !== "actionPanel"
@@ -390,7 +390,7 @@ const DataPanel: React.FC = () => {
                 <BrickPreview
                   traceRecord={record}
                   brickConfig={brickConfig}
-                  extensionPoint={activeModComponentFormState.extensionPoint}
+                  starterBrick={activeModComponentFormState.extensionPoint}
                 />
               </ErrorBoundary>
             ) : (

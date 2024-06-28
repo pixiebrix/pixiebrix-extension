@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ExtensionUrlPatternAnalysis, {
+import ModComponentUrlPatternAnalysis, {
   INVALID_HOST_MESSAGE,
   INVALID_SCHEME_MESSAGE,
   INVALID_URL_MESSAGE,
   REQUIRED_MESSAGE,
-} from "./extensionUrlPatternAnalysis";
+} from "./modComponentUrlPatternAnalysis";
 
 describe("analyzeStringUrlsField", () => {
   test.each([
@@ -30,7 +30,7 @@ describe("analyzeStringUrlsField", () => {
     "*://*/*",
     "https://foo.com/before/*/after",
   ])("accepts valid URL [%s]", async (url) => {
-    const analysis = new ExtensionUrlPatternAnalysis();
+    const analysis = new ModComponentUrlPatternAnalysis();
     await analysis.analyzeStringUrlsField([url], "testField");
 
     expect(analysis.getAnnotations()).toHaveLength(0);
@@ -110,7 +110,7 @@ describe("analyzeStringUrlsField", () => {
   test.each(invalidUrlsCases)(
     "rejects invalid URL [$url]",
     async ({ url, message }) => {
-      const analysis = new ExtensionUrlPatternAnalysis();
+      const analysis = new ModComponentUrlPatternAnalysis();
       await analysis.analyzeStringUrlsField([url!], "testField");
       expect(analysis.getAnnotations()).toHaveLength(1);
       expect(analysis.getAnnotations()[0]!.message).toEqual(message);

@@ -51,7 +51,7 @@ import { type DerivedFunction } from "cooky-cutter/dist/derive";
 import { type BaseModComponentState } from "@/pageEditor/baseFormStateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-export const baseExtensionStateFactory = define<BaseModComponentState>({
+export const baseModComponentStateFactory = define<BaseModComponentState>({
   blockPipeline: () => pipelineFactory(),
 });
 
@@ -73,7 +73,7 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   recipe: undefined,
   type: StarterBrickTypes.INLINE_PANEL,
   label: (i: number) => `Element ${i}`,
-  extension: baseExtensionStateFactory,
+  extension: baseModComponentStateFactory,
   // @ts-expect-error -- TODO: verify typings
   extensionPoint: derive<ModComponentFormState, StarterBrickDefinitionLike>(
     ({ type }) => {
@@ -95,7 +95,7 @@ export const formStateFactory = (
   if (pipelineOverride) {
     return internalFormStateFactory({
       ...override,
-      extension: baseExtensionStateFactory({
+      extension: baseModComponentStateFactory({
         blockPipeline: pipelineOverride,
       }),
     } as InternalFormStateOverride);

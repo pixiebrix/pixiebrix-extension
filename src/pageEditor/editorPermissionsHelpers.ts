@@ -18,7 +18,7 @@
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
-import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
+import { collectModComponentPermissions } from "@/permissions/modComponentPermissionHelpers";
 import {
   ensurePermissionsFromUserGesture,
   mergePermissionsStatuses,
@@ -47,8 +47,8 @@ export async function calculatePermissionsForModComponentFormState(
 
   // Pass the starter brick directly because the foundation will not have been saved/added to the
   // registry at this point when called from useCreate
-  const permissions = await collectExtensionPermissions(modComponent, {
-    extensionPoint: starterBrick,
+  const permissions = await collectModComponentPermissions(modComponent, {
+    starterBrick,
   });
 
   const hasPermissions = await browser.permissions.contains(permissions);

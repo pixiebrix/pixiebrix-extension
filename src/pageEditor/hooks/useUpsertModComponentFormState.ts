@@ -30,7 +30,7 @@ import {
   useGetEditablePackagesQuery,
   useSaveStandaloneModDefinitionMutation,
 } from "@/data/service/api";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
@@ -42,7 +42,7 @@ import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-const { saveModComponent } = extensionsSlice.actions;
+const { saveModComponent } = modComponentsSlice.actions;
 const { markClean } = editorSlice.actions;
 
 async function upsertPackageConfig(
@@ -148,38 +148,37 @@ function useUpsertModComponentFormState(): SaveCallback {
         `No adapter found for ${modComponentFormState.type}`,
       );
 
-      const extensionPointId = modComponentFormState.extensionPoint.metadata.id;
-      const hasInnerExtensionPoint =
-        isInnerDefinitionRegistryId(extensionPointId);
+      const starterBrickId = modComponentFormState.extensionPoint.metadata.id;
+      const hasInnerStarterBrick = isInnerDefinitionRegistryId(starterBrickId);
 
       let isEditable = false;
 
-      // Handle the case where the Page Editor is also editing an extension point that exists as a registry item
-      if (!hasInnerExtensionPoint) {
+      // Handle the case where the Page Editor is also editing a starter brick that exists as a registry item
+      if (!hasInnerStarterBrick) {
         assertNotNullish(editablePackages, "Editable packages not loaded");
         // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
         // number of bricks implemented and frequency of saves
         isEditable =
-          editablePackages.some((x) => x.name === extensionPointId) ?? false;
+          editablePackages.some((x) => x.name === starterBrickId) ?? false;
 
         const isLocked = modComponentFormState.installed && !isEditable;
 
         if (!isLocked) {
           try {
-            const extensionPointConfig = adapter.selectStarterBrickDefinition(
+            const starterBrickConfig = adapter.selectStarterBrickDefinition(
               modComponentFormState,
             );
             const packageId = modComponentFormState.installed
               ? editablePackages.find(
                   // Bricks endpoint uses "name" instead of id
-                  (x) => x.name === extensionPointConfig.metadata?.id,
+                  (x) => x.name === starterBrickConfig.metadata?.id,
                 )?.id ?? null
               : null;
 
             await upsertPackageConfig(
               packageId,
               DefinitionKinds.STARTER_BRICK,
-              extensionPointConfig,
+              starterBrickConfig,
             );
           } catch (error) {
             return onStepError(error, "saving foundation");
@@ -194,17 +193,17 @@ function useUpsertModComponentFormState(): SaveCallback {
       });
 
       try {
-        let modComponent = adapter.selectExtension(modComponentFormState);
+        let modComponent = adapter.selectModComponent(modComponentFormState);
         const updateTimestamp: Timestamp =
           new Date().toISOString() as Timestamp;
 
-        if (hasInnerExtensionPoint) {
-          const extensionPointConfig = adapter.selectStarterBrickDefinition(
+        if (hasInnerStarterBrick) {
+          const starterBrickConfig = adapter.selectStarterBrickDefinition(
             modComponentFormState,
           );
           modComponent = modComponentWithInnerDefinitions(
             modComponent,
-            extensionPointConfig.definition,
+            starterBrickConfig.definition,
           );
         }
 

@@ -22,7 +22,7 @@ import ModOptionsDefinitionEditor from "@/pageEditor/tabs/modOptionsDefinitions/
 import { waitForEffect } from "@/testUtils/testHelpers";
 import selectEvent from "react-select-event";
 import { screen } from "@testing-library/react";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/extensionsSlice";
 import userEvent from "@testing-library/user-event";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
@@ -43,7 +43,7 @@ describe("ModOptionsDefinitionEditor", () => {
     render(<ModOptionsDefinitionEditor />, {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.activateMod({
+          modComponentsSlice.actions.activateMod({
             modDefinition,
             screen: "pageEditor",
             isReactivate: false,

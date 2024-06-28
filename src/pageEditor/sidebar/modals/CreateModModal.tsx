@@ -79,7 +79,7 @@ function useInitialFormState({
   const modMetadata = dirtyModMetadata ?? activeMod?.metadata;
 
   // Handle the "Save As New" case, where an existing mod, or an
-  // extension within an existing mod, is selected
+  // mod component within an existing mod, is selected
   if (modMetadata) {
     let newModId = generateScopeBrickId(scope, modMetadata.id);
     if (newModId === modMetadata.id) {

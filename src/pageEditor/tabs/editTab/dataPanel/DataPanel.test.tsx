@@ -33,7 +33,7 @@ bricksRegistry.register([echoBrick]);
 
 const { formState, records } = formStateWithTraceDataFactory();
 const renderDataPanel = () => {
-  const extensionId = formState.uuid;
+  const modComponentId = formState.uuid;
   const { instanceId } = formState.extension.blockPipeline[1];
 
   return render(<DataPanel />, {
@@ -42,7 +42,10 @@ const renderDataPanel = () => {
       dispatch(editorActions.addModComponentFormState(formState));
       dispatch(editorActions.setActiveModComponentId(formState.uuid));
       dispatch(
-        runtimeSlice.actions.setExtensionTrace({ extensionId, records }),
+        runtimeSlice.actions.setModComponentTrace({
+          modComponentId,
+          records,
+        }),
       );
       dispatch(editorActions.setActiveNodeId(instanceId));
       dispatch(

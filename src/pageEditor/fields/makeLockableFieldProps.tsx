@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import LockedExtensionPointLabel from "@/components/form/lockedLabel/LockedExtensionPointLabel";
+import LockedStarterBrickLabel from "@/components/form/lockedLabel/LockedStarterBrickLabel";
 
 export function makeLockableFieldProps(
   label: string,
@@ -26,7 +26,7 @@ export function makeLockableFieldProps(
   return {
     disabled: isLocked,
     label: isLocked ? (
-      <LockedExtensionPointLabel label={label} message={message} />
+      <LockedStarterBrickLabel label={label} message={message} />
     ) : (
       label
     ),

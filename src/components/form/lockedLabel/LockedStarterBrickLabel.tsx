@@ -28,7 +28,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { useField } from "formik";
 
-const LockedExtensionPointLabel: React.FC<{
+const LockedStarterBrickLabel: React.FC<{
   label: string;
   message?: string;
 }> = ({ label, message }) => {
@@ -61,4 +61,4 @@ const LockedExtensionPointLabel: React.FC<{
   );
 };
 
-export default LockedExtensionPointLabel;
+export default LockedStarterBrickLabel;

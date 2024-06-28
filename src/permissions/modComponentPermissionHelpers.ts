@@ -18,7 +18,7 @@
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Permissions } from "webextension-polyfill";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
-import extensionPointRegistry from "@/starterBricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 import { castArray, compact } from "lodash";
 import { mergePermissions } from "@/permissions/permissionsUtils";
 import { type StarterBrick } from "@/types/starterBrickTypes";
@@ -27,47 +27,47 @@ import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 type PermissionOptions = {
   /**
-   * If provided, used instead of the registry version of the referenced extensionPoint.
+   * If provided, used instead of the registry version of the referenced starter brick.
    */
-  extensionPoint?: StarterBrick;
+  starterBrick?: StarterBrick;
 
   /**
-   * True to include permissions for permissions declared on the extension point and it's default reader.
+   * True to include permissions for permissions declared on the starter brick and it's default reader.
    */
-  includeExtensionPoint?: boolean;
+  includeStarterBrick?: boolean;
 
   /**
-   * True to include permissions for services referenced by the extension.
+   * True to include permissions for integrations referenced by the mod component.
    */
-  includeServices?: boolean;
+  includeIntegrations?: boolean;
 };
 
 /**
  * Returns browser permissions required to run the ModComponentBase
- * - Extension
+ * - ModComponent
  * - Blocks
  * - Services (optional, default=true)
- * - Extension point (optional, default=true)
+ * - StarterBrick (optional, default=true)
  *
  * @see ModComponentBase.permissions
  * @see StarterBrick.permissions
  * @see checkExtensionPermissions
  */
-export async function collectExtensionPermissions(
-  extension: ModComponentBase,
+export async function collectModComponentPermissions(
+  modComponent: ModComponentBase,
   options: PermissionOptions = {},
 ): Promise<Permissions.Permissions> {
-  const { includeExtensionPoint = true, includeServices = true } = options;
-  const resolved = await hydrateModComponentInnerDefinitions(extension);
+  const { includeStarterBrick = true, includeIntegrations = true } = options;
+  const resolved = await hydrateModComponentInnerDefinitions(modComponent);
 
-  const extensionPoint =
-    options.extensionPoint ??
-    (await extensionPointRegistry.lookup(resolved.extensionPointId));
+  const starterBrick =
+    options.starterBrick ??
+    (await starterBrickRegistry.lookup(resolved.extensionPointId));
 
-  let servicePermissions: Permissions.Permissions[] = [];
+  let integrationPermissions: Permissions.Permissions[] = [];
 
-  if (includeServices) {
-    servicePermissions = await Promise.all(
+  if (includeIntegrations) {
+    integrationPermissions = await Promise.all(
       (resolved.integrationDependencies ?? [])
         .filter(({ configId }) => configId)
         .map(async (integrationDependency) =>
@@ -76,30 +76,30 @@ export async function collectExtensionPermissions(
     );
   }
 
-  const blocks = await extensionPoint.getBricks(resolved);
-  const blockPermissions = blocks.map((x) => x.permissions);
+  const bricks = await starterBrick.getBricks(resolved);
+  const brickPermissions = bricks.map((x) => x.permissions);
 
   return mergePermissions(
     compact([
-      extension.permissions ?? {},
-      includeExtensionPoint ? extensionPoint.permissions : null,
-      ...servicePermissions,
-      ...blockPermissions,
+      modComponent.permissions ?? {},
+      includeStarterBrick ? starterBrick.permissions : null,
+      ...integrationPermissions,
+      ...brickPermissions,
     ]),
   );
 }
 
 /**
  * Check the status of permissions for one or more ModComponentBases.
- * @param extensionOrExtensions the extension or extensions to check
+ * @param modComponentOrModComponents the mod component or mod components to check
  */
 export async function checkExtensionPermissions(
-  extensionOrExtensions: ModComponentBase | ModComponentBase[],
+  modComponentOrModComponents: ModComponentBase | ModComponentBase[],
 ): Promise<PermissionsStatus> {
   const permissions = mergePermissions(
     await Promise.all(
-      castArray(extensionOrExtensions).map(async (x) =>
-        collectExtensionPermissions(x),
+      castArray(modComponentOrModComponents).map(async (x) =>
+        collectModComponentPermissions(x),
       ),
     ),
   );

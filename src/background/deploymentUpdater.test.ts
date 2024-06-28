@@ -331,7 +331,7 @@ describe("syncDeployments", () => {
     let editorState = initialEditorState;
     const element = (await ADAPTERS.get(
       starterBrick.definition.type,
-    ).fromExtension(modComponent)) as ActionFormState;
+    ).fromModComponent(modComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addModComponentFormState(element),
@@ -439,9 +439,9 @@ describe("syncDeployments", () => {
     });
 
     let editorState = initialEditorState;
-    const element = (await ADAPTERS.get(StarterBrickTypes.BUTTON).fromExtension(
-      modComponent,
-    )) as ActionFormState;
+    const element = (await ADAPTERS.get(
+      StarterBrickTypes.BUTTON,
+    ).fromModComponent(modComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addModComponentFormState(element),
@@ -734,7 +734,7 @@ describe("syncDeployments", () => {
 
     const personalModComponentFormState = (await ADAPTERS.get(
       personalStarterBrick.definition.type,
-    ).fromExtension(standaloneModComponent)) as ActionFormState;
+    ).fromModComponent(standaloneModComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addModComponentFormState(
@@ -744,7 +744,7 @@ describe("syncDeployments", () => {
 
     const deploymentElement = (await ADAPTERS.get(
       deploymentStarterBrick.definition.type,
-    ).fromExtension(deploymentModComponent)) as ActionFormState;
+    ).fromModComponent(deploymentModComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addModComponentFormState(deploymentElement),

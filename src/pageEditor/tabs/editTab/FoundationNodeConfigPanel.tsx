@@ -72,7 +72,7 @@ const FoundationNodeConfigPanel: React.FC = () => {
     "starterBrick not found in active mod component form state",
   );
 
-  // For now, don't allow modifying extensionPoint packages via the Page Editor.
+  // For now, don't allow modifying starter brick packages via the Page Editor.
   const isLocked = useMemo(
     () => !isInnerDefinitionRegistryId(starterBrick.metadata.id),
     [starterBrick.metadata.id],

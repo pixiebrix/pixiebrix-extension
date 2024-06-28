@@ -28,7 +28,7 @@ import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
-  baseExtensionStateFactory,
+  baseModComponentStateFactory,
   formStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
@@ -48,7 +48,7 @@ describe("DocumentOptions", () => {
     stylesheets: string[] = [],
   ): ModComponentFormState {
     return formStateFactory({
-      extension: baseExtensionStateFactory({
+      extension: baseModComponentStateFactory({
         blockPipeline: [
           brickConfigFactory({
             config: {
@@ -182,7 +182,7 @@ describe("DocumentOptions", () => {
       // Form state for the test
       const formState = formStateFactory({
         integrationDependencies,
-        extension: baseExtensionStateFactory({
+        extension: baseModComponentStateFactory({
           blockPipeline: [
             brickConfigFactory({ config: documentWithButtonConfig }),
           ],

@@ -22,14 +22,14 @@ import {
   type StarterBrickType,
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
-import menuItemExtension from "@/pageEditor/starterBricks/menuItem";
-import quickBarExtension from "@/pageEditor/starterBricks/quickBar";
-import triggerExtension from "@/pageEditor/starterBricks/trigger";
-import panelExtension from "@/pageEditor/starterBricks/panel";
-import contextMenuExtension from "@/pageEditor/starterBricks/contextMenu";
-import sidebarExtension from "@/pageEditor/starterBricks/sidebar";
-import quickBarProviderExtension from "@/pageEditor/starterBricks/quickBarProvider";
-import tourExtension from "@/pageEditor/starterBricks/tour";
+import buttonModComponent from "@/pageEditor/starterBricks/menuItem";
+import quickBarActionModComponent from "@/pageEditor/starterBricks/quickBar";
+import triggerModComponent from "@/pageEditor/starterBricks/trigger";
+import inlinePanelModComponent from "@/pageEditor/starterBricks/panel";
+import contextMenuModComponent from "@/pageEditor/starterBricks/contextMenu";
+import sidebarPanelModComponent from "@/pageEditor/starterBricks/sidebar";
+import quickBarProviderModComponent from "@/pageEditor/starterBricks/quickBarProvider";
+import tourModComponent from "@/pageEditor/starterBricks/tour";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -38,55 +38,55 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>(
   [
-    [StarterBrickTypes.TRIGGER, triggerExtension],
-    [StarterBrickTypes.INLINE_PANEL, panelExtension],
-    [StarterBrickTypes.CONTEXT_MENU, contextMenuExtension],
-    [StarterBrickTypes.SIDEBAR_PANEL, sidebarExtension],
-    [StarterBrickTypes.BUTTON, menuItemExtension],
-    [StarterBrickTypes.QUICK_BAR_ACTION, quickBarExtension],
-    [StarterBrickTypes.DYNAMIC_QUICK_BAR, quickBarProviderExtension],
-    [StarterBrickTypes.TOUR, tourExtension],
+    [StarterBrickTypes.TRIGGER, triggerModComponent],
+    [StarterBrickTypes.INLINE_PANEL, inlinePanelModComponent],
+    [StarterBrickTypes.CONTEXT_MENU, contextMenuModComponent],
+    [StarterBrickTypes.SIDEBAR_PANEL, sidebarPanelModComponent],
+    [StarterBrickTypes.BUTTON, buttonModComponent],
+    [StarterBrickTypes.QUICK_BAR_ACTION, quickBarActionModComponent],
+    [StarterBrickTypes.DYNAMIC_QUICK_BAR, quickBarProviderModComponent],
+    [StarterBrickTypes.TOUR, tourModComponent],
   ],
 );
 
 export async function selectType(
-  extension: ModComponentBase,
+  modComponent: ModComponentBase,
 ): Promise<StarterBrickType> {
-  if (hasInnerStarterBrickRef(extension)) {
-    const { extensionPointId, definitions } = extension;
+  if (hasInnerStarterBrickRef(modComponent)) {
+    const { extensionPointId: starterBrickId, definitions } = modComponent;
     return (
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerExtensionPointRef
-      (definitions![extensionPointId] as unknown as StarterBrickDefinitionLike)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerStarterBrickRef
+      (definitions![starterBrickId] as unknown as StarterBrickDefinitionLike)
         .definition.type
     );
   }
 
-  const brick = await registry.find(extension.extensionPointId);
+  const brick = await registry.find(modComponent.extensionPointId);
   if (!brick) {
     console.error("Cannot find starter brick", {
-      extensionPointId: extension.extensionPointId,
-      extension,
+      extensionPointId: modComponent.extensionPointId,
+      extension: modComponent,
     });
     throw new Error("Cannot find starter brick");
   }
 
-  const extensionPoint = brick.config as unknown as StarterBrickDefinitionLike;
-  return extensionPoint.definition.type;
+  const starterBrick = brick.config as unknown as StarterBrickDefinitionLike;
+  return starterBrick.definition.type;
 }
 
 export async function modComponentToFormState(
   modComponent: ModComponentBase,
 ): Promise<ModComponentFormState> {
   const starterBrickType = await selectType(modComponent);
-  const { fromExtension } = ADAPTERS.get(starterBrickType) ?? {};
-  if (!fromExtension) {
+  const { fromModComponent } = ADAPTERS.get(starterBrickType) ?? {};
+  if (!fromModComponent) {
     throw new Error(
       `Editing existing mod components not implemented for starter brick type: '${starterBrickType}'`,
     );
   }
 
   // FormState is the sum type of all the modComponent form states, so OK to cast
-  return fromExtension(modComponent) as Promise<ModComponentFormState>;
+  return fromModComponent(modComponent) as Promise<ModComponentFormState>;
 }
 
 export function formStateToDraftModComponent(

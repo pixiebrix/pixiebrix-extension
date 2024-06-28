@@ -86,10 +86,10 @@ function fromNativeElement(
 function selectStarterBrickDefinition(
   formState: PanelFormState,
 ): StarterBrickDefinitionLike<PanelDefinition> {
-  const { extensionPoint } = formState;
+  const { extensionPoint: starterBrick } = formState;
   const {
     definition: { isAvailable, position, template, reader, containerSelector },
-  } = extensionPoint;
+  } = starterBrick;
 
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
@@ -104,18 +104,18 @@ function selectStarterBrickDefinition(
   });
 }
 
-function selectExtension(
+function selectModComponent(
   state: PanelFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<PanelConfig> {
-  const { extension } = state;
+  const { extension: modComponent } = state;
   const config: PanelConfig = {
-    heading: extension.heading,
+    heading: modComponent.heading,
     body: options.includeInstanceIds
-      ? extension.blockPipeline
-      : omitEditorMetadata(extension.blockPipeline),
-    collapsible: extension.collapsible,
-    shadowDOM: extension.shadowDOM,
+      ? modComponent.blockPipeline
+      : omitEditorMetadata(modComponent.blockPipeline),
+    collapsible: modComponent.collapsible,
+    shadowDOM: modComponent.shadowDOM,
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),
@@ -128,22 +128,22 @@ function asDraftModComponent(
 ): DraftModComponent {
   return {
     type: "panel",
-    extension: selectExtension(panelFormState, { includeInstanceIds: true }),
+    extension: selectModComponent(panelFormState, { includeInstanceIds: true }),
     extensionPointConfig: selectStarterBrickDefinition(panelFormState),
   };
 }
 
-async function fromExtension(
+async function fromModComponent(
   config: ModComponentBase<PanelConfig>,
 ): Promise<PanelFormState> {
-  const extensionPoint = await lookupStarterBrick<
+  const starterBrick = await lookupStarterBrick<
     PanelDefinition,
     PanelConfig,
     "panel"
   >(config, "panel");
 
-  const base = baseFromModComponent(config, extensionPoint.definition.type);
-  const extension = await modComponentWithNormalizedPipeline(
+  const base = baseFromModComponent(config, starterBrick.definition.type);
+  const modComponent = await modComponentWithNormalizedPipeline(
     config.config,
     "body",
     {
@@ -151,25 +151,22 @@ async function fromExtension(
     },
   );
 
-  assertNotNullish(
-    extensionPoint.metadata,
-    "Starter brick metadata is required",
-  );
+  assertNotNullish(starterBrick.metadata, "Starter brick metadata is required");
 
   return {
     ...base,
-    extension,
+    extension: modComponent,
     containerInfo: null,
     extensionPoint: {
-      metadata: extensionPoint.metadata,
+      metadata: starterBrick.metadata,
       traits: {
         // We don't provide a way to set style anywhere yet so this doesn't apply yet
         style: { mode: "inherit" },
       },
       definition: {
-        ...extensionPoint.definition,
-        reader: readerTypeHack(extensionPoint.definition.reader),
-        isAvailable: selectStarterBrickAvailability(extensionPoint),
+        ...starterBrick.definition,
+        reader: readerTypeHack(starterBrick.definition.reader),
+        isAvailable: selectStarterBrickAvailability(starterBrick),
       },
     },
   };
@@ -190,8 +187,8 @@ const config: ModComponentFormStateAdapter<
   fromNativeElement,
   asDraftModComponent,
   selectStarterBrickDefinition,
-  selectExtension,
-  fromExtension,
+  selectModComponent,
+  fromModComponent,
 };
 
 export default config;

@@ -18,7 +18,7 @@
 import { type AuthRootState } from "@/auth/authTypes";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
+import { type SavingModComponentState } from "@/pageEditor/panes/save/savingModComponentSlice";
 import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
@@ -84,12 +84,12 @@ export type EditorStateV1 = {
   selectionSeq: number;
 
   /**
-   * The element type, if the page editor is in "insertion-mode"
+   * The starter brick type, if the page editor is in "insertion-mode"
    */
   inserting: StarterBrickType | null;
 
   /**
-   * The uuid of the active element, if an extension is selected
+   * The uuid of the active mod component form state, if a mod component is selected
    */
   activeElementId: UUID | null;
 
@@ -136,7 +136,7 @@ export type EditorStateV1 = {
   elementUIStates: Record<UUID, BrickPipelineUIState>;
 
   /**
-   * A clipboard-style-copy of a block ready to paste into an extension
+   * A clipboard-style-copy of a brick ready to paste into a mod component
    */
   copiedBlock?: BrickConfig;
 
@@ -172,12 +172,12 @@ export type EditorStateV1 = {
   keepLocalCopyOnCreateRecipe: boolean;
 
   /**
-   * Unsaved extensions that have been deleted from a mod
+   * Unsaved mod components that have been deleted from a mod
    */
   deletedElementsByRecipeId: Record<RegistryId, BaseFormStateV1[]>;
 
   /**
-   * The available installed extensions for the current tab
+   * The available installed mod components for the current tab
    */
   availableInstalledIds: UUID[];
 
@@ -360,5 +360,5 @@ export type RootState = AuthRootState &
   SettingsRootState &
   SessionRootState &
   SessionChangesRootState & {
-    savingExtension: SavingExtensionState;
+    savingExtension: SavingModComponentState;
   };
