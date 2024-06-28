@@ -198,6 +198,11 @@ async function addABlock(addButton: Element, blockName: string) {
 }
 
 describe("renders", () => {
+  beforeEach(() => {
+    // :barf: these Jest snapshot contains sequence UUIDs
+    formStateFactory.resetSequence();
+  });
+
   test("the first selected node", async () => {
     const formState = getPlainFormState();
     const { instanceId } = formState.extension.blockPipeline[0];

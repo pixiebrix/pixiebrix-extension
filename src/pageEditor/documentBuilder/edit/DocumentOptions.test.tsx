@@ -78,7 +78,7 @@ describe("DocumentOptions", () => {
             ),
           );
           dispatch(
-            actions.setActiveDocumentOrFormPreviewElement(initialActiveElement),
+            actions.setActiveBuilderPreviewElement(initialActiveElement),
           );
         },
       },

@@ -27,11 +27,7 @@ function useAutoInsert(type: StarterBrickType): void {
 
   useAsyncEffect(async () => {
     // These have their own UI, so don't auto-insert
-    if (
-      type === StarterBrickTypes.BUTTON ||
-      type === StarterBrickTypes.INLINE_PANEL ||
-      type == null
-    ) {
+    if (type === StarterBrickTypes.BUTTON || type == null) {
       return;
     }
 

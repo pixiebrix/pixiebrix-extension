@@ -25,7 +25,6 @@ import {
   type ButtonStarterBrickConfig,
   type ButtonPosition,
 } from "@/starterBricks/button/buttonStarterBrickTypes";
-import { type PanelConfig } from "@/starterBricks/panel/panelStarterBrickTypes";
 import {
   type QuickBarConfig,
   type QuickBarDefaultOptions,
@@ -169,34 +168,6 @@ export interface TriggerFormState
   type: "trigger";
 }
 
-// PanelFormState
-export type PanelTraits = {
-  style: {
-    mode: "default" | "inherit";
-  };
-};
-
-type PanelModComponentState = BaseModComponentState &
-  Except<PanelConfig, "body">;
-type PanelStarterBrickState = BaseStarterBrickState & {
-  definition: {
-    type: StarterBrickType;
-    containerSelector: string;
-    position?: ButtonPosition;
-    template: string;
-    reader: SingleLayerReaderConfig;
-    isAvailable: NormalizedAvailability;
-  };
-  traits: PanelTraits;
-};
-
-export interface PanelFormState
-  extends BaseFormState<PanelModComponentState, PanelStarterBrickState> {
-  type: "panel";
-
-  containerInfo: ElementInfo | null;
-}
-
 // ContextMenuFormState
 type ContextMenuModComponentState = BaseModComponentState &
   Except<ContextMenuConfig, "action">;
@@ -294,7 +265,6 @@ export type ModComponentFormState =
   | ActionFormState
   | TriggerFormState
   | SidebarFormState
-  | PanelFormState
   | ContextMenuFormState
   | QuickBarFormState
   | QuickBarProviderFormState

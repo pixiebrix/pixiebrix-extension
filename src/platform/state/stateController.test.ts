@@ -47,8 +47,8 @@ describe("pageState", () => {
 
     document.addEventListener("statechange", listener);
 
-    const blueprintId = registryIdFactory();
-    const extensionId = uuidv4();
+    const modId = registryIdFactory();
+    const modComponentId = uuidv4();
 
     setState({
       namespace: StateNamespaces.MOD,
@@ -57,15 +57,15 @@ describe("pageState", () => {
       },
       mergeStrategy: MergeStrategies.DEEP,
       modComponentId: uuidv4(),
-      modId: blueprintId,
+      modId,
     });
 
     const updatedState = setState({
       namespace: StateNamespaces.MOD,
       data: { asyncState: { isFetching: true, currentData: null } },
       mergeStrategy: MergeStrategies.DEEP,
-      modComponentId: extensionId,
-      modId: blueprintId,
+      modComponentId,
+      modId,
     });
 
     expect(listener).toHaveBeenCalledTimes(2);

@@ -25,7 +25,6 @@ import {
 import buttonModComponent from "@/pageEditor/starterBricks/menuItem";
 import quickBarActionModComponent from "@/pageEditor/starterBricks/quickBar";
 import triggerModComponent from "@/pageEditor/starterBricks/trigger";
-import inlinePanelModComponent from "@/pageEditor/starterBricks/panel";
 import contextMenuModComponent from "@/pageEditor/starterBricks/contextMenu";
 import sidebarPanelModComponent from "@/pageEditor/starterBricks/sidebar";
 import quickBarProviderModComponent from "@/pageEditor/starterBricks/quickBarProvider";
@@ -39,7 +38,6 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 export const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>(
   [
     [StarterBrickTypes.TRIGGER, triggerModComponent],
-    [StarterBrickTypes.INLINE_PANEL, inlinePanelModComponent],
     [StarterBrickTypes.CONTEXT_MENU, contextMenuModComponent],
     [StarterBrickTypes.SIDEBAR_PANEL, sidebarPanelModComponent],
     [StarterBrickTypes.BUTTON, buttonModComponent],

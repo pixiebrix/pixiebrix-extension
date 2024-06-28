@@ -16,7 +16,7 @@
  */
 
 import useReduxState from "@/hooks/useReduxState";
-import { selectActiveDocumentOrFormPreviewElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/slices/editorSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useField } from "formik";
 import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
@@ -33,8 +33,8 @@ type MoveWithinParent = {
 
 function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
   const [activeElement, setActiveElement] = useReduxState(
-    selectActiveDocumentOrFormPreviewElement,
-    actions.setActiveDocumentOrFormPreviewElement,
+    selectActiveBuilderPreviewElement,
+    actions.setActiveBuilderPreviewElement,
   );
 
   assertNotNullish(activeElement, "No active element found");

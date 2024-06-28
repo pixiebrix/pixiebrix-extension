@@ -23,7 +23,7 @@ import MoveElement from "./MoveElement";
 import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 import useElementOptions from "@/pageEditor/documentBuilder/edit/useElementOptions";
 import { useSelector } from "react-redux";
-import { selectActiveDocumentOrFormPreviewElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/slices/editorSelectors";
 import { getProperty } from "@/utils/objectUtils";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { joinName } from "@/utils/formUtils";
@@ -34,7 +34,7 @@ type ElementEditorProps = {
 };
 
 const ElementEditor: React.FC<ElementEditorProps> = ({ documentBodyName }) => {
-  const activeElement = useSelector(selectActiveDocumentOrFormPreviewElement);
+  const activeElement = useSelector(selectActiveBuilderPreviewElement);
   const elementName = `${documentBodyName}.${activeElement}`;
   const [{ value: documentBuilderElement }] =
     useField<DocumentBuilderElement>(elementName);

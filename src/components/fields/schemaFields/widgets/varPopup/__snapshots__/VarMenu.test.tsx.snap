@@ -16,7 +16,7 @@ exports[`VarMenu shows view for match 1`] = `
         <div
           class="label"
         >
-          Starter Brick: Panel
+          Starter Brick: Sidebar Panel
         </div>
         <ul
           style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"

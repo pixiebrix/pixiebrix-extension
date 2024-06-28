@@ -286,7 +286,7 @@ exports[`PageStateTab it renders with mod's mod component 1`] = `
 </DocumentFragment>
 `;
 
-exports[`PageStateTab it renders with orphan mod component 1`] = `
+exports[`PageStateTab it renders with standalone mod component 1`] = `
 <DocumentFragment>
   <div
     aria-hidden="false"

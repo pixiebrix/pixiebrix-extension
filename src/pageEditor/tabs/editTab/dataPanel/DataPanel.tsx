@@ -42,7 +42,7 @@ import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
   selectActiveNodeInfo,
-  selectActiveDocumentOrFormPreviewElement,
+  selectActiveBuilderPreviewElement,
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import Alert from "@/components/Alert";
@@ -174,13 +174,11 @@ const DataPanel: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- We only want to report when `activeTabKey` changes
   }, [activeTabKey]);
 
-  const [
-    activeDocumentOrFormPreviewElement,
-    setActiveDocumentOrFormPreviewElement,
-  ] = useReduxState(
-    selectActiveDocumentOrFormPreviewElement,
-    editorActions.setActiveDocumentOrFormPreviewElement,
-  );
+  const [activeBuilderPreviewElement, setActiveBuilderPreviewElement] =
+    useReduxState(
+      selectActiveBuilderPreviewElement,
+      editorActions.setActiveBuilderPreviewElement,
+    );
 
   const popupBoundary = showDocumentPreview
     ? document.querySelector(`.${dataPanelStyles.tabContent}`)
@@ -188,10 +186,7 @@ const DataPanel: React.FC = () => {
 
   const isRenderedPanelStale = useMemo(() => {
     // Only show alert for Panel and Side Panel mod components
-    if (
-      activeModComponentFormState.type !== "panel" &&
-      activeModComponentFormState.type !== "actionPanel"
-    ) {
+    if (activeModComponentFormState.type !== "actionPanel") {
       return false;
     }
 
@@ -363,24 +358,20 @@ const DataPanel: React.FC = () => {
               <ErrorBoundary>
                 {isRenderedPanelStale && (
                   <Alert variant="info">
-                    The rendered{" "}
-                    {activeModComponentFormState.type === "panel"
-                      ? "Panel"
-                      : "Sidebar Panel"}{" "}
-                    is out of date with the preview
+                    The rendered Sidebar Panel is out of date with the preview
                   </Alert>
                 )}
                 {showFormPreview ? (
                   <FormPreview
                     rjsfSchema={brickConfig?.config as RJSFSchema}
-                    activeField={activeDocumentOrFormPreviewElement}
-                    setActiveField={setActiveDocumentOrFormPreviewElement}
+                    activeField={activeBuilderPreviewElement}
+                    setActiveField={setActiveBuilderPreviewElement}
                   />
                 ) : (
                   <DocumentPreview
                     documentBodyName={documentBodyFieldName}
-                    activeElement={activeDocumentOrFormPreviewElement}
-                    setActiveElement={setActiveDocumentOrFormPreviewElement}
+                    activeElement={activeBuilderPreviewElement}
+                    setActiveElement={setActiveBuilderPreviewElement}
                     menuBoundary={popupBoundary}
                   />
                 )}
@@ -404,17 +395,13 @@ const DataPanel: React.FC = () => {
             <ErrorBoundary>
               {isRenderedPanelStale && (
                 <Alert variant="info">
-                  The rendered{" "}
-                  {activeModComponentFormState.type === "panel"
-                    ? "Panel"
-                    : "Sidebar Panel"}{" "}
-                  is out of date with the outline
+                  The rendered Sidebar Panel is out of date with the outline
                 </Alert>
               )}
               <DocumentOutline
                 documentBodyName={documentBodyFieldName}
-                activeElement={activeDocumentOrFormPreviewElement}
-                setActiveElement={setActiveDocumentOrFormPreviewElement}
+                activeElement={activeBuilderPreviewElement}
+                setActiveElement={setActiveBuilderPreviewElement}
               />
             </ErrorBoundary>
           </DataTab>
