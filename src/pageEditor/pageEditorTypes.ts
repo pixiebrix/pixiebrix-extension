@@ -165,7 +165,7 @@ export type EditorStateV1 = {
   addBlockLocation?: AddBrickLocation;
 
   /**
-   * When creating a new blueprint from an existing extension, should we keep a separate copy of the extension?
+   * When creating a new mod from an existing mod component, should we keep a separate copy of the mod component?
    */
   // XXX: refactor & remove from top-level Redux state. This is a property of the create mod workflow:
   // https://github.com/pixiebrix/pixiebrix-extension/issues/3264

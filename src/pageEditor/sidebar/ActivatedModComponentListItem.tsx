@@ -148,7 +148,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   return (
     <ListGroup.Item
       className={cx(styles.root, {
-        [styles.modBackground]: hasActiveModBackground,
+        [styles.modBackground ?? ""]: hasActiveModBackground,
       })}
       action
       active={isActive}

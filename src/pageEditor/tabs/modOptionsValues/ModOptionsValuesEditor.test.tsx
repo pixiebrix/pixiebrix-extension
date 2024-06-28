@@ -132,7 +132,7 @@ describe("ModOptionsValuesEditor", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("renders blueprint options with additional props", async () => {
+  test("renders mod options with additional props", async () => {
     const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {
@@ -153,7 +153,7 @@ describe("ModOptionsValuesEditor", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("renders blueprint options with uiSchema sort order", async () => {
+  test("renders mod options with uiSchema sort order", async () => {
     const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {

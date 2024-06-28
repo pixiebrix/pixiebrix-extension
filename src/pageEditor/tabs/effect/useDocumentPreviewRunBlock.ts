@@ -191,8 +191,8 @@ export default function useDocumentPreviewRunBlock(
 
       try {
         await runRendererBrick(inspectedTab, {
-          extensionId: modComponentId,
-          blueprintId: mod?.id,
+          modComponentId,
+          modId: mod?.id,
           runId: traceRecord.runId,
           title,
           args: {

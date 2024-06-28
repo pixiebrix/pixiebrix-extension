@@ -37,7 +37,7 @@ describe("createModVariableProxy", () => {
 
   it("reads from blank page state", () => {
     const ctxt = extendModVariableContext({} as UnknownObject, {
-      blueprintId: null,
+      modId: null,
       options: apiVersionOptions("v3"),
     });
     expect(contextAsPlainObject(ctxt)).toEqual({ "@mod": {} });
@@ -54,7 +54,7 @@ describe("createModVariableProxy", () => {
 
     const ctxt = extendModVariableContext(
       {},
-      { blueprintId: null, options: apiVersionOptions("v3") },
+      { modId: null, options: apiVersionOptions("v3") },
     );
 
     expect(ctxt["@mod"]!.foo).toBe(42);
@@ -65,7 +65,7 @@ describe("createModVariableProxy", () => {
     (version: ApiVersion) => {
       const ctxt = extendModVariableContext(
         {},
-        { blueprintId: null, options: apiVersionOptions(version) },
+        { modId: null, options: apiVersionOptions(version) },
       );
 
       expect(ctxt["@mod"]).toBeUndefined();
@@ -75,7 +75,7 @@ describe("createModVariableProxy", () => {
   it("does not overwrite existing state", () => {
     const ctxt = extendModVariableContext(
       { "@mod": "foo" },
-      { blueprintId: null, options: apiVersionOptions("v3") },
+      { modId: null, options: apiVersionOptions("v3") },
     );
     expect(ctxt["@mod"]).toBe("foo");
   });
@@ -83,7 +83,7 @@ describe("createModVariableProxy", () => {
   it("sets symbol", () => {
     const ctxt = extendModVariableContext(
       {},
-      { blueprintId: null, options: apiVersionOptions("v3") },
+      { modId: null, options: apiVersionOptions("v3") },
     );
     expect(isModVariableContext(ctxt)).toBe(true);
     // The symbol shouldn't show up when enumerating properties. (We don't want it to show up in the UI)
@@ -97,7 +97,7 @@ describe("createModVariableProxy", () => {
   it("do not update by default", () => {
     const ctxt1 = extendModVariableContext(
       {},
-      { blueprintId: null, options: apiVersionOptions("v3") },
+      { modId: null, options: apiVersionOptions("v3") },
     );
 
     setState({
@@ -109,7 +109,7 @@ describe("createModVariableProxy", () => {
     });
 
     const ctxt2 = extendModVariableContext(ctxt1, {
-      blueprintId: null,
+      modId: null,
       options: apiVersionOptions("v3"),
     });
 
@@ -119,7 +119,7 @@ describe("createModVariableProxy", () => {
   it("update if update flag is set", () => {
     const ctxt1 = extendModVariableContext(
       {},
-      { blueprintId: null, options: apiVersionOptions("v3") },
+      { modId: null, options: apiVersionOptions("v3") },
     );
 
     setState({
@@ -131,7 +131,7 @@ describe("createModVariableProxy", () => {
     });
 
     const ctxt2 = extendModVariableContext(ctxt1, {
-      blueprintId: null,
+      modId: null,
       update: true,
       options: apiVersionOptions("v3"),
     });

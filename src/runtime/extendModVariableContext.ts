@@ -95,18 +95,18 @@ export function contextAsPlainObject<T extends UnknownObject = UnknownObject>(
  * Returns an extended state with a `@mod` variable provided.
  * @since 1.7.34
  * @param originalContext The original context
- * @param blueprintId The mod ID, if there is one
+ * @param modId The mod ID, if there is one
  * @param update If true, the mod variable will be updated with the latest state
  * @param options The runtime version API options
  */
 function extendModVariableContext<T extends UnknownObject = UnknownObject>(
   originalContext: T,
   {
-    blueprintId,
+    modId,
     update = false,
     options,
   }: {
-    blueprintId: Nullishable<RegistryId>;
+    modId: Nullishable<RegistryId>;
     update?: boolean;
     options: Pick<ApiVersionOptions, "extendModVariable">;
   },
@@ -137,8 +137,8 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
   // Additionally, in the future to pass the context to the sandbox we'd have to always load the state anyway.
   const modState = getState({
     namespace: "blueprint",
-    modId: blueprintId,
-    // `extensionId` is not used because namespace is `blueprint`
+    modId,
+    // `modComopnentId` is not used because namespace is `blueprint`
     modComponentId: null,
   });
 

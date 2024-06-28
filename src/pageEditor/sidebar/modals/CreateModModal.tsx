@@ -136,15 +136,19 @@ function useFormSchema() {
 
 const CreateModModalBody: React.FC = () => {
   const dispatch = useDispatch();
-  const activeModComponent = useSelector(selectActiveModComponentFormState);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const { createModFromMod } = useCreateModFromMod();
-  const { createModFromComponent } =
-    useCreateModFromModComponent(activeModComponent);
+  const { createModFromComponent } = useCreateModFromModComponent(
+    activeModComponentFormState,
+  );
 
   // `selectActiveModId` returns the mod id if a mod is selected. Assumption: if the CreateModal
   // is open, and a mod is active, then we're performing a "Save as New" on that mod.
   const directlyActiveModId = useSelector(selectActiveModId);
-  const activeModId = directlyActiveModId ?? activeModComponent?.recipe?.id;
+  const activeModId =
+    directlyActiveModId ?? activeModComponentFormState?.recipe?.id;
   const { data: activeMod, isFetching: isModFetching } =
     useOptionalModDefinition(activeModId);
 
@@ -155,18 +159,18 @@ const CreateModModalBody: React.FC = () => {
   }, [dispatch]);
 
   const initialModMetadataFormState = useInitialFormState({
-    activeElement: activeModComponent,
+    activeElement: activeModComponentFormState,
     activeMod,
   });
 
   const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
     try {
-      // `activeRecipe` must come first. It's possible that both activeElement and activeRecipe are set because
-      // activeRecipe will be the recipe of the active element if in a "Save as New" workflow for an existing recipe
+      // `activeMod` must come first. It's possible that both activeModComponentFormState and activeMod are set because
+      // activeMod will be the mod of the active mod component form state if in a "Save as New" workflow for an existing mod
       if (activeMod) {
         await createModFromMod(activeMod, values);
-      } else if (activeModComponent) {
-        await createModFromComponent(activeModComponent, values);
+      } else if (activeModComponentFormState) {
+        await createModFromComponent(activeModComponentFormState, values);
       } else {
         // Should not happen in practice
         // noinspection ExceptionCaughtLocallyJS

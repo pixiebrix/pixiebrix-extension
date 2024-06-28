@@ -95,7 +95,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
         eventKey={modId}
         as={ListGroup.Item}
         className={cx(styles.root, "list-group-item-action", {
-          [styles.modBackground]: hasModBackground,
+          [styles.modBackground ?? ""]: hasModBackground,
         })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}
