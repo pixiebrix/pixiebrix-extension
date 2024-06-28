@@ -58,6 +58,8 @@ import { type TourDefinition } from "@/starterBricks/tour/tourTypes";
 import {
   type BaseStarterBrickState,
   type BaseModComponentState,
+  type BaseStarterBrickState,
+  type BaseModComponentState,
   type BaseFormState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
