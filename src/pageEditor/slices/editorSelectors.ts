@@ -128,9 +128,9 @@ export const selectDirtyModOptionsDefinitions = ({ editor }: EditorRootState) =>
 
 const dirtyOptionsDefinitionsForModIdSelector = createSelector(
   selectDirtyModOptionsDefinitions,
-  (_state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (_state: EditorRootState, modId: RegistryId) => modId,
   (dirtyOptionsDefinitionsByModId, modId) => {
-    // eslint-disable-next-line security/detect-object-injection -- RegistryId for recipe
+    // eslint-disable-next-line security/detect-object-injection -- RegistryId for mod
     const options = dirtyOptionsDefinitionsByModId[modId];
 
     if (options) {
@@ -150,8 +150,8 @@ export const selectDirtyOptionsDefinitionsForModId =
 const dirtyOptionValuesForModIdSelector = createSelector(
   selectNotDeletedModComponentFormStates,
   (_state: EditorRootState, modId: RegistryId) => modId,
-  (formStates, recipeId) =>
-    formStates.find((formState) => formState.recipe?.id === recipeId)
+  (formStates, modIdId) =>
+    formStates.find((formState) => formState.recipe?.id === modIdId)
       ?.optionsArgs,
 );
 

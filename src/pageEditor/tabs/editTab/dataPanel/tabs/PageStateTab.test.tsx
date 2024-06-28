@@ -53,13 +53,13 @@ describe("PageStateTab", () => {
     return utils;
   }
 
-  test("it renders with orphan extension", async () => {
+  test("it renders with orphan mod component", async () => {
     const formState = formStateFactory();
     const { asFragment } = await renderPageStateTab(formState);
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("it renders with recipe extension", async () => {
+  test("it renders with mod's mod component", async () => {
     const formState = formStateFactory({
       recipe: modMetadataFactory(),
     });

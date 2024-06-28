@@ -145,7 +145,7 @@ const CreateModModalBody: React.FC = () => {
   // is open, and a mod is active, then we're performing a "Save as New" on that mod.
   const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId = directlyActiveModId ?? activeModComponent?.recipe?.id;
-  const { data: activeMod, isFetching: isRecipeFetching } =
+  const { data: activeMod, isFetching: isModFetching } =
     useOptionalModDefinition(activeModId);
 
   const formSchema = useFormSchema();
@@ -240,7 +240,7 @@ const CreateModModalBody: React.FC = () => {
 
   return (
     <RequireScope scopeSettingsDescription="To create a mod, you must first set an account alias for your PixieBrix account">
-      {isRecipeFetching ? (
+      {isModFetching ? (
         <Loader />
       ) : (
         <Form
