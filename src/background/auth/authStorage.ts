@@ -19,6 +19,7 @@ import { type UUID } from "@/types/stringTypes";
 import { expectContext } from "@/utils/expectContext";
 import { type AuthData } from "@/integrations/integrationTypes";
 import { oauth2Storage } from "@/auth/authConstants";
+import chromeP from "webext-polyfill-kinda";
 
 /**
  * Set the cached auth data for the given integration configId
@@ -93,4 +94,8 @@ export async function deleteCachedAuthData(configId: UUID): Promise<void> {
       configId,
     );
   }
+}
+
+export async function removeOAuth2Token(token: string) {
+  await chromeP.identity.removeCachedAuthToken({ token });
 }

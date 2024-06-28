@@ -50,7 +50,7 @@ export default async function refreshPKCEToken(
     );
   } else if (integration.id === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
     throw new Error(
-      `Use _refreshPartnerToken to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`,
+      `Use refreshPartnerAuthentication to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`,
     );
   } else if (!integration.isOAuth2PKCE) {
     throw new Error(

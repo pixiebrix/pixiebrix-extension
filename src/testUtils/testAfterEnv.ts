@@ -60,3 +60,29 @@ chrome.storage.onChanged = {
   removeRules: jest.fn(),
   addRules: jest.fn(),
 };
+
+enum AccountStatus {
+  SYNC = "SYNC",
+  ANY = "ANY",
+}
+
+// `jest-webextension-mock` is missing mocks for identity
+chrome.identity = {
+  AccountStatus,
+  clearAllCachedAuthTokens: jest.fn(),
+  getAccounts: jest.fn(),
+  getAuthToken: jest.fn(),
+  getProfileUserInfo: jest.fn(),
+  getRedirectURL: jest.fn(),
+  launchWebAuthFlow: jest.fn(),
+  onSignInChanged: {
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    hasListener: jest.fn(),
+    hasListeners: jest.fn(),
+    getRules: jest.fn(),
+    removeRules: jest.fn(),
+    addRules: jest.fn(),
+  },
+  removeCachedAuthToken: jest.fn(),
+};

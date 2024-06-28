@@ -15,14 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios, { type AxiosInstance } from "axios";
+import axios, { type AxiosError, type AxiosInstance } from "axios";
 import { getBaseURL } from "@/data/service/baseService";
-import { getAuthHeaders } from "@/auth/authStorage";
+import {
+  addAuthListener,
+  clearPartnerAuthData,
+  getAuthHeaders,
+  getPartnerAuthData,
+  isLinked,
+} from "@/auth/authStorage";
 import {
   ExtensionNotLinkedError,
   SuspiciousOperationError,
 } from "@/errors/genericErrors";
 import { isUrlRelative } from "@/utils/urlUtils";
+import createAuthRefreshInterceptor from "axios-auth-refresh";
+import { selectAxiosError } from "@/data/service/requestErrorUtils";
+import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
+import { refreshPartnerAuthentication } from "@/background/messenger/api";
 
 /**
  * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL
@@ -49,26 +59,91 @@ export async function absoluteApiUrl(
   );
 }
 
+let apiClientInstance: AxiosInstance | null = null;
+
+async function setupApiClient(): Promise<void> {
+  const [authHeaders, partnerAuthData] = await Promise.all([
+    getAuthHeaders(),
+    getPartnerAuthData(),
+  ]);
+
+  apiClientInstance = axios.create({
+    baseURL: await getBaseURL(),
+    headers: {
+      ...authHeaders,
+      // Version 2.0 is paginated. Explicitly pass version, so we can switch the default version on the server
+      // once clients are all passing an explicit version number
+      Accept: "application/json; version=1.0",
+    },
+  });
+
+  // Create auth interceptor for partner auth refresh tokens
+  if (partnerAuthData?.refreshToken) {
+    createAuthRefreshInterceptor(
+      apiClientInstance,
+      async () => {
+        try {
+          console.info("Refreshing partner token");
+          await refreshPartnerAuthentication();
+        } catch (error) {
+          console.warn("Failed to refresh partner token", error);
+          await clearPartnerAuthData();
+        }
+      },
+      {
+        shouldRefresh(error: AxiosError) {
+          const axiosError = selectAxiosError(error);
+          if (!axiosError) {
+            return false;
+          }
+
+          return axiosError && isAuthenticationAxiosError(axiosError);
+        },
+      },
+    );
+  }
+}
+
+let apiClientSetupPromise: Promise<void> | null = null;
+
+async function safeSetupClient(): Promise<void> {
+  try {
+    apiClientSetupPromise = setupApiClient();
+    await apiClientSetupPromise;
+  } catch (error) {
+    console.error("Failed to setup api client", error);
+  }
+}
+
+/**
+ * Returns an Axios client for making (optionally) authenticated API requests to PixieBrix.
+ */
+export async function getApiClient(): Promise<AxiosInstance> {
+  if (apiClientSetupPromise == null) {
+    await safeSetupClient();
+  }
+
+  await apiClientSetupPromise;
+
+  if (apiClientInstance == null) {
+    throw new Error(
+      "Api client instance not found, something went wrong during client setup.",
+    );
+  }
+
+  return apiClientInstance;
+}
+
 /**
  * Returns an Axios client for making authenticated API requests to PixieBrix.
  * @throws ExtensionNotLinkedError if the extension has not been linked to the API yet
  */
 export async function getLinkedApiClient(): Promise<AxiosInstance> {
-  const authHeaders = await getAuthHeaders();
-
-  if (!authHeaders) {
+  if (!(await isLinked())) {
     throw new ExtensionNotLinkedError();
   }
 
-  return axios.create({
-    baseURL: await getBaseURL(),
-    headers: {
-      ...authHeaders,
-      // Version 2.0 is paginated. Explicitly pass version so we can switch the default version on the server when
-      // once clients are all passing an explicit version number
-      Accept: "application/json; version=1.0",
-    },
-  });
+  return getApiClient();
 }
 
 /**
@@ -87,19 +162,18 @@ export async function maybeGetLinkedApiClient(): Promise<AxiosInstance | null> {
   }
 }
 
-/**
- * Returns an Axios client for making (optionally) authenticated API requests to PixieBrix.
- */
-export async function getApiClient(): Promise<AxiosInstance> {
-  const authHeaders = await getAuthHeaders();
+export function initApiClient() {
+  if (apiClientInstance != null) {
+    console.warn(
+      "initApiClient() called, but the client instance already exists.",
+    );
+  }
 
-  return axios.create({
-    baseURL: await getBaseURL(),
-    headers: {
-      ...authHeaders,
-      // Version 2.0 is paginated. Explicitly pass version so we can switch the default version on the server when
-      // once clients are all passing an explicit version number
-      Accept: "application/json; version=1.0",
-    },
+  // We could remove this and defer setup to the first time the client is
+  // requested, if we need to improve background script startup time
+  void safeSetupClient();
+
+  addAuthListener(() => {
+    void safeSetupClient();
   });
 }

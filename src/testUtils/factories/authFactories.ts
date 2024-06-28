@@ -20,6 +20,7 @@ import {
   type AuthState,
   type AuthUserOrganization,
   type OrganizationAuthState,
+  type PartnerAuthData,
   type TokenAuthData,
   type UserData,
 } from "@/auth/authTypes";
@@ -178,4 +179,14 @@ export const userPartnerFactory = define<UserPartner>({
     return `Test AA Partner ${n}`;
   },
   partnerTheme: "automation-anywhere",
+});
+
+export const partnerAuthDataFactory = define<PartnerAuthData>({
+  authId: uuidSequence,
+  token: "test_token",
+  refreshToken: null,
+  extraHeaders: null,
+  refreshUrl: null,
+  refreshParamPayload: null,
+  refreshExtraHeaders: null,
 });

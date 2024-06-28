@@ -19,7 +19,6 @@ import refreshPKCEToken from "@/background/refreshToken";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
-import { readRawConfigurations } from "@/integrations/registry";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
 import { locator } from "@/background/locator";
 import aaDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
@@ -31,6 +30,7 @@ import {
   setCachedAuthData,
 } from "@/background/auth/authStorage";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
+import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
 
 const aaIntegration = fromJS(aaDefinition as any);
 const googleIntegration = fromJS(googleDefinition as any);
@@ -42,13 +42,7 @@ jest.mock("@/background/auth/authStorage", () => ({
   setCachedAuthData: jest.fn(),
 }));
 
-jest.mock("@/integrations/registry", () => {
-  const actual = jest.requireActual("@/integrations/registry");
-  return {
-    ...actual,
-    readRawConfigurations: jest.fn(),
-  };
-});
+jest.mock("@/integrations/util/readRawConfigurations");
 
 const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
 const setCachedAuthDataMock = jest.mocked(setCachedAuthData);
@@ -71,7 +65,7 @@ describe("refresh token argument validation", () => {
     await expect(
       refreshPKCEToken(aaIntegration, integrationConfig),
     ).rejects.toThrow(
-      `Use _refreshPartnerToken to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`,
+      `Use refreshPartnerAuthentication to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`,
     );
   });
 

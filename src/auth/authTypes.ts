@@ -117,21 +117,35 @@ export type PartnerAuthData = {
   /**
    * The service auth configuration for authenticating with the PixieBrix API.
    */
-  authId: UUID | null;
+  authId: UUID;
   /**
    * The JWT bearer token corresponding to the authId.
    */
-  token: string | null;
+  token: string;
   /**
    * The refresh token, if `offline_access` was included in scope.
    * @since 1.7.15
    */
   refreshToken: string | null;
-
   /**
    * Extra HTTP headers to send with every request.
    */
   extraHeaders: Record<string, string> | null;
+
+  /**
+   * The refresh request URL
+   * @since 2.0.3
+   */
+  refreshUrl: string | null;
+  /**
+   * The refresh request param payload
+   * @since 2.0.3
+   */
+  refreshParamPayload: Record<string, string> | null;
+  /**
+   * The refresh request extra headers
+   */
+  refreshExtraHeaders: Record<string, string> | null;
 };
 
 export type OrganizationAuthState = {
