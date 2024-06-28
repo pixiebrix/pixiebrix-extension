@@ -188,10 +188,7 @@ const DataPanel: React.FC = () => {
 
   const isRenderedPanelStale = useMemo(() => {
     // Only show alert for Panel and Side Panel extensions
-    if (
-      activeModComponentFormState.type !== "panel" &&
-      activeModComponentFormState.type !== "actionPanel"
-    ) {
+    if (activeModComponentFormState.type !== "actionPanel") {
       return false;
     }
 
@@ -363,11 +360,7 @@ const DataPanel: React.FC = () => {
               <ErrorBoundary>
                 {isRenderedPanelStale && (
                   <Alert variant="info">
-                    The rendered{" "}
-                    {activeModComponentFormState.type === "panel"
-                      ? "Panel"
-                      : "Sidebar Panel"}{" "}
-                    is out of date with the preview
+                    The rendered Sidebar Panel is out of date with the preview
                   </Alert>
                 )}
                 {showFormPreview ? (
@@ -404,11 +397,7 @@ const DataPanel: React.FC = () => {
             <ErrorBoundary>
               {isRenderedPanelStale && (
                 <Alert variant="info">
-                  The rendered{" "}
-                  {activeModComponentFormState.type === "panel"
-                    ? "Panel"
-                    : "Sidebar Panel"}{" "}
-                  is out of date with the outline
+                  The rendered Sidebar Panel is out of date with the outline
                 </Alert>
               )}
               <DocumentOutline

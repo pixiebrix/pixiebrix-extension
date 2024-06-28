@@ -102,7 +102,6 @@ describe("getImplicitReader", () => {
     [StarterBrickTypes.DYNAMIC_QUICK_BAR],
     [StarterBrickTypes.CONTEXT_MENU],
     [StarterBrickTypes.TRIGGER],
-    [StarterBrickTypes.INLINE_PANEL],
     [StarterBrickTypes.SIDEBAR_PANEL],
   ])("includes metadata reader for %s", (type: StarterBrickType) => {
     expect(getImplicitReader(type)).toContainEqual(
@@ -116,7 +115,6 @@ describe("getImplicitReader", () => {
     [StarterBrickTypes.DYNAMIC_QUICK_BAR],
     [StarterBrickTypes.CONTEXT_MENU],
     [StarterBrickTypes.TRIGGER],
-    [StarterBrickTypes.INLINE_PANEL],
     [StarterBrickTypes.SIDEBAR_PANEL],
   ])(
     "overrides url from metadata reader with current URL from context reader",
@@ -148,11 +146,10 @@ describe("getImplicitReader", () => {
     });
   });
 
-  it.each([
-    [StarterBrickTypes.INLINE_PANEL],
-    [StarterBrickTypes.SIDEBAR_PANEL],
-  ])("does not include element reader for %s", (type: StarterBrickType) => {
-    expect(getImplicitReader(type)).not.toContainEqual({
+  it(`does not include element reader for ${StarterBrickTypes.SIDEBAR_PANEL}`, () => {
+    expect(
+      getImplicitReader(StarterBrickTypes.SIDEBAR_PANEL),
+    ).not.toContainEqual({
       element: "@pixiebrix/html/element",
     });
   });

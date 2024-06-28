@@ -80,14 +80,13 @@ export const starterBrickDefinitionFactory = define<StarterBrickDefinitionLike>(
         name: `Starter Brick ${n}`,
       }),
     definition(n: number) {
-      const definition: StarterBrickDefinitionProp = {
+      return {
         type: StarterBrickTypes.BUTTON,
         isAvailable: {
           matchPatterns: [`https://www.mySite${n}.com/*`],
         },
         reader: validateRegistryId("@pixiebrix/document-context"),
-      };
-      return definition;
+      } satisfies StarterBrickDefinitionProp;
     },
   },
 );
