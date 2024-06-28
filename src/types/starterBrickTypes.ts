@@ -38,7 +38,6 @@ export const StarterBrickTypes = {
   CONTEXT_MENU: "contextMenu",
   QUICK_BAR_ACTION: "quickBar",
   DYNAMIC_QUICK_BAR: "quickBarProvider",
-  TOUR: "tour",
 } as const;
 
 /**

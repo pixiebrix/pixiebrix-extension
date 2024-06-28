@@ -18,16 +18,11 @@
 import { type BrickPipeline } from "@/bricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { validateRegistryId } from "@/types/helpers";
-import {
-  createNewConfiguredBrick,
-  getExampleBrickConfig,
-} from "@/pageEditor/exampleBrickConfigs";
-import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
 import { toExpression } from "@/utils/expressionUtils";
 
 const documentBrickId = validateRegistryId("@pixiebrix/document");
 const quickbarActionId = validateRegistryId("@pixiebrix/quickbar/add");
-const tourStepBrickId = validateRegistryId("@pixiebrix/tour/step");
 
 export function getExampleBrickPipeline(type: StarterBrickType): BrickPipeline {
   if (type === "actionPanel") {
@@ -42,14 +37,6 @@ export function getExampleBrickPipeline(type: StarterBrickType): BrickPipeline {
       action: toExpression("pipeline", []),
     };
     return [quickbarActionBlock];
-  }
-
-  if (type === "tour") {
-    const tourStepBlock = createNewConfiguredBrick(tourStepBrickId);
-    tourStepBlock.outputKey = validateOutputKey("step");
-    tourStepBlock.config = getExampleBrickConfig(tourStepBrickId);
-
-    return [tourStepBlock];
   }
 
   return [];

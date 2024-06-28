@@ -16,19 +16,21 @@
  */
 
 import { type TypedBrickPair } from "@/bricks/registry";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { stubTrue } from "lodash";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type RegistryId } from "@/types/registryTypes";
-import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
 import { ErrorEffect } from "@/bricks/effects/error";
 import CancelEffect from "@/bricks/effects/CancelEffect";
 import CommentEffect from "@/bricks/effects/comment";
 import { PipelineFlavor } from "@/bricks/types";
 
-const PANEL_TYPES = ["actionPanel", "panel"];
+const PANEL_TYPES = [StarterBrickTypes.SIDEBAR_PANEL];
 
 const ALWAYS_SHOW = new Set([
   // Cancel/Error provide meaningful control flow for all bricks
@@ -63,17 +65,6 @@ export function getSubPipelineFlavor(
   if (parentNodeId === DisplayTemporaryInfo.BRICK_ID) {
     // Temporary Info renderer shouldn't have side effects
     return PipelineFlavor.NoEffect;
-  }
-
-  if (parentNodeId === TourStepTransformer.BRICK_ID) {
-    const pathParts = pipelinePath.split(".");
-    if (pathParts.at(-2) === "body") {
-      // Tour step body should have no side effects
-      return PipelineFlavor.NoEffect;
-    }
-
-    // Don't allow renderer in onBeforeShow/onAfterShow
-    return PipelineFlavor.NoRenderer;
   }
 
   return PipelineFlavor.NoRenderer;

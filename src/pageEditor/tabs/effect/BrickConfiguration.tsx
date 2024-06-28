@@ -141,7 +141,6 @@ const BrickConfiguration: React.FunctionComponent<{
   // it's root-aware if multiple menu items are added to the page.
   // Technically trigger/quickBar/etc. allow the user to pick the target mode. But for now, show the field even if
   // the user has configured the extension point to use the document as the target.
-  // Include tour because the Show Tour Step brick passes the target through to its pipeline
   const showRootMode =
     isRootAware &&
     !isComment &&
@@ -151,7 +150,6 @@ const BrickConfiguration: React.FunctionComponent<{
       StarterBrickTypes.QUICK_BAR_ACTION,
       StarterBrickTypes.DYNAMIC_QUICK_BAR,
       StarterBrickTypes.BUTTON,
-      StarterBrickTypes.TOUR,
     ].includes(context.values.type);
   const showIfAndTarget =
     brickType && brickType !== BrickTypes.RENDERER && !isComment;

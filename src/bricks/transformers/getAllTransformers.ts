@@ -46,7 +46,6 @@ import { RandomNumber } from "@/bricks/transformers/randomNumber";
 import Retry from "@/bricks/transformers/controlFlow/Retry";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import TraverseElements from "@/bricks/transformers/traverseElements";
-import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
 import { type Brick } from "@/types/brickTypes";
 import { SelectElement } from "@/bricks/transformers/selectElement";
 import Run from "@/bricks/transformers/controlFlow/Run";
@@ -119,7 +118,6 @@ function getAllTransformers(
 
     // Render Pipelines
     new DisplayTemporaryInfo(),
-    new TourStepTransformer(),
   ];
 }
 

@@ -4,7 +4,6 @@ import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getExampleBrickPipeline } from "@/pageEditor/exampleStarterBrickConfigs";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { updateDraftModComponent } from "@/contentScript/messenger/api";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -15,7 +14,6 @@ import {
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import notify from "@/utils/notify";
 import {
-  allFramesInInspectedTab,
   getCurrentInspectedURL,
   inspectedTab,
 } from "@/pageEditor/context/connection";
@@ -51,14 +49,6 @@ function useAutoInsert(type: StarterBrickType): void {
 
       dispatch(addModComponentFormState(formState));
       dispatch(actions.checkActiveModComponentAvailability());
-
-      // Don't auto-run tours on selection in Page Editor
-      if (config.elementType !== "tour") {
-        updateDraftModComponent(
-          allFramesInInspectedTab,
-          config.asDraftModComponent(formState),
-        );
-      }
 
       // TODO: report if created new, or using existing foundation
       reportEvent(Events.PAGE_EDITOR_START, {
