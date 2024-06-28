@@ -17,6 +17,7 @@
 
 import { expect, type Page } from "@playwright/test";
 import { getModifierKey, getModifierSymbol } from "end-to-end-tests/utils";
+import BasePageObject from "./pageObject";
 
 function getExtensionShortcutsUrl(chromiumChannel: "chrome" | "msedge") {
   switch (chromiumChannel) {
@@ -42,13 +43,14 @@ async function getShortcut(page: Page): Promise<string> {
   return modifierKey === "Meta" ? `${modifierSymbol}M` : "Ctrl + M";
 }
 
-export class ExtensionsShortcutsPage {
+export class ExtensionsShortcutsPage extends BasePageObject {
   private readonly pageUrl: string;
 
   constructor(
-    private readonly page: Page,
+    page: Page,
     private readonly chromiumChannel: "chrome" | "msedge",
   ) {
+    super(page);
     this.pageUrl = getExtensionShortcutsUrl(this.chromiumChannel);
   }
 
@@ -57,49 +59,47 @@ export class ExtensionsShortcutsPage {
   }
 
   async goto() {
-    await this.page.goto(this.pageUrl);
+    await this.page().goto(this.pageUrl);
 
     if (this.chromiumChannel === "chrome") {
       await expect(
-        this.page.getByRole("heading", { name: /PixieBrix/ }),
+        this.getByRole("heading", { name: /PixieBrix/ }),
       ).toBeVisible();
     } else {
-      await expect(this.page.getByText(/PixieBrix/)).toBeVisible();
+      await expect(this.getByText(/PixieBrix/)).toBeVisible();
     }
   }
 
   async clearQuickbarShortcut() {
-    await this.page.bringToFront();
+    await this.page().bringToFront();
 
-    const shortcut = await getShortcut(this.page);
+    const shortcut = await getShortcut(this.page());
 
     if (this.chromiumChannel === "chrome") {
-      await expect(this.page.getByPlaceholder(/shortcut set: /i)).toHaveValue(
+      await expect(this.page().getByPlaceholder(/shortcut set: /i)).toHaveValue(
         shortcut,
       );
 
       // Clear the shortcut
-      await this.page.getByLabel("Edit shortcut Toggle Quick").click();
-      await this.page
-        .locator("extensions-keyboard-shortcuts #container")
-        .click();
+      await this.getByLabel("Edit shortcut Toggle Quick").click();
+      await this.locator("extensions-keyboard-shortcuts #container").click();
 
       await expect(
-        this.page.getByLabel(/Shortcut Toggle Quick Bar for PixieBrix/, {
+        this.getByLabel(/Shortcut Toggle Quick Bar for PixieBrix/, {
           exact: true,
         }),
       ).toBeEmpty();
     } else {
       await expect(
-        this.page.getByLabel(
+        this.getByLabel(
           /Type a shortcut that will Toggle Quick Bar for PixieBrix/,
         ),
       ).toHaveValue(shortcut);
 
-      await this.page.getByRole("button", { name: "Clear shortcut" }).click();
+      await this.getByRole("button", { name: "Clear shortcut" }).click();
 
       await expect(
-        this.page.getByLabel(
+        this.getByLabel(
           /Type a shortcut that will Toggle Quick Bar for PixieBrix/,
         ),
       ).toBeEmpty();
@@ -107,38 +107,34 @@ export class ExtensionsShortcutsPage {
   }
 
   async setQuickbarShortcut() {
-    await this.page.bringToFront();
+    await this.page().bringToFront();
 
-    const modifierKey = await getModifierKey(this.page);
-    const shortcut = await getShortcut(this.page);
+    const modifierKey = await getModifierKey(this.page());
+    const shortcut = await getShortcut(this.page());
 
     if (this.chromiumChannel === "chrome") {
       await expect(
-        this.page.getByLabel(/Shortcut Toggle Quick Bar for PixieBrix/),
+        this.getByLabel(/Shortcut Toggle Quick Bar for PixieBrix/),
       ).toBeEmpty();
 
-      await this.page.getByLabel("Edit shortcut Toggle Quick").click();
-      await this.page
-        .getByPlaceholder("Type a shortcut")
-        .press(`${modifierKey}+m`);
+      await this.getByLabel("Edit shortcut Toggle Quick").click();
+      await this.getByPlaceholder("Type a shortcut").press(`${modifierKey}+m`);
 
-      await this.page
-        .locator("extensions-keyboard-shortcuts #container")
-        .click();
+      await this.locator("extensions-keyboard-shortcuts #container").click();
 
-      await expect(this.page.getByPlaceholder(/shortcut set: /i)).toHaveValue(
+      await expect(this.getByPlaceholder(/shortcut set: /i)).toHaveValue(
         shortcut,
       );
     } else {
       const shortcutLabel = /type a shortcut that will toggle quick bar/i;
-      const input = this.page.getByLabel(shortcutLabel);
+      const input = this.getByLabel(shortcutLabel);
 
       await expect(input).toBeEmpty();
 
       await input.click();
       await input.press(`${modifierKey}+m`);
 
-      await this.page.getByText("Keyboard ShortcutsPixieBrix").click();
+      await this.getByText("Keyboard ShortcutsPixieBrix").click();
 
       await expect(input).toHaveValue(shortcut);
     }

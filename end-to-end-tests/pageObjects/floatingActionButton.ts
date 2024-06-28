@@ -15,13 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Page } from "@playwright/test";
+import BasePageObject from "./pageObject";
 
-export class FloatingActionButton {
-  constructor(private readonly page: Page) {}
-
+export class FloatingActionButton extends BasePageObject {
   async getActionButton() {
-    return this.page.getByRole("button", {
+    return this.getByRole("button", {
       name: "Toggle the PixieBrix Sidebar",
     });
   }
@@ -35,7 +33,7 @@ export class FloatingActionButton {
     const actionButton = await this.getActionButton();
     await actionButton.hover();
 
-    const hideButton = this.page.getByRole("button", {
+    const hideButton = this.getByRole("button", {
       name: "Hide Button",
     });
     await hideButton.click();
