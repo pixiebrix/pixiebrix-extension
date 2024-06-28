@@ -18,13 +18,13 @@
 import { type Metadata } from "@/types/registryTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
-  baseFromExtension,
-  baseSelectExtension,
-  baseSelectExtensionPoint,
+  baseFromModComponent,
+  baseSelectModComponent,
+  baseSelectStarterBrick,
   cleanIsAvailable,
-  extensionWithNormalizedPipeline,
+  modComponentWithNormalizedPipeline,
   getImplicitReader,
-  lookupExtensionPoint,
+  lookupStarterBrick,
   makeInitialBaseState,
   removeEmptyValues,
   selectStarterBrickAvailability,
@@ -90,7 +90,7 @@ function selectStarterBrickDefinition(
     },
   } = extensionPoint;
   return removeEmptyValues({
-    ...baseSelectExtensionPoint(formState),
+    ...baseSelectStarterBrick(formState),
     definition: {
       type: "quickBar",
       documentUrlPatterns,
@@ -115,7 +115,7 @@ function selectExtension(
       : omitEditorMetadata(extension.blockPipeline),
   };
   return removeEmptyValues({
-    ...baseSelectExtension(state),
+    ...baseSelectModComponent(state),
     config,
   });
 }
@@ -123,7 +123,7 @@ function selectExtension(
 async function fromExtension(
   config: ModComponentBase<QuickBarConfig>,
 ): Promise<QuickBarFormState> {
-  const extensionPoint = await lookupExtensionPoint<
+  const extensionPoint = await lookupStarterBrick<
     QuickBarDefinition,
     QuickBarConfig,
     "quickBar"
@@ -137,8 +137,8 @@ async function fromExtension(
     reader,
   } = extensionPoint.definition;
 
-  const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = await extensionWithNormalizedPipeline(
+  const base = baseFromModComponent(config, extensionPoint.definition.type);
+  const extension = await modComponentWithNormalizedPipeline(
     config.config,
     "action",
   );

@@ -45,7 +45,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
     onAction,
   } = useContext(DocumentContext);
 
-  // Logger context will have both extensionId and blueprintId because they're passed from the containing PanelBody
+  // Logger context will have both modComponentId and modId because they're passed from the containing PanelBody
   const panelContext = logger.context as PanelContext;
 
   const {

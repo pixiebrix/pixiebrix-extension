@@ -126,7 +126,7 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
   const dispatch = useDispatch();
   const updateRedux = useCallback(
     (options: ModOptionsDefinition) => {
-      dispatch(actions.editRecipeOptionsDefinitions(options));
+      dispatch(actions.editModOptionsDefinitions(options));
     },
     [dispatch],
   );
@@ -152,7 +152,7 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
           initialValues={initialValues}
           onSubmit={() => {
             console.error(
-              "Formik's submit should not be called to save mod options. Use 'saveRecipe' from 'useRecipeSaver' instead.",
+              "Formik's submit should not be called to save mod options. Use 'saveMod' from 'useSaveMod' instead.",
             );
           }}
         >

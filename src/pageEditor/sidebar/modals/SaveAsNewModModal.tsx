@@ -25,14 +25,14 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 
-const SaveAsNewRecipeModal: React.FC = () => {
+const SaveAsNewModModal: React.FC = () => {
   const { isSaveAsNewModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
 
   const modId = useSelector(selectActiveModId);
-  const { data: recipe, isFetching } = useOptionalModDefinition(modId);
-  const recipeName = recipe?.metadata?.name ?? "this mod";
+  const { data: mod, isFetching } = useOptionalModDefinition(modId);
+  const modName = mod?.metadata?.name ?? "this mod";
 
   const dispatch = useDispatch();
 
@@ -41,8 +41,8 @@ const SaveAsNewRecipeModal: React.FC = () => {
   };
 
   const onConfirm = () => {
-    // Don't keep the old recipe active
-    dispatch(actions.showCreateRecipeModal({ keepLocalCopy: false }));
+    // Don't keep the old mod active
+    dispatch(actions.showCreateModModal({ keepLocalCopy: false }));
   };
 
   return (
@@ -51,7 +51,7 @@ const SaveAsNewRecipeModal: React.FC = () => {
         <Modal.Title>Save as new mod?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        You do not have permissions to edit <em>{recipeName}</em>. Save as a new
+        You do not have permissions to edit <em>{modName}</em>. Save as a new
         mod?
       </Modal.Body>
       <Modal.Footer>
@@ -66,4 +66,4 @@ const SaveAsNewRecipeModal: React.FC = () => {
   );
 };
 
-export default SaveAsNewRecipeModal;
+export default SaveAsNewModModal;

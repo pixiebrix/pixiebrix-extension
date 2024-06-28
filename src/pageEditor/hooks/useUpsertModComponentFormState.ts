@@ -25,7 +25,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/data/service/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
-import { extensionWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
+import { modComponentWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
 import {
   useGetEditablePackagesQuery,
   useSaveStandaloneModDefinitionMutation,
@@ -38,7 +38,7 @@ import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEdi
 import { type Timestamp, type UUID } from "@/types/stringTypes";
 
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
-import type { RegistryId } from "@/types/registryTypes";
+import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
@@ -178,7 +178,7 @@ function useUpsertModComponentFormState(): SaveCallback {
 
             await upsertPackageConfig(
               packageId,
-              "extensionPoint",
+              DefinitionKinds.STARTER_BRICK,
               extensionPointConfig,
             );
           } catch (error) {
@@ -202,7 +202,7 @@ function useUpsertModComponentFormState(): SaveCallback {
           const extensionPointConfig = adapter.selectStarterBrickDefinition(
             modComponentFormState,
           );
-          modComponent = extensionWithInnerDefinitions(
+          modComponent = modComponentWithInnerDefinitions(
             modComponent,
             extensionPointConfig.definition,
           );

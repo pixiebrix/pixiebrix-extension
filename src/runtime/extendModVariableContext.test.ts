@@ -19,7 +19,11 @@ import extendModVariableContext, {
   contextAsPlainObject,
   isModVariableContext,
 } from "@/runtime/extendModVariableContext";
-import { setState } from "@/platform/state/stateController";
+import {
+  MergeStrategies,
+  setState,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type ApiVersion } from "@/types/runtimeTypes";
@@ -27,17 +31,17 @@ import { type ApiVersion } from "@/types/runtimeTypes";
 describe("createModVariableProxy", () => {
   beforeEach(() => {
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: {},
-      extensionId: autoUUIDSequence(),
-      blueprintId: null,
-      mergeStrategy: "replace",
+      modComponentId: autoUUIDSequence(),
+      modId: null,
+      mergeStrategy: MergeStrategies.REPLACE,
     });
   });
 
   it("reads from blank page state", () => {
     const ctxt = extendModVariableContext({} as UnknownObject, {
-      blueprintId: null,
+      modId: null,
       options: apiVersionOptions("v3"),
     });
     expect(contextAsPlainObject(ctxt)).toEqual({ "@mod": {} });
@@ -45,16 +49,16 @@ describe("createModVariableProxy", () => {
 
   it("reads from page state", () => {
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { foo: 42 },
-      extensionId: autoUUIDSequence(),
-      blueprintId: null,
-      mergeStrategy: "replace",
+      modComponentId: autoUUIDSequence(),
+      modId: null,
+      mergeStrategy: MergeStrategies.REPLACE,
     });
 
     const ctxt = extendModVariableContext(
       {},
-      { blueprintId: null, options: apiVersionOptions("v3") },
+      { modId: null, options: apiVersionOptions("v3") },
     );
 
     expect(ctxt["@mod"]!.foo).toBe(42);
@@ -65,7 +69,7 @@ describe("createModVariableProxy", () => {
     (version: ApiVersion) => {
       const ctxt = extendModVariableContext(
         {},
-        { blueprintId: null, options: apiVersionOptions(version) },
+        { modId: null, options: apiVersionOptions(version) },
       );
 
       expect(ctxt["@mod"]).toBeUndefined();
@@ -75,7 +79,7 @@ describe("createModVariableProxy", () => {
   it("does not overwrite existing state", () => {
     const ctxt = extendModVariableContext(
       { "@mod": "foo" },
-      { blueprintId: null, options: apiVersionOptions("v3") },
+      { modId: null, options: apiVersionOptions("v3") },
     );
     expect(ctxt["@mod"]).toBe("foo");
   });
@@ -83,7 +87,7 @@ describe("createModVariableProxy", () => {
   it("sets symbol", () => {
     const ctxt = extendModVariableContext(
       {},
-      { blueprintId: null, options: apiVersionOptions("v3") },
+      { modId: null, options: apiVersionOptions("v3") },
     );
     expect(isModVariableContext(ctxt)).toBe(true);
     // The symbol shouldn't show up when enumerating properties. (We don't want it to show up in the UI)
@@ -97,19 +101,19 @@ describe("createModVariableProxy", () => {
   it("do not update by default", () => {
     const ctxt1 = extendModVariableContext(
       {},
-      { blueprintId: null, options: apiVersionOptions("v3") },
+      { modId: null, options: apiVersionOptions("v3") },
     );
 
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { foo: 42 },
-      extensionId: autoUUIDSequence(),
-      blueprintId: null,
-      mergeStrategy: "replace",
+      modComponentId: autoUUIDSequence(),
+      modId: null,
+      mergeStrategy: MergeStrategies.REPLACE,
     });
 
     const ctxt2 = extendModVariableContext(ctxt1, {
-      blueprintId: null,
+      modId: null,
       options: apiVersionOptions("v3"),
     });
 
@@ -119,19 +123,19 @@ describe("createModVariableProxy", () => {
   it("update if update flag is set", () => {
     const ctxt1 = extendModVariableContext(
       {},
-      { blueprintId: null, options: apiVersionOptions("v3") },
+      { modId: null, options: apiVersionOptions("v3") },
     );
 
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { foo: 42 },
-      extensionId: autoUUIDSequence(),
-      blueprintId: null,
-      mergeStrategy: "replace",
+      modComponentId: autoUUIDSequence(),
+      modId: null,
+      mergeStrategy: MergeStrategies.REPLACE,
     });
 
     const ctxt2 = extendModVariableContext(ctxt1, {
-      blueprintId: null,
+      modId: null,
       update: true,
       options: apiVersionOptions("v3"),
     });

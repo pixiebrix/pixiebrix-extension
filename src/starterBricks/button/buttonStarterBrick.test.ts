@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromJS } from "@/starterBricks/menuItem/menuItemStarterBrick";
+import { fromJS } from "@/starterBricks/button/buttonStarterBrick";
 import { validateRegistryId } from "@/types/helpers";
-import { type Metadata } from "@/types/registryTypes";
+import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import blockRegistry from "@/bricks/registry";
@@ -35,13 +35,14 @@ import { RunReason } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { getPlatform } from "@/platform/platformContext";
 import {
-  type MenuItemDefinition,
-  type MenuItemStarterBrickConfig,
-} from "@/starterBricks/menuItem/menuItemTypes";
+  type ButtonDefinition,
+  type ButtonStarterBrickConfig,
+} from "@/starterBricks/button/buttonStarterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 jest.mock("@/runtime/reducePipeline");
 
-const reduceExtensionPipelineMock = jest.mocked(reduceModComponentPipeline);
+const reduceModComponentPipelineMock = jest.mocked(reduceModComponentPipeline);
 
 globalThis.requestIdleCallback = jest.fn((callback) => {
   callback({ didTimeout: false, timeRemaining: () => 1 });
@@ -56,16 +57,16 @@ globalThis.requestAnimationFrame = jest.fn((callback) => {
 const rootReaderId = validateRegistryId("test/root-reader");
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<StarterBrickDefinitionLike<MenuItemDefinition>>({
+  define<StarterBrickDefinitionLike<ButtonDefinition>>({
     apiVersion: "v3",
-    kind: "extensionPoint",
+    kind: DefinitionKinds.STARTER_BRICK,
     metadata: (n: number) =>
       ({
         id: validateRegistryId(`test/starter-brick-${n}`),
         name: "Test Starter Brick",
       }) as Metadata,
-    definition: define<MenuItemDefinition>({
-      type: "menuItem",
+    definition: define<ButtonDefinition>({
+      type: StarterBrickTypes.BUTTON,
       template: "<button>{{caption}}</button>",
       containerSelector: "div",
       isAvailable: () => ({
@@ -83,8 +84,8 @@ const modComponentFactory = define<HydratedModComponent>({
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
   _recipe: undefined,
-  label: "Test Extension",
-  config: define<MenuItemStarterBrickConfig>({
+  label: "Test Button",
+  config: define<ButtonStarterBrickConfig>({
     caption: "Hello World",
     action: () => [] as BrickPipeline,
     synchronous: false,
@@ -94,7 +95,7 @@ const modComponentFactory = define<HydratedModComponent>({
 const rootReader = new RootReader();
 
 beforeEach(() => {
-  reduceExtensionPipelineMock.mockClear();
+  reduceModComponentPipelineMock.mockClear();
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
   blockRegistry.clear();
@@ -103,9 +104,9 @@ beforeEach(() => {
   rootReader.ref = null;
 });
 
-describe("menuItemStarterBrick", () => {
+describe("buttonStarterBrick", () => {
   it.each([["append"], [undefined]])(
-    "can add menu item with position: %s",
+    "can add button with position: %s",
     async (position) => {
       document.body.innerHTML = getDocument("<div>foo</div>").body.innerHTML;
 
@@ -134,7 +135,7 @@ describe("menuItemStarterBrick", () => {
     },
   );
 
-  it("can prepend menu item", async () => {
+  it("can prepend button", async () => {
     document.body.innerHTML = getDocument("<div>foo</div>").body.innerHTML;
     const starterBrick = fromJS(
       getPlatform(),
@@ -188,7 +189,7 @@ describe("menuItemStarterBrick", () => {
     const buttonRef = getReferenceForElement(document.querySelector("button")!);
     expect(rootReader.ref).toEqual(buttonRef);
 
-    expect(reduceExtensionPipelineMock).toHaveBeenCalledWith(
+    expect(reduceModComponentPipelineMock).toHaveBeenCalledWith(
       [],
       expect.objectContaining({
         root: document.querySelector("button"),
@@ -232,7 +233,7 @@ describe("menuItemStarterBrick", () => {
     );
     expect(rootReader.ref).toEqual(outerRef);
 
-    expect(reduceExtensionPipelineMock).toHaveBeenCalledWith(
+    expect(reduceModComponentPipelineMock).toHaveBeenCalledWith(
       [],
       expect.objectContaining({
         // Reader selector only impacts the reader context, not the pipeline context
@@ -266,7 +267,7 @@ describe("menuItemStarterBrick", () => {
 
       expect(document.querySelectorAll("button")).toHaveLength(1);
 
-      expect(reduceExtensionPipelineMock).not.toHaveBeenCalled();
+      expect(reduceModComponentPipelineMock).not.toHaveBeenCalled();
 
       document.querySelector("button")!.click();
       await tick();
@@ -275,7 +276,7 @@ describe("menuItemStarterBrick", () => {
       const documentRef = getReferenceForElement(document);
       expect(rootReader.ref).toEqual(documentRef);
 
-      expect(reduceExtensionPipelineMock).toHaveBeenCalledWith(
+      expect(reduceModComponentPipelineMock).toHaveBeenCalledWith(
         [],
         expect.objectContaining({
           root: document,
@@ -311,7 +312,7 @@ describe("menuItemStarterBrick", () => {
     starterBrick.uninstall();
   });
 
-  it("watches ancestor changes for menu location", async () => {
+  it("watches ancestor changes for button location", async () => {
     document.body.innerHTML = getDocument(
       '<div id="root"><div id="menu"></div></div>',
     ).body.innerHTML;
@@ -347,7 +348,7 @@ describe("menuItemStarterBrick", () => {
     starterBrick.uninstall();
   });
 
-  it("watch attach mode attaches new menu items", async () => {
+  it("watch attach mode attaches new buttons", async () => {
     document.body.innerHTML = getDocument(
       "<div><div class='menu'></div></div>",
     ).body.innerHTML;

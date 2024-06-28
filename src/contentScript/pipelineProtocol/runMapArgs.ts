@@ -40,7 +40,7 @@ export async function runMapArgs({
   config,
   context,
   options,
-  blueprintId,
+  modId,
 }: {
   config: Args;
   context: UnknownObject;
@@ -51,12 +51,12 @@ export async function runMapArgs({
      */
     extendModVariable: boolean;
   };
-  blueprintId: Nullishable<RegistryId>;
+  modId: Nullishable<RegistryId>;
 }): Promise<unknown> {
   expectContext("contentScript");
 
   const extendedContext = extendModVariableContext(context, {
-    blueprintId,
+    modId,
     options,
     // The mod variable is only update when running a brick in a pipeline. It's not updated for `defer` expressions,
     // e.g., when rendering items for a ListElement in the Document Builder.

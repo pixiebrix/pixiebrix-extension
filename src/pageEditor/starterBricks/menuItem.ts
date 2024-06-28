@@ -18,12 +18,12 @@
 import { type Metadata } from "@/types/registryTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
-  baseFromExtension,
-  baseSelectExtension,
-  baseSelectExtensionPoint,
-  extensionWithNormalizedPipeline,
+  baseFromModComponent,
+  baseSelectModComponent,
+  baseSelectStarterBrick,
+  modComponentWithNormalizedPipeline,
   getImplicitReader,
-  lookupExtensionPoint,
+  lookupStarterBrick,
   makeInitialBaseState,
   getDefaultAvailabilityForUrl,
   readerTypeHack,
@@ -32,7 +32,7 @@ import {
   cleanIsAvailable,
 } from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemStarterBrick";
+import { ButtonStarterBrickABC } from "@/starterBricks/button/buttonStarterBrick";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
@@ -40,15 +40,16 @@ import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/mo
 import MenuItemConfiguration from "@/pageEditor/tabs/menuItem/MenuItemConfiguration";
 import { insertButton } from "@/contentScript/messenger/api";
 import {
-  type ButtonDefinition,
+  type DraftButtonModComponent,
   type ButtonSelectionResult,
 } from "@/contentScript/pageEditor/types";
 import { type ActionFormState } from "./formStateTypes";
 import {
-  type MenuItemDefinition,
-  type MenuItemStarterBrickConfig,
-} from "@/starterBricks/menuItem/menuItemTypes";
+  type ButtonDefinition,
+  type ButtonStarterBrickConfig,
+} from "@/starterBricks/button/buttonStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 function fromNativeElement(
   url: string,
@@ -56,7 +57,7 @@ function fromNativeElement(
   button: ButtonSelectionResult,
 ): ActionFormState {
   return {
-    type: "menuItem",
+    type: StarterBrickTypes.BUTTON,
     label: `My ${getDomain(url)} button`,
     ...makeInitialBaseState(button.uuid),
     containerInfo: button.containerInfo,
@@ -64,8 +65,8 @@ function fromNativeElement(
       metadata,
       definition: {
         ...button.menu,
-        type: "menuItem",
-        reader: getImplicitReader("menuItem"),
+        type: StarterBrickTypes.BUTTON,
+        reader: getImplicitReader(StarterBrickTypes.BUTTON),
         isAvailable: getDefaultAvailabilityForUrl(url),
         targetMode: "document",
         attachMode: "once",
@@ -88,7 +89,7 @@ function fromNativeElement(
 
 function selectStarterBrickDefinition(
   formState: ActionFormState,
-): StarterBrickDefinitionLike<MenuItemDefinition> {
+): StarterBrickDefinitionLike<ButtonDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {
@@ -102,9 +103,9 @@ function selectStarterBrickDefinition(
     },
   } = extensionPoint;
   return removeEmptyValues({
-    ...baseSelectExtensionPoint(formState),
+    ...baseSelectStarterBrick(formState),
     definition: {
-      type: "menuItem",
+      type: StarterBrickTypes.BUTTON,
       reader,
       isAvailable: cleanIsAvailable(isAvailable),
       containerSelector,
@@ -119,9 +120,9 @@ function selectStarterBrickDefinition(
 function selectExtension(
   state: ActionFormState,
   options: { includeInstanceIds?: boolean } = {},
-): ModComponentBase<MenuItemStarterBrickConfig> {
+): ModComponentBase<ButtonStarterBrickConfig> {
   const { extension } = state;
-  const config: MenuItemStarterBrickConfig = {
+  const config: ButtonStarterBrickConfig = {
     caption: extension.caption,
     icon: extension.icon,
     action: options.includeInstanceIds
@@ -132,22 +133,22 @@ function selectExtension(
     synchronous: extension.synchronous,
   };
   return removeEmptyValues({
-    ...baseSelectExtension(state),
+    ...baseSelectModComponent(state),
     config,
   });
 }
 
 async function fromExtension(
-  config: ModComponentBase<MenuItemStarterBrickConfig>,
+  config: ModComponentBase<ButtonStarterBrickConfig>,
 ): Promise<ActionFormState> {
-  const extensionPoint = await lookupExtensionPoint<
-    MenuItemDefinition,
-    MenuItemStarterBrickConfig,
-    "menuItem"
-  >(config, "menuItem");
+  const extensionPoint = await lookupStarterBrick<
+    ButtonDefinition,
+    ButtonStarterBrickConfig,
+    typeof StarterBrickTypes.BUTTON
+  >(config, StarterBrickTypes.BUTTON);
 
-  const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = await extensionWithNormalizedPipeline(
+  const base = baseFromModComponent(config, extensionPoint.definition.type);
+  const extension = await modComponentWithNormalizedPipeline(
     config.config,
     "action",
   );
@@ -175,9 +176,9 @@ async function fromExtension(
 
 function asDraftModComponent(
   actionFormState: ActionFormState,
-): ButtonDefinition {
+): DraftButtonModComponent {
   return {
-    type: "menuItem",
+    type: StarterBrickTypes.BUTTON,
     extension: selectExtension(actionFormState, { includeInstanceIds: true }),
     extensionPointConfig: selectStarterBrickDefinition(actionFormState),
   };
@@ -188,10 +189,10 @@ const config: ModComponentFormStateAdapter<
   ActionFormState
 > = {
   displayOrder: 0,
-  elementType: "menuItem",
+  elementType: StarterBrickTypes.BUTTON,
   label: "Button",
   icon: faMousePointer,
-  baseClass: MenuItemStarterBrickABC,
+  baseClass: ButtonStarterBrickABC,
   EditorNode: MenuItemConfiguration,
   selectNativeElement: insertButton,
   fromNativeElement,

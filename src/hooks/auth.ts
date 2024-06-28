@@ -16,7 +16,6 @@
  */
 
 import { type AuthOption, type AuthSharing } from "@/auth/authTypes";
-import { readRawConfigurations } from "@/integrations/registry";
 import { sortBy } from "lodash";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
@@ -28,6 +27,7 @@ import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { useGetIntegrationAuthsQuery } from "@/data/service/api";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
 
 function defaultLabel(label: Nullishable<string>): string {
   const normalized = (label ?? "").trim();

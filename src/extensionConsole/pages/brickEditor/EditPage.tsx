@@ -39,7 +39,7 @@ import { type Package } from "@/types/contract";
 import { useGetPackageQuery } from "@/data/service/api";
 import useIsMounted from "@/hooks/useIsMounted";
 import { type UUID } from "@/types/stringTypes";
-import { type Definition } from "@/types/registryTypes";
+import { type Definition, DefinitionKinds } from "@/types/registryTypes";
 
 const { touchBrick } = workshopSlice.actions;
 
@@ -58,7 +58,7 @@ function useParseBrick(config: string | null): ParsedBrickInfo {
     }
 
     const configJSON = loadBrickYaml(config) as Definition;
-    const isBlueprint = configJSON.kind === "recipe";
+    const isBlueprint = configJSON.kind === DefinitionKinds.MOD;
     if (isBlueprint) {
       return {
         isBlueprint: true,

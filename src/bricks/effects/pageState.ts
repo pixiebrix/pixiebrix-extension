@@ -25,20 +25,23 @@ import { isObject } from "@/utils/objectUtils";
 import { mapValues } from "lodash";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-
-type MergeStrategy = "shallow" | "replace" | "deep";
-export type Namespace = "blueprint" | "extension" | "shared";
+import {
+  MergeStrategies,
+  type MergeStrategy,
+  type StateNamespace,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 
 /**
  * Namespace options for use in oneOf.
  */
 export const namespaceOptions = [
-  { const: "blueprint", title: "Mod" },
+  { const: StateNamespaces.MOD, title: "Mod" },
   {
-    const: "extension",
+    const: StateNamespaces.PRIVATE,
     title: "Private",
   },
-  { const: "shared", title: "Public" },
+  { const: StateNamespaces.PUBLIC, title: "Public" },
 ] as Schema[];
 
 export class SetPageState extends TransformerABC {
@@ -76,21 +79,27 @@ export class SetPageState extends TransformerABC {
         description:
           "Where to set the data. If set to Mod and this Starter Brick is not part of a Mod, behaves as Public.",
         oneOf: namespaceOptions,
-        default: "blueprint",
+        default: StateNamespaces.MOD,
       },
       mergeStrategy: {
         title: "Merge Strategy",
         type: "string",
         oneOf: [
-          { const: "shallow", title: "Shallow: replace existing properties" },
-          { const: "replace", title: "Replace: replace the entire state" },
           {
-            const: "deep",
+            const: MergeStrategies.SHALLOW,
+            title: "Shallow: replace existing properties",
+          },
+          {
+            const: MergeStrategies.REPLACE,
+            title: "Replace: replace the entire state",
+          },
+          {
+            const: MergeStrategies.DEEP,
             title: "Deep: recursively merge data with existing state",
           },
         ],
         description: "Strategy for merging the data with existing state.",
-        default: "shallow",
+        default: MergeStrategies.SHALLOW,
       },
     },
     ["data"],
@@ -103,10 +112,10 @@ export class SetPageState extends TransformerABC {
   override async getModVariableSchema(
     _config: BrickConfig,
   ): Promise<Schema | undefined> {
-    const { data, namespace = "blueprint" } = _config.config;
+    const { data, namespace = StateNamespaces.MOD } = _config.config;
 
     try {
-      if (castTextLiteralOrThrow(namespace) !== "blueprint") {
+      if (castTextLiteralOrThrow(namespace) !== StateNamespaces.MOD) {
         return;
       }
     } catch {
@@ -132,11 +141,11 @@ export class SetPageState extends TransformerABC {
   async transform(
     {
       data,
-      mergeStrategy = "shallow",
-      namespace = "blueprint",
+      mergeStrategy = MergeStrategies.SHALLOW,
+      namespace = StateNamespaces.MOD,
     }: BrickArgs<{
       data: JsonObject;
-      namespace?: Namespace;
+      namespace?: StateNamespace;
       mergeStrategy?: MergeStrategy;
     }>,
     { logger, platform }: BrickOptions,
@@ -148,8 +157,8 @@ export class SetPageState extends TransformerABC {
       data,
       mergeStrategy,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7891
-      extensionId: extensionId!,
-      blueprintId,
+      modComponentId: extensionId!,
+      modId: blueprintId,
     });
   }
 }
@@ -175,7 +184,7 @@ export class GetPageState extends TransformerABC {
         description:
           "Where to retrieve the data. If set to Mod and this Starter Brick is not part of a Mod, behaves as Public",
         oneOf: namespaceOptions,
-        default: "blueprint",
+        default: StateNamespaces.MOD,
       },
     },
     [],
@@ -191,15 +200,17 @@ export class GetPageState extends TransformerABC {
   }
 
   async transform(
-    { namespace = "blueprint" }: BrickArgs<{ namespace?: Namespace }>,
+    {
+      namespace = StateNamespaces.MOD,
+    }: BrickArgs<{ namespace?: StateNamespace }>,
     { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
-    const { blueprintId, extensionId } = logger.context;
+    const { blueprintId: modId, extensionId: modComponentId } = logger.context;
 
     return platform.state.getState({
       namespace,
-      blueprintId,
-      extensionId,
+      modId,
+      modComponentId,
     });
   }
 }

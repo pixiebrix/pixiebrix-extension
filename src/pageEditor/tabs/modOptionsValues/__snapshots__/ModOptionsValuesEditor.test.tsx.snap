@@ -1,35 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ModOptionsValuesEditor renders blueprint options with additional props 1`] = `
-<DocumentFragment>
-  <div
-    class="pt-3 container-fluid"
-  >
-    <form
-      class=""
-      novalidate=""
-    >
-      <div
-        class="card"
-      >
-        <div
-          class="card-header"
-        >
-          Mod Input Options
-        </div>
-        <div
-          class="card-body"
-        >
-          <div>
-            This mod does not require any configuration
-          </div>
-        </div>
-      </div>
-    </form>
-  </div>
-</DocumentFragment>
-`;
-
 exports[`ModOptionsValuesEditor renders empty options 1`] = `
 <DocumentFragment>
   <div
@@ -471,6 +441,36 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ModOptionsValuesEditor renders mod options with additional props 1`] = `
+<DocumentFragment>
+  <div
+    class="pt-3 container-fluid"
+  >
+    <form
+      class=""
+      novalidate=""
+    >
+      <div
+        class="card"
+      >
+        <div
+          class="card-header"
+        >
+          Mod Input Options
+        </div>
+        <div
+          class="card-body"
+        >
+          <div>
+            This mod does not require any configuration
           </div>
         </div>
       </div>

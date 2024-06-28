@@ -19,7 +19,7 @@ import { type TypedBrickPair } from "@/bricks/registry";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { stubTrue } from "lodash";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { type BrickType } from "@/runtime/runtimeTypes";
+import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type RegistryId } from "@/types/registryTypes";
 import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
@@ -90,12 +90,12 @@ export function makeIsBrickAllowedForPipeline(
 
   switch (pipelineFlavor) {
     case PipelineFlavor.NoEffect: {
-      excludedType = "effect";
+      excludedType = BrickTypes.EFFECT;
       break;
     }
 
     case PipelineFlavor.NoRenderer: {
-      excludedType = "renderer";
+      excludedType = BrickTypes.RENDERER;
       break;
     }
 

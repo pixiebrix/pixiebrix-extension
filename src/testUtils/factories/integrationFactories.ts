@@ -31,7 +31,7 @@ import { type RemoteIntegrationConfig } from "@/types/contract";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-import { type Kind } from "@/registry/packageRegistry";
+import { type DefinitionKind, DefinitionKinds } from "@/types/registryTypes";
 
 export const sanitizedIntegrationConfigFactory =
   define<SanitizedIntegrationConfig>({
@@ -123,17 +123,19 @@ export const keyAuthIntegrationDefinitionFactory = define<
 
 export function generateIntegrationAndRemoteConfig(): {
   remoteConfig: RemoteIntegrationConfig;
-  integrationDefinition: IntegrationDefinition & { kind: Kind };
+  integrationDefinition: IntegrationDefinition & { kind: DefinitionKind };
 } {
   const remoteConfig = remoteIntegrationConfigurationFactory();
 
-  const integrationDefinition: IntegrationDefinition & { kind: Kind } = {
+  const integrationDefinition: IntegrationDefinition & {
+    kind: DefinitionKind;
+  } = {
     ...keyAuthIntegrationDefinitionFactory({
       metadata: metadataFactory({
         id: remoteConfig.service.config.metadata.id,
       }),
     }),
-    kind: "service" as Kind,
+    kind: DefinitionKinds.INTEGRATION,
   };
 
   return {

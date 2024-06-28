@@ -27,6 +27,7 @@ import { uniqBy } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import type { Mod, UnavailableMod } from "@/types/modTypes";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 type ModsState = {
   /**
@@ -45,7 +46,7 @@ export function unavailableModFactory(
 ): UnavailableMod {
   return {
     metadata: modComponent._recipe,
-    kind: "recipe",
+    kind: DefinitionKinds.MOD,
     isStub: true,
     updated_at: modComponent._recipe.updated_at,
     sharing: modComponent._recipe.sharing,

@@ -31,7 +31,7 @@ import {
 } from "@/starterBricks/types";
 import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { type InnerDefinitions } from "@/types/registryTypes";
+import { type InnerDefinitions, DefinitionKinds } from "@/types/registryTypes";
 import produce from "immer";
 import { buildModComponents } from "@/pageEditor/panes/save/saveHelpers";
 
@@ -91,7 +91,7 @@ function useCheckModStarterBrickInvariants(): (
         const { selectStarterBrickDefinition } = adapter;
 
         const definitionFromComponent = {
-          kind: "extensionPoint",
+          kind: DefinitionKinds.STARTER_BRICK,
           definition: selectStarterBrickDefinition(formState).definition,
         } satisfies StarterBrickDefinitionLike;
         if (

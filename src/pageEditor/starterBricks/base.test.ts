@@ -20,7 +20,10 @@ import {
   removeEmptyValues,
   selectStarterBrickAvailability,
 } from "./base";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { type ReaderConfig } from "@/bricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
@@ -94,13 +97,12 @@ describe("selectIsAvailable", () => {
 
 describe("getImplicitReader", () => {
   it.each([
-    ["menuItem"],
-    ["quickBar"],
-    ["quickBarProvider"],
-    ["contextMenu"],
-    ["trigger"],
-    ["panel"],
-    ["sidePanel"],
+    [StarterBrickTypes.BUTTON],
+    [StarterBrickTypes.QUICK_BAR_ACTION],
+    [StarterBrickTypes.DYNAMIC_QUICK_BAR],
+    [StarterBrickTypes.CONTEXT_MENU],
+    [StarterBrickTypes.TRIGGER],
+    [StarterBrickTypes.SIDEBAR_PANEL],
   ])("includes metadata reader for %s", (type: StarterBrickType) => {
     expect(getImplicitReader(type)).toContainEqual(
       "@pixiebrix/document-metadata",
@@ -108,13 +110,12 @@ describe("getImplicitReader", () => {
   });
 
   it.each([
-    ["menuItem"],
-    ["quickBar"],
-    ["quickBarProvider"],
-    ["contextMenu"],
-    ["trigger"],
-    ["panel"],
-    ["sidePanel"],
+    [StarterBrickTypes.BUTTON],
+    [StarterBrickTypes.QUICK_BAR_ACTION],
+    [StarterBrickTypes.DYNAMIC_QUICK_BAR],
+    [StarterBrickTypes.CONTEXT_MENU],
+    [StarterBrickTypes.TRIGGER],
+    [StarterBrickTypes.SIDEBAR_PANEL],
   ])(
     "overrides url from metadata reader with current URL from context reader",
     (type: StarterBrickType) => {
@@ -134,23 +135,22 @@ describe("getImplicitReader", () => {
   );
 
   it.each([
-    ["menuItem"],
-    ["quickBar"],
-    ["quickBarProvider"],
-    ["contextMenu"],
-    ["trigger"],
+    [StarterBrickTypes.BUTTON],
+    [StarterBrickTypes.QUICK_BAR_ACTION],
+    [StarterBrickTypes.DYNAMIC_QUICK_BAR],
+    [StarterBrickTypes.CONTEXT_MENU],
+    [StarterBrickTypes.TRIGGER],
   ])("includes element reader for %s", (type: StarterBrickType) => {
     expect(getImplicitReader(type)).toContainEqual({
       element: "@pixiebrix/html/element",
     });
   });
 
-  it.each([["panel"], ["sidePanel"]])(
-    "does not include element reader for %s",
-    (type: StarterBrickType) => {
-      expect(getImplicitReader(type)).not.toContainEqual({
-        element: "@pixiebrix/html/element",
-      });
-    },
-  );
+  it(`does not include element reader for ${StarterBrickTypes.SIDEBAR_PANEL}`, () => {
+    expect(
+      getImplicitReader(StarterBrickTypes.SIDEBAR_PANEL),
+    ).not.toContainEqual({
+      element: "@pixiebrix/html/element",
+    });
+  });
 });

@@ -16,9 +16,9 @@
  */
 
 import {
-  addListener as addAuthListener,
+  addAuthListener,
   getPartnerAuthData,
-  removeListener as removeAuthListener,
+  removeAuthListener,
 } from "@/auth/authStorage";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import type { AsyncState } from "@/types/sliceTypes";
@@ -38,7 +38,7 @@ const subscribe = (callback: () => void) => {
  * Use the current partner auth data. Automatically listens for changes and updates the state.
  * @see getPartnerAuthData
  */
-function usePartnerAuthData(): AsyncState<Partial<PartnerAuthData>> {
+function usePartnerAuthData(): AsyncState<PartnerAuthData | undefined> {
   return useAsyncExternalStore(subscribe, getPartnerAuthData);
 }
 

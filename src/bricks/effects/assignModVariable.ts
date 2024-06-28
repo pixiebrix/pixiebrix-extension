@@ -2,7 +2,11 @@ import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type JsonObject, type JsonPrimitive } from "type-fest";
-import { setState } from "@/platform/state/stateController";
+import {
+  MergeStrategies,
+  setState,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
@@ -92,14 +96,14 @@ class AssignModVariable extends EffectABC {
     }>,
     { logger }: BrickOptions,
   ): Promise<void> {
-    const { blueprintId, extensionId } = logger.context;
+    const { blueprintId: modId, extensionId: modComponentId } = logger.context;
 
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { [variableName]: value },
-      mergeStrategy: "shallow",
-      extensionId,
-      blueprintId,
+      mergeStrategy: MergeStrategies.SHALLOW,
+      modComponentId,
+      modId,
     });
   }
 }

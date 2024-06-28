@@ -47,15 +47,15 @@ type Location = "modal" | "panel";
  * @see useDocumentPreviewRunBlock
  */
 export async function runRendererBrick({
-  extensionId,
-  blueprintId,
+  modComponentId,
+  modId,
   runId,
   title,
   args,
   location,
 }: {
-  extensionId: UUID;
-  blueprintId: RegistryId | null;
+  modComponentId: UUID;
+  modId: RegistryId | null;
   runId: UUID;
   title: string;
   args: RunBrickArgs;
@@ -65,7 +65,7 @@ export async function runRendererBrick({
 
   let payload: PanelPayload;
   try {
-    await runBrickPreview({ ...args, blueprintId });
+    await runBrickPreview({ ...args, modId });
     // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
     // noinspection ExceptionCaughtLocallyJS
     throw new NoRendererError();
@@ -76,14 +76,14 @@ export async function runRendererBrick({
         blockId: error.blockId,
         args: error.args,
         ctxt: error.ctxt,
-        extensionId,
+        extensionId: modComponentId,
         runId,
       };
     } else {
       payload = {
         key: nonce,
         error: serializeError(error),
-        extensionId,
+        extensionId: modComponentId,
         runId,
       };
     }
@@ -91,8 +91,8 @@ export async function runRendererBrick({
     if (location === "panel") {
       await showTemporarySidebarPanel({
         // Pass extension id so previous run is cancelled
-        extensionId,
-        blueprintId,
+        extensionId: modComponentId,
+        blueprintId: modId,
         nonce,
         heading: title,
         payload,
@@ -107,10 +107,10 @@ export async function runRendererBrick({
         await waitForTemporaryPanel({
           nonce,
           location,
-          extensionId,
+          extensionId: modComponentId,
           entry: {
-            extensionId,
-            blueprintId,
+            extensionId: modComponentId,
+            blueprintId: modId,
             nonce,
             heading: title,
             payload,

@@ -22,7 +22,11 @@ import {
   simpleInput,
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { setState } from "@/platform/state/stateController";
+import {
+  MergeStrategies,
+  setState,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
@@ -36,11 +40,11 @@ beforeEach(() => {
 describe("modVariableContext", () => {
   test("use mod variable in variable condition", async () => {
     setState({
-      namespace: "blueprint" as const,
+      namespace: StateNamespaces.MOD,
       data: { run: true },
-      mergeStrategy: "replace",
-      extensionId: null,
-      blueprintId: null,
+      mergeStrategy: MergeStrategies.REPLACE,
+      modComponentId: null,
+      modId: null,
     });
 
     const pipeline = [
@@ -62,11 +66,11 @@ describe("modVariableContext", () => {
 
   test("use mod variable in nunjucks condition", async () => {
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { run: true },
-      mergeStrategy: "replace",
-      extensionId: autoUUIDSequence(),
-      blueprintId: undefined,
+      mergeStrategy: MergeStrategies.REPLACE,
+      modComponentId: autoUUIDSequence(),
+      modId: undefined,
     });
 
     const pipeline = [
@@ -88,11 +92,11 @@ describe("modVariableContext", () => {
 
   test("mod variable appears in context", async () => {
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
-      mergeStrategy: "replace",
-      extensionId: autoUUIDSequence(),
-      blueprintId: undefined,
+      mergeStrategy: MergeStrategies.REPLACE,
+      modComponentId: autoUUIDSequence(),
+      modId: undefined,
     });
 
     const pipeline = [
@@ -115,11 +119,11 @@ describe("modVariableContext", () => {
 
   test("use mod variable in nunjucks body", async () => {
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
-      mergeStrategy: "replace",
-      extensionId: autoUUIDSequence(),
-      blueprintId: undefined,
+      mergeStrategy: MergeStrategies.REPLACE,
+      modComponentId: autoUUIDSequence(),
+      modId: undefined,
     });
 
     const pipeline = [
@@ -140,11 +144,11 @@ describe("modVariableContext", () => {
 
   test("use mod variable in variable body", async () => {
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
-      mergeStrategy: "replace",
-      extensionId: autoUUIDSequence(),
-      blueprintId: undefined,
+      mergeStrategy: MergeStrategies.REPLACE,
+      modComponentId: autoUUIDSequence(),
+      modId: undefined,
     });
 
     const pipeline = [

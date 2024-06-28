@@ -19,29 +19,34 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { validateRegistryId } from "@/types/helpers";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { getState, setState } from "@/platform/state/stateController";
+import {
+  getState,
+  MergeStrategies,
+  setState,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
-const extensionId = autoUUIDSequence();
-const blueprintId = validateRegistryId("test/123");
+const modComponentId = autoUUIDSequence();
+const modId = validateRegistryId("test/123");
 
 const brick = new AssignModVariable();
 
 const logger = new ConsoleLogger({
-  extensionId,
-  blueprintId,
+  extensionId: modComponentId,
+  blueprintId: modId,
 });
 
 const brickOptions = brickOptionsFactory({ logger });
 
 beforeEach(() => {
   setState({
-    namespace: "blueprint",
-    blueprintId,
-    extensionId,
-    mergeStrategy: "replace",
+    namespace: StateNamespaces.MOD,
+    modId,
+    modComponentId,
+    mergeStrategy: MergeStrategies.REPLACE,
     data: {},
   });
 });
@@ -59,7 +64,11 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     expect(
-      getState({ namespace: "blueprint", blueprintId, extensionId }),
+      getState({
+        namespace: StateNamespaces.MOD,
+        modId,
+        modComponentId,
+      }),
     ).toEqual({ foo: { bar: 42 } });
   });
 
@@ -89,7 +98,11 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     expect(
-      getState({ namespace: "blueprint", blueprintId, extensionId }),
+      getState({
+        namespace: StateNamespaces.MOD,
+        modId,
+        modComponentId,
+      }),
     ).toEqual({ foo: null });
   });
 
@@ -105,7 +118,11 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     expect(
-      getState({ namespace: "blueprint", blueprintId, extensionId }),
+      getState({
+        namespace: StateNamespaces.MOD,
+        modId,
+        modComponentId,
+      }),
     ).toEqual({ foo: 42, bar: 0 });
   });
 

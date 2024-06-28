@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromJS as deserializePanel } from "@/starterBricks/panel/panelStarterBrick";
-import { fromJS as deserializeMenuItem } from "@/starterBricks/menuItem/menuItemStarterBrick";
+import { fromJS as deserializeMenuItem } from "@/starterBricks/button/buttonStarterBrick";
 import { fromJS as deserializeTrigger } from "@/starterBricks/trigger/triggerStarterBrick";
 import { fromJS as deserializeContextMenu } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { fromJS as deserializeSidebar } from "@/starterBricks/sidebar/sidebarStarterBrick";
@@ -26,9 +25,9 @@ import { fromJS as deserializeTour } from "@/starterBricks/tour/tourStarterBrick
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getPlatform } from "@/platform/platformContext";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 const TYPE_MAP = {
-  panel: deserializePanel,
   menuItem: deserializeMenuItem,
   trigger: deserializeTrigger,
   contextMenu: deserializeContextMenu,
@@ -39,10 +38,12 @@ const TYPE_MAP = {
 };
 
 export function fromJS(config: StarterBrickDefinitionLike): StarterBrick {
-  if (config.kind !== "extensionPoint") {
+  if (config.kind !== DefinitionKinds.STARTER_BRICK) {
     // Is `never` due to check, but needed because this method is called dynamically
     const exhaustiveCheck: never = config.kind;
-    throw new Error(`Expected kind extensionPoint, got ${exhaustiveCheck}`);
+    throw new Error(
+      `Expected kind ${DefinitionKinds.STARTER_BRICK}, got ${exhaustiveCheck}`,
+    );
   }
 
   if (!Object.hasOwn(TYPE_MAP, config.definition.type)) {

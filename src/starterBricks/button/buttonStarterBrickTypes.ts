@@ -19,17 +19,18 @@ import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type IconConfig } from "@/types/iconTypes";
 import { type MessageConfig } from "@/utils/notify";
+import { type StarterBrickTypes } from "@/types/starterBrickTypes";
 
 /**
  * @since 1.7.8
  */
 export type AttachMode =
-  // Add menu items once. If a menu item is removed, PixieBrix will still attempt to re-add it.
+  // Add buttons once. If a button is removed, PixieBrix will still attempt to re-add it.
   | "once"
-  // Watch for new menus on the screen and add menu items to them
+  // Watch for new button containers (e.g., menus, toolbars) on the screen and add buttons to them
   | "watch";
 
-export type MenuItemStarterBrickConfig = {
+export type ButtonStarterBrickConfig = {
   /**
    * The button caption to supply to the `caption` in the starter brick template.
    * If `dynamicCaption` is true, can include template expressions.
@@ -47,7 +48,7 @@ export type MenuItemStarterBrickConfig = {
   action: BrickConfig | BrickPipeline;
 
   /**
-   * (Experimental) condition to determine whether to show the menu item
+   * (Experimental) condition to determine whether to show the button
    * @see if
    */
   if?: BrickConfig | BrickPipeline;
@@ -76,7 +77,7 @@ export type MenuItemStarterBrickConfig = {
   onSuccess?: MessageConfig | boolean;
 };
 
-export type MenuPosition =
+export type ButtonPosition =
   | "append"
   | "prepend"
   | {
@@ -84,14 +85,14 @@ export type MenuPosition =
       sibling: string | null;
     };
 
-export type MenuTargetMode = "document" | "eventTarget";
+export type ButtonTargetMode = "document" | "eventTarget";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
   tag?: string;
 }
 
-interface MenuDefaultOptions {
+interface ButtonDefaultOptions {
   caption?: string;
   [key: string]: string | undefined;
 }
@@ -99,18 +100,19 @@ interface MenuDefaultOptions {
 /**
  * @since 1.7.16
  */
-export interface MenuItemDefinition extends StarterBrickDefinitionProp {
-  type: "menuItem";
+export interface ButtonDefinition extends StarterBrickDefinitionProp {
+  // Using `menuItem` as the type for backward compatibility
+  type: typeof StarterBrickTypes.BUTTON;
   /**
-   * The HTML template to render the button/menu item.
+   * The HTML template to render the button.
    */
   template: string;
   /**
-   * Position in the menu to insert the item.
+   * Position in the parent container to insert the button. Typically, a menu or toolbar.
    */
-  position?: MenuPosition;
+  position?: ButtonPosition;
   /**
-   * Selector targeting the menu location
+   * Selector targeting the parent container location
    */
   containerSelector: string;
   /**
@@ -124,16 +126,16 @@ export interface MenuItemDefinition extends StarterBrickDefinitionProp {
    * @since 1.7.16
    * @see readerSelector
    */
-  targetMode?: MenuTargetMode;
+  targetMode?: ButtonTargetMode;
   /**
-   * Wrap menu item in a shadow DOM
+   * Wrap button in a shadow DOM
    * @deprecated do we still want to support this? Is it used anywhere?
    */
   shadowDOM?: ShadowDOM;
   /**
    * Default options for ModComponentBases attached to the starter brick
    */
-  defaultOptions?: MenuDefaultOptions;
+  defaultOptions?: ButtonDefaultOptions;
   /**
    * Mode for attaching the menu to the page. Defaults to "once"
    * @since 1.7.28

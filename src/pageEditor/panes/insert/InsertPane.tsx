@@ -16,9 +16,11 @@
  */
 
 import React, { useCallback } from "react";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import InsertMenuItemPane from "@/pageEditor/panes/insert/InsertMenuItemPane";
-import InsertPanelPane from "@/pageEditor/panes/insert/InsertPanelPane";
 import { useDispatch } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
@@ -43,12 +45,8 @@ const InsertPane: React.FC<{ inserting: StarterBrickType }> = ({
   useEscapeHandler(cancelInsert, inserting != null);
 
   switch (inserting) {
-    case "menuItem": {
+    case StarterBrickTypes.BUTTON: {
       return <InsertMenuItemPane cancel={cancelInsert} />;
-    }
-
-    case "panel": {
-      return <InsertPanelPane cancel={cancelInsert} />;
     }
 
     default: {

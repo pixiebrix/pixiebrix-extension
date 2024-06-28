@@ -19,7 +19,7 @@ import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import {
   internalStarterBrickMetaFactory,
-  lookupExtensionPoint,
+  lookupStarterBrick,
 } from "@/pageEditor/starterBricks/base";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { hookAct, renderHook } from "@/pageEditor/testHelpers";
@@ -43,10 +43,11 @@ import { array } from "cooky-cutter";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { normalizeModDefinition } from "@/utils/modUtils";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
-  lookupExtensionPoint: jest.fn(),
+  lookupStarterBrick: jest.fn(),
 }));
 
 describe("useBuildAndValidateMod", () => {
@@ -60,7 +61,7 @@ describe("useBuildAndValidateMod", () => {
         apiVersion: modDefinition.apiVersion,
         metadata: internalStarterBrickMetaFactory(),
         definition,
-        kind: "extensionPoint",
+        kind: DefinitionKinds.STARTER_BRICK,
       };
     });
   }
@@ -113,7 +114,7 @@ describe("useBuildAndValidateMod", () => {
         for (let i = 0; i < dirtyModComponentCount; i++) {
           const extensionPoint = extensionPoints[i];
           // Mock this lookup for the adapter call that follows
-          jest.mocked(lookupExtensionPoint).mockResolvedValue(extensionPoint);
+          jest.mocked(lookupStarterBrick).mockResolvedValue(extensionPoint);
 
           // Mod was installed, so get the mod component from state
           const modComponent = state.extensions[i];

@@ -22,7 +22,7 @@ import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
-import { selectActiveDocumentOrFormPreviewElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useField, useFormikContext } from "formik";
 import { partial } from "lodash";
@@ -44,6 +44,7 @@ import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedColla
 import type { PipelineExpression } from "@/types/runtimeTypes";
 import { Collapse } from "react-bootstrap";
 import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
+import { StateNamespaces } from "@/platform/state/stateController";
 
 const recordIdSchema: Schema = {
   type: "string",
@@ -98,7 +99,7 @@ const FormDataBindingOptions: React.FC<{
     if (nextStorageType === "state") {
       await setStorageValue({
         type: "state",
-        namespace: "blueprint",
+        namespace: StateNamespaces.MOD,
       } as Storage);
     } else {
       await setStorageValue({ type: nextStorageType } as Storage);
@@ -273,8 +274,8 @@ const FormRendererOptions: React.FC<{
   const configName = makeName();
 
   const [activeElement, setActiveElement] = useReduxState(
-    selectActiveDocumentOrFormPreviewElement,
-    editorActions.setActiveDocumentOrFormPreviewElement,
+    selectActiveBuilderPreviewElement,
+    editorActions.setActiveBuilderPreviewElement,
   );
 
   return (

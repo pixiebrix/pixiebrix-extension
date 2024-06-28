@@ -22,6 +22,7 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { type BaseFormState } from "@/pageEditor/baseFormStateTypes";
+import { StateNamespaces } from "@/platform/state/stateController";
 
 describe("PageStateAnalysis", () => {
   it.each([SetPageState.BRICK_ID, GetPageState.BRICK_ID])(
@@ -77,7 +78,7 @@ describe("PageStateAnalysis", () => {
         config: {
           storage: {
             type: "state",
-            namespace: "blueprint",
+            namespace: StateNamespaces.MOD,
           },
         },
       },
@@ -100,7 +101,7 @@ describe("PageStateAnalysis", () => {
         {
           id: registryId,
           config: {
-            namespace: "blueprint",
+            namespace: StateNamespaces.MOD,
           },
         },
       ]);
@@ -123,7 +124,7 @@ describe("PageStateAnalysis", () => {
         {
           id: registryId,
           config: {
-            namespace: "blueprint",
+            namespace: StateNamespaces.MOD,
           },
         },
       ]);

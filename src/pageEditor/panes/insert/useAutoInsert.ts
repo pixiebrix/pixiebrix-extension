@@ -8,7 +8,10 @@ import { updateDraftModComponent } from "@/contentScript/messenger/api";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import notify from "@/utils/notify";
 import {
@@ -24,7 +27,7 @@ function useAutoInsert(type: StarterBrickType): void {
 
   useAsyncEffect(async () => {
     // These have their own UI, so don't auto-insert
-    if (type === "menuItem" || type === "panel" || type == null) {
+    if (type === StarterBrickTypes.BUTTON || type == null) {
       return;
     }
 

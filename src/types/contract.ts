@@ -28,6 +28,7 @@ import {
   type SecretsConfig,
 } from "@/integrations/integrationTypes";
 import {
+  type DefinitionKind,
   type Metadata,
   type RegistryId,
   type SemVerString,
@@ -134,8 +135,9 @@ export type EditablePackageMetadata = components["schemas"]["PackageMeta"] & {
   name: RegistryId;
 
   /**
-   * Backend display name for the Package.kind.
+   * Backend display name for the Package.kind. WARNING: different names/capitalization than the frontend types.
    * @see https://github.com/pixiebrix/pixiebrix-app/blob/be1c486eba393e3c8e2f99401f78af5958b4060b/api/models/registry.py#L210-L210
+   * @see DefinitionKind
    */
   kind: "Blueprint" | "Service" | "Block" | "Reader" | "Foundation";
 
@@ -155,7 +157,7 @@ export type RegistryPackage = Pick<
    * Note that EditablePackageMetadata uses the backend's display name for this field
    * @see https://github.com/pixiebrix/pixiebrix-app/blob/43f0a4b81d8b7aaaf11adbe7fd8e4530ca4b8bf0/api/serializers/brick.py#L204-L204
    */
-  kind: "component" | "extensionPoint" | "recipe" | "service" | "reader";
+  kind: DefinitionKind;
 
   // PackageConfigListSerializer adds updated_at and sharing to the PackageConfigList response:
   // https://github.com/pixiebrix/pixiebrix-app/blob/368a0116edad2c115ae370b651f109619e621745/api/serializers/brick.py#L139-L139

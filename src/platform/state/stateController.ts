@@ -19,13 +19,25 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { cloneDeep, isEqual, merge } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { type JsonObject } from "type-fest";
+import { type JsonObject, type ValueOf } from "type-fest";
 import { assertPlatformCapability } from "@/platform/platformContext";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
-type MergeStrategy = "shallow" | "replace" | "deep";
+export const MergeStrategies = {
+  SHALLOW: "shallow",
+  REPLACE: "replace",
+  DEEP: "deep",
+} as const;
 
-type StateNamespace = "blueprint" | "extension" | "shared";
+export type MergeStrategy = ValueOf<typeof MergeStrategies>;
+
+export const StateNamespaces = {
+  MOD: "blueprint",
+  PRIVATE: "extension",
+  PUBLIC: "shared",
+} as const;
+
+export type StateNamespace = ValueOf<typeof StateNamespaces>;
 
 const privateState = new Map<UUID, JsonObject>();
 
@@ -42,16 +54,16 @@ function mergeState(
   const cloned = cloneDeep(update);
 
   switch (strategy) {
-    case "replace": {
+    case MergeStrategies.REPLACE: {
       return cloned;
     }
 
-    case "deep": {
+    case MergeStrategies.DEEP: {
       // `merge` mutates the first argument, so we clone it first
       return merge(cloneDeep(previous), cloned);
     }
 
-    case "shallow": {
+    case MergeStrategies.SHALLOW: {
       return { ...previous, ...cloned };
     }
 
@@ -62,25 +74,25 @@ function mergeState(
   }
 }
 
-function dispatchStageChangeEventOnChange({
+function dispatchStateChangeEventOnChange({
   previous,
   next,
   namespace,
-  extensionId,
-  blueprintId,
+  modComponentId,
+  modId: modid,
 }: {
   previous: unknown;
   next: unknown;
   namespace: string;
-  extensionId: Nullishable<UUID>;
-  blueprintId: Nullishable<RegistryId>;
+  modComponentId: Nullishable<UUID>;
+  modId: Nullishable<RegistryId>;
 }) {
   if (!isEqual(previous, next)) {
     // For now, leave off the event data because we're using a public channel
     const detail = {
       namespace,
-      extensionId,
-      blueprintId,
+      extensionId: modComponentId,
+      blueprintId: modid,
     };
 
     console.debug("Dispatching statechange", detail);
@@ -94,30 +106,30 @@ export function setState({
   namespace,
   data,
   mergeStrategy,
-  extensionId,
+  modComponentId,
   // Normalize undefined to null for lookup
-  blueprintId = null,
+  modId = null,
 }: {
   namespace: StateNamespace;
   data: JsonObject;
   mergeStrategy: MergeStrategy;
-  extensionId: Nullishable<UUID>;
-  blueprintId: Nullishable<RegistryId>;
+  modComponentId: Nullishable<UUID>;
+  modId: Nullishable<RegistryId>;
 }) {
   assertPlatformCapability("state");
 
   const notifyOnChange = (previous: JsonObject, next: JsonObject) => {
-    dispatchStageChangeEventOnChange({
+    dispatchStateChangeEventOnChange({
       previous,
       next,
       namespace,
-      extensionId,
-      blueprintId,
+      modComponentId,
+      modId,
     });
   };
 
   switch (namespace) {
-    case "shared": {
+    case StateNamespaces.PUBLIC: {
       const previous = modState.get(null) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
       modState.set(null, next);
@@ -125,19 +137,22 @@ export function setState({
       return next;
     }
 
-    case "blueprint": {
-      const previous = modState.get(blueprintId) ?? {};
+    case StateNamespaces.MOD: {
+      const previous = modState.get(modId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      modState.set(blueprintId, next);
+      modState.set(modId, next);
       notifyOnChange(previous, next);
       return next;
     }
 
-    case "extension": {
-      assertNotNullish(extensionId, "Invalid context: extensionId not found");
-      const previous = privateState.get(extensionId) ?? {};
+    case StateNamespaces.PRIVATE: {
+      assertNotNullish(
+        modComponentId,
+        "Invalid context: mod component id not found",
+      );
+      const previous = privateState.get(modComponentId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      privateState.set(extensionId, next);
+      privateState.set(modComponentId, next);
       notifyOnChange(previous, next);
       return next;
     }
@@ -151,28 +166,31 @@ export function setState({
 
 export function getState({
   namespace,
-  extensionId,
+  modComponentId,
   // Normalize undefined to null for lookup
-  blueprintId = null,
+  modId = null,
 }: {
   namespace: StateNamespace;
-  extensionId: Nullishable<UUID>;
-  blueprintId: Nullishable<RegistryId>;
+  modComponentId: Nullishable<UUID>;
+  modId: Nullishable<RegistryId>;
 }): JsonObject {
   assertPlatformCapability("state");
 
   switch (namespace) {
-    case "shared": {
+    case StateNamespaces.PUBLIC: {
       return modState.get(null) ?? {};
     }
 
-    case "blueprint": {
-      return modState.get(blueprintId) ?? {};
+    case StateNamespaces.MOD: {
+      return modState.get(modId) ?? {};
     }
 
-    case "extension": {
-      assertNotNullish(extensionId, "Invalid context: extensionId not found");
-      return privateState.get(extensionId) ?? {};
+    case StateNamespaces.PRIVATE: {
+      assertNotNullish(
+        modComponentId,
+        "Invalid context: mod component id not found",
+      );
+      return privateState.get(modComponentId) ?? {};
     }
 
     default: {

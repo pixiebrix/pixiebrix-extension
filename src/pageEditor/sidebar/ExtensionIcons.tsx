@@ -26,7 +26,7 @@ import {
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import Icon from "@/icons/Icon";
 
-export const ExtensionIcon: React.FunctionComponent<{
+export const ModComponentIcon: React.FunctionComponent<{
   type: StarterBrickType;
 }> = ({ type }) => (
   <FontAwesomeIcon
@@ -43,7 +43,7 @@ export const UnsavedChangesIcon: React.FunctionComponent = () => (
   <Icon library="custom" icon="ic-unsaved" />
 );
 
-export const RecipeHasUpdateIcon: React.FunctionComponent<{
+export const ModHasUpdateIcon: React.FunctionComponent<{
   title: string;
 }> = ({ title }) => (
   <FontAwesomeIcon icon={faExclamationTriangle} title={title} />

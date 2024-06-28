@@ -291,7 +291,18 @@ exports[`Storyshots Components/Banner Danger 1`] = `
     <div
       className="align-self-center"
     >
-      This is a danger banner. Something went wrong!
+      <span>
+        This is a danger banner. 
+        <strong>
+          Something went wrong!
+        </strong>
+         
+        <a
+          href="#"
+        >
+          Link
+        </a>
+      </span>
     </div>
     <div
       className="flex-grow-1"
@@ -313,7 +324,18 @@ exports[`Storyshots Components/Banner Info 1`] = `
     <div
       className="align-self-center"
     >
-      This is an info banner. Check it out!
+      <span>
+        This is an info banner. 
+        <strong>
+          Check it out!
+        </strong>
+         
+        <a
+          href="#"
+        >
+          Link
+        </a>
+      </span>
     </div>
     <div
       className="flex-grow-1"
@@ -335,7 +357,18 @@ exports[`Storyshots Components/Banner Success 1`] = `
     <div
       className="align-self-center"
     >
-      This is a success banner. Something good happened!
+      <span>
+        This is a success banner. 
+        <strong>
+          Something good happened!
+        </strong>
+         
+        <a
+          href="#"
+        >
+          Link
+        </a>
+      </span>
     </div>
     <div
       className="flex-grow-1"
@@ -357,7 +390,18 @@ exports[`Storyshots Components/Banner Warning 1`] = `
     <div
       className="align-self-center"
     >
-      This is a warning banner. Something is not quite right.
+      <span>
+        This is a warning banner. 
+        <strong>
+          Something is not quite right.
+        </strong>
+         
+        <a
+          href="#"
+        >
+          Link
+        </a>
+      </span>
     </div>
     <div
       className="flex-grow-1"
@@ -9556,7 +9600,7 @@ exports[`Storyshots Panels/RootErrorPanel No Renderer Error Example 1`] = `
 </div>
 `;
 
-exports[`Storyshots Sidebar/ActionMenu Blueprint 1`] = `
+exports[`Storyshots Sidebar/ActionMenu Mod 1`] = `
 <div
   className="d-flex"
 >
@@ -9621,7 +9665,7 @@ exports[`Storyshots Sidebar/ActionMenu Blueprint 1`] = `
 </div>
 `;
 
-exports[`Storyshots Sidebar/ActionMenu New Extension 1`] = `
+exports[`Storyshots Sidebar/ActionMenu New Mod Component 1`] = `
 <div
   className="d-flex"
 >
@@ -9686,7 +9730,7 @@ exports[`Storyshots Sidebar/ActionMenu New Extension 1`] = `
 </div>
 `;
 
-exports[`Storyshots Sidebar/ActionMenu New Extension In Blueprint 1`] = `
+exports[`Storyshots Sidebar/ActionMenu New Mod Component In Mod 1`] = `
 <div
   className="d-flex"
 >
@@ -9751,7 +9795,7 @@ exports[`Storyshots Sidebar/ActionMenu New Extension In Blueprint 1`] = `
 </div>
 `;
 
-exports[`Storyshots Sidebar/ActionMenu Old Extension 1`] = `
+exports[`Storyshots Sidebar/ActionMenu Old Mod Component 1`] = `
 <div
   className="d-flex"
 >
@@ -9816,7 +9860,7 @@ exports[`Storyshots Sidebar/ActionMenu Old Extension 1`] = `
 </div>
 `;
 
-exports[`Storyshots Sidebar/ActionMenu Old Extension In Blueprint 1`] = `
+exports[`Storyshots Sidebar/ActionMenu Old Mod Component In Mod 1`] = `
 <div
   className="d-flex"
 >

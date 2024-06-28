@@ -36,6 +36,7 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,
+  DefinitionKinds,
 } from "@/types/registryTypes";
 
 let extensionPointCount = 0;
@@ -112,7 +113,7 @@ describe("useCheckModStarterBrickInvariants", () => {
           });
           cleanModComponentDefinitions.push(modComponentDefinition);
           cleanModInnerDefinitions[extensionPointId] = {
-            kind: "extensionPoint",
+            kind: DefinitionKinds.STARTER_BRICK,
             definition: starterBrickDefinitionFactory().definition,
           };
         }
@@ -124,7 +125,7 @@ describe("useCheckModStarterBrickInvariants", () => {
           });
           dirtyModComponentDefinitions.push(modComponentDefinition);
           dirtyModInnerDefinitions[extensionPointId] = {
-            kind: "extensionPoint",
+            kind: DefinitionKinds.STARTER_BRICK,
             definition: starterBrickDefinitionFactory().definition,
           };
         }
@@ -161,7 +162,7 @@ describe("useCheckModStarterBrickInvariants", () => {
         });
         newModComponentDefinitions.push(modComponentDefinition);
         newModInnerDefinitions[extensionPointId] = {
-          kind: "extensionPoint",
+          kind: DefinitionKinds.STARTER_BRICK,
           definition: starterBrickDefinitionFactory().definition,
         };
       }
@@ -245,7 +246,7 @@ describe("useCheckModStarterBrickInvariants", () => {
       id: extensionPointId,
     });
     modInnerDefinitions[extensionPointId] = {
-      kind: "extensionPoint",
+      kind: DefinitionKinds.STARTER_BRICK,
       definition: starterBrickDefinitionFactory().definition,
     };
 
@@ -285,7 +286,7 @@ describe("useCheckModStarterBrickInvariants", () => {
       id: extensionPointId,
     });
     modInnerDefinitions[extensionPointId] = {
-      kind: "extensionPoint",
+      kind: DefinitionKinds.STARTER_BRICK,
       definition: starterBrickDefinitionFactory().definition,
     };
     const modForComponent = modDefinitionFactory({

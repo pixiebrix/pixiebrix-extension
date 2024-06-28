@@ -154,9 +154,9 @@ export function removeModComponentFormState(
 }
 
 /**
- * Remove a given recipe's extra data from a redux state object
+ * Remove a given mod's extra data from a redux state object
  * @param state The editor redux state
- * @param modId The id of the recipe to remove
+ * @param modId The id of the mod to remove
  */
 export function removeModData(state: Draft<EditorState>, modId: RegistryId) {
   if (state.activeModId === modId) {
@@ -188,7 +188,7 @@ export function setActiveModId(state: Draft<EditorState>, modId: RegistryId) {
   state.selectionSeq++;
 }
 
-export function editRecipeMetadata(
+export function editModMetadata(
   state: Draft<EditorState>,
   metadata: ModMetadataFormState,
 ) {
@@ -200,7 +200,7 @@ export function editRecipeMetadata(
   state.dirtyModMetadataById[activeModId] = metadata;
 }
 
-export function editRecipeOptionsDefinitions(
+export function editModOptionsDefinitions(
   state: Draft<EditorState>,
   options: ModOptionsDefinition,
 ) {

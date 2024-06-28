@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setState } from "@/platform/state/stateController";
+import {
+  MergeStrategies,
+  setState,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 import { uuidv4 } from "@/types/helpers";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
@@ -28,11 +32,11 @@ describe("pageState", () => {
     const blueprintId = registryIdFactory();
 
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { foo: { bar: "baz" } },
-      mergeStrategy: "deep",
-      extensionId: uuidv4(),
-      blueprintId,
+      mergeStrategy: MergeStrategies.DEEP,
+      modComponentId: uuidv4(),
+      modId: blueprintId,
     });
 
     expect(listener).toHaveBeenCalledTimes(1);
@@ -43,25 +47,25 @@ describe("pageState", () => {
 
     document.addEventListener("statechange", listener);
 
-    const blueprintId = registryIdFactory();
-    const extensionId = uuidv4();
+    const modId = registryIdFactory();
+    const modComponentId = uuidv4();
 
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: {
         asyncState: { isFetching: false, data: "foo", currentData: "foo" },
       },
-      mergeStrategy: "deep",
-      extensionId: uuidv4(),
-      blueprintId,
+      mergeStrategy: MergeStrategies.DEEP,
+      modComponentId: uuidv4(),
+      modId,
     });
 
     const updatedState = setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: { asyncState: { isFetching: true, currentData: null } },
-      mergeStrategy: "deep",
-      extensionId,
-      blueprintId,
+      mergeStrategy: MergeStrategies.DEEP,
+      modComponentId,
+      modId,
     });
 
     expect(listener).toHaveBeenCalledTimes(2);

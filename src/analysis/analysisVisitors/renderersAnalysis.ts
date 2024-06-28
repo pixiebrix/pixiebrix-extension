@@ -27,6 +27,7 @@ import {
 } from "@/bricks/PipelineVisitor";
 import { AnnotationType } from "@/types/annotationTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { BrickTypes } from "@/runtime/runtimeTypes";
 
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
   "A panel can only have one renderer. There are one or more other renderers configured for this mod.";
@@ -59,7 +60,7 @@ class RenderersAnalysis extends AnalysisVisitorWithResolvedBricksABC {
       const brickType = this.allBlocks.get(pipelineBlock.id)?.type;
       const brickErrors = [];
 
-      if (brickType !== "renderer") {
+      if (brickType !== BrickTypes.RENDERER) {
         continue;
       }
 

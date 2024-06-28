@@ -134,7 +134,9 @@ const FoundationDataPanel: React.FC = () => {
           mountOnEnter
           unmountOnExit
         >
-          <ExtensionPointPreview element={activeModComponentFormState} />
+          <ExtensionPointPreview
+            modComponentFormState={activeModComponentFormState}
+          />
         </Tab.Pane>
         <PageStateTab />
       </Tab.Content>
