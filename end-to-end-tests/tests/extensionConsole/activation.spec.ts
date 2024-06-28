@@ -91,9 +91,9 @@ test("can activate a mod with built-in integration", async ({
   await page.goto("/");
 
   const floatingActionButton = new FloatingActionButton(page);
-
+  const button = await floatingActionButton.getActionButton();
   // Ensure the QuickBar is ready
-  await expect(await floatingActionButton.getActionButton()).toBeVisible();
+  await expect(button).toBeVisible();
 
   await runModViaQuickBar(page, "GIPHY Search");
 
