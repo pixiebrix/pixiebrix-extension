@@ -61,6 +61,7 @@ import {
 import { meWithPartnerApiResponseFactory } from "@/testUtils/factories/authFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { PipelineFlavor } from "@/bricks/types";
+import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 /* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectEditorError"] }] -- TODO: replace with native expect and it.each */
 
@@ -198,6 +199,13 @@ async function addABlock(addButton: Element, blockName: string) {
 }
 
 describe("renders", () => {
+  beforeEach(() => {
+    // :barf: these Jest snapshot contains sequence UUIDs
+    formStateFactory.resetSequence();
+    brickConfigFactory.resetSequence();
+    starterBrickDefinitionFactory.resetSequence();
+  });
+
   test("the first selected node", async () => {
     const formState = getPlainFormState();
     const { instanceId } = formState.extension.blockPipeline[0];

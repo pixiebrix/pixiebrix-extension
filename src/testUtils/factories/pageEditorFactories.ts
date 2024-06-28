@@ -77,6 +77,7 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   // @ts-expect-error -- TODO: verify typings
   extensionPoint: derive<ModComponentFormState, StarterBrickDefinitionLike>(
     ({ type }) => {
+      // FIXME: the starter brick type produced is not based on the type provided
       const starterBrick = starterBrickDefinitionFactory();
       if (type) {
         starterBrick.definition.type = type;
@@ -102,6 +103,10 @@ export const formStateFactory = (
   }
 
   return internalFormStateFactory(override as InternalFormStateOverride);
+};
+
+formStateFactory.resetSequence = () => {
+  internalFormStateFactory.resetSequence();
 };
 
 export const triggerFormStateFactory = (
