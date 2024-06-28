@@ -24,9 +24,9 @@ import { faBars, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { getBaseURL } from "@/data/service/baseService";
 import {
-  addListener as addAuthListener,
+  addAuthListener,
   getPartnerAuthData,
-  removeListener as removeAuthListener,
+  removeAuthListener,
 } from "@/auth/authStorage";
 import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";

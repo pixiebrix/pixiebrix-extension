@@ -26,9 +26,10 @@ import {
   mockAuthenticatedMeApiResponse,
 } from "@/testUtils/userMock";
 import {
-  meWithPartnerApiResponseFactory,
   meApiResponseFactory,
   meOrganizationApiResponseFactory,
+  meWithPartnerApiResponseFactory,
+  partnerAuthDataFactory,
 } from "@/testUtils/factories/authFactories";
 import { renderHook } from "@/pageEditor/testHelpers";
 import { integrationConfigFactory } from "@/testUtils/factories/integrationFactories";
@@ -188,9 +189,7 @@ describe("useRequiredPartnerAuth", () => {
 
   test("has required partner integration", async () => {
     usePartnerAuthDataMock.mockReturnValue(
-      valueToAsyncState({
-        token: "NOTAREALTOKEN",
-      }),
+      valueToAsyncState(partnerAuthDataFactory()),
     );
 
     await mockAuthenticatedMeApiResponse(

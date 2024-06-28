@@ -21,7 +21,7 @@ import { useDispatch } from "react-redux";
 import { logActions } from "@/components/logViewer/logSlice";
 import { useEffect } from "react";
 import { type MessageContext } from "@/types/loggerTypes";
-import { type Definition } from "@/types/registryTypes";
+import { type Definition, DefinitionKinds } from "@/types/registryTypes";
 
 const LOG_MESSAGE_CONTEXT_DEBOUNCE_MS = 350;
 
@@ -54,23 +54,23 @@ function useLogContext(config: string | null) {
 
     let messageContext: MessageContext | null;
     switch (json.kind) {
-      case "service": {
+      case DefinitionKinds.INTEGRATION: {
         messageContext = { serviceId: id };
         break;
       }
 
-      case "extensionPoint": {
+      case DefinitionKinds.STARTER_BRICK: {
         messageContext = { extensionPointId: id };
         break;
       }
 
-      case "component":
-      case "reader": {
+      case DefinitionKinds.BRICK:
+      case DefinitionKinds.READER: {
         messageContext = { blockId: id };
         break;
       }
 
-      case "recipe": {
+      case DefinitionKinds.MOD: {
         messageContext = { blueprintId: id };
         break;
       }

@@ -63,7 +63,7 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
   const sessionId = useSelector(selectSessionId);
 
-  const addElement = useAddNewModComponent();
+  const addNewModComponent = useAddNewModComponent();
 
   const { data: entries = [] } = useAsyncState<React.ReactNode>(async () => {
     const results = await Promise.all(
@@ -87,7 +87,7 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
             icon={config.icon}
             beta={Boolean(config.flag)}
             onClick={() => {
-              addElement(config);
+              addNewModComponent(config);
             }}
           />
         ))

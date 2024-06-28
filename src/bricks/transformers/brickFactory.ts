@@ -38,6 +38,7 @@ import {
   type UiSchema,
 } from "@/types/schemaTypes";
 import {
+  DefinitionKinds,
   type Metadata,
   type RegistryId,
   type SemVerString,
@@ -71,7 +72,7 @@ export type BrickDefinition = {
   /**
    * User-defined brick kind.
    */
-  kind: "component";
+  kind: typeof DefinitionKinds.BRICK;
 
   /**
    * Registry package metadata.
@@ -402,7 +403,7 @@ export function fromJS(
     );
   }
 
-  if (component.kind === "reader") {
+  if (component.kind === DefinitionKinds.READER) {
     return readerFactory(component);
   }
 

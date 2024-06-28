@@ -31,6 +31,7 @@ import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import type { Reader } from "@/types/bricks/readerTypes";
 import type { PackageConfigDetail } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 export const brickFactory = define<Brick>({
   id: registryIdSequence,
@@ -77,7 +78,7 @@ export const pipelineFactory: (
  */
 export const brickDefinitionFactory = define<BrickDefinition>({
   metadata: metadataFactory,
-  kind: "component",
+  kind: DefinitionKinds.BRICK,
   inputSchema: minimalSchemaFactory,
   pipeline: pipelineFactory,
 });

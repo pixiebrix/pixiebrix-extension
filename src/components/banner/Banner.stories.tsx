@@ -39,25 +39,45 @@ const Template: ComponentStory<typeof Banner> = (args) => <Banner {...args} />;
 export const Info = Template.bind({});
 Info.args = {
   variant: "info",
-  children: "This is an info banner. Check it out!",
+  children: (
+    <span>
+      This is an info banner. <strong>Check it out!</strong>{" "}
+      <a href="#">Link</a>
+    </span>
+  ),
 };
 
 export const Success = Template.bind({});
 Success.args = {
   variant: "success",
-  children: "This is a success banner. Something good happened!",
+  children: (
+    <span>
+      This is a success banner. <strong>Something good happened!</strong>{" "}
+      <a href="#">Link</a>
+    </span>
+  ),
 };
 
 export const Danger = Template.bind({});
 Danger.args = {
   variant: "danger",
-  children: "This is a danger banner. Something went wrong!",
+  children: (
+    <span>
+      This is a danger banner. <strong>Something went wrong!</strong>{" "}
+      <a href="#">Link</a>
+    </span>
+  ),
 };
 
 export const Warning = Template.bind({});
 Warning.args = {
   variant: "warning",
-  children: "This is a warning banner. Something is not quite right.",
+  children: (
+    <span>
+      This is a warning banner. <strong>Something is not quite right.</strong>{" "}
+      <a href="#">Link</a>
+    </span>
+  ),
 };
 
 export const WithButton = Template.bind({});

@@ -23,7 +23,7 @@ import {
   type TriggerDefinition,
 } from "@/starterBricks/trigger/triggerStarterBrick";
 import { validateRegistryId } from "@/types/helpers";
-import { type Metadata } from "@/types/registryTypes";
+import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
@@ -48,7 +48,7 @@ const starterBrickDefinitionFactory = (
 ) =>
   define<StarterBrickDefinitionLike<TriggerDefinition>>({
     apiVersion: "v3",
-    kind: "extensionPoint",
+    kind: DefinitionKinds.STARTER_BRICK,
     metadata: (n: number) =>
       ({
         id: validateRegistryId(`test/starter-brick-${n}`),

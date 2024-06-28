@@ -24,6 +24,7 @@ import { PACKAGE_REGEX } from "@/types/helpers";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getApiClient } from "@/data/service/apiClient";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
+import { type DefinitionKind } from "@/types/registryTypes";
 
 const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
@@ -35,21 +36,10 @@ type Version = {
   patch: number;
 };
 
-export type Kind =
-  | "block"
-  | "foundation"
-  | "service"
-  | "blueprint"
-  | "reader"
-  | "effect"
-  | "component"
-  | "extensionPoint"
-  | "recipe";
-
 export type PackageVersion = {
   id: string;
   version: Version;
-  kind: Kind;
+  kind: DefinitionKind;
   scope: Nullishable<string>;
   config: UnknownObject;
   // `rawConfig` is the YAML configuration. Only available for user-defined packages
@@ -194,9 +184,11 @@ export async function recreateDB(): Promise<void> {
 
 /**
  * Return all packages for the given kinds
- * @param kinds kinds of bricks
+ * @param kinds kinds of packages
  */
-export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
+export async function getByKinds(
+  kinds: DefinitionKind[],
+): Promise<PackageVersion[]> {
   await ensurePopulated();
 
   const db = await openRegistryDB();

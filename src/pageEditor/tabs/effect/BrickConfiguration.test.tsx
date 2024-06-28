@@ -39,6 +39,7 @@ import {
 } from "@/testUtils/factories/brickFactories";
 import CommentEffect from "@/bricks/effects/comment";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -87,11 +88,11 @@ test("renders", async () => {
 
 describe("shows root mode", () => {
   test.each([
-    ["trigger", triggerFormStateFactory],
-    ["quickBar", quickbarFormStateFactory],
-    ["contextMenu", contextMenuFormStateFactory],
-    // `menuItem` must show root mode because root mode is used if the location matches multiple elements on the page
-    ["menuItem", menuItemFormStateFactory],
+    [StarterBrickTypes.TRIGGER, triggerFormStateFactory],
+    [StarterBrickTypes.QUICK_BAR_ACTION, quickbarFormStateFactory],
+    [StarterBrickTypes.CONTEXT_MENU, contextMenuFormStateFactory],
+    // Buttons must show root mode because root mode is used if the location matches multiple elements on the page
+    [StarterBrickTypes.BUTTON, menuItemFormStateFactory],
   ])("shows root mode for %s", async (type, factory) => {
     const brick = echoBrick;
     brickRegistry.register([brick]);

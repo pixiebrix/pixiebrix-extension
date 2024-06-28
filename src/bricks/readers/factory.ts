@@ -23,7 +23,11 @@ import { type ApiVersion, type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import { type Reader, ReaderABC } from "@/types/bricks/readerTypes";
-import { type Metadata, type SemVerString } from "@/types/registryTypes";
+import {
+  type DefinitionKinds,
+  type Metadata,
+  type SemVerString,
+} from "@/types/registryTypes";
 import {
   PAGE_SCRIPT_CAPABILITIES,
   type PlatformCapability,
@@ -47,7 +51,7 @@ export interface ReaderConfig<
   apiVersion?: ApiVersion;
   metadata: Metadata;
   outputSchema: Schema;
-  kind: "reader";
+  kind: typeof DefinitionKinds.READER;
   definition: TDefinition;
 }
 

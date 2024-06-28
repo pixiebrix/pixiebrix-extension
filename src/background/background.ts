@@ -38,7 +38,6 @@ import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deploymentUpdater";
 import initTheme from "@/background/initTheme";
 import initStarterMods from "@/background/starterMods";
-import { initPartnerTokenRefresh } from "@/background/auth/partnerIntegrations/partnerIntegrations";
 import { initLogSweep } from "@/telemetry/logging";
 import { initModUpdater } from "@/background/modUpdater";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
@@ -49,6 +48,7 @@ import { setPlatform } from "@/platform/platformContext";
 import backgroundPlatform from "@/background/backgroundPlatform";
 import { initFeatureFlagBackgroundListeners } from "@/auth/featureFlagStorage";
 import initTabListener from "./tabs";
+import { initApiClient } from "@/data/service/apiClient";
 
 // The background "platform" currently is used to execute API requests from Google Sheets/Automation Anywhere.
 // In the future, it might also run other background tasks from mods (e.g., background intervals)
@@ -71,7 +71,7 @@ initBrowserCommands();
 initDeploymentUpdater();
 initTheme();
 initStarterMods();
-initPartnerTokenRefresh();
+initApiClient();
 initLogSweep();
 initModUpdater();
 initWalkthroughModalTrigger();

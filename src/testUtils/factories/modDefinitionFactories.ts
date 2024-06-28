@@ -23,6 +23,7 @@ import {
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,
+  DefinitionKinds,
   type RegistryId,
 } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
@@ -35,7 +36,7 @@ import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
 import { type SafeString } from "@/types/stringTypes";
 import {
@@ -61,7 +62,7 @@ export const modComponentDefinitionFactory = define<ModComponentDefinition>({
 });
 
 export const modDefinitionFactory = define<ModDefinition>({
-  kind: "recipe",
+  kind: DefinitionKinds.MOD,
   apiVersion: "v3",
   metadata: metadataFactory,
   sharing: sharingDefinitionFactory,
@@ -71,7 +72,7 @@ export const modDefinitionFactory = define<ModDefinition>({
 
 export const starterBrickDefinitionFactory = define<StarterBrickDefinitionLike>(
   {
-    kind: "extensionPoint",
+    kind: DefinitionKinds.STARTER_BRICK,
     apiVersion: "v3",
     metadata: (n: number) =>
       metadataFactory({
@@ -79,14 +80,13 @@ export const starterBrickDefinitionFactory = define<StarterBrickDefinitionLike>(
         name: `Starter Brick ${n}`,
       }),
     definition(n: number) {
-      const definition: StarterBrickDefinitionProp = {
-        type: "menuItem" as StarterBrickType,
+      return {
+        type: StarterBrickTypes.BUTTON,
         isAvailable: {
           matchPatterns: [`https://www.mySite${n}.com/*`],
         },
         reader: validateRegistryId("@pixiebrix/document-context"),
-      };
-      return definition;
+      } satisfies StarterBrickDefinitionProp;
     },
   },
 );
@@ -94,10 +94,10 @@ export const starterBrickDefinitionFactory = define<StarterBrickDefinitionLike>(
 // Return as UnknownObject to match InnerDefinitions type. Otherwise, Typescript complains about a missing string
 // index signature when assigning the value to InnerDefinitions.
 export const starterBrickInnerDefinitionFactory = define<UnknownObject>({
-  kind: "extensionPoint",
+  kind: DefinitionKinds.STARTER_BRICK,
   definition(n: number) {
     const definition: StarterBrickDefinitionProp = {
-      type: "menuItem" as StarterBrickType,
+      type: StarterBrickTypes.BUTTON,
       isAvailable: {
         matchPatterns: [`https://www.mySite${n}.com/*`],
       },
@@ -158,7 +158,7 @@ export const versionedModDefinitionWithHydratedModComponents = (
 
   for (const modComponentDefinition of modComponentDefinitions) {
     definitions[modComponentDefinition.id] = {
-      kind: "extensionPoint",
+      kind: DefinitionKinds.STARTER_BRICK,
       definition: starterBrickDefinitionFactory().definition,
     } satisfies StarterBrickDefinitionLike;
   }

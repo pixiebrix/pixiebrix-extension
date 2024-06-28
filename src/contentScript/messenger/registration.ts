@@ -48,7 +48,6 @@ import { cancelSelect } from "@/contentScript/pageEditor/elementPicker";
 import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 import selectElement from "@/contentScript/pageEditor/selectElement";
-import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
 import { insertButton } from "@/contentScript/pageEditor/insertButton";
 import {
   disableOverlay,
@@ -105,7 +104,6 @@ declare global {
     RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
     GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
     SELECT_ELEMENT: typeof selectElement;
-    INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
     ENABLE_OVERLAY: typeof enableOverlay;
     DISABLE_OVERLAY: typeof disableOverlay;
@@ -159,7 +157,6 @@ export default function registerMessenger(): void {
     RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
     GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
     SELECT_ELEMENT: selectElement,
-    INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,
     ENABLE_OVERLAY: enableOverlay,
     DISABLE_OVERLAY: disableOverlay,

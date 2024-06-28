@@ -32,7 +32,7 @@ import {
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type BrickPipeline } from "@/bricks/types";
@@ -46,7 +46,10 @@ import { type TraceRecord } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
 import sidebar from "@/pageEditor/starterBricks/sidebar";
 import { traceRecordFactory } from "@/testUtils/factories/traceFactories";
-import { pipelineFactory } from "@/testUtils/factories/brickFactories";
+import {
+  brickConfigFactory,
+  pipelineFactory,
+} from "@/testUtils/factories/brickFactories";
 import { type DerivedFunction } from "cooky-cutter/dist/derive";
 import { type BaseExtensionState } from "@/pageEditor/baseFormStateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -71,12 +74,13 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
     return [];
   },
   recipe: undefined,
-  type: "panel" as StarterBrickType,
+  type: StarterBrickTypes.SIDEBAR_PANEL,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   // @ts-expect-error -- TODO: verify typings
   extensionPoint: derive<ModComponentFormState, StarterBrickDefinitionLike>(
     ({ type }) => {
+      // FIXME: the starter brick type produced is not based on the type provided
       const starterBrick = starterBrickDefinitionFactory();
       if (type) {
         starterBrick.definition.type = type;
@@ -102,6 +106,15 @@ export const formStateFactory = (
   }
 
   return internalFormStateFactory(override as InternalFormStateOverride);
+};
+
+// Define a method to reset the sequence for formStateFactory given that it's not a factory definition
+formStateFactory.resetSequence = () => {
+  // Reset the sequence for the internal factories
+  baseExtensionStateFactory.resetSequence();
+  internalFormStateFactory.resetSequence();
+  brickConfigFactory.resetSequence();
+  starterBrickDefinitionFactory.resetSequence();
 };
 
 export const triggerFormStateFactory = (

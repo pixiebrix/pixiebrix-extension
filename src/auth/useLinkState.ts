@@ -16,8 +16,8 @@
  */
 
 import {
-  addListener as addAuthListener,
-  removeListener as removeAuthListener,
+  addAuthListener,
+  removeAuthListener,
   isLinked,
 } from "@/auth/authStorage";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";

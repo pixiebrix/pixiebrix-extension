@@ -18,6 +18,7 @@
 import {
   INNER_SCOPE,
   type Metadata,
+  DefinitionKinds,
   type RegistryId,
 } from "@/types/registryTypes";
 import { castArray, cloneDeep, isEmpty } from "lodash";
@@ -136,19 +137,22 @@ export function baseFromExtension<T extends StarterBrickType>(
 }
 
 /**
- * Add the recipe options to the form state if the extension is a part of a recipe
+ * Add the mod options to the form state if the mod component is a part of a mod
  */
-export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
-  element: TElement,
-  recipes: ModDefinition[],
+export function initRecipeOptionsIfNeeded<TFormState extends BaseFormState>(
+  modComponentFormState: TFormState,
+  modDefinitions: ModDefinition[],
 ) {
-  if (element.recipe?.id) {
-    const recipe = recipes?.find((x) => x.metadata.id === element.recipe?.id);
+  if (modComponentFormState.recipe?.id) {
+    const recipe = modDefinitions?.find(
+      (x) => x.metadata.id === modComponentFormState.recipe?.id,
+    );
 
     if (recipe?.options == null) {
-      element.optionsDefinition = emptyModOptionsDefinitionFactory();
+      modComponentFormState.optionsDefinition =
+        emptyModOptionsDefinitionFactory();
     } else {
-      element.optionsDefinition = {
+      modComponentFormState.optionsDefinition = {
         schema: recipe.options.schema.properties
           ? recipe.options.schema
           : ({
@@ -282,7 +286,7 @@ export async function lookupExtensionPoint<
     );
     const innerExtensionPoint = {
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-      kind: "extensionPoint",
+      kind: DefinitionKinds.STARTER_BRICK,
       metadata: internalStarterBrickMetaFactory(),
       ...definition,
     } as unknown as StarterBrickDefinitionLike<TDefinition> & {
@@ -318,7 +322,7 @@ export function baseSelectExtensionPoint(
 
   return {
     apiVersion: formState.apiVersion,
-    kind: "extensionPoint",
+    kind: DefinitionKinds.STARTER_BRICK,
     metadata: {
       id: metadata.id,
       // The server requires the version to save the brick, even though it's not marked as required
@@ -346,7 +350,7 @@ export function extensionWithInnerDefinitions(
     result.definitions = {
       ...result.definitions,
       [extensionPointId]: {
-        kind: "extensionPoint",
+        kind: DefinitionKinds.STARTER_BRICK,
         definition: extensionPointDefinition,
       },
     };

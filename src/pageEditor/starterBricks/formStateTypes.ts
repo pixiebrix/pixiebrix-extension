@@ -22,10 +22,9 @@ import {
   type MenuDefaultOptions as ContextMenuDefaultOptions,
 } from "@/starterBricks/contextMenu/contextMenuTypes";
 import {
-  type MenuItemStarterBrickConfig,
-  type MenuPosition,
-} from "@/starterBricks/menuItem/menuItemTypes";
-import { type PanelConfig } from "@/starterBricks/panel/panelStarterBrickTypes";
+  type ButtonStarterBrickConfig,
+  type ButtonPosition,
+} from "@/starterBricks/button/buttonStarterBrickTypes";
 import {
   type QuickBarConfig,
   type QuickBarDefaultOptions,
@@ -45,7 +44,10 @@ import {
   type CustomEventOptions,
   type DebounceOptions,
 } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  type StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
 import { type Menus } from "webextension-polyfill";
 import {
@@ -64,12 +66,12 @@ import { type Nullishable } from "@/utils/nullishUtils";
 
 // ActionFormState
 type ActionExtensionState = BaseExtensionState &
-  Except<MenuItemStarterBrickConfig, "action">;
+  Except<ButtonStarterBrickConfig, "action">;
 type ActionExtensionPointState = BaseExtensionPointState & {
   definition: {
     type: StarterBrickType;
     containerSelector: string;
-    position?: MenuPosition;
+    position?: ButtonPosition;
     template: string;
     /**
      * @since 1.7.16
@@ -91,7 +93,7 @@ type ActionExtensionPointState = BaseExtensionPointState & {
 
 export interface ActionFormState
   extends BaseFormState<ActionExtensionState, ActionExtensionPointState> {
-  type: "menuItem";
+  type: typeof StarterBrickTypes.BUTTON;
   containerInfo: ElementInfo | null;
 }
 
@@ -163,33 +165,6 @@ export function isTriggerExtensionPoint(
 export interface TriggerFormState
   extends BaseFormState<BaseExtensionState, TriggerExtensionPointState> {
   type: "trigger";
-}
-
-// PanelFormState
-export type PanelTraits = {
-  style: {
-    mode: "default" | "inherit";
-  };
-};
-
-type PanelExtensionState = BaseExtensionState & Except<PanelConfig, "body">;
-type PanelExtensionPointState = BaseExtensionPointState & {
-  definition: {
-    type: StarterBrickType;
-    containerSelector: string;
-    position?: MenuPosition;
-    template: string;
-    reader: SingleLayerReaderConfig;
-    isAvailable: NormalizedAvailability;
-  };
-  traits: PanelTraits;
-};
-
-export interface PanelFormState
-  extends BaseFormState<PanelExtensionState, PanelExtensionPointState> {
-  type: "panel";
-
-  containerInfo: ElementInfo | null;
 }
 
 // ContextMenuFormState
@@ -289,7 +264,6 @@ export type ModComponentFormState =
   | ActionFormState
   | TriggerFormState
   | SidebarFormState
-  | PanelFormState
   | ContextMenuFormState
   | QuickBarFormState
   | QuickBarProviderFormState

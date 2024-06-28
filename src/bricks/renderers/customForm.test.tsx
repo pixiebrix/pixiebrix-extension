@@ -37,6 +37,7 @@ import {
   TEST_resetState,
   getState,
   setState,
+  StateNamespaces,
 } from "@/platform/state/stateController";
 import type { Target } from "@/types/messengerTypes";
 
@@ -350,7 +351,7 @@ describe("CustomFormRenderer", () => {
 
       expect(
         getState({
-          namespace: "blueprint",
+          namespace: StateNamespaces.MOD,
           extensionId: options.logger.context.extensionId,
           blueprintId: options.logger.context.blueprintId,
         }),

@@ -25,7 +25,12 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import brickRegistry from "@/bricks/registry";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { getState, setState } from "@/platform/state/stateController";
+import {
+  getState,
+  MergeStrategies,
+  setState,
+  StateNamespaces,
+} from "@/platform/state/stateController";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { type Brick } from "@/types/brickTypes";
@@ -68,7 +73,7 @@ const logger = new ConsoleLogger({
 
 function expectPageState(expectedState: UnknownObject) {
   const pageState = getState({
-    namespace: "blueprint",
+    namespace: StateNamespaces.MOD,
     extensionId,
     blueprintId,
   });
@@ -83,11 +88,11 @@ describe("WithAsyncModVariable", () => {
   beforeEach(() => {
     // Reset the page state to avoid interference between tests
     setState({
-      namespace: "blueprint",
+      namespace: StateNamespaces.MOD,
       data: {},
       blueprintId,
       extensionId,
-      mergeStrategy: "replace",
+      mergeStrategy: MergeStrategies.REPLACE,
     });
 
     // Most tests just require a single brick instance for testing

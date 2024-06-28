@@ -216,11 +216,9 @@
 ./src/sidebar/RendererComponent.tsx
 ./src/starterBricks/contextMenu.ts
 ./src/starterBricks/contextMenuReader.ts
-./src/starterBricks/dom.tsx
 ./src/starterBricks/factory.ts
 ./src/starterBricks/helpers.ts
 ./src/starterBricks/menuItemExtension.ts
-./src/starterBricks/panelExtension.ts
 ./src/starterBricks/quickBarExtension.tsx
 ./src/starterBricks/quickBarProviderExtension.tsx
 ./src/starterBricks/quickbarQueryReader.ts

@@ -32,7 +32,7 @@ import {
 import { produce } from "immer";
 import { calculateInnerRegistryId } from "@/registry/hydrateInnerDefinitions";
 import { cloneDeep, range, uniq } from "lodash";
-import { type MenuItemDefinition } from "@/starterBricks/menuItem/menuItemTypes";
+import { type ButtonDefinition } from "@/starterBricks/button/buttonStarterBrickTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
   type StarterBrickDefinitionLike,
@@ -41,7 +41,10 @@ import {
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { type InnerDefinitionRef } from "@/types/registryTypes";
+import {
+  type InnerDefinitionRef,
+  DefinitionKinds,
+} from "@/types/registryTypes";
 import {
   type ModOptionsDefinition,
   type UnsavedModDefinition,
@@ -314,7 +317,7 @@ describe("replaceModComponent round trip", () => {
         modDefinition.definitions.extensionPoint,
       );
       (
-        draft.definitions.extensionPoint2.definition as MenuItemDefinition
+        draft.definitions.extensionPoint2.definition as ButtonDefinition
       ).template = newTemplate;
       draft.extensionPoints[0].id = "extensionPoint2" as InnerDefinitionRef;
       draft.extensionPoints[0].label = "New Label";
@@ -607,7 +610,7 @@ function selectExtensionPoints(
       apiVersion: modDefinition.apiVersion,
       metadata: internalStarterBrickMetaFactory(),
       definition,
-      kind: "extensionPoint",
+      kind: DefinitionKinds.STARTER_BRICK,
     };
   });
 }
@@ -682,7 +685,7 @@ describe("buildNewMod", () => {
 
       modComponent.definitions = {
         extensionPoint: {
-          kind: "extensionPoint",
+          kind: DefinitionKinds.STARTER_BRICK,
           definition: extensionPoint,
         },
       };
@@ -755,7 +758,7 @@ describe("buildNewMod", () => {
 
       modComponent.definitions = {
         extensionPoint: {
-          kind: "extensionPoint",
+          kind: DefinitionKinds.STARTER_BRICK,
           definition: starterBrick,
         },
       };
