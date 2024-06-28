@@ -26,9 +26,9 @@ import {
   type PanelDefinition,
 } from "@/starterBricks/panel/panelStarterBrickTypes";
 import {
-  type MenuItemDefinition,
-  type MenuItemStarterBrickConfig,
-} from "@/starterBricks/menuItem/menuItemTypes";
+  type ButtonDefinition,
+  type ButtonStarterBrickConfig,
+} from "@/starterBricks/button/buttonStarterBrickTypes";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -55,14 +55,14 @@ export type PanelSelectionResult = {
   panel: Except<PanelConfig, "body">;
   containerInfo: ElementInfo;
 };
-export type ButtonDefinition = DraftModComponent<
-  MenuItemDefinition,
-  MenuItemStarterBrickConfig
+export type DraftButtonModComponent = DraftModComponent<
+  ButtonDefinition,
+  ButtonStarterBrickConfig
 >;
 export type ButtonSelectionResult = {
   uuid: UUID;
-  menu: Except<MenuItemDefinition, "defaultOptions" | "isAvailable" | "reader">;
-  item: Pick<MenuItemStarterBrickConfig, "caption">;
+  menu: Except<ButtonDefinition, "defaultOptions" | "isAvailable" | "reader">;
+  item: Pick<ButtonStarterBrickConfig, "caption">;
   containerInfo: ElementInfo;
 };
 

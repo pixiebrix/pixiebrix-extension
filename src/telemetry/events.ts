@@ -71,7 +71,7 @@ export const Events = {
   MARKETPLACE_ACTIVATE: "MarketplaceActivate",
   MARKETPLACE_REJECT_PERMISSIONS: "MarketplaceRejectPermissions",
 
-  MENU_ITEM_CLICK: "MenuItemClick",
+  BUTTON_CLICK: "MenuItemClick",
 
   MOD_ACTIVATE: "InstallBlueprint",
   MOD_ACTIVATION_CANCEL: "CancelModActivation",

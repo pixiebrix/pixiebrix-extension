@@ -32,7 +32,7 @@ import {
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type BrickPipeline } from "@/bricks/types";
@@ -71,7 +71,7 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
     return [];
   },
   recipe: undefined,
-  type: "panel" as StarterBrickType,
+  type: StarterBrickTypes.INLINE_PANEL,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   // @ts-expect-error -- TODO: verify typings

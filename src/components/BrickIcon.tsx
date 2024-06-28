@@ -30,7 +30,7 @@ import {
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import { TriggerStarterBrickABC } from "@/starterBricks/trigger/triggerStarterBrick";
-import { MenuItemStarterBrickABC } from "@/starterBricks/menuItem/menuItemStarterBrick";
+import { ButtonStarterBrickABC } from "@/starterBricks/button/buttonStarterBrick";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { PanelStarterBrickABC } from "@/starterBricks/panel/panelStarterBrick";
 import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
@@ -75,7 +75,7 @@ function getDefaultBrickIcon<T extends Metadata>(
     return faBolt;
   }
 
-  if (brick instanceof MenuItemStarterBrickABC) {
+  if (brick instanceof ButtonStarterBrickABC) {
     return faMousePointer;
   }
 

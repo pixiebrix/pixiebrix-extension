@@ -69,7 +69,10 @@ import {
   RunReason,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrick,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/jQueryInitialize";
@@ -84,16 +87,23 @@ import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import {
-  type MenuItemStarterBrickConfig,
+  type ButtonStarterBrickConfig,
   type AttachMode,
-  type MenuItemDefinition,
-  type MenuTargetMode,
-} from "@/starterBricks/menuItem/menuItemTypes";
+  type ButtonDefinition,
+  type ButtonTargetMode,
+} from "@/starterBricks/button/buttonStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DATA_ATTR = "data-pb-uuid";
 
-const MENU_INSTALL_ERROR_DEBOUNCE_MS = 1000;
+const BUTTON_INSTALL_ERROR_DEBOUNCE_MS = 1000;
+
+/**
+ * Nominal type for a button container nonce.
+ */
+type ContainerNonce = UUID & {
+  _containerNonceBrand: never;
+};
 
 const actionSchema: Schema = {
   oneOf: [
@@ -113,17 +123,18 @@ async function cancelOnNavigation<T>(promise: Promise<T>): Promise<T> {
   return rejectOnCancelled(promise, isNavigationCancelled);
 }
 
-export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemStarterBrickConfig> {
+export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarterBrickConfig> {
   /**
-   * Mapping of menu container nonce UUID to the DOM element for the menu container
+   * Mapping of button container nonce UUID to the DOM element for the button container
    */
-  protected readonly menus: Map<UUID, HTMLElement>;
+  // XXX: does this need to be a WeakMap to prevent memory leaks? But won't be able to enumerate
+  protected readonly containers: Map<ContainerNonce, HTMLElement>;
 
   /**
-   * Set of menu container UUID that have been removed from the DOM. Track so we we know which ones we've already
-   * taken action on to attempt to reacquire a menu container for
+   * Set of button container UUIDs that have been removed from the DOM. Track so we know which ones we've already
+   * taken action on to attempt to reacquire a button container.
    */
-  private readonly removed: Set<UUID>;
+  private readonly removed: Set<ContainerNonce>;
 
   /**
    * Set of methods to call to cancel any DOM watchers associated with this starter brick
@@ -136,8 +147,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   private uninstalled = false;
 
   /**
-   * Mapping from component id to the set of menu items that have been clicked and still running.
-   * @see MenuItemStarterBrickConfig.synchronous
+   * Mapping from component id to the set of buttons that have been clicked and still running.
+   * @see ButtonStarterBrickConfig.synchronous
    */
   private readonly runningModComponentPageElements = new Map<
     UUID,
@@ -150,38 +161,38 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         type: "error",
         ...payload,
       }),
-    MENU_INSTALL_ERROR_DEBOUNCE_MS,
+    BUTTON_INSTALL_ERROR_DEBOUNCE_MS,
     {
       leading: true,
       trailing: false,
     },
   ) as PlatformProtocol["toasts"]["showNotification"]; // `debounce` loses the overloads
 
-  public get kind(): "menuItem" {
-    return "menuItem";
+  public get kind(): typeof StarterBrickTypes.BUTTON {
+    return StarterBrickTypes.BUTTON;
   }
 
   readonly capabilities: PlatformCapability[] = CONTENT_SCRIPT_CAPABILITIES;
 
-  public abstract get targetMode(): MenuTargetMode;
+  public abstract get targetMode(): ButtonTargetMode;
 
   public abstract get attachMode(): AttachMode;
 
   public override get defaultOptions(): { caption: string } {
-    return { caption: "Custom Menu Item" };
+    return { caption: "Custom Button" };
   }
 
   protected constructor(platform: PlatformProtocol, metadata: Metadata) {
     super(platform, metadata);
-    this.menus = new Map<UUID, HTMLElement>();
-    this.removed = new Set<UUID>();
+    this.containers = new Map<ContainerNonce, HTMLElement>();
+    this.removed = new Set<ContainerNonce>();
   }
 
   inputSchema: Schema = propertiesToSchema(
     {
       caption: {
         type: "string",
-        description: "The caption for the menu item.",
+        description: "The caption for the button.",
       },
       dynamicCaption: {
         type: "boolean",
@@ -193,8 +204,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
       shadowDOM: {
         type: "object",
-        description:
-          "When provided, renders the menu item as using the shadowDOM",
+        description: "When provided, renders the button using the shadowDOM",
         properties: {
           tag: {
             type: "string",
@@ -212,55 +222,53 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   );
 
   private cancelAllPending(): void {
-    console.debug("Cancelling menuItemStarterBrick observers");
+    console.debug("Cancelling buttonStarterBrick observers");
     this.cancelController.abortAndReset();
   }
 
   clearModComponentInterfaceAndEvents(modComponentIds: UUID[]): void {
-    console.debug(
-      "Remove componentIds for menuItem starter brick: %s",
-      this.id,
-      { modComponentIds },
-    );
-    // Can't use this.menus.values() here b/c because it may have already been cleared
+    console.debug("Remove componentIds for button starter brick: %s", this.id, {
+      modComponentIds,
+    });
+    // Can't use this.containers.values() here b/c because it may have already been cleared
     for (const modComponentId of modComponentIds) {
-      const $item = $safeFind(`[${DATA_ATTR}="${modComponentId}"]`);
-      if ($item.length === 0) {
-        console.warn(`Item for ${modComponentId} was not in the menu`);
+      const $button = $safeFind(`[${DATA_ATTR}="${modComponentId}"]`);
+      if ($button.length === 0) {
+        console.warn(`Button for ${modComponentId} was not found`);
       }
 
-      $item.remove();
+      $button.remove();
     }
   }
 
   public override uninstall(): void {
     this.uninstalled = true;
 
-    const menus = [...this.menus.values()];
+    const containers = [...this.containers.values()];
 
     // Clear so they don't get re-added by the onNodeRemoved mechanism
     const modComponents = this.modComponents.splice(0);
-    this.menus.clear();
+    this.containers.clear();
 
     if (modComponents.length === 0) {
       console.warn(
-        `uninstall called on menu starter brick with no mod components: ${this.id}`,
+        `uninstall called on button starter brick with no mod components: ${this.id}`,
       );
     }
 
     console.debug(
-      `Uninstalling ${menus.length} menus for ${modComponents.length} mod components`,
+      `Uninstalling ${containers.length} buttons for ${modComponents.length} mod components`,
     );
 
     this.cancelAllPending();
 
-    for (const element of menus) {
+    for (const container of containers) {
       try {
         this.clearModComponentInterfaceAndEvents(
           modComponents.map((x) => x.id),
         );
-        // Release the menu element
-        element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
+        // Release the button container element
+        container.removeAttribute(EXTENSION_POINT_DATA_ATTR);
       } catch (error) {
         this.logger.error(error);
       }
@@ -268,8 +276,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 
   /**
-   * Returns the selector root for bricks attached to the menuItem.
-   * @param $buttonElement the element that triggered the menu
+   * Returns the selector root for bricks attached to the button.
+   * @param $buttonElement the element that triggered the button
    */
   abstract getPipelineRoot($buttonElement: JQuery): SelectorRoot;
 
@@ -288,22 +296,22 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
   abstract getContainerSelector(): string | string[];
 
-  addMenuItem($menu: JQuery, $menuItem: JQuery): void {
-    $menu.append($menuItem);
+  addButton($container: JQuery, $button: JQuery): void {
+    $container.append($button);
   }
 
   async getBricks(
-    modComponent: HydratedModComponent<MenuItemStarterBrickConfig>,
+    modComponent: HydratedModComponent<ButtonStarterBrickConfig>,
   ): Promise<Brick[]> {
     return collectAllBricks(modComponent.config.action);
   }
 
   /**
-   * Callback when a menu is removed from the page to wait to re-install the menu if the container is re-added.
+   * Callback when a button is removed from the page to wait to re-install the button if the container is re-added.
    * Used to handle SPA page transitions that don't navigate (e.g., modals, tabs, etc.)
-   * @param menuNonce the menu nonce generated in attachMenus
+   * @param containerNonce the container nonce generated in attachButtons
    */
-  private async reacquire(menuNonce: UUID): Promise<void> {
+  private async reacquire(containerNonce: ContainerNonce): Promise<void> {
     if (this.attachMode === "watch") {
       throw new Error("reacquire should not be called in watch mode");
     }
@@ -315,46 +323,47 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       return;
     }
 
-    const alreadyRemoved = this.removed.has(menuNonce);
-    this.removed.add(menuNonce);
+    const alreadyRemoved = this.removed.has(containerNonce);
+    this.removed.add(containerNonce);
     if (alreadyRemoved) {
       console.warn(
-        `${this.instanceNonce}: menu ${menuNonce} removed from DOM multiple times for ${this.id}`,
+        `${this.instanceNonce}: button container ${containerNonce} removed from DOM multiple times for ${this.id}`,
       );
     } else {
       console.debug(
-        `${this.instanceNonce}: menu ${menuNonce} removed from DOM for ${this.id}`,
+        `${this.instanceNonce}: button container ${containerNonce} removed from DOM for ${this.id}`,
       );
-      this.menus.delete(menuNonce);
-      // Re-install the menus (will wait for the menu selector to re-appear if there's no copies of it on the page)
-      // The behavior for multiple buttons is quirky here for "once" attachMode. There's a corner case where
-      // 1) if one button is removed, 2) the menus are re-added immediately, 3) PixieBrix stops watching for new buttons
-      await this.waitAttachMenus();
+      this.containers.delete(containerNonce);
+      // Re-install the button containers (will wait for the container selector to re-appear if there's no copies of it
+      // on the page) The behavior for multiple buttons is quirky here for "once" attachMode. There's a corner case
+      // where 1) if one button is removed, 2) the containers are re-added immediately, 3) PixieBrix stops watching for
+      // new buttons
+      await this.waitAttachButtonContainers();
       await this.runModComponents({ reason: RunReason.MUTATION });
     }
   }
 
   /**
-   * Attach starter brick to the provided menu containers.
+   * Attach starter brick to the provided button containers.
    */
-  private attachMenus($menuContainers: JQuery): void {
-    const existingMenuContainers = new Set(this.menus.values());
+  private attachButtons($buttonContainers: JQuery): void {
+    const existingContainers = new Set(this.containers.values());
 
-    for (const element of $menuContainers) {
-      // Only acquire new menu items, otherwise we end up with duplicate entries in this.menus which causes
-      // repeat evaluation of menus in this.run
-      if (!existingMenuContainers.has(element)) {
-        const menuNonce = uuidv4();
-        this.menus.set(menuNonce, element);
+    for (const buttonContainer of $buttonContainers) {
+      // Only acquire new button containers, otherwise we end up with duplicate entries in this.containers which causes
+      // repeat evaluation of buttons in this.run
+      if (!existingContainers.has(buttonContainer)) {
+        const containerNonce = uuidv4() as ContainerNonce;
+        this.containers.set(containerNonce, buttonContainer);
 
-        const acquired = acquireElement(element, this.id);
+        const acquired = acquireElement(buttonContainer, this.id);
 
         if (acquired && this.attachMode === "once") {
-          // Only re-acquire in "once" attachMode. In "watch" the menu will automatically be re-acquired when the
-          // element is re-initialized on the page
+          // Only re-acquire in "once" attachMode. In "watch" the button  will automatically be re-acquired when the
+          // button container is re-initialized on the page
           onNodeRemoved(
-            element,
-            async () => this.reacquire(menuNonce),
+            buttonContainer,
+            async () => this.reacquire(containerNonce),
             this.cancelController.signal,
           );
         }
@@ -363,9 +372,9 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 
   /**
-   * Watch for new menus to appear on the screen, e.g., due to SPA page transition, infinite scroll, etc.
+   * Watch for new button containers to appear on the screen, e.g., due to SPA page transition, infinite scroll, etc.
    */
-  private watchMenus(): void {
+  private watchButtonContainers(): void {
     const containerSelector = this.getContainerSelector();
 
     if (typeof containerSelector !== "string") {
@@ -377,8 +386,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     // Watch for new containers on the page on the page
     const mutationObserver = initialize(
       containerSelector,
-      (index, element) => {
-        this.attachMenus($(element as HTMLElement));
+      (_index, container) => {
+        this.attachButtons($(container as HTMLElement));
         void this.runModComponents({ reason: RunReason.MUTATION });
       },
       // `target` is a required option. Would it be possible to scope if the selector is nested? Would have to consider
@@ -390,52 +399,54 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 
   /**
-   * Find and claim the new menu containers currently on the page for the starter brick.
-   * @returns true iff one or more menu containers were found
+   * Find and claim the new button containers currently on the page for the starter brick.
+   * @returns true iff one or more button containers were found
    */
-  private async waitAttachMenus(): Promise<boolean> {
+  private async waitAttachButtonContainers(): Promise<boolean> {
     if (this.uninstalled) {
-      console.error("Menu item starter brick is uninstalled", {
+      console.error("Button starter brick is uninstalled", {
         starerBrickNonce: this.instanceNonce,
       });
       throw new Error(
-        "Cannot install menu item because starter brick was uninstalled",
+        "Cannot install button because starter brick was uninstalled",
       );
     }
 
     const containerSelector = this.getContainerSelector();
 
     console.debug(
-      `${this.instanceNonce}: awaiting menu container for ${this.id}`,
+      `${this.instanceNonce}: awaiting button container for ${this.id}`,
       {
         selector: containerSelector,
       },
     );
 
-    const menuPromise = awaitElementOnce(
+    const buttonContainerPromise = awaitElementOnce(
       containerSelector,
       this.cancelController.signal,
     );
 
-    let $menuContainers;
+    let $buttonContainers;
 
     try {
-      $menuContainers = (await cancelOnNavigation(menuPromise)) as JQuery;
+      $buttonContainers = (await cancelOnNavigation(
+        buttonContainerPromise,
+      )) as JQuery;
     } catch (error) {
       console.debug(
-        `${this.instanceNonce}: stopped awaiting menu container for ${this.id}`,
+        `${this.instanceNonce}: stopped awaiting button container for ${this.id}`,
         { error },
       );
       throw error;
     }
 
-    this.attachMenus($menuContainers);
+    this.attachButtons($buttonContainers);
 
     if (this.attachMode === "watch") {
-      this.watchMenus();
+      this.watchButtonContainers();
     }
 
-    return this.menus.size > 0;
+    return this.containers.size > 0;
   }
 
   async install(): Promise<boolean> {
@@ -444,18 +455,18 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       return false;
     }
 
-    return this.waitAttachMenus();
+    return this.waitAttachButtonContainers();
   }
 
-  protected abstract makeItem(
+  protected abstract makeButton(
     html: string,
-    modComponent: HydratedModComponent<MenuItemStarterBrickConfig>,
+    modComponent: HydratedModComponent<ButtonStarterBrickConfig>,
   ): JQuery;
 
   private async runModComponent(
-    menu: HTMLElement,
+    buttonContainer: HTMLElement,
     ctxtPromise: Promise<JsonObject> | undefined,
-    modComponent: HydratedModComponent<MenuItemStarterBrickConfig>,
+    modComponent: HydratedModComponent<ButtonStarterBrickConfig>,
   ) {
     if (!modComponent.id) {
       this.logger.error(`Refusing to run mod without id for ${this.id}`);
@@ -467,11 +478,11 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     );
 
     console.debug(
-      `${this.instanceNonce}: running menuItem mod component ${modComponent.id}`,
+      `${this.instanceNonce}: running button mod component ${modComponent.id}`,
     );
 
-    // Safe because menu is an HTMLElement, not a string
-    const $menu = $(menu);
+    // Safe because button is an HTMLElement, not a string
+    const $buttonContainer = $(buttonContainer);
 
     const {
       caption,
@@ -502,7 +513,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         modComponent.integrationDependencies,
       );
 
-      console.debug("Checking menuItem precondition", {
+      console.debug("Checking button precondition", {
         input,
         serviceContext,
       });
@@ -510,7 +521,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       // There's no button at this point, so can't use the eventTarget targetMode
       if (this.targetMode !== "document") {
         throw new BusinessError(
-          `targetMode ${this.targetMode} not supported for conditional menu items`,
+          `targetMode ${this.targetMode} not supported for conditional buttons`,
         );
       }
 
@@ -521,8 +532,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         root: document,
       };
 
-      // NOTE: don't use reduceExtensionPipeline because this is just evaluating the condition and shouldn't show up
-      // as a "run" in the logs/traces. We also leave off the extensionLogger (see note)
+      // NOTE: don't use reduceModComponentPipeline because this is just evaluating the condition and shouldn't show up
+      // as a "run" in the logs/traces. We also leave off the modComponentLogger (see note)
       const show = await reducePipeline(modComponent.config.if, initialValues, {
         // Don't pass extension: modComponentLogger because our log display doesn't handle the in-starter brick
         // conditionals yet
@@ -561,9 +572,9 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       })) as string;
     }
 
-    const $menuItem = this.makeItem(html, modComponent);
+    const $button = this.makeButton(html, modComponent);
 
-    $menuItem.on("click", async (event) => {
+    $button.on("click", async (event) => {
       let runningElements: WeakSet<HTMLElement> | undefined =
         this.runningModComponentPageElements.get(modComponent.id);
       if (runningElements == null) {
@@ -584,9 +595,9 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         event.preventDefault();
         event.stopPropagation();
 
-        console.debug("Run menu item", this.logger.context);
+        console.debug("Run button", this.logger.context);
 
-        reportEvent(Events.MENU_ITEM_CLICK, selectEventData(modComponent));
+        reportEvent(Events.BUTTON_CLICK, selectEventData(modComponent));
 
         try {
           // Read the latest state at the time of the action
@@ -595,15 +606,15 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
           const initialValues: InitialValues = {
             input: await reader.read(
               this.getReaderRoot({
-                $containerElement: $menu,
-                $buttonElement: $menuItem,
+                $containerElement: $buttonContainer,
+                $buttonElement: $button,
               }),
             ),
             serviceContext: await makeIntegrationsContextFromDependencies(
               modComponent.integrationDependencies,
             ),
             optionsArgs: modComponent.optionsArgs,
-            root: this.getPipelineRoot($menuItem),
+            root: this.getPipelineRoot($button),
           };
 
           await reduceModComponentPipeline(actionConfig, initialValues, {
@@ -644,31 +655,33 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       }
     });
 
-    const $existingItem = $menu.find(`[${DATA_ATTR}="${modComponent.id}"]`);
+    const $existingButton = $buttonContainer.find(
+      `[${DATA_ATTR}="${modComponent.id}"]`,
+    );
 
-    if ($existingItem.length > 0) {
+    if ($existingButton.length > 0) {
       // We don't need to unbind any click handlers because we're replacing the element completely.
       console.debug(
-        `Replacing existing menu item for ${modComponent.id} (${modComponent.label})`,
+        `Replacing existing button for ${modComponent.id} (${modComponent.label})`,
       );
-      $existingItem.replaceWith($menuItem);
+      $existingButton.replaceWith($button);
     } else {
       console.debug(
-        `Adding new menu item ${modComponent.id} (${modComponent.label})`,
+        `Adding new button ${modComponent.id} (${modComponent.label})`,
       );
-      this.addMenuItem($menu, $menuItem);
+      this.addButton($buttonContainer, $button);
     }
 
-    const element = $menuItem.get(0);
-    assertNotNullish(element, "Failed to get menu item node");
+    const buttonElement = $button.get(0);
+    assertNotNullish(buttonElement, "Failed to get button element");
 
     if (process.env.DEBUG) {
       onNodeRemoved(
-        element,
+        buttonElement,
         () => {
-          // Don't re-install here. We're reinstalling the entire menu
+          // Don't re-install here. Starter brick will reinstall the entire button container
           console.debug(
-            `Menu item for ${modComponent.id} was removed from the DOM`,
+            `Button for ${modComponent.id} was removed from the DOM`,
           );
         },
         this.cancelController.signal,
@@ -677,23 +690,25 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 
   async runModComponents({ extensionIds = null }: RunArgs): Promise<void> {
-    if (this.menus.size === 0 || this.modComponents.length === 0) {
+    if (this.containers.size === 0 || this.modComponents.length === 0) {
       return;
     }
 
     const startNavigationId = getNavigationId();
     const isNavigationCancelled = () => getNavigationId() !== startNavigationId;
 
-    const errors = [];
+    const errors: unknown[] = [];
 
     const containerSelector = this.getContainerSelector();
-    const $currentMenus = $safeFind(castArray(containerSelector).join(" "));
-    const currentMenus = $currentMenus.toArray();
+    const $currentContainers = $safeFind(
+      castArray(containerSelector).join(" "),
+    );
+    const currentContainers = $currentContainers.toArray();
 
-    for (const menu of this.menus.values()) {
-      if (!currentMenus.includes(menu)) {
+    for (const container of this.containers.values()) {
+      if (!currentContainers.includes(container)) {
         console.debug(
-          "Skipping menu because it's no longer found by the container selector",
+          "Skipping button container because it no matches the container selector",
         );
         continue;
       }
@@ -716,14 +731,14 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         }
 
         if (modComponent.config.dynamicCaption || modComponent.config.if) {
-          // Lazily read context for the menu if one of the mod components actually uses it
+          // Lazily read context for the button container if one of the mod components actually uses it
 
           // Wrap in rejectOnCancelled because if the reader takes a long time to run, the user may
           // navigate away from the page before the reader comes back.
           ctxtPromise = rejectOnCancelled(
             reader.read(
               this.getReaderRoot({
-                $containerElement: $(menu),
+                $containerElement: $(container),
                 $buttonElement: null,
               }),
             ),
@@ -733,11 +748,11 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
         try {
           // eslint-disable-next-line no-await-in-loop -- TODO: Make it run in parallel if possible while maintaining the order
-          await this.runModComponent(menu, ctxtPromise, modComponent);
+          await this.runModComponent(container, ctxtPromise, modComponent);
         } catch (error) {
           if (error instanceof PromiseCancelled) {
             console.debug(
-              `menuItemStarterBrick run promise cancelled for mod component: ${modComponent.id}`,
+              `buttonStarterBrick run promise cancelled for mod component: ${modComponent.id}`,
             );
           } else {
             errors.push(error);
@@ -765,12 +780,12 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 }
 
-export class RemoteMenuItemStarterBrick extends MenuItemStarterBrickABC {
-  private readonly _definition: MenuItemDefinition;
+export class RemoteButtonStarterBrick extends ButtonStarterBrickABC {
+  private readonly _definition: ButtonDefinition;
 
   public readonly permissions: Permissions.Permissions;
 
-  public readonly rawConfig: StarterBrickDefinitionLike<MenuItemDefinition>;
+  public readonly rawConfig: StarterBrickDefinitionLike<ButtonDefinition>;
 
   public override get defaultOptions(): {
     caption: string;
@@ -785,7 +800,7 @@ export class RemoteMenuItemStarterBrick extends MenuItemStarterBrickABC {
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickDefinitionLike<MenuItemDefinition>,
+    config: StarterBrickDefinitionLike<ButtonDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -803,12 +818,12 @@ export class RemoteMenuItemStarterBrick extends MenuItemStarterBrickABC {
     };
   }
 
-  override addMenuItem($menu: JQuery, $menuItem: JQuery): void {
+  override addButton($container: JQuery, $button: JQuery): void {
     const { position = "append" } = this._definition;
 
     if (typeof position === "object") {
       if (position.sibling) {
-        const $sibling = $safeFind(position.sibling, $menu);
+        const $sibling = $safeFind(position.sibling, $container);
         if ($sibling.length > 1) {
           throw new Error(
             `Multiple sibling elements for selector: ${position.sibling}`,
@@ -816,21 +831,21 @@ export class RemoteMenuItemStarterBrick extends MenuItemStarterBrickABC {
         }
 
         if ($sibling.length === 1) {
-          $sibling.before($menuItem);
+          $sibling.before($button);
         } else {
           // Didn't find the sibling, so just try inserting it at the end
-          $menu.append($menuItem);
+          $container.append($button);
         }
       } else {
         // No element to insert the item before, so insert it at the end.
-        $menu.append($menuItem);
+        $container.append($button);
       }
     } else {
       switch (position) {
         case "prepend":
         case "append": {
           // eslint-disable-next-line security/detect-object-injection -- Safe because we're checking the value in the case statements
-          $menu[position]($menuItem);
+          $container[position]($button);
           break;
         }
 
@@ -922,13 +937,13 @@ export class RemoteMenuItemStarterBrick extends MenuItemStarterBrickABC {
     return this._definition.attachMode ?? "once";
   }
 
-  override get targetMode(): MenuTargetMode {
+  override get targetMode(): ButtonTargetMode {
     return this._definition.targetMode ?? "document";
   }
 
-  protected makeItem(
+  protected makeButton(
     unsanitizedHTML: string,
-    modComponent: HydratedModComponent<MenuItemStarterBrickConfig>,
+    modComponent: HydratedModComponent<ButtonStarterBrickConfig>,
   ): JQuery {
     const sanitizedHTML = sanitize(unsanitizedHTML);
 
@@ -957,13 +972,15 @@ export class RemoteMenuItemStarterBrick extends MenuItemStarterBrickABC {
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickDefinitionLike<MenuItemDefinition>,
+  config: StarterBrickDefinitionLike<ButtonDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
-  if (type !== "menuItem") {
+  if (type !== StarterBrickTypes.BUTTON) {
     // `type` is `never` here due to the if-statement
-    throw new Error(`Expected type=menuItem, got ${type as string}`);
+    throw new Error(
+      `Expected type=${StarterBrickTypes.BUTTON}, got ${type as string}`,
+    );
   }
 
-  return new RemoteMenuItemStarterBrick(platform, config);
+  return new RemoteButtonStarterBrick(platform, config);
 }

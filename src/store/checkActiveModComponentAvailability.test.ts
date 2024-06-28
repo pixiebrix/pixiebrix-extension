@@ -34,6 +34,7 @@ import { produce } from "immer";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/pageEditor/context/connection");
@@ -59,7 +60,7 @@ describe("checkActiveModComponentAvailability", () => {
           name: "Test Starter Brick 1",
         },
         definition: {
-          type: "menuItem",
+          type: StarterBrickTypes.BUTTON,
           reader: [] as RegistryId[],
           isAvailable: normalizeAvailability({
             matchPatterns: ["https://www.otherUrl.com/"],
@@ -77,7 +78,7 @@ describe("checkActiveModComponentAvailability", () => {
           name: "Test Starter Brick 2",
         },
         definition: {
-          type: "menuItem",
+          type: StarterBrickTypes.BUTTON,
           reader: [] as RegistryId[],
           isAvailable: normalizeAvailability({
             matchPatterns: ["https://www.otherUrl.com/"],

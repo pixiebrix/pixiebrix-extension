@@ -23,7 +23,7 @@ import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getRunningStarterBricks } from "@/contentScript/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
-import { RemoteMenuItemStarterBrick } from "@/starterBricks/menuItem/menuItemStarterBrick";
+import { RemoteButtonStarterBrick } from "@/starterBricks/button/buttonStarterBrick";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import { RemoteQuickBarStarterBrick } from "@/starterBricks/quickBar/quickBarStarterBrick";
@@ -32,8 +32,9 @@ import { standaloneModDefinitionFactory } from "@/testUtils/factories/modCompone
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { getPlatform } from "@/platform/platformContext";
-import { type MenuItemDefinition } from "@/starterBricks/menuItem/menuItemTypes";
+import { type ButtonDefinition } from "@/starterBricks/button/buttonStarterBrickTypes";
 import { type QuickBarDefinition } from "@/starterBricks/quickBar/quickBarTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -70,9 +71,9 @@ describe("checkAvailableInstalledExtensions", () => {
             id: availableButtonId,
           });
         },
-        definition(): MenuItemDefinition {
+        definition(): ButtonDefinition {
           return {
-            type: "menuItem",
+            type: StarterBrickTypes.BUTTON,
             containerSelector: "",
             template: "",
             isAvailable: {
@@ -82,8 +83,8 @@ describe("checkAvailableInstalledExtensions", () => {
           };
         },
       },
-    ) as StarterBrickDefinitionLike<MenuItemDefinition>;
-    const availableButtonExtensionPoint = new RemoteMenuItemStarterBrick(
+    ) as StarterBrickDefinitionLike<ButtonDefinition>;
+    const availableButtonExtensionPoint = new RemoteButtonStarterBrick(
       getPlatform(),
       availableButtonStarterBrickDefinition,
     );
