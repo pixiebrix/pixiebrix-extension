@@ -20,7 +20,7 @@ import { useSelector } from "react-redux";
 import { makeSelectBrickTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
-import ExtensionPointPreview from "@/pageEditor/tabs/effect/ExtensionPointPreview";
+import StarterBrickPreview from "@/pageEditor/tabs/effect/StarterBrickPreview";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useFlags from "@/hooks/useFlags";
 import PageStateTab from "./tabs/PageStateTab";
@@ -134,7 +134,7 @@ const FoundationDataPanel: React.FC = () => {
           mountOnEnter
           unmountOnExit
         >
-          <ExtensionPointPreview
+          <StarterBrickPreview
             modComponentFormState={activeModComponentFormState}
           />
         </Tab.Pane>

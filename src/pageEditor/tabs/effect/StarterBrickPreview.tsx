@@ -66,7 +66,7 @@ const previewSlice = createSlice({
   },
 });
 
-const ExtensionPointPreview: React.FunctionComponent<{
+const StarterBrickPreview: React.FunctionComponent<{
   modComponentFormState: ModComponentFormState;
   previewRefreshMillis?: 250;
 }> = ({ modComponentFormState, previewRefreshMillis }) => {
@@ -186,4 +186,4 @@ const ExtensionPointPreview: React.FunctionComponent<{
   );
 };
 
-export default ExtensionPointPreview;
+export default StarterBrickPreview;

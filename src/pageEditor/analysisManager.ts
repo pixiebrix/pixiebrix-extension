@@ -16,7 +16,7 @@
  */
 
 import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
-import ExtensionUrlPatternAnalysis from "@/analysis/analysisVisitors/extensionUrlPatternAnalysis";
+import ModComponentUrlPatternAnalysis from "@/analysis/analysisVisitors/modComponentUrlPatternAnalysis";
 import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
@@ -103,7 +103,7 @@ const nodeListMutationActions = [
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   (
-    action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
+    action: PayloadAction<{ modComponentId: UUID; records: TraceRecord[] }>,
     state: RootState,
   ) => {
     // TraceAnalysis filter the trace errors, thus
@@ -114,7 +114,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   },
   {
     matcher: isAnyOf(
-      runtimeActions.setExtensionTrace,
+      runtimeActions.setModComponentTrace,
       ...nodeListMutationActions,
     ),
   },
@@ -164,7 +164,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
-  () => new ExtensionUrlPatternAnalysis(),
+  () => new ModComponentUrlPatternAnalysis(),
   {
     matcher: isAnyOf(
       editorActions.syncModComponentFormState,
@@ -201,7 +201,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 );
 
 async function varAnalysisFactory(
-  action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
+  action: PayloadAction<{ modComponentId: UUID; records: TraceRecord[] }>,
   state: RootState,
 ) {
   const trace = selectActiveModComponentTraces(state);
@@ -254,7 +254,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     postAnalysisAction(analysis, modComponentId, listenerApi) {
       listenerApi.dispatch(
         analysisSlice.actions.setKnownEventNames({
-          extensionId: modComponentId,
+          modComponentId,
           eventNames: analysis.knownEventNames,
         }),
       );
@@ -271,7 +271,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
       // Include setActiveModComponentId so that variable analysis is ready when user first types
       editorActions.setActiveModComponentId,
       editorActions.syncModComponentFormState,
-      runtimeActions.setExtensionTrace,
+      runtimeActions.setModComponentTrace,
       ...nodeListMutationActions,
     ),
   },
@@ -279,7 +279,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     postAnalysisAction(analysis, modComponentId, listenerApi) {
       listenerApi.dispatch(
         analysisSlice.actions.setKnownVars({
-          extensionId: modComponentId,
+          modComponentId,
           vars: analysis.getKnownVars(),
         }),
       );

@@ -21,20 +21,22 @@ import { type TraceRecord } from "@/telemetry/trace";
 import { type RuntimeState } from "@/pageEditor/slices/runtimeSliceTypes";
 
 const initialState: RuntimeState = {
-  extensionTraces: {},
+  modComponentTraces: {},
 };
 
 const runtimeSlice = createSlice({
   name: "runtime",
   initialState,
   reducers: {
-    setExtensionTrace(
+    setModComponentTrace(
       state,
-      { payload }: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
+      {
+        payload,
+      }: PayloadAction<{ modComponentId: UUID; records: TraceRecord[] }>,
     ) {
-      const { extensionId, records } = payload;
+      const { modComponentId, records } = payload;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Immer's writable draft in combination with TraceRecord[] produce TS error: type instantiation is excessively deep and possibly infinite
-      state.extensionTraces[extensionId] = records as any;
+      state.modComponentTraces[modComponentId] = records as any;
     },
   },
 });

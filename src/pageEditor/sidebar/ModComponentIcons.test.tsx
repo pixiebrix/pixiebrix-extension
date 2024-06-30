@@ -16,7 +16,7 @@
  */
 
 import testItRenders from "@/testUtils/testItRenders";
-import { ModHasUpdateIcon } from "./ExtensionIcons";
+import { ModHasUpdateIcon } from "./ModComponentIcons";
 
 beforeAll(() => {
   // When a FontAwesomeIcon gets a title, it generates a random id, which breaks the snapshot.

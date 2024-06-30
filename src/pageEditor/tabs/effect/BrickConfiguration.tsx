@@ -137,10 +137,10 @@ const BrickConfiguration: React.FunctionComponent<{
     [configName],
   );
 
-  // Only show if the extension point supports a target mode. menuItem implicitly supports target mode, because
+  // Only show if the starter brick supports a target mode. menuItem implicitly supports target mode, because
   // it's root-aware if multiple menu items are added to the page.
   // Technically trigger/quickBar/etc. allow the user to pick the target mode. But for now, show the field even if
-  // the user has configured the extension point to use the document as the target.
+  // the user has configured the starter brick to use the document as the target.
   // Include tour because the Show Tour Step brick passes the target through to its pipeline
   const showRootMode =
     isRootAware &&

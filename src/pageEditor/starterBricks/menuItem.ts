@@ -90,7 +90,7 @@ function fromNativeElement(
 function selectStarterBrickDefinition(
   formState: ActionFormState,
 ): StarterBrickDefinitionLike<ButtonDefinition> {
-  const { extensionPoint } = formState;
+  const { extensionPoint: starterBrick } = formState;
   const {
     definition: {
       isAvailable,
@@ -101,7 +101,7 @@ function selectStarterBrickDefinition(
       targetMode,
       attachMode,
     },
-  } = extensionPoint;
+  } = starterBrick;
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
     definition: {
@@ -117,20 +117,20 @@ function selectStarterBrickDefinition(
   });
 }
 
-function selectExtension(
+function selectModComponent(
   state: ActionFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<ButtonStarterBrickConfig> {
-  const { extension } = state;
+  const { extension: modComponent } = state;
   const config: ButtonStarterBrickConfig = {
-    caption: extension.caption,
-    icon: extension.icon,
+    caption: modComponent.caption,
+    icon: modComponent.icon,
     action: options.includeInstanceIds
-      ? extension.blockPipeline
-      : omitEditorMetadata(extension.blockPipeline),
-    dynamicCaption: extension.dynamicCaption,
-    onSuccess: extension.onSuccess,
-    synchronous: extension.synchronous,
+      ? modComponent.blockPipeline
+      : omitEditorMetadata(modComponent.blockPipeline),
+    dynamicCaption: modComponent.dynamicCaption,
+    onSuccess: modComponent.onSuccess,
+    synchronous: modComponent.synchronous,
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),
@@ -138,37 +138,34 @@ function selectExtension(
   });
 }
 
-async function fromExtension(
+async function fromModComponent(
   config: ModComponentBase<ButtonStarterBrickConfig>,
 ): Promise<ActionFormState> {
-  const extensionPoint = await lookupStarterBrick<
+  const starterBrick = await lookupStarterBrick<
     ButtonDefinition,
     ButtonStarterBrickConfig,
     typeof StarterBrickTypes.BUTTON
   >(config, StarterBrickTypes.BUTTON);
 
-  const base = baseFromModComponent(config, extensionPoint.definition.type);
-  const extension = await modComponentWithNormalizedPipeline(
+  const base = baseFromModComponent(config, starterBrick.definition.type);
+  const modComponent = await modComponentWithNormalizedPipeline(
     config.config,
     "action",
   );
 
-  assertNotNullish(
-    extensionPoint.metadata,
-    "Starter brick metadata is required",
-  );
+  assertNotNullish(starterBrick.metadata, "Starter brick metadata is required");
 
   return {
     ...base,
-    extension,
+    extension: modComponent,
     // `containerInfo` only populated on initial creation session
     containerInfo: null,
     extensionPoint: {
-      metadata: extensionPoint.metadata,
+      metadata: starterBrick.metadata,
       definition: {
-        ...extensionPoint.definition,
-        reader: readerTypeHack(extensionPoint.definition.reader),
-        isAvailable: selectStarterBrickAvailability(extensionPoint),
+        ...starterBrick.definition,
+        reader: readerTypeHack(starterBrick.definition.reader),
+        isAvailable: selectStarterBrickAvailability(starterBrick),
       },
     },
   };
@@ -179,7 +176,9 @@ function asDraftModComponent(
 ): DraftButtonModComponent {
   return {
     type: StarterBrickTypes.BUTTON,
-    extension: selectExtension(actionFormState, { includeInstanceIds: true }),
+    extension: selectModComponent(actionFormState, {
+      includeInstanceIds: true,
+    }),
     extensionPointConfig: selectStarterBrickDefinition(actionFormState),
   };
 }
@@ -198,8 +197,8 @@ const config: ModComponentFormStateAdapter<
   fromNativeElement,
   asDraftModComponent,
   selectStarterBrickDefinition,
-  selectExtension,
-  fromExtension,
+  selectModComponent,
+  fromModComponent,
 };
 
 export default config;

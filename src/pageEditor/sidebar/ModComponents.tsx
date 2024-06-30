@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./Extensions.module.scss";
+import styles from "./ModComponents.module.scss";
 import React, { useMemo, useState } from "react";
 import { Accordion, Button, FormControl, ListGroup } from "react-bootstrap";
 import {
@@ -42,7 +42,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/sidebar/filterSidebarItems";
 
-const Extensions: React.FunctionComponent = () => {
+const ModComponents: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const activeModComponentId = useSelector(selectActiveModComponentId);
   const activeModId = useSelector(selectActiveModId);
@@ -161,7 +161,7 @@ const Extensions: React.FunctionComponent = () => {
         ) : null}
       </div>
 
-      {/* Extension List */}
+      {/* Mod Component List */}
       <Accordion activeKey={expandedModId} className={styles.list}>
         <ListGroup>{listItems}</ListGroup>
       </Accordion>
@@ -169,4 +169,4 @@ const Extensions: React.FunctionComponent = () => {
   );
 };
 
-export default Extensions;
+export default ModComponents;

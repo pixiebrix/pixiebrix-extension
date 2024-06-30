@@ -28,7 +28,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import type { components } from "@/types/swagger";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import type { EditablePackageMetadata } from "@/types/contract";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/extensionsSlice";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -72,7 +72,7 @@ describe("useSaveMod", () => {
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.activateMod({
+          modComponentsSlice.actions.activateMod({
             modDefinition: definition,
             screen: "pageEditor",
             isReactivate: false,
@@ -135,7 +135,7 @@ describe("useSaveMod", () => {
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.activateMod({
+          modComponentsSlice.actions.activateMod({
             modDefinition: definition,
             screen: "pageEditor",
             isReactivate: false,
@@ -204,7 +204,7 @@ describe("useSaveMod", () => {
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.activateMod({
+          modComponentsSlice.actions.activateMod({
             modDefinition: definition,
             screen: "pageEditor",
             isReactivate: false,

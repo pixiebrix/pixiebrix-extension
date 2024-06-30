@@ -23,7 +23,7 @@ import {
 import { hookAct, renderHook, waitFor } from "@/pageEditor/testHelpers";
 import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
-import { actions as extensionsActions } from "@/store/extensionsSlice";
+import { actions as modComponentsActions } from "@/store/extensionsSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { array } from "cooky-cutter";
@@ -64,7 +64,7 @@ describe("useCreateModFromMod", () => {
     const { result } = renderHook(() => useCreateModFromMod(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.activateMod({
+          modComponentsActions.activateMod({
             modDefinition: definition,
             screen: "pageEditor",
             isReactivate: false,
@@ -106,7 +106,7 @@ describe("useCreateModFromMod", () => {
     const { result } = renderHook(() => useCreateModFromMod(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.activateMod({
+          modComponentsActions.activateMod({
             modDefinition: installedModDefinition,
             screen: "pageEditor",
             isReactivate: false,
@@ -140,7 +140,7 @@ describe("useCreateModFromMod", () => {
     const { result } = renderHook(() => useCreateModFromMod(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.activateMod({
+          modComponentsActions.activateMod({
             modDefinition: installedModDefinition,
             screen: "pageEditor",
             isReactivate: false,

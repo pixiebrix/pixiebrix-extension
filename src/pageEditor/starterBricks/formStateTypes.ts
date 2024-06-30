@@ -65,9 +65,9 @@ import { type NormalizedAvailability } from "@/types/availabilityTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 
 // ActionFormState
-type ActionExtensionState = BaseModComponentState &
+type ActionModComponentState = BaseModComponentState &
   Except<ButtonStarterBrickConfig, "action">;
-type ActionExtensionPointState = BaseStarterBrickState & {
+type ActionStarterBrickState = BaseStarterBrickState & {
   definition: {
     type: StarterBrickType;
     containerSelector: string;
@@ -92,16 +92,16 @@ type ActionExtensionPointState = BaseStarterBrickState & {
 };
 
 export interface ActionFormState
-  extends BaseFormState<ActionExtensionState, ActionExtensionPointState> {
+  extends BaseFormState<ActionModComponentState, ActionStarterBrickState> {
   type: typeof StarterBrickTypes.BUTTON;
   containerInfo: ElementInfo | null;
 }
 
 // SidebarFormState
-type SidebarExtensionState = BaseModComponentState &
+type SidebarModComponentState = BaseModComponentState &
   Except<SidebarConfig, "body">;
 
-type SidebarExtensionPointState = BaseStarterBrickState & {
+type SidebarStarterBrickState = BaseStarterBrickState & {
   definition: BaseStarterBrickState["definition"] & {
     /**
      * Sidebar trigger (default="load")
@@ -124,12 +124,12 @@ type SidebarExtensionPointState = BaseStarterBrickState & {
 };
 
 export interface SidebarFormState
-  extends BaseFormState<SidebarExtensionState, SidebarExtensionPointState> {
+  extends BaseFormState<SidebarModComponentState, SidebarStarterBrickState> {
   type: "actionPanel";
 }
 
 // TriggerFormState
-type TriggerExtensionPointState = BaseStarterBrickState & {
+type TriggerStarterBrickState = BaseStarterBrickState & {
   definition: {
     type: StarterBrickType;
     rootSelector?: string;
@@ -157,21 +157,21 @@ type TriggerExtensionPointState = BaseStarterBrickState & {
   };
 };
 
-export function isTriggerExtensionPoint(
-  extensionPoint: BaseStarterBrickState,
-): extensionPoint is TriggerExtensionPointState {
-  return extensionPoint.definition.type === "trigger";
+export function isTriggerStarterBrick(
+  starterBrick: BaseStarterBrickState,
+): starterBrick is TriggerStarterBrickState {
+  return starterBrick.definition.type === "trigger";
 }
 
 export interface TriggerFormState
-  extends BaseFormState<BaseModComponentState, TriggerExtensionPointState> {
+  extends BaseFormState<BaseModComponentState, TriggerStarterBrickState> {
   type: "trigger";
 }
 
 // ContextMenuFormState
-type ContextMenuExtensionState = BaseModComponentState &
+type ContextMenuModComponentState = BaseModComponentState &
   Except<ContextMenuConfig, "action">;
-type ContextMenuExtensionPointState = BaseStarterBrickState & {
+type ContextMenuStarterBrickState = BaseStarterBrickState & {
   definition: {
     type: StarterBrickType;
     defaultOptions: ContextMenuDefaultOptions;
@@ -185,16 +185,16 @@ type ContextMenuExtensionPointState = BaseStarterBrickState & {
 
 export interface ContextMenuFormState
   extends BaseFormState<
-    ContextMenuExtensionState,
-    ContextMenuExtensionPointState
+    ContextMenuModComponentState,
+    ContextMenuStarterBrickState
   > {
   type: "contextMenu";
 }
 
 // QuickBarFormState
-type QuickBarExtensionState = BaseModComponentState &
+type QuickBarModComponentState = BaseModComponentState &
   Except<QuickBarConfig, "action">;
-type QuickBarExtensionPointState = BaseStarterBrickState & {
+type QuickBarStarterBrickState = BaseStarterBrickState & {
   definition: {
     type: StarterBrickType;
     defaultOptions: QuickBarDefaultOptions;
@@ -207,11 +207,11 @@ type QuickBarExtensionPointState = BaseStarterBrickState & {
 };
 
 // QuickBarFormState
-type QuickBarProviderExtensionState = BaseModComponentState &
+type QuickBarProviderModComponentState = BaseModComponentState &
   Except<QuickBarProviderConfig, "generator"> & {
     rootAction?: QuickBarProviderConfig["rootAction"];
   };
-type QuickBarProviderExtensionPointState = BaseStarterBrickState & {
+type QuickBarProviderStarterBrickState = BaseStarterBrickState & {
   definition: {
     type: StarterBrickType;
     defaultOptions: QuickBarProviderDefaultOptions;
@@ -221,29 +221,29 @@ type QuickBarProviderExtensionPointState = BaseStarterBrickState & {
   };
 };
 
-export function isQuickBarExtensionPoint(
-  extensionPoint: BaseStarterBrickState,
-): extensionPoint is QuickBarExtensionPointState {
+export function isQuickBarStarterBrick(
+  starterBrick: BaseStarterBrickState,
+): starterBrick is QuickBarStarterBrickState {
   return ["quickBar", "quickBarProvider"].includes(
-    extensionPoint.definition.type,
+    starterBrick.definition.type,
   );
 }
 
 export interface QuickBarFormState
-  extends BaseFormState<QuickBarExtensionState, QuickBarExtensionPointState> {
+  extends BaseFormState<QuickBarModComponentState, QuickBarStarterBrickState> {
   type: "quickBar";
 }
 
 export interface QuickBarProviderFormState
   extends BaseFormState<
-    QuickBarProviderExtensionState,
-    QuickBarProviderExtensionPointState
+    QuickBarProviderModComponentState,
+    QuickBarProviderStarterBrickState
   > {
   type: "quickBarProvider";
 }
 
 // TourFormState
-type TourExtensionPointState = BaseStarterBrickState & {
+type TourStarterBrickState = BaseStarterBrickState & {
   definition: {
     type: StarterBrickType;
     isAvailable: NormalizedAvailability;
@@ -253,7 +253,7 @@ type TourExtensionPointState = BaseStarterBrickState & {
 };
 
 export interface TourFormState
-  extends BaseFormState<BaseModComponentState, TourExtensionPointState> {
+  extends BaseFormState<BaseModComponentState, TourStarterBrickState> {
   type: "tour";
 }
 

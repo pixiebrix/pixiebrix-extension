@@ -31,7 +31,7 @@ import { selectIsEditorSidebarExpanded } from "@/pageEditor/slices/editorSelecto
 import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
-import Extensions from "./Extensions";
+import ModComponents from "./ModComponents";
 
 /**
  * React Bootstrap Collapsed component that includes a div wrapper.
@@ -111,7 +111,7 @@ const Sidebar: React.VFC = () => {
         {showDeveloperUI && <ReloadButton />}
       </CollapsedElement>
 
-      {/* Expanded sidebar: Extensions list */}
+      {/* Expanded sidebar: Mod Components list */}
       <CollapsedElement
         dimension="width"
         in={isExpanded}
@@ -127,7 +127,7 @@ const Sidebar: React.VFC = () => {
             width: "270px",
           }}
         >
-          <Extensions />
+          <ModComponents />
         </div>
       </CollapsedElement>
     </div>

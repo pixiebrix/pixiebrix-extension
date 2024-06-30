@@ -27,8 +27,8 @@ import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
-import extensionsSlice, {
-  actions as extensionsActions,
+import modComponentsSlice, {
+  actions as modComponentsActions,
 } from "@/store/extensionsSlice";
 import {
   modComponentDefinitionFactory,
@@ -51,7 +51,7 @@ jest.mock("@/pageEditor/starterBricks/base", () => ({
 }));
 
 describe("useBuildAndValidateMod", () => {
-  function selectExtensionPoints(
+  function selectStarterBricks(
     modDefinition: UnsavedModDefinition,
   ): StarterBrickDefinitionLike[] {
     return modDefinition.extensionPoints.map(({ id }) => {
@@ -96,9 +96,9 @@ describe("useBuildAndValidateMod", () => {
       )();
 
       // Install the mod
-      const state = extensionsSlice.reducer(
+      const state = modComponentsSlice.reducer(
         { extensions: [] },
-        extensionsActions.activateMod({
+        modComponentsActions.activateMod({
           modDefinition,
           screen: "pageEditor",
           isReactivate: false,
@@ -109,22 +109,22 @@ describe("useBuildAndValidateMod", () => {
       const modComponentFormStates: ModComponentFormState[] = [];
 
       if (dirtyModComponentCount > 0) {
-        const extensionPoints = selectExtensionPoints(modDefinition);
+        const starterBricks = selectStarterBricks(modDefinition);
 
         for (let i = 0; i < dirtyModComponentCount; i++) {
-          const extensionPoint = extensionPoints[i];
+          const starterBrick = starterBricks[i];
           // Mock this lookup for the adapter call that follows
-          jest.mocked(lookupStarterBrick).mockResolvedValue(extensionPoint);
+          jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
           // Mod was installed, so get the mod component from state
           const modComponent = state.extensions[i];
 
           // Load the adapter for this mod component
-          const adapter = ADAPTERS.get(extensionPoint.definition.type);
+          const adapter = ADAPTERS.get(starterBrick.definition.type);
 
           // Use the adapter to convert to FormState
           // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
-          const modComponentFormState = (await adapter.fromExtension(
+          const modComponentFormState = (await adapter.fromModComponent(
             modComponent,
           )) as ModComponentFormState;
 
@@ -138,7 +138,7 @@ describe("useBuildAndValidateMod", () => {
       const { result } = renderHook(() => useBuildAndValidateMod(), {
         setupRedux(dispatch) {
           dispatch(
-            extensionsActions.activateMod({
+            modComponentsActions.activateMod({
               modDefinition,
               screen: "pageEditor",
               isReactivate: false,
@@ -157,10 +157,10 @@ describe("useBuildAndValidateMod", () => {
 
         // Update the source mod with the expected label changes
         const updatedMod = produce(modDefinition, (draft) => {
-          for (const [index, extensionPoint] of draft.extensionPoints
+          for (const [index, starterBrick] of draft.extensionPoints
             .slice(0, dirtyModComponentCount)
             .entries()) {
-            extensionPoint.label = `New Label ${index}`;
+            starterBrick.label = `New Label ${index}`;
           }
         });
 
@@ -188,7 +188,7 @@ describe("useBuildAndValidateMod", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            extensionsActions.activateMod({
+            modComponentsActions.activateMod({
               modDefinition: installedModDefinition,
               screen: "pageEditor",
               isReactivate: false,

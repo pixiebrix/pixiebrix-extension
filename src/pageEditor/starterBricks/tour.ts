@@ -74,10 +74,10 @@ function fromNativeElement(
 function selectStarterBrickDefinition(
   formState: TourFormState,
 ): StarterBrickDefinitionLike<TourDefinition> {
-  const { extensionPoint } = formState;
+  const { extensionPoint: starterBrick } = formState;
   const {
     definition: { isAvailable, reader },
-  } = extensionPoint;
+  } = starterBrick;
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
     definition: {
@@ -88,15 +88,15 @@ function selectStarterBrickDefinition(
   });
 }
 
-function selectExtension(
+function selectModComponent(
   state: TourFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<TourConfig> {
-  const { extension } = state;
+  const { extension: modComponent } = state;
   const config: TourConfig = {
     tour: options.includeInstanceIds
-      ? extension.blockPipeline
-      : omitEditorMetadata(extension.blockPipeline),
+      ? modComponent.blockPipeline
+      : omitEditorMetadata(modComponent.blockPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),
@@ -107,12 +107,12 @@ function selectExtension(
 function asDraftModComponent(tourFormState: TourFormState): DraftModComponent {
   return {
     type: "tour",
-    extension: selectExtension(tourFormState, { includeInstanceIds: true }),
+    extension: selectModComponent(tourFormState, { includeInstanceIds: true }),
     extensionPointConfig: selectStarterBrickDefinition(tourFormState),
   };
 }
 
-async function fromExtension(
+async function fromModComponent(
   config: ModComponentBase<TourConfig>,
 ): Promise<TourFormState> {
   const starterBrick = await lookupStarterBrick<
@@ -157,8 +157,8 @@ const config: ModComponentFormStateAdapter<undefined, TourFormState> = {
   fromNativeElement,
   asDraftModComponent,
   selectStarterBrickDefinition,
-  selectExtension,
-  fromExtension,
+  selectModComponent,
+  fromModComponent,
 };
 
 export default config;
