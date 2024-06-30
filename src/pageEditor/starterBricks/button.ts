@@ -37,13 +37,13 @@ import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
-import MenuItemConfiguration from "@/pageEditor/tabs/menuItem/MenuItemConfiguration";
+import ButtonConfiguration from "@/pageEditor/tabs/button/ButtonConfiguration";
 import { insertButton } from "@/contentScript/messenger/api";
 import {
   type DraftButtonModComponent,
   type ButtonSelectionResult,
 } from "@/contentScript/pageEditor/types";
-import { type ActionFormState } from "./formStateTypes";
+import { type ButtonFormState } from "./formStateTypes";
 import {
   type ButtonDefinition,
   type ButtonStarterBrickConfig,
@@ -55,7 +55,7 @@ function fromNativeElement(
   url: string,
   metadata: Metadata,
   button: ButtonSelectionResult,
-): ActionFormState {
+): ButtonFormState {
   return {
     type: StarterBrickTypes.BUTTON,
     label: `My ${getDomain(url)} button`,
@@ -88,7 +88,7 @@ function fromNativeElement(
 }
 
 function selectStarterBrickDefinition(
-  formState: ActionFormState,
+  formState: ButtonFormState,
 ): StarterBrickDefinitionLike<ButtonDefinition> {
   const { extensionPoint: starterBrick } = formState;
   const {
@@ -118,7 +118,7 @@ function selectStarterBrickDefinition(
 }
 
 function selectModComponent(
-  state: ActionFormState,
+  state: ButtonFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<ButtonStarterBrickConfig> {
   const { extension: modComponent } = state;
@@ -140,7 +140,7 @@ function selectModComponent(
 
 async function fromModComponent(
   config: ModComponentBase<ButtonStarterBrickConfig>,
-): Promise<ActionFormState> {
+): Promise<ButtonFormState> {
   const starterBrick = await lookupStarterBrick<
     ButtonDefinition,
     ButtonStarterBrickConfig,
@@ -172,7 +172,7 @@ async function fromModComponent(
 }
 
 function asDraftModComponent(
-  actionFormState: ActionFormState,
+  actionFormState: ButtonFormState,
 ): DraftButtonModComponent {
   return {
     type: StarterBrickTypes.BUTTON,
@@ -185,14 +185,14 @@ function asDraftModComponent(
 
 const config: ModComponentFormStateAdapter<
   ButtonSelectionResult,
-  ActionFormState
+  ButtonFormState
 > = {
   displayOrder: 0,
   elementType: StarterBrickTypes.BUTTON,
   label: "Button",
   icon: faMousePointer,
   baseClass: ButtonStarterBrickABC,
-  EditorNode: MenuItemConfiguration,
+  EditorNode: ButtonConfiguration,
   selectNativeElement: insertButton,
   fromNativeElement,
   asDraftModComponent,

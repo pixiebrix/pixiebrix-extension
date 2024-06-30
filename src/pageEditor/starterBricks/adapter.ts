@@ -22,7 +22,7 @@ import {
   type StarterBrickType,
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
-import buttonModComponent from "@/pageEditor/starterBricks/menuItem";
+import buttonModComponent from "@/pageEditor/starterBricks/button";
 import quickBarActionModComponent from "@/pageEditor/starterBricks/quickBar";
 import triggerModComponent from "@/pageEditor/starterBricks/trigger";
 import contextMenuModComponent from "@/pageEditor/starterBricks/contextMenu";

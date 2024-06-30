@@ -34,7 +34,7 @@ import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchBut
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 
-const menuSnippets: Snippet[] = [
+const buttonSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },
   { label: "icon", value: "{{{icon}}}" },
   { label: "space", value: "&nbsp;" },
@@ -45,7 +45,7 @@ const positionOptions: Option[] = [
   { value: "prepend", label: "Start" },
 ];
 
-const MenuItemConfiguration: React.FC<{
+const ButtonConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => {
   const [{ value: onSuccess }] = useField("extension.onSuccess");
@@ -87,7 +87,7 @@ const MenuItemConfiguration: React.FC<{
 
         <ConnectedFieldTemplate
           name="extensionPoint.definition.position"
-          description="Position relative to other menu items/buttons"
+          description="Position relative to other buttons"
           as={SelectWidget}
           blankValue={null}
           options={positionOptions}
@@ -98,7 +98,7 @@ const MenuItemConfiguration: React.FC<{
           name="extensionPoint.definition.template"
           as={TemplateWidget}
           description="A template for the item, with a placeholder for the caption and/or icon"
-          snippets={menuSnippets}
+          snippets={buttonSnippets}
           {...makeLockableFieldProps("Template", isLocked)}
         />
 
@@ -108,9 +108,10 @@ const MenuItemConfiguration: React.FC<{
           title="Attach Mode"
           description={
             <p>
-              Use&nbsp;<code>once</code> to add the buttons once the menu
-              becomes available. Use&nbsp;
-              <code>watch</code> to continue to watch the page for new menus.
+              Use&nbsp;<code>once</code> to add the buttons once the button
+              container becomes available. Use&nbsp;
+              <code>watch</code> to continue to watch the page for new
+              containers.
             </p>
           }
           {...makeLockableFieldProps("Attach Mode", isLocked)}
@@ -164,4 +165,4 @@ const MenuItemConfiguration: React.FC<{
   );
 };
 
-export default MenuItemConfiguration;
+export default ButtonConfiguration;

@@ -58,7 +58,7 @@ const modComponentConfigFactory = define<ModComponentBase["config"]>({
     };
   },
 
-  // This is the pipeline prop for the menu item starter brick
+  // `action` is the pipeline prop for the button starter brick
   action() {
     return [
       {
