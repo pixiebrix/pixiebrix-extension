@@ -28,13 +28,15 @@ import {
 } from "@/testUtils/factories/modComponentFactories";
 import {
   defaultModDefinitionFactory,
-  innerStarterBrickModDefinitionFactory,
   starterBrickInnerDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-import { DefinitionKinds, InnerDefinitionRef } from "@/types/registryTypes";
+import {
+  DefinitionKinds,
+  type InnerDefinitionRef,
+} from "@/types/registryTypes";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 
