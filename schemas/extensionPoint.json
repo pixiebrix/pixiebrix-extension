@@ -51,13 +51,11 @@
           "type": "string",
           "enum": [
             "menuItem",
-            "panel",
             "trigger",
             "contextMenu",
             "sidebar",
             "quickBar",
-            "quickBarProvider",
-            "tour"
+            "quickBarProvider"
           ]
         },
         "reader": {

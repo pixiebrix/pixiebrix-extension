@@ -49,7 +49,6 @@ import ScrollIntoViewEffect from "@/bricks/effects/scrollIntoView";
 import AddQuickBarAction from "@/bricks/effects/AddQuickBarAction";
 import ToggleQuickbarEffect from "@/bricks/effects/ToggleQuickbarEffect";
 import SubmitPanelEffect from "@/bricks/effects/submitPanel";
-import { RunSubTourEffect } from "@/bricks/effects/runSubTour";
 import { type Brick } from "@/types/brickTypes";
 import PostMessageEffect from "@/bricks/effects/postMessage";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
@@ -108,7 +107,6 @@ function getAllEffects(): Brick[] {
     new AddTextSnippets(),
     new ToggleQuickbarEffect(),
     new SubmitPanelEffect(),
-    new RunSubTourEffect(),
     new CommentEffect(),
     new SetToolbarBadge(),
     new InsertAtCursorEffect(),

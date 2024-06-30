@@ -69,7 +69,7 @@ export class WaitEffect extends EffectABC {
  * @param abortSignal an optional abort signal to cancel the wait
  * @throws BusinessError if the element is not found within the timeout
  */
-export async function awaitElement({
+async function awaitElement({
   selector,
   $root,
   maxWaitMillis = 0,

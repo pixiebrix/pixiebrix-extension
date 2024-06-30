@@ -20,8 +20,6 @@ import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { makeIsBrickAllowedForPipeline } from "@/bricks/brickFilterHelpers";
 import { AnnotationType } from "@/types/annotationTypes";
-import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
-import { TourEffect } from "@/bricks/effects/tourEffect";
 
 class BrickTypeAnalysis extends AnalysisVisitorWithResolvedBricksABC {
   get id() {
@@ -43,28 +41,6 @@ class BrickTypeAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     const isBlockAllowed = makeIsBrickAllowedForPipeline(extra.pipelineFlavor)(
       typedBlock,
     );
-
-    if (
-      blockConfig.id === TourStepTransformer.BRICK_ID &&
-      this.extension.type !== "tour"
-    ) {
-      this.annotations.push({
-        position,
-        message: "The Show Tour Step brick can only be used in a Tour",
-        analysisId: this.id,
-        type: AnnotationType.Error,
-      });
-    } else if (
-      blockConfig.id === TourEffect.BLOCK_ID &&
-      this.extension.type === "tour"
-    ) {
-      this.annotations.push({
-        position,
-        message: "Use the Show Tour Step brick inside a Tour",
-        analysisId: this.id,
-        type: AnnotationType.Error,
-      });
-    }
 
     if (!isBlockAllowed) {
       this.annotations.push({

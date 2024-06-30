@@ -54,7 +54,6 @@ import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefaultOptions,
 } from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
-import { type TourDefinition } from "@/starterBricks/tour/tourTypes";
 import {
   type BaseStarterBrickState,
   type BaseModComponentState,
@@ -242,21 +241,6 @@ export interface QuickBarProviderFormState
   type: "quickBarProvider";
 }
 
-// TourFormState
-type TourStarterBrickState = BaseStarterBrickState & {
-  definition: {
-    type: StarterBrickType;
-    isAvailable: NormalizedAvailability;
-    allowUserRun?: TourDefinition["allowUserRun"];
-    autoRunSchedule?: TourDefinition["autoRunSchedule"];
-  };
-};
-
-export interface TourFormState
-  extends BaseFormState<BaseModComponentState, TourStarterBrickState> {
-  type: "tour";
-}
-
 /**
  * @deprecated We want to deconstruct ComponentFormState and using reducers instead of
  * useEffect/useAsyncEffect for defaulting, cleaning up integration configurations, etc.
@@ -267,5 +251,4 @@ export type ModComponentFormState =
   | SidebarFormState
   | ContextMenuFormState
   | QuickBarFormState
-  | QuickBarProviderFormState
-  | TourFormState;
+  | QuickBarProviderFormState;
