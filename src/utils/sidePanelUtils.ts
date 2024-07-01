@@ -20,7 +20,7 @@
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { forbidContext, isBrowserSidebarTopFrame } from "@/utils/expectContext";
 import { type PageTarget, messenger, getThisFrame } from "webext-messenger";
-import { isContentScript } from "webext-detect-page";
+import { isContentScript } from "webext-detect";
 
 /**
  * Returns true if an error showing sidebar is due to a missing user gesture.

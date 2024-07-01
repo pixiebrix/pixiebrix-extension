@@ -20,7 +20,7 @@ import {
   isContentScript,
   isExtensionContext,
   isWebPage,
-} from "webext-detect-page";
+} from "webext-detect";
 
 /**
  * Whether the current context is the top frame of the browser sidebar.

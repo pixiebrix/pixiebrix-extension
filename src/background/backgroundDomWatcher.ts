@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isBackgroundPage } from "webext-detect-page";
+import { isBackgroundPage } from "webext-detect";
 
 /** @file DO NOT alter this file to add an "init" function because it must be executed as early as possible */
 if (isBackgroundPage()) {

@@ -21,7 +21,7 @@ import {
   isTargetReady,
 } from "@/contentScript/ready";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
-import { TEST_setContext } from "webext-detect-page";
+import { TEST_setContext } from "webext-detect";
 import { type Runtime, type Tabs } from "webextension-polyfill";
 
 TEST_setContext("background");

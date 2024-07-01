@@ -36,7 +36,7 @@
     "./__mocks__/@/utils/injectScriptTag.ts",
     "./__mocks__/@/utils/injectStylesheet.ts",
     "./__mocks__/@uipath/robot.ts",
-    "./__mocks__/webext-detect-page.ts",
+    "./__mocks__/webext-detect.ts",
     "./activation/ActivationLink.tsx",
     "./activation/WizardValuesModIntegrationsContextAdapter.tsx",
     "./activation/activateLinkClickHandler.test.tsx",

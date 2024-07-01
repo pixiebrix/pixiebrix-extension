@@ -165,7 +165,7 @@
     "use-sync-external-store": "^1.2.2",
     "uuid": "^10.0.0",
     "webext-content-scripts": "^2.6.1",
-    "webext-detect-page": "^5.0.0",
+    "webext-detect": "^5.0.2",
     "webext-events": "^3.0.0",
     "webext-inject-on-install": "^2.2.0",
     "webext-messenger": "^0.28.0",

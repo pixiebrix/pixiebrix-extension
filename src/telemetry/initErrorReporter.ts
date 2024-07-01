@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isContentScript } from "webext-detect-page";
+import { isContentScript } from "webext-detect";
 import { addAuthListener } from "@/auth/authStorage";
 import type { UserData } from "@/auth/authTypes";
 import pMemoize from "p-memoize";
