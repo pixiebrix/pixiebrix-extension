@@ -36,6 +36,7 @@ import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Except } from "type-fest";
 import {
+  type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
 } from "@/pageEditor/baseFormStateTypes";
@@ -340,15 +341,24 @@ export type EditorStateV3 = Except<
   isPendingDraftModComponents: boolean;
 };
 
+/**
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ */
 export type EditorStateV4 = Except<
   EditorStateV3,
+  "modComponentFormStates" | "deletedModComponentFormStatesByModId"
+> & {
+  modComponentFormStates: BaseFormStateV3[];
+  deletedModComponentFormStatesByModId: Record<string, BaseFormStateV3[]>;
+};
+
+export type EditorState = Except<
+  EditorStateV4,
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: ModComponentFormState[];
   deletedModComponentFormStatesByModId: Record<string, ModComponentFormState[]>;
 };
-
-export type EditorState = EditorStateV4;
 
 export type EditorRootState = {
   editor: EditorState;
