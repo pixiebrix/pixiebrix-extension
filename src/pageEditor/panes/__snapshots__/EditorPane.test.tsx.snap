@@ -90,6 +90,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
         >
           <div
             class="nodePanel"
+            data-testid="brickActionsPanel"
           >
             <div
               class="nodeHeader"
@@ -567,6 +568,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
           </div>
           <div
             class="configPanel"
+            data-testid="brickConfigurationPanel"
           >
             <div
               class="formGroup form-group"
@@ -1150,6 +1152,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
           </div>
           <div
             class="collapseWrapper"
+            data-testid="dataPanel"
           >
             <button
               class="toggle active"
@@ -1491,6 +1494,7 @@ exports[`renders the first selected node 1`] = `
         >
           <div
             class="nodePanel"
+            data-testid="brickActionsPanel"
           >
             <div
               class="nodeHeader"
@@ -1821,6 +1825,7 @@ exports[`renders the first selected node 1`] = `
           </div>
           <div
             class="configPanel"
+            data-testid="brickConfigurationPanel"
           >
             <h6
               class="mb-3 d-flex justify-content-between flex-wrap gap-2"
@@ -2021,6 +2026,7 @@ exports[`renders the first selected node 1`] = `
           </div>
           <div
             class="collapseWrapper"
+            data-testid="dataPanel"
           >
             <button
               class="toggle active"
