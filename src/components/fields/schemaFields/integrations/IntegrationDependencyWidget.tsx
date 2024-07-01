@@ -316,13 +316,13 @@ const IntegrationDependencyWidget: React.FC<
           isEqual(makeVariableExpression(dependency.outputKey), value),
         )
       ) {
-        // This currently happens when a brick is copy-pasted into a separate extension
+        // This currently happens when a brick is copy-pasted into a separate mod component
         // that does not yet have root.integrationDependencies configured, but already
         // has the integration dependency key set up in the (copied) BrickConfig.
         // Clearing the value here allows the preceding if-branch to execute again, which
         // runs the "detectDefault" logic and then calls the integration-dependency-select
         // change handler, which in turn will configure root.integrationDependencies
-        // properly for the extension.
+        // properly for the mod component.
         await helpers.setValue(null);
       }
     },

@@ -153,7 +153,8 @@ export type BaseFormStateV3<
   "recipe" | "extension" | "extensionPoint"
 > & {
   /**
-   * @since 2.0.4, part of Page Editor renaming effort
+   * @since 2.0.5
+   * Part of the Page Editor renaming effort
    * `extensionPoint` to `starterBrick`
    * `extension` to `modComponent`
    * `recipe` to `mod`

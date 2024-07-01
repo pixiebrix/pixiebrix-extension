@@ -32,7 +32,7 @@ const LockedStarterBrickLabel: React.FC<{
   label: string;
   message?: string;
 }> = ({ label, message }) => {
-  const [{ value: name }] = useField<string>("extensionPoint.metadata.name");
+  const [{ value: name }] = useField<string>("starterBrick.metadata.name");
   const defaultMessage = (
     <p>
       Provided by Starter Brick <span className={styles.name}>{name}</span>.

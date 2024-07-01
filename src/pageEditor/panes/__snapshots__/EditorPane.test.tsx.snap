@@ -607,7 +607,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
               </div>
               <label
                 class="label form-label"
-                for="extension.heading"
+                for="modComponent.heading"
               >
                 Tab Title
               </label>
@@ -616,8 +616,8 @@ exports[`renders a mod component with sub pipeline 1`] = `
               >
                 <input
                   class="form-control"
-                  id="extension.heading"
-                  name="extension.heading"
+                  id="modComponent.heading"
+                  name="modComponent.heading"
                   value=""
                 />
                 <small
@@ -667,7 +667,63 @@ exports[`renders a mod component with sub pipeline 1`] = `
               >
                 <ul
                   class="list-group mb-2"
-                />
+                >
+                  <li
+                    class="list-group-item py-1"
+                  >
+                    <div
+                      class="formGroup mb-0 form-group"
+                    >
+                      <div
+                        class="mb-2 w-100 collapse"
+                      >
+                        <div
+                          class="annotationPlaceholder"
+                        />
+                      </div>
+                      <div
+                        class="formField"
+                      >
+                        <div
+                          class="root"
+                        >
+                          <div
+                            class="field"
+                          >
+                            <textarea
+                              class="form-control"
+                              id="starterBrick.definition.isAvailable.matchPatterns.0"
+                              name="starterBrick.definition.isAvailable.matchPatterns.0"
+                              rows="1"
+                            >
+                              https://www.mySite1.com/*
+                            </textarea>
+                          </div>
+                          <div
+                            class="dropdown dropdown"
+                            data-test-selected="Text"
+                            data-testid="toggle-starterBrick.definition.isAvailable.matchPatterns.0"
+                          >
+                            <button
+                              aria-expanded="false"
+                              aria-haspopup="true"
+                              class="dropdown-toggle btn btn-link"
+                              type="button"
+                            >
+                              <span
+                                class="symbol"
+                              >
+                                <test-file-stub
+                                  classname="root"
+                                />
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
                 <button
                   class="addButton btn btn-link"
                   type="button"
