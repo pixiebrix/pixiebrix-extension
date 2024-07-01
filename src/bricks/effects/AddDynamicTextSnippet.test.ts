@@ -49,8 +49,8 @@ describe("AddDynamicTextSnippet", () => {
     async (shortcut) => {
       const extensionId = uuidv4();
       const logger = new ConsoleLogger({
-        extensionId,
-        blueprintId: registryIdFactory(),
+        modComponentId: extensionId,
+        modId: registryIdFactory(),
       });
 
       const pipeline = {
@@ -98,7 +98,7 @@ describe("AddDynamicTextSnippet", () => {
     "passes preview directly: %s",
     async (preview) => {
       const extensionId = uuidv4();
-      const logger = new ConsoleLogger({ extensionId });
+      const logger = new ConsoleLogger({ modComponentId: extensionId });
 
       const pipeline = {
         id: brick.id,

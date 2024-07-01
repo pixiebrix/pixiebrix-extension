@@ -347,8 +347,8 @@ async function getIntegrationMessageContext(
   }
 
   return {
-    serviceId: config.serviceId,
-    serviceVersion: resolvedIntegration?.version,
+    integrationId: config.serviceId,
+    integrationVersion: resolvedIntegration?.version,
     authId: config.id,
   };
 }

@@ -27,8 +27,8 @@ const brick = new AddQuickBarAction();
 const platform = platformMock;
 
 const logger = new ConsoleLogger({
-  extensionId: uuidv4(),
-  extensionPointId: validateRegistryId("test/test"),
+  modComponentId: uuidv4(),
+  starterBrickId: validateRegistryId("test/test"),
 });
 
 describe("AddQuickBarAction", () => {
@@ -58,8 +58,8 @@ describe("AddQuickBarAction", () => {
     );
     expect(platform.quickBar.addAction).toHaveBeenCalledWith({
       id: expect.toBeString(),
-      extensionPointId: logger.context.extensionPointId,
-      extensionId: logger.context.extensionId,
+      extensionPointId: logger.context.starterBrickId,
+      extensionId: logger.context.modComponentId,
       name: "test",
       icon: expect.anything(),
       perform: expect.toBeFunction(),

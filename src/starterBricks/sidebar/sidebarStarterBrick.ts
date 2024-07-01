@@ -259,8 +259,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       this.logger
         .childLogger({
           deploymentId: modComponent._deployment?.id,
-          blueprintId: modComponent._recipe?.id,
-          extensionId: modComponent.id,
+          modId: modComponent._recipe?.id,
+          modComponentId: modComponent.id,
         })
         .error(error);
     }

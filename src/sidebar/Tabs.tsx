@@ -316,8 +316,8 @@ const Tabs: React.FC = () => {
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
                     panelType: panel.type,
-                    extensionId: panel.extensionId,
-                    blueprintId: panel.blueprintId,
+                    modComponentId: panel.extensionId,
+                    modId: panel.blueprintId,
                   });
                 }}
               >
@@ -336,9 +336,9 @@ const Tabs: React.FC = () => {
                   payload={panel.payload}
                   onAction={permanentSidebarPanelAction}
                   context={{
-                    extensionId: panel.extensionId,
-                    extensionPointId: panel.extensionPointId,
-                    blueprintId: panel.blueprintId,
+                    modComponentId: panel.extensionId,
+                    starterBrickId: panel.extensionPointId,
+                    modId: panel.blueprintId,
                   }}
                 />
               </ErrorBoundary>
@@ -355,8 +355,8 @@ const Tabs: React.FC = () => {
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
                     panelType: form.type,
-                    extensionId: form.extensionId,
-                    blueprintId: form.blueprintId,
+                    modComponentId: form.extensionId,
+                    modId: form.blueprintId,
                   });
                 }}
               >

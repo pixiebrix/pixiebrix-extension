@@ -24,7 +24,7 @@ import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 const brick = new AttachAutocomplete();
 
 const logger = new ConsoleLogger({
-  extensionId: uuidSequence(0),
+  modComponentId: uuidSequence(0),
 });
 
 describe("AttachAutocomplete", () => {

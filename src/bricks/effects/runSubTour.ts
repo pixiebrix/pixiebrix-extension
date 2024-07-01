@@ -45,7 +45,7 @@ export class RunSubTourEffect extends EffectABC {
     { tour }: BrickArgs<{ tour: string }>,
     { logger }: BrickOptions,
   ): Promise<void> {
-    if (logger.context.blueprintId == null) {
+    if (logger.context.modId == null) {
       throw new BusinessError("Can only run sub-tours in the same mod");
     }
 
@@ -53,7 +53,7 @@ export class RunSubTourEffect extends EffectABC {
     // manually running a tour will cancel all tours in progress (see tourController.ts)
     await runSubTour({
       tour,
-      blueprintId: logger.context.blueprintId,
+      blueprintId: logger.context.modId,
     });
   }
 }

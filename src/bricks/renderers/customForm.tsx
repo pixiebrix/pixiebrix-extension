@@ -284,7 +284,7 @@ export class CustomFormRenderer extends RendererABC {
     }>,
     { logger, runPipeline, platform }: BrickOptions,
   ): Promise<ComponentRef> {
-    if (logger.context.extensionId == null) {
+    if (logger.context.modComponentId == null) {
       throw new Error("extensionId is required");
     }
 
@@ -311,7 +311,7 @@ export class CustomFormRenderer extends RendererABC {
       assumeNotNullish_UNSAFE(recordId);
     }
 
-    const { blueprintId, extensionId } = logger.context;
+    const { modId: blueprintId, modComponentId: extensionId } = logger.context;
 
     const initialData = await getInitialData(storage, recordId, {
       blueprintId,

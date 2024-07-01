@@ -182,7 +182,7 @@ const PanelBody: React.FunctionComponent<{
 
         const logger = platform.logger.childLogger({
           ...context,
-          blockId,
+          brickId: blockId,
         });
 
         const branches = tracePath ? mapPathToTraceBranches(tracePath) : [];

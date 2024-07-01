@@ -50,26 +50,26 @@ function useDeactivateAction(modViewItem: ModViewItem): (() => void) | null {
     [mod],
   );
 
-  const extensionsFromMod = useSelector(memoizedExtensionsSelector);
+  const modComponentsFromMod = useSelector(memoizedExtensionsSelector);
 
   const deactivate = useUserAction(
     async () => {
       if (isModDefinition(mod)) {
-        const blueprintId = mod.metadata.id;
-        await uninstallMod(blueprintId, extensionsFromMod, dispatch);
+        const modId = mod.metadata.id;
+        await uninstallMod(modId, modComponentsFromMod, dispatch);
 
         reportEvent(Events.MOD_REMOVE, {
-          blueprintId,
+          modId,
         });
       } else {
         await uninstallModComponents(
-          extensionsFromMod.map(({ id }) => id),
+          modComponentsFromMod.map(({ id }) => id),
           dispatch,
         );
 
-        for (const extension of extensionsFromMod) {
+        for (const modComponent of modComponentsFromMod) {
           reportEvent(Events.MOD_COMPONENT_REMOVE, {
-            extensionId: extension.id,
+            modComponentId: modComponent.id,
           });
         }
       }
@@ -78,7 +78,7 @@ function useDeactivateAction(modViewItem: ModViewItem): (() => void) | null {
       successMessage: `Deactivated mod: ${getLabel(mod)}`,
       errorMessage: `Error deactivating mod: ${getLabel(mod)}`,
     },
-    [mod, extensionsFromMod],
+    [mod, modComponentsFromMod],
   );
 
   return isActive && !isRestricted ? deactivate : null;

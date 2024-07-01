@@ -43,7 +43,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ extensionId, shouldShowConfirmation = true }) => {
+    async ({ extensionId: modComponentId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
           title: "Reset Brick?",
@@ -58,13 +58,13 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
 
       reportEvent(Events.PAGE_EDITOR_RESET, {
         sessionId,
-        extensionId,
+        modComponentId,
       });
 
       try {
-        const extension = installed.find((x) => x.id === extensionId);
+        const extension = installed.find((x) => x.id === modComponentId);
         if (extension == null) {
-          dispatch(actions.removeModComponentFormState(extensionId));
+          dispatch(actions.removeModComponentFormState(modComponentId));
         } else {
           const formState = await modComponentToFormState(extension);
           initModOptionsIfNeeded(formState, compact(mods));
@@ -72,7 +72,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
         }
       } catch (error) {
         reportError(error);
-        dispatch(actions.adapterError({ uuid: extensionId, error }));
+        dispatch(actions.adapterError({ uuid: modComponentId, error }));
       }
     },
     [dispatch, mods, sessionId, installed, showConfirmation],

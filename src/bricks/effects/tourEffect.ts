@@ -139,7 +139,12 @@ export class TourEffect extends EffectABC {
       );
     }
 
-    const { extensionId, label, extensionLabel, blueprintId } = logger.context;
+    const {
+      modComponentId: extensionId,
+      label,
+      modComponentLabel: extensionLabel,
+      modId: blueprintId,
+    } = logger.context;
     const nonce = uuidv4();
     const abortController = new AbortController();
     const stylesheetLink = await injectStylesheet(stylesheetUrl);

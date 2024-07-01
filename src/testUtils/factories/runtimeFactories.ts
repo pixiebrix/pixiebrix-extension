@@ -35,7 +35,7 @@ export const brickOptionsFactory = define<BrickOptions>({
   platform: () => contentScriptPlatform,
   logger: (i: number) =>
     new ConsoleLogger({
-      extensionId: uuidSequence(i),
+      modComponentId: uuidSequence(i),
     }),
   root: (_i: number) => document,
   runPipeline: (_i: number) =>
@@ -47,7 +47,7 @@ export const brickOptionsFactory = define<BrickOptions>({
   meta: derive<BrickOptions, RunMetadata>(
     (options) => ({
       runId: null,
-      extensionId: options.logger?.context.extensionId,
+      extensionId: options.logger?.context.modComponentId,
       branches: [],
     }),
     "logger",

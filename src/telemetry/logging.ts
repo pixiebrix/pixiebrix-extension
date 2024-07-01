@@ -103,10 +103,10 @@ type IndexKey = keyof Except<
   | "deploymentId"
   | "label"
   | "pageName"
-  | "blueprintVersion"
-  | "blockVersion"
-  | "serviceVersion"
-  | "extensionLabel"
+  | "modVersion"
+  | "brickVersion"
+  | "integrationVersion"
+  | "modComponentLabel"
   | "platformName"
   | "url"
   | "connectionType"
@@ -114,11 +114,11 @@ type IndexKey = keyof Except<
 >;
 
 const INDEX_KEYS = [
-  "extensionId",
-  "blueprintId",
-  "blockId",
-  "extensionPointId",
-  "serviceId",
+  "modComponentId",
+  "modId",
+  "brickId",
+  "starterBrickId",
+  "integrationId",
   "authId",
 ] as const satisfies IndexKey[];
 

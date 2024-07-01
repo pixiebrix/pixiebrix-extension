@@ -50,7 +50,12 @@ export const TemporaryPanelTabPane: React.FC<{
     },
     [dispatch, panel.nonce],
   );
-  const { type, extensionId, blueprintId, payload } = panel;
+  const {
+    type,
+    extensionId: modComponentId,
+    blueprintId: modId,
+    payload,
+  } = panel;
 
   return (
     <Tab.Pane
@@ -61,8 +66,8 @@ export const TemporaryPanelTabPane: React.FC<{
         onError={() => {
           reportEvent(Events.VIEW_ERROR, {
             panelType: type,
-            extensionId,
-            blueprintId,
+            modComponentId,
+            modId,
           });
         }}
       >
@@ -75,8 +80,8 @@ export const TemporaryPanelTabPane: React.FC<{
           isRootPanel={false}
           payload={payload}
           context={{
-            extensionId,
-            blueprintId,
+            modComponentId,
+            modId,
           }}
           onAction={onAction}
         />

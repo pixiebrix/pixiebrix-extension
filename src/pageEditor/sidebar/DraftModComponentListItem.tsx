@@ -164,7 +164,7 @@ const DraftModComponentListItem: React.FunctionComponent<
       onClick={async () => {
         reportEvent(Events.PAGE_EDITOR_OPEN, {
           sessionId,
-          extensionId: modComponentFormState.uuid,
+          modComponentId: modComponentFormState.uuid,
         });
 
         dispatch(actions.setActiveModComponentId(modComponentFormState.uuid));

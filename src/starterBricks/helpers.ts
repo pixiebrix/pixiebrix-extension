@@ -191,12 +191,12 @@ export function selectModComponentContext(
   return {
     // The step label will be re-assigned later in reducePipeline
     label: modComponent.label ?? undefined,
-    extensionLabel: modComponent.label ?? undefined,
-    extensionId: modComponent.id,
-    extensionPointId: modComponent.extensionPointId,
+    modComponentLabel: modComponent.label ?? undefined,
+    modComponentId: modComponent.id,
+    starterBrickId: modComponent.extensionPointId,
     deploymentId: modComponent._deployment?.id,
-    blueprintId: modComponent._recipe?.id,
-    blueprintVersion: modComponent._recipe?.version,
+    modId: modComponent._recipe?.id,
+    modVersion: modComponent._recipe?.version,
   };
 }
 

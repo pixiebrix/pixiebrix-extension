@@ -160,7 +160,7 @@ const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
           variant="outline-danger"
           onClick={() => {
             reportEvent(Events.MOD_ACTIVATION_CANCEL, {
-              recipeId: normalizedMod?.metadata?.id,
+              modId: normalizedMod?.metadata?.id,
             });
             onClickCancel();
           }}
@@ -171,7 +171,7 @@ const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
           type="submit"
           onClick={() => {
             reportEvent(Events.MOD_ACTIVATION_SUBMIT, {
-              recipeId: normalizedMod?.metadata?.id,
+              modId: normalizedMod?.metadata?.id,
             });
             return true;
           }}

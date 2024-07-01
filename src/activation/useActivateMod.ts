@@ -53,8 +53,8 @@ type ActivationSource = "marketplace" | "extensionConsole";
 
 function selectActivateEventData(modDefinition: ModDefinition) {
   return {
-    blueprintId: modDefinition.metadata.id,
-    extensions: modDefinition.extensionPoints.map((x) => x.label),
+    modId: modDefinition.metadata.id,
+    modComponents: modDefinition.extensionPoints.map((x) => x.label),
   };
 }
 

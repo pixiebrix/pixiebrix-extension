@@ -135,14 +135,14 @@ export class FormTransformer extends TransformerABC {
       controller.abort();
     });
 
-    if (logger.context.extensionId == null) {
+    if (logger.context.modComponentId == null) {
       throw new Error(`${this.name} must be run in a mod context`);
     }
 
     try {
       return await platform.form(formDefinition, controller, {
-        componentId: logger.context.extensionId,
-        modId: logger.context.blueprintId,
+        componentId: logger.context.modComponentId,
+        modId: logger.context.modId,
       });
     } finally {
       controller.abort();

@@ -16,7 +16,7 @@
  */
 
 import { backgroundTarget as bg, getNotifier } from "webext-messenger";
-import { type Event } from "@/telemetry/events";
+import { type Event, type ReservedKeys } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 
 expectContext(
@@ -27,15 +27,60 @@ expectContext(
 // Private method. Do not move to api.ts
 const _record = getNotifier("RECORD_EVENT", bg);
 
+function transformEventData(data: UnknownObject): UnknownObject {
+  if (data.brickId) {
+    data.blockId = data.brickId;
+  }
+
+  if (data.brickVersion) {
+    data.blockVersion = data.brickVersion;
+  }
+
+  if (data.integrationId) {
+    data.serviceId = data.integrationId;
+  }
+
+  if (data.integrationVersion) {
+    data.serviceVersion = data.integrationVersion;
+  }
+
+  if (data.modId) {
+    data.blueprintId = data.modId;
+    data.recipeId = data.modId;
+  }
+
+  if (data.modVersion) {
+    data.blueprintVersion = data.modVersion;
+  }
+
+  if (data.modComponentId) {
+    data.extensionId = data.modComponentId;
+  }
+
+  if (data.modComponentLabel) {
+    data.extensionLabel = data.modComponentLabel;
+  }
+
+  if (data.modComponents) {
+    data.extensions = data.modComponents;
+  }
+
+  if (data.starterBrickId) {
+    data.extensionPointId = data.starterBrickId;
+  }
+
+  return data;
+}
+
 /**
  * Report an event to the PixieBrix telemetry service, if the user doesn't have DNT set.
  * @see selectEventData
  */
-export default function reportEvent(
+export default function reportEvent<TData extends UnknownObject>(
   event: Event,
-  data: UnknownObject = {},
+  data: TData extends ReservedKeys ? never : TData = {} as never,
 ): void {
   // eslint-disable-next-line prefer-rest-params -- Needs `arguments` to avoid printing the default
   console.debug(...arguments);
-  _record({ event, data });
+  _record({ event, data: transformEventData(data) });
 }

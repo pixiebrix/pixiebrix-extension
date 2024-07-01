@@ -35,8 +35,8 @@ const modId = validateRegistryId("test/123");
 const brick = new AssignModVariable();
 
 const logger = new ConsoleLogger({
-  extensionId: modComponentId,
-  blueprintId: modId,
+  modComponentId: modComponentId,
+  modId: modId,
 });
 
 const brickOptions = brickOptionsFactory({ logger });

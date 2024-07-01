@@ -352,8 +352,8 @@ describe("CustomFormRenderer", () => {
       expect(
         getState({
           namespace: StateNamespaces.MOD,
-          modComponentId: options.logger.context.extensionId,
-          modId: options.logger.context.blueprintId,
+          modComponentId: options.logger.context.modComponentId,
+          modId: options.logger.context.modId,
         }),
       ).toStrictEqual({
         name: value,

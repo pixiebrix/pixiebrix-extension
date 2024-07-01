@@ -55,7 +55,7 @@ function useSaveStandaloneModComponent(): ExtensionSaver {
       } else {
         reportEvent(Events.PAGE_EDITOR_STANDALONE_MOD_COMPONENT_UPDATE, {
           sessionId,
-          extensionId: modComponentFormState.uuid,
+          modComponentId: modComponentFormState.uuid,
         });
       }
     } finally {

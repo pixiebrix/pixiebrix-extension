@@ -50,8 +50,8 @@ jest.mock("@/contentScript/popoverDom", () => ({
 }));
 
 const logger = new ConsoleLogger({
-  extensionId: uuidv4(),
-  blueprintId: validateRegistryId("test/tour"),
+  modComponentId: uuidv4(),
+  modId: validateRegistryId("test/tour"),
 });
 
 const brick = new TourStepTransformer();
@@ -70,7 +70,7 @@ function startTour() {
       id: extensionId,
       label: "Test Tour",
     },
-    { abortController, context: { extensionId } },
+    { abortController, context: { modComponentId: extensionId } },
   );
 
   return { nonce, abortController };

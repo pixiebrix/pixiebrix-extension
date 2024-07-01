@@ -67,8 +67,8 @@ const extensionId = autoUUIDSequence();
 const blueprintId = registryIdFactory();
 
 const logger = new ConsoleLogger({
-  extensionId,
-  blueprintId,
+  modComponentId: extensionId,
+  modId: blueprintId,
 });
 
 function expectPageState(expectedState: UnknownObject) {

@@ -37,12 +37,12 @@ describe("tourController", () => {
     markTourStart(
       nonce,
       { id: modComponentId, label: "Ad-hoc", _recipe: undefined },
-      { abortController, context: { extensionId: modComponentId } },
+      { abortController, context: { modComponentId: modComponentId } },
     );
 
     expect(isTourInProgress()).toBe(true);
 
-    markTourEnd(nonce, { context: { extensionId: modComponentId } });
+    markTourEnd(nonce, { context: { modComponentId: modComponentId } });
 
     expect(isTourInProgress()).toBe(false);
   });
@@ -54,7 +54,7 @@ describe("tourController", () => {
     markTourStart(
       nonce,
       { id: modComponentId, label: "Ad-hoc", _recipe: undefined },
-      { abortController, context: { extensionId: modComponentId } },
+      { abortController, context: { modComponentId: modComponentId } },
     );
 
     expect(isTourInProgress()).toBe(true);

@@ -50,7 +50,7 @@ describe("PanelBody", () => {
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{ extensionId, blueprintId }}
+        context={{ modComponentId: extensionId, modId: blueprintId }}
         payload={payload}
       />,
     );
@@ -70,7 +70,7 @@ describe("PanelBody", () => {
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{ extensionId, blueprintId }}
+        context={{ modComponentId: extensionId, modId: blueprintId }}
         payload={payload}
       />,
     );
@@ -90,7 +90,7 @@ describe("PanelBody", () => {
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{ extensionId, blueprintId }}
+        context={{ modComponentId: extensionId, modId: blueprintId }}
         payload={payload}
       />,
     );
@@ -114,7 +114,7 @@ describe("PanelBody", () => {
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{ extensionId, blueprintId }}
+        context={{ modComponentId: extensionId, modId: blueprintId }}
         payload={payload}
       />,
     );
@@ -141,7 +141,7 @@ describe("PanelBody", () => {
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{ extensionId, blueprintId }}
+        context={{ modComponentId: extensionId, modId: blueprintId }}
         payload={payload}
       />,
     );
@@ -215,7 +215,7 @@ describe("PanelBody", () => {
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{ extensionId, blueprintId }}
+        context={{ modComponentId: extensionId, modId: blueprintId }}
         payload={payload}
       />,
     );

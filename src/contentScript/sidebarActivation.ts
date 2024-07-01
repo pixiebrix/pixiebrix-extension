@@ -88,7 +88,7 @@ function addActivateModsListener(): void {
 
     reportEvent(Events.START_MOD_ACTIVATE, {
       // For legacy, report the first mod id
-      blueprintId: modIds,
+      modId: modIds[0],
       modIds,
       screen: "marketplace",
       reinstall: modIds.some((x) => activatedModIds.has(x)),

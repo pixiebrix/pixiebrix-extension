@@ -32,7 +32,7 @@ function useViewLogsAction(modViewItem: ModViewItem): (() => void) | null {
         messageContext: isModDefinition(mod)
           ? {
               label: getLabel(mod),
-              blueprintId: mod.metadata.id,
+              modId: mod.metadata.id,
             }
           : selectModComponentContext(mod),
       }),

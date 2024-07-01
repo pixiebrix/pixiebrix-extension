@@ -168,3 +168,21 @@ export const Events = {
 } as const;
 
 export type Event = (typeof Events)[keyof typeof Events];
+
+export const reservedKeys = [
+  "blockId",
+  "blockVersion",
+  "blueprintId",
+  "blueprintVersion",
+  "extensionId",
+  "extensionLabel",
+  "extensionPointId",
+  "extensions",
+  "recipeId",
+  "serviceId",
+  "serviceVersion",
+] as const;
+
+export type ReservedKeys = {
+  [K in (typeof reservedKeys)[number]]?: unknown;
+};

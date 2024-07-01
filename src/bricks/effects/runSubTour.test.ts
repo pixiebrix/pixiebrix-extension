@@ -56,7 +56,9 @@ describe("runSubTour", () => {
 
     const promise = brick.run(
       unsafeAssumeValidArg({ tour: "Test Extension" }),
-      brickOptionsFactory({ logger: new ConsoleLogger({ blueprintId }) }),
+      brickOptionsFactory({
+        logger: new ConsoleLogger({ modId: blueprintId }),
+      }),
     );
 
     await tick();

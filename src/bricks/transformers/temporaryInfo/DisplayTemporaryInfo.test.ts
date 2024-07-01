@@ -106,7 +106,10 @@ describe("DisplayTemporaryInfo", () => {
 
     await reducePipeline(pipeline, simpleInput({}), {
       ...testOptions("v3"),
-      logger: new ConsoleLogger({ extensionId, blueprintId }),
+      logger: new ConsoleLogger({
+        modComponentId: extensionId,
+        modId: blueprintId,
+      }),
     });
 
     // Show function will be called with a "loading" payload
@@ -184,7 +187,7 @@ describe("DisplayTemporaryInfo", () => {
     const options = {
       ...testOptions("v3"),
       logger: new ConsoleLogger({
-        extensionId,
+        modComponentId: extensionId,
       }),
     };
 
@@ -225,7 +228,7 @@ describe("DisplayTemporaryInfo", () => {
     const options = {
       ...testOptions("v3"),
       logger: new ConsoleLogger({
-        extensionId,
+        modComponentId: extensionId,
       }),
     };
 
@@ -251,7 +254,7 @@ describe("DisplayTemporaryInfo", () => {
     const options = {
       ...testOptions("v3"),
       logger: new ConsoleLogger({
-        extensionId,
+        modComponentId: extensionId,
       }),
     };
 
@@ -280,7 +283,7 @@ describe("DisplayTemporaryInfo", () => {
     const options = {
       ...testOptions("v3"),
       logger: new ConsoleLogger({
-        extensionId,
+        modComponentId: extensionId,
       }),
     };
 
@@ -319,7 +322,7 @@ describe("DisplayTemporaryInfo", () => {
     const options = {
       ...testOptions("v3"),
       logger: new ConsoleLogger({
-        extensionId,
+        modComponentId: extensionId,
       }),
     };
 
@@ -366,7 +369,7 @@ describe("DisplayTemporaryInfo", () => {
     const options = {
       ...testOptions("v3"),
       logger: new ConsoleLogger({
-        extensionId,
+        modComponentId: extensionId,
       }),
     };
 

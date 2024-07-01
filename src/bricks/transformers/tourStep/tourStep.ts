@@ -328,7 +328,7 @@ class TourStepTransformer extends TransformerABC {
     {
       abortSignal,
       logger: {
-        context: { extensionId, blueprintId },
+        context: { modComponentId: extensionId, modId: blueprintId },
       },
       platform,
       runRendererPipeline,

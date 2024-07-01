@@ -39,5 +39,5 @@ export async function removeModComponentForEveryTab(
   });
   await uninstallContextMenu({ extensionId: modComponentId });
   await clearExtensionTraces(modComponentId);
-  await clearLog({ extensionId: modComponentId });
+  await clearLog({ modComponentId: modComponentId });
 }

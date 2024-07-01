@@ -331,7 +331,7 @@ const IntegrationsPage: React.VFC = () => {
     (integration: Integration) => {
       // TODO: This is possibly being reported in the wrong place? Should this be when a new config is SAVED instead?
       reportEvent(Events.INTEGRATION_ADD, {
-        serviceId: integration.id,
+        integrationId: integration.id,
       });
 
       if (integration.isAuthorizationGrant) {

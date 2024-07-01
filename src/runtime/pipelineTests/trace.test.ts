@@ -235,7 +235,9 @@ describe("Trace normal execution", () => {
       instanceId,
     };
 
-    const logger = new ConsoleLogger().childLogger({ extensionId });
+    const logger = new ConsoleLogger().childLogger({
+      modComponentId: extensionId,
+    });
 
     await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
       ...testOptions("v2"),
@@ -300,7 +302,9 @@ describe("Trace normal execution", () => {
       },
     ];
 
-    const logger = new ConsoleLogger().childLogger({ extensionId });
+    const logger = new ConsoleLogger().childLogger({
+      modComponentId: extensionId,
+    });
 
     await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
       ...testOptions("v2"),
@@ -353,7 +357,9 @@ describe("Trace normal execution", () => {
       },
     ];
 
-    const logger = new ConsoleLogger().childLogger({ extensionId });
+    const logger = new ConsoleLogger().childLogger({
+      modComponentId: extensionId,
+    });
 
     await expect(async () => {
       await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {

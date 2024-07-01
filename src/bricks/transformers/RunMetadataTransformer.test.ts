@@ -31,7 +31,7 @@ describe("RunMetadataTransformer", () => {
   it("returns standalone mod metadata", async () => {
     const extensionId = autoUUIDSequence();
     const logger = new ConsoleLogger({
-      extensionId,
+      modComponentId: extensionId,
     });
 
     const result = await brick.run(
@@ -53,9 +53,9 @@ describe("RunMetadataTransformer", () => {
     const extensionId = autoUUIDSequence();
     const registryId = registryIdFactory();
     const logger = new ConsoleLogger({
-      extensionId,
-      blueprintId: registryId,
-      blueprintVersion: "1.0.0" as SemVerString,
+      modComponentId: extensionId,
+      modId: registryId,
+      modVersion: "1.0.0" as SemVerString,
     });
 
     const result = await brick.run(
@@ -83,9 +83,9 @@ describe("RunMetadataTransformer", () => {
     const runId = autoUUIDSequence();
 
     const logger = new ConsoleLogger({
-      extensionId,
-      blueprintId: registryId,
-      blueprintVersion: "1.0.0" as SemVerString,
+      modComponentId: extensionId,
+      modId: registryId,
+      modVersion: "1.0.0" as SemVerString,
       deploymentId,
     });
 

@@ -95,13 +95,13 @@ describe("logging", () => {
 
     await appendEntry(
       logEntryFactory({
-        context: messageContextFactory({ blueprintId }),
+        context: messageContextFactory({ modId: blueprintId }),
       }),
     );
 
     await appendEntry(logEntryFactory());
 
-    await clearLog({ blueprintId });
+    await clearLog({ modId: blueprintId });
 
     await expect(count()).resolves.toBe(1);
   });
@@ -124,13 +124,13 @@ describe("logging", () => {
 
     await appendEntry(
       logEntryFactory({
-        context: messageContextFactory({ blueprintId }),
+        context: messageContextFactory({ modId: blueprintId }),
       }),
     );
 
     await appendEntry(logEntryFactory());
 
-    await expect(getLogEntries({ blueprintId })).resolves.toStrictEqual([
+    await expect(getLogEntries({ modId: blueprintId })).resolves.toStrictEqual([
       expect.objectContaining({
         context: expect.objectContaining({ blueprintId }),
       }),
