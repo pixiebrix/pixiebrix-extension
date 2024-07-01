@@ -34,7 +34,7 @@ bricksRegistry.register([echoBrick]);
 const { formState, records } = formStateWithTraceDataFactory();
 const renderDataPanel = () => {
   const modComponentId = formState.uuid;
-  const { instanceId } = formState.extension.blockPipeline[1];
+  const { instanceId } = formState.modComponent.brickPipeline[1];
 
   return render(<DataPanel />, {
     initialValues: formState,
@@ -76,7 +76,7 @@ describe("DataPanel", () => {
     expect(reportEventMock).toHaveBeenCalledOnce();
     expect(reportEventMock).toHaveBeenCalledWith(Events.DATA_PANEL_TAB_VIEW, {
       tabName: DataPanelTabKey.Context,
-      brickId: formState.extension.blockPipeline[1].id,
+      brickId: formState.modComponent.brickPipeline[1].id,
       modId: undefined,
     });
 
@@ -95,7 +95,7 @@ describe("DataPanel", () => {
     expect(reportEventMock).toHaveBeenCalledOnce();
     expect(reportEventMock).toHaveBeenCalledWith(Events.DATA_PANEL_TAB_VIEW, {
       tabName: DataPanelTabKey.Comments,
-      brickId: formState.extension.blockPipeline[1].id,
+      brickId: formState.modComponent.brickPipeline[1].id,
       modId: undefined,
     });
   });

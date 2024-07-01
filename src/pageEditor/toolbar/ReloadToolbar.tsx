@@ -49,7 +49,7 @@ function isAutomaticTrigger(
   return (
     modComponentFormState?.type === "trigger" &&
     automatic.includes(
-      modComponentFormState?.extensionPoint.definition.trigger ?? "",
+      modComponentFormState?.starterBrick.definition.trigger ?? "",
     )
   );
 }

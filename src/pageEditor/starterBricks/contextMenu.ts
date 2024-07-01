@@ -60,7 +60,7 @@ function fromNativeElement(
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
-    extensionPoint: {
+    starterBrick: {
       metadata,
       definition: {
         type: "contextMenu",
@@ -72,10 +72,10 @@ function fromNativeElement(
         isAvailable,
       },
     },
-    extension: {
+    modComponent: {
       title,
       onSuccess: true,
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -83,7 +83,7 @@ function fromNativeElement(
 function selectStarterBrickDefinition(
   formState: ContextMenuFormState,
 ): StarterBrickDefinitionLike<ContextMenuDefinition> {
-  const { extensionPoint: starterBrick } = formState;
+  const { starterBrick } = formState;
   const {
     definition: {
       isAvailable,
@@ -110,13 +110,13 @@ function selectModComponent(
   state: ContextMenuFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<ContextMenuConfig> {
-  const { extension: modComponent } = state;
+  const { modComponent } = state;
   const config: ContextMenuConfig = {
     title: modComponent.title,
     onSuccess: modComponent.onSuccess,
     action: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),
@@ -150,8 +150,8 @@ async function fromModComponent(
 
   return {
     ...base,
-    extension: modComponent,
-    extensionPoint: {
+    modComponent,
+    starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
         type: "contextMenu",

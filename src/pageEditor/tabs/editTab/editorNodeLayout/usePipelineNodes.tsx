@@ -22,7 +22,7 @@ import {
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import {
   type BrickConfig,
   type BrickPipeline,
@@ -226,7 +226,7 @@ const usePipelineNodes = (): {
   const starterBrickType = activeModComponentFormState.type;
   const { label: starterBrickLabel, icon: starterBrickIcon } =
     ADAPTERS.get(starterBrickType);
-  const rootPipeline = activeModComponentFormState.extension.blockPipeline;
+  const rootPipeline = activeModComponentFormState.modComponent.brickPipeline;
   const rootPipelineFlavor = getRootPipelineFlavor(starterBrickType);
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
@@ -602,7 +602,7 @@ const usePipelineNodes = (): {
   function mapPipelineToNodes({
     pipeline,
     flavor,
-    pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
+    pipelinePath = PIPELINE_BRICKS_FIELD_NAME,
     nestingLevel = 0,
     isParentActive = false,
     isAncestorActive = false,
@@ -622,7 +622,7 @@ const usePipelineNodes = (): {
      */
     latestParentCall?: Branch[];
   }): MapOutput {
-    const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
+    const isRootPipeline = pipelinePath === PIPELINE_BRICKS_FIELD_NAME;
     const lastIndex = pipeline.length - 1;
     const lastBlockId = pipeline.at(lastIndex)?.id;
     const lastBlock = lastBlockId ? allBricks.get(lastBlockId) : undefined;
@@ -693,7 +693,7 @@ const usePipelineNodes = (): {
         onClick() {
           dispatch(
             actions.showAddBlockModal({
-              path: PIPELINE_BLOCKS_FIELD_NAME,
+              path: PIPELINE_BRICKS_FIELD_NAME,
               flavor: pipelineFlavor,
               index: 0,
             }),
@@ -708,7 +708,7 @@ const usePipelineNodes = (): {
         icon: faPaste,
         tooltipText: "Paste copied brick",
         async onClick() {
-          await pasteBlock(PIPELINE_BLOCKS_FIELD_NAME, 0);
+          await pasteBlock(PIPELINE_BRICKS_FIELD_NAME, 0);
         },
       });
     }

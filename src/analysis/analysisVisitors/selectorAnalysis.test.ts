@@ -73,19 +73,19 @@ describe("SelectorAnalysis", () => {
     async (attachMode: AttachMode) => {
       const analysis = new SelectorAnalysis();
 
-      const component = triggerFormStateFactory();
+      const formState = triggerFormStateFactory();
 
-      component.extensionPoint.definition.rootSelector = 'div:contains("foo")';
-      component.extensionPoint.definition.attachMode = attachMode;
+      formState.starterBrick.definition.rootSelector = 'div:contains("foo")';
+      formState.starterBrick.definition.attachMode = attachMode;
 
-      await analysis.run(component);
+      await analysis.run(formState);
 
       expect(analysis.getAnnotations()).toStrictEqual([
         {
           analysisId: "selector",
           message: expect.any(String),
           position: {
-            path: "extensionPoint.definition.rootSelector",
+            path: "starterBrick.definition.rootSelector",
           },
           type: expect.toBeOneOf(["warning", "info"]),
         },
@@ -96,18 +96,18 @@ describe("SelectorAnalysis", () => {
   it("detects invalid trigger selector", async () => {
     const analysis = new SelectorAnalysis();
 
-    const component = triggerFormStateFactory();
+    const formState = triggerFormStateFactory();
 
-    component.extensionPoint.definition.rootSelector = '!div:contains("foo")';
+    formState.starterBrick.definition.rootSelector = '!div:contains("foo")';
 
-    await analysis.run(component);
+    await analysis.run(formState);
 
     expect(analysis.getAnnotations()).toStrictEqual([
       {
         analysisId: "selector",
         message: expect.any(String),
         position: {
-          path: "extensionPoint.definition.rootSelector",
+          path: "starterBrick.definition.rootSelector",
         },
         type: "error",
       },
@@ -119,20 +119,20 @@ describe("SelectorAnalysis", () => {
     async (attachMode: AttachMode) => {
       const analysis = new SelectorAnalysis();
 
-      const component = menuItemFormStateFactory();
+      const formState = menuItemFormStateFactory();
 
-      component.extensionPoint.definition.containerSelector =
+      formState.starterBrick.definition.containerSelector =
         'div:contains("foo")';
-      component.extensionPoint.definition.attachMode = attachMode;
+      formState.starterBrick.definition.attachMode = attachMode;
 
-      await analysis.run(component);
+      await analysis.run(formState);
 
       expect(analysis.getAnnotations()).toStrictEqual([
         {
           analysisId: "selector",
           message: expect.any(String),
           position: {
-            path: "extensionPoint.definition.containerSelector",
+            path: "starterBrick.definition.containerSelector",
           },
           type: expect.toBeOneOf(["warning", "info"]),
         },
@@ -143,18 +143,18 @@ describe("SelectorAnalysis", () => {
   it("detects invalid action location selector", async () => {
     const analysis = new SelectorAnalysis();
 
-    const component = menuItemFormStateFactory();
+    const formState = menuItemFormStateFactory();
 
-    component.extensionPoint.definition.containerSelector = "!div";
+    formState.starterBrick.definition.containerSelector = "!div";
 
-    await analysis.run(component);
+    await analysis.run(formState);
 
     expect(analysis.getAnnotations()).toStrictEqual([
       {
         analysisId: "selector",
         message: "Invalid selector.",
         position: {
-          path: "extensionPoint.definition.containerSelector",
+          path: "starterBrick.definition.containerSelector",
         },
         type: "error",
       },
@@ -164,9 +164,9 @@ describe("SelectorAnalysis", () => {
   it("detects selectors passed to highlight brick", async () => {
     const analysis = new SelectorAnalysis();
 
-    const component = triggerFormStateFactory();
+    const formState = triggerFormStateFactory();
 
-    component.extension.blockPipeline = [
+    formState.modComponent.brickPipeline = [
       {
         id: highlight.id,
         config: {
@@ -180,14 +180,14 @@ describe("SelectorAnalysis", () => {
       },
     ];
 
-    await analysis.run(component);
+    await analysis.run(formState);
 
     expect(analysis.getAnnotations()).toStrictEqual([
       {
         analysisId: "selector",
         message: expect.stringMatching(/Selector appears to contain generated/),
         position: {
-          path: "extension.blockPipeline.0.config.rootSelector",
+          path: "modComponent.brickPipeline.0.config.rootSelector",
         },
         type: "warning",
       },
@@ -195,7 +195,7 @@ describe("SelectorAnalysis", () => {
         analysisId: "selector",
         message: expect.stringMatching(/Selector appears to contain generated/),
         position: {
-          path: "extension.blockPipeline.0.config.elements.0.selector",
+          path: "modComponent.brickPipeline.0.config.elements.0.selector",
         },
         type: "warning",
       },
@@ -205,9 +205,9 @@ describe("SelectorAnalysis", () => {
   it("detects selectors passed to jquery brick", async () => {
     const analysis = new SelectorAnalysis();
 
-    const component = triggerFormStateFactory();
+    const formState = triggerFormStateFactory();
 
-    component.extension.blockPipeline = [
+    formState.modComponent.brickPipeline = [
       {
         id: reader.id,
         config: {
@@ -221,14 +221,14 @@ describe("SelectorAnalysis", () => {
       },
     ];
 
-    await analysis.run(component);
+    await analysis.run(formState);
 
     expect(analysis.getAnnotations()).toStrictEqual([
       {
         analysisId: "selector",
         message: expect.stringMatching(/Selector appears to contain generated/),
         position: {
-          path: "extension.blockPipeline.0.config.selectors.simple",
+          path: "modComponent.brickPipeline.0.config.selectors.simple",
         },
         type: "warning",
       },
@@ -236,7 +236,7 @@ describe("SelectorAnalysis", () => {
         analysisId: "selector",
         message: expect.stringMatching(/Selector appears to contain generated/),
         position: {
-          path: "extension.blockPipeline.0.config.selectors.complex.selector",
+          path: "modComponent.brickPipeline.0.config.selectors.complex.selector",
         },
         type: "warning",
       },

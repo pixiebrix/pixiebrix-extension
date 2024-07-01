@@ -57,7 +57,7 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
-    extensionPoint: {
+    starterBrick: {
       metadata,
       definition: {
         type: "quickBar",
@@ -69,9 +69,9 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
         isAvailable,
       },
     },
-    extension: {
+    modComponent: {
       title,
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -79,7 +79,7 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
 function selectStarterBrickDefinition(
   formState: QuickBarFormState,
 ): StarterBrickDefinitionLike<QuickBarDefinition> {
-  const { extensionPoint: starterBrick } = formState;
+  const { starterBrick } = formState;
   const {
     definition: {
       isAvailable,
@@ -106,13 +106,13 @@ function selectModComponent(
   state: QuickBarFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<QuickBarConfig> {
-  const { extension: modComponent } = state;
+  const { modComponent } = state;
   const config: QuickBarConfig = {
     title: modComponent.title,
     icon: modComponent.icon,
     action: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),
@@ -147,8 +147,8 @@ async function fromModComponent(
 
   return {
     ...base,
-    extension: modComponent,
-    extensionPoint: {
+    modComponent,
+    starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
         type: "quickBar",

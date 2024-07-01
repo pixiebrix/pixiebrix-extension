@@ -60,7 +60,7 @@ function fromNativeElement(
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
-    extensionPoint: {
+    starterBrick: {
       metadata,
       definition: {
         type: "quickBarProvider",
@@ -70,9 +70,9 @@ function fromNativeElement(
         isAvailable,
       },
     },
-    extension: {
+    modComponent: {
       rootAction: undefined,
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -80,7 +80,7 @@ function fromNativeElement(
 function selectStarterBrickDefinition(
   formState: QuickBarProviderFormState,
 ): StarterBrickDefinitionLike<QuickBarProviderDefinition> {
-  const { extensionPoint: starterBrick } = formState;
+  const { starterBrick } = formState;
   const {
     definition: { isAvailable, documentUrlPatterns, reader },
   } = starterBrick;
@@ -99,12 +99,12 @@ function selectModComponent(
   state: QuickBarProviderFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<QuickBarProviderConfig> {
-  const { extension: modComponent } = state;
+  const { modComponent } = state;
   const config: QuickBarProviderConfig = {
     rootAction: modComponent.rootAction,
     generator: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),
@@ -137,8 +137,8 @@ async function fromModComponent(
 
   return {
     ...base,
-    extension: modComponent,
-    extensionPoint: {
+    modComponent,
+    starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
         type: "quickBarProvider",

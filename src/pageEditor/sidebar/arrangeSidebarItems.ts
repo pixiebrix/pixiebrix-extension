@@ -44,15 +44,15 @@ function arrangeSidebarItems({
   for (const formState of modComponentFormStates) {
     formStateModComponentIds.add(formState.uuid);
 
-    if (formState.recipe == null) {
+    if (formState.modMetadata == null) {
       orphanSidebarItems.push(formState);
     } else {
-      const modSidebarItem = modSidebarItems[formState.recipe.id] ?? {
-        modMetadata: formState.recipe,
+      const modSidebarItem = modSidebarItems[formState.modMetadata.id] ?? {
+        modMetadata: formState.modMetadata,
         modComponents: [],
       };
       modSidebarItem.modComponents.push(formState);
-      modSidebarItems[formState.recipe.id] = modSidebarItem;
+      modSidebarItems[formState.modMetadata.id] = modSidebarItem;
     }
   }
 

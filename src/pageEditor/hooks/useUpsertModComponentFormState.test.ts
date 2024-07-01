@@ -69,7 +69,7 @@ describe("useUpsertModComponentFormState", () => {
     expect(modComponents[0]).toEqual(
       expect.objectContaining({
         id: modComponentFormState.uuid,
-        extensionPointId: modComponentFormState.extensionPoint.metadata.id,
+        extensionPointId: modComponentFormState.starterBrick.metadata.id,
         updateTimestamp: expectedUpdateDate.toISOString(),
       }),
     );
@@ -95,7 +95,7 @@ describe("useUpsertModComponentFormState", () => {
 
     const expectedFields = {
       id: modComponentFormState.uuid,
-      extensionPointId: modComponentFormState.extensionPoint.metadata.id,
+      extensionPointId: modComponentFormState.starterBrick.metadata.id,
       updateTimestamp: expectedUpdateDate.toISOString(),
     };
 

@@ -18,8 +18,11 @@
 import { type PersistedState, type MigrationManifest } from "redux-persist";
 import { mapValues, omit } from "lodash";
 import {
+  type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
+  type BaseModComponentStateV1,
+  type BaseModComponentStateV2,
 } from "@/pageEditor/baseFormStateTypes";
 import {
   type IntegrationDependencyV1,
@@ -29,6 +32,7 @@ import {
   type EditorStateV2,
   type EditorStateV1,
   type EditorStateV3,
+  type EditorStateV4,
 } from "@/pageEditor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
@@ -39,6 +43,7 @@ export const migrations: MigrationManifest = {
   1: (state) => state,
   2: (state: EditorStateV1 & PersistedState) => migrateEditorStateV1(state),
   3: (state: EditorStateV2 & PersistedState) => migrateEditorStateV2(state),
+  4: (state: EditorStateV3 & PersistedState) => migrateEditorStateV3(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -104,7 +109,7 @@ export function migrateEditorStateV2({
     activeModComponentId: activeElementId,
     activeModId: activeRecipeId,
     expandedModId: expandedRecipeId,
-    modComponentFormStates: elements as ModComponentFormState[],
+    modComponentFormStates: elements,
     knownEditableBrickIds: knownEditable,
     brickPipelineUIStateById: elementUIStates,
     copiedBrick: copiedBlock,
@@ -112,13 +117,44 @@ export function migrateEditorStateV2({
     dirtyModMetadataById: dirtyRecipeMetadataById,
     addBrickLocation: addBlockLocation,
     keepLocalCopyOnCreateMod: keepLocalCopyOnCreateRecipe,
-    deletedModComponentFormStatesByModId: deletedElementsByRecipeId as Record<
-      string,
-      ModComponentFormState[]
-    >,
+    deletedModComponentFormStatesByModId: deletedElementsByRecipeId,
     availableActivatedModComponentIds: availableInstalledIds,
     isPendingAvailableActivatedModComponents: isPendingInstalledExtensions,
     availableDraftModComponentIds: availableDynamicIds,
     isPendingDraftModComponents: isPendingDynamicExtensions,
+  };
+}
+
+function migrateModComponentStateV1(
+  state: BaseModComponentStateV1,
+): BaseModComponentStateV2 {
+  return {
+    brickPipeline: state.blockPipeline,
+  };
+}
+
+function migrateFormStateV2(state: BaseFormStateV2): BaseFormStateV3 {
+  return {
+    ...omit(state, "recipe", "extension", "extensionPoint"),
+    modComponent: migrateModComponentStateV1(state.extension),
+    starterBrick: state.extensionPoint,
+    modMetadata: state.recipe,
+  };
+}
+
+export function migrateEditorStateV3({
+  modComponentFormStates,
+  deletedModComponentFormStatesByModId,
+  ...rest
+}: EditorStateV3 & PersistedState): EditorStateV4 & PersistedState {
+  return {
+    ...rest,
+    modComponentFormStates: modComponentFormStates.map((element) =>
+      migrateFormStateV2(element),
+    ) as ModComponentFormState[],
+    deletedModComponentFormStatesByModId: mapValues(
+      deletedModComponentFormStatesByModId,
+      (formStates) => formStates.map((element) => migrateFormStateV2(element)),
+    ) as Record<string, ModComponentFormState[]>,
   };
 }

@@ -36,6 +36,7 @@ import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Except } from "type-fest";
 import {
+  type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
 } from "@/pageEditor/baseFormStateTypes";
@@ -271,7 +272,7 @@ export type EditorStateV3 = Except<
    * When a mod component is selected in the Page Editor, a mod component form state is created for it and stored here;
    * that is, "touched" mod component form states.
    */
-  readonly modComponentFormStates: ModComponentFormState[];
+  readonly modComponentFormStates: BaseFormStateV2[];
 
   /**
    * Brick ids (not UUIDs) that the user has access to edit
@@ -317,10 +318,7 @@ export type EditorStateV3 = Except<
   /**
    * Unsaved mod components that have been deleted from a mod
    */
-  deletedModComponentFormStatesByModId: Record<
-    RegistryId,
-    ModComponentFormState[]
-  >;
+  deletedModComponentFormStatesByModId: Record<RegistryId, BaseFormStateV2[]>;
 
   /**
    * The available activated mod components for the current tab
@@ -343,7 +341,24 @@ export type EditorStateV3 = Except<
   isPendingDraftModComponents: boolean;
 };
 
-export type EditorState = EditorStateV3;
+/**
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ */
+export type EditorStateV4 = Except<
+  EditorStateV3,
+  "modComponentFormStates" | "deletedModComponentFormStatesByModId"
+> & {
+  modComponentFormStates: BaseFormStateV3[];
+  deletedModComponentFormStatesByModId: Record<string, BaseFormStateV3[]>;
+};
+
+export type EditorState = Except<
+  EditorStateV4,
+  "modComponentFormStates" | "deletedModComponentFormStatesByModId"
+> & {
+  modComponentFormStates: ModComponentFormState[];
+  deletedModComponentFormStatesByModId: Record<string, ModComponentFormState[]>;
+};
 
 export type EditorRootState = {
   editor: EditorState;

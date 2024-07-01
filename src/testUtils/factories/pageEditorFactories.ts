@@ -55,7 +55,7 @@ import { type BaseModComponentState } from "@/pageEditor/baseFormStateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const baseModComponentStateFactory = define<BaseModComponentState>({
-  blockPipeline: () => pipelineFactory(),
+  brickPipeline: () => pipelineFactory(),
 });
 
 type InternalFormStateOverride = ModComponentFormState & {
@@ -73,12 +73,12 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   integrationDependencies(): IntegrationDependency[] {
     return [];
   },
-  recipe: undefined,
+  modMetadata: undefined,
   type: StarterBrickTypes.SIDEBAR_PANEL,
   label: (i: number) => `Element ${i}`,
-  extension: baseModComponentStateFactory,
+  modComponent: baseModComponentStateFactory,
   // @ts-expect-error -- TODO: verify typings
-  extensionPoint: derive<ModComponentFormState, StarterBrickDefinitionLike>(
+  starterBrick: derive<ModComponentFormState, StarterBrickDefinitionLike>(
     ({ type }) => {
       // FIXME: the starter brick type produced is not based on the type provided
       const starterBrick = starterBrickDefinitionFactory();
@@ -99,8 +99,8 @@ export const formStateFactory = (
   if (pipelineOverride) {
     return internalFormStateFactory({
       ...override,
-      extension: baseModComponentStateFactory({
-        blockPipeline: pipelineOverride,
+      modComponent: baseModComponentStateFactory({
+        brickPipeline: pipelineOverride,
       }),
     } as InternalFormStateOverride);
   }
@@ -261,11 +261,11 @@ export const formStateWithTraceDataFactory = define<{
     TraceRecord[]
   >(({ formState }) => {
     assertNotNullish(formState, "formState is required");
-    const { uuid: extensionId, extension } = formState;
+    const { uuid: modComponentId, modComponent } = formState;
 
     let outputKey = "" as OutputKey;
     let output: JsonObject = foundationOutputFactory();
-    return extension.blockPipeline.map((block, index) => {
+    return modComponent.brickPipeline.map((block, index) => {
       const context = output;
       outputKey = `output${index}` as OutputKey;
       output = {
@@ -278,7 +278,7 @@ export const formStateWithTraceDataFactory = define<{
       };
 
       return traceRecordFactory({
-        extensionId,
+        extensionId: modComponentId,
         blockInstanceId: block.instanceId,
         blockId: block.id,
         templateContext: context,

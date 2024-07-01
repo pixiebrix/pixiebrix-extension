@@ -275,7 +275,7 @@ export function replaceModComponent(
     assertNotNullish(adapter, `No adapter found for ${newModComponent.type}`);
     const { selectModComponent, selectStarterBrickDefinition } = adapter;
     const rawModComponent = selectModComponent(newModComponent);
-    const starterBrickId = newModComponent.extensionPoint.metadata.id;
+    const starterBrickId = newModComponent.starterBrick.metadata.id;
     const hasInnerDefinition = isInnerDefinitionRegistryId(starterBrickId);
 
     const commonModComponentDefinition: Except<ModComponentDefinition, "id"> = {

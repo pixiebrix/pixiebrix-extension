@@ -19,7 +19,7 @@ import { DocumentRenderer } from "@/bricks/renderers/document";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { type BrickPosition, type BrickConfig } from "@/bricks/types";
 import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import PipelineVisitor, { type VisitBlockExtra } from "./PipelineVisitor";
 import {
@@ -46,13 +46,13 @@ test("should invoke the callback for the pipeline bricks", () => {
 
   const visitor = new Visitor();
   visitor.visitRootPipeline(pipeline, {
-    extensionPointType: StarterBrickTypes.BUTTON,
+    starterBrickType: StarterBrickTypes.BUTTON,
   });
 
   expect(visitBlock).toHaveBeenCalledTimes(pipeline.length);
   expect(visitBlock).toHaveBeenCalledWith(
     {
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.0`,
     },
     pipeline[0],
     {
@@ -60,12 +60,12 @@ test("should invoke the callback for the pipeline bricks", () => {
       pipelineFlavor: "noRenderer",
       parentNodeId: undefined,
       pipeline,
-      pipelinePosition: { path: PIPELINE_BLOCKS_FIELD_NAME },
+      pipelinePosition: { path: PIPELINE_BRICKS_FIELD_NAME },
     },
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.1`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.1`,
     },
     pipeline[1],
     {
@@ -73,7 +73,7 @@ test("should invoke the callback for the pipeline bricks", () => {
       pipelineFlavor: "noRenderer",
       parentNodeId: undefined,
       pipeline,
-      pipelinePosition: { path: PIPELINE_BLOCKS_FIELD_NAME },
+      pipelinePosition: { path: PIPELINE_BRICKS_FIELD_NAME },
     },
   );
 });
@@ -104,7 +104,7 @@ test("should invoke the callback for the sub pipeline bricks", () => {
   }
   const visitor = new Visitor();
   visitor.visitRootPipeline(pipeline, {
-    extensionPointType: StarterBrickTypes.BUTTON,
+    starterBrickType: StarterBrickTypes.BUTTON,
   });
 
   expect(visitBlock).toHaveBeenCalledTimes(
@@ -113,7 +113,7 @@ test("should invoke the callback for the sub pipeline bricks", () => {
 
   expect(visitBlock).toHaveBeenCalledWith(
     {
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__.0`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.__value__.0`,
     },
     subPipeline[0],
     {
@@ -122,13 +122,13 @@ test("should invoke the callback for the sub pipeline bricks", () => {
       parentNodeId: forEachBrick.instanceId,
       pipeline: subPipeline,
       pipelinePosition: {
-        path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__`,
+        path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.__value__`,
       },
     },
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__.1`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.__value__.1`,
     },
     subPipeline[1],
     {
@@ -137,13 +137,13 @@ test("should invoke the callback for the sub pipeline bricks", () => {
       parentNodeId: forEachBrick.instanceId,
       pipeline: subPipeline,
       pipelinePosition: {
-        path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__`,
+        path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.__value__`,
       },
     },
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.0`,
     },
     pipeline[0],
     {
@@ -151,7 +151,7 @@ test("should invoke the callback for the sub pipeline bricks", () => {
       pipelineFlavor: "noRenderer",
       parentNodeId: undefined,
       pipeline,
-      pipelinePosition: { path: PIPELINE_BLOCKS_FIELD_NAME },
+      pipelinePosition: { path: PIPELINE_BRICKS_FIELD_NAME },
     },
   );
 });
@@ -186,13 +186,13 @@ test("should invoke the callback for the Document button pipeline", () => {
   }
   const visitor = new Visitor();
   visitor.visitRootPipeline(pipeline, {
-    extensionPointType: StarterBrickTypes.SIDEBAR_PANEL,
+    starterBrickType: StarterBrickTypes.SIDEBAR_PANEL,
   });
 
   expect(visitBlock).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
   expect(visitBlock).toHaveBeenCalledWith(
     {
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.0`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.0`,
     },
     subPipeline[0],
     {
@@ -201,13 +201,13 @@ test("should invoke the callback for the Document button pipeline", () => {
       parentNodeId: documentBrick.instanceId,
       pipeline: subPipeline,
       pipelinePosition: {
-        path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__`,
+        path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__`,
       },
     },
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.0`,
     },
     documentBrick,
     {
@@ -216,7 +216,7 @@ test("should invoke the callback for the Document button pipeline", () => {
       parentNodeId: undefined,
       pipeline,
       pipelinePosition: {
-        path: PIPELINE_BLOCKS_FIELD_NAME,
+        path: PIPELINE_BRICKS_FIELD_NAME,
       },
     },
   );
