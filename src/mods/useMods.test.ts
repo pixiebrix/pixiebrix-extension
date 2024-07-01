@@ -26,11 +26,17 @@ import {
   standaloneModDefinitionFactory,
   activatedModComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import {
+  defaultModDefinitionFactory,
+  starterBrickInnerDefinitionFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-import { DefinitionKinds } from "@/types/registryTypes";
+import {
+  DefinitionKinds,
+  type InnerDefinitionRef,
+} from "@/types/registryTypes";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 
@@ -120,7 +126,7 @@ describe("useMods", () => {
     });
   });
 
-  it("handles known recipe", async () => {
+  it("handles known mod definition", async () => {
     const metadata = metadataFactory();
 
     useAllModDefinitionsMock.mockReturnValue({
@@ -158,7 +164,7 @@ describe("useMods", () => {
     expect(wrapper.result.current.mods[0]).not.toHaveProperty("isStub");
   });
 
-  it("handles inactive cloud extension", async () => {
+  it("handles inactive standalone mod component", async () => {
     appApiMock
       .onGet("/api/extensions/")
       .reply(200, [standaloneModDefinitionFactory()]);
@@ -178,7 +184,7 @@ describe("useMods", () => {
     });
   });
 
-  it("handles active cloud extension", async () => {
+  it("handles active standalone mod component", async () => {
     appApiMock.reset();
 
     const standaloneModDefinition = standaloneModDefinitionFactory();
@@ -202,6 +208,65 @@ describe("useMods", () => {
         expect.objectContaining({
           active: true,
           extensionPointId: expect.toBeString(),
+        }),
+      ],
+      error: undefined,
+    });
+  });
+
+  it("handles retired starter brick type with no valid mods", async () => {
+    appApiMock.reset();
+
+    const standaloneModDefinition = standaloneModDefinitionFactory();
+    standaloneModDefinition.definitions = {
+      extensionPoint: starterBrickInnerDefinitionFactory(),
+    };
+    (
+      standaloneModDefinition.definitions.extensionPoint.definition as any
+    ).type = "retired";
+    standaloneModDefinition.extensionPointId =
+      "extensionPoint" as InnerDefinitionRef;
+
+    appApiMock.onGet("/api/extensions/").reply(200, [standaloneModDefinition]);
+
+    const wrapper = renderHook(() => useMods(), {
+      setupRedux(dispatch) {},
+    });
+
+    await wrapper.waitForEffect();
+
+    expect(wrapper.result.current.mods).toEqual([]);
+    expect(wrapper.result.current.error).toBeInstanceOf(Error);
+  });
+
+  it("handles ignores retired mods", async () => {
+    appApiMock.reset();
+
+    const retiredDefinition = standaloneModDefinitionFactory();
+    retiredDefinition.definitions = {
+      extensionPoint: starterBrickInnerDefinitionFactory(),
+    };
+    (retiredDefinition.definitions.extensionPoint.definition as any).type =
+      "retired";
+    retiredDefinition.extensionPointId = "extensionPoint" as InnerDefinitionRef;
+
+    const validDefinition = standaloneModDefinitionFactory();
+
+    appApiMock
+      .onGet("/api/extensions/")
+      .reply(200, [retiredDefinition, validDefinition]);
+
+    const wrapper = renderHook(() => useMods(), {
+      setupRedux(dispatch) {},
+    });
+
+    await wrapper.waitForEffect();
+
+    expect(wrapper.result.current).toEqual({
+      mods: [
+        expect.objectContaining({
+          active: false,
+          extensionPointId: validDefinition.extensionPointId,
         }),
       ],
       error: undefined,

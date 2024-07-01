@@ -28,6 +28,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import type { Mod, UnavailableMod } from "@/types/modTypes";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { allSettled } from "@/utils/promiseUtils";
 
 type ModsState = {
   /**
@@ -41,7 +42,7 @@ type ModsState = {
   error: unknown;
 };
 
-export function unavailableModFactory(
+export function mapModComponentToUnavailableMod(
   modComponent: ModComponentBase,
 ): UnavailableMod {
   return {
@@ -59,99 +60,132 @@ export function unavailableModFactory(
  */
 function useMods(): ModsState {
   const scope = useSelector(selectScope);
-  const unresolvedExtensions = useSelector(selectActivatedModComponents);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
 
-  const { data: knownRecipes, ...recipesState } = useAllModDefinitions();
+  const { data: knownModDefinitions = [], ...modDefinitionsState } =
+    useAllModDefinitions();
   const standaloneModDefinitions = useGetAllStandaloneModDefinitionsQuery();
 
-  const { installedExtensionIds, installedRecipeIds } = useMemo(
-    () => ({
-      installedExtensionIds: new Set<UUID>(
-        unresolvedExtensions.map((extension) => extension.id),
-      ),
-      installedRecipeIds: new Set(
-        unresolvedExtensions.map((extension) => extension._recipe?.id),
-      ),
-    }),
-    [unresolvedExtensions],
-  );
+  const { activatedStandaloneModComponentIds, activatedModDefinitionIds } =
+    useMemo(
+      () => ({
+        activatedStandaloneModComponentIds: new Set<UUID>(
+          activatedModComponents.map((x) => x.id),
+        ),
+        activatedModDefinitionIds: new Set(
+          activatedModComponents.map((x) => x._recipe?.id),
+        ),
+      }),
+      [activatedModComponents],
+    );
 
-  const knownPersonalOrTeamRecipes = useMemo(
+  const knownPersonalOrTeamModDefinitions = useMemo(
     () =>
-      (knownRecipes ?? []).filter(
-        (recipe) =>
-          // Is personal blueprint
-          recipe.metadata.id.includes(scope) ||
-          // Is blueprint shared with user
-          recipe.sharing.organizations.length > 0 ||
-          // Is blueprint active, e.g. installed via marketplace
-          installedRecipeIds.has(recipe.metadata.id),
+      (knownModDefinitions ?? []).filter(
+        (modDefinition) =>
+          // Is personal mod
+          modDefinition.metadata.id.includes(scope) ||
+          // Is mod shared with the current user
+          modDefinition.sharing.organizations.length > 0 ||
+          // Is mod active, e.g. activated via marketplace
+          activatedModDefinitionIds.has(modDefinition.metadata.id),
       ),
-    [installedRecipeIds, knownRecipes, scope],
+    [activatedModDefinitionIds, knownModDefinitions, scope],
   );
 
-  const allExtensions = useMemo(() => {
-    const inactiveExtensions =
+  // All known mod components, including activated mods and standalone mod components retrieved from the server.
+  const knownModComponents = useMemo(() => {
+    const unactivatedStandaloneModComponents =
       standaloneModDefinitions.data
-        ?.filter((x) => !installedExtensionIds.has(x.id))
+        ?.filter((x) => !activatedStandaloneModComponentIds.has(x.id))
         .map((x) => ({ ...x, active: false })) ?? [];
 
-    return [...unresolvedExtensions, ...inactiveExtensions];
+    return [...activatedModComponents, ...unactivatedStandaloneModComponents];
   }, [
     standaloneModDefinitions.data,
-    installedExtensionIds,
-    unresolvedExtensions,
+    activatedStandaloneModComponentIds,
+    activatedModComponents,
   ]);
 
-  const { data: resolvedExtensions, error: resolveError } = useAsyncState(
-    async () =>
-      Promise.all(
-        allExtensions.map(async (extension) =>
-          hydrateModComponentInnerDefinitions(extension),
-        ),
-      ),
-    [allExtensions],
-    { initialValue: [] },
-  );
+  const { data: hydratedModComponents = [], error: hydrationError } =
+    useAsyncState(
+      async () => {
+        // Hydration can fail if we've dropped support for a starter brick type (e.g., tour, inline panel)
+        const hydrationPromises = await allSettled(
+          knownModComponents.map(async (x) => {
+            try {
+              return await hydrateModComponentInnerDefinitions(x);
+            } catch (error) {
+              // Enrich the error with the mod component id to support resolving the issue. E.g., in the case of
+              // an unsupported starter brick, deleting the standalone mod component from the server
+              throw new Error(`Error hydrating mod component: ${x.id}`, {
+                cause: error,
+              });
+            }
+          }),
+          {
+            catch(errors) {
+              console.warn(
+                `Failed to hydrate mod ${errors.length} component(s)`,
+                errors,
+              );
+            },
+          },
+        );
 
-  const extensionsWithoutRecipe = useMemo(
+        const { fulfilled: hydratedModComponents } = hydrationPromises;
+
+        if (
+          knownModComponents.length > 0 &&
+          hydratedModComponents.length === 0
+        ) {
+          throw new Error("Failed to hydrate any mod components");
+        }
+
+        return hydratedModComponents;
+      },
+      [knownModComponents],
+      { initialValue: [] },
+    );
+
+  const standaloneModComponents = useMemo(
     () =>
-      // `resolvedExtensions` can be undefined if resolveDefinitions errors above
-      (resolvedExtensions ?? []).filter((extension) =>
-        extension._recipe?.id
-          ? !installedRecipeIds.has(extension._recipe?.id)
-          : true,
+      hydratedModComponents.filter((x) =>
+        x._recipe?.id ? !activatedModDefinitionIds.has(x._recipe?.id) : true,
       ),
-    [installedRecipeIds, resolvedExtensions],
+    [activatedModDefinitionIds, hydratedModComponents],
   );
 
-  // Find extensions that were installed by a recipe that's no longer available to the user, e.g., because it was
-  // deleted, or because the user no longer has access to it.
-  const unavailableRecipes: UnavailableMod[] = useMemo(() => {
-    const knownRecipeIds = new Set(
-      (knownRecipes ?? []).map((x) => x.metadata.id),
+  // Find mod components that were activated by a mod definitions that's no longer available to the user, e.g.,
+  // because it was deleted, or because the user no longer has access to it.
+  const unavailableMods: UnavailableMod[] = useMemo(() => {
+    const knownModDefinitionIds = new Set(
+      knownModDefinitions.map((x) => x.metadata.id),
     );
 
-    // `resolvedExtensions` can be undefined if resolveDefinitions errors above
-    const unavailable = (resolvedExtensions ?? []).filter(
-      (extension) =>
-        extension._recipe?.id && !knownRecipeIds.has(extension._recipe?.id),
+    const unavailable = hydratedModComponents.filter(
+      (modComponent) =>
+        modComponent._recipe?.id &&
+        !knownModDefinitionIds.has(modComponent._recipe?.id),
     );
 
-    // Show one entry per missing recipe
+    // Show one entry per missing mod id
     return uniqBy(
-      unavailable.map((x) => unavailableModFactory(x)),
+      unavailable.map((x) => mapModComponentToUnavailableMod(x)),
       (x) => x.metadata.id,
     );
-  }, [knownRecipes, resolvedExtensions]);
+  }, [knownModDefinitions, hydratedModComponents]);
 
   return {
     mods: [
-      ...extensionsWithoutRecipe,
-      ...knownPersonalOrTeamRecipes,
-      ...unavailableRecipes,
+      ...standaloneModComponents,
+      ...knownPersonalOrTeamModDefinitions,
+      ...unavailableMods,
     ],
-    error: standaloneModDefinitions.error ?? recipesState.error ?? resolveError,
+    error:
+      standaloneModDefinitions.error ??
+      modDefinitionsState.error ??
+      hydrationError,
   };
 }
 
