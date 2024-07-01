@@ -73,12 +73,12 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   integrationDependencies(): IntegrationDependency[] {
     return [];
   },
-  recipe: undefined,
+  mod: undefined,
   type: StarterBrickTypes.SIDEBAR_PANEL,
   label: (i: number) => `Element ${i}`,
-  extension: baseModComponentStateFactory,
+  modComponent: baseModComponentStateFactory,
   // @ts-expect-error -- TODO: verify typings
-  extensionPoint: derive<ModComponentFormState, StarterBrickDefinitionLike>(
+  starterBrick: derive<ModComponentFormState, StarterBrickDefinitionLike>(
     ({ type }) => {
       // FIXME: the starter brick type produced is not based on the type provided
       const starterBrick = starterBrickDefinitionFactory();
@@ -99,7 +99,7 @@ export const formStateFactory = (
   if (pipelineOverride) {
     return internalFormStateFactory({
       ...override,
-      extension: baseModComponentStateFactory({
+      modComponent: baseModComponentStateFactory({
         blockPipeline: pipelineOverride,
       }),
     } as InternalFormStateOverride);
@@ -261,11 +261,11 @@ export const formStateWithTraceDataFactory = define<{
     TraceRecord[]
   >(({ formState }) => {
     assertNotNullish(formState, "formState is required");
-    const { uuid: extensionId, extension } = formState;
+    const { uuid: modComponentId, modComponent } = formState;
 
     let outputKey = "" as OutputKey;
     let output: JsonObject = foundationOutputFactory();
-    return extension.blockPipeline.map((block, index) => {
+    return modComponent.blockPipeline.map((block, index) => {
       const context = output;
       outputKey = `output${index}` as OutputKey;
       output = {
@@ -278,7 +278,7 @@ export const formStateWithTraceDataFactory = define<{
       };
 
       return traceRecordFactory({
-        extensionId,
+        extensionId: modComponentId,
         blockInstanceId: block.instanceId,
         blockId: block.id,
         templateContext: context,
