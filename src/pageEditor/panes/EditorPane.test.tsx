@@ -38,7 +38,7 @@ import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
 import { type EditablePackageMetadata } from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
@@ -843,7 +843,7 @@ describe("validation", () => {
           dispatch(
             editorActions.addNode({
               block: disallowedBlockConfig,
-              pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
+              pipelinePath: PIPELINE_BRICKS_FIELD_NAME,
               pipelineIndex: 0,
             }),
           );

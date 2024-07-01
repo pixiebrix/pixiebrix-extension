@@ -30,12 +30,12 @@ import {
   getSubPipelineFlavor,
 } from "@/bricks/brickFilterHelpers";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { joinPathParts } from "@/utils/formUtils";
 
 export const ROOT_POSITION = Object.freeze({
-  path: PIPELINE_BLOCKS_FIELD_NAME,
+  path: PIPELINE_BRICKS_FIELD_NAME,
 }) as BrickPosition;
 
 export function nestedPosition(

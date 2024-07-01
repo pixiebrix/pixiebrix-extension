@@ -40,7 +40,7 @@ describe("FormRendererOptions", () => {
 
     render(
       <FormRendererOptions
-        name="extension.blockPipeline.0"
+        name="modComponent.blockPipeline.0"
         configKey="config"
       />,
       {
@@ -65,7 +65,7 @@ describe("FormRendererOptions", () => {
 
     render(
       <FormRendererOptions
-        name="extension.blockPipeline.0"
+        name="modComponent.blockPipeline.0"
         configKey="config"
       />,
       {
@@ -98,7 +98,7 @@ describe("FormRendererOptions", () => {
 
     render(
       <FormRendererOptions
-        name="extension.blockPipeline.0"
+        name="modComponent.blockPipeline.0"
         configKey="config"
       />,
       {

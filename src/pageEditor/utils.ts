@@ -29,7 +29,7 @@ import {
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pick, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "./consts";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -220,7 +220,7 @@ export function getFoundationNodeAnnotations(
 ): AnalysisAnnotation[] {
   return annotations.filter(
     (annotation) =>
-      !annotation.position.path.startsWith(PIPELINE_BLOCKS_FIELD_NAME),
+      !annotation.position.path.startsWith(PIPELINE_BRICKS_FIELD_NAME),
   );
 }
 
