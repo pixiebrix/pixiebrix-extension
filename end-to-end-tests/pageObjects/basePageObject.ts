@@ -57,7 +57,7 @@ import { type Locator, type Page } from "playwright";
  * const username = await dashboardPage.userProfile.getUsername();
  *
  * @param {Locator|Page} rootLocatorOrPage The root locator scoping this page object.
- * If a Page is provided, the root locator will be the body.
+ * If a Page is provided, the root locator will be `locator("html")`.
  */
 export class BasePageObject {
   readonly root: Locator;
