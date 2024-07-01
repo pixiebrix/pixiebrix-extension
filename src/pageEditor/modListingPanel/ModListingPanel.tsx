@@ -69,7 +69,7 @@ const ModListingPanel: React.VFC = () => {
   return (
     <div
       className={cx(styles.root, "flex-shrink-0")}
-      data-testid={"modListingPanel"}
+      data-testid="modListingPanel"
     >
       {/* Expanded sidebar: Actions list (+ always visible Home button) */}
 
