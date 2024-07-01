@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
-import DraftModComponentListItem from "@/pageEditor/sidebar/DraftModComponentListItem";
+import DraftModComponentListItem from "@/pageEditor/modListingPanel/DraftModComponentListItem";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";

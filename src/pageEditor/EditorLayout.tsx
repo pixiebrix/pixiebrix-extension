@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import Sidebar from "@/pageEditor/sidebar/Sidebar";
+import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
 import { useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import Modals from "./Modals";
@@ -60,7 +60,7 @@ const EditorLayout: React.FunctionComponent = () => {
           <InsertPane inserting={isInserting} />
         ) : (
           <>
-            <Sidebar />
+            <ModListingPanel />
             <EditorContent />
           </>
         )}

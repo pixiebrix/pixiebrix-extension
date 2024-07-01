@@ -19,7 +19,7 @@ import {
   getModComponentItemId,
   isModSidebarItem,
   type SidebarItem,
-} from "@/pageEditor/sidebar/common";
+} from "@/pageEditor/modListingPanel/common";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./Sidebar.module.scss";
+import styles from "./ModListingPanel.module.scss";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -48,7 +48,7 @@ const CollapsedElement: React.FC<
   </BootstrapCollapse>
 );
 
-const Sidebar: React.VFC = () => {
+const ModListingPanel: React.VFC = () => {
   const dispatch = useDispatch();
 
   const isExpanded = useSelector(selectIsEditorSidebarExpanded);
@@ -134,4 +134,4 @@ const Sidebar: React.VFC = () => {
   );
 };
 
-export default Sidebar;
+export default ModListingPanel;

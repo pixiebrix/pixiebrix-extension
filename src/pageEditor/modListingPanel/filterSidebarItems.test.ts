@@ -16,13 +16,13 @@
  */
 
 import { define } from "cooky-cutter";
-import { type SidebarItem } from "@/pageEditor/sidebar/common";
+import { type SidebarItem } from "@/pageEditor/modListingPanel/common";
 import {
   modComponentFactory,
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import filterSidebarItems from "@/pageEditor/sidebar/filterSidebarItems";
+import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
