@@ -32,7 +32,7 @@ const LogTable: React.FunctionComponent<{
         <th>Timestamp</th>
         <th>Level</th>
         <th>Label</th>
-        <th>Block/Service</th>
+        <th>Brick/Integration</th>
         <th>Message/Error</th>
       </tr>
     </thead>
