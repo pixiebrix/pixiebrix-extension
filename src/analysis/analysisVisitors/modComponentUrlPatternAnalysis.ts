@@ -31,11 +31,11 @@ const hostRegexp = /^(\*|(^(\*\.)?[^*/]+))$/;
 // All URLs is required for certain interactions, e.g., taking screenshots without activeTab
 const allUrls = "<all_urls>";
 
-const urlPatternFields = ["extensionPoint.definition.isAvailable.urlPatterns"];
+const urlPatternFields = ["starterBrick.definition.isAvailable.urlPatterns"];
 
 const stringUrlFields = [
-  "extensionPoint.definition.documentUrlPatterns",
-  "extensionPoint.definition.isAvailable.matchPatterns",
+  "starterBrick.definition.documentUrlPatterns",
+  "starterBrick.definition.isAvailable.matchPatterns",
   "permissions.origins",
 ];
 
@@ -52,7 +52,7 @@ export const INVALID_SCHEME_MESSAGE =
 export const INVALID_HOST_MESSAGE =
   "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+.";
 
-class ExtensionUrlPatternAnalysis implements Analysis {
+class ModComponentUrlPatternAnalysis implements Analysis {
   get id() {
     return "urlPattern";
   }
@@ -74,9 +74,9 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     });
   }
 
-  async run(extension: ModComponentFormState): Promise<void> {
+  async run(modComponent: ModComponentFormState): Promise<void> {
     for (const fieldName of urlPatternFields) {
-      const urlPatterns: UnknownObject[] = get(extension, fieldName);
+      const urlPatterns: UnknownObject[] = get(modComponent, fieldName);
       if (urlPatterns == null || urlPatterns.length === 0) {
         continue;
       }
@@ -86,7 +86,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
 
     const stringUrlsFieldAnalysisPromises: Array<Promise<void>> = [];
     for (const fieldName of stringUrlFields) {
-      const urls: string[] = get(extension, fieldName);
+      const urls: string[] = get(modComponent, fieldName);
       if (urls == null || urls.length === 0) {
         continue;
       }
@@ -170,4 +170,4 @@ class ExtensionUrlPatternAnalysis implements Analysis {
   }
 }
 
-export default ExtensionUrlPatternAnalysis;
+export default ModComponentUrlPatternAnalysis;

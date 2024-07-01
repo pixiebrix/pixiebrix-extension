@@ -18,7 +18,7 @@
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import arrangeSidebarItems from "@/pageEditor/sidebar/arrangeSidebarItems";
-import { type ActionFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type ButtonFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   modComponentFactory,
   modMetadataFactory,
@@ -47,14 +47,14 @@ const cleanModComponentFooA: ModComponentBase = modComponentFactory({
 });
 
 const ID_FOO_B = uuidv4();
-const formStateModComponentFooB: ActionFormState = menuItemFormStateFactory({
+const formStateModComponentFooB: ButtonFormState = menuItemFormStateFactory({
   uuid: ID_FOO_B,
   label: "B",
-  recipe: modMetadataFoo,
+  modMetadata: modMetadataFoo,
 });
 
 const ID_ORPHAN_C = uuidv4();
-const formStateModComponentOrphanC: ActionFormState = menuItemFormStateFactory({
+const formStateModComponentOrphanC: ButtonFormState = menuItemFormStateFactory({
   uuid: ID_ORPHAN_C,
   label: "C",
 });
@@ -67,10 +67,10 @@ const cleanModComponentBarD: ModComponentBase = modComponentFactory({
 });
 
 const ID_BAR_E = uuidv4();
-const formStateModComponentBarE: ActionFormState = menuItemFormStateFactory({
+const formStateModComponentBarE: ButtonFormState = menuItemFormStateFactory({
   uuid: ID_BAR_E,
   label: "E",
-  recipe: modMetadataBar,
+  modMetadata: modMetadataBar,
 });
 
 const ID_BAR_F = uuidv4();
@@ -92,7 +92,7 @@ const cleanModComponentOrphanH: ModComponentBase = modComponentFactory({
   label: "H",
 });
 
-const formStateModComponentOrphanH: ActionFormState = menuItemFormStateFactory({
+const formStateModComponentOrphanH: ButtonFormState = menuItemFormStateFactory({
   uuid: ID_ORPHAN_H,
   label: "H",
 });

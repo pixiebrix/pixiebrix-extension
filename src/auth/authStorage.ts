@@ -23,7 +23,7 @@ import {
   type UserData,
   type UserDataUpdate,
 } from "./authTypes";
-import { isExtensionContext } from "webext-detect-page";
+import { isExtensionContext } from "webext-detect";
 import { expectContext } from "@/utils/expectContext";
 import { omit } from "lodash";
 import { syncRemotePackages } from "@/registry/memoryRegistry";

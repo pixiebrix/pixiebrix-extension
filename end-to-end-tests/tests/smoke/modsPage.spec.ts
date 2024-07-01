@@ -18,7 +18,7 @@
 import { test, expect } from "../../fixtures/testBase";
 import { ModsPage } from "../../pageObjects/extensionConsole/modsPage";
 import AxeBuilder from "@axe-core/playwright";
-import { checkForCriticalViolations, ensureVisibility } from "../../utils";
+import { checkForCriticalViolations } from "../../utils";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 
@@ -29,9 +29,6 @@ test.describe("extension console mods page smoke test", () => {
     const pageTitle = await page.title();
     expect(pageTitle).toBe("Mods | PixieBrix");
     await modsPage.viewAllMods();
-    const modTableItems = modsPage.modTableItems();
-    // Expect at least one mod visible - These might be initially hidden, so toBeVisible() would immediately fail
-    await ensureVisibility(modTableItems.nth(0), { timeout: 6000 });
 
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 

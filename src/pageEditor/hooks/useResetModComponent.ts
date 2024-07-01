@@ -31,11 +31,11 @@ import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { compact } from "lodash";
 
 type Config = {
-  extensionId: UUID;
+  modComponentId: UUID;
   shouldShowConfirmation?: boolean;
 };
 
-function useResetExtension(): (useResetConfig: Config) => Promise<void> {
+function useResetModComponent(): (useResetConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const installed = useSelector(selectActivatedModComponents);
@@ -43,7 +43,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ extensionId: modComponentId, shouldShowConfirmation = true }) => {
+    async ({ modComponentId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
           title: "Reset Brick?",
@@ -58,15 +58,15 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
 
       reportEvent(Events.PAGE_EDITOR_RESET, {
         sessionId,
-        modComponentId,
+        extensionId: modComponentId,
       });
 
       try {
-        const extension = installed.find((x) => x.id === modComponentId);
-        if (extension == null) {
+        const modComponent = installed.find((x) => x.id === modComponentId);
+        if (modComponent == null) {
           dispatch(actions.removeModComponentFormState(modComponentId));
         } else {
-          const formState = await modComponentToFormState(extension);
+          const formState = await modComponentToFormState(modComponent);
           initModOptionsIfNeeded(formState, compact(mods));
           dispatch(actions.resetInstalled(formState));
         }
@@ -79,4 +79,4 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
   );
 }
 
-export default useResetExtension;
+export default useResetModComponent;

@@ -27,7 +27,10 @@ import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import type React from "react";
 import { createSitePattern, SITES_PATTERN } from "@/permissions/patterns";
 import { type Except } from "type-fest";
@@ -120,7 +123,7 @@ export function baseFromModComponent<T extends StarterBrickType>(
   | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
-  | "recipe"
+  | "modMetadata"
 > & { type: T } {
   return {
     uuid: config.id,
@@ -132,7 +135,7 @@ export function baseFromModComponent<T extends StarterBrickType>(
     permissions: config.permissions ?? {},
     optionsArgs: config.optionsArgs ?? {},
     type,
-    recipe: config._recipe,
+    modMetadata: config._recipe,
   };
 }
 
@@ -143,9 +146,9 @@ export function initModOptionsIfNeeded<TFormState extends BaseFormState>(
   modComponentFormState: TFormState,
   modDefinitions: ModDefinition[],
 ) {
-  if (modComponentFormState.recipe?.id) {
+  if (modComponentFormState.modMetadata?.id) {
     const mod = modDefinitions?.find(
-      (x) => x.metadata.id === modComponentFormState.recipe?.id,
+      (x) => x.metadata.id === modComponentFormState.modMetadata?.id,
     );
 
     if (mod?.options == null) {
@@ -172,8 +175,8 @@ export function baseSelectModComponent({
   optionsArgs,
   integrationDependencies,
   permissions,
-  extensionPoint,
-  recipe,
+  starterBrick,
+  modMetadata: mod,
 }: BaseFormState): Pick<
   ModComponentBase,
   | "id"
@@ -188,8 +191,8 @@ export function baseSelectModComponent({
   return {
     id: uuid,
     apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: recipe,
+    extensionPointId: starterBrick.metadata.id,
+    _recipe: mod,
     label,
     integrationDependencies,
     permissions,
@@ -199,17 +202,17 @@ export function baseSelectModComponent({
 
 export function makeInitialBaseState(
   uuid: UUID = uuidv4(),
-): Except<BaseFormState, "type" | "label" | "extensionPoint"> {
+): Except<BaseFormState, "type" | "label" | "starterBrick"> {
   return {
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     integrationDependencies: [],
     permissions: emptyPermissionsFactory(),
     optionsArgs: {},
-    extension: {
-      blockPipeline: [],
+    modComponent: {
+      brickPipeline: [],
     },
-    recipe: undefined,
+    modMetadata: undefined,
   };
 }
 
@@ -278,7 +281,7 @@ export async function lookupStarterBrick<
   }
 
   if (hasInnerStarterBrickRef(config)) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerExtensionPointRef
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerStarterBrickRef
     const definition = config.definitions![config.extensionPointId];
     console.debug(
       "Converting mod component definition to temporary starter brick",
@@ -318,7 +321,7 @@ export async function lookupStarterBrick<
 export function baseSelectStarterBrick(
   formState: BaseFormState,
 ): Except<StarterBrickDefinitionLike, "definition"> {
-  const { metadata } = formState.extensionPoint;
+  const { metadata } = formState.starterBrick;
 
   return {
     apiVersion: formState.apiVersion,
@@ -419,7 +422,7 @@ export function getImplicitReader(
     return readerTypeHack([...base, ...elementAddons]);
   }
 
-  if (type === "menuItem") {
+  if (type === StarterBrickTypes.BUTTON) {
     return readerTypeHack([...base, ...elementAddons]);
   }
 
@@ -448,7 +451,7 @@ export async function modComponentWithNormalizedPipeline<
 ): Promise<BaseModComponentState & Omit<T, Prop>> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
-    blockPipeline: await normalizePipelineForEditor(
+    brickPipeline: await normalizePipelineForEditor(
       castArray(pipeline) as BrickPipeline,
     ),
     ...defaults,

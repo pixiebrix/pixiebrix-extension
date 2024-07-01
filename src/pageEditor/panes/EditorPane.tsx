@@ -58,12 +58,12 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   useEffect(() => {
     const messageContext = {
       extensionId: modComponentFormState.uuid,
-      blueprintId: modComponentFormState.recipe
-        ? modComponentFormState.recipe.id
+      blueprintId: modComponentFormState.modMetadata
+        ? modComponentFormState.modMetadata.id
         : undefined,
     };
     dispatch(logActions.setContext(messageContext));
-  }, [modComponentFormState.uuid, modComponentFormState.recipe, dispatch]);
+  }, [modComponentFormState.uuid, modComponentFormState.modMetadata, dispatch]);
 
   return (
     <IntegrationsSliceModIntegrationsContextAdapter>
@@ -94,7 +94,7 @@ const EditorPane: React.VFC = () => {
         initialValues={activeModComponentFormState}
         onSubmit={() => {
           console.error(
-            "Formik's submit should not be called to save an extension.",
+            "Formik's submit should not be called to save a mod component.",
           );
         }}
         // Don't validate -- we're using analysis, so we don't pass in a validation schema here

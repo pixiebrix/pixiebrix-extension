@@ -65,14 +65,13 @@ const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
 const FoundationNodeConfigPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showVersionField = flagOn("page-editor-developer");
-  const { extensionPoint: starterBrick } =
-    useSelector(selectActiveModComponentFormState) ?? {};
+  const { starterBrick } = useSelector(selectActiveModComponentFormState) ?? {};
   assertNotNullish(
     starterBrick,
     "starterBrick not found in active mod component form state",
   );
 
-  // For now, don't allow modifying extensionPoint packages via the Page Editor.
+  // For now, don't allow modifying starter brick packages via the Page Editor.
   const isLocked = useMemo(
     () => !isInnerDefinitionRegistryId(starterBrick.metadata.id),
     [starterBrick.metadata.id],

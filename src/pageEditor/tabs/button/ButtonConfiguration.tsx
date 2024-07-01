@@ -34,7 +34,7 @@ import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchBut
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 
-const menuSnippets: Snippet[] = [
+const buttonSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },
   { label: "icon", value: "{{{icon}}}" },
   { label: "space", value: "&nbsp;" },
@@ -45,32 +45,32 @@ const positionOptions: Option[] = [
   { value: "prepend", label: "Start" },
 ];
 
-const MenuItemConfiguration: React.FC<{
+const ButtonConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => {
-  const [{ value: onSuccess }] = useField("extension.onSuccess");
+  const [{ value: onSuccess }] = useField("modComponent.onSuccess");
 
   return (
     <>
       <ConnectedFieldTemplate
-        name="extension.caption"
+        name="modComponent.caption"
         label="Button text"
         description="This is the text that appears on the button"
       />
 
       <ConnectedFieldTemplate
-        name="extensionPoint.definition.containerSelector"
+        name="starterBrick.definition.containerSelector"
         as={LocationWidget}
         {...makeLockableFieldProps("Location", isLocked)}
       />
 
       <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
+        name="starterBrick.definition.isAvailable.matchPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
       />
 
       <ConnectedFieldTemplate
-        name="extensionPoint.definition.isAvailable.allFrames"
+        name="starterBrick.definition.isAvailable.allFrames"
         title="Show in All Frames"
         as={BooleanWidget}
         description="Show button in all matching frames. If toggled off, the button will only be added in the top-level frame."
@@ -79,15 +79,15 @@ const MenuItemConfiguration: React.FC<{
 
       <ConnectedCollapsibleFieldSection title="Advanced: Item Options">
         <ConnectedFieldTemplate
-          name="extension.icon"
+          name="modComponent.icon"
           label="Icon"
           as={IconWidget}
           description="Icon to place in the icon placeholder of the template"
         />
 
         <ConnectedFieldTemplate
-          name="extensionPoint.definition.position"
-          description="Position relative to other menu items/buttons"
+          name="starterBrick.definition.position"
+          description="Position relative to other buttons"
           as={SelectWidget}
           blankValue={null}
           options={positionOptions}
@@ -95,22 +95,23 @@ const MenuItemConfiguration: React.FC<{
         />
 
         <ConnectedFieldTemplate
-          name="extensionPoint.definition.template"
+          name="starterBrick.definition.template"
           as={TemplateWidget}
           description="A template for the item, with a placeholder for the caption and/or icon"
-          snippets={menuSnippets}
+          snippets={buttonSnippets}
           {...makeLockableFieldProps("Template", isLocked)}
         />
 
         <ConnectedFieldTemplate
-          name="extensionPoint.definition.attachMode"
+          name="starterBrick.definition.attachMode"
           as="select"
           title="Attach Mode"
           description={
             <p>
-              Use&nbsp;<code>once</code> to add the buttons once the menu
-              becomes available. Use&nbsp;
-              <code>watch</code> to continue to watch the page for new menus.
+              Use&nbsp;<code>once</code> to add the buttons once the button
+              container becomes available. Use&nbsp;
+              <code>watch</code> to continue to watch the page for new
+              containers.
             </p>
           }
           {...makeLockableFieldProps("Attach Mode", isLocked)}
@@ -120,7 +121,7 @@ const MenuItemConfiguration: React.FC<{
         </ConnectedFieldTemplate>
 
         <ConnectedFieldTemplate
-          name="extensionPoint.definition.targetMode"
+          name="starterBrick.definition.targetMode"
           as="select"
           title="Target Mode"
           blankValue="document"
@@ -138,7 +139,7 @@ const MenuItemConfiguration: React.FC<{
         </ConnectedFieldTemplate>
 
         <ConnectedFieldTemplate
-          name="extension.synchronous"
+          name="modComponent.synchronous"
           label="Synchronous"
           as={SwitchButtonWidget}
           description="Prevent button to be clicked again while action is in progress"
@@ -149,7 +150,7 @@ const MenuItemConfiguration: React.FC<{
           // Punt on object-based configuration for now. Enterprise customers are just asking to turn off the message.
           // If they want a custom message they can add an alert brick.
           <ConnectedFieldTemplate
-            name="extension.onSuccess"
+            name="modComponent.onSuccess"
             label="Show Success Message"
             as={SwitchButtonWidget}
             description="Show the default success message when run"
@@ -164,4 +165,4 @@ const MenuItemConfiguration: React.FC<{
   );
 };
 
-export default MenuItemConfiguration;
+export default ButtonConfiguration;

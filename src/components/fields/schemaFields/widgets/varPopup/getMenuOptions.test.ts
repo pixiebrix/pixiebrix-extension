@@ -50,7 +50,7 @@ describe("setting values", () => {
     });
 
     knownVars.setVariableExistence({
-      source: "extension.blockPipeline.0",
+      source: "modComponent.brickPipeline.0",
       variableName: "@jq",
       existence: VarExistence.DEFINITELY,
       allowAnyChild: true,
@@ -73,7 +73,7 @@ describe("setting values", () => {
     // Validate the order of the options
     expect(actual.map(([key]) => key)).toEqual([
       "input:Array Composite Reader",
-      "extension.blockPipeline.0",
+      "modComponent.brickPipeline.0",
     ]);
   });
 
@@ -94,7 +94,7 @@ describe("setting values", () => {
     // Validate the order of the options
     expect(actual.map(([key]) => key)).toEqual([
       "input:Array Composite Reader",
-      "extension.blockPipeline.0",
+      "modComponent.brickPipeline.0",
     ]);
 
     // Function getMenuOptions produces a mix of VarMap nodes and plain values from the trace
@@ -182,7 +182,9 @@ describe("mod variables", () => {
     const extension = formStateFactory({}, [brickConfigFactory()]);
     await analysis.run(extension);
 
-    const knownVars = analysis.getKnownVars().get("extension.blockPipeline.0");
+    const knownVars = analysis
+      .getKnownVars()
+      .get("modComponent.brickPipeline.0");
 
     const actual = getMenuOptions(knownVars, null);
     expect(actual).toEqual([

@@ -141,11 +141,11 @@ const previewSlice = createSlice({
 
 const BrickPreview: React.FunctionComponent<{
   brickConfig: BrickConfig;
-  extensionPoint: BaseStarterBrickState;
+  starterBrick: BaseStarterBrickState;
   traceRecord: TraceRecord;
   previewRefreshMillis?: 250;
   // eslint-disable-next-line complexity -- complex due to formik
-}> = ({ brickConfig, extensionPoint, traceRecord, previewRefreshMillis }) => {
+}> = ({ brickConfig, starterBrick, traceRecord, previewRefreshMillis }) => {
   const [{ isRunning, output }, dispatch] = useReducer(previewSlice.reducer, {
     ...initialState,
     outputKey: brickConfig.outputKey,
@@ -185,7 +185,7 @@ const BrickPreview: React.FunctionComponent<{
             )),
           },
           rootSelector: undefined,
-          modId: values.recipe?.id,
+          modId: values.modMetadata?.id,
         });
         dispatch(previewSlice.actions.setSuccess({ output, outputKey }));
       } catch (error) {

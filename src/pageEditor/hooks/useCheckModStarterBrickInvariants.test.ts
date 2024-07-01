@@ -31,7 +31,7 @@ import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { take } from "lodash";
 import { renderHook } from "@/pageEditor/testHelpers";
 import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
-import { actions as extensionsActions } from "@/store/extensionsSlice";
+import { actions as modComponentsActions } from "@/store/extensionsSlice";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import {
   type InnerDefinitionRef,
@@ -39,10 +39,10 @@ import {
   DefinitionKinds,
 } from "@/types/registryTypes";
 
-let extensionPointCount = 0;
-function newExtensionPointId(): InnerDefinitionRef {
+let starterBrickCount = 0;
+function newStarterBrickId(): InnerDefinitionRef {
   // eslint-disable-next-line no-constant-binary-expression -- false positive
-  return `extensionPoint${extensionPointCount++ ?? ""}` as InnerDefinitionRef;
+  return `starterBrick${starterBrickCount++ ?? ""}` as InnerDefinitionRef;
 }
 
 describe("useCheckModStarterBrickInvariants", () => {
@@ -107,24 +107,24 @@ describe("useCheckModStarterBrickInvariants", () => {
 
       if (cleanCount + dirtyCount) {
         for (let i = 0; i < cleanCount; i++) {
-          const extensionPointId = newExtensionPointId();
+          const starterBrickId = newStarterBrickId();
           const modComponentDefinition = modComponentDefinitionFactory({
-            id: extensionPointId,
+            id: starterBrickId,
           });
           cleanModComponentDefinitions.push(modComponentDefinition);
-          cleanModInnerDefinitions[extensionPointId] = {
+          cleanModInnerDefinitions[starterBrickId] = {
             kind: DefinitionKinds.STARTER_BRICK,
             definition: starterBrickDefinitionFactory().definition,
           };
         }
 
         for (let i = 0; i < dirtyCount; i++) {
-          const extensionPointId = newExtensionPointId();
+          const starterBrickId = newStarterBrickId();
           const modComponentDefinition = modComponentDefinitionFactory({
-            id: extensionPointId,
+            id: starterBrickId,
           });
           dirtyModComponentDefinitions.push(modComponentDefinition);
-          dirtyModInnerDefinitions[extensionPointId] = {
+          dirtyModInnerDefinitions[starterBrickId] = {
             kind: DefinitionKinds.STARTER_BRICK,
             definition: starterBrickDefinitionFactory().definition,
           };
@@ -156,12 +156,12 @@ describe("useCheckModStarterBrickInvariants", () => {
       }
 
       for (let i = 0; i < newCount; i++) {
-        const extensionPointId = newExtensionPointId();
+        const starterBrickId = newStarterBrickId();
         const modComponentDefinition = modComponentDefinitionFactory({
-          id: extensionPointId,
+          id: starterBrickId,
         });
         newModComponentDefinitions.push(modComponentDefinition);
-        newModInnerDefinitions[extensionPointId] = {
+        newModInnerDefinitions[starterBrickId] = {
           kind: DefinitionKinds.STARTER_BRICK,
           definition: starterBrickDefinitionFactory().definition,
         };
@@ -188,7 +188,7 @@ describe("useCheckModStarterBrickInvariants", () => {
         }
       }
 
-      const extensionPoints: ModComponentDefinition[] = [
+      const starterBricks: ModComponentDefinition[] = [
         ...take(cleanModComponentDefinitions, modCleanCount),
         ...take(dirtyModComponentDefinitions, modDirtyCount),
         ...take(newModComponentDefinitions, modNewCount),
@@ -200,7 +200,7 @@ describe("useCheckModStarterBrickInvariants", () => {
       ]);
       const resultModDefinition: ModDefinition = modDefinitionFactory({
         metadata: modMetadata,
-        extensionPoints,
+        extensionPoints: starterBricks,
         definitions,
       });
 
@@ -208,7 +208,7 @@ describe("useCheckModStarterBrickInvariants", () => {
         setupRedux(dispatch) {
           if (installedModDefinition) {
             dispatch(
-              extensionsActions.activateMod({
+              modComponentsActions.activateMod({
                 modDefinition: installedModDefinition,
                 screen: "pageEditor",
                 isReactivate: false,
@@ -241,11 +241,11 @@ describe("useCheckModStarterBrickInvariants", () => {
 
     const modInnerDefinitions: InnerDefinitions = {};
 
-    const extensionPointId = newExtensionPointId();
+    const starterBrickId = newStarterBrickId();
     const modComponentDefinition = modComponentDefinitionFactory({
-      id: extensionPointId,
+      id: starterBrickId,
     });
-    modInnerDefinitions[extensionPointId] = {
+    modInnerDefinitions[starterBrickId] = {
       kind: DefinitionKinds.STARTER_BRICK,
       definition: starterBrickDefinitionFactory().definition,
     };
@@ -281,11 +281,11 @@ describe("useCheckModStarterBrickInvariants", () => {
   it("should return false for one new mod component and no matching component in mod definition", async () => {
     const modMetadata = modMetadataFactory();
     const modInnerDefinitions: InnerDefinitions = {};
-    const extensionPointId = newExtensionPointId();
+    const starterBrickId = newStarterBrickId();
     const modComponentDefinition = modComponentDefinitionFactory({
-      id: extensionPointId,
+      id: starterBrickId,
     });
-    modInnerDefinitions[extensionPointId] = {
+    modInnerDefinitions[starterBrickId] = {
       kind: DefinitionKinds.STARTER_BRICK,
       definition: starterBrickDefinitionFactory().definition,
     };
@@ -301,7 +301,7 @@ describe("useCheckModStarterBrickInvariants", () => {
       integrationDependencies: [],
     });
     const formState = await modComponentToFormState(activatedModComponent);
-    delete formState.recipe;
+    delete formState.modMetadata;
 
     const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
       setupRedux(dispatch) {

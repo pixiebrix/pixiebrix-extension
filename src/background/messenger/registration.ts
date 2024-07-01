@@ -24,7 +24,7 @@ import initTheme from "@/background/initTheme";
 import {
   addTraceEntry,
   addTraceExit,
-  clearExtensionTraces,
+  clearModComponentTraces,
   clearTraces,
 } from "@/telemetry/trace";
 import { captureTab } from "@/background/capture";
@@ -86,7 +86,7 @@ declare global {
     ACTIVATE_THEME: typeof initTheme;
     ADD_TRACE_ENTRY: typeof addTraceEntry;
     ADD_TRACE_EXIT: typeof addTraceExit;
-    CLEAR_TRACES: typeof clearExtensionTraces;
+    CLEAR_TRACES: typeof clearModComponentTraces;
     CLEAR_ALL_TRACES: typeof clearTraces;
     CAPTURE_TAB: typeof captureTab;
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
@@ -159,7 +159,7 @@ export default function registerMessenger(): void {
     ACTIVATE_THEME: initTheme,
     ADD_TRACE_ENTRY: addTraceEntry,
     ADD_TRACE_EXIT: addTraceExit,
-    CLEAR_TRACES: clearExtensionTraces,
+    CLEAR_TRACES: clearModComponentTraces,
     CLEAR_ALL_TRACES: clearTraces,
     CAPTURE_TAB: captureTab,
     DELETE_CACHED_AUTH: deleteCachedAuthData,

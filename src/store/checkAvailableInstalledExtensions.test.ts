@@ -138,7 +138,7 @@ describe("checkAvailableInstalledExtensions", () => {
       optionsActions.activateStandaloneModDefinition(unavailableQb),
     );
 
-    await store.dispatch(actions.checkAvailableInstalledExtensions());
+    await store.dispatch(actions.checkAvailableActivatedModComponents());
 
     const state = store.getState();
 

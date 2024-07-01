@@ -22,7 +22,7 @@ import PipelineVisitor, {
 import CustomEventEffect from "@/bricks/effects/customEvent";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import {
-  isTriggerExtensionPoint,
+  isTriggerStarterBrick,
   type ModComponentFormState,
 } from "@/pageEditor/starterBricks/formStateTypes";
 
@@ -62,10 +62,10 @@ class CollectEventNamesVisitor extends PipelineVisitor {
   }
 
   private visitStarterBrick(
-    extensionPoint: ModComponentFormState["extensionPoint"],
+    starterBrick: ModComponentFormState["starterBrick"],
   ) {
-    if (isTriggerExtensionPoint(extensionPoint)) {
-      const eventName = extensionPoint.definition.customEvent?.eventName;
+    if (isTriggerStarterBrick(starterBrick)) {
+      const eventName = starterBrick.definition.customEvent?.eventName;
 
       if (eventName) {
         this._triggerNames.add(eventName);
@@ -98,8 +98,8 @@ class CollectEventNamesVisitor extends PipelineVisitor {
   ): EventNameAnalysisResult {
     const visitor = new CollectEventNamesVisitor();
 
-    visitor.visitRootPipeline(formState.extension.blockPipeline);
-    visitor.visitStarterBrick(formState.extensionPoint);
+    visitor.visitRootPipeline(formState.modComponent.brickPipeline);
+    visitor.visitStarterBrick(formState.starterBrick);
 
     return visitor.result;
   }

@@ -23,7 +23,7 @@ import {
 import { forEachTab } from "@/utils/extensionUtils";
 import { type UUID } from "@/types/stringTypes";
 import { uninstallContextMenu } from "./contextMenus/uninstallContextMenu";
-import { clearExtensionTraces } from "@/telemetry/trace";
+import { clearModComponentTraces } from "@/telemetry/trace";
 import { clearLog } from "@/telemetry/logging";
 
 export async function removeModComponentForEveryTab(
@@ -38,6 +38,6 @@ export async function removeModComponentForEveryTab(
     await removeSidebars({ tabId }, [modComponentId]);
   });
   await uninstallContextMenu({ extensionId: modComponentId });
-  await clearExtensionTraces(modComponentId);
+  await clearModComponentTraces(modComponentId);
   await clearLog({ modComponentId: modComponentId });
 }

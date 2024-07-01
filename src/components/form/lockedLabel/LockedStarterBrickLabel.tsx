@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./LockedExtensionPointLabel.module.scss";
-
 import React from "react";
 import {
   OverlayTrigger,
@@ -28,15 +26,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { useField } from "formik";
 
-const LockedExtensionPointLabel: React.FC<{
+import styles from "./LockedStarterBrickLabel.module.scss";
+
+const LockedStarterBrickLabel: React.FC<{
   label: string;
   message?: string;
 }> = ({ label, message }) => {
-  const [{ value: name }] = useField<string>("extensionPoint.metadata.name");
+  const [{ value: name }] = useField<string>("starterBrick.metadata.name");
   const defaultMessage = (
     <p>
-      Provided by foundation <span className={styles.name}>{name}</span>. Edit
-      the foundation in the Workshop.
+      Provided by Starter Brick <span className={styles.name}>{name}</span>.
+      Edit the Starter Brick in the Workshop.
     </p>
   );
 
@@ -61,4 +61,4 @@ const LockedExtensionPointLabel: React.FC<{
   );
 };
 
-export default LockedExtensionPointLabel;
+export default LockedStarterBrickLabel;

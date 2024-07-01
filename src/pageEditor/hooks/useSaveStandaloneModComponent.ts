@@ -24,12 +24,12 @@ import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
-type ExtensionSaver = {
+type ModComponentSaver = {
   save: (modComponentFormState: ModComponentFormState) => Promise<void>;
   isSaving: boolean;
 };
 
-function useSaveStandaloneModComponent(): ExtensionSaver {
+function useSaveStandaloneModComponent(): ModComponentSaver {
   const [isSaving, setIsSaving] = useState(false);
   const upsertModComponentFormState = useUpsertModComponentFormState();
   const sessionId = useSelector(selectSessionId);

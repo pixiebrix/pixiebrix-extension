@@ -129,7 +129,7 @@ describe("Add/Remove Bricks", () => {
 
   const source = formStateFactory(
     {
-      label: "Test Extension",
+      label: "Test Mod Component",
       integrationDependencies: [
         integrationDependencyFactory({
           integrationId: GOOGLE_SHEET_SERVICE_ID,
@@ -151,28 +151,28 @@ describe("Add/Remove Bricks", () => {
   test("Add Brick", async () => {
     // Get initial bricks
     const initialBricks =
-      editor.modComponentFormStates[0].extension.blockPipeline;
+      editor.modComponentFormStates[0].modComponent.brickPipeline;
 
     // Add a Brick
     editor = editorSlice.reducer(
       editor,
       actions.addNode({
         block: standardBrick,
-        pipelinePath: "extension.blockPipeline",
+        pipelinePath: "modComponent.brickPipeline",
         pipelineIndex: 0,
       }),
     );
 
     // Ensure we have one more brick than we started with
     expect(
-      editor.modComponentFormStates[0].extension.blockPipeline,
+      editor.modComponentFormStates[0].modComponent.brickPipeline,
     ).toBeArrayOfSize(initialBricks.length + 1);
   });
 
   test("Remove Brick with Integration Dependency", async () => {
     // Get initial bricks and integration dependencies
     const initialBricks =
-      editor.modComponentFormStates[0].extension.blockPipeline;
+      editor.modComponentFormStates[0].modComponent.brickPipeline;
     const initialIntegrationDependencies =
       editor.modComponentFormStates[0].integrationDependencies;
 
@@ -184,7 +184,7 @@ describe("Add/Remove Bricks", () => {
 
     // Ensure Integration Dependency was removed
     expect(
-      editor.modComponentFormStates[0].extension.blockPipeline,
+      editor.modComponentFormStates[0].modComponent.brickPipeline,
     ).toBeArrayOfSize(initialBricks.length - 1);
     expect(
       editor.modComponentFormStates[0].integrationDependencies,
@@ -194,7 +194,7 @@ describe("Add/Remove Bricks", () => {
   test("Remove Brick without Integration Dependency", async () => {
     // Get initial bricks and services
     const initialBricks =
-      editor.modComponentFormStates[0].extension.blockPipeline;
+      editor.modComponentFormStates[0].modComponent.brickPipeline;
     const initialIntegrationDependencies =
       editor.modComponentFormStates[0].integrationDependencies;
 
@@ -206,18 +206,18 @@ describe("Add/Remove Bricks", () => {
 
     // Ensure Service was NOT removed
     expect(
-      editor.modComponentFormStates[0].extension.blockPipeline,
+      editor.modComponentFormStates[0].modComponent.brickPipeline,
     ).toBeArrayOfSize(initialBricks.length - 1);
     expect(
       editor.modComponentFormStates[0].integrationDependencies,
     ).toBeArrayOfSize(initialIntegrationDependencies.length);
   });
 
-  test("Can clone an extension", async () => {
+  test("Can clone a mod compoenent", async () => {
     const dispatch = jest.fn();
     const getState: () => EditorRootState = () => ({ editor });
 
-    await actions.cloneActiveExtension()(dispatch, getState, undefined);
+    await actions.cloneActiveModComponent()(dispatch, getState, undefined);
 
     // Dispatch call args (actions) should be:
     //  1. thunk pending
@@ -229,7 +229,7 @@ describe("Add/Remove Bricks", () => {
     const action1 = dispatch.mock.calls[0][0];
     expect(action1).toHaveProperty(
       "type",
-      "editor/cloneActiveExtension/pending",
+      "editor/cloneActiveModComponent/pending",
     );
 
     const action2 = dispatch.mock.calls[1][0];
@@ -237,7 +237,7 @@ describe("Add/Remove Bricks", () => {
     expect(action2.payload).toEqual(
       expect.objectContaining({
         uuid: expect.not.stringMatching(source.uuid),
-        label: "Test Extension (Copy)",
+        label: "Test Mod Component (Copy)",
       }),
     );
     expect(action2.payload).not.toHaveProperty("recipe");
@@ -245,7 +245,7 @@ describe("Add/Remove Bricks", () => {
     const action3 = dispatch.mock.calls[2][0];
     expect(action3).toHaveProperty(
       "type",
-      "editor/cloneActiveExtension/fulfilled",
+      "editor/cloneActiveModComponent/fulfilled",
     );
   });
 });

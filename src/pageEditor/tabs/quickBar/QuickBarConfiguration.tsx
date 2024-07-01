@@ -30,20 +30,20 @@ import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedColla
 const QuickBarConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => {
-  const [{ value: actionTitle }] = useField<string>("extension.title");
+  const [{ value: actionTitle }] = useField<string>("modComponent.title");
   const emojiFirstCharacter =
     splitStartingEmoji(actionTitle).startingEmoji !== undefined;
 
   return (
     <>
       <ConnectedFieldTemplate
-        name="extension.title"
+        name="modComponent.title"
         label="Action Title"
         description="Quick Bar action title"
       />
 
       <ConnectedFieldTemplate
-        name="extensionPoint.definition.contexts"
+        name="starterBrick.definition.contexts"
         as={MultiSelectWidget}
         options={contextOptions}
         description={
@@ -57,7 +57,7 @@ const QuickBarConfiguration: React.FC<{
       />
 
       <UrlMatchPatternField
-        name="extensionPoint.definition.documentUrlPatterns"
+        name="starterBrick.definition.documentUrlPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
         description={
           <span>
@@ -75,7 +75,7 @@ const QuickBarConfiguration: React.FC<{
       />
       <ConnectedCollapsibleFieldSection title="Advanced">
         <ConnectedFieldTemplate
-          name="extension.icon"
+          name="modComponent.icon"
           as={IconWidget}
           description="Icon to show in the menu"
           {...makeLockableFieldProps(
@@ -85,7 +85,7 @@ const QuickBarConfiguration: React.FC<{
           )}
         />
         <ConnectedFieldTemplate
-          name="extensionPoint.definition.targetMode"
+          name="starterBrick.definition.targetMode"
           as="select"
           title="Target Mode"
           blankValue="eventTarget"
@@ -102,7 +102,7 @@ const QuickBarConfiguration: React.FC<{
           <option value="document">document</option>
         </ConnectedFieldTemplate>
         <UrlMatchPatternField
-          name="extensionPoint.definition.isAvailable.matchPatterns"
+          name="starterBrick.definition.isAvailable.matchPatterns"
           description={
             <span>
               URL match patterns give PixieBrix access to a page without you

@@ -607,7 +607,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
               </div>
               <label
                 class="label form-label"
-                for="extension.heading"
+                for="modComponent.heading"
               >
                 Tab Title
               </label>
@@ -616,8 +616,8 @@ exports[`renders a mod component with sub pipeline 1`] = `
               >
                 <input
                   class="form-control"
-                  id="extension.heading"
-                  name="extension.heading"
+                  id="modComponent.heading"
+                  name="modComponent.heading"
                   value=""
                 />
                 <small
@@ -641,7 +641,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
               </div>
               <label
                 class="label form-label"
-                for="extensionPoint.definition.isAvailable.matchPatterns"
+                for="starterBrick.definition.isAvailable.matchPatterns"
               >
                 <span>
                   Sites 
@@ -692,8 +692,8 @@ exports[`renders a mod component with sub pipeline 1`] = `
                           >
                             <textarea
                               class="form-control"
-                              id="extensionPoint.definition.isAvailable.matchPatterns.0"
-                              name="extensionPoint.definition.isAvailable.matchPatterns.0"
+                              id="starterBrick.definition.isAvailable.matchPatterns.0"
+                              name="starterBrick.definition.isAvailable.matchPatterns.0"
                               rows="1"
                             >
                               https://www.mySite1.com/*
@@ -702,7 +702,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                           <div
                             class="dropdown dropdown"
                             data-test-selected="Text"
-                            data-testid="toggle-extensionPoint.definition.isAvailable.matchPatterns.0"
+                            data-testid="toggle-starterBrick.definition.isAvailable.matchPatterns.0"
                           >
                             <button
                               aria-expanded="false"
@@ -762,7 +762,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
               </div>
               <label
                 class="label form-label"
-                for="extensionPoint.definition.trigger"
+                for="starterBrick.definition.trigger"
               >
                 <span>
                   Trigger 
@@ -789,8 +789,8 @@ exports[`renders a mod component with sub pipeline 1`] = `
                 <select
                   class="form-control"
                   disabled=""
-                  id="extensionPoint.definition.trigger"
-                  name="extensionPoint.definition.trigger"
+                  id="starterBrick.definition.trigger"
+                  name="starterBrick.definition.trigger"
                 >
                   <option
                     value="load"
@@ -938,7 +938,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                   </div>
                   <label
                     class="label form-label"
-                    for="extensionPoint.definition.isAvailable.urlPatterns"
+                    for="starterBrick.definition.isAvailable.urlPatterns"
                   >
                     <span>
                       URL Patterns 
@@ -1000,7 +1000,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                   </div>
                   <label
                     class="label form-label"
-                    for="extensionPoint.definition.isAvailable.selectors"
+                    for="starterBrick.definition.isAvailable.selectors"
                   >
                     <span>
                       Selectors 
@@ -1845,7 +1845,7 @@ exports[`renders the first selected node 1`] = `
                   </div>
                   <label
                     class="label form-label"
-                    for="extension.blockPipeline.0.label"
+                    for="modComponent.brickPipeline.0.label"
                   >
                     Step Name
                   </label>
@@ -1854,8 +1854,8 @@ exports[`renders the first selected node 1`] = `
                   >
                     <input
                       class="form-control"
-                      id="extension.blockPipeline.0.label"
-                      name="extension.blockPipeline.0.label"
+                      id="modComponent.brickPipeline.0.label"
+                      name="modComponent.brickPipeline.0.label"
                       placeholder="Echo Brick"
                       value=""
                     />
@@ -1873,7 +1873,7 @@ exports[`renders the first selected node 1`] = `
                   </div>
                   <label
                     class="label form-label"
-                    for="extension.blockPipeline.0.outputKey"
+                    for="modComponent.brickPipeline.0.outputKey"
                   >
                     <span
                       class="span"
@@ -1918,8 +1918,8 @@ exports[`renders the first selected node 1`] = `
                       </div>
                       <input
                         class="form-control"
-                        id="extension.blockPipeline.0.outputKey"
-                        name="extension.blockPipeline.0.outputKey"
+                        id="modComponent.brickPipeline.0.outputKey"
+                        name="modComponent.brickPipeline.0.outputKey"
                         value="echoOutput"
                       />
                     </div>
@@ -1939,7 +1939,7 @@ exports[`renders the first selected node 1`] = `
               </div>
               <label
                 class="label form-label"
-                for="extension.blockPipeline.0.config.message"
+                for="modComponent.brickPipeline.0.config.message"
               >
                 Message
               </label>
@@ -1954,15 +1954,15 @@ exports[`renders the first selected node 1`] = `
                   >
                     <textarea
                       class="form-control"
-                      id="extension.blockPipeline.0.config.message"
-                      name="extension.blockPipeline.0.config.message"
+                      id="modComponent.brickPipeline.0.config.message"
+                      name="modComponent.brickPipeline.0.config.message"
                       rows="1"
                     />
                   </div>
                   <div
                     class="dropdown dropdown"
                     data-test-selected="Text"
-                    data-testid="toggle-extension.blockPipeline.0.config.message"
+                    data-testid="toggle-modComponent.brickPipeline.0.config.message"
                   >
                     <button
                       aria-expanded="false"
@@ -2140,7 +2140,7 @@ exports[`renders the first selected node 1`] = `
                     >
                       <textarea
                         class="form-control"
-                        name="extension.blockPipeline.0.comments"
+                        name="modComponent.brickPipeline.0.comments"
                         rows="1"
                       />
                     </div>

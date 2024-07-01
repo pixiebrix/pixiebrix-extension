@@ -4,7 +4,6 @@ import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getExampleBrickPipeline } from "@/pageEditor/exampleStarterBrickConfigs";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { updateDraftModComponent } from "@/contentScript/messenger/api";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -19,6 +18,7 @@ import {
   getCurrentInspectedURL,
   inspectedTab,
 } from "@/pageEditor/context/connection";
+import { updateDraftModComponent } from "@/contentScript/messenger/api";
 
 const { addModComponentFormState, toggleInsert } = actions;
 
@@ -45,27 +45,24 @@ function useAutoInsert(type: StarterBrickType): void {
         undefined,
       ) as ModComponentFormState;
 
-      formState.extension.blockPipeline = getExampleBrickPipeline(
+      formState.modComponent.brickPipeline = getExampleBrickPipeline(
         formState.type,
       );
 
       dispatch(addModComponentFormState(formState));
       dispatch(actions.checkActiveModComponentAvailability());
 
-      // Don't auto-run tours on selection in Page Editor
-      if (config.elementType !== "tour") {
-        updateDraftModComponent(
-          allFramesInInspectedTab,
-          config.asDraftModComponent(formState),
-        );
-      }
+      updateDraftModComponent(
+        allFramesInInspectedTab,
+        config.asDraftModComponent(formState),
+      );
 
       // TODO: report if created new, or using existing foundation
       reportEvent(Events.PAGE_EDITOR_START, {
         type: config.elementType,
       });
 
-      if (config.elementType === "actionPanel") {
+      if (config.elementType === StarterBrickTypes.SIDEBAR_PANEL) {
         // For convenience, open the side panel if it's not already open so that the user doesn't
         // have to manually toggle it
         void openSidePanel(inspectedTab.tabId);

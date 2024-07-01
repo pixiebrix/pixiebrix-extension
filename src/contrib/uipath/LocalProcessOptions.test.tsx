@@ -25,7 +25,7 @@ import * as auth from "@/hooks/auth";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
-import { TEST_setContext } from "webext-detect-page";
+import { TEST_setContext } from "webext-detect";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -86,7 +86,10 @@ function makeBaseState() {
 
 function renderOptions(initialValues: ModComponentFormState = makeBaseState()) {
   return render(
-    <LocalProcessOptions name="extension.blockPipeline.0" configKey="config" />,
+    <LocalProcessOptions
+      name="modComponent.brickPipeline.0"
+      configKey="config"
+    />,
     { initialValues },
   );
 }
@@ -188,7 +191,7 @@ describe("UiPath LocalProcess Options", () => {
 
     const formState = makeBaseState();
     formState.integrationDependencies[0].configId = configId;
-    formState.extension.blockPipeline[0].config.service = "@uipath";
+    formState.modComponent.brickPipeline[0].config.service = "@uipath";
 
     renderOptions();
 

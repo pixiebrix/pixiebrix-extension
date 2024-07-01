@@ -20,13 +20,13 @@ import { type RegistryId } from "@/types/registryTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
-import useResetExtension from "@/pageEditor/hooks/useResetExtension";
+import useResetModComponent from "@/pageEditor/hooks/useResetModComponent";
 import { selectModComponentFormStates } from "@/pageEditor/slices/editorSelectors";
 
 function useResetMod(): (modId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
   const dispatch = useDispatch();
-  const resetExtension = useResetExtension();
+  const resetModComponent = useResetModComponent();
   const modComponentFormStates = useSelector(selectModComponentFormStates);
 
   return useCallback(
@@ -45,11 +45,11 @@ function useResetMod(): (modId: RegistryId) => Promise<void> {
         modComponentFormStates
           .filter(
             (modComponentFormState) =>
-              modComponentFormState.recipe?.id === modId,
+              modComponentFormState.modMetadata?.id === modId,
           )
           .map(async (modComponentFormState) =>
-            resetExtension({
-              extensionId: modComponentFormState.uuid,
+            resetModComponent({
+              modComponentId: modComponentFormState.uuid,
               shouldShowConfirmation: false,
             }),
           ),
@@ -59,7 +59,7 @@ function useResetMod(): (modId: RegistryId) => Promise<void> {
       dispatch(actions.restoreDeletedModComponentFormStatesForMod(modId));
       dispatch(actions.setActiveModId(modId));
     },
-    [dispatch, modComponentFormStates, resetExtension, showConfirmation],
+    [dispatch, modComponentFormStates, resetModComponent, showConfirmation],
   );
 }
 

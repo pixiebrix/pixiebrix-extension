@@ -63,7 +63,7 @@ class ModVariableSchemasVisitor extends PipelineVisitor {
     const visitor = new ModVariableSchemasVisitor(allBlocks);
 
     for (const formState of formStates) {
-      visitor.visitRootPipeline(formState.extension.blockPipeline);
+      visitor.visitRootPipeline(formState.modComponent.brickPipeline);
     }
 
     // Schema promises return undefined if not page state

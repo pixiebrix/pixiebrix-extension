@@ -23,7 +23,7 @@ import {
   selectModComponentIntegrations,
 } from "@/pageEditor/panes/save/saveHelpers";
 import { normalizeSemVerString, validateRegistryId } from "@/types/helpers";
-import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
+import brickModComponentAdapter from "@/pageEditor/starterBricks/button";
 import {
   internalStarterBrickMetaFactory,
   lookupStarterBrick,
@@ -33,7 +33,7 @@ import { produce } from "immer";
 import { calculateInnerRegistryId } from "@/registry/hydrateInnerDefinitions";
 import { cloneDeep, range, uniq } from "lodash";
 import { type ButtonDefinition } from "@/starterBricks/button/buttonStarterBrickTypes";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/extensionsSlice";
 import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
@@ -96,15 +96,15 @@ describe("generatePersonalBrickId", () => {
 });
 
 describe("replaceModComponent round trip", () => {
-  test("single mod component with versioned extensionPoint", async () => {
+  test("single mod component with versioned starter brick", async () => {
     const starterBrick = starterBrickDefinitionFactory();
     const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
       extensionPointId: starterBrick.metadata.id,
     })();
 
-    const state = extensionsSlice.reducer(
+    const state = modComponentsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.activateMod({
+      modComponentsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -113,9 +113,8 @@ describe("replaceModComponent round trip", () => {
 
     jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
-    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0],
-    );
+    const modComponentFormState =
+      await brickModComponentAdapter.fromModComponent(state.extensions[0]);
     modComponentFormState.label = "New Label";
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
@@ -143,12 +142,12 @@ describe("replaceModComponent round trip", () => {
 
     modDefinition.extensionPoints.push({
       ...modDefinition.extensionPoints[0],
-      label: "Other Extension",
+      label: "Other Mod Component",
     });
 
-    const state = extensionsSlice.reducer(
+    const state = modComponentsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.activateMod({
+      modComponentsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -157,9 +156,8 @@ describe("replaceModComponent round trip", () => {
 
     jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
-    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0],
-    );
+    const modComponentFormState =
+      await brickModComponentAdapter.fromModComponent(state.extensions[0]);
     modComponentFormState.label = "New Label";
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
@@ -181,9 +179,9 @@ describe("replaceModComponent round trip", () => {
   test("single starter brick with innerDefinition", async () => {
     const modDefinition = innerStarterBrickModDefinitionFactory()();
 
-    const state = extensionsSlice.reducer(
+    const state = modComponentsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.activateMod({
+      modComponentsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -199,9 +197,8 @@ describe("replaceModComponent round trip", () => {
       },
     } as any);
 
-    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0],
-    );
+    const modComponentFormState =
+      await brickModComponentAdapter.fromModComponent(state.extensions[0]);
 
     modComponentFormState.label = "New Label";
 
@@ -229,9 +226,9 @@ describe("replaceModComponent round trip", () => {
     const originalId = Object.keys(modDefinition.definitions)[0];
     modDefinition.definitions.excess = starterBrickInnerDefinitionFactory();
 
-    const state = extensionsSlice.reducer(
+    const state = modComponentsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.activateMod({
+      modComponentsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -247,9 +244,8 @@ describe("replaceModComponent round trip", () => {
       },
     } as any);
 
-    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0],
-    );
+    const modComponentFormState =
+      await brickModComponentAdapter.fromModComponent(state.extensions[0]);
 
     modComponentFormState.label = "New Label";
 
@@ -272,9 +268,9 @@ describe("replaceModComponent round trip", () => {
       label: "Other Mod Component",
     });
 
-    const state = extensionsSlice.reducer(
+    const state = modComponentsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.activateMod({
+      modComponentsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -290,13 +286,12 @@ describe("replaceModComponent round trip", () => {
       },
     } as any);
 
-    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0],
-    );
+    const modComponentFormState =
+      await brickModComponentAdapter.fromModComponent(state.extensions[0]);
 
     modComponentFormState.label = "New Label";
     const newTemplate = '<input value="Click Me!"/>';
-    modComponentFormState.extensionPoint.definition.template = newTemplate;
+    modComponentFormState.starterBrick.definition.template = newTemplate;
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
 
@@ -325,17 +320,17 @@ describe("replaceModComponent round trip", () => {
     );
   });
 
-  test("reuse identifier definition for multiple if extensionPoint not modified", async () => {
+  test("reuse identifier definition for multiple if starter brick not modified", async () => {
     const modDefinition = innerStarterBrickModDefinitionFactory()();
 
     modDefinition.extensionPoints.push({
       ...modDefinition.extensionPoints[0],
-      label: "Other Extension",
+      label: "Other Mod Component",
     });
 
-    const state = extensionsSlice.reducer(
+    const state = modComponentsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.activateMod({
+      modComponentsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -351,9 +346,8 @@ describe("replaceModComponent round trip", () => {
       },
     } as any);
 
-    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0],
-    );
+    const modComponentFormState =
+      await brickModComponentAdapter.fromModComponent(state.extensions[0]);
 
     modComponentFormState.label = "New Label";
 
@@ -379,19 +373,19 @@ describe("replaceModComponent round trip", () => {
       apiVersion: "v2",
     });
 
-    const extensionPointId = starterBrick.metadata.id;
+    const starterBrickId = starterBrick.metadata.id;
     const modDefinition = innerStarterBrickModDefinitionFactory({
-      extensionPointRef: extensionPointId as any,
+      extensionPointRef: starterBrickId as any,
     })({
       apiVersion: "v2",
       definitions: {
-        [extensionPointId]: starterBrick,
+        [starterBrickId]: starterBrick,
       } as any,
     });
 
-    const state = extensionsSlice.reducer(
+    const state = modComponentsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.activateMod({
+      modComponentsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -400,10 +394,11 @@ describe("replaceModComponent round trip", () => {
 
     jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
-    const modComponentFormState = await menuItemExtensionAdapter.fromExtension({
-      ...state.extensions[0],
-      apiVersion: "v3",
-    });
+    const modComponentFormState =
+      await brickModComponentAdapter.fromModComponent({
+        ...state.extensions[0],
+        apiVersion: "v3",
+      });
     modComponentFormState.label = "New Label";
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
@@ -438,9 +433,9 @@ describe("replaceModComponent round trip", () => {
       ],
     });
 
-    const state = extensionsSlice.reducer(
+    const state = modComponentsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.activateMod({
+      modComponentsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -449,10 +444,11 @@ describe("replaceModComponent round trip", () => {
 
     jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
-    const modComponentFormState = await menuItemExtensionAdapter.fromExtension({
-      ...state.extensions[0],
-      apiVersion: "v3",
-    });
+    const modComponentFormState =
+      await brickModComponentAdapter.fromModComponent({
+        ...state.extensions[0],
+        apiVersion: "v3",
+      });
     modComponentFormState.label = "New Label";
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
@@ -476,18 +472,19 @@ describe("mod options", () => {
       options: modOptionsDefinition,
     });
 
-    const modComponentState = extensionsSlice.reducer(
+    const modComponentState = modComponentsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.activateMod({
+      modComponentsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
       }),
     );
 
-    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
-      modComponentState.extensions[0],
-    );
+    const modComponentFormState =
+      await brickModComponentAdapter.fromModComponent(
+        modComponentState.extensions[0],
+      );
 
     modComponentFormState.optionsDefinition = modComponentModOptions;
 
@@ -596,7 +593,7 @@ describe("mod options", () => {
   });
 });
 
-function selectExtensionPoints(
+function selectStarterBricks(
   modDefinition: UnsavedModDefinition,
 ): StarterBrickDefinitionLike[] {
   return modDefinition.extensionPoints.map(({ id }) => {
@@ -612,7 +609,7 @@ function selectExtensionPoints(
 }
 
 describe("buildNewMod", () => {
-  test("Clean mod component referencing extensionPoint registry package", async () => {
+  test("Clean mod component referencing starter brick registry package", async () => {
     const modComponent = modComponentFactory({
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     }) as SerializedModComponent;
@@ -649,7 +646,7 @@ describe("buildNewMod", () => {
     jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
     // Use the adapter to convert to ModComponentFormState
-    const modComponentFormState = (await adapter.fromExtension(
+    const modComponentFormState = (await adapter.fromModComponent(
       modComponent,
     )) as ModComponentFormState;
 
@@ -674,7 +671,7 @@ describe("buildNewMod", () => {
       starterBrickDefinitionFactory().definition,
     ];
 
-    const modComponents = starterBricks.map((extensionPoint) => {
+    const modComponents = starterBricks.map((starterBrick) => {
       const modComponent = modComponentFactory({
         apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
       }) as SerializedModComponent;
@@ -682,7 +679,7 @@ describe("buildNewMod", () => {
       modComponent.definitions = {
         extensionPoint: {
           kind: DefinitionKinds.STARTER_BRICK,
-          definition: extensionPoint,
+          definition: starterBrick,
         },
       };
 
@@ -808,9 +805,9 @@ describe("buildNewMod", () => {
       )();
 
       // Install the mod
-      const state = extensionsSlice.reducer(
+      const state = modComponentsSlice.reducer(
         { extensions: [] },
-        extensionsSlice.actions.activateMod({
+        modComponentsSlice.actions.activateMod({
           modDefinition,
           screen: "pageEditor",
           isReactivate: false,
@@ -821,22 +818,22 @@ describe("buildNewMod", () => {
       const modComponentFormStates: ModComponentFormState[] = [];
 
       if (dirtyModComponentCount > 0) {
-        const extensionPoints = selectExtensionPoints(modDefinition);
+        const starterBricks = selectStarterBricks(modDefinition);
 
         for (let i = 0; i < dirtyModComponentCount; i++) {
-          const extensionPoint = extensionPoints[i];
+          const starterBrick = starterBricks[i];
           // Mock this lookup for the adapter call that follows
-          jest.mocked(lookupStarterBrick).mockResolvedValue(extensionPoint);
+          jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
           // Mod was installed, so get the mod component from state
           const modComponent = state.extensions[i];
 
           // Load the adapter for this mod component
-          const adapter = ADAPTERS.get(extensionPoint.definition.type);
+          const adapter = ADAPTERS.get(starterBrick.definition.type);
 
           // Use the adapter to convert to FormState
           // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
-          const modComponentFormState = (await adapter.fromExtension(
+          const modComponentFormState = (await adapter.fromModComponent(
             modComponent,
           )) as ModComponentFormState;
 
@@ -857,10 +854,10 @@ describe("buildNewMod", () => {
 
       // Update the source mod with the expected label changes
       const updatedMod = produce(modDefinition, (draft) => {
-        for (const [index, extensionPoint] of draft.extensionPoints
+        for (const [index, starterBrick] of draft.extensionPoints
           .slice(0, dirtyModComponentCount)
           .entries()) {
-          extensionPoint.label = `New Label ${index}`;
+          starterBrick.label = `New Label ${index}`;
         }
       });
 
@@ -925,7 +922,7 @@ describe("findMaxServicesDependencyApiVersion", () => {
   });
 });
 
-describe("selectExtensionPointIntegrations", () => {
+describe("selectModComponentIntegrations", () => {
   it("works for v1 services", () => {
     const modComponent: Pick<ModComponentBase, "integrationDependencies"> = {
       integrationDependencies: [

@@ -37,7 +37,7 @@ import workshopSlice, {
   persistWorkshopConfig,
   type WorkshopRootState,
 } from "@/store/workshopSlice";
-import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
+import { persistModComponentOptionsConfig } from "@/store/extensionsStorage";
 import { persistSettingsConfig } from "@/store/settings/settingsStorage";
 import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import modsPageSlice, {
@@ -98,7 +98,7 @@ const store = configureStore({
     router: connectRouter(hashHistory),
     auth: persistReducer(persistAuthConfig, authSlice.reducer),
     options: persistReducer(
-      persistExtensionOptionsConfig,
+      persistModComponentOptionsConfig,
       extensionsSlice.reducer,
     ),
     modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),

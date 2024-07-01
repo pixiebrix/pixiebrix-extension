@@ -33,7 +33,7 @@ import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import userEvent from "@testing-library/user-event";
 import {
-  baseExtensionStateFactory,
+  baseModComponentStateFactory,
   formStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
@@ -57,8 +57,8 @@ const renderElementPreview = (
   };
 
   const formState = formStateFactory({
-    extension: baseExtensionStateFactory({
-      blockPipeline: [
+    modComponent: baseModComponentStateFactory({
+      brickPipeline: [
         brickConfigFactory({
           config: {
             body: [element],
@@ -75,7 +75,7 @@ const renderElementPreview = (
       dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
         actions.setActiveNodeId(
-          formState.extension.blockPipeline[0].instanceId,
+          formState.modComponent.brickPipeline[0].instanceId,
         ),
       );
       dispatch(actions.setActiveBuilderPreviewElement("0"));

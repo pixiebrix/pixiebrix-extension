@@ -46,7 +46,7 @@ exports[`MatchRulesSection render empty section 1`] = `
           </div>
           <label
             class="label form-label"
-            for="extensionPoint.definition.isAvailable.urlPatterns"
+            for="starterBrick.definition.isAvailable.urlPatterns"
           >
             URL Patterns
           </label>
@@ -91,7 +91,7 @@ exports[`MatchRulesSection render empty section 1`] = `
           </div>
           <label
             class="label form-label"
-            for="extensionPoint.definition.isAvailable.selectors"
+            for="starterBrick.definition.isAvailable.selectors"
           >
             Selectors
           </label>
@@ -177,7 +177,7 @@ exports[`MatchRulesSection render populated section 1`] = `
           </div>
           <label
             class="label form-label"
-            for="extensionPoint.definition.isAvailable.urlPatterns"
+            for="starterBrick.definition.isAvailable.urlPatterns"
           >
             URL Patterns
           </label>
@@ -232,7 +232,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                 <td>
                                   <input
                                     class="form-control"
-                                    data-testid="extensionPoint.definition.isAvailable.urlPatterns.0.hostname-name"
+                                    data-testid="starterBrick.definition.isAvailable.urlPatterns.0.hostname-name"
                                     readonly=""
                                     type="text"
                                     value="hostname"
@@ -260,8 +260,8 @@ exports[`MatchRulesSection render populated section 1`] = `
                                         >
                                           <input
                                             class="form-control"
-                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
-                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
+                                            id="starterBrick.definition.isAvailable.urlPatterns.0.hostname"
+                                            name="starterBrick.definition.isAvailable.urlPatterns.0.hostname"
                                             readonly=""
                                             value=""
                                           />
@@ -269,7 +269,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                         <div
                                           class="dropdown dropdown"
                                           data-test-selected="Exclude"
-                                          data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
+                                          data-testid="toggle-starterBrick.definition.isAvailable.urlPatterns.0.hostname"
                                         >
                                           <button
                                             aria-expanded="false"
@@ -302,7 +302,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                 <td>
                                   <input
                                     class="form-control"
-                                    data-testid="extensionPoint.definition.isAvailable.urlPatterns.0.pathname-name"
+                                    data-testid="starterBrick.definition.isAvailable.urlPatterns.0.pathname-name"
                                     readonly=""
                                     type="text"
                                     value="pathname"
@@ -330,8 +330,8 @@ exports[`MatchRulesSection render populated section 1`] = `
                                         >
                                           <input
                                             class="form-control"
-                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
-                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
+                                            id="starterBrick.definition.isAvailable.urlPatterns.0.pathname"
+                                            name="starterBrick.definition.isAvailable.urlPatterns.0.pathname"
                                             readonly=""
                                             value=""
                                           />
@@ -339,7 +339,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                         <div
                                           class="dropdown dropdown"
                                           data-test-selected="Exclude"
-                                          data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
+                                          data-testid="toggle-starterBrick.definition.isAvailable.urlPatterns.0.pathname"
                                         >
                                           <button
                                             aria-expanded="false"
@@ -372,7 +372,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                 <td>
                                   <input
                                     class="form-control"
-                                    data-testid="extensionPoint.definition.isAvailable.urlPatterns.0.hash-name"
+                                    data-testid="starterBrick.definition.isAvailable.urlPatterns.0.hash-name"
                                     readonly=""
                                     type="text"
                                     value="hash"
@@ -400,8 +400,8 @@ exports[`MatchRulesSection render populated section 1`] = `
                                         >
                                           <textarea
                                             class="form-control"
-                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.hash"
-                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.hash"
+                                            id="starterBrick.definition.isAvailable.urlPatterns.0.hash"
+                                            name="starterBrick.definition.isAvailable.urlPatterns.0.hash"
                                             rows="1"
                                           >
                                             /foo/
@@ -410,7 +410,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                         <div
                                           class="dropdown dropdown"
                                           data-test-selected="Text"
-                                          data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0.hash"
+                                          data-testid="toggle-starterBrick.definition.isAvailable.urlPatterns.0.hash"
                                         >
                                           <button
                                             aria-expanded="false"
@@ -443,7 +443,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                 <td>
                                   <input
                                     class="form-control"
-                                    data-testid="extensionPoint.definition.isAvailable.urlPatterns.0.search-name"
+                                    data-testid="starterBrick.definition.isAvailable.urlPatterns.0.search-name"
                                     readonly=""
                                     type="text"
                                     value="search"
@@ -471,8 +471,8 @@ exports[`MatchRulesSection render populated section 1`] = `
                                         >
                                           <input
                                             class="form-control"
-                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.search"
-                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.search"
+                                            id="starterBrick.definition.isAvailable.urlPatterns.0.search"
+                                            name="starterBrick.definition.isAvailable.urlPatterns.0.search"
                                             readonly=""
                                             value=""
                                           />
@@ -480,7 +480,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                         <div
                                           class="dropdown dropdown"
                                           data-test-selected="Exclude"
-                                          data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0.search"
+                                          data-testid="toggle-starterBrick.definition.isAvailable.urlPatterns.0.search"
                                         >
                                           <button
                                             aria-expanded="false"
@@ -522,7 +522,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                       <div
                         class="dropdown dropdown"
                         data-test-selected="Object properties"
-                        data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0"
+                        data-testid="toggle-starterBrick.definition.isAvailable.urlPatterns.0"
                       >
                         <button
                           aria-expanded="false"
@@ -579,7 +579,7 @@ exports[`MatchRulesSection render populated section 1`] = `
           </div>
           <label
             class="label form-label"
-            for="extensionPoint.definition.isAvailable.selectors"
+            for="starterBrick.definition.isAvailable.selectors"
           >
             Selectors
           </label>
@@ -613,8 +613,8 @@ exports[`MatchRulesSection render populated section 1`] = `
                       >
                         <textarea
                           class="form-control"
-                          id="extensionPoint.definition.isAvailable.selectors.0"
-                          name="extensionPoint.definition.isAvailable.selectors.0"
+                          id="starterBrick.definition.isAvailable.selectors.0"
+                          name="starterBrick.definition.isAvailable.selectors.0"
                           rows="1"
                         >
                           #foo
@@ -623,7 +623,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                       <div
                         class="dropdown dropdown"
                         data-test-selected="Text"
-                        data-testid="toggle-extensionPoint.definition.isAvailable.selectors.0"
+                        data-testid="toggle-starterBrick.definition.isAvailable.selectors.0"
                       >
                         <button
                           aria-expanded="false"

@@ -20,7 +20,7 @@ import {
   createSlice,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { clearExtensionTraces } from "@/telemetry/trace";
+import { clearModComponentTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type BrickConfig } from "@/bricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
@@ -44,7 +44,7 @@ import {
   selectNotDeletedActivatedModComponents,
 } from "./editorSelectors";
 import {
-  isQuickBarExtensionPoint,
+  isQuickBarStarterBrick,
   type ModComponentFormState,
 } from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
@@ -120,11 +120,11 @@ export const initialState: EditorState = {
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
-const cloneActiveExtension = createAsyncThunk<
+const cloneActiveModComponent = createAsyncThunk<
   void,
   void,
   { state: EditorRootState }
->("editor/cloneActiveExtension", async (arg, thunkAPI) => {
+>("editor/cloneActiveModComponent", async (arg, thunkAPI) => {
   const state = thunkAPI.getState();
   const newActiveModComponentFormState = await produce(
     selectActiveModComponentFormState(state),
@@ -133,10 +133,10 @@ const cloneActiveExtension = createAsyncThunk<
       draft.uuid = uuidv4();
       draft.label += " (Copy)";
       // Remove from its mod, if any (the user can add it to any mod after creation)
-      delete draft.recipe;
-      // Re-generate instance IDs for all the bricks in the extension
-      draft.extension.blockPipeline = await normalizePipelineForEditor(
-        draft.extension.blockPipeline,
+      delete draft.modMetadata;
+      // Re-generate instance IDs for all the bricks in the mod component
+      draft.modComponent.brickPipeline = await normalizePipelineForEditor(
+        draft.modComponent.brickPipeline,
       );
     },
   );
@@ -145,7 +145,7 @@ const cloneActiveExtension = createAsyncThunk<
     "New active mod component form state not found",
   );
   thunkAPI.dispatch(
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned extension
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned mod component
     actions.addModComponentFormState(newActiveModComponentFormState),
   );
 });
@@ -154,11 +154,11 @@ type AvailableInstalled = {
   availableInstalledIds: UUID[];
 };
 
-const checkAvailableInstalledExtensions = createAsyncThunk<
+const checkAvailableActivatedModComponents = createAsyncThunk<
   AvailableInstalled,
   void,
   { state: EditorRootState & ModComponentsRootState }
->("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
+>("editor/checkAvailableActivatedModComponents", async (arg, thunkAPI) => {
   const notDeletedFormStates = selectNotDeletedModComponentFormStates(
     thunkAPI.getState(),
   );
@@ -175,7 +175,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
     ),
   );
   const tabUrl = await getCurrentInspectedURL();
-  const availableExtensionPointIds = resolved
+  const availableStarterBrickIds = resolved
     .filter((x) => {
       const activatedStarterBrick = activatedStarterBricks.get(
         x.extensionPointId,
@@ -210,7 +210,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
   );
 
   const availableInstalledIds = notDraftActivated
-    .filter((x) => availableExtensionPointIds.includes(x.id))
+    .filter((x) => availableStarterBrickIds.includes(x.id))
     .map((x) => x.id);
 
   return { availableInstalledIds };
@@ -220,7 +220,7 @@ async function isStarterBrickFormStateAvailable(
   tabUrl: string,
   starterBrickFormState: BaseStarterBrickState,
 ): Promise<boolean> {
-  if (isQuickBarExtensionPoint(starterBrickFormState)) {
+  if (isQuickBarStarterBrick(starterBrickFormState)) {
     return testMatchPatterns(
       starterBrickFormState.definition.documentUrlPatterns,
       tabUrl,
@@ -249,7 +249,7 @@ const checkAvailableDraftModComponents = createAsyncThunk<
   const tabUrl = await getCurrentInspectedURL();
   const availableFormStateIds = await Promise.all(
     notDeletedFormStates.map(
-      async ({ uuid, extensionPoint: formStateStarterBrick }) => {
+      async ({ uuid, starterBrick: formStateStarterBrick }) => {
         const isAvailable = await isStarterBrickFormStateAvailable(
           tabUrl,
           formStateStarterBrick,
@@ -283,7 +283,7 @@ const checkActiveModComponentAvailability = createAsyncThunk<
   // Calculate new availability for the active mod component
   const isAvailable = await isStarterBrickFormStateAvailable(
     tabUrl,
-    activeModComponentFormState.extensionPoint,
+    activeModComponentFormState.starterBrick,
   );
   // Calculate the new draft mod component availability, depending on the
   // new availability of the active mod component -- should be a unique list of ids,
@@ -378,7 +378,7 @@ export const editorSlice = createSlice({
       state.selectionSeq++;
 
       // Make sure we're not keeping any private data around from Page Editor sessions
-      void clearExtensionTraces(modComponentFormState.uuid);
+      void clearModComponentTraces(modComponentFormState.uuid);
 
       syncNodeUIStates(state, modComponentFormState);
     },
@@ -411,7 +411,7 @@ export const editorSlice = createSlice({
 
       if (!modComponentFormState.installed) {
         state.knownEditableBrickIds.push(
-          modComponentFormState.extensionPoint.metadata.id,
+          modComponentFormState.starterBrick.metadata.id,
         );
       }
 
@@ -556,10 +556,10 @@ export const editorSlice = createSlice({
       const modMetadata = action.payload;
       const modComponentFormStates = state.modComponentFormStates.filter(
         (modComponentFormState) =>
-          modComponentFormState.recipe?.id === modMetadata?.id,
+          modComponentFormState.modMetadata?.id === modMetadata?.id,
       );
       for (const formState of modComponentFormStates) {
-        formState.recipe = modMetadata;
+        formState.modMetadata = modMetadata;
       }
     },
     showAddToModModal(state) {
@@ -593,7 +593,7 @@ export const editorSlice = createSlice({
       state.modComponentFormStates.push({
         ...modComponentFormState,
         uuid: newId,
-        recipe: modMetadata,
+        modMetadata,
         installed: false, // Can't "reset" this, only remove or save
       });
       state.dirty[newId] = true;
@@ -634,10 +634,10 @@ export const editorSlice = createSlice({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
         state.modComponentFormStates[modComponentFormStateIndex]!;
       assertNotNullish(
-        modComponentFormState.recipe,
+        modComponentFormState.modMetadata,
         "Mod component form state has no mod definition",
       );
-      const modId = modComponentFormState.recipe.id;
+      const modId = modComponentFormState.modMetadata.id;
       state.deletedModComponentFormStatesByModId[modId] ??= [];
 
       state.deletedModComponentFormStatesByModId[modId].push(
@@ -653,7 +653,7 @@ export const editorSlice = createSlice({
         state.modComponentFormStates.push({
           ...modComponentFormState,
           uuid: newId,
-          recipe: undefined,
+          modMetadata: undefined,
         });
         state.dirty[newId] = true;
         ensureBrickPipelineUIState(state, newId);
@@ -869,7 +869,7 @@ export const editorSlice = createSlice({
         editor: state,
       });
       const modFormStates = notDeletedFormStates.filter(
-        (formState) => formState.recipe?.id === modId,
+        (formState) => formState.modMetadata?.id === modId,
       );
       for (const formState of modFormStates) {
         formState.optionsArgs = action.payload;
@@ -945,19 +945,19 @@ export const editorSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addCase(checkAvailableInstalledExtensions.pending, (state) => {
+      .addCase(checkAvailableActivatedModComponents.pending, (state) => {
         state.isPendingAvailableActivatedModComponents = true;
         // We're not resetting the result here so that the old value remains during re-calculation
       })
       .addCase(
-        checkAvailableInstalledExtensions.fulfilled,
+        checkAvailableActivatedModComponents.fulfilled,
         (state, { payload: { availableInstalledIds } }) => {
           state.isPendingAvailableActivatedModComponents = false;
           state.availableActivatedModComponentIds = availableInstalledIds;
         },
       )
       .addCase(
-        checkAvailableInstalledExtensions.rejected,
+        checkAvailableActivatedModComponents.rejected,
         (state, { error }) => {
           state.isPendingAvailableActivatedModComponents = false;
           state.error = error;
@@ -996,8 +996,8 @@ export const editorSlice = createSlice({
 
 export const actions = {
   ...editorSlice.actions,
-  cloneActiveExtension,
-  checkAvailableInstalledExtensions,
+  cloneActiveModComponent,
+  checkAvailableActivatedModComponents,
   checkAvailableDraftModComponents,
   checkActiveModComponentAvailability,
 };
@@ -1007,7 +1007,7 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 3,
+  version: 4,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: [
     "inserting",

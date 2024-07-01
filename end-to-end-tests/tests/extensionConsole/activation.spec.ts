@@ -85,15 +85,17 @@ test("can activate a mod with built-in integration", async ({
   await modActivationPage.goto();
 
   await expect(
-    page.locator(".form-group").filter({ hasText: /^GIPHY — ✨ Built-in$/ }),
+    modActivationPage
+      .locator(".form-group")
+      .filter({ hasText: /^GIPHY — ✨ Built-in$/ }),
   ).toBeVisible();
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
   await page.goto("/");
 
   const floatingActionButton = new FloatingActionButton(page);
-
+  const button = await floatingActionButton.getActionButton();
   // Ensure the QuickBar is ready
-  await expect(await floatingActionButton.getActionButton()).toBeVisible();
+  await expect(button).toBeVisible();
 
   await runModViaQuickBar(page, "GIPHY Search");
 
@@ -176,21 +178,19 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
 
   await test.step("Verify the mod activation page has links for setting the shortcut", async () => {
     await expect(
-      modActivationPage.keyboardShortcutDocumentationLink(),
+      modActivationPage.keyboardShortcutDocumentationLink,
     ).toBeVisible();
-    await modActivationPage.keyboardShortcutDocumentationLink().click();
+    await modActivationPage.keyboardShortcutDocumentationLink.click();
 
     await expect(
       secondTab.getByRole("heading", { name: "Changing the Quick Bar" }),
     ).toBeVisible();
     await secondTab.goBack();
 
-    await expect(
-      modActivationPage.configureQuickbarShortcutLink(),
-    ).toBeVisible();
+    await expect(modActivationPage.configureQuickbarShortcutLink).toBeVisible();
 
     const configureShortcutPage = await clickAndWaitForNewPage(
-      modActivationPage.configureQuickbarShortcutLink(),
+      modActivationPage.configureQuickbarShortcutLink,
       context,
     );
 

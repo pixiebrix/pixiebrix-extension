@@ -191,7 +191,7 @@
 ./src/pageScript/messenger/constants.ts
 ./src/pageScript/messenger/sender.ts
 ./src/permissions/deploymentPermissionsHelpers.ts
-./src/permissions/extensionPermissionsHelpers.ts
+./src/permissions/modComponentPermissionsHelpers.ts
 ./src/permissions/permissionsTypes.ts
 ./src/permissions/permissionsUtils.ts
 ./src/registry/internal.ts

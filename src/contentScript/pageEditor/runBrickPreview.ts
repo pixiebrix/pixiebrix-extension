@@ -73,7 +73,7 @@ export async function runBrickPreview({
     // Handle non-document contexts. If the selector is unique, this gives the root that would be available at runtime.
     // Differences in behavior:
     // - For triggers, the PixieBrix looks for the closest ancestor to the DOM event target matching the selector
-    //   See TriggerExtensionPoint.eventHandler for reference
+    //   See TriggerStarterBrick.eventHandler for reference
     // - For multi-menus (not currently available in the Page Editor), the below logic returns an arbitrary menu
     const rootElement = $safeFind(rootSelector);
     if (rootElement.length > 0) {

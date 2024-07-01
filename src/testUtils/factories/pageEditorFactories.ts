@@ -17,7 +17,7 @@
 
 import { define, derive, type FactoryConfig } from "cooky-cutter";
 import {
-  type ActionFormState,
+  type ButtonFormState,
   type ContextMenuFormState,
   type ModComponentFormState,
   type QuickBarFormState,
@@ -38,7 +38,7 @@ import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type BrickPipeline } from "@/bricks/types";
 import contextMenu from "@/pageEditor/starterBricks/contextMenu";
 import { validateRegistryId } from "@/types/helpers";
-import menuItem from "@/pageEditor/starterBricks/menuItem";
+import menuItem from "@/pageEditor/starterBricks/button";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
 import quickBar from "@/pageEditor/starterBricks/quickBar";
 import trigger from "@/pageEditor/starterBricks/trigger";
@@ -54,8 +54,8 @@ import { type DerivedFunction } from "cooky-cutter/dist/derive";
 import { type BaseModComponentState } from "@/pageEditor/baseFormStateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-export const baseExtensionStateFactory = define<BaseModComponentState>({
-  blockPipeline: () => pipelineFactory(),
+export const baseModComponentStateFactory = define<BaseModComponentState>({
+  brickPipeline: () => pipelineFactory(),
 });
 
 type InternalFormStateOverride = ModComponentFormState & {
@@ -73,12 +73,12 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   integrationDependencies(): IntegrationDependency[] {
     return [];
   },
-  recipe: undefined,
+  modMetadata: undefined,
   type: StarterBrickTypes.SIDEBAR_PANEL,
   label: (i: number) => `Element ${i}`,
-  extension: baseExtensionStateFactory,
+  modComponent: baseModComponentStateFactory,
   // @ts-expect-error -- TODO: verify typings
-  extensionPoint: derive<ModComponentFormState, StarterBrickDefinitionLike>(
+  starterBrick: derive<ModComponentFormState, StarterBrickDefinitionLike>(
     ({ type }) => {
       // FIXME: the starter brick type produced is not based on the type provided
       const starterBrick = starterBrickDefinitionFactory();
@@ -99,8 +99,8 @@ export const formStateFactory = (
   if (pipelineOverride) {
     return internalFormStateFactory({
       ...override,
-      extension: baseExtensionStateFactory({
-        blockPipeline: pipelineOverride,
+      modComponent: baseModComponentStateFactory({
+        brickPipeline: pipelineOverride,
       }),
     } as InternalFormStateOverride);
   }
@@ -111,7 +111,7 @@ export const formStateFactory = (
 // Define a method to reset the sequence for formStateFactory given that it's not a factory definition
 formStateFactory.resetSequence = () => {
   // Reset the sequence for the internal factories
-  baseExtensionStateFactory.resetSequence();
+  baseModComponentStateFactory.resetSequence();
   internalFormStateFactory.resetSequence();
   brickConfigFactory.resetSequence();
   starterBrickDefinitionFactory.resetSequence();
@@ -207,7 +207,7 @@ export const quickbarFormStateFactory = (
 };
 
 export const menuItemFormStateFactory = (
-  override?: FactoryConfig<ActionFormState>,
+  override?: FactoryConfig<ButtonFormState>,
   pipelineOverride?: BrickPipeline,
 ) => {
   const defaultTriggerProps = menuItem.fromNativeElement(
@@ -229,7 +229,7 @@ export const menuItemFormStateFactory = (
       ...override,
     } as FactoryConfig<ModComponentFormState>,
     pipelineOverride,
-  ) as ActionFormState;
+  ) as ButtonFormState;
 };
 
 const foundationOutputFactory = define<JsonObject>({
@@ -261,11 +261,11 @@ export const formStateWithTraceDataFactory = define<{
     TraceRecord[]
   >(({ formState }) => {
     assertNotNullish(formState, "formState is required");
-    const { uuid: extensionId, extension } = formState;
+    const { uuid: modComponentId, modComponent } = formState;
 
     let outputKey = "" as OutputKey;
     let output: JsonObject = foundationOutputFactory();
-    return extension.blockPipeline.map((block, index) => {
+    return modComponent.brickPipeline.map((block, index) => {
       const context = output;
       outputKey = `output${index}` as OutputKey;
       output = {
@@ -278,7 +278,7 @@ export const formStateWithTraceDataFactory = define<{
       };
 
       return traceRecordFactory({
-        extensionId,
+        extensionId: modComponentId,
         blockInstanceId: block.instanceId,
         blockId: block.id,
         templateContext: context,

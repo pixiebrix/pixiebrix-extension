@@ -16,7 +16,7 @@
  */
 
 import type {
-  ActionFormState,
+  ButtonFormState,
   ModComponentFormState,
   TriggerFormState,
 } from "@/pageEditor/starterBricks/formStateTypes";
@@ -107,11 +107,11 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     await super.run(component);
   }
 
-  checkAction(component: ActionFormState): void {
-    const selector = component.extensionPoint.definition.containerSelector;
+  checkAction(formState: ButtonFormState): void {
+    const selector = formState.starterBrick.definition.containerSelector;
 
     const position = {
-      path: "extensionPoint.definition.containerSelector",
+      path: "starterBrick.definition.containerSelector",
     };
 
     if (!isEmpty(selector)) {
@@ -127,7 +127,7 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
       if (!isNativeCssSelector(selector)) {
         const matches = findJQueryExtensions(selector);
         const isWatch =
-          component.extensionPoint.definition.attachMode === "watch";
+          formState.starterBrick.definition.attachMode === "watch";
 
         let message = isWatch
           ? "Using a non-native CSS selector for location in watch mode. Button location selectors that use jQuery extensions may slow down the page."
@@ -150,11 +150,11 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     }
   }
 
-  checkTrigger(component: TriggerFormState): void {
-    const selector = component.extensionPoint.definition.rootSelector;
+  checkTrigger(formState: TriggerFormState): void {
+    const selector = formState.starterBrick.definition.rootSelector;
 
     const position = {
-      path: "extensionPoint.definition.rootSelector",
+      path: "starterBrick.definition.rootSelector",
     };
 
     if (selector) {
@@ -170,7 +170,7 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
       if (!isNativeCssSelector(selector)) {
         const matches = findJQueryExtensions(selector);
         const isWatch =
-          component.extensionPoint.definition.attachMode === "watch";
+          formState.starterBrick.definition.attachMode === "watch";
 
         let message = isWatch
           ? "Using a non-native CSS selector in watch mode. Watching selectors that use jQuery extensions may slow down the page."

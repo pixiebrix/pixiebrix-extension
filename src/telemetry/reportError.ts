@@ -20,7 +20,7 @@ import { backgroundTarget as bg, getNotifier } from "webext-messenger";
 import { serializeError } from "serialize-error";
 import { selectError, shouldErrorBeIgnored } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
-import { getContextName } from "webext-detect-page";
+import { getContextName } from "webext-detect";
 
 expectContext(
   "extension",

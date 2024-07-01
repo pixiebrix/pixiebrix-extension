@@ -60,7 +60,7 @@ function fromNativeElement(
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
-    extensionPoint: {
+    starterBrick: {
       metadata,
       definition: {
         type: "contextMenu",
@@ -72,10 +72,10 @@ function fromNativeElement(
         isAvailable,
       },
     },
-    extension: {
+    modComponent: {
       title,
       onSuccess: true,
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -83,7 +83,7 @@ function fromNativeElement(
 function selectStarterBrickDefinition(
   formState: ContextMenuFormState,
 ): StarterBrickDefinitionLike<ContextMenuDefinition> {
-  const { extensionPoint } = formState;
+  const { starterBrick } = formState;
   const {
     definition: {
       isAvailable,
@@ -92,7 +92,7 @@ function selectStarterBrickDefinition(
       targetMode,
       contexts = ["all"],
     },
-  } = extensionPoint;
+  } = starterBrick;
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
     definition: {
@@ -106,17 +106,17 @@ function selectStarterBrickDefinition(
   });
 }
 
-function selectExtension(
+function selectModComponent(
   state: ContextMenuFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<ContextMenuConfig> {
-  const { extension } = state;
+  const { modComponent } = state;
   const config: ContextMenuConfig = {
-    title: extension.title,
-    onSuccess: extension.onSuccess,
+    title: modComponent.title,
+    onSuccess: modComponent.onSuccess,
     action: options.includeInstanceIds
-      ? extension.blockPipeline
-      : omitEditorMetadata(extension.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),
@@ -124,10 +124,10 @@ function selectExtension(
   });
 }
 
-async function fromExtension(
+async function fromModComponent(
   config: ModComponentBase<ContextMenuConfig>,
 ): Promise<ContextMenuFormState> {
-  const extensionPoint = await lookupStarterBrick<
+  const starterBrick = await lookupStarterBrick<
     ContextMenuDefinition,
     ContextMenuConfig,
     "contextMenu"
@@ -138,24 +138,21 @@ async function fromExtension(
     contexts,
     targetMode,
     reader,
-  } = extensionPoint.definition;
+  } = starterBrick.definition;
 
-  const base = baseFromModComponent(config, extensionPoint.definition.type);
-  const extension = await modComponentWithNormalizedPipeline(
+  const base = baseFromModComponent(config, starterBrick.definition.type);
+  const modComponent = await modComponentWithNormalizedPipeline(
     config.config,
     "action",
   );
 
-  assertNotNullish(
-    extensionPoint.metadata,
-    "Starter brick metadata is required",
-  );
+  assertNotNullish(starterBrick.metadata, "Starter brick metadata is required");
 
   return {
     ...base,
-    extension,
-    extensionPoint: {
-      metadata: extensionPoint.metadata,
+    modComponent,
+    starterBrick: {
+      metadata: starterBrick.metadata,
       definition: {
         type: "contextMenu",
         documentUrlPatterns,
@@ -164,7 +161,7 @@ async function fromExtension(
         contexts,
         // See comment on SingleLayerReaderConfig
         reader: reader as SingleLayerReaderConfig,
-        isAvailable: selectStarterBrickAvailability(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(starterBrick),
       },
     },
   };
@@ -175,7 +172,7 @@ function asDraftModComponent(
 ): DraftModComponent {
   return {
     type: "contextMenu",
-    extension: selectExtension(contextMenuFormState, {
+    extension: selectModComponent(contextMenuFormState, {
       includeInstanceIds: true,
     }),
     extensionPointConfig: selectStarterBrickDefinition(contextMenuFormState),
@@ -193,8 +190,8 @@ const config: ModComponentFormStateAdapter<undefined, ContextMenuFormState> = {
   fromNativeElement,
   asDraftModComponent,
   selectStarterBrickDefinition,
-  selectExtension,
-  fromExtension,
+  selectModComponent,
+  fromModComponent,
 };
 
 export default config;

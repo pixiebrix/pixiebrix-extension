@@ -53,7 +53,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
     type: "actionPanel",
     label: heading,
     ...base,
-    extensionPoint: {
+    starterBrick: {
       metadata,
 
       definition: {
@@ -72,9 +72,9 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
         customEvent: null,
       },
     },
-    extension: {
+    modComponent: {
       heading,
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -82,10 +82,10 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
 function selectStarterBrickDefinition(
   formState: SidebarFormState,
 ): StarterBrickDefinitionLike {
-  const { extensionPoint } = formState;
+  const { starterBrick } = formState;
   const {
     definition: { isAvailable, reader, trigger, debounce, customEvent },
-  } = extensionPoint;
+  } = starterBrick;
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
     definition: {
@@ -99,16 +99,16 @@ function selectStarterBrickDefinition(
   });
 }
 
-function selectExtension(
+function selectModComponent(
   state: SidebarFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<SidebarConfig> {
-  const { extension } = state;
+  const { modComponent } = state;
   const config: SidebarConfig = {
-    heading: extension.heading,
+    heading: modComponent.heading,
     body: options.includeInstanceIds
-      ? extension.blockPipeline
-      : omitEditorMetadata(extension.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),
@@ -121,12 +121,14 @@ function asDraftModComponent(
 ): DraftModComponent {
   return {
     type: "actionPanel",
-    extension: selectExtension(sidebarFormState, { includeInstanceIds: true }),
+    extension: selectModComponent(sidebarFormState, {
+      includeInstanceIds: true,
+    }),
     extensionPointConfig: selectStarterBrickDefinition(sidebarFormState),
   };
 }
 
-async function fromExtension(
+async function fromModComponent(
   config: ModComponentBase<SidebarConfig>,
 ): Promise<SidebarFormState> {
   const starterBrick = await lookupStarterBrick<
@@ -152,8 +154,8 @@ async function fromExtension(
 
   return {
     ...base,
-    extension: modComponent,
-    extensionPoint: {
+    modComponent,
+    starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
         ...starterBrick.definition,
@@ -177,8 +179,8 @@ const config: ModComponentFormStateAdapter<never, SidebarFormState> = {
   fromNativeElement,
   asDraftModComponent,
   selectStarterBrickDefinition,
-  selectExtension,
-  fromExtension,
+  selectModComponent,
+  fromModComponent,
   EditorNode: SidebarConfiguration,
 };
 

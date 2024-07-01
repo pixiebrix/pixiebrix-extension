@@ -25,7 +25,7 @@ import {
   ModComponentIcon,
   NotAvailableIcon,
   UnsavedChangesIcon,
-} from "@/pageEditor/sidebar/ExtensionIcons";
+} from "@/pageEditor/sidebar/ModComponentIcons";
 import { type UUID } from "@/types/stringTypes";
 import {
   disableOverlay,
@@ -45,7 +45,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 import useSaveStandaloneModComponent from "@/pageEditor/hooks/useSaveStandaloneModComponent";
-import useResetExtension from "@/pageEditor/hooks/useResetExtension";
+import useResetModComponent from "@/pageEditor/hooks/useResetModComponent";
 import {
   useRemoveModComponentFromStorage,
   DEACTIVATE_MOD_MODAL_PROPS,
@@ -80,9 +80,9 @@ const DraftModComponentListItem: React.FunctionComponent<
 
   const isActive =
     activeModComponentFormState?.uuid === modComponentFormState.uuid;
-  const modId = modComponentFormState.recipe?.id;
-  const isSiblingOfActiveListItem = activeModComponentFormState?.recipe?.id
-    ? modId === activeModComponentFormState?.recipe?.id
+  const modId = modComponentFormState.modMetadata?.id;
+  const isSiblingOfActiveListItem = activeModComponentFormState?.modMetadata?.id
+    ? modId === activeModComponentFormState?.modMetadata?.id
     : false;
   const isChildOfActiveListItem = modId === activeModId;
   const isRelativeOfActiveListItem =
@@ -108,7 +108,7 @@ const DraftModComponentListItem: React.FunctionComponent<
     save: saveStandaloneModComponent,
     isSaving: isSavingStandaloneModComponent,
   } = useSaveStandaloneModComponent();
-  const resetExtension = useResetExtension();
+  const resetModComponent = useResetModComponent();
   const { save: saveMod, isSaving: isSavingMod } = useSaveMod();
 
   const deleteModComponent = async () =>
@@ -125,26 +125,26 @@ const DraftModComponentListItem: React.FunctionComponent<
     });
 
   const onSave = async () => {
-    if (modComponentFormState.recipe) {
-      await saveMod(modComponentFormState.recipe?.id);
+    if (modComponentFormState.modMetadata) {
+      await saveMod(modComponentFormState.modMetadata?.id);
     } else {
       await saveStandaloneModComponent(modComponentFormState);
     }
   };
 
-  const isSaving = modComponentFormState.recipe
+  const isSaving = modComponentFormState.modMetadata
     ? isSavingMod
     : isSavingStandaloneModComponent;
 
   const onReset = async () =>
-    resetExtension({ extensionId: modComponentFormState.uuid });
+    resetModComponent({ modComponentId: modComponentFormState.uuid });
 
   const onDelete = modId || !isSavedOnCloud ? deleteModComponent : undefined;
 
   const onDeactivate = onDelete ? undefined : deactivateModComponent;
 
   const onClone = async () => {
-    dispatch(actions.cloneActiveExtension());
+    dispatch(actions.cloneActiveModComponent());
   };
 
   return (
@@ -209,14 +209,14 @@ const DraftModComponentListItem: React.FunctionComponent<
           onReset={modComponentFormState.installed ? onReset : undefined}
           isDirty={isDirty}
           onAddToMod={
-            modComponentFormState.recipe
+            modComponentFormState.modMetadata
               ? undefined
               : async () => {
                   dispatch(actions.showAddToModModal());
                 }
           }
           onRemoveFromMod={
-            modComponentFormState.recipe
+            modComponentFormState.modMetadata
               ? async () => {
                   dispatch(actions.showRemoveFromModModal());
                 }
