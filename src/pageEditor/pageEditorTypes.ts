@@ -18,7 +18,7 @@
 import { type AuthRootState } from "@/auth/authTypes";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
+import { type SavingModComponentState } from "@/pageEditor/panes/save/savingModComponentSlice";
 import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
@@ -36,6 +36,7 @@ import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Except } from "type-fest";
 import {
+  type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
 } from "@/pageEditor/baseFormStateTypes";
@@ -84,22 +85,22 @@ export type EditorStateV1 = {
   selectionSeq: number;
 
   /**
-   * The element type, if the page editor is in "insertion-mode"
+   * The starter brick type, if the page editor is in "insertion-mode"
    */
   inserting: StarterBrickType | null;
 
   /**
-   * The uuid of the active element, if an extension is selected
+   * The uuid of the active mod component form state, if a mod component is selected
    */
   activeElementId: UUID | null;
 
   /**
-   * The registry id of the active recipe, if a recipe is selected
+   * The registry id of the active mod, if a mod is selected
    */
   activeRecipeId: RegistryId | null;
 
   /**
-   * The registry id of the 'expanded' recipe in the sidebar, if one is expanded
+   * The registry id of the 'expanded' mod in the sidebar, if one is expanded
    */
   expandedRecipeId: RegistryId | null;
 
@@ -136,17 +137,17 @@ export type EditorStateV1 = {
   elementUIStates: Record<UUID, BrickPipelineUIState>;
 
   /**
-   * A clipboard-style-copy of a block ready to paste into an extension
+   * A clipboard-style-copy of a brick ready to paste into a mod component
    */
   copiedBlock?: BrickConfig;
 
   /**
-   * Unsaved, changed recipe options definitions
+   * Unsaved, changed mod options definitions
    */
   dirtyRecipeOptionsById: Record<RegistryId, ModOptionsDefinition>;
 
   /**
-   * Unsaved, changed recipe metadata
+   * Unsaved, changed mod metadata
    */
   dirtyRecipeMetadataById: Record<RegistryId, ModMetadataFormState>;
 
@@ -165,19 +166,19 @@ export type EditorStateV1 = {
   addBlockLocation?: AddBrickLocation;
 
   /**
-   * When creating a new blueprint from an existing extension, should we keep a separate copy of the extension?
+   * When creating a new mod from an existing mod component, should we keep a separate copy of the mod component?
    */
-  // XXX: refactor & remove from top-level Redux state. This is a property of the create recipe workflow:
+  // XXX: refactor & remove from top-level Redux state. This is a property of the create mod workflow:
   // https://github.com/pixiebrix/pixiebrix-extension/issues/3264
   keepLocalCopyOnCreateRecipe: boolean;
 
   /**
-   * Unsaved extensions that have been deleted from a recipe
+   * Unsaved mod components that have been deleted from a mod
    */
   deletedElementsByRecipeId: Record<RegistryId, BaseFormStateV1[]>;
 
   /**
-   * The available installed extensions for the current tab
+   * The available installed mod components for the current tab
    */
   availableInstalledIds: UUID[];
 
@@ -271,7 +272,7 @@ export type EditorStateV3 = Except<
    * When a mod component is selected in the Page Editor, a mod component form state is created for it and stored here;
    * that is, "touched" mod component form states.
    */
-  readonly modComponentFormStates: ModComponentFormState[];
+  readonly modComponentFormStates: BaseFormStateV2[];
 
   /**
    * Brick ids (not UUIDs) that the user has access to edit
@@ -310,17 +311,14 @@ export type EditorStateV3 = Except<
   /**
    * When creating a new mod from an existing mod component, should we keep a separate copy of the mod component?
    */
-  // XXX: refactor & remove from top-level Redux state. This is a property of the create recipe workflow:
+  // XXX: refactor & remove from top-level Redux state. This is a property of the create mod workflow:
   // https://github.com/pixiebrix/pixiebrix-extension/issues/3264
   keepLocalCopyOnCreateMod: boolean;
 
   /**
    * Unsaved mod components that have been deleted from a mod
    */
-  deletedModComponentFormStatesByModId: Record<
-    RegistryId,
-    ModComponentFormState[]
-  >;
+  deletedModComponentFormStatesByModId: Record<RegistryId, BaseFormStateV2[]>;
 
   /**
    * The available activated mod components for the current tab
@@ -343,7 +341,24 @@ export type EditorStateV3 = Except<
   isPendingDraftModComponents: boolean;
 };
 
-export type EditorState = EditorStateV3;
+/**
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ */
+export type EditorStateV4 = Except<
+  EditorStateV3,
+  "modComponentFormStates" | "deletedModComponentFormStatesByModId"
+> & {
+  modComponentFormStates: BaseFormStateV3[];
+  deletedModComponentFormStatesByModId: Record<string, BaseFormStateV3[]>;
+};
+
+export type EditorState = Except<
+  EditorStateV4,
+  "modComponentFormStates" | "deletedModComponentFormStatesByModId"
+> & {
+  modComponentFormStates: ModComponentFormState[];
+  deletedModComponentFormStatesByModId: Record<string, ModComponentFormState[]>;
+};
 
 export type EditorRootState = {
   editor: EditorState;
@@ -360,5 +375,5 @@ export type RootState = AuthRootState &
   SettingsRootState &
   SessionRootState &
   SessionChangesRootState & {
-    savingExtension: SavingExtensionState;
+    savingExtension: SavingModComponentState;
   };

@@ -29,7 +29,7 @@ import {
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/extensionsSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
@@ -50,7 +50,7 @@ import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import type { ModComponentBase } from "@/types/modComponentTypes";
 import { pick } from "lodash";
 
-const { actions: optionsActions } = extensionsSlice;
+const { actions: optionsActions } = modComponentsSlice;
 
 // Exported for testing
 export function isModEditable(
@@ -118,7 +118,7 @@ function useSaveMod(): ModSaver {
     }
 
     if (!isModEditable(editablePackages, modDefinition)) {
-      dispatch(editorActions.showSaveAsNewRecipeModal());
+      dispatch(editorActions.showSaveAsNewModModal());
       return false;
     }
 
@@ -194,13 +194,13 @@ function useSaveMod(): ModSaver {
       editorActions.updateModMetadataOnModComponentFormStates(newModMetadata),
     );
 
-    // Remove any deleted mod component form states from the extensions slice
+    // Remove any deleted mod component form states from the mod components slice
     for (const modComponentId of getDeletedComponentIdsForMod(modId)) {
       dispatch(optionsActions.removeModComponent({ modComponentId }));
     }
 
     // Clear the dirty states
-    dispatch(editorActions.resetMetadataAndOptionsForRecipe(newModMetadata.id));
+    dispatch(editorActions.resetMetadataAndOptionsForMod(newModMetadata.id));
     dispatch(
       editorActions.clearDeletedModComponentFormStatesForMod(newModMetadata.id),
     );

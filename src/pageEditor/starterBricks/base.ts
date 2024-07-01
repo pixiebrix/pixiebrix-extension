@@ -27,7 +27,10 @@ import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import type React from "react";
 import { createSitePattern, SITES_PATTERN } from "@/permissions/patterns";
 import { type Except } from "type-fest";
@@ -51,7 +54,7 @@ import { isNullOrBlank } from "@/utils/stringUtils";
 import { deepPickBy, freeze } from "@/utils/objectUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
 import {
-  type BaseExtensionState,
+  type BaseModComponentState,
   type BaseFormState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
@@ -77,9 +80,9 @@ export interface WizardStep {
 export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v3";
 
 /**
- * Default definition entry for the inner definition of the extensionPoint for the extension
+ * Default definition entry for the inner definition of the starter brick for the mod component
  */
-export const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
+export const DEFAULT_STARTER_BRICK_VAR = "extensionPoint";
 
 /**
  * Return availability for all sites.
@@ -106,9 +109,9 @@ export function getDefaultAvailabilityForUrl(
 }
 
 /**
- * Return common extension properties for the Page Editor form state
+ * Return common mod component properties for the Page Editor form state
  */
-export function baseFromExtension<T extends StarterBrickType>(
+export function baseFromModComponent<T extends StarterBrickType>(
   config: ModComponentBase,
   type: T,
 ): Pick<
@@ -120,7 +123,7 @@ export function baseFromExtension<T extends StarterBrickType>(
   | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
-  | "recipe"
+  | "modMetadata"
 > & { type: T } {
   return {
     uuid: config.id,
@@ -132,48 +135,48 @@ export function baseFromExtension<T extends StarterBrickType>(
     permissions: config.permissions ?? {},
     optionsArgs: config.optionsArgs ?? {},
     type,
-    recipe: config._recipe,
+    modMetadata: config._recipe,
   };
 }
 
 /**
  * Add the mod options to the form state if the mod component is a part of a mod
  */
-export function initRecipeOptionsIfNeeded<TFormState extends BaseFormState>(
+export function initModOptionsIfNeeded<TFormState extends BaseFormState>(
   modComponentFormState: TFormState,
   modDefinitions: ModDefinition[],
 ) {
-  if (modComponentFormState.recipe?.id) {
-    const recipe = modDefinitions?.find(
-      (x) => x.metadata.id === modComponentFormState.recipe?.id,
+  if (modComponentFormState.modMetadata?.id) {
+    const mod = modDefinitions?.find(
+      (x) => x.metadata.id === modComponentFormState.modMetadata?.id,
     );
 
-    if (recipe?.options == null) {
+    if (mod?.options == null) {
       modComponentFormState.optionsDefinition =
         emptyModOptionsDefinitionFactory();
     } else {
       modComponentFormState.optionsDefinition = {
-        schema: recipe.options.schema.properties
-          ? recipe.options.schema
+        schema: mod.options.schema.properties
+          ? mod.options.schema
           : ({
               type: "object",
-              properties: recipe.options.schema,
+              properties: mod.options.schema,
             } as Schema),
-        uiSchema: recipe.options.uiSchema,
+        uiSchema: mod.options.uiSchema,
       };
     }
   }
 }
 
-export function baseSelectExtension({
+export function baseSelectModComponent({
   apiVersion,
   uuid,
   label,
   optionsArgs,
   integrationDependencies,
   permissions,
-  extensionPoint,
-  recipe,
+  starterBrick,
+  modMetadata: mod,
 }: BaseFormState): Pick<
   ModComponentBase,
   | "id"
@@ -188,8 +191,8 @@ export function baseSelectExtension({
   return {
     id: uuid,
     apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: recipe,
+    extensionPointId: starterBrick.metadata.id,
+    _recipe: mod,
     label,
     integrationDependencies,
     permissions,
@@ -199,23 +202,23 @@ export function baseSelectExtension({
 
 export function makeInitialBaseState(
   uuid: UUID = uuidv4(),
-): Except<BaseFormState, "type" | "label" | "extensionPoint"> {
+): Except<BaseFormState, "type" | "label" | "starterBrick"> {
   return {
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     integrationDependencies: [],
     permissions: emptyPermissionsFactory(),
     optionsArgs: {},
-    extension: {
-      blockPipeline: [],
+    modComponent: {
+      brickPipeline: [],
     },
-    recipe: undefined,
+    modMetadata: undefined,
   };
 }
 
 /**
- * Create metadata for a temporary extension point definition. When the extension point is saved, it will be assigned
- * an id based on its hash, and included in the `definitions` section of the recipe/extension.
+ * Create metadata for a temporary starter brick definition. When the starter brick is saved, it will be assigned
+ * an id based on its hash, and included in the `definitions` section of the mod/mod component
  *
  * @see makeInternalId
  */
@@ -263,7 +266,7 @@ export function cleanIsAvailable(
   };
 }
 
-export async function lookupExtensionPoint<
+export async function lookupStarterBrick<
   TDefinition extends StarterBrickDefinitionProp,
   TConfig extends UnknownObject,
   TType extends string,
@@ -278,13 +281,13 @@ export async function lookupExtensionPoint<
   }
 
   if (hasInnerStarterBrickRef(config)) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerExtensionPointRef
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerStarterBrickRef
     const definition = config.definitions![config.extensionPointId];
     console.debug(
-      "Converting extension definition to temporary extension point",
+      "Converting mod component definition to temporary starter brick",
       definition,
     );
-    const innerExtensionPoint = {
+    const innerStarterBrick = {
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
       kind: DefinitionKinds.STARTER_BRICK,
       metadata: internalStarterBrickMetaFactory(),
@@ -293,8 +296,8 @@ export async function lookupExtensionPoint<
       definition: { type: TType };
     };
 
-    assertStarterBrickDefinitionLike(innerExtensionPoint);
-    return innerExtensionPoint;
+    assertStarterBrickDefinitionLike(innerStarterBrick);
+    return innerStarterBrick;
   }
 
   const brick = await registry.find(config.extensionPointId);
@@ -304,21 +307,21 @@ export async function lookupExtensionPoint<
     );
   }
 
-  const extensionPoint =
+  const starterBrick =
     brick.config as unknown as StarterBrickDefinitionLike<TDefinition>;
-  if (extensionPoint.definition.type !== type) {
+  if (starterBrick.definition.type !== type) {
     throw new Error(`Expected ${type} starter brick type`);
   }
 
-  return extensionPoint as StarterBrickDefinitionLike<TDefinition> & {
+  return starterBrick as StarterBrickDefinitionLike<TDefinition> & {
     definition: { type: TType };
   };
 }
 
-export function baseSelectExtensionPoint(
+export function baseSelectStarterBrick(
   formState: BaseFormState,
 ): Except<StarterBrickDefinitionLike, "definition"> {
-  const { metadata } = formState.extensionPoint;
+  const { metadata } = formState.starterBrick;
 
   return {
     apiVersion: formState.apiVersion,
@@ -336,32 +339,32 @@ export function baseSelectExtensionPoint(
   };
 }
 
-export function extensionWithInnerDefinitions(
-  extension: ModComponentBase,
-  extensionPointDefinition: StarterBrickDefinitionProp,
+export function modComponentWithInnerDefinitions(
+  modComponent: ModComponentBase,
+  starterBrickDefinition: StarterBrickDefinitionProp,
 ): ModComponentBase {
-  if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
-    const extensionPointId = freshIdentifier(
-      DEFAULT_EXTENSION_POINT_VAR as SafeString,
-      Object.keys(extension.definitions ?? {}),
+  if (isInnerDefinitionRegistryId(modComponent.extensionPointId)) {
+    const starterBrick = freshIdentifier(
+      DEFAULT_STARTER_BRICK_VAR as SafeString,
+      Object.keys(modComponent.definitions ?? {}),
     );
 
-    const result = cloneDeep(extension);
+    const result = cloneDeep(modComponent);
     result.definitions = {
       ...result.definitions,
-      [extensionPointId]: {
+      [starterBrick]: {
         kind: DefinitionKinds.STARTER_BRICK,
-        definition: extensionPointDefinition,
+        definition: starterBrickDefinition,
       },
     };
 
     // XXX: we need to fix the type of ModComponentBase.extensionPointId to support variable names
-    result.extensionPointId = extensionPointId as RegistryId;
+    result.extensionPointId = starterBrick as RegistryId;
 
     return result;
   }
 
-  return extension;
+  return modComponent;
 }
 
 /**
@@ -383,7 +386,7 @@ export function removeEmptyValues<T extends object>(obj: T): T {
 }
 
 /**
- * Return a composite reader to automatically include in new extensions created with the Page Editor.
+ * Return a composite reader to automatically include in new mod components created with the Page Editor.
  */
 export function getImplicitReader(
   type: StarterBrickType,
@@ -415,11 +418,11 @@ export function getImplicitReader(
 
   if (type === "contextMenu") {
     // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by
-    // the contextMenu extension point.
+    // the contextMenu starter brick.
     return readerTypeHack([...base, ...elementAddons]);
   }
 
-  if (type === "menuItem") {
+  if (type === StarterBrickTypes.BUTTON) {
     return readerTypeHack([...base, ...elementAddons]);
   }
 
@@ -435,20 +438,20 @@ export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
 
 /**
  * Normalize the pipeline prop name and assign instance ids for tracing.
- * @param config the extension configuration
+ * @param config the mod component configuration
  * @param pipelineProp the name of the pipeline prop, currently either "action" or "body"
  */
-export async function extensionWithNormalizedPipeline<
+export async function modComponentWithNormalizedPipeline<
   T extends UnknownObject,
   Prop extends keyof T,
 >(
   config: T,
   pipelineProp: Prop,
   defaults: Partial<T> = {},
-): Promise<BaseExtensionState & Omit<T, Prop>> {
+): Promise<BaseModComponentState & Omit<T, Prop>> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
-    blockPipeline: await normalizePipelineForEditor(
+    brickPipeline: await normalizePipelineForEditor(
       castArray(pipeline) as BrickPipeline,
     ),
     ...defaults,

@@ -19,6 +19,7 @@ import {
   type EditorStateV3,
   type EditorStateV1,
   type EditorStateV2,
+  type EditorStateV4,
 } from "@/pageEditor/pageEditorTypes";
 import { mapValues, omit } from "lodash";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -31,13 +32,17 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { validateRegistryId } from "@/types/helpers";
 import {
+  type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
+  type BaseModComponentStateV2,
+  type BaseModComponentStateV1,
 } from "@/pageEditor/baseFormStateTypes";
 import { type PersistedState } from "redux-persist";
 import {
   migrateEditorStateV1,
   migrateEditorStateV2,
+  migrateEditorStateV3,
 } from "@/store/editorMigrations";
 
 const initialStateV1: EditorStateV1 & PersistedState = {
@@ -118,11 +123,42 @@ const initialStateV3: EditorStateV3 & PersistedState = {
   },
 };
 
-describe("migrateEditorStateV1", () => {
-  it("migrates empty state", () => {
-    expect(migrateEditorStateV1(initialStateV1)).toStrictEqual(initialStateV2);
-  });
+const initialStateV4: EditorStateV4 & PersistedState = {
+  selectionSeq: 0,
+  activeModComponentId: null,
+  activeModId: null,
+  expandedModId: null,
+  error: null,
+  beta: false,
+  modComponentFormStates: [],
+  knownEditableBrickIds: [],
+  dirty: {},
+  isBetaUI: false,
+  copiedBrick: undefined,
+  brickPipelineUIStateById: {},
+  dirtyModOptionsById: {},
+  dirtyModMetadataById: {},
+  visibleModalKey: null,
+  addBrickLocation: undefined,
+  keepLocalCopyOnCreateMod: false,
+  deletedModComponentFormStatesByModId: {},
+  availableActivatedModComponentIds: [],
+  isPendingAvailableActivatedModComponents: false,
+  availableDraftModComponentIds: [],
+  isPendingDraftModComponents: false,
+  isModListExpanded: true,
+  isDataPanelExpanded: true,
+  isDimensionsWarningDismissed: false,
+  inserting: null,
+  isVariablePopoverVisible: false,
+  // Function under test does not handle updating the persistence, this is handled by redux-persist
+  _persist: {
+    version: 1,
+    rehydrated: false,
+  },
+};
 
+describe("editor state migrations", () => {
   function unmigrateServices(
     integrationDependencies: IntegrationDependencyV2[] = [],
   ): IntegrationDependencyV1[] {
@@ -164,81 +200,157 @@ describe("migrateEditorStateV1", () => {
     };
   }
 
-  it("migrates state with elements with no services", () => {
-    const expectedState = {
-      ...initialStateV2,
-      elements: [formStateFactory(), formStateFactory()],
+  function unmigrateModComponentStateV1(
+    state: BaseModComponentStateV2,
+  ): BaseModComponentStateV1 {
+    return {
+      blockPipeline: state.brickPipeline,
     };
-    const unmigrated = unmigrateEditorStateV2(expectedState);
-    expect(migrateEditorStateV1(unmigrated)).toStrictEqual(expectedState);
-  });
+  }
 
-  it("migrates state with elements with services and deleted elements", () => {
-    const fooElement1 = formStateFactory({
-      recipe: modMetadataFactory({
-        id: validateRegistryId("foo"),
-      }),
-      integrationDependencies: [
-        integrationDependencyFactory({
-          configId: uuidSequence,
-        }),
-        integrationDependencyFactory({
-          configId: uuidSequence,
-        }),
-      ],
+  function unmigrateFormStateV2(formState: BaseFormStateV3): BaseFormStateV2 {
+    return {
+      ...omit(formState, ["modMetadata", "modComponent", "starterBrick"]),
+      recipe: formState.modMetadata,
+      extension: unmigrateModComponentStateV1(formState.modComponent),
+      extensionPoint: formState.starterBrick,
+    };
+  }
+
+  function unmigrateEditorStateV3(
+    state: EditorStateV4 & PersistedState,
+  ): EditorStateV3 & PersistedState {
+    return {
+      ...omit(
+        state,
+        "modComponentFormStates",
+        "deletedModComponentFormStatesByModId",
+      ),
+      modComponentFormStates: state.modComponentFormStates.map((formState) =>
+        unmigrateFormStateV2(formState),
+      ),
+      deletedModComponentFormStatesByModId: mapValues(
+        state.deletedModComponentFormStatesByModId,
+        (formStates) =>
+          formStates.map((formState) => unmigrateFormStateV2(formState)),
+      ),
+    };
+  }
+
+  describe("migrateEditorStateV1", () => {
+    it("migrates empty state", () => {
+      expect(migrateEditorStateV1(initialStateV1)).toStrictEqual(
+        initialStateV2,
+      );
     });
-    const fooElement2 = formStateFactory({
-      recipe: modMetadataFactory({
-        id: validateRegistryId("foo"),
-      }),
-      integrationDependencies: [
-        integrationDependencyFactory({
-          configId: uuidSequence,
-        }),
-        integrationDependencyFactory({
-          configId: uuidSequence,
-        }),
-      ],
+
+    it("migrates state with elements with no services", () => {
+      const expectedState = {
+        ...initialStateV2,
+        elements: [
+          unmigrateFormStateV2(formStateFactory()),
+          unmigrateFormStateV2(formStateFactory()),
+        ],
+      };
+      const unmigrated = unmigrateEditorStateV2(expectedState);
+      expect(migrateEditorStateV1(unmigrated)).toStrictEqual(expectedState);
     });
-    const barElement = formStateFactory({
-      recipe: modMetadataFactory({
-        id: validateRegistryId("bar"),
-      }),
-      integrationDependencies: [
-        integrationDependencyFactory({
-          configId: uuidSequence,
-        }),
-        integrationDependencyFactory({
-          configId: uuidSequence,
-        }),
-      ],
-    });
-    const expectedState = {
-      ...initialStateV2,
-      elements: [
+
+    it("migrates state with elements with services and deleted elements", () => {
+      const fooElement1 = unmigrateFormStateV2(
         formStateFactory({
+          modMetadata: modMetadataFactory({
+            id: validateRegistryId("foo"),
+          }),
           integrationDependencies: [
+            integrationDependencyFactory({
+              configId: uuidSequence,
+            }),
             integrationDependencyFactory({
               configId: uuidSequence,
             }),
           ],
         }),
-        fooElement1,
-        fooElement2,
-        barElement,
-      ],
-      deletedElementsByRecipeId: {
-        foo: [fooElement1, fooElement2],
-        bar: [barElement],
-      },
-    };
-    const unmigrated = unmigrateEditorStateV2(expectedState);
-    expect(migrateEditorStateV1(unmigrated)).toStrictEqual(expectedState);
+      );
+      const fooElement2 = unmigrateFormStateV2(
+        formStateFactory({
+          modMetadata: modMetadataFactory({
+            id: validateRegistryId("foo"),
+          }),
+          integrationDependencies: [
+            integrationDependencyFactory({
+              configId: uuidSequence,
+            }),
+            integrationDependencyFactory({
+              configId: uuidSequence,
+            }),
+          ],
+        }),
+      );
+      const barElement = unmigrateFormStateV2(
+        formStateFactory({
+          modMetadata: modMetadataFactory({
+            id: validateRegistryId("bar"),
+          }),
+          integrationDependencies: [
+            integrationDependencyFactory({
+              configId: uuidSequence,
+            }),
+            integrationDependencyFactory({
+              configId: uuidSequence,
+            }),
+          ],
+        }),
+      );
+      const expectedState = {
+        ...initialStateV2,
+        elements: [
+          unmigrateFormStateV2(
+            formStateFactory({
+              integrationDependencies: [
+                integrationDependencyFactory({
+                  configId: uuidSequence,
+                }),
+              ],
+            }),
+          ),
+          fooElement1,
+          fooElement2,
+          barElement,
+        ],
+        deletedElementsByRecipeId: {
+          foo: [fooElement1, fooElement2],
+          bar: [barElement],
+        },
+      };
+      const unmigrated = unmigrateEditorStateV2(expectedState);
+      expect(migrateEditorStateV1(unmigrated)).toStrictEqual(expectedState);
+    });
   });
-});
 
-describe("migrateEditorStateV2", () => {
-  it("migrates empty state", () => {
-    expect(migrateEditorStateV2(initialStateV2)).toStrictEqual(initialStateV3);
+  describe("migrateEditorStateV2", () => {
+    it("migrates empty state", () => {
+      expect(migrateEditorStateV2(initialStateV2)).toStrictEqual(
+        initialStateV3,
+      );
+    });
+  });
+
+  describe("migrateEditorStateV3", () => {
+    it("migrates empty state", () => {
+      expect(migrateEditorStateV3(initialStateV3)).toStrictEqual(
+        initialStateV4,
+      );
+    });
+
+    it("migrates the form states", () => {
+      const formState = formStateFactory();
+      const expectedState = {
+        ...initialStateV4,
+        modComponentFormStates: [formState],
+      };
+      const unmigrated = unmigrateEditorStateV3(expectedState);
+      expect(migrateEditorStateV3(unmigrated)).toStrictEqual(expectedState);
+    });
   });
 });

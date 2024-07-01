@@ -37,12 +37,12 @@ const QuickBarProviderConfiguration: React.FC<{
 
   const [rootActionField] = useField<
     QuickBarProviderConfig["rootAction"] | null
-  >("extension.rootAction");
+  >("modComponent.rootAction");
 
   return (
     <>
       <UrlMatchPatternField
-        name="extensionPoint.definition.documentUrlPatterns"
+        name="starterBrick.definition.documentUrlPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
         description={
           <span>
@@ -60,20 +60,20 @@ const QuickBarProviderConfiguration: React.FC<{
       />
 
       <FieldTemplate
-        name="extension.rootAction"
+        name="modComponent.rootAction"
         label="Parent Action"
         as={SwitchButtonWidget}
         value={Boolean(rootActionField.value)}
         description="Toggle on to show a parent action that contains child actions when selected"
         onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
           if (target.value) {
-            await setFieldValue("extension.rootAction", {
+            await setFieldValue("modComponent.rootAction", {
               title: null,
               icon: null,
               requireActiveRoot: false,
             });
           } else {
-            await setFieldValue("extension.rootAction", null);
+            await setFieldValue("modComponent.rootAction", null);
           }
         }}
       />
@@ -81,20 +81,20 @@ const QuickBarProviderConfiguration: React.FC<{
       {rootActionField.value && (
         <>
           <ConnectedFieldTemplate
-            name="extension.rootAction.title"
+            name="modComponent.rootAction.title"
             label="Action Title"
             description="Quick Bar action title"
           />
 
           <ConnectedFieldTemplate
-            name="extension.rootAction.icon"
+            name="modComponent.rootAction.icon"
             label="Action Icon"
             as={IconWidget}
             description="Icon to show in the Quick Bar for the action"
           />
 
           <ConnectedFieldTemplate
-            name="extension.rootAction.requireActiveRoot"
+            name="modComponent.rootAction.requireActiveRoot"
             label="Require Active Root"
             as={SwitchButtonWidget}
             description="Toggle on to only generate actions when the parent action is selected"
@@ -103,7 +103,7 @@ const QuickBarProviderConfiguration: React.FC<{
       )}
       <ConnectedCollapsibleFieldSection title="Advanced">
         <UrlMatchPatternField
-          name="extensionPoint.definition.isAvailable.matchPatterns"
+          name="starterBrick.definition.isAvailable.matchPatterns"
           description={
             <span>
               URL match patterns give PixieBrix access to a page without you

@@ -32,7 +32,7 @@ const brands: Array<{ brand: string }> =
 /**
  * Return true if the browser is Google Chrome.
  *
- * Unlike webext-detect-page, attempts to exclude other Chromium-based browsers like Microsoft Edge, Brave, and Opera.
+ * Unlike webext-detect, attempts to exclude other Chromium-based browsers like Microsoft Edge, Brave, and Opera.
  */
 export function isGoogleChrome(): boolean {
   return brands.some((x) => x.brand === "Google Chrome");

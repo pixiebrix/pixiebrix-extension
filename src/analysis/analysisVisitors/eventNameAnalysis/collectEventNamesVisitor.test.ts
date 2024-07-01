@@ -27,7 +27,7 @@ import { toExpression } from "@/utils/expressionUtils";
 describe("collectEventNamesAnalysis", () => {
   it("collects event name from literal", () => {
     const formState = formStateFactory();
-    formState.extension.blockPipeline[0] = {
+    formState.modComponent.brickPipeline[0] = {
       id: CustomEventEffect.BRICK_ID,
       config: {
         eventName: "foo",
@@ -45,7 +45,7 @@ describe("collectEventNamesAnalysis", () => {
 
   it("collects event name from template literal", () => {
     const formState = formStateFactory();
-    formState.extension.blockPipeline[0] = {
+    formState.modComponent.brickPipeline[0] = {
       id: CustomEventEffect.BRICK_ID,
       config: {
         eventName: toExpression("nunjucks", "foo"),
@@ -63,7 +63,7 @@ describe("collectEventNamesAnalysis", () => {
 
   it("sets dynamic event flag", () => {
     const formState = formStateFactory();
-    formState.extension.blockPipeline[0] = {
+    formState.modComponent.brickPipeline[0] = {
       id: CustomEventEffect.BRICK_ID,
       config: {
         eventName: toExpression("nunjucks", "{{ @foo }}"),
@@ -81,8 +81,8 @@ describe("collectEventNamesAnalysis", () => {
 
   it("collects custom trigger names from trigger starter bricks", () => {
     const formState = triggerFormStateFactory();
-    formState.extensionPoint.definition.trigger = "custom";
-    formState.extensionPoint.definition.customEvent = {
+    formState.starterBrick.definition.trigger = "custom";
+    formState.starterBrick.definition.customEvent = {
       eventName: "foo",
     };
 

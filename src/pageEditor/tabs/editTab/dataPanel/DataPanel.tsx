@@ -66,7 +66,7 @@ import { BrickTypes } from "@/runtime/runtimeTypes";
  * Exclude irrelevant top-level keys.
  */
 const contextFilter = (value: unknown, key: string) => {
-  // `@options` comes from marketplace-installed extensions. There's a chance the user might add a brick that has
+  // `@options` comes from marketplace-installed mod components. There's a chance the user might add a brick that has
   // @options as an output key. In that case, we'd expect values to flow into it. So just checking to see if there's
   // any data is a good compromise even though we miss the corner-case where @options is user-defined but empty
   if (key === "@options" && isEmpty(value)) {
@@ -167,7 +167,7 @@ const DataPanel: React.FC = () => {
 
   useEffect(() => {
     reportEvent(Events.DATA_PANEL_TAB_VIEW, {
-      modId: activeModComponentFormState.recipe?.id,
+      modId: activeModComponentFormState.modMetadata?.id,
       brickId,
       tabName: activeTabKey,
     });
@@ -185,7 +185,7 @@ const DataPanel: React.FC = () => {
     : undefined;
 
   const isRenderedPanelStale = useMemo(() => {
-    // Only show alert for Panel and Side Panel extensions
+    // Only show alert for Panel and Side Panel mod components
     if (activeModComponentFormState.type !== "actionPanel") {
       return false;
     }
@@ -381,7 +381,7 @@ const DataPanel: React.FC = () => {
                 <BrickPreview
                   traceRecord={record}
                   brickConfig={brickConfig}
-                  extensionPoint={activeModComponentFormState.extensionPoint}
+                  starterBrick={activeModComponentFormState.starterBrick}
                 />
               </ErrorBoundary>
             ) : (
@@ -407,7 +407,7 @@ const DataPanel: React.FC = () => {
           </DataTab>
           <CommentsTab
             brickId={brickConfig.id}
-            modId={activeModComponentFormState.recipe?.id}
+            modId={activeModComponentFormState.modMetadata?.id}
             brickCommentsFieldName={brickCommentsFieldName}
           />
         </Tab.Content>

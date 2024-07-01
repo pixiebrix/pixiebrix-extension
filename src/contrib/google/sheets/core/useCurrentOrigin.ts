@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isOptionsPage } from "webext-detect-page";
+import { isOptionsPage } from "webext-detect";
 import { useEffect } from "react";
 import notify from "@/utils/notify";
 import useAsyncState from "@/hooks/useAsyncState";

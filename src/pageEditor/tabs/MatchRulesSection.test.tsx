@@ -29,7 +29,7 @@ describe("MatchRulesSection", () => {
   test("render empty section", () => {
     expect(
       render(<MatchRulesSection isLocked={false} />, {
-        initialValues: set({}, "extensionPoint.definition.isAvailable", {
+        initialValues: set({}, "starterBrick.definition.isAvailable", {
           matchPatterns: [],
           urlPatterns: [],
           selectors: [],
@@ -41,7 +41,7 @@ describe("MatchRulesSection", () => {
   test("render populated section", () => {
     expect(
       render(<MatchRulesSection isLocked={false} />, {
-        initialValues: set({}, "extensionPoint.definition.isAvailable", {
+        initialValues: set({}, "starterBrick.definition.isAvailable", {
           matchPatterns: [],
           urlPatterns: [
             {

@@ -27,7 +27,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { actions as extensionsActions } from "@/store/extensionsSlice";
+import { actions as modComponentsActions } from "@/store/extensionsSlice";
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
 import { removeModComponentsFromAllTabs } from "@/store/uninstallUtils";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
@@ -67,7 +67,7 @@ export const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
 };
 
 /**
- * Returns a callback that removes a mod component from the Page Editor and Extension Storage.
+ * Returns a callback that removes a mod component from the Page Editor and Mod Component Storage.
  *
  * For mod components packaged inside a mod and standalone mod components not saved on the cloud, this callback will effectively delete the mod component.
  * For saved standalone mods, this callback will simply deactivate the mod and remove it from the Page Editor.
@@ -104,8 +104,8 @@ export function useRemoveModComponentFromStorage(): (
         // Remove the mod component form state from the Page Editor
         dispatch(editorActions.removeModComponentFormState(modComponentId));
 
-        // Remove from options slice / extension storage
-        dispatch(extensionsActions.removeModComponent({ modComponentId }));
+        // Remove from options slice / mod component storage
+        dispatch(modComponentsActions.removeModComponent({ modComponentId }));
 
         // Remove from the host page
         try {

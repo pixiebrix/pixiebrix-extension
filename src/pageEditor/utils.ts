@@ -16,7 +16,7 @@
  */
 
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { isModComponentBase } from "@/pageEditor/sidebar/common";
+import { isModComponentBase } from "@/pageEditor/modListingPanel/common";
 import { type BrickConfig } from "@/bricks/types";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
@@ -29,17 +29,13 @@ import {
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pick, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
-import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
+import { PIPELINE_BRICKS_FIELD_NAME } from "./consts";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
-import {
-  castTextLiteralOrThrow,
-  isPipelineExpression,
-} from "@/utils/expressionUtils";
+import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
@@ -61,7 +57,7 @@ export function getModId(
 ): RegistryId | undefined {
   return isModComponentBase(modComponentOrFormState)
     ? modComponentOrFormState._recipe?.id
-    : modComponentOrFormState.recipe?.id;
+    : modComponentOrFormState.modMetadata?.id;
 }
 
 /**
@@ -80,27 +76,6 @@ export function getPipelinePropNames(
 ): string[] {
   switch (brickConfig.id) {
     // Special handling for tour step to avoid clutter and input type alternatives
-    case TourStepTransformer.BRICK_ID: {
-      const propNames = [];
-
-      // Only show onBeforeShow if it's provided, to avoid cluttering the UI
-      if (brickConfig.config.onBeforeShow != null) {
-        propNames.push("onBeforeShow");
-      }
-
-      // `body` can be a markdown value, or a pipeline
-      if (isPipelineExpression(brickConfig.config.body)) {
-        propNames.push("body");
-      }
-
-      // Only show onAfterShow if it's provided, to avoid cluttering the UI
-      if (brickConfig.config.onAfterShow != null) {
-        propNames.push("onAfterShow");
-      }
-
-      return propNames;
-    }
-
     case CustomFormRenderer.BRICK_ID: {
       const propNames = [];
 
@@ -245,7 +220,7 @@ export function getFoundationNodeAnnotations(
 ): AnalysisAnnotation[] {
   return annotations.filter(
     (annotation) =>
-      !annotation.position.path.startsWith(PIPELINE_BLOCKS_FIELD_NAME),
+      !annotation.position.path.startsWith(PIPELINE_BRICKS_FIELD_NAME),
   );
 }
 

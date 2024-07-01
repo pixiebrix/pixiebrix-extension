@@ -33,8 +33,8 @@ bricksRegistry.register([echoBrick]);
 
 const { formState, records } = formStateWithTraceDataFactory();
 const renderDataPanel = () => {
-  const extensionId = formState.uuid;
-  const { instanceId } = formState.extension.blockPipeline[1];
+  const modComponentId = formState.uuid;
+  const { instanceId } = formState.modComponent.brickPipeline[1];
 
   return render(<DataPanel />, {
     initialValues: formState,
@@ -42,7 +42,10 @@ const renderDataPanel = () => {
       dispatch(editorActions.addModComponentFormState(formState));
       dispatch(editorActions.setActiveModComponentId(formState.uuid));
       dispatch(
-        runtimeSlice.actions.setExtensionTrace({ extensionId, records }),
+        runtimeSlice.actions.setModComponentTrace({
+          modComponentId,
+          records,
+        }),
       );
       dispatch(editorActions.setActiveNodeId(instanceId));
       dispatch(
@@ -73,7 +76,7 @@ describe("DataPanel", () => {
     expect(reportEventMock).toHaveBeenCalledOnce();
     expect(reportEventMock).toHaveBeenCalledWith(Events.DATA_PANEL_TAB_VIEW, {
       tabName: DataPanelTabKey.Context,
-      brickId: formState.extension.blockPipeline[1].id,
+      brickId: formState.modComponent.brickPipeline[1].id,
       modId: undefined,
     });
 
@@ -92,7 +95,7 @@ describe("DataPanel", () => {
     expect(reportEventMock).toHaveBeenCalledOnce();
     expect(reportEventMock).toHaveBeenCalledWith(Events.DATA_PANEL_TAB_VIEW, {
       tabName: DataPanelTabKey.Comments,
-      brickId: formState.extension.blockPipeline[1].id,
+      brickId: formState.modComponent.brickPipeline[1].id,
       modId: undefined,
     });
   });

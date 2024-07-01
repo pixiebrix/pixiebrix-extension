@@ -120,7 +120,7 @@ describe("RequireIntegrationConfig", () => {
     render(
       <RequireIntegrationConfig
         integrationFieldSchema={integrationFieldSchema}
-        integrationFieldName="extension.blockPipeline[0].config.integration"
+        integrationFieldName="modComponent.brickPipeline[0].config.integration"
       >
         {({ sanitizedConfig }) => (
           <ChildComponent sanitizedConfig={sanitizedConfig} />
@@ -178,7 +178,7 @@ describe("RequireIntegrationConfig", () => {
     render(
       <RequireIntegrationConfig
         integrationFieldSchema={integrationFieldSchema}
-        integrationFieldName="extension.blockPipeline[0].config.integration"
+        integrationFieldName="modComponent.brickPipeline[0].config.integration"
       >
         {({ sanitizedConfig }) => (
           <ChildComponent sanitizedConfig={sanitizedConfig} />
@@ -253,7 +253,7 @@ describe("RequireIntegrationConfig", () => {
     render(
       <RequireIntegrationConfig
         integrationFieldSchema={integrationFieldSchema}
-        integrationFieldName="extension.blockPipeline[0].config.integration"
+        integrationFieldName="modComponent.brickPipeline[0].config.integration"
       >
         {({ sanitizedConfig }) => (
           <ChildComponent sanitizedConfig={sanitizedConfig} />
@@ -306,7 +306,7 @@ describe("RequireIntegrationConfig", () => {
     render(
       <RequireIntegrationConfig
         integrationFieldSchema={integrationFieldSchema}
-        integrationFieldName="extension.blockPipeline[0].config.integration"
+        integrationFieldName="modComponent.brickPipeline[0].config.integration"
       >
         {({ sanitizedConfig }) => (
           <ChildComponent sanitizedConfig={sanitizedConfig} />

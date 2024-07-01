@@ -19,7 +19,7 @@ import { renderHook } from "@/pageEditor/testHelpers";
 import { removeModComponentsFromAllTabs } from "@/store/uninstallUtils";
 import { useRemoveModComponentFromStorage } from "./useRemoveModComponentFromStorage";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { actions as extensionsActions } from "@/store/extensionsSlice";
+import { actions as modComponentsActions } from "@/store/extensionsSlice";
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
 
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
@@ -32,7 +32,7 @@ test("useRemoveModComponentFromStorage", async () => {
   const modComponentId = autoUUIDSequence();
 
   const {
-    result: { current: removeExtension },
+    result: { current: removeModComponent },
     getReduxStore,
   } = renderHook(() => useRemoveModComponentFromStorage(), {
     setupRedux(dispatch, { store }) {
@@ -40,7 +40,7 @@ test("useRemoveModComponentFromStorage", async () => {
     },
   });
 
-  await removeExtension({
+  await removeModComponent({
     modComponentId,
   });
 
@@ -50,7 +50,7 @@ test("useRemoveModComponentFromStorage", async () => {
     editorActions.removeModComponentFormState(modComponentId),
   );
   expect(dispatch).toHaveBeenCalledWith(
-    extensionsActions.removeModComponent({ modComponentId }),
+    modComponentsActions.removeModComponent({ modComponentId }),
   );
   expect(removeDraftModComponents).toHaveBeenCalledWith(
     expect.any(Object),

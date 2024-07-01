@@ -28,7 +28,6 @@ import {
   activateExtensionPanel,
   showSidebar,
 } from "@/contentScript/sidebarController";
-import { type TourDefinition } from "@/starterBricks/tour/tourTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 export async function updateDraftModComponent({
@@ -55,10 +54,6 @@ export async function updateDraftModComponent({
       // OK to assign directly since the object comes from the messenger (so we have a fresh object)
       triggerDefinition.trigger = "load";
     }
-  } else if (extensionPointConfig.definition.type === "tour") {
-    // Prevent auto-run of tour when using the Page Editor
-    const tourDefinition = extensionPointConfig.definition as TourDefinition;
-    tourDefinition.autoRunSchedule = "never";
   }
 
   const starterBrick = starterBrickFactory(extensionPointConfig);

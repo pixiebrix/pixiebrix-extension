@@ -82,22 +82,22 @@ const analysisSlice = createSlice({
     setKnownVars(
       state,
       action: PayloadAction<{
-        extensionId: UUID;
+        modComponentId: UUID;
         vars: Map<string, VarMap>;
       }>,
     ) {
-      const { extensionId, vars } = action.payload;
-      state.knownVars[extensionId] = vars;
+      const { modComponentId, vars } = action.payload;
+      state.knownVars[modComponentId] = vars;
     },
     setKnownEventNames(
       state,
       action: PayloadAction<{
-        extensionId: UUID;
+        modComponentId: UUID;
         eventNames: string[];
       }>,
     ) {
-      const { extensionId, eventNames } = action.payload;
-      state.knownEventNames[extensionId] = eventNames;
+      const { modComponentId, eventNames } = action.payload;
+      state.knownEventNames[modComponentId] = eventNames;
     },
   },
 });

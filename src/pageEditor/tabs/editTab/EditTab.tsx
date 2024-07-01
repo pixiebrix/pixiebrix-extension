@@ -22,7 +22,7 @@ import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPan
 import styles from "./EditTab.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
-import useExtensionTrace from "@/pageEditor/hooks/useExtensionTrace";
+import useModComponentTrace from "@/pageEditor/hooks/useModComponentTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
@@ -51,7 +51,7 @@ const EditTab: React.FC<{
 }> = ({ eventKey }) => {
   const dispatch = useDispatch();
 
-  useExtensionTrace();
+  useModComponentTrace();
   useReportTraceError();
 
   const isRuntimeVersionSupported = useApiVersionAtLeast("v3");
@@ -76,7 +76,7 @@ const EditTab: React.FC<{
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
       <div className={styles.paneContent}>
-        <div className={styles.nodePanel}>
+        <div className={styles.nodePanel} data-testid="brickActionsPanel">
           <div className={styles.nodeHeader}>
             <span
               className={cx(styles.nodeHeaderTitle, {
@@ -111,7 +111,10 @@ const EditTab: React.FC<{
             <EditorNodeLayout />
           </div>
         </div>
-        <div className={styles.configPanel}>
+        <div
+          className={styles.configPanel}
+          data-testid="brickConfigurationPanel"
+        >
           <ErrorBoundary
             key={
               // Pass in the activeNodeId as the render key for error boundary so
@@ -131,7 +134,7 @@ const EditTab: React.FC<{
             )}
           </ErrorBoundary>
         </div>
-        <div className={styles.collapseWrapper}>
+        <div className={styles.collapseWrapper} data-testid="dataPanel">
           <button
             className={cx(styles.toggle, {
               [styles.active ?? ""]: isDataPanelExpanded,

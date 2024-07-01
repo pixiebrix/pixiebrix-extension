@@ -15,17 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Locator, type Page } from "@playwright/test";
 import { WorkshopModEditor } from "./modEditor";
+import { BasePageObject } from "../../basePageObject";
 
-export class CreateWorkshopModPage {
-  readonly editor: WorkshopModEditor;
-  readonly createBrickButton: Locator;
-
-  constructor(private readonly page: Page) {
-    this.editor = new WorkshopModEditor(this.page);
-    this.createBrickButton = this.page.getByRole("button", {
-      name: "Create Brick",
-    });
-  }
+export class CreateWorkshopModPage extends BasePageObject {
+  editor = new WorkshopModEditor(this.getByLabel("Editor"));
+  createBrickButton = this.getByRole("button", {
+    name: "Create Brick",
+  });
 }

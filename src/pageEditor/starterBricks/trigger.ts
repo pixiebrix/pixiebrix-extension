@@ -17,12 +17,12 @@
 
 import { type Metadata } from "@/types/registryTypes";
 import {
-  baseFromExtension,
-  baseSelectExtension,
-  baseSelectExtensionPoint,
-  extensionWithNormalizedPipeline,
+  baseFromModComponent,
+  baseSelectModComponent,
+  baseSelectStarterBrick,
+  modComponentWithNormalizedPipeline,
   getImplicitReader,
-  lookupExtensionPoint,
+  lookupStarterBrick,
   makeInitialBaseState,
   getDefaultAvailabilityForUrl,
   readerTypeHack,
@@ -56,7 +56,7 @@ function fromNativeElement(
     type: "trigger",
     label: `My ${getDomain(url)} trigger`,
     ...makeInitialBaseState(),
-    extensionPoint: {
+    starterBrick: {
       metadata,
       definition: {
         type: "trigger",
@@ -78,8 +78,8 @@ function fromNativeElement(
         isAvailable: getDefaultAvailabilityForUrl(url),
       },
     },
-    extension: {
-      blockPipeline: [],
+    modComponent: {
+      brickPipeline: [],
     },
   };
 }
@@ -87,7 +87,7 @@ function fromNativeElement(
 function selectStarterBrickDefinition(
   formState: TriggerFormState,
 ): StarterBrickDefinitionLike<TriggerDefinition> {
-  const { extensionPoint } = formState;
+  const { starterBrick } = formState;
   const {
     definition: {
       isAvailable,
@@ -103,9 +103,9 @@ function selectStarterBrickDefinition(
       reader,
       trigger,
     },
-  } = extensionPoint;
+  } = starterBrick;
   return removeEmptyValues({
-    ...baseSelectExtensionPoint(formState),
+    ...baseSelectStarterBrick(formState),
     definition: {
       type: "trigger",
       reader,
@@ -125,18 +125,18 @@ function selectStarterBrickDefinition(
   });
 }
 
-function selectExtension(
+function selectModComponent(
   state: TriggerFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<TriggerConfig> {
-  const { extension } = state;
+  const { modComponent } = state;
   const config: TriggerConfig = {
     action: options.includeInstanceIds
-      ? extension.blockPipeline
-      : omitEditorMetadata(extension.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
-    ...baseSelectExtension(state),
+    ...baseSelectModComponent(state),
     config,
   });
 }
@@ -146,15 +146,17 @@ function asDraftModComponent(
 ): DraftModComponent {
   return {
     type: "trigger",
-    extension: selectExtension(triggerFormState, { includeInstanceIds: true }),
+    extension: selectModComponent(triggerFormState, {
+      includeInstanceIds: true,
+    }),
     extensionPointConfig: selectStarterBrickDefinition(triggerFormState),
   };
 }
 
-async function fromExtension(
+async function fromModComponent(
   config: ModComponentBase<TriggerConfig>,
 ): Promise<TriggerFormState> {
-  const extensionPoint = await lookupExtensionPoint<
+  const starterBrick = await lookupStarterBrick<
     TriggerDefinition,
     TriggerConfig,
     "trigger"
@@ -172,26 +174,23 @@ async function fromExtension(
     intervalMillis,
     debounce,
     customEvent,
-  } = extensionPoint.definition;
+  } = starterBrick.definition;
 
-  const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = await extensionWithNormalizedPipeline(
+  const base = baseFromModComponent(config, starterBrick.definition.type);
+  const modComponent = await modComponentWithNormalizedPipeline(
     config.config,
     "action",
   );
 
-  assertNotNullish(
-    extensionPoint.metadata,
-    "Starter brick metadata is required",
-  );
+  assertNotNullish(starterBrick.metadata, "Starter brick metadata is required");
 
   return {
     ...base,
-    extension,
-    extensionPoint: {
-      metadata: extensionPoint.metadata,
+    modComponent,
+    starterBrick: {
+      metadata: starterBrick.metadata,
       definition: {
-        type: extensionPoint.definition.type,
+        type: starterBrick.definition.type,
         rootSelector,
         trigger,
         attachMode,
@@ -203,7 +202,7 @@ async function fromExtension(
         background,
         intervalMillis,
         reader: readerTypeHack(reader),
-        isAvailable: selectStarterBrickAvailability(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(starterBrick),
       },
     },
   };
@@ -220,8 +219,8 @@ const config: ModComponentFormStateAdapter<undefined, TriggerFormState> = {
   fromNativeElement,
   asDraftModComponent,
   selectStarterBrickDefinition,
-  selectExtension,
-  fromExtension,
+  selectModComponent,
+  fromModComponent,
 };
 
 export default config;

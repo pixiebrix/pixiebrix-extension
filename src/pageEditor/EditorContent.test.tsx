@@ -24,8 +24,8 @@ import { getRunningStarterBricks } from "@/contentScript/messenger/api";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 
-jest.mock("@/permissions/extensionPermissionsHelpers", () => ({
-  collectExtensionPermissions: jest.fn().mockResolvedValue({}),
+jest.mock("@/permissions/modComponentPermissionsHelpers", () => ({
+  collectModComponentPermissions: jest.fn().mockResolvedValue({}),
 }));
 
 // Mock to support hook usage in the subtree, not relevant to UI tests here
@@ -64,7 +64,7 @@ describe("error alerting in the UI", () => {
     expect(screen.getByText(message)).toBeInTheDocument();
   });
 
-  test("shows error when checkAvailableInstalledExtensions fails", async () => {
+  test("shows error when checkAvailableActivatedModComponents fails", async () => {
     const message = "testing error";
     jest.mocked(getRunningStarterBricks).mockImplementation(() => {
       throw new Error(message);
@@ -75,7 +75,7 @@ describe("error alerting in the UI", () => {
       async setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
-        await dispatch(editorActions.checkAvailableInstalledExtensions());
+        await dispatch(editorActions.checkAvailableActivatedModComponents());
       },
     });
 

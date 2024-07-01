@@ -17,12 +17,12 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/extensionsSlice";
 import integrationsSlice from "@/integrations/store/integrationsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
-import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
+import { savingModComponentSlice } from "@/pageEditor/panes/save/savingModComponentSlice";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import {
@@ -40,12 +40,12 @@ const configureStoreForTests = () =>
   configureStore({
     reducer: {
       auth: authSlice.reducer,
-      options: extensionsSlice.reducer,
+      options: modComponentsSlice.reducer,
       integrations: integrationsSlice.reducer,
       settings: settingsSlice.reducer,
       editor: editorSlice.reducer,
       session: sessionSlice.reducer,
-      savingExtension: savingExtensionSlice.reducer,
+      savingModComponent: savingModComponentSlice.reducer,
       runtime: runtimeSlice.reducer,
       logs: logSlice.reducer,
       analysis: analysisSlice.reducer,

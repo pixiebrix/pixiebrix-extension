@@ -30,7 +30,7 @@ import {
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { type BrickPipelineUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { clearExtensionTraces } from "@/telemetry/trace";
+import { clearModComponentTraces } from "@/telemetry/trace";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
@@ -45,7 +45,7 @@ export function ensureBrickPipelineUIState(
       makeInitialBrickPipelineUIState();
     const pipeline = state.modComponentFormStates.find(
       (x) => x.uuid === modComponentId,
-    )?.extension.blockPipeline;
+    )?.modComponent.brickPipeline;
 
     assertNotNullish(
       pipeline,
@@ -77,7 +77,7 @@ export function syncNodeUIStates(
   );
 
   const pipelineMap = getPipelineMap(
-    modComponentFormState.extension.blockPipeline,
+    modComponentFormState.modComponent.brickPipeline,
   );
 
   brickPipelineUIState.pipelineMap = pipelineMap;
@@ -150,13 +150,13 @@ export function removeModComponentFormState(
   }
 
   // Make sure we're not keeping any private data around from Page Editor sessions
-  void clearExtensionTraces(uuid);
+  void clearModComponentTraces(uuid);
 }
 
 /**
- * Remove a given recipe's extra data from a redux state object
+ * Remove a given mod's extra data from a redux state object
  * @param state The editor redux state
- * @param modId The id of the recipe to remove
+ * @param modId The id of the mod to remove
  */
 export function removeModData(state: Draft<EditorState>, modId: RegistryId) {
   if (state.activeModId === modId) {
@@ -188,7 +188,7 @@ export function setActiveModId(state: Draft<EditorState>, modId: RegistryId) {
   state.selectionSeq++;
 }
 
-export function editRecipeMetadata(
+export function editModMetadata(
   state: Draft<EditorState>,
   metadata: ModMetadataFormState,
 ) {
@@ -200,7 +200,7 @@ export function editRecipeMetadata(
   state.dirtyModMetadataById[activeModId] = metadata;
 }
 
-export function editRecipeOptionsDefinitions(
+export function editModOptionsDefinitions(
   state: Draft<EditorState>,
   options: ModOptionsDefinition,
 ) {
@@ -221,7 +221,8 @@ export function setActiveModComponentId(
   state.beta = false;
   state.activeModComponentId = modComponentFormState.uuid;
   state.activeModId = null;
-  state.expandedModId = modComponentFormState.recipe?.id ?? state.expandedModId;
+  state.expandedModId =
+    modComponentFormState.modMetadata?.id ?? state.expandedModId;
   state.selectionSeq++;
 
   ensureBrickPipelineUIState(state, modComponentFormState.uuid);

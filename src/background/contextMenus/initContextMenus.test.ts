@@ -21,7 +21,7 @@ import * as backgroundApi from "@/background/messenger/api";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";
-import { TEST_setContext } from "webext-detect-page";
+import { TEST_setContext } from "webext-detect";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { getPlatform } from "@/platform/platformContext";

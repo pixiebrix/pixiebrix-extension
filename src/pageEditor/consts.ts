@@ -15,4 +15,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const PIPELINE_BLOCKS_FIELD_NAME = "extension.blockPipeline";
+export const PIPELINE_BRICKS_FIELD_NAME = "modComponent.brickPipeline";

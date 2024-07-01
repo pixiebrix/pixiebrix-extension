@@ -48,12 +48,12 @@ export const contextOptions = [
 const ContextMenuConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => {
-  const [{ value: onSuccess }] = useField("extension.onSuccess");
+  const [{ value: onSuccess }] = useField("modComponent.onSuccess");
 
   return (
     <>
       <ConnectedFieldTemplate
-        name="extension.title"
+        name="modComponent.title"
         label="Title"
         as={TemplateWidget}
         rows={1}
@@ -68,7 +68,7 @@ const ContextMenuConfiguration: React.FC<{
       />
 
       <ConnectedFieldTemplate
-        name="extensionPoint.definition.contexts"
+        name="starterBrick.definition.contexts"
         as={MultiSelectWidget}
         options={contextOptions}
         description={
@@ -82,7 +82,7 @@ const ContextMenuConfiguration: React.FC<{
       />
 
       <UrlMatchPatternField
-        name="extensionPoint.definition.documentUrlPatterns"
+        name="starterBrick.definition.documentUrlPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
         description={
           <span>
@@ -100,7 +100,7 @@ const ContextMenuConfiguration: React.FC<{
       />
       <ConnectedCollapsibleFieldSection title="Advanced">
         <ConnectedFieldTemplate
-          name="extensionPoint.definition.targetMode"
+          name="starterBrick.definition.targetMode"
           as="select"
           title="Target Mode"
           blankValue="legacy"
@@ -122,7 +122,7 @@ const ContextMenuConfiguration: React.FC<{
           // Punt on object-based configuration for now. Enterprise customers are just asking to turn off the message.
           // If they want a custom message they can add an alert brick.
           <ConnectedFieldTemplate
-            name="extension.onSuccess"
+            name="modComponent.onSuccess"
             label="Show Success Message"
             as={SwitchButtonWidget}
             description="Show the default success message when run"
@@ -131,7 +131,7 @@ const ContextMenuConfiguration: React.FC<{
         )}
 
         <UrlMatchPatternField
-          name="extensionPoint.definition.isAvailable.matchPatterns"
+          name="starterBrick.definition.isAvailable.matchPatterns"
           description={
             <span>
               URL match patterns give PixieBrix access to a page without you

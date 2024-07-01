@@ -84,8 +84,8 @@ export function decideFoundationStatus({
     return RunStatus.WARNING;
   }
 
-  // The runtime doesn't directly trace the extension point. However, if there's a trace from a brick, we
-  // know the extension point ran successfully
+  // The runtime doesn't directly trace the starter brick. However, if there's a trace from a brick, we
+  // know the starter brick ran successfully
   if (hasTraces) {
     return RunStatus.SUCCESS;
   }

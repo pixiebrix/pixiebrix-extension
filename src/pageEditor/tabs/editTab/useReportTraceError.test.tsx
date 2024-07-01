@@ -58,7 +58,7 @@ const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
           activeModComponentId,
         },
         runtime: {
-          extensionTraces: {
+          modComponentTraces: {
             [activeModComponentId]: testTraces,
           },
         },

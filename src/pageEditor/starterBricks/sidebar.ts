@@ -18,12 +18,12 @@
 import { type Metadata } from "@/types/registryTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
-  baseFromExtension,
-  baseSelectExtension,
-  baseSelectExtensionPoint,
-  extensionWithNormalizedPipeline,
+  baseFromModComponent,
+  baseSelectModComponent,
+  baseSelectStarterBrick,
+  modComponentWithNormalizedPipeline,
   getImplicitReader,
-  lookupExtensionPoint,
+  lookupStarterBrick,
   makeInitialBaseState,
   readerTypeHack,
   removeEmptyValues,
@@ -53,7 +53,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
     type: "actionPanel",
     label: heading,
     ...base,
-    extensionPoint: {
+    starterBrick: {
       metadata,
 
       definition: {
@@ -72,9 +72,9 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
         customEvent: null,
       },
     },
-    extension: {
+    modComponent: {
       heading,
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -82,12 +82,12 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
 function selectStarterBrickDefinition(
   formState: SidebarFormState,
 ): StarterBrickDefinitionLike {
-  const { extensionPoint } = formState;
+  const { starterBrick } = formState;
   const {
     definition: { isAvailable, reader, trigger, debounce, customEvent },
-  } = extensionPoint;
+  } = starterBrick;
   return removeEmptyValues({
-    ...baseSelectExtensionPoint(formState),
+    ...baseSelectStarterBrick(formState),
     definition: {
       type: "actionPanel",
       reader,
@@ -99,19 +99,19 @@ function selectStarterBrickDefinition(
   });
 }
 
-function selectExtension(
+function selectModComponent(
   state: SidebarFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<SidebarConfig> {
-  const { extension } = state;
+  const { modComponent } = state;
   const config: SidebarConfig = {
-    heading: extension.heading,
+    heading: modComponent.heading,
     body: options.includeInstanceIds
-      ? extension.blockPipeline
-      : omitEditorMetadata(extension.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
-    ...baseSelectExtension(state),
+    ...baseSelectModComponent(state),
     config,
   });
 }
@@ -121,22 +121,24 @@ function asDraftModComponent(
 ): DraftModComponent {
   return {
     type: "actionPanel",
-    extension: selectExtension(sidebarFormState, { includeInstanceIds: true }),
+    extension: selectModComponent(sidebarFormState, {
+      includeInstanceIds: true,
+    }),
     extensionPointConfig: selectStarterBrickDefinition(sidebarFormState),
   };
 }
 
-async function fromExtension(
+async function fromModComponent(
   config: ModComponentBase<SidebarConfig>,
 ): Promise<SidebarFormState> {
-  const extensionPoint = await lookupExtensionPoint<
+  const starterBrick = await lookupStarterBrick<
     SidebarDefinition,
     SidebarConfig,
     "actionPanel"
   >(config, "actionPanel");
 
-  const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = await extensionWithNormalizedPipeline(
+  const base = baseFromModComponent(config, starterBrick.definition.type);
+  const modComponent = await modComponentWithNormalizedPipeline(
     config.config,
     "body",
   );
@@ -146,25 +148,22 @@ async function fromExtension(
     debounce,
     customEvent,
     reader,
-  } = extensionPoint.definition;
+  } = starterBrick.definition;
 
-  assertNotNullish(
-    extensionPoint.metadata,
-    "Starter brick metadata is required",
-  );
+  assertNotNullish(starterBrick.metadata, "Starter brick metadata is required");
 
   return {
     ...base,
-    extension,
-    extensionPoint: {
-      metadata: extensionPoint.metadata,
+    modComponent,
+    starterBrick: {
+      metadata: starterBrick.metadata,
       definition: {
-        ...extensionPoint.definition,
+        ...starterBrick.definition,
         trigger,
         debounce,
         customEvent,
         reader: readerTypeHack(reader),
-        isAvailable: selectStarterBrickAvailability(extensionPoint),
+        isAvailable: selectStarterBrickAvailability(starterBrick),
       },
     },
   };
@@ -180,8 +179,8 @@ const config: ModComponentFormStateAdapter<never, SidebarFormState> = {
   fromNativeElement,
   asDraftModComponent,
   selectStarterBrickDefinition,
-  selectExtension,
-  fromExtension,
+  selectModComponent,
+  fromModComponent,
   EditorNode: SidebarConfiguration,
 };
 

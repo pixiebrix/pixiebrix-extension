@@ -18,7 +18,7 @@
 import { AnalysisVisitorABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
 import {
   type ModComponentFormState,
-  isTriggerExtensionPoint,
+  isTriggerStarterBrick,
 } from "@/pageEditor/starterBricks/formStateTypes";
 import { flatten, uniq } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";
@@ -49,23 +49,23 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
     ];
   }
 
-  override visitExtensionPoint(
-    extensionPoint: ModComponentFormState["extensionPoint"],
+  override visitStarterBrick(
+    starterBrick: ModComponentFormState["starterBrick"],
   ) {
-    super.visitExtensionPoint(extensionPoint);
+    super.visitStarterBrick(starterBrick);
 
     if (
-      isTriggerExtensionPoint(extensionPoint) &&
-      extensionPoint.definition.trigger === "custom"
+      isTriggerStarterBrick(starterBrick) &&
+      starterBrick.definition.trigger === "custom"
     ) {
-      const eventName = extensionPoint.definition.customEvent?.eventName;
+      const eventName = starterBrick.definition.customEvent?.eventName;
 
       if (!eventName) {
         this.annotations.push({
           analysisId: this.id,
           type: AnnotationType.Error,
           message: "Custom event name is required",
-          position: { path: "extensionPoint.definition.customEvent.eventName" },
+          position: { path: "starterBrick.definition.customEvent.eventName" },
         });
       } else if (
         !DOM_EVENTS.includes(eventName) &&
@@ -79,7 +79,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
             type: AnnotationType.Info,
             message: `Custom event ${eventName} does not match a known emitted event in this Mod`,
             position: {
-              path: "extensionPoint.definition.customEvent.eventName",
+              path: "starterBrick.definition.customEvent.eventName",
             },
           });
         } else {
@@ -88,7 +88,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
             type: AnnotationType.Warning,
             message: `Custom event ${eventName} is not emitted in this Mod`,
             position: {
-              path: "extensionPoint.definition.customEvent.eventName",
+              path: "starterBrick.definition.customEvent.eventName",
             },
           });
         }
@@ -96,7 +96,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
     }
   }
 
-  override async run(extension: ModComponentFormState) {
+  override async run(formState: ModComponentFormState) {
     const results = this.formStates.map((x) =>
       CollectEventNamesVisitor.collectNames(x),
     );
@@ -111,7 +111,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
       hasDynamicEventName: results.some((result) => result.hasDynamicEventName),
     };
 
-    super.run(extension);
+    super.run(formState);
   }
 }
 

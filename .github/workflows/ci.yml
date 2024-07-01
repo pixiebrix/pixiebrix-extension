@@ -211,9 +211,9 @@ jobs:
         shell: bash
         env:
           ARTIFACT_ZIP_PASSWORD: ${{ secrets.ARTIFACT_ZIP_PASSWORD }}
-        run: 7z -y x -p"$ARTIFACT_ZIP_PASSWORD" -o./playwright-report "./7z-blob-reports/*.7z"
+        run: 7z -y x -p"$ARTIFACT_ZIP_PASSWORD" -o./blob-reports "./7z-blob-reports/*.7z"
       - name: Merge blob reports
-        run: PLAYWRIGHT_JSON_OUTPUT_NAME=./playwright-report/results.json npx playwright merge-reports --reporter=html,json ./playwright-report
+        run: PLAYWRIGHT_JSON_OUTPUT_NAME=./playwright-report/results.json npx playwright merge-reports --reporter=html,json ./blob-reports
       - name: Password protect merged Playwright report
         if: always()
         shell: bash

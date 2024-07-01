@@ -40,7 +40,7 @@ export type SingleLayerReaderConfig =
   | RegistryId[]
   | Record<string, RegistryId>;
 
-export type BaseExtensionPointState = {
+export type BaseStarterBrickState = {
   metadata: Metadata;
   definition: {
     type: StarterBrickType;
@@ -50,16 +50,31 @@ export type BaseExtensionPointState = {
   };
 };
 
-export interface BaseExtensionState {
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type BaseModComponentStateV1 = {
   blockPipeline: BrickPipeline;
-}
+};
+
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type BaseModComponentStateV2 = Except<
+  BaseModComponentStateV1,
+  "blockPipeline"
+> & {
+  brickPipeline: BrickPipeline;
+};
+
+export type BaseModComponentState = BaseModComponentStateV2;
 
 /**
  * @deprecated - Do not use versioned state types directly
  */
 export interface BaseFormStateV1<
-  TExtension extends BaseExtensionState = BaseExtensionState,
-  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState,
+  TModComponent extends BaseModComponentStateV1 = BaseModComponentStateV1,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > {
   /**
    * The apiVersion of the brick definition, controlling how PixieBrix interprets brick definitions
@@ -68,33 +83,33 @@ export interface BaseFormStateV1<
   readonly apiVersion: ApiVersion;
 
   /**
-   * The extension uuid
+   * The mod component uuid
    */
   readonly uuid: UUID;
 
   /**
-   * The type of the extensionPoint
+   * The type of the starter brick
    */
   readonly type: StarterBrickType;
 
   /**
-   * True if the extensionPoint exists in the registry
+   * True if the starter brick exists in the registry
    */
   installed?: boolean;
 
   /**
-   * True if the extension should be allowed to auto-reload. In general, only extensions that require user
+   * True if the mod component should be allowed to auto-reload. In general, only mod components that require user
    * interaction to trigger should be allowed to auto-reload. Otherwise, PixieBrix might end up spamming an API
    */
   autoReload?: boolean;
 
   /**
-   * User-provided name to identify the extension
+   * User-provided name to identify the mod component
    */
   label: string;
 
   /**
-   * The input options from the extension's blueprint
+   * The input options from the mod component's mod
    * @since 1.4.3
    */
   optionsArgs: OptionsArgs;
@@ -102,25 +117,25 @@ export interface BaseFormStateV1<
   services: IntegrationDependencyV1[];
 
   /**
-   * The extra permissions required by the extension
+   * The extra permissions required by the mod component
    * @since 1.7.0
    */
   permissions: Permissions.Permissions;
 
-  extensionPoint: TExtensionPoint;
+  extensionPoint: TStarterBrick;
 
-  extension: TExtension;
+  extension: TModComponent;
 
   /**
-   * Information about the recipe (i.e., blueprint) used to install the extension, or `undefined` if the extension
-   * is not part of a recipe.
+   * Information about the mod used to install the mod component, or `undefined`
+   * if the mod component is not part of a mod.
    * @see ModComponentBase._recipe
    */
   recipe: ModComponentBase["_recipe"] | undefined;
 
   /**
-   * Information about the recipe (i.e., blueprint) options,
-   * or `undefined` if the extension is not part of a recipe.
+   * Information about the mod options or `undefined`
+   * if the mod component is not part of a mod.
    * @see ModDefinition.options
    */
   optionsDefinition?: ModOptionsDefinition;
@@ -130,11 +145,11 @@ export interface BaseFormStateV1<
  * @deprecated - Do not use versioned state types directly
  */
 export type BaseFormStateV2<
-  TExtension extends BaseExtensionState = BaseExtensionState,
-  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState,
-> = Except<BaseFormStateV1<TExtension, TExtensionPoint>, "services"> & {
+  TModComponent extends BaseModComponentStateV1 = BaseModComponentStateV1,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
+> = Except<BaseFormStateV1<TModComponent, TStarterBrick>, "services"> & {
   /**
-   * The integration dependencies configured for the extension
+   * The integration dependencies configured for the mod component
    *
    * @since 1.7.41 renamed from `services` to `integrationDependencies`, also
    * changed from IntegrationDependencyV1 to IntegrationDependencyV2
@@ -142,11 +157,46 @@ export type BaseFormStateV2<
   integrationDependencies: IntegrationDependencyV2[];
 };
 
-export type BaseFormState<
-  TExtension extends BaseExtensionState = BaseExtensionState,
-  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState,
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type BaseFormStateV3<
+  TModComponent extends BaseModComponentStateV2 = BaseModComponentStateV2,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<
-  BaseFormStateV2<TExtension, TExtensionPoint>,
+  BaseFormStateV2<BaseModComponentStateV1, TStarterBrick>,
+  "recipe" | "extension" | "extensionPoint"
+> & {
+  /**
+   * @since 2.0.5
+   * Part of the Page Editor renaming effort
+   * `extensionPoint` to `starterBrick`
+   */
+  starterBrick: TStarterBrick;
+
+  /**
+   * @since 2.0.5
+   * Part of the Page Editor renaming effort
+   * `extension` to `modComponent`
+   */
+  modComponent: TModComponent;
+
+  /**
+   * @since 2.0.5
+   * Part of the Page Editor renaming effort
+   * `recipe` to `modMetadata`
+   * Information about the mod used to install the mod component, or `undefined`
+   * if the mod component is not part of a mod.
+   * @see ModComponentBase._recipe
+   */
+  modMetadata: ModComponentBase["_recipe"] | undefined;
+};
+
+export type BaseFormState<
+  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
+> = Except<
+  BaseFormStateV3<TModComponent, TStarterBrick>,
   "integrationDependencies"
 > & {
   /**

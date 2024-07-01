@@ -77,13 +77,13 @@ describe("removeEmptyValues()", () => {
 
 describe("selectIsAvailable", () => {
   it("normalizes matchPatterns", () => {
-    const extensionPoint = starterBrickDefinitionFactory();
-    extensionPoint.definition.isAvailable.matchPatterns =
+    const starterBrick = starterBrickDefinitionFactory();
+    starterBrick.definition.isAvailable.matchPatterns =
       "https://www.example.com";
-    delete extensionPoint.definition.isAvailable.selectors;
-    delete extensionPoint.definition.isAvailable.urlPatterns;
+    delete starterBrick.definition.isAvailable.selectors;
+    delete starterBrick.definition.isAvailable.urlPatterns;
 
-    const normalized = selectStarterBrickAvailability(extensionPoint);
+    const normalized = selectStarterBrickAvailability(starterBrick);
 
     expect(normalized).toStrictEqual({
       matchPatterns: ["https://www.example.com"],

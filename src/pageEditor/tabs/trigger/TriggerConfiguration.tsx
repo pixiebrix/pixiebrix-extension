@@ -49,7 +49,7 @@ function supportsTargetMode(trigger: Trigger) {
 const TriggerConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => {
-  const fieldName = partial(joinName, "extensionPoint.definition");
+  const fieldName = partial(joinName, "starterBrick.definition");
 
   const [{ value: trigger }] = useField<Trigger>(fieldName("trigger"));
 

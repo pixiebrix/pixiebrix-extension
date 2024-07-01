@@ -34,7 +34,7 @@ import {
 import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import parseTemplateVariables from "./parseTemplateVariables";
-import recipesRegistry from "@/modDefinitions/registry";
+import modRegistry from "@/modDefinitions/registry";
 import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import {
   isDocumentBuilderElementArray,
@@ -133,22 +133,22 @@ async function setIntegrationDependencyVars(
 }
 
 /**
- * Set the input variables from the ExtensionPoint definition (aka starter brick).
+ * Set the input variables from the starter brick definition.
  */
 async function setInputVars(
-  extension: ModComponentFormState,
+  formState: ModComponentFormState,
   contextVars: VarMap,
 ): Promise<void> {
-  const adapter = ADAPTERS.get(extension.extensionPoint.definition.type);
+  const adapter = ADAPTERS.get(formState.starterBrick.definition.type);
   assertNotNullish(
     adapter,
-    `Adapter not found for ${extension.extensionPoint.definition.type}`,
+    `Adapter not found for ${formState.starterBrick.definition.type}`,
   );
-  const config = adapter.selectStarterBrickDefinition(extension);
+  const config = adapter.selectStarterBrickDefinition(formState);
 
-  const extensionPoint = fromJS(config);
+  const starterBrick = fromJS(config);
 
-  const reader = await extensionPoint.defaultReader();
+  const reader = await starterBrick.defaultReader();
 
   setVarsFromSchema({
     schema: reader?.outputSchema ?? {
@@ -193,7 +193,7 @@ type SetVarsFromSchemaArgs = {
  * Helper method to set variables based on a JSON Schema.
  *
  * Examples:
- * - Blueprint input schema
+ * - Mod input schema
  * - Brick output schema
  * - Integration configuration schema
  */
@@ -304,24 +304,24 @@ function setVarsFromSchema({
 }
 
 /**
- * Set the options variables from the blueprint option definitions.
+ * Set the options variables from the mod option definitions.
  */
 async function setOptionsVars(
-  extension: ModComponentFormState,
+  formState: ModComponentFormState,
   contextVars: VarMap,
 ): Promise<void> {
-  if (extension.recipe == null) {
+  if (formState.modMetadata == null) {
     return;
   }
 
-  const recipeId = extension.recipe.id;
-  const recipe = await recipesRegistry.lookup(recipeId);
-  const optionsSchema = recipe?.options?.schema;
+  const modId = formState.modMetadata.id;
+  const mod = await modRegistry.lookup(modId);
+  const optionsSchema = mod?.options?.schema;
   if (isEmpty(optionsSchema)) {
     return;
   }
 
-  const source = `${KnownSources.OPTIONS}:${recipeId}`;
+  const source = `${KnownSources.OPTIONS}:${modId}`;
   const optionsOutputKey = "@options";
 
   setVarsFromSchema({
@@ -332,7 +332,7 @@ async function setOptionsVars(
   });
 
   // Options currently only supports primitives, so don't need to recurse
-  for (const optionName of Object.keys(extension.optionsArgs ?? {})) {
+  for (const optionName of Object.keys(formState.optionsArgs ?? {})) {
     contextVars.setExistence({
       source,
       path: [optionsOutputKey, optionName],
@@ -452,7 +452,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   /**
-   * @param trace the trace for the latest run of the extension
+   * @param trace the trace for the latest run of the mod component
    * @param modState the current mod page state
    * @param modVariables statically-inferred mod variable names
    * @see CollectNamesVisitor
@@ -682,23 +682,23 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     this.contextStack.pop();
   }
 
-  async run(extension: ModComponentFormState): Promise<void> {
+  async run(formState: ModComponentFormState): Promise<void> {
     this.allBlocks = await blockRegistry.allTyped();
 
     // Order of the following calls will determine the order of the sources in the UI
     const contextVars = new VarMap();
-    await setOptionsVars(extension, contextVars);
+    await setOptionsVars(formState, contextVars);
     await setModVariables(this.modVariables, this.modState, contextVars);
-    await setIntegrationDependencyVars(extension, contextVars);
-    await setInputVars(extension, contextVars);
+    await setIntegrationDependencyVars(formState, contextVars);
+    await setInputVars(formState, contextVars);
 
     this.contextStack.push({
       vars: contextVars,
       blockOutputVars: new VarMap(),
     });
 
-    this.visitRootPipeline(extension.extension.blockPipeline, {
-      extensionPointType: extension.type,
+    this.visitRootPipeline(formState.modComponent.brickPipeline, {
+      starterBrickType: formState.type,
     });
   }
 

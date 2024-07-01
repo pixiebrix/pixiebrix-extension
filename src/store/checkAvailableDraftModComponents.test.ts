@@ -29,7 +29,7 @@ import {
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/extensionsSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";
@@ -39,7 +39,7 @@ jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/pageEditor/context/connection");
 
-const { reducer: extensionsReducer } = extensionsSlice;
+const { reducer: modComponentsReducer } = modComponentsSlice;
 
 describe("checkAvailableDraftModComponents", () => {
   test("it checks draft mod components correctly", async () => {
@@ -49,12 +49,12 @@ describe("checkAvailableDraftModComponents", () => {
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
-        options: extensionsReducer,
+        options: modComponentsReducer,
       },
     });
 
     const availableDraftModComponent = menuItemFormStateFactory({
-      extensionPoint: {
+      starterBrick: {
         metadata: {
           id: validateRegistryId("test/available-button"),
           name: "Test Starter Brick 1",
@@ -72,7 +72,7 @@ describe("checkAvailableDraftModComponents", () => {
     });
 
     const unavailableDraftModComponent = menuItemFormStateFactory({
-      extensionPoint: {
+      starterBrick: {
         metadata: {
           id: validateRegistryId("test/unavailable-button"),
           name: "Test Starter Brick 2",
@@ -105,7 +105,7 @@ describe("checkAvailableDraftModComponents", () => {
       );
 
     await store.dispatch(actions.checkAvailableDraftModComponents());
-    await store.dispatch(actions.checkAvailableInstalledExtensions());
+    await store.dispatch(actions.checkAvailableActivatedModComponents());
 
     const state = store.getState();
 

@@ -128,9 +128,9 @@ export const selectDirtyModOptionsDefinitions = ({ editor }: EditorRootState) =>
 
 const dirtyOptionsDefinitionsForModIdSelector = createSelector(
   selectDirtyModOptionsDefinitions,
-  (_state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (_state: EditorRootState, modId: RegistryId) => modId,
   (dirtyOptionsDefinitionsByModId, modId) => {
-    // eslint-disable-next-line security/detect-object-injection -- RegistryId for recipe
+    // eslint-disable-next-line security/detect-object-injection -- RegistryId for mod
     const options = dirtyOptionsDefinitionsByModId[modId];
 
     if (options) {
@@ -150,8 +150,8 @@ export const selectDirtyOptionsDefinitionsForModId =
 const dirtyOptionValuesForModIdSelector = createSelector(
   selectNotDeletedModComponentFormStates,
   (_state: EditorRootState, modId: RegistryId) => modId,
-  (formStates, recipeId) =>
-    formStates.find((formState) => formState.recipe?.id === recipeId)
+  (formStates, modId) =>
+    formStates.find((formState) => formState.modMetadata?.id === modId)
       ?.optionsArgs,
 );
 
@@ -195,7 +195,7 @@ const modIsDirtySelector = createSelector(
     selectDeletedComponentFormStatesByModId(state)[modId],
   ({ editor }: EditorRootState, modId: RegistryId) =>
     editor.modComponentFormStates
-      .filter((formState) => formState.recipe?.id === modId)
+      .filter((formState) => formState.modMetadata?.id === modId)
       .map((formState) => formState.uuid),
   (
     isModComponentDirtyById,
@@ -239,8 +239,8 @@ export const selectInstalledModMetadatas = createSelector(
   selectActivatedModComponents,
   (formStates, activatedModComponents) => {
     const formStateModMetadatas: Array<ModComponentBase["_recipe"]> = formStates
-      .filter((formState) => Boolean(formState.recipe))
-      .map((formState) => formState.recipe);
+      .filter((formState) => Boolean(formState.modMetadata))
+      .map((formState) => formState.modMetadata);
     const activatedModComponentModMetadatas: Array<
       ModComponentBase["_recipe"]
     > = activatedModComponents
@@ -441,7 +441,7 @@ const activeModComponentAnalysisAnnotationsForPath = createSelector(
 
 /**
  * Selects the analysis annotations for the given path
- * @param path A path relative to the root of the extension or root pipeline
+ * @param path A path relative to the root of the mod component or root pipeline
  *
  * @note This should NOT be used outside the page editor, it is tightly coupled with editorSlice
  */

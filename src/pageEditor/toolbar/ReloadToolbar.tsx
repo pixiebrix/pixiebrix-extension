@@ -29,15 +29,14 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
 function isPanel(modComponentFormState: ModComponentFormState | null): boolean {
-  return ["panel", "actionPanel"].includes(modComponentFormState?.type ?? "");
-}
-
-function isTour(modComponentFormState: ModComponentFormState | null): boolean {
-  return modComponentFormState?.type === "tour";
+  return [StarterBrickTypes.SIDEBAR_PANEL].includes(
+    modComponentFormState?.type ?? "",
+  );
 }
 
 /**
@@ -50,7 +49,7 @@ function isAutomaticTrigger(
   return (
     modComponentFormState?.type === "trigger" &&
     automatic.includes(
-      modComponentFormState?.extensionPoint.definition.trigger ?? "",
+      modComponentFormState?.starterBrick.definition.trigger ?? "",
     )
   );
 }
@@ -83,8 +82,7 @@ export function shouldAutoRun(
   const automaticUpdate = !(
     isAutomaticTrigger(modComponentFormState) ||
     // By default, don't automatically trigger (because it might be doing expensive operations such as hitting an API)
-    isPanel(modComponentFormState) ||
-    isTour(modComponentFormState)
+    isPanel(modComponentFormState)
   );
 
   return automaticUpdate || (modComponentFormState.autoReload ?? false);
@@ -167,10 +165,6 @@ const ReloadToolbar: React.FunctionComponent<{
         buttonCaption="Run Trigger"
       />
     );
-  }
-
-  if (isTour(modComponentFormState)) {
-    return <Controls manualRun={manualRun} buttonCaption="Run Tour" />;
   }
 
   return null;

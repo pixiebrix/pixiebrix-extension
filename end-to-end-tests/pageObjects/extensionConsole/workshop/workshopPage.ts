@@ -15,39 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Locator, type Page, expect } from "@playwright/test";
+import { type Page, expect } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../../constants";
 import { EditWorkshopModPage } from "end-to-end-tests/pageObjects/extensionConsole/workshop/editWorkshopModPage";
 import { CreateWorkshopModPage } from "./createWorkshopModPage";
+import { BasePageObject } from "../../basePageObject";
 
-export class WorkshopPage {
+export class WorkshopPage extends BasePageObject {
   private readonly extensionConsoleUrl: string;
-  private readonly createNewBrickButton: Locator;
 
-  constructor(
-    private readonly page: Page,
-    extensionId: string,
-  ) {
+  createNewBrickButton = this.getByRole("button", {
+    name: "Create New Brick",
+  });
+
+  constructor(page: Page, extensionId: string) {
+    super(page);
     this.extensionConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
-    this.createNewBrickButton = this.page.getByRole("button", {
-      name: "Create New Brick",
-    });
   }
 
   async goto() {
     await this.page.goto(this.extensionConsoleUrl);
-    await this.page
-      .getByRole("link", {
-        name: "Workshop",
-      })
-      .click();
+    await this.getByRole("link", {
+      name: "Workshop",
+    }).click();
   }
 
   async findAndSelectMod(modId: string) {
-    await this.page
-      .getByPlaceholder("Start typing to find results")
-      .fill(modId);
-    await this.page.getByRole("cell", { name: modId }).click();
+    await this.getByPlaceholder("Start typing to find results").fill(modId);
+    await this.getByRole("cell", { name: modId }).click();
 
     const editPage = new EditWorkshopModPage(this.page);
     await editPage.editor.waitForLoad();
@@ -61,9 +56,9 @@ export class WorkshopPage {
     const modId =
       await createPage.editor.replaceWithModDefinition(modDefinitionName);
     await createPage.createBrickButton.click();
-    await expect(
-      this.page.getByRole("status").getByText("Created "),
-    ).toBeVisible({ timeout: 8000 });
+    await expect(this.getByRole("status").getByText("Created ")).toBeVisible({
+      timeout: 8000,
+    });
     return modId;
   }
 
