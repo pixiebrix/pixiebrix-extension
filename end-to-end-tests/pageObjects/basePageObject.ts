@@ -77,7 +77,7 @@ export class BasePageObject {
       this.root = rootLocatorOrPage;
       this.page = rootLocatorOrPage.page();
     } else {
-      this.root = rootLocatorOrPage.locator("body");
+      this.root = rootLocatorOrPage.locator("html");
       this.page = rootLocatorOrPage;
     }
 
