@@ -23,7 +23,7 @@ import {
   selectModComponentIntegrations,
 } from "@/pageEditor/panes/save/saveHelpers";
 import { normalizeSemVerString, validateRegistryId } from "@/types/helpers";
-import brickModComponentAdapter from "@/pageEditor/starterBricks/menuItem";
+import brickModComponentAdapter from "@/pageEditor/starterBricks/button";
 import {
   internalStarterBrickMetaFactory,
   lookupStarterBrick,

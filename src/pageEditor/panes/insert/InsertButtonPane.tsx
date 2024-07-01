@@ -27,11 +27,11 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 
-const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
+const InsertButtonPane: React.FunctionComponent<{ cancel: () => void }> = ({
   cancel,
 }) => (
   <Centered isScrollable>
-    <div className={styles.title}>Inserting Button/Menu Item</div>
+    <div className={styles.title}>Inserting Button</div>
 
     <div className="text-left">
       <p>
@@ -57,4 +57,4 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
   </Centered>
 );
 
-export default InsertMenuItemPane;
+export default InsertButtonPane;

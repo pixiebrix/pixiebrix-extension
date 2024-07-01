@@ -17,7 +17,7 @@
 
 import { define, derive, type FactoryConfig } from "cooky-cutter";
 import {
-  type ActionFormState,
+  type ButtonFormState,
   type ContextMenuFormState,
   type ModComponentFormState,
   type QuickBarFormState,
@@ -38,7 +38,7 @@ import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type BrickPipeline } from "@/bricks/types";
 import contextMenu from "@/pageEditor/starterBricks/contextMenu";
 import { validateRegistryId } from "@/types/helpers";
-import menuItem from "@/pageEditor/starterBricks/menuItem";
+import menuItem from "@/pageEditor/starterBricks/button";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
 import quickBar from "@/pageEditor/starterBricks/quickBar";
 import trigger from "@/pageEditor/starterBricks/trigger";
@@ -207,7 +207,7 @@ export const quickbarFormStateFactory = (
 };
 
 export const menuItemFormStateFactory = (
-  override?: FactoryConfig<ActionFormState>,
+  override?: FactoryConfig<ButtonFormState>,
   pipelineOverride?: BrickPipeline,
 ) => {
   const defaultTriggerProps = menuItem.fromNativeElement(
@@ -229,7 +229,7 @@ export const menuItemFormStateFactory = (
       ...override,
     } as FactoryConfig<ModComponentFormState>,
     pipelineOverride,
-  ) as ActionFormState;
+  ) as ButtonFormState;
 };
 
 const foundationOutputFactory = define<JsonObject>({

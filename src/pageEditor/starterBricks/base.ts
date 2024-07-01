@@ -27,7 +27,10 @@ import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import type React from "react";
 import { createSitePattern, SITES_PATTERN } from "@/permissions/patterns";
 import { type Except } from "type-fest";
@@ -419,7 +422,7 @@ export function getImplicitReader(
     return readerTypeHack([...base, ...elementAddons]);
   }
 
-  if (type === "menuItem") {
+  if (type === StarterBrickTypes.BUTTON) {
     return readerTypeHack([...base, ...elementAddons]);
   }
 

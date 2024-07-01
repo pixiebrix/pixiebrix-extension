@@ -16,7 +16,7 @@
  */
 
 import type {
-  ActionFormState,
+  ButtonFormState,
   ModComponentFormState,
   TriggerFormState,
 } from "@/pageEditor/starterBricks/formStateTypes";
@@ -107,7 +107,7 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     await super.run(component);
   }
 
-  checkAction(component: ActionFormState): void {
+  checkAction(component: ButtonFormState): void {
     const selector = component.extensionPoint.definition.containerSelector;
 
     const position = {

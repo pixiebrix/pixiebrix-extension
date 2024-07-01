@@ -81,7 +81,7 @@ export type ButtonPosition =
   | "append"
   | "prepend"
   | {
-      // Element to insert the menu item before, selector is relative to the container
+      // Element to insert the button before, selector is relative to the button's container
       sibling: string | null;
     };
 

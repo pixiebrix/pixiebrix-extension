@@ -63,10 +63,10 @@ import {
 import { type NormalizedAvailability } from "@/types/availabilityTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-// ActionFormState
-type ActionModComponentState = BaseModComponentState &
+// ButtonFormState
+type ButtonModComponentState = BaseModComponentState &
   Except<ButtonStarterBrickConfig, "action">;
-type ActionStarterBrickState = BaseStarterBrickState & {
+type ButtonStarterBrickState = BaseStarterBrickState & {
   definition: {
     type: StarterBrickType;
     containerSelector: string;
@@ -90,8 +90,8 @@ type ActionStarterBrickState = BaseStarterBrickState & {
   };
 };
 
-export interface ActionFormState
-  extends BaseFormState<ActionModComponentState, ActionStarterBrickState> {
+export interface ButtonFormState
+  extends BaseFormState<ButtonModComponentState, ButtonStarterBrickState> {
   type: typeof StarterBrickTypes.BUTTON;
   containerInfo: ElementInfo | null;
 }
@@ -246,7 +246,7 @@ export interface QuickBarProviderFormState
  * useEffect/useAsyncEffect for defaulting, cleaning up integration configurations, etc.
  */
 export type ModComponentFormState =
-  | ActionFormState
+  | ButtonFormState
   | TriggerFormState
   | SidebarFormState
   | ContextMenuFormState
