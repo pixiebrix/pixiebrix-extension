@@ -51,7 +51,7 @@ describe("useCompareModComponentCounts", () => {
       metadata: modMetadata,
     });
     const formState = formStateFactory({
-      recipe: modMetadata,
+      mod: modMetadata,
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
@@ -95,7 +95,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const dirtyFormState = formStateFactory({
-      recipe: modMetadata,
+      mod: modMetadata,
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
@@ -130,10 +130,10 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const dirtyFormState1 = formStateFactory({
-      recipe: modMetadata,
+      mod: modMetadata,
     });
     const dirtyFormState2 = formStateFactory({
-      recipe: modMetadata,
+      mod: modMetadata,
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
@@ -163,7 +163,7 @@ describe("useCompareModComponentCounts", () => {
       metadata: modMetadata,
     });
     const formState = formStateFactory({
-      recipe: modMetadata,
+      mod: modMetadata,
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
@@ -193,7 +193,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      recipe: modMetadata,
+      mod: modMetadata,
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
@@ -282,7 +282,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      recipe: modMetadata,
+      mod: modMetadata,
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
@@ -313,7 +313,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      recipe: modMetadata,
+      mod: modMetadata,
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
@@ -344,7 +344,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      recipe: modMetadata,
+      mod: modMetadata,
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
@@ -375,7 +375,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      recipe: modMetadata,
+      mod: modMetadata,
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {

@@ -57,7 +57,7 @@ const renderElementPreview = (
   };
 
   const formState = formStateFactory({
-    extension: baseModComponentStateFactory({
+    modComponent: baseModComponentStateFactory({
       blockPipeline: [
         brickConfigFactory({
           config: {
@@ -75,7 +75,7 @@ const renderElementPreview = (
       dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
         actions.setActiveNodeId(
-          formState.extension.blockPipeline[0].instanceId,
+          formState.modComponent.blockPipeline[0].instanceId,
         ),
       );
       dispatch(actions.setActiveBuilderPreviewElement("0"));

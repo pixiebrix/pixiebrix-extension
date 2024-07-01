@@ -145,7 +145,7 @@ const MoveFromModModal: React.FC = () => {
       <Modal.Header closeButton>
         <Modal.Title>
           Remove <em>{modComponentFormState?.label}</em> from mod{" "}
-          <em>{modComponentFormState?.recipe?.name}</em>?
+          <em>{modComponentFormState?.mod?.name}</em>?
         </Modal.Title>
       </Modal.Header>
       <Form

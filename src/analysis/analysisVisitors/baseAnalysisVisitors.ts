@@ -32,7 +32,7 @@ export abstract class AnalysisVisitorABC
 {
   abstract readonly id: string;
 
-  protected extension!: ModComponentFormState;
+  protected formState!: ModComponentFormState;
 
   protected readonly annotations: AnalysisAnnotation[] = [];
   getAnnotations(): AnalysisAnnotation[] {
@@ -40,21 +40,19 @@ export abstract class AnalysisVisitorABC
   }
 
   /**
-   * Visit the extension point definition.
+   * Visit the starter brick definition.
    */
-  visitExtensionPoint(
-    extensionPoint: ModComponentFormState["extensionPoint"],
-  ): void {
+  visitStarterBrick(starterBrick: ModComponentFormState["starterBrick"]): void {
     // NOP
   }
 
-  run(extension: ModComponentFormState): void {
-    this.extension = extension;
+  run(formState: ModComponentFormState): void {
+    this.formState = formState;
 
-    this.visitExtensionPoint(extension.extensionPoint);
+    this.visitStarterBrick(formState.starterBrick);
 
-    this.visitRootPipeline(extension.extension.blockPipeline, {
-      extensionPointType: extension.type,
+    this.visitRootPipeline(formState.modComponent.blockPipeline, {
+      starterBrickType: formState.type,
     });
   }
 }
@@ -62,9 +60,9 @@ export abstract class AnalysisVisitorABC
 export abstract class AnalysisVisitorWithResolvedBricksABC extends AnalysisVisitorABC {
   protected allBlocks!: TypedBrickMap;
 
-  override async run(extension: ModComponentFormState): Promise<void> {
+  override async run(formState: ModComponentFormState): Promise<void> {
     this.allBlocks = await blockRegistry.allTyped();
 
-    super.run(extension);
+    super.run(formState);
   }
 }

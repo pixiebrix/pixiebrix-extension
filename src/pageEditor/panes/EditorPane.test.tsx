@@ -205,7 +205,7 @@ describe("renders", () => {
 
   test("the first selected node", async () => {
     const formState = getPlainFormState();
-    const { instanceId } = formState.extension.blockPipeline[0];
+    const { instanceId } = formState.modComponent.blockPipeline[0];
     const { asFragment } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
@@ -343,7 +343,7 @@ describe("can add a node", () => {
     const activeModComponentFormState =
       selectActiveModComponentFormState(reduxState);
     const jqNodeId = (
-      activeModComponentFormState.extension.blockPipeline[1].config
+      activeModComponentFormState.modComponent.blockPipeline[1].config
         .body as PipelineExpression
     ).__value__[0].instanceId;
     const addButtonInSubPipeline = screen.getByTestId(
@@ -366,7 +366,7 @@ describe("can add a node", () => {
 async function renderEditorPaneWithBasicFormState() {
   const modComponentFormState = getFormStateWithSubPipelines();
   const activeNodeId =
-    modComponentFormState.extension.blockPipeline[0].instanceId;
+    modComponentFormState.modComponent.blockPipeline[0].instanceId;
   const utils = render(
     <div>
       <EditorPane />
@@ -620,7 +620,7 @@ describe("validation", () => {
   test("validates string templates", async () => {
     const formState = getFormStateWithSubPipelines();
     const subEchoNode = (
-      formState.extension.blockPipeline[1].config.body as PipelineExpression
+      formState.modComponent.blockPipeline[1].config.body as PipelineExpression
     ).__value__[0];
     const { container } = render(<EditorPane />, {
       setupRedux(dispatch) {
@@ -658,7 +658,7 @@ describe("validation", () => {
 
     // Selecting the Echo brick in the first mod component
     const { instanceId: echoBlockInstanceId } =
-      modComponent1.extension.blockPipeline[0];
+      modComponent1.modComponent.blockPipeline[0];
     const { container, getReduxStore } = render(
       <>
         <EditorPane />
@@ -744,7 +744,7 @@ describe("validation", () => {
 
   test("validates multiple renderers on add", async () => {
     const formState = getPlainFormState();
-    formState.extension.blockPipeline.push(
+    formState.modComponent.blockPipeline.push(
       brickConfigFactory({
         id: MarkdownRenderer.BRICK_ID,
         config: {
@@ -781,7 +781,7 @@ describe("validation", () => {
 
   test("validates that renderer is the last node on move", async () => {
     const formState = getPlainFormState();
-    formState.extension.blockPipeline.push(
+    formState.modComponent.blockPipeline.push(
       brickConfigFactory({
         id: MarkdownRenderer.BRICK_ID,
         config: {
@@ -791,7 +791,7 @@ describe("validation", () => {
     );
 
     // Selecting the last node (renderer)
-    const { instanceId } = formState.extension.blockPipeline[2];
+    const { instanceId } = formState.modComponent.blockPipeline[2];
     const { container } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));

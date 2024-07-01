@@ -38,8 +38,8 @@ const FoundationDataPanel: React.FC = () => {
     selectActiveModComponentFormState,
   );
   const {
-    extension: { blockPipeline },
-    extensionPoint: starterBrick,
+    modComponent: { blockPipeline },
+    starterBrick,
   } = activeModComponentFormState;
   const firstBlockInstanceId = blockPipeline[0]?.instanceId;
 

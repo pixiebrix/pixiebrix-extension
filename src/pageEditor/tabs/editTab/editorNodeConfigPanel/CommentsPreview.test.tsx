@@ -32,7 +32,7 @@ const renderCommentsPreview = (comments: string) => {
       dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
         actions.setActiveNodeId(
-          formState.extension.blockPipeline[0].instanceId,
+          formState.modComponent.blockPipeline[0].instanceId,
         ),
       );
       dispatch(actions.setNodeDataPanelTabSelected(DataPanelTabKey.Context));

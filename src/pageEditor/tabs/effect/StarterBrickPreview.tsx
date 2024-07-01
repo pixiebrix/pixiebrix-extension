@@ -47,7 +47,7 @@ const initialState: PreviewState = {
 };
 
 const previewSlice = createSlice({
-  name: "extensionPointPreview",
+  name: "starterBrickPreview",
   initialState,
   reducers: {
     startRun(state) {
@@ -90,11 +90,11 @@ const StarterBrickPreview: React.FunctionComponent<{
         // data about the element that caused the trigger
         let rootSelector: Nullishable<string> = null;
         if (
-          (modComponentFormState as TriggerFormState).extensionPoint.definition
+          (modComponentFormState as TriggerFormState).starterBrick.definition
             .rootSelector
         ) {
           rootSelector = (modComponentFormState as TriggerFormState)
-            .extensionPoint.definition.rootSelector;
+            .starterBrick.definition.rootSelector;
         }
 
         const data = await runStarterBrickReaderPreview(
@@ -120,7 +120,7 @@ const StarterBrickPreview: React.FunctionComponent<{
   useEffect(() => {
     void debouncedRun(modComponentFormState);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
-  }, [debouncedRun, modComponentFormState.extensionPoint]);
+  }, [debouncedRun, modComponentFormState.starterBrick]);
 
   if (isRunning) {
     return (
@@ -132,7 +132,7 @@ const StarterBrickPreview: React.FunctionComponent<{
 
   const reloadTrigger =
     modComponentFormState.type === "trigger" &&
-    modComponentFormState.extensionPoint.definition.trigger !== "load" ? (
+    modComponentFormState.starterBrick.definition.trigger !== "load" ? (
       <div className="text-info">
         <AsyncButton
           variant="info"

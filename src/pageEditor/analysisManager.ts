@@ -61,17 +61,17 @@ async function selectActiveModFormStates(
 ): Promise<ModComponentFormState[]> {
   const activeModComponentFormState = selectActiveModComponentFormState(state);
 
-  if (activeModComponentFormState?.recipe) {
+  if (activeModComponentFormState?.mod) {
     const dirtyModComponentFormStates =
       state.editor.modComponentFormStates.filter(
-        (x) => x.recipe?.id === activeModComponentFormState.recipe.id,
+        (x) => x.mod?.id === activeModComponentFormState.mod.id,
       );
     const dirtyIds = new Set(dirtyModComponentFormStates.map((x) => x.uuid));
 
     const activatedModComponents = selectActivatedModComponents(state);
     const otherModComponents = activatedModComponents.filter(
       (x) =>
-        x._recipe?.id === activeModComponentFormState.recipe.id &&
+        x._recipe?.id === activeModComponentFormState.mod.id &&
         !dirtyIds.has(x.id),
     );
     const otherModComponentFormStates = await Promise.all(
@@ -215,7 +215,7 @@ async function varAnalysisFactory(
   const modState = await getPageState(inspectedTab, {
     namespace: StateNamespaces.MOD,
     modComponentId: activeModComponentFormState.uuid,
-    modId: activeModComponentFormState.recipe?.id,
+    modId: activeModComponentFormState.mod?.id,
   });
 
   return new VarAnalysis({

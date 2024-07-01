@@ -31,11 +31,11 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 
 const reportEventMock = jest.mocked(reportEvent);
 
-const commentsFieldName = "extension.blockPipeline.0.comments";
+const commentsFieldName = "modComponent.blockPipeline.0.comments";
 const initialComments = "Hello world!";
 const formStateWithComments = menuItemFormStateFactory(
   {
-    recipe: modMetadataFactory(),
+    mod: modMetadataFactory(),
   },
   [
     brickConfigFactory({
@@ -48,14 +48,14 @@ const formStateWithNoComments = menuItemFormStateFactory({}, [
   brickConfigFactory(),
 ]);
 const renderCommentsTab = (formState = formStateWithComments) => {
-  const brickId = formState.extension.blockPipeline[0].id;
+  const brickId = formState.modComponent.blockPipeline[0].id;
   render(
     <Tab.Container defaultActiveKey={DataPanelTabKey.Comments}>
       <Formik onSubmit={jest.fn()} initialValues={formState}>
         <CommentsTab
           brickId={brickId}
           brickCommentsFieldName={commentsFieldName}
-          modId={formState.recipe?.id}
+          modId={formState.mod?.id}
         />
       </Formik>
     </Tab.Container>,
@@ -83,7 +83,7 @@ describe("CommentsTab", () => {
     // Trigger onBlur event for the textarea
     await userEvent.keyboard("{tab}");
     const expectedBrickId =
-      formStateWithNoComments.extension.blockPipeline[0].id;
+      formStateWithNoComments.modComponent.blockPipeline[0].id;
 
     expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {
       commentsLength: newComments.length,
@@ -104,12 +104,13 @@ describe("CommentsTab", () => {
 
     // Trigger onBlur event for the textarea
     await userEvent.keyboard("{tab}");
-    const expectedBrickId = formStateWithComments.extension.blockPipeline[0].id;
+    const expectedBrickId =
+      formStateWithComments.modComponent.blockPipeline[0].id;
 
     expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {
       commentsLength: expectedComments.length,
       brickId: expectedBrickId,
-      modId: formStateWithComments.recipe.id,
+      modId: formStateWithComments.mod.id,
     });
   });
 });

@@ -151,28 +151,28 @@ describe("Add/Remove Bricks", () => {
   test("Add Brick", async () => {
     // Get initial bricks
     const initialBricks =
-      editor.modComponentFormStates[0].extension.blockPipeline;
+      editor.modComponentFormStates[0].modComponent.blockPipeline;
 
     // Add a Brick
     editor = editorSlice.reducer(
       editor,
       actions.addNode({
         block: standardBrick,
-        pipelinePath: "extension.blockPipeline",
+        pipelinePath: "modComponent.blockPipeline",
         pipelineIndex: 0,
       }),
     );
 
     // Ensure we have one more brick than we started with
     expect(
-      editor.modComponentFormStates[0].extension.blockPipeline,
+      editor.modComponentFormStates[0].modComponent.blockPipeline,
     ).toBeArrayOfSize(initialBricks.length + 1);
   });
 
   test("Remove Brick with Integration Dependency", async () => {
     // Get initial bricks and integration dependencies
     const initialBricks =
-      editor.modComponentFormStates[0].extension.blockPipeline;
+      editor.modComponentFormStates[0].modComponent.blockPipeline;
     const initialIntegrationDependencies =
       editor.modComponentFormStates[0].integrationDependencies;
 
@@ -184,7 +184,7 @@ describe("Add/Remove Bricks", () => {
 
     // Ensure Integration Dependency was removed
     expect(
-      editor.modComponentFormStates[0].extension.blockPipeline,
+      editor.modComponentFormStates[0].modComponent.blockPipeline,
     ).toBeArrayOfSize(initialBricks.length - 1);
     expect(
       editor.modComponentFormStates[0].integrationDependencies,
@@ -194,7 +194,7 @@ describe("Add/Remove Bricks", () => {
   test("Remove Brick without Integration Dependency", async () => {
     // Get initial bricks and services
     const initialBricks =
-      editor.modComponentFormStates[0].extension.blockPipeline;
+      editor.modComponentFormStates[0].modComponent.blockPipeline;
     const initialIntegrationDependencies =
       editor.modComponentFormStates[0].integrationDependencies;
 
@@ -206,7 +206,7 @@ describe("Add/Remove Bricks", () => {
 
     // Ensure Service was NOT removed
     expect(
-      editor.modComponentFormStates[0].extension.blockPipeline,
+      editor.modComponentFormStates[0].modComponent.blockPipeline,
     ).toBeArrayOfSize(initialBricks.length - 1);
     expect(
       editor.modComponentFormStates[0].integrationDependencies,

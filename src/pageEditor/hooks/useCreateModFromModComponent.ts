@@ -84,7 +84,7 @@ function useCreateModFromModComponent(
           }).unwrap();
 
           const newModComponent = produce(newModComponentFormState, (draft) => {
-            draft.recipe = selectModMetadata(newModDefinition, upsertResponse);
+            draft.mod = selectModMetadata(newModDefinition, upsertResponse);
           });
 
           dispatch(editorActions.addModComponentFormState(newModComponent));

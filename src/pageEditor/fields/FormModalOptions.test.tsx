@@ -37,13 +37,16 @@ describe("FormModalOptions", () => {
     const brick = createNewConfiguredBrick(FormTransformer.BRICK_ID);
 
     const initialValues = formStateFactory({
-      extension: baseModComponentStateFactory({
+      modComponent: baseModComponentStateFactory({
         blockPipeline: [brick],
       }),
     });
 
     render(
-      <FormModalOptions name="extension.blockPipeline.0" configKey="config" />,
+      <FormModalOptions
+        name="modComponent.blockPipeline.0"
+        configKey="config"
+      />,
       {
         initialValues,
         setupRedux(dispatch) {

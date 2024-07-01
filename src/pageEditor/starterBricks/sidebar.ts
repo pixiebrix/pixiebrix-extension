@@ -53,7 +53,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
     type: "actionPanel",
     label: heading,
     ...base,
-    extensionPoint: {
+    starterBrick: {
       metadata,
 
       definition: {
@@ -72,7 +72,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
         customEvent: null,
       },
     },
-    extension: {
+    modComponent: {
       heading,
       blockPipeline: [],
     },
@@ -82,7 +82,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
 function selectStarterBrickDefinition(
   formState: SidebarFormState,
 ): StarterBrickDefinitionLike {
-  const { extensionPoint: starterBrick } = formState;
+  const { starterBrick } = formState;
   const {
     definition: { isAvailable, reader, trigger, debounce, customEvent },
   } = starterBrick;
@@ -103,7 +103,7 @@ function selectModComponent(
   state: SidebarFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<SidebarConfig> {
-  const { extension: modComponent } = state;
+  const { modComponent } = state;
   const config: SidebarConfig = {
     heading: modComponent.heading,
     body: options.includeInstanceIds
@@ -154,8 +154,8 @@ async function fromModComponent(
 
   return {
     ...base,
-    extension: modComponent,
-    extensionPoint: {
+    modComponent,
+    starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
         ...starterBrick.definition,

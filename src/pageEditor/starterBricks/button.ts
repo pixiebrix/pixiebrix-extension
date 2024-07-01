@@ -61,7 +61,7 @@ function fromNativeElement(
     label: `My ${getDomain(url)} button`,
     ...makeInitialBaseState(button.uuid),
     containerInfo: button.containerInfo,
-    extensionPoint: {
+    starterBrick: {
       metadata,
       definition: {
         ...button.menu,
@@ -77,7 +77,7 @@ function fromNativeElement(
         },
       },
     },
-    extension: {
+    modComponent: {
       caption: button.item.caption,
       blockPipeline: [],
       dynamicCaption: false,
@@ -90,7 +90,7 @@ function fromNativeElement(
 function selectStarterBrickDefinition(
   formState: ButtonFormState,
 ): StarterBrickDefinitionLike<ButtonDefinition> {
-  const { extensionPoint: starterBrick } = formState;
+  const { starterBrick } = formState;
   const {
     definition: {
       isAvailable,
@@ -121,7 +121,7 @@ function selectModComponent(
   state: ButtonFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<ButtonStarterBrickConfig> {
-  const { extension: modComponent } = state;
+  const { modComponent } = state;
   const config: ButtonStarterBrickConfig = {
     caption: modComponent.caption,
     icon: modComponent.icon,
@@ -157,10 +157,10 @@ async function fromModComponent(
 
   return {
     ...base,
-    extension: modComponent,
+    modComponent,
     // `containerInfo` only populated on initial creation session
     containerInfo: null,
-    extensionPoint: {
+    starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
         ...starterBrick.definition,

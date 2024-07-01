@@ -291,7 +291,7 @@ describe("replaceModComponent round trip", () => {
 
     modComponentFormState.label = "New Label";
     const newTemplate = '<input value="Click Me!"/>';
-    modComponentFormState.extensionPoint.definition.template = newTemplate;
+    modComponentFormState.starterBrick.definition.template = newTemplate;
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
 

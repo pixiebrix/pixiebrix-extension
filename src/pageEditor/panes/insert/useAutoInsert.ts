@@ -45,7 +45,7 @@ function useAutoInsert(type: StarterBrickType): void {
         undefined,
       ) as ModComponentFormState;
 
-      formState.extension.blockPipeline = getExampleBrickPipeline(
+      formState.modComponent.blockPipeline = getExampleBrickPipeline(
         formState.type,
       );
 

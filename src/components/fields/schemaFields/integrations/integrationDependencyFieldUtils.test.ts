@@ -210,8 +210,8 @@ describe("selectVariables", () => {
       permissions: emptyPermissionsFactory(),
       optionsArgs: {},
       type: "actionPanel",
-      recipe: null,
-      extension: {
+      mod: null,
+      modComponent: {
         blockPipeline: [
           {
             id: validateRegistryId("@pixiebrix/document"),
@@ -262,7 +262,7 @@ describe("selectVariables", () => {
         ],
         heading: "Document",
       },
-      extensionPoint: {
+      starterBrick: {
         metadata: {
           id: validateRegistryId(
             "@internal/52d42d87-4382-4c78-b00e-bbdd21d75000",

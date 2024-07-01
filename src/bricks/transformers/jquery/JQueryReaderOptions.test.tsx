@@ -41,7 +41,7 @@ const getAttributeExamplesMock = jest.mocked(getAttributeExamples);
 
 function baseStateFactory() {
   const baseFormState = menuItemFormStateFactory();
-  baseFormState.extension.blockPipeline = [
+  baseFormState.modComponent.blockPipeline = [
     {
       id: JQueryReader.BRICK_ID,
       config: {
@@ -57,7 +57,7 @@ function renderOptions(formState: ModComponentFormState = baseStateFactory()) {
     <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
       <Formik onSubmit={jest.fn()} initialValues={formState}>
         <JQueryReaderOptions
-          name="extension.blockPipeline.0"
+          name="modComponent.blockPipeline.0"
           configKey="config"
         />
       </Formik>
@@ -82,7 +82,7 @@ describe("JQueryReaderOptions", () => {
 
   it("shows workshop message on variable selector", async () => {
     const state = baseStateFactory();
-    state.extension.blockPipeline[0].config.selectors = {
+    state.modComponent.blockPipeline[0].config.selectors = {
       property: toExpression("var", "@foo"),
     };
 
@@ -96,7 +96,7 @@ describe("JQueryReaderOptions", () => {
 
   it("shows workshop message variable selectors", async () => {
     const state = baseStateFactory();
-    state.extension.blockPipeline[0].config.selectors = toExpression(
+    state.modComponent.blockPipeline[0].config.selectors = toExpression(
       "var",
       "@foo",
     );
@@ -111,7 +111,7 @@ describe("JQueryReaderOptions", () => {
 
   it("normalizes primitive selectors", async () => {
     const state = baseStateFactory();
-    state.extension.blockPipeline[0].config.selectors = { property: "h1" };
+    state.modComponent.blockPipeline[0].config.selectors = { property: "h1" };
 
     renderOptions(state);
 
@@ -123,7 +123,7 @@ describe("JQueryReaderOptions", () => {
 
     expect(
       screen.getByTestId(
-        "toggle-extension.blockPipeline.0.config.selectors.property.selector",
+        "toggle-modComponent.blockPipeline.0.config.selectors.property.selector",
       ).dataset.testSelected,
     ).toBe("Selector");
 
@@ -132,7 +132,7 @@ describe("JQueryReaderOptions", () => {
 
   it("normalizes nested selectors", async () => {
     const state = baseStateFactory();
-    state.extension.blockPipeline[0].config.selectors = {
+    state.modComponent.blockPipeline[0].config.selectors = {
       outer: {
         selector: "div",
         find: {
@@ -147,12 +147,12 @@ describe("JQueryReaderOptions", () => {
 
     expect(
       screen.getByTestId(
-        "toggle-extension.blockPipeline.0.config.selectors.outer.selector",
+        "toggle-modComponent.blockPipeline.0.config.selectors.outer.selector",
       ).dataset.testSelected,
     ).toBe("Selector");
     expect(
       screen.getByTestId(
-        "toggle-extension.blockPipeline.0.config.selectors.outer.find.inner.selector",
+        "toggle-modComponent.blockPipeline.0.config.selectors.outer.find.inner.selector",
       ).dataset.testSelected,
     ).toBe("Selector");
 
@@ -161,7 +161,7 @@ describe("JQueryReaderOptions", () => {
 
   it("normalizes nunjucks literal selectors", async () => {
     const state = baseStateFactory();
-    state.extension.blockPipeline[0].config.selectors = {
+    state.modComponent.blockPipeline[0].config.selectors = {
       outer: {
         selector: toExpression("nunjucks", "div"),
         find: {
@@ -176,12 +176,12 @@ describe("JQueryReaderOptions", () => {
 
     expect(
       screen.getByTestId(
-        "toggle-extension.blockPipeline.0.config.selectors.outer.selector",
+        "toggle-modComponent.blockPipeline.0.config.selectors.outer.selector",
       ).dataset.testSelected,
     ).toBe("Selector");
     expect(
       screen.getByTestId(
-        "toggle-extension.blockPipeline.0.config.selectors.outer.find.inner.selector",
+        "toggle-modComponent.blockPipeline.0.config.selectors.outer.find.inner.selector",
       ).dataset.testSelected,
     ).toBe("Selector");
 
@@ -190,7 +190,7 @@ describe("JQueryReaderOptions", () => {
 
   it("allows rename of property", async () => {
     const state = baseStateFactory();
-    state.extension.blockPipeline[0].config.selectors = {
+    state.modComponent.blockPipeline[0].config.selectors = {
       outer: {
         selector: toExpression("nunjucks", "div"),
         find: {
@@ -219,7 +219,7 @@ describe("JQueryReaderOptions", () => {
 
   it("clearing a property name reverts the value to the initial value on blur", async () => {
     const state = baseStateFactory();
-    state.extension.blockPipeline[0].config.selectors = {
+    state.modComponent.blockPipeline[0].config.selectors = {
       outer: {
         selector: toExpression("nunjucks", "div"),
         find: {
@@ -247,7 +247,7 @@ describe("JQueryReaderOptions", () => {
 
   it("generates example attributes for nested selectors", async () => {
     const state = baseStateFactory();
-    state.extension.blockPipeline[0].config.selectors = {
+    state.modComponent.blockPipeline[0].config.selectors = {
       outer: {
         selector: "div",
         find: {

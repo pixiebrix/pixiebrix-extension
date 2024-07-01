@@ -28,7 +28,7 @@ import { makeVariableExpression } from "@/utils/variableUtils";
 
 export type IntegrationsFormSlice = Pick<
   ModComponentFormState,
-  "integrationDependencies" | "extension"
+  "integrationDependencies" | "modComponent"
 >;
 
 /**
@@ -68,15 +68,15 @@ function deepFindIntegrationDependencyVariables(
 }
 
 /**
- * Return set of integration dependency variables referenced by the extension,
+ * Return set of integration dependency variables referenced by the mod component,
  * including the `@`-prefixes
  */
 export function selectIntegrationDependencyVariables(
-  state: Pick<ModComponentFormState, "extension">,
+  state: Pick<ModComponentFormState, "modComponent">,
 ): Set<string> {
   const variables = new Set<string>();
   deepFindIntegrationDependencyVariables(
-    state.extension.blockPipeline,
+    state.modComponent.blockPipeline,
     variables,
   );
   return variables;

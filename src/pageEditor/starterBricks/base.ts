@@ -123,7 +123,7 @@ export function baseFromModComponent<T extends StarterBrickType>(
   | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
-  | "recipe"
+  | "mod"
 > & { type: T } {
   return {
     uuid: config.id,
@@ -135,7 +135,7 @@ export function baseFromModComponent<T extends StarterBrickType>(
     permissions: config.permissions ?? {},
     optionsArgs: config.optionsArgs ?? {},
     type,
-    recipe: config._recipe,
+    mod: config._recipe,
   };
 }
 
@@ -146,9 +146,9 @@ export function initModOptionsIfNeeded<TFormState extends BaseFormState>(
   modComponentFormState: TFormState,
   modDefinitions: ModDefinition[],
 ) {
-  if (modComponentFormState.recipe?.id) {
+  if (modComponentFormState.mod?.id) {
     const mod = modDefinitions?.find(
-      (x) => x.metadata.id === modComponentFormState.recipe?.id,
+      (x) => x.metadata.id === modComponentFormState.mod?.id,
     );
 
     if (mod?.options == null) {
@@ -175,8 +175,8 @@ export function baseSelectModComponent({
   optionsArgs,
   integrationDependencies,
   permissions,
-  extensionPoint,
-  recipe,
+  starterBrick,
+  mod,
 }: BaseFormState): Pick<
   ModComponentBase,
   | "id"
@@ -191,8 +191,8 @@ export function baseSelectModComponent({
   return {
     id: uuid,
     apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: recipe,
+    extensionPointId: starterBrick.metadata.id,
+    _recipe: mod,
     label,
     integrationDependencies,
     permissions,
@@ -202,17 +202,17 @@ export function baseSelectModComponent({
 
 export function makeInitialBaseState(
   uuid: UUID = uuidv4(),
-): Except<BaseFormState, "type" | "label" | "extensionPoint"> {
+): Except<BaseFormState, "type" | "label" | "starterBrick"> {
   return {
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     integrationDependencies: [],
     permissions: emptyPermissionsFactory(),
     optionsArgs: {},
-    extension: {
+    modComponent: {
       blockPipeline: [],
     },
-    recipe: undefined,
+    mod: undefined,
   };
 }
 
@@ -321,7 +321,7 @@ export async function lookupStarterBrick<
 export function baseSelectStarterBrick(
   formState: BaseFormState,
 ): Except<StarterBrickDefinitionLike, "definition"> {
-  const { metadata } = formState.extensionPoint;
+  const { metadata } = formState.starterBrick;
 
   return {
     apiVersion: formState.apiVersion,

@@ -58,12 +58,12 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   useEffect(() => {
     const messageContext = {
       extensionId: modComponentFormState.uuid,
-      blueprintId: modComponentFormState.recipe
-        ? modComponentFormState.recipe.id
+      blueprintId: modComponentFormState.mod
+        ? modComponentFormState.mod.id
         : undefined,
     };
     dispatch(logActions.setContext(messageContext));
-  }, [modComponentFormState.uuid, modComponentFormState.recipe, dispatch]);
+  }, [modComponentFormState.uuid, modComponentFormState.mod, dispatch]);
 
   return (
     <IntegrationsSliceModIntegrationsContextAdapter>

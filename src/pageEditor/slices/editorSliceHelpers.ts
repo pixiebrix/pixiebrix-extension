@@ -45,7 +45,7 @@ export function ensureBrickPipelineUIState(
       makeInitialBrickPipelineUIState();
     const pipeline = state.modComponentFormStates.find(
       (x) => x.uuid === modComponentId,
-    )?.extension.blockPipeline;
+    )?.modComponent.blockPipeline;
 
     assertNotNullish(
       pipeline,
@@ -77,7 +77,7 @@ export function syncNodeUIStates(
   );
 
   const pipelineMap = getPipelineMap(
-    modComponentFormState.extension.blockPipeline,
+    modComponentFormState.modComponent.blockPipeline,
   );
 
   brickPipelineUIState.pipelineMap = pipelineMap;
@@ -221,7 +221,7 @@ export function setActiveModComponentId(
   state.beta = false;
   state.activeModComponentId = modComponentFormState.uuid;
   state.activeModId = null;
-  state.expandedModId = modComponentFormState.recipe?.id ?? state.expandedModId;
+  state.expandedModId = modComponentFormState.mod?.id ?? state.expandedModId;
   state.selectionSeq++;
 
   ensureBrickPipelineUIState(state, modComponentFormState.uuid);

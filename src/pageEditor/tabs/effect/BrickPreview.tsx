@@ -185,7 +185,7 @@ const BrickPreview: React.FunctionComponent<{
             )),
           },
           rootSelector: undefined,
-          modId: values.recipe?.id,
+          modId: values.mod?.id,
         });
         dispatch(previewSlice.actions.setSuccess({ output, outputKey }));
       } catch (error) {

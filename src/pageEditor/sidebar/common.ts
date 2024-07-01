@@ -30,7 +30,7 @@ export type ModSidebarItem = {
 export type SidebarItem = ModSidebarItem | ModComponentSidebarItem;
 
 export function getLabel(modComponent: ModComponentFormState): string {
-  return modComponent.label ?? modComponent.extensionPoint.metadata.name;
+  return modComponent.label ?? modComponent.starterBrick.metadata.name;
 }
 
 export function isModComponentBase(

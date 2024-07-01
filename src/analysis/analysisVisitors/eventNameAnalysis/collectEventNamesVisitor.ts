@@ -62,10 +62,10 @@ class CollectEventNamesVisitor extends PipelineVisitor {
   }
 
   private visitStarterBrick(
-    extensionPoint: ModComponentFormState["extensionPoint"],
+    starterBrick: ModComponentFormState["starterBrick"],
   ) {
-    if (isTriggerStarterBrick(extensionPoint)) {
-      const eventName = extensionPoint.definition.customEvent?.eventName;
+    if (isTriggerStarterBrick(starterBrick)) {
+      const eventName = starterBrick.definition.customEvent?.eventName;
 
       if (eventName) {
         this._triggerNames.add(eventName);
@@ -98,8 +98,8 @@ class CollectEventNamesVisitor extends PipelineVisitor {
   ): EventNameAnalysisResult {
     const visitor = new CollectEventNamesVisitor();
 
-    visitor.visitRootPipeline(formState.extension.blockPipeline);
-    visitor.visitStarterBrick(formState.extensionPoint);
+    visitor.visitRootPipeline(formState.modComponent.blockPipeline);
+    visitor.visitStarterBrick(formState.starterBrick);
 
     return visitor.result;
   }

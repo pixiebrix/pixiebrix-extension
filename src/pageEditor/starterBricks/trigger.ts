@@ -56,7 +56,7 @@ function fromNativeElement(
     type: "trigger",
     label: `My ${getDomain(url)} trigger`,
     ...makeInitialBaseState(),
-    extensionPoint: {
+    starterBrick: {
       metadata,
       definition: {
         type: "trigger",
@@ -78,7 +78,7 @@ function fromNativeElement(
         isAvailable: getDefaultAvailabilityForUrl(url),
       },
     },
-    extension: {
+    modComponent: {
       blockPipeline: [],
     },
   };
@@ -87,7 +87,7 @@ function fromNativeElement(
 function selectStarterBrickDefinition(
   formState: TriggerFormState,
 ): StarterBrickDefinitionLike<TriggerDefinition> {
-  const { extensionPoint: starterBrick } = formState;
+  const { starterBrick } = formState;
   const {
     definition: {
       isAvailable,
@@ -129,7 +129,7 @@ function selectModComponent(
   state: TriggerFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<TriggerConfig> {
-  const { extension: modComponent } = state;
+  const { modComponent } = state;
   const config: TriggerConfig = {
     action: options.includeInstanceIds
       ? modComponent.blockPipeline
@@ -186,8 +186,8 @@ async function fromModComponent(
 
   return {
     ...base,
-    extension: modComponent,
-    extensionPoint: {
+    modComponent,
+    starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
         type: starterBrick.definition.type,

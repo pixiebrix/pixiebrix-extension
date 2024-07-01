@@ -61,7 +61,7 @@ describe("PageStateTab", () => {
 
   test("it renders with mod's mod component", async () => {
     const formState = formStateFactory({
-      recipe: modMetadataFactory(),
+      mod: modMetadataFactory(),
     });
     const { asFragment } = await renderPageStateTab(formState);
     expect(asFragment()).toMatchSnapshot();

@@ -28,7 +28,7 @@ beforeAll(() => {
 describe("ModVariableSchemasVisitor", () => {
   it("collects event schema from a template literal", async () => {
     const formState = formStateFactory();
-    formState.extension.blockPipeline[0] = {
+    formState.modComponent.blockPipeline[0] = {
       id: AssignModVariable.BRICK_ID,
       config: {
         variableName: toExpression("nunjucks", "foo"),
@@ -44,7 +44,7 @@ describe("ModVariableSchemasVisitor", () => {
 
   it("unions known schemas", async () => {
     const formState = formStateFactory();
-    formState.extension.blockPipeline[0] = {
+    formState.modComponent.blockPipeline[0] = {
       id: AssignModVariable.BRICK_ID,
       config: {
         variableName: "foo",
@@ -52,7 +52,7 @@ describe("ModVariableSchemasVisitor", () => {
     };
 
     const otherFormState = formStateFactory();
-    otherFormState.extension.blockPipeline[0] = {
+    otherFormState.modComponent.blockPipeline[0] = {
       id: AssignModVariable.BRICK_ID,
       config: {
         variableName: "bar",
@@ -71,7 +71,7 @@ describe("ModVariableSchemasVisitor", () => {
 
   it("does not duplicate schemas", async () => {
     const formState = formStateFactory();
-    formState.extension.blockPipeline[0] = {
+    formState.modComponent.blockPipeline[0] = {
       id: AssignModVariable.BRICK_ID,
       config: {
         variableName: "foo",
@@ -79,7 +79,7 @@ describe("ModVariableSchemasVisitor", () => {
     };
 
     const otherFormState = formStateFactory();
-    otherFormState.extension.blockPipeline[0] = {
+    otherFormState.modComponent.blockPipeline[0] = {
       id: AssignModVariable.BRICK_ID,
       config: {
         variableName: "foo",

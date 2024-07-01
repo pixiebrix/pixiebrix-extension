@@ -86,7 +86,10 @@ function makeBaseState() {
 
 function renderOptions(initialValues: ModComponentFormState = makeBaseState()) {
   return render(
-    <LocalProcessOptions name="extension.blockPipeline.0" configKey="config" />,
+    <LocalProcessOptions
+      name="modComponent.blockPipeline.0"
+      configKey="config"
+    />,
     { initialValues },
   );
 }
@@ -188,7 +191,7 @@ describe("UiPath LocalProcess Options", () => {
 
     const formState = makeBaseState();
     formState.integrationDependencies[0].configId = configId;
-    formState.extension.blockPipeline[0].config.service = "@uipath";
+    formState.modComponent.blockPipeline[0].config.service = "@uipath";
 
     renderOptions();
 

@@ -32,7 +32,6 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  BaseFormState,
   type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,

@@ -48,7 +48,7 @@ describe("useCreateModFromModComponent", () => {
 
   it("saves with no dirty changes", async () => {
     const metadata = modMetadataFactory();
-    const menuItemFormState = menuItemFormStateFactory({ recipe: metadata });
+    const menuItemFormState = menuItemFormStateFactory({ mod: metadata });
 
     appApiMock
       .onPost("/api/bricks/")
@@ -75,7 +75,7 @@ describe("useCreateModFromModComponent", () => {
   it("does not throw an error if the mod fails the compareModComponentCounts check", async () => {
     compareModComponentCountsMock.mockReturnValue(() => false);
     const metadata = modMetadataFactory();
-    const menuItemFormState = menuItemFormStateFactory({ recipe: metadata });
+    const menuItemFormState = menuItemFormStateFactory({ mod: metadata });
 
     appApiMock
       .onPost("/api/bricks/")
@@ -95,7 +95,7 @@ describe("useCreateModFromModComponent", () => {
   it("does not throw an error if the mod fails the checkModStarterBrickInvariants check", async () => {
     checkModStarterBrickInvariantsMock.mockReturnValue(async () => false);
     const metadata = modMetadataFactory();
-    const menuItemFormState = menuItemFormStateFactory({ recipe: metadata });
+    const menuItemFormState = menuItemFormStateFactory({ mod: metadata });
 
     appApiMock
       .onPost("/api/bricks/")
