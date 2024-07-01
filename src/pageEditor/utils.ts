@@ -16,7 +16,7 @@
  */
 
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { isModComponentBase } from "@/pageEditor/sidebar/common";
+import { isModComponentBase } from "@/pageEditor/modListingPanel/common";
 import { type BrickConfig } from "@/bricks/types";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";

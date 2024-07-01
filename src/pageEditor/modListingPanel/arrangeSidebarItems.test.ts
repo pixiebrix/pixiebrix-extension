@@ -17,7 +17,7 @@
 
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import arrangeSidebarItems from "@/pageEditor/sidebar/arrangeSidebarItems";
+import arrangeSidebarItems from "@/pageEditor/modListingPanel/arrangeSidebarItems";
 import { type ButtonFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   modComponentFactory,

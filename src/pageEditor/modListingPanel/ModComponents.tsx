@@ -22,9 +22,9 @@ import {
   getModComponentItemId,
   isModSidebarItem,
   type SidebarItem,
-} from "@/pageEditor/sidebar/common";
-import ModListItem from "@/pageEditor/sidebar/ModListItem";
-import arrangeSidebarItems from "@/pageEditor/sidebar/arrangeSidebarItems";
+} from "@/pageEditor/modListingPanel/common";
+import ModListItem from "@/pageEditor/modListingPanel/ModListItem";
+import arrangeSidebarItems from "@/pageEditor/modListingPanel/arrangeSidebarItems";
 import {
   selectActiveModComponentId,
   selectActiveModId,
@@ -40,7 +40,7 @@ import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDebounce } from "use-debounce";
-import filterSidebarItems from "@/pageEditor/sidebar/filterSidebarItems";
+import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
 
 const ModComponents: React.FunctionComponent = () => {
   const dispatch = useDispatch();

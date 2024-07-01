@@ -29,7 +29,7 @@ import { ListGroup } from "react-bootstrap";
 import {
   ModComponentIcon,
   NotAvailableIcon,
-} from "@/pageEditor/sidebar/ModComponentIcons";
+} from "@/pageEditor/modListingPanel/ModComponentIcons";
 import {
   disableOverlay,
   enableOverlay,
