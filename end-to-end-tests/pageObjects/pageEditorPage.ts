@@ -21,6 +21,7 @@ import { uuidv4 } from "@/types/helpers";
 import { ModsPage } from "./extensionConsole/modsPage";
 import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshop/workshopPage";
 import { type UUID } from "@/types/stringTypes";
+import { BasePageObject } from "./basePageObject";
 
 // Starter brick names as shown in the Page Editor UI
 export type StarterBrickName =
@@ -38,16 +39,21 @@ export type StarterBrickName =
  * @knip usage of PageEditorPage indirectly via the newPageEditorPage fixture in testBase.ts causes a
  * false-positive
  */
-export class PageEditorPage {
+export class PageEditorPage extends BasePageObject {
   private readonly pageEditorUrl: string;
   private readonly savedStandaloneModNames: string[] = [];
   private readonly savedPackageModIds: string[] = [];
 
+  templateGalleryButton = this.getByRole("button", {
+    name: "Launch Template Gallery",
+  });
+
   constructor(
-    private readonly page: Page,
+    page: Page,
     private readonly urlToConnectTo: string,
     private readonly extensionId: string,
   ) {
+    super(page);
     this.pageEditorUrl = getBasePageEditorUrl(extensionId);
   }
 
@@ -55,8 +61,8 @@ export class PageEditorPage {
     await this.page.goto(this.pageEditorUrl);
     // Set the viewport size to the expected in horizontal layout size of the devconsole when docked on the bottom.
     await this.page.setViewportSize({ width: 1280, height: 300 });
-    await this.page.getByTestId(`tab-${this.urlToConnectTo}`).click();
-    const heading = this.page.getByRole("heading", {
+    await this.getByTestId(`tab-${this.urlToConnectTo}`).click();
+    const heading = this.getByRole("heading", {
       name: "Welcome to the Page Editor!",
     });
     await expect(heading).toBeVisible();
@@ -72,10 +78,6 @@ export class PageEditorPage {
     await this.page.waitForTimeout(500);
   }
 
-  getTemplateGalleryButton() {
-    return this.page.getByRole("button", { name: "Launch Template Gallery" });
-  }
-
   /**
    * Adds a starter brick in the Page Editor. Generates a unique mod name to prevent
    * test collision.
@@ -87,12 +89,10 @@ export class PageEditorPage {
   async addStarterBrick(starterBrickName: StarterBrickName) {
     const modUuid = uuidv4();
     const modComponentName = `Test ${starterBrickName} ${modUuid}`;
-    await this.page.getByRole("button", { name: "Add", exact: true }).click();
-    await this.page
-      .locator("[role=button].dropdown-item", {
-        hasText: starterBrickName,
-      })
-      .click();
+    await this.getByRole("button", { name: "Add", exact: true }).click();
+    await this.locator("[role=button].dropdown-item", {
+      hasText: starterBrickName,
+    }).click();
 
     return { modComponentName, modUuid };
   }
@@ -103,7 +103,7 @@ export class PageEditorPage {
   }
 
   async fillInBrickField(fieldLabel: string, value: string) {
-    await this.page.getByLabel(fieldLabel).fill(value);
+    await this.getByLabel(fieldLabel).fill(value);
     await this.waitForReduxUpdate();
   }
 
@@ -111,21 +111,20 @@ export class PageEditorPage {
     brickName: string,
     { index = 0 }: { index?: number } = {},
   ) {
-    await this.page
-      .getByTestId(/icon-button-.*-add-brick/)
+    await this.getByTestId(/icon-button-.*-add-brick/)
       .nth(index)
       .click();
 
-    await this.page.getByTestId("tag-search-input").fill(brickName);
-    await this.page.getByRole("button", { name: brickName }).click();
+    await this.getByTestId("tag-search-input").fill(brickName);
+    await this.getByRole("button", { name: brickName }).click();
 
-    await this.page.getByRole("button", { name: "Add brick" }).click();
+    await this.getByRole("button", { name: "Add brick" }).click();
   }
 
   async selectConnectedPageElement(connectedPage: Page) {
     // Without focusing first, the click doesn't enable selection tool ¯\_(ツ)_/¯
-    await this.page.getByLabel("Select element").focus();
-    await this.page.getByLabel("Select element").click();
+    await this.getByLabel("Select element").focus();
+    await this.getByLabel("Select element").click();
 
     await connectedPage.bringToFront();
     await expect(
@@ -136,7 +135,7 @@ export class PageEditorPage {
       .click();
 
     await this.page.bringToFront();
-    await expect(this.page.getByPlaceholder("Select an element")).toHaveValue(
+    await expect(this.getByPlaceholder("Select an element")).toHaveValue(
       "#root h1",
     );
 
@@ -144,8 +143,7 @@ export class PageEditorPage {
   }
 
   getModListItemByName(modName: string) {
-    return this.page
-      .locator(".list-group-item")
+    return this.locator(".list-group-item")
       .locator("span", { hasText: modName })
       .first();
   }
@@ -157,28 +155,16 @@ export class PageEditorPage {
     // TODO: this method is currently meant for packaged mods that aren't meant to be
     //  cleaned up after the test. Future work is adding affordance to clean up saved packaged
     //  mods, with an option to avoid cleanup for certain mods.
-    await this.page.locator("[data-icon=save]").click();
-    await this.page.getByRole("button", { name: "Save" }).click();
-  }
-
-  getByText(text: string) {
-    return this.page.getByText(text);
-  }
-
-  getByLabel(text: string) {
-    return this.page.getByLabel(text);
-  }
-
-  getByPlaceholder(text: string) {
-    return this.page.getByPlaceholder(text);
+    await this.locator("[data-icon=save]").click();
+    await this.getByRole("button", { name: "Save" }).click();
   }
 
   getRenderPanelButton() {
-    return this.page.getByRole("button", { name: "Render Panel" });
+    return this.getByRole("button", { name: "Render Panel" });
   }
 
   getIncrementVersionErrorToast() {
-    return this.page.getByText(
+    return this.getByText(
       "Cannot overwrite version of a published brick. Increment the version",
     );
   }
@@ -188,12 +174,12 @@ export class PageEditorPage {
     // https://github.com/pixiebrix/pixiebrix-extension/blob/277eab74d2c85c2d16053bbcd27023d2612f9e31/src/pageEditor/panes/EditorPane.tsx#L48
     // eslint-disable-next-line playwright/no-wait-for-timeout -- see above
     await this.page.waitForTimeout(600);
-    const modListItem = this.page.locator(".list-group-item", {
+    const modListItem = this.locator(".list-group-item", {
       hasText: modName,
     });
     await modListItem.click();
     await modListItem.locator("[data-icon=save]").click();
-    await expect(this.page.getByText("Saved Mod")).toBeVisible();
+    await expect(this.getByText("Saved Mod")).toBeVisible();
     this.savedStandaloneModNames.push(modName);
   }
 
@@ -208,18 +194,18 @@ export class PageEditorPage {
   }) {
     const modName = `${modNameRoot} ${modUuid}`;
 
-    await this.page.getByLabel(`${modComponentName} - Ellipsis`).click();
-    await this.page.getByRole("button", { name: "Add to mod" }).click();
+    await this.getByLabel(`${modComponentName} - Ellipsis`).click();
+    await this.getByRole("button", { name: "Add to mod" }).click();
 
-    await this.page.getByText("Select...Choose a mod").click();
-    await this.page.getByRole("option", { name: /Create new mod.../ }).click();
-    await this.page.getByRole("button", { name: "Move" }).click();
+    await this.getByText("Select...Choose a mod").click();
+    await this.getByRole("option", { name: /Create new mod.../ }).click();
+    await this.getByRole("button", { name: "Move" }).click();
 
     const modId = `${modName.split(" ").join("-").toLowerCase()}-${modUuid}`;
-    await this.page.getByTestId("registryId-id-id").fill(modId);
+    await this.getByTestId("registryId-id-id").fill(modId);
 
-    await this.page.getByLabel("Name", { exact: true }).fill(modName);
-    await this.page.getByRole("button", { name: "Create" }).click();
+    await this.getByLabel("Name", { exact: true }).fill(modName);
+    await this.getByRole("button", { name: "Create" }).click();
 
     this.savedPackageModIds.push(modId);
 
