@@ -36,7 +36,7 @@ test("can create a new mod from a yaml definition", async ({
   const editWorkshopModPage =
     await workshopPage.findAndSelectMod(simpleSidebarModId);
 
-  await expect(editWorkshopModPage.editor.baseLocator).toContainText(
+  await expect(editWorkshopModPage.editor.root).toContainText(
     simpleSidebarModId,
   );
 

@@ -36,7 +36,7 @@ test("can save a standalone trigger mod", async ({
   const modsPage = new ModsPage(page, extensionId);
   await modsPage.goto();
   await expect(
-    page.locator(".list-group-item", { hasText: modComponentName }),
+    modsPage.locator(".list-group-item", { hasText: modComponentName }),
   ).toBeVisible();
 });
 

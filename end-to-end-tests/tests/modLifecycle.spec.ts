@@ -112,14 +112,14 @@ test("create, run, package, and update mod", async ({
     ).toBeVisible();
     await modListing.getByRole("button", { name: "Update" }).click();
 
-    await expect(newPage.locator("form")).toContainText(
+    await expect(modsPage.locator("form")).toContainText(
       "Created through Playwright Automation",
     );
 
     await expect(
-      newPage.getByRole("button", { name: "Reactivate" }),
+      modsPage.getByRole("button", { name: "Reactivate" }),
     ).toBeVisible();
-    await newPage.getByRole("button", { name: "Reactivate" }).click();
+    await modsPage.getByRole("button", { name: "Reactivate" }).click();
 
     await expect(modListing).toContainText("version 1.0.1");
   });
