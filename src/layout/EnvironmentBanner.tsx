@@ -17,7 +17,7 @@
 
 import React from "react";
 import { getExtensionAuth } from "@/auth/authStorage";
-import { isExtensionContext } from "webext-detect-page";
+import { isExtensionContext } from "webext-detect";
 import { connectPage } from "@/background/messenger/external/api";
 import Banner, { type BannerVariant } from "@/components/banner/Banner";
 import useAsyncState from "@/hooks/useAsyncState";

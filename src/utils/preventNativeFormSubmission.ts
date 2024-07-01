@@ -21,7 +21,7 @@
  * https://github.com/pixiebrix/pixiebrix-extension/issues/3879
  * https://github.com/pixiebrix/pixiebrix-extension/issues/4122
  */
-import { isBackgroundWorker, isWebPage } from "webext-detect-page";
+import { isBackgroundWorker, isWebPage } from "webext-detect";
 
 function preventDefault(event: Event): void {
   event.preventDefault();

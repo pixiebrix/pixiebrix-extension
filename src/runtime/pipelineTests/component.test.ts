@@ -27,7 +27,7 @@ import {
 
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import { normalizeSemVerString } from "@/types/helpers";
-import { TEST_setContext } from "webext-detect-page";
+import { TEST_setContext } from "webext-detect";
 import { toExpression } from "@/utils/expressionUtils";
 import { DefinitionKinds } from "@/types/registryTypes";
 

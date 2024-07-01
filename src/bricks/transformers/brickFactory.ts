@@ -47,7 +47,7 @@ import {
   isPipelineExpression,
   type PipelineClosureExpression,
 } from "@/utils/expressionUtils";
-import { isContentScript } from "webext-detect-page";
+import { isContentScript } from "webext-detect";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
