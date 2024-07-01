@@ -44,7 +44,7 @@ import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/manage
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
-import { TEST_setContext } from "webext-detect-page";
+import { TEST_setContext } from "webext-detect";
 import {
   modComponentFactory,
   modMetadataFactory,

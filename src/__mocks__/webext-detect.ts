@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ContextName } from "webext-detect-page";
+import { type ContextName } from "webext-detect";
 
 let _context: ContextName = "extension";
 
@@ -26,8 +26,8 @@ export function TEST_setContext(context: ContextName) {
 // Files in __mocks__ cannot be imported directly
 // https://github.com/jest-community/eslint-plugin-jest/blob/v27.9.0/docs/rules/no-mocks-import.md
 // ... so this exposes the type for the test-only export:
-// Example: import { TEST_setContext } from "webext-detect-page";
-declare module "webext-detect-page" {
+// Example: import { TEST_setContext } from "webext-detect";
+declare module "webext-detect" {
   export function TEST_setContext(context: ContextName): boolean;
 }
 
