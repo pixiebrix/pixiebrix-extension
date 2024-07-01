@@ -17,7 +17,7 @@
 
 import { useEffect, useReducer } from "react";
 import { usePreviewInfo } from "@/pageEditor/tabs/effect/BrickPreview";
-import { isTriggerExtensionPoint } from "@/pageEditor/starterBricks/formStateTypes";
+import { isTriggerStarterBrick } from "@/pageEditor/starterBricks/formStateTypes";
 import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
@@ -151,10 +151,10 @@ export default function useDocumentPreviewRunBlock(
 
   // This defaults to "inherit" as described in the doc, see BrickConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";
-  const shouldUseExtensionPointRoot =
+  const shouldUseStarterBrickRoot =
     blockInfo?.isRootAware &&
     blockRootMode === "inherit" &&
-    isTriggerExtensionPoint(starterBrick);
+    isTriggerStarterBrick(starterBrick);
 
   const parentBlockInfo = useSelector(selectParentBlockInfo(blockInstanceId));
 
@@ -174,13 +174,13 @@ export default function useDocumentPreviewRunBlock(
       dispatch(previewSlice.actions.startPreview());
 
       // If the block is configured to inherit the root element, and the
-      // extension point is a trigger, try to get the root element from the
-      // extension point.
-      // Note: this is not possible when extensionPoint's targetMode equals
+      // starter brick is a trigger, try to get the root element from the
+      // starter brick.
+      // Note: this is not possible when starter brick's targetMode equals
       // "targetElement"; in this case a special message will be shown instead
       // of the brick output (see the code later in the component)
       const rootSelector =
-        shouldUseExtensionPointRoot &&
+        shouldUseStarterBrickRoot &&
         starterBrick.definition.targetMode === "root"
           ? starterBrick.definition.rootSelector
           : undefined;

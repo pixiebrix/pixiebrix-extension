@@ -94,7 +94,7 @@ const EditorPane: React.VFC = () => {
         initialValues={activeModComponentFormState}
         onSubmit={() => {
           console.error(
-            "Formik's submit should not be called to save an extension.",
+            "Formik's submit should not be called to save a mod component.",
           );
         }}
         // Don't validate -- we're using analysis, so we don't pass in a validation schema here

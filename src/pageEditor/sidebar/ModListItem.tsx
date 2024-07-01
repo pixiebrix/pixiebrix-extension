@@ -21,7 +21,7 @@ import styles from "./Entry.module.scss";
 import {
   ModHasUpdateIcon,
   UnsavedChangesIcon,
-} from "@/pageEditor/sidebar/ExtensionIcons";
+} from "@/pageEditor/sidebar/ModComponentIcons";
 import { Accordion, ListGroup } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

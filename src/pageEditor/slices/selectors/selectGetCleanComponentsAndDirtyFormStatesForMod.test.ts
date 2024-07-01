@@ -33,10 +33,10 @@ import {
 } from "@/types/registryTypes";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
-let extensionPointCount = 0;
-function newExtensionPointId(): InnerDefinitionRef {
+let starterBrickCount = 0;
+function newStarterBrickId(): InnerDefinitionRef {
   // eslint-disable-next-line no-constant-binary-expression -- false positive
-  return `extensionPoint${extensionPointCount++ ?? ""}` as InnerDefinitionRef;
+  return `starterBrick${starterBrickCount++ ?? ""}` as InnerDefinitionRef;
 }
 
 describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
@@ -100,12 +100,12 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
 
       const cleanModComponents: ActivatedModComponent[] = [];
       for (let i = 0; i < cleanCount; i++) {
-        const extensionPointId = newExtensionPointId();
+        const starterBrickId = newStarterBrickId();
         const activatedModComponent = activatedModComponentFactory({
           _recipe: primaryModMetadata,
-          extensionPointId,
+          extensionPointId: starterBrickId,
           definitions: {
-            [extensionPointId]: {
+            [starterBrickId]: {
               kind: DefinitionKinds.STARTER_BRICK,
               definition: starterBrickDefinitionFactory().definition,
             },
@@ -118,12 +118,12 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       const cleanFormModComponents: ActivatedModComponent[] = [];
       const cleanFormStates: ModComponentFormState[] = [];
       for (let i = 0; i < cleanFormCount; i++) {
-        const extensionPointId = newExtensionPointId();
+        const starterBrickId = newStarterBrickId();
         const activatedModComponent = activatedModComponentFactory({
           _recipe: primaryModMetadata,
-          extensionPointId,
+          extensionPointId: starterBrickId,
           definitions: {
-            [extensionPointId]: {
+            [starterBrickId]: {
               kind: DefinitionKinds.STARTER_BRICK,
               definition: starterBrickDefinitionFactory().definition,
             },
@@ -138,12 +138,12 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       const dirtyModComponents: ActivatedModComponent[] = [];
       const dirtyFormStates: ModComponentFormState[] = [];
       for (let i = 0; i < dirtyCount; i++) {
-        const extensionPointId = newExtensionPointId();
+        const starterBrickId = newStarterBrickId();
         const activatedModComponent = activatedModComponentFactory({
           _recipe: primaryModMetadata,
-          extensionPointId,
+          extensionPointId: starterBrickId,
           definitions: {
-            [extensionPointId]: {
+            [starterBrickId]: {
               kind: DefinitionKinds.STARTER_BRICK,
               definition: starterBrickDefinitionFactory().definition,
             },
@@ -158,12 +158,12 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       const deletedDirtyModComponents: ActivatedModComponent[] = [];
       const deletedDirtyFormStates: ModComponentFormState[] = [];
       for (let i = 0; i < deletedCount; i++) {
-        const extensionPointId = newExtensionPointId();
+        const starterBrickId = newStarterBrickId();
         const activatedModComponent = activatedModComponentFactory({
           _recipe: primaryModMetadata,
-          extensionPointId,
+          extensionPointId: starterBrickId,
           definitions: {
-            [extensionPointId]: {
+            [starterBrickId]: {
               kind: DefinitionKinds.STARTER_BRICK,
               definition: starterBrickDefinitionFactory().definition,
             },
@@ -196,12 +196,12 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       const extraDirtyModComponents: ActivatedModComponent[] = [];
       const extraDirtyFormStates: ModComponentFormState[] = [];
       for (let i = 0; i < extraDirty; i++) {
-        const extensionPointId = newExtensionPointId();
+        const starterBrickId = newStarterBrickId();
         const activatedModComponent = activatedModComponentFactory({
           _recipe: otherModMetadata,
-          extensionPointId,
+          extensionPointId: starterBrickId,
           definitions: {
-            [extensionPointId]: {
+            [starterBrickId]: {
               kind: DefinitionKinds.STARTER_BRICK,
               definition: starterBrickDefinitionFactory().definition,
             },

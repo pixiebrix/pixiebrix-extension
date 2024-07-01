@@ -22,7 +22,7 @@ import PipelineVisitor, {
 import CustomEventEffect from "@/bricks/effects/customEvent";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import {
-  isTriggerExtensionPoint,
+  isTriggerStarterBrick,
   type ModComponentFormState,
 } from "@/pageEditor/starterBricks/formStateTypes";
 
@@ -64,7 +64,7 @@ class CollectEventNamesVisitor extends PipelineVisitor {
   private visitStarterBrick(
     extensionPoint: ModComponentFormState["extensionPoint"],
   ) {
-    if (isTriggerExtensionPoint(extensionPoint)) {
+    if (isTriggerStarterBrick(extensionPoint)) {
       const eventName = extensionPoint.definition.customEvent?.eventName;
 
       if (eventName) {

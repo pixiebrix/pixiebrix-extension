@@ -58,8 +58,8 @@ export interface BaseModComponentState {
  * @deprecated - Do not use versioned state types directly
  */
 export interface BaseFormStateV1<
-  TExtension extends BaseModComponentState = BaseModComponentState,
-  TExtensionPoint extends BaseStarterBrickState = BaseStarterBrickState,
+  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > {
   /**
    * The apiVersion of the brick definition, controlling how PixieBrix interprets brick definitions
@@ -107,9 +107,9 @@ export interface BaseFormStateV1<
    */
   permissions: Permissions.Permissions;
 
-  extensionPoint: TExtensionPoint;
+  extensionPoint: TStarterBrick;
 
-  extension: TExtension;
+  extension: TModComponent;
 
   /**
    * Information about the mod used to install the mod component, or `undefined`
@@ -130,9 +130,9 @@ export interface BaseFormStateV1<
  * @deprecated - Do not use versioned state types directly
  */
 export type BaseFormStateV2<
-  TExtension extends BaseModComponentState = BaseModComponentState,
-  TExtensionPoint extends BaseStarterBrickState = BaseStarterBrickState,
-> = Except<BaseFormStateV1<TExtension, TExtensionPoint>, "services"> & {
+  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
+> = Except<BaseFormStateV1<TModComponent, TStarterBrick>, "services"> & {
   /**
    * The integration dependencies configured for the mod component
    *
@@ -143,10 +143,10 @@ export type BaseFormStateV2<
 };
 
 export type BaseFormState<
-  TExtension extends BaseModComponentState = BaseModComponentState,
-  TExtensionPoint extends BaseStarterBrickState = BaseStarterBrickState,
+  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<
-  BaseFormStateV2<TExtension, TExtensionPoint>,
+  BaseFormStateV2<TModComponent, TStarterBrick>,
   "integrationDependencies"
 > & {
   /**

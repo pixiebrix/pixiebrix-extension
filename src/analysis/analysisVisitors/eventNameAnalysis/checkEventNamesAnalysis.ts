@@ -18,7 +18,7 @@
 import { AnalysisVisitorABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
 import {
   type ModComponentFormState,
-  isTriggerExtensionPoint,
+  isTriggerStarterBrick,
 } from "@/pageEditor/starterBricks/formStateTypes";
 import { flatten, uniq } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";
@@ -55,7 +55,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
     super.visitExtensionPoint(extensionPoint);
 
     if (
-      isTriggerExtensionPoint(extensionPoint) &&
+      isTriggerStarterBrick(extensionPoint) &&
       extensionPoint.definition.trigger === "custom"
     ) {
       const eventName = extensionPoint.definition.customEvent?.eventName;

@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { isExtensionContext } from "webext-detect-page";
+import { isExtensionContext } from "webext-detect";
 
 const Footer: React.FunctionComponent = () => {
   const extensionVersion = useMemo(() => {

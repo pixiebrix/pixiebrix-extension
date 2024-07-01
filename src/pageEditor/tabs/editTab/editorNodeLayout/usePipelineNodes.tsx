@@ -72,7 +72,7 @@ import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type Branch, type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
-import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
+import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBrick from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBrick";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
@@ -193,7 +193,7 @@ function getSubPipelinesForBlock(
 
 type MapOutput = {
   nodes: EditorNodeProps[];
-  extensionHasTraces: boolean;
+  modComponentHasTraces: boolean;
 };
 
 const usePipelineNodes = (): {
@@ -210,7 +210,7 @@ const usePipelineNodes = (): {
   const collapsedNodes = useSelector(selectCollapsedNodes);
 
   const annotations = useSelector(
-    selectExtensionAnnotations(activeModComponentFormState.uuid),
+    selectModComponentAnnotations(activeModComponentFormState.uuid),
   );
   const activeBuilderPreviewElementId = useSelector(
     selectActiveBuilderPreviewElement,
@@ -224,13 +224,13 @@ const usePipelineNodes = (): {
   const showPaste = pasteBlock && isApiAtLeastV2;
 
   const starterBrickType = activeModComponentFormState.type;
-  const { label: extensionPointLabel, icon: extensionPointIcon } =
+  const { label: starterBrickLabel, icon: starterBrickIcon } =
     ADAPTERS.get(starterBrickType);
   const rootPipeline = activeModComponentFormState.extension.blockPipeline;
   const rootPipelineFlavor = getRootPipelineFlavor(starterBrickType);
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
-  const { nodes, extensionHasTraces } = mapPipelineToNodes({
+  const { nodes, modComponentHasTraces } = mapPipelineToNodes({
     pipeline: rootPipeline,
     flavor: rootPipelineFlavor,
   });
@@ -238,9 +238,9 @@ const usePipelineNodes = (): {
   const foundationNodeProps = makeFoundationNode({
     pipelineFlavor: rootPipelineFlavor,
     showBiggerActions: isEmpty(rootPipeline),
-    extensionPointLabel,
-    extensionPointIcon,
-    extensionHasTraces,
+    starterBrickLabel,
+    starterBrickIcon,
+    modComponentHasTraces,
   });
 
   return {
@@ -275,7 +275,7 @@ const usePipelineNodes = (): {
   }
 
   // eslint-disable-next-line complexity -- large number of parameters required to map a block to nodes
-  function mapBlockToNodes({
+  function mapBrickToNodes({
     index,
     blockConfig,
     latestPipelineCall,
@@ -287,7 +287,7 @@ const usePipelineNodes = (): {
     isParentActive,
     isAncestorActive,
     nestingLevel,
-    extensionHasTraces: extensionHasTracesInput,
+    modComponentHasTraces: modComponentHasTracesInput,
   }: {
     index: number;
     blockConfig: BrickConfig;
@@ -300,7 +300,7 @@ const usePipelineNodes = (): {
     isParentActive: boolean;
     isAncestorActive: boolean;
     nestingLevel: number;
-    extensionHasTraces?: boolean;
+    modComponentHasTraces?: boolean;
   }): MapOutput {
     const nodes: EditorNodeProps[] = [];
     const block = allBricks.get(blockConfig.id)?.block;
@@ -311,7 +311,8 @@ const usePipelineNodes = (): {
       blockConfig.instanceId,
     );
 
-    let extensionHasTraces = extensionHasTracesInput || traceRecord != null;
+    let modComponentHasTraces =
+      modComponentHasTracesInput || traceRecord != null;
 
     const subPipelines = getSubPipelinesForBlock(block, blockConfig);
     const hasSubPipelines = !isEmpty(subPipelines);
@@ -544,7 +545,7 @@ const usePipelineNodes = (): {
 
         const {
           nodes: subPipelineNodes,
-          extensionHasTraces: subPipelineHasTraces,
+          modComponentHasTraces: subPipelineHasTraces,
         } = mapPipelineToNodes({
           pipeline,
           flavor,
@@ -570,7 +571,7 @@ const usePipelineNodes = (): {
           ...subPipelineNodes,
         );
 
-        extensionHasTraces ||= subPipelineHasTraces;
+        modComponentHasTraces ||= subPipelineHasTraces;
       }
 
       const footerNodeProps: PipelineFooterNodeProps = {
@@ -594,7 +595,7 @@ const usePipelineNodes = (): {
 
     return {
       nodes,
-      extensionHasTraces,
+      modComponentHasTraces,
     };
   }
 
@@ -641,46 +642,48 @@ const usePipelineNodes = (): {
       )?.branches;
     }
 
-    let extensionHasTraces = false;
+    let modComponentHasTraces = false;
 
     for (const [index, blockConfig] of pipeline.entries()) {
-      const { nodes: blockNodes, extensionHasTraces: extensionHasTracesOut } =
-        mapBlockToNodes({
-          index,
-          blockConfig,
-          latestPipelineCall,
-          flavor,
-          pipelinePath,
-          lastIndex,
-          isRootPipeline,
-          showAppend,
-          isParentActive,
-          isAncestorActive,
-          nestingLevel,
-          extensionHasTraces,
-        });
+      const {
+        nodes: blockNodes,
+        modComponentHasTraces: modComponentHasTracesOut,
+      } = mapBrickToNodes({
+        index,
+        blockConfig,
+        latestPipelineCall,
+        flavor,
+        pipelinePath,
+        lastIndex,
+        isRootPipeline,
+        showAppend,
+        isParentActive,
+        isAncestorActive,
+        nestingLevel,
+        modComponentHasTraces,
+      });
       nodes.push(...blockNodes);
-      extensionHasTraces ||= extensionHasTracesOut;
+      modComponentHasTraces ||= modComponentHasTracesOut;
     }
 
     return {
       nodes,
-      extensionHasTraces,
+      modComponentHasTraces,
     };
   }
 
   function makeFoundationNode({
     pipelineFlavor,
     showBiggerActions,
-    extensionPointLabel,
-    extensionPointIcon,
-    extensionHasTraces,
+    starterBrickLabel,
+    starterBrickIcon,
+    modComponentHasTraces,
   }: {
     pipelineFlavor: PipelineFlavor;
     showBiggerActions: boolean;
-    extensionPointLabel: string;
-    extensionPointIcon: IconProp;
-    extensionHasTraces: boolean;
+    starterBrickLabel: string;
+    starterBrickIcon: IconProp;
+    modComponentHasTraces: boolean;
   }): BrickNodeProps {
     const foundationNodeActions: NodeAction[] = [
       {
@@ -711,12 +714,12 @@ const usePipelineNodes = (): {
     }
 
     return {
-      icon: extensionPointIcon,
+      icon: starterBrickIcon,
       runStatus: decideFoundationStatus({
-        hasTraces: extensionHasTraces,
+        hasTraces: modComponentHasTraces,
         blockAnnotations: getFoundationNodeAnnotations(annotations),
       }),
-      brickLabel: extensionPointLabel,
+      brickLabel: starterBrickLabel,
       outputKey: "input" as OutputKey,
       onClick() {
         setActiveNodeId(FOUNDATION_NODE_ID);

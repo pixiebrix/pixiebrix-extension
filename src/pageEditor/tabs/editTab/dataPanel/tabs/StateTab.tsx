@@ -23,7 +23,7 @@ import { useSelector } from "react-redux";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
-import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
+import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 const StateTab: React.FC = () => {
@@ -35,7 +35,7 @@ const StateTab: React.FC = () => {
     "No active mod component form state found",
   );
   const annotations = useSelector(
-    selectExtensionAnnotations(activeModComponentFormState.uuid),
+    selectModComponentAnnotations(activeModComponentFormState.uuid),
   );
 
   return (

@@ -20,7 +20,7 @@ import {
   createSlice,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { clearExtensionTraces } from "@/telemetry/trace";
+import { clearModComponentTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type BrickConfig } from "@/bricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
@@ -44,7 +44,7 @@ import {
   selectNotDeletedActivatedModComponents,
 } from "./editorSelectors";
 import {
-  isQuickBarExtensionPoint,
+  isQuickBarStarterBrick,
   type ModComponentFormState,
 } from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
@@ -120,11 +120,11 @@ export const initialState: EditorState = {
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
-const cloneActiveExtension = createAsyncThunk<
+const cloneActiveModComponent = createAsyncThunk<
   void,
   void,
   { state: EditorRootState }
->("editor/cloneActiveExtension", async (arg, thunkAPI) => {
+>("editor/cloneActiveModComponent", async (arg, thunkAPI) => {
   const state = thunkAPI.getState();
   const newActiveModComponentFormState = await produce(
     selectActiveModComponentFormState(state),
@@ -134,7 +134,7 @@ const cloneActiveExtension = createAsyncThunk<
       draft.label += " (Copy)";
       // Remove from its mod, if any (the user can add it to any mod after creation)
       delete draft.recipe;
-      // Re-generate instance IDs for all the bricks in the extension
+      // Re-generate instance IDs for all the bricks in the mod component
       draft.extension.blockPipeline = await normalizePipelineForEditor(
         draft.extension.blockPipeline,
       );
@@ -145,7 +145,7 @@ const cloneActiveExtension = createAsyncThunk<
     "New active mod component form state not found",
   );
   thunkAPI.dispatch(
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned extension
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned mod component
     actions.addModComponentFormState(newActiveModComponentFormState),
   );
 });
@@ -154,11 +154,11 @@ type AvailableInstalled = {
   availableInstalledIds: UUID[];
 };
 
-const checkAvailableInstalledExtensions = createAsyncThunk<
+const checkAvailableActivatedModComponents = createAsyncThunk<
   AvailableInstalled,
   void,
   { state: EditorRootState & ModComponentsRootState }
->("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
+>("editor/checkAvailableActivatedModComponents", async (arg, thunkAPI) => {
   const notDeletedFormStates = selectNotDeletedModComponentFormStates(
     thunkAPI.getState(),
   );
@@ -175,7 +175,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
     ),
   );
   const tabUrl = await getCurrentInspectedURL();
-  const availableExtensionPointIds = resolved
+  const availableStarterBrickIds = resolved
     .filter((x) => {
       const activatedStarterBrick = activatedStarterBricks.get(
         x.extensionPointId,
@@ -210,7 +210,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
   );
 
   const availableInstalledIds = notDraftActivated
-    .filter((x) => availableExtensionPointIds.includes(x.id))
+    .filter((x) => availableStarterBrickIds.includes(x.id))
     .map((x) => x.id);
 
   return { availableInstalledIds };
@@ -220,7 +220,7 @@ async function isStarterBrickFormStateAvailable(
   tabUrl: string,
   starterBrickFormState: BaseStarterBrickState,
 ): Promise<boolean> {
-  if (isQuickBarExtensionPoint(starterBrickFormState)) {
+  if (isQuickBarStarterBrick(starterBrickFormState)) {
     return testMatchPatterns(
       starterBrickFormState.definition.documentUrlPatterns,
       tabUrl,
@@ -378,7 +378,7 @@ export const editorSlice = createSlice({
       state.selectionSeq++;
 
       // Make sure we're not keeping any private data around from Page Editor sessions
-      void clearExtensionTraces(modComponentFormState.uuid);
+      void clearModComponentTraces(modComponentFormState.uuid);
 
       syncNodeUIStates(state, modComponentFormState);
     },
@@ -945,19 +945,19 @@ export const editorSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addCase(checkAvailableInstalledExtensions.pending, (state) => {
+      .addCase(checkAvailableActivatedModComponents.pending, (state) => {
         state.isPendingAvailableActivatedModComponents = true;
         // We're not resetting the result here so that the old value remains during re-calculation
       })
       .addCase(
-        checkAvailableInstalledExtensions.fulfilled,
+        checkAvailableActivatedModComponents.fulfilled,
         (state, { payload: { availableInstalledIds } }) => {
           state.isPendingAvailableActivatedModComponents = false;
           state.availableActivatedModComponentIds = availableInstalledIds;
         },
       )
       .addCase(
-        checkAvailableInstalledExtensions.rejected,
+        checkAvailableActivatedModComponents.rejected,
         (state, { error }) => {
           state.isPendingAvailableActivatedModComponents = false;
           state.error = error;
@@ -996,8 +996,8 @@ export const editorSlice = createSlice({
 
 export const actions = {
   ...editorSlice.actions,
-  cloneActiveExtension,
-  checkAvailableInstalledExtensions,
+  cloneActiveModComponent,
+  checkAvailableActivatedModComponents,
   checkAvailableDraftModComponents,
   checkActiveModComponentAvailability,
 };

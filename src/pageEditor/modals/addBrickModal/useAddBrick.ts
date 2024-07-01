@@ -61,7 +61,7 @@ function makeBrickLevelAnalyses(): Analysis[] {
 function useAddBrick(): AddBrick {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
-  const activeExtension = useSelector(selectActiveModComponentFormState);
+  const activeModComponent = useSelector(selectActiveModComponentFormState);
   const pipelineMap = useSelector(selectPipelineMap);
 
   const addBlockLocation = useSelector(selectAddBlockLocation);
@@ -88,7 +88,7 @@ function useAddBrick(): AddBrick {
   );
 
   /**
-   * Create a copy of the active extension, add the brick, and then
+   * Create a copy of the active mod component, add the brick, and then
    * run brick-level analyses to determine if there are any issues
    * with adding the particular brick.
    */
@@ -98,9 +98,9 @@ function useAddBrick(): AddBrick {
         return {};
       }
 
-      // Add the block to a copy of the extension
+      // Add the block to a copy of the mod component
       const newBlock = await makeNewBrick(block);
-      const newExtension = produce(activeExtension, (draft) => {
+      const newModComponent = produce(activeModComponent, (draft) => {
         const pipeline = get(draft, addBlockLocation.path) as
           | BrickConfig[]
           | undefined;
@@ -115,7 +115,7 @@ function useAddBrick(): AddBrick {
       const analyses = makeBrickLevelAnalyses();
       const annotationSets = await Promise.all(
         analyses.map(async (analysis) => {
-          await analysis.run(newExtension);
+          await analysis.run(newModComponent);
           return analysis.getAnnotations();
         }),
       );
@@ -136,7 +136,7 @@ function useAddBrick(): AddBrick {
 
       return {};
     },
-    [activeExtension, addBlockLocation, makeNewBrick],
+    [activeModComponent, addBlockLocation, makeNewBrick],
   );
 
   const addBrick = useCallback(
@@ -158,12 +158,12 @@ function useAddBrick(): AddBrick {
       reportEvent(Events.BRICK_ADD, {
         brickId: brick.id,
         sessionId,
-        extensionId: activeExtension.uuid,
+        extensionId: activeModComponent.uuid,
         source: "PageEditor-BrickSearchModal",
       });
     },
     [
-      activeExtension?.uuid,
+      activeModComponent?.uuid,
       addBlockLocation,
       dispatch,
       makeNewBrick,

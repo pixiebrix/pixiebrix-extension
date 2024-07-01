@@ -15,29 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickPipeline, type BrickConfig } from "@/bricks/types";
-import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
+import testItRenders from "@/testUtils/testItRenders";
+import { ModHasUpdateIcon } from "./ModComponentIcons";
 
-export type TourConfig = {
-  /**
-   * The tour pipeline to run
-   * @since 1.7.19
-   */
-  tour: BrickPipeline | BrickConfig;
-};
+beforeAll(() => {
+  // When a FontAwesomeIcon gets a title, it generates a random id, which breaks the snapshot.
+  jest.spyOn(global.Math, "random").mockImplementation(() => 0);
+});
+afterAll(() => {
+  jest.clearAllMocks();
+});
 
-export interface TourDefinition extends StarterBrickDefinitionProp {
-  defaultOptions?: UnknownObject;
-
-  /**
-   * Automatically run the tour on matching pages.
-   * @since 1.7.19
-   */
-  autoRunSchedule?: "never" | "once" | "always";
-
-  /**
-   * Allow the user to manually run the tour. Causes the tour to be available in the Quick Bar.
-   * @since 1.7.19
-   */
-  allowUserRun?: boolean;
-}
+testItRenders({
+  testName: "ModHasUpdateIcon",
+  Component: ModHasUpdateIcon,
+  props: { title: "test" },
+});

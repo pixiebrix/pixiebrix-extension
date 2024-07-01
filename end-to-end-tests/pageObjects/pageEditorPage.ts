@@ -30,8 +30,7 @@ export type StarterBrickName =
   | "Button"
   | "Quick Bar Action"
   | "Dynamic Quick Bar"
-  | "Sidebar Panel"
-  | "Tour";
+  | "Sidebar Panel";
 
 /**
  * Page object for the Page Editor. Prefer the newPageEditorPage fixture in testBase.ts to directly creating an

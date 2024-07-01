@@ -19,7 +19,7 @@ import { uuidv4 } from "@/types/helpers";
 import { type Runtime } from "webextension-polyfill";
 import { patternToRegex } from "webext-patterns";
 import chromeP from "webext-polyfill-kinda";
-import { isBackground, isExtensionContext } from "webext-detect-page";
+import { isBackground, isExtensionContext } from "webext-detect";
 import { deserializeError } from "serialize-error";
 
 import {

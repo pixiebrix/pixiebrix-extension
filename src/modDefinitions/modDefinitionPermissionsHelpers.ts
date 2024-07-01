@@ -27,7 +27,7 @@ import { type Permissions } from "webextension-polyfill";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { collectIntegrationOriginPermissions } from "@/integrations/util/permissionsHelpers";
-import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
+import { collectModComponentPermissions } from "@/permissions/modComponentPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import type { Manifest } from "webextension-polyfill/namespaces/manifest";
 
@@ -53,10 +53,10 @@ async function collectModComponentDefinitionPermissions(
         //  provide the structure required by getBlocks. Really, the argument of extensionPermissions should be changed
         //  to not depend on irrelevant information, e.g., the uuid of the extension. This will also involve changing
         //  the type of getBlocks on the ExtensionPoint interface
-        inner = await collectExtensionPermissions(
+        inner = await collectModComponentPermissions(
           { config } as unknown as ModComponentBase,
           {
-            extensionPoint,
+            starterBrick: extensionPoint,
           },
         );
       } catch (error) {

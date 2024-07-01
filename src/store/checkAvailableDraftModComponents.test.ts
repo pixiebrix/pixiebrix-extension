@@ -105,7 +105,7 @@ describe("checkAvailableDraftModComponents", () => {
       );
 
     await store.dispatch(actions.checkAvailableDraftModComponents());
-    await store.dispatch(actions.checkAvailableInstalledExtensions());
+    await store.dispatch(actions.checkAvailableActivatedModComponents());
 
     const state = store.getState();
 

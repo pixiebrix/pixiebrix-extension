@@ -29,8 +29,8 @@ export type ModSidebarItem = {
 
 export type SidebarItem = ModSidebarItem | ModComponentSidebarItem;
 
-export function getLabel(extension: ModComponentFormState): string {
-  return extension.label ?? extension.extensionPoint.metadata.name;
+export function getLabel(modComponent: ModComponentFormState): string {
+  return modComponent.label ?? modComponent.extensionPoint.metadata.name;
 }
 
 export function isModComponentBase(

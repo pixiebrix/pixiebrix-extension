@@ -20,9 +20,9 @@ import { type TraceRecord } from "@/telemetry/trace";
 
 export type RuntimeState = {
   /**
-   * Mapping from extension id to its latest available trace.
+   * Mapping from mod component id to its latest available trace.
    */
-  extensionTraces: Record<UUID, TraceRecord[]>;
+  modComponentTraces: Record<UUID, TraceRecord[]>;
 };
 
 export type RuntimeRootState = {

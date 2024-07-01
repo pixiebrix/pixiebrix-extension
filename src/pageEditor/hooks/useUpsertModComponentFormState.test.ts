@@ -61,12 +61,12 @@ describe("useUpsertModComponentFormState", () => {
       options: defaultOptions,
     });
 
-    const extensions = selectActivatedModComponents(
+    const modComponents = selectActivatedModComponents(
       getReduxStore().getState() as { options: ModComponentState },
     );
 
-    expect(extensions).toHaveLength(1);
-    expect(extensions[0]).toEqual(
+    expect(modComponents).toHaveLength(1);
+    expect(modComponents[0]).toEqual(
       expect.objectContaining({
         id: modComponentFormState.uuid,
         extensionPointId: modComponentFormState.extensionPoint.metadata.id,
@@ -89,7 +89,7 @@ describe("useUpsertModComponentFormState", () => {
       options: { ...defaultOptions, pushToCloud: true },
     });
 
-    const extensions = selectActivatedModComponents(
+    const modComponents = selectActivatedModComponents(
       getReduxStore().getState() as { options: ModComponentState },
     );
 
@@ -99,8 +99,8 @@ describe("useUpsertModComponentFormState", () => {
       updateTimestamp: expectedUpdateDate.toISOString(),
     };
 
-    expect(extensions).toHaveLength(1);
-    expect(extensions[0]).toEqual(expect.objectContaining(expectedFields));
+    expect(modComponents).toHaveLength(1);
+    expect(modComponents[0]).toEqual(expect.objectContaining(expectedFields));
 
     expect(axiosMock.history.put).toHaveLength(1);
     expect(axiosMock.history.put[0].url).toBe(
