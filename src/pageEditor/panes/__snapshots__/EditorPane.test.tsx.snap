@@ -1845,7 +1845,7 @@ exports[`renders the first selected node 1`] = `
                   </div>
                   <label
                     class="label form-label"
-                    for="modComponent.blockPipeline.0.label"
+                    for="modComponent.brickPipeline.0.label"
                   >
                     Step Name
                   </label>
@@ -1854,8 +1854,8 @@ exports[`renders the first selected node 1`] = `
                   >
                     <input
                       class="form-control"
-                      id="modComponent.blockPipeline.0.label"
-                      name="modComponent.blockPipeline.0.label"
+                      id="modComponent.brickPipeline.0.label"
+                      name="modComponent.brickPipeline.0.label"
                       placeholder="Echo Brick"
                       value=""
                     />
@@ -1873,7 +1873,7 @@ exports[`renders the first selected node 1`] = `
                   </div>
                   <label
                     class="label form-label"
-                    for="modComponent.blockPipeline.0.outputKey"
+                    for="modComponent.brickPipeline.0.outputKey"
                   >
                     <span
                       class="span"
@@ -1918,8 +1918,8 @@ exports[`renders the first selected node 1`] = `
                       </div>
                       <input
                         class="form-control"
-                        id="modComponent.blockPipeline.0.outputKey"
-                        name="modComponent.blockPipeline.0.outputKey"
+                        id="modComponent.brickPipeline.0.outputKey"
+                        name="modComponent.brickPipeline.0.outputKey"
                         value="echoOutput"
                       />
                     </div>
@@ -1939,7 +1939,7 @@ exports[`renders the first selected node 1`] = `
               </div>
               <label
                 class="label form-label"
-                for="modComponent.blockPipeline.0.config.message"
+                for="modComponent.brickPipeline.0.config.message"
               >
                 Message
               </label>
@@ -1954,15 +1954,15 @@ exports[`renders the first selected node 1`] = `
                   >
                     <textarea
                       class="form-control"
-                      id="modComponent.blockPipeline.0.config.message"
-                      name="modComponent.blockPipeline.0.config.message"
+                      id="modComponent.brickPipeline.0.config.message"
+                      name="modComponent.brickPipeline.0.config.message"
                       rows="1"
                     />
                   </div>
                   <div
                     class="dropdown dropdown"
                     data-test-selected="Text"
-                    data-testid="toggle-modComponent.blockPipeline.0.config.message"
+                    data-testid="toggle-modComponent.brickPipeline.0.config.message"
                   >
                     <button
                       aria-expanded="false"
@@ -2140,7 +2140,7 @@ exports[`renders the first selected node 1`] = `
                     >
                       <textarea
                         class="form-control"
-                        name="modComponent.blockPipeline.0.comments"
+                        name="modComponent.brickPipeline.0.comments"
                         rows="1"
                       />
                     </div>

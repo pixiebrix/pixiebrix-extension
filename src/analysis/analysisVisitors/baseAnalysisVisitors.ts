@@ -51,7 +51,7 @@ export abstract class AnalysisVisitorABC
 
     this.visitStarterBrick(formState.starterBrick);
 
-    this.visitRootPipeline(formState.modComponent.blockPipeline, {
+    this.visitRootPipeline(formState.modComponent.brickPipeline, {
       starterBrickType: formState.type,
     });
   }

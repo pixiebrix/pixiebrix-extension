@@ -79,7 +79,7 @@ function fromNativeElement(
       },
     },
     modComponent: {
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -132,8 +132,8 @@ function selectModComponent(
   const { modComponent } = state;
   const config: TriggerConfig = {
     action: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),

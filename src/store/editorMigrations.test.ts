@@ -35,6 +35,8 @@ import {
   type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
+  type BaseModComponentStateV2,
+  type BaseModComponentStateV1,
 } from "@/pageEditor/baseFormStateTypes";
 import { type PersistedState } from "redux-persist";
 import {
@@ -198,11 +200,19 @@ describe("editor state migrations", () => {
     };
   }
 
+  function unmigrateModComponentStateV1(
+    state: BaseModComponentStateV2,
+  ): BaseModComponentStateV1 {
+    return {
+      blockPipeline: state.brickPipeline,
+    };
+  }
+
   function unmigrateFormStateV2(formState: BaseFormStateV3): BaseFormStateV2 {
     return {
       ...omit(formState, ["modMetadata", "modComponent", "starterBrick"]),
       recipe: formState.modMetadata,
-      extension: formState.modComponent,
+      extension: unmigrateModComponentStateV1(formState.modComponent),
       extensionPoint: formState.starterBrick,
     };
   }

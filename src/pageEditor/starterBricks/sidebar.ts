@@ -74,7 +74,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
     },
     modComponent: {
       heading,
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -107,8 +107,8 @@ function selectModComponent(
   const config: SidebarConfig = {
     heading: modComponent.heading,
     body: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),

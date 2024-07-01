@@ -31,7 +31,7 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 
 const reportEventMock = jest.mocked(reportEvent);
 
-const commentsFieldName = "modComponent.blockPipeline.0.comments";
+const commentsFieldName = "modComponent.brickPipeline.0.comments";
 const initialComments = "Hello world!";
 const formStateWithComments = menuItemFormStateFactory(
   {
@@ -48,7 +48,7 @@ const formStateWithNoComments = menuItemFormStateFactory({}, [
   brickConfigFactory(),
 ]);
 const renderCommentsTab = (formState = formStateWithComments) => {
-  const brickId = formState.modComponent.blockPipeline[0].id;
+  const brickId = formState.modComponent.brickPipeline[0].id;
   render(
     <Tab.Container defaultActiveKey={DataPanelTabKey.Comments}>
       <Formik onSubmit={jest.fn()} initialValues={formState}>
@@ -83,7 +83,7 @@ describe("CommentsTab", () => {
     // Trigger onBlur event for the textarea
     await userEvent.keyboard("{tab}");
     const expectedBrickId =
-      formStateWithNoComments.modComponent.blockPipeline[0].id;
+      formStateWithNoComments.modComponent.brickPipeline[0].id;
 
     expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {
       commentsLength: newComments.length,
@@ -105,7 +105,7 @@ describe("CommentsTab", () => {
     // Trigger onBlur event for the textarea
     await userEvent.keyboard("{tab}");
     const expectedBrickId =
-      formStateWithComments.modComponent.blockPipeline[0].id;
+      formStateWithComments.modComponent.brickPipeline[0].id;
 
     expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {
       commentsLength: expectedComments.length,

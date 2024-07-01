@@ -84,7 +84,7 @@ const renderWidget = (
       {({ values }) => (
         <>
           <IntegrationDependencyWidget
-            name="modComponent.blockPipeline.0.config.service"
+            name="modComponent.brickPipeline.0.config.service"
             schema={schema}
             {...props}
           />

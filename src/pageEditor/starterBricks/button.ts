@@ -79,7 +79,7 @@ function fromNativeElement(
     },
     modComponent: {
       caption: button.item.caption,
-      blockPipeline: [],
+      brickPipeline: [],
       dynamicCaption: false,
       onSuccess: true,
       synchronous: false,
@@ -126,8 +126,8 @@ function selectModComponent(
     caption: modComponent.caption,
     icon: modComponent.icon,
     action: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
     dynamicCaption: modComponent.dynamicCaption,
     onSuccess: modComponent.onSuccess,
     synchronous: modComponent.synchronous,

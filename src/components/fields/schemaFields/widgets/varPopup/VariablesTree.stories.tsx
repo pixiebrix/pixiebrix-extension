@@ -59,13 +59,13 @@ const knownVars = {
       },
     },
   },
-  "modComponent.blockPipeline.0": {
+  "modComponent.brickPipeline.0": {
     "@data": {},
   },
-  "modComponent.blockPipeline.1": {
+  "modComponent.brickPipeline.1": {
     "@ifElseOutput": {},
   },
-  "modComponent.blockPipeline.2": {
+  "modComponent.brickPipeline.2": {
     "@forEachOutput": {},
   },
 };

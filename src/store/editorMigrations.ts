@@ -21,6 +21,8 @@ import {
   type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
+  type BaseModComponentStateV1,
+  type BaseModComponentStateV2,
 } from "@/pageEditor/baseFormStateTypes";
 import {
   type IntegrationDependencyV1,
@@ -123,10 +125,18 @@ export function migrateEditorStateV2({
   };
 }
 
+function migrateModComponentStateV1(
+  state: BaseModComponentStateV1,
+): BaseModComponentStateV2 {
+  return {
+    brickPipeline: state.blockPipeline,
+  };
+}
+
 function migrateFormStateV2(state: BaseFormStateV2): BaseFormStateV3 {
   return {
     ...omit(state, "recipe", "extension", "extensionPoint"),
-    modComponent: state.extension,
+    modComponent: migrateModComponentStateV1(state.extension),
     starterBrick: state.extensionPoint,
     modMetadata: state.recipe,
   };

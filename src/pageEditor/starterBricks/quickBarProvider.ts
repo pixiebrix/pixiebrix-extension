@@ -72,7 +72,7 @@ function fromNativeElement(
     },
     modComponent: {
       rootAction: undefined,
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -103,8 +103,8 @@ function selectModComponent(
   const config: QuickBarProviderConfig = {
     rootAction: modComponent.rootAction,
     generator: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),

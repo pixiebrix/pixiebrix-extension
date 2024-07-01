@@ -210,7 +210,7 @@ export function makeInitialBaseState(
     permissions: emptyPermissionsFactory(),
     optionsArgs: {},
     modComponent: {
-      blockPipeline: [],
+      brickPipeline: [],
     },
     modMetadata: undefined,
   };
@@ -451,7 +451,7 @@ export async function modComponentWithNormalizedPipeline<
 ): Promise<BaseModComponentState & Omit<T, Prop>> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
-    blockPipeline: await normalizePipelineForEditor(
+    brickPipeline: await normalizePipelineForEditor(
       castArray(pipeline) as BrickPipeline,
     ),
     ...defaults,

@@ -63,7 +63,7 @@ function renderBrickConfiguration(
       dispatch(actions.setActiveModComponentId(initialValues.uuid));
       dispatch(
         actions.setActiveNodeId(
-          initialValues.modComponent.blockPipeline[0].instanceId,
+          initialValues.modComponent.brickPipeline[0].instanceId,
         ),
       );
     },
@@ -78,7 +78,7 @@ test("renders", async () => {
   ]);
   const { asFragment } = renderBrickConfiguration(
     <BrickConfiguration
-      name="modComponent.blockPipeline[0]"
+      name="modComponent.brickPipeline[0]"
       brickId={brick.id}
     />,
     initialState,
@@ -104,7 +104,7 @@ describe("shows root mode", () => {
     ]);
     renderBrickConfiguration(
       <BrickConfiguration
-        name="modComponent.blockPipeline[0]"
+        name="modComponent.brickPipeline[0]"
         brickId={brick.id}
       />,
       initialState,
@@ -125,7 +125,7 @@ describe("shows root mode", () => {
     ]);
     renderBrickConfiguration(
       <BrickConfiguration
-        name="modComponent.blockPipeline[0]"
+        name="modComponent.brickPipeline[0]"
         brickId={brick.id}
       />,
       initialState,
@@ -146,7 +146,7 @@ describe("shows root mode", () => {
     ]);
     renderBrickConfiguration(
       <BrickConfiguration
-        name="modComponent.blockPipeline[0]"
+        name="modComponent.brickPipeline[0]"
         brickId={brick.id}
       />,
       initialState,
@@ -185,7 +185,7 @@ test.each`
     ]);
     renderBrickConfiguration(
       <BrickConfiguration
-        name="modComponent.blockPipeline[0]"
+        name="modComponent.brickPipeline[0]"
         brickId={brick.id}
       />,
       initialState,

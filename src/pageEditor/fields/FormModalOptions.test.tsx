@@ -38,13 +38,13 @@ describe("FormModalOptions", () => {
 
     const initialValues = formStateFactory({
       modComponent: baseModComponentStateFactory({
-        blockPipeline: [brick],
+        brickPipeline: [brick],
       }),
     });
 
     render(
       <FormModalOptions
-        name="modComponent.blockPipeline.0"
+        name="modComponent.brickPipeline.0"
         configKey="config"
       />,
       {

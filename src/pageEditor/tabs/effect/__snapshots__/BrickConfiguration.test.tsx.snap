@@ -17,7 +17,7 @@ exports[`renders 1`] = `
       </div>
       <label
         class="label form-label"
-        for="modComponent.blockPipeline[0].config.message"
+        for="modComponent.brickPipeline[0].config.message"
       >
         Message
       </label>
@@ -32,15 +32,15 @@ exports[`renders 1`] = `
           >
             <textarea
               class="form-control"
-              id="modComponent.blockPipeline[0].config.message"
-              name="modComponent.blockPipeline[0].config.message"
+              id="modComponent.brickPipeline[0].config.message"
+              name="modComponent.brickPipeline[0].config.message"
               rows="1"
             />
           </div>
           <div
             class="dropdown dropdown"
             data-test-selected="Text"
-            data-testid="toggle-modComponent.blockPipeline[0].config.message"
+            data-testid="toggle-modComponent.brickPipeline[0].config.message"
           >
             <button
               aria-expanded="false"

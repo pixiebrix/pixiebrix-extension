@@ -75,7 +75,7 @@ function fromNativeElement(
     modComponent: {
       title,
       onSuccess: true,
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -115,8 +115,8 @@ function selectModComponent(
     title: modComponent.title,
     onSuccess: modComponent.onSuccess,
     action: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),

@@ -212,7 +212,7 @@ describe("selectVariables", () => {
       type: "actionPanel",
       modMetadata: null,
       modComponent: {
-        blockPipeline: [
+        brickPipeline: [
           {
             id: validateRegistryId("@pixiebrix/document"),
             config: {

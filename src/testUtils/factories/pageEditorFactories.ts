@@ -55,7 +55,7 @@ import { type BaseModComponentState } from "@/pageEditor/baseFormStateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const baseModComponentStateFactory = define<BaseModComponentState>({
-  blockPipeline: () => pipelineFactory(),
+  brickPipeline: () => pipelineFactory(),
 });
 
 type InternalFormStateOverride = ModComponentFormState & {
@@ -100,7 +100,7 @@ export const formStateFactory = (
     return internalFormStateFactory({
       ...override,
       modComponent: baseModComponentStateFactory({
-        blockPipeline: pipelineOverride,
+        brickPipeline: pipelineOverride,
       }),
     } as InternalFormStateOverride);
   }
@@ -265,7 +265,7 @@ export const formStateWithTraceDataFactory = define<{
 
     let outputKey = "" as OutputKey;
     let output: JsonObject = foundationOutputFactory();
-    return modComponent.blockPipeline.map((block, index) => {
+    return modComponent.brickPipeline.map((block, index) => {
       const context = output;
       outputKey = `output${index}` as OutputKey;
       output = {

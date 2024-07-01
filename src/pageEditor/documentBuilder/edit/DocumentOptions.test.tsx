@@ -49,7 +49,7 @@ describe("DocumentOptions", () => {
   ): ModComponentFormState {
     return formStateFactory({
       modComponent: baseModComponentStateFactory({
-        blockPipeline: [
+        brickPipeline: [
           brickConfigFactory({
             config: {
               body: documentElements,
@@ -67,7 +67,7 @@ describe("DocumentOptions", () => {
   ) {
     return render(
       <DocumentOptions
-        name="modComponent.blockPipeline.0"
+        name="modComponent.brickPipeline.0"
         configKey="config"
       />,
       {
@@ -77,7 +77,7 @@ describe("DocumentOptions", () => {
           dispatch(actions.setActiveModComponentId(formState.uuid));
           dispatch(
             actions.setActiveNodeId(
-              formState.modComponent.blockPipeline[0].instanceId,
+              formState.modComponent.brickPipeline[0].instanceId,
             ),
           );
           dispatch(
@@ -186,7 +186,7 @@ describe("DocumentOptions", () => {
       const formState = formStateFactory({
         integrationDependencies,
         modComponent: baseModComponentStateFactory({
-          blockPipeline: [
+          brickPipeline: [
             brickConfigFactory({ config: documentWithButtonConfig }),
           ],
         }),
@@ -232,7 +232,7 @@ describe("DocumentOptions", () => {
 
       // The form state should be updated
       expect(
-        getFormState().modComponent.blockPipeline[0].config.stylesheets,
+        getFormState().modComponent.brickPipeline[0].config.stylesheets,
       ).toStrictEqual([
         toExpression("nunjucks", "https://example.com/stylesheet.css"),
       ]);

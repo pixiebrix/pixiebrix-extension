@@ -27,7 +27,7 @@ const containsMock = jest.mocked(browser.permissions.contains);
 
 function brickModComponentFactory(url: string) {
   const formState = triggerFormStateFactory();
-  formState.modComponent.blockPipeline = [
+  formState.modComponent.brickPipeline = [
     brickConfigFactory({
       id: RemoteMethod.BLOCK_ID,
       config: {
@@ -57,7 +57,7 @@ describe("requestPermissionAnalysis", () => {
         message:
           "PixieBrix does not support calls using http: because they are insecure. Please use https: instead.",
         position: {
-          path: "modComponent.blockPipeline.0.config.url",
+          path: "modComponent.brickPipeline.0.config.url",
         },
       },
     ]);
@@ -76,7 +76,7 @@ describe("requestPermissionAnalysis", () => {
         type: "error",
         message: "Invalid URL: https://there is a space in here",
         position: {
-          path: "modComponent.blockPipeline.0.config.url",
+          path: "modComponent.brickPipeline.0.config.url",
         },
       },
     ]);
@@ -107,7 +107,7 @@ describe("requestPermissionAnalysis", () => {
         message:
           "Insufficient browser permissions to make request. Specify an Integration to access the API, or add an Extra Permissions rule to the starter brick.",
         position: {
-          path: "modComponent.blockPipeline.0.config.url",
+          path: "modComponent.brickPipeline.0.config.url",
         },
       },
     ]);

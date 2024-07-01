@@ -55,7 +55,7 @@ describe("draftModComponentStorage", () => {
     const formState = formStateFactory();
     const nodeUIStates: Record<UUID, NodeUIState> = {
       [formState.uuid]: {
-        nodeId: formState.modComponent.blockPipeline[0].instanceId,
+        nodeId: formState.modComponent.brickPipeline[0].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -70,8 +70,8 @@ describe("draftModComponentStorage", () => {
       },
       brickPipelineUIStateById: {
         [formState.uuid]: {
-          pipelineMap: getPipelineMap(formState.modComponent.blockPipeline),
-          activeNodeId: formState.modComponent.blockPipeline[0].instanceId,
+          pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
+          activeNodeId: formState.modComponent.brickPipeline[0].instanceId,
           nodeUIStates,
         },
       },
@@ -92,7 +92,7 @@ describe("draftModComponentStorage", () => {
     const inactiveFormState = formStateFactory();
     const inactiveNodeUIStates: Record<UUID, NodeUIState> = {
       [inactiveFormState.uuid]: {
-        nodeId: inactiveFormState.modComponent.blockPipeline[1].instanceId,
+        nodeId: inactiveFormState.modComponent.brickPipeline[1].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -101,7 +101,7 @@ describe("draftModComponentStorage", () => {
     const activeFormState = formStateFactory();
     const activeNodeUIStates: Record<UUID, NodeUIState> = {
       [activeFormState.uuid]: {
-        nodeId: activeFormState.modComponent.blockPipeline[0].instanceId,
+        nodeId: activeFormState.modComponent.brickPipeline[0].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -117,10 +117,10 @@ describe("draftModComponentStorage", () => {
       brickPipelineUIStateById: {
         [activeFormState.uuid]: {
           pipelineMap: getPipelineMap(
-            activeFormState.modComponent.blockPipeline,
+            activeFormState.modComponent.brickPipeline,
           ),
           activeNodeId:
-            activeFormState.modComponent.blockPipeline[0].instanceId,
+            activeFormState.modComponent.brickPipeline[0].instanceId,
           nodeUIStates: activeNodeUIStates,
         },
       },
@@ -136,10 +136,10 @@ describe("draftModComponentStorage", () => {
         ...baseState.brickPipelineUIStateById,
         [inactiveFormState.uuid]: {
           pipelineMap: getPipelineMap(
-            inactiveFormState.modComponent.blockPipeline,
+            inactiveFormState.modComponent.brickPipeline,
           ),
           activeNodeId:
-            inactiveFormState.modComponent.blockPipeline[0].instanceId,
+            inactiveFormState.modComponent.brickPipeline[0].instanceId,
           nodeUIStates: inactiveNodeUIStates,
         },
       },
@@ -166,7 +166,7 @@ describe("draftModComponentStorage", () => {
     });
     const formState1NodeUIStates: Record<UUID, NodeUIState> = {
       [formState1.uuid]: {
-        nodeId: formState1.modComponent.blockPipeline[0].instanceId,
+        nodeId: formState1.modComponent.brickPipeline[0].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -177,7 +177,7 @@ describe("draftModComponentStorage", () => {
     });
     const formState2NodeUIStates: Record<UUID, NodeUIState> = {
       [formState2.uuid]: {
-        nodeId: formState2.modComponent.blockPipeline[0].instanceId,
+        nodeId: formState2.modComponent.brickPipeline[0].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -186,7 +186,7 @@ describe("draftModComponentStorage", () => {
     const formState3 = formStateFactory();
     const formState3NodeUIStates: Record<UUID, NodeUIState> = {
       [formState3.uuid]: {
-        nodeId: formState3.modComponent.blockPipeline[1].instanceId,
+        nodeId: formState3.modComponent.brickPipeline[1].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -197,8 +197,8 @@ describe("draftModComponentStorage", () => {
       modComponentFormStates: [formState3],
       brickPipelineUIStateById: {
         [formState3.uuid]: {
-          pipelineMap: getPipelineMap(formState3.modComponent.blockPipeline),
-          activeNodeId: formState3.modComponent.blockPipeline[0].instanceId,
+          pipelineMap: getPipelineMap(formState3.modComponent.brickPipeline),
+          activeNodeId: formState3.modComponent.brickPipeline[0].instanceId,
           nodeUIStates: formState3NodeUIStates,
         },
       },
@@ -224,13 +224,13 @@ describe("draftModComponentStorage", () => {
       brickPipelineUIStateById: {
         ...baseState.brickPipelineUIStateById,
         [formState1.uuid]: {
-          pipelineMap: getPipelineMap(formState1.modComponent.blockPipeline),
-          activeNodeId: formState1.modComponent.blockPipeline[1].instanceId,
+          pipelineMap: getPipelineMap(formState1.modComponent.brickPipeline),
+          activeNodeId: formState1.modComponent.brickPipeline[1].instanceId,
           nodeUIStates: formState1NodeUIStates,
         },
         [formState2.uuid]: {
-          pipelineMap: getPipelineMap(formState2.modComponent.blockPipeline),
-          activeNodeId: formState2.modComponent.blockPipeline[0].instanceId,
+          pipelineMap: getPipelineMap(formState2.modComponent.brickPipeline),
+          activeNodeId: formState2.modComponent.brickPipeline[0].instanceId,
           nodeUIStates: formState2NodeUIStates,
         },
       },
@@ -258,7 +258,7 @@ describe("draftModComponentStorage", () => {
     });
     const formState1NodeUIStates: Record<UUID, NodeUIState> = {
       [formState1.uuid]: {
-        nodeId: formState1.modComponent.blockPipeline[0].instanceId,
+        nodeId: formState1.modComponent.brickPipeline[0].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -269,7 +269,7 @@ describe("draftModComponentStorage", () => {
     });
     const formState2NodeUIStates: Record<UUID, NodeUIState> = {
       [formState2.uuid]: {
-        nodeId: formState2.modComponent.blockPipeline[0].instanceId,
+        nodeId: formState2.modComponent.brickPipeline[0].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -278,7 +278,7 @@ describe("draftModComponentStorage", () => {
     const formState3 = formStateFactory();
     const formState3NodeUIStates: Record<UUID, NodeUIState> = {
       [formState3.uuid]: {
-        nodeId: formState3.modComponent.blockPipeline[1].instanceId,
+        nodeId: formState3.modComponent.brickPipeline[1].instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -290,8 +290,8 @@ describe("draftModComponentStorage", () => {
       modComponentFormStates: [formState3],
       brickPipelineUIStateById: {
         [formState3.uuid]: {
-          pipelineMap: getPipelineMap(formState3.modComponent.blockPipeline),
-          activeNodeId: formState3.modComponent.blockPipeline[0].instanceId,
+          pipelineMap: getPipelineMap(formState3.modComponent.brickPipeline),
+          activeNodeId: formState3.modComponent.brickPipeline[0].instanceId,
           nodeUIStates: formState3NodeUIStates,
         },
       },
@@ -316,13 +316,13 @@ describe("draftModComponentStorage", () => {
       brickPipelineUIStateById: {
         ...baseState.brickPipelineUIStateById,
         [formState1.uuid]: {
-          pipelineMap: getPipelineMap(formState1.modComponent.blockPipeline),
-          activeNodeId: formState1.modComponent.blockPipeline[1].instanceId,
+          pipelineMap: getPipelineMap(formState1.modComponent.brickPipeline),
+          activeNodeId: formState1.modComponent.brickPipeline[1].instanceId,
           nodeUIStates: formState1NodeUIStates,
         },
         [formState2.uuid]: {
-          pipelineMap: getPipelineMap(formState2.modComponent.blockPipeline),
-          activeNodeId: formState2.modComponent.blockPipeline[0].instanceId,
+          pipelineMap: getPipelineMap(formState2.modComponent.brickPipeline),
+          activeNodeId: formState2.modComponent.brickPipeline[0].instanceId,
           nodeUIStates: formState2NodeUIStates,
         },
       },

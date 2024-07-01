@@ -135,8 +135,8 @@ const cloneActiveModComponent = createAsyncThunk<
       // Remove from its mod, if any (the user can add it to any mod after creation)
       delete draft.modMetadata;
       // Re-generate instance IDs for all the bricks in the mod component
-      draft.modComponent.blockPipeline = await normalizePipelineForEditor(
-        draft.modComponent.blockPipeline,
+      draft.modComponent.brickPipeline = await normalizePipelineForEditor(
+        draft.modComponent.brickPipeline,
       );
     },
   );

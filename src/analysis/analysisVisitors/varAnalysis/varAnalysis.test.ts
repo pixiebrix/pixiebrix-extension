@@ -159,7 +159,7 @@ describe("Collecting available vars", () => {
       const knownVars = analysis.getKnownVars();
       expect(knownVars.size).toBe(1);
 
-      const foundationKnownVars = knownVars.get("modComponent.blockPipeline.0");
+      const foundationKnownVars = knownVars.get("modComponent.brickPipeline.0");
       expect(foundationKnownVars.isVariableDefined("@input.title")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@input.url")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@input.lang")).toBeTrue();
@@ -188,13 +188,13 @@ describe("Collecting available vars", () => {
 
       const block0Vars = analysis
         .getKnownVars()
-        .get("modComponent.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       expect(block0Vars.isVariableDefined("@foo")).toBeFalse();
 
       const block1Vars = analysis
         .getKnownVars()
-        .get("modComponent.blockPipeline.1");
+        .get("modComponent.brickPipeline.1");
 
       expect(block1Vars.isVariableDefined("@foo")).toBeTrue();
 
@@ -215,13 +215,13 @@ describe("Collecting available vars", () => {
 
       const block0Vars = analysis
         .getKnownVars()
-        .get("modComponent.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       expect(block0Vars.isVariableDefined("@foo")).toBeFalse();
 
       const block1Vars = analysis
         .getKnownVars()
-        .get("modComponent.blockPipeline.1");
+        .get("modComponent.brickPipeline.1");
 
       expect(block1Vars.isVariableDefined("@foo")).toBeTrue();
 
@@ -240,7 +240,7 @@ describe("Collecting available vars", () => {
 
       const foundationKnownVars = analysis
         .getKnownVars()
-        .get("modComponent.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       expect(foundationKnownVars.isVariableDefined("@mod")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@mod.foo")).toBeTrue();
@@ -260,7 +260,7 @@ describe("Collecting available vars", () => {
 
       const foundationKnownVars = analysis
         .getKnownVars()
-        .get("modComponent.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       console.log(JSON.stringify(foundationKnownVars));
 
@@ -290,7 +290,7 @@ describe("Collecting available vars", () => {
 
       const foundationKnownVars = analysis
         .getKnownVars()
-        .get("modComponent.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       expect(foundationKnownVars.isVariableDefined("@mod")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@mod.foo")).toBeTrue();
@@ -319,7 +319,7 @@ describe("Collecting available vars", () => {
 
       const foundationKnownVars = analysis
         .getKnownVars()
-        .get("modComponent.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       expect(foundationKnownVars.isVariableDefined("@options")).toBeFalse();
     });
@@ -354,7 +354,7 @@ describe("Collecting available vars", () => {
 
       const foundationKnownVars = analysis
         .getKnownVars()
-        .get("modComponent.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       // A variable defined in the mod
       expect(foundationKnownVars.isVariableDefined("@options.foo")).toBeTrue();
@@ -391,7 +391,7 @@ describe("Collecting available vars", () => {
       const knownVars = analysis.getKnownVars();
 
       const optionsVars = knownVars
-        .get("modComponent.blockPipeline.0")
+        .get("modComponent.brickPipeline.0")
         .getMap()["options:test/mod"]["@options"];
 
       expect(optionsVars.foo[SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
@@ -424,7 +424,7 @@ describe("Collecting available vars", () => {
       const knownVars = analysis.getKnownVars();
 
       const optionsVars = knownVars
-        .get("modComponent.blockPipeline.0")
+        .get("modComponent.brickPipeline.0")
         .getMap()["options:test/mod"]["@options"];
 
       expect(optionsVars.foo[SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
@@ -444,7 +444,7 @@ describe("Collecting available vars", () => {
       jest.mocked(blockRegistry.allTyped).mockResolvedValue(
         new Map([
           [
-            formState.modComponent.blockPipeline[0].id,
+            formState.modComponent.brickPipeline[0].id,
             {
               block: {
                 // HtmlReader's output schema, see @/bricks/readers/HtmlReader.ts
@@ -457,7 +457,7 @@ describe("Collecting available vars", () => {
 
       await analysis.run(formState);
 
-      return analysis.getKnownVars().get("modComponent.blockPipeline.1");
+      return analysis.getKnownVars().get("modComponent.brickPipeline.1");
     }
 
     test("reads output schema of a block when defined", async () => {
@@ -741,16 +741,16 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("modComponent.blockPipeline.1")
+          .get("modComponent.brickPipeline.1")
           .isVariableDefined("@ifOutput"),
       ).toBeTrue();
     });
 
     test.each([
-      "modComponent.blockPipeline.0.config.if.__value__.0",
-      "modComponent.blockPipeline.0.config.if.__value__.1",
-      "modComponent.blockPipeline.0.config.else.__value__.0",
-      "modComponent.blockPipeline.0.config.else.__value__.1",
+      "modComponent.brickPipeline.0.config.if.__value__.0",
+      "modComponent.brickPipeline.0.config.if.__value__.1",
+      "modComponent.brickPipeline.0.config.else.__value__.0",
+      "modComponent.brickPipeline.0.config.else.__value__.1",
     ])(
       "doesn't add if-else output to sub pipelines (%s)",
       async (blockPath) => {
@@ -763,7 +763,7 @@ describe("Collecting available vars", () => {
     test("doesn't leak sub pipeline outputs", async () => {
       const block1Vars = analysis
         .getKnownVars()
-        .get("modComponent.blockPipeline.1");
+        .get("modComponent.brickPipeline.1");
       expect(block1Vars.isVariableDefined("@foo")).toBeFalse();
       expect(block1Vars.isVariableDefined("@bar")).toBeFalse();
     });
@@ -802,7 +802,7 @@ describe("Collecting available vars", () => {
       await analysis.run(formState);
 
       const knownVars = analysis.getKnownVars();
-      const varMap = knownVars.get("modComponent.blockPipeline.1");
+      const varMap = knownVars.get("modComponent.brickPipeline.1");
 
       // Check optional chaining handled for first variable
       expect(varMap.isVariableDefined("@input")).toBeTrue();
@@ -849,7 +849,7 @@ describe("Collecting available vars", () => {
     test("adds the list element key list body", () => {
       const knownVars = analysis.getKnownVars();
       const listElementVarMap = knownVars.get(
-        "modComponent.blockPipeline.0.config.body.0.config.element.__value__",
+        "modComponent.brickPipeline.0.config.body.0.config.element.__value__",
       );
 
       expect(listElementVarMap.isVariableDefined("@element")).toBeTrue();
@@ -865,7 +865,7 @@ describe("Collecting available vars", () => {
         'Variable "@foo" might not be defined',
       );
       expect(annotations[0].position.path).toBe(
-        "modComponent.blockPipeline.0.config.body.0.config.element.__value__.config.text",
+        "modComponent.brickPipeline.0.config.body.0.config.element.__value__.config.text",
       );
 
       // Not available in to the peer element to the list
@@ -873,7 +873,7 @@ describe("Collecting available vars", () => {
         'Variable "@element" might not be defined',
       );
       expect(annotations[1].position.path).toBe(
-        "modComponent.blockPipeline.0.config.body.1.config.text",
+        "modComponent.brickPipeline.0.config.body.1.config.text",
       );
     });
   });
@@ -917,7 +917,7 @@ describe("Collecting available vars", () => {
     test("adds the list element key list body", () => {
       const knownVars = analysis.getKnownVars();
       const buttonPipelineVarMap = knownVars.get(
-        "modComponent.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0",
+        "modComponent.brickPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0",
       );
 
       expect(buttonPipelineVarMap.isVariableDefined("@input")).toBeTrue();
@@ -934,7 +934,7 @@ describe("Collecting available vars", () => {
         message: 'Variable "@foo" might not be defined',
         type: "warning",
         position: {
-          path: "modComponent.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0.config.text",
+          path: "modComponent.brickPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0.config.text",
         },
         detail: {
           expression: expect.toBeObject(),
@@ -968,7 +968,7 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("modComponent.blockPipeline.0.config.except.__value__.0")
+          .get("modComponent.brickPipeline.0.config.except.__value__.0")
           .isVariableDefined("@error"),
       ).toBeTrue();
     });
@@ -977,7 +977,7 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("modComponent.blockPipeline.0.config.try.__value__.0")
+          .get("modComponent.brickPipeline.0.config.try.__value__.0")
           .isVariableDefined("@error"),
       ).toBeFalse();
     });
@@ -1008,7 +1008,7 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("modComponent.blockPipeline.0.config.body.__value__.0")
+          .get("modComponent.brickPipeline.0.config.body.__value__.0")
           .isVariableDefined("@element"),
       ).toBeTrue();
     });
@@ -1044,14 +1044,14 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("modComponent.blockPipeline.1")
+          .get("modComponent.brickPipeline.1")
           .isVariableDefined("@forEachOutput"),
       ).toBeTrue();
     });
 
     test.each([
-      "modComponent.blockPipeline.0.config.body.__value__.0",
-      "modComponent.blockPipeline.0.config.body.__value__.1",
+      "modComponent.brickPipeline.0.config.body.__value__.0",
+      "modComponent.brickPipeline.0.config.body.__value__.1",
     ])("doesn't add for-each output to sub pipelines (%s)", (blockPath) => {
       expect(
         analysis
@@ -1065,7 +1065,7 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("modComponent.blockPipeline.1")
+          .get("modComponent.brickPipeline.1")
           .isVariableDefined("@foo"),
       ).toBeFalse();
     });
@@ -1074,7 +1074,7 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("modComponent.blockPipeline.0.config.body.__value__.0")
+          .get("modComponent.brickPipeline.0.config.body.__value__.0")
           .isVariableDefined("@element"),
       ).toBeTrue();
     });
@@ -1083,18 +1083,18 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("modComponent.blockPipeline.1")
+          .get("modComponent.brickPipeline.1")
           .isVariableDefined("@element"),
       ).toBeFalse();
     });
 
     test.each([
-      "modComponent.blockPipeline.0.config.body.__value__.0",
-      "modComponent.blockPipeline.0.config.body.__value__.1",
+      "modComponent.brickPipeline.0.config.body.__value__.0",
+      "modComponent.brickPipeline.0.config.body.__value__.1",
     ])("source of the @element key if the For-Each block (%s)", (blockPath) => {
       const blockVars = analysis.getKnownVars().get(blockPath).getMap();
 
-      const expectedForEachBlockPath = "modComponent.blockPipeline.0";
+      const expectedForEachBlockPath = "modComponent.brickPipeline.0";
 
       // Find the source that provided the @element variable
       const actualForEachBlockPath = Object.entries(blockVars).find(
@@ -1147,7 +1147,7 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("modComponent.blockPipeline.0.config.onSubmit.__value__.0")
+          .get("modComponent.brickPipeline.0.config.onSubmit.__value__.0")
           .isVariableDefined("@values"),
       ).toBeTrue();
     });
@@ -1155,7 +1155,7 @@ describe("Collecting available vars", () => {
     test("adds the form fields to the onsubmit handler", () => {
       const blockVars = analysis
         .getKnownVars()
-        .get("modComponent.blockPipeline.0.config.onSubmit.__value__.0");
+        .get("modComponent.brickPipeline.0.config.onSubmit.__value__.0");
 
       expect(blockVars.isVariableDefined("@values.foo")).toBeTrue();
       expect(blockVars.isVariableDefined("@values.bar")).toBeFalse();
@@ -1203,7 +1203,7 @@ describe("Invalid template", () => {
     // Only the second (index = 1) block should be annotated
     expect(annotations).toHaveLength(1);
     expect(annotations[0].position.path).toBe(
-      "modComponent.blockPipeline.1.config.message",
+      "modComponent.brickPipeline.1.config.message",
     );
   });
 });

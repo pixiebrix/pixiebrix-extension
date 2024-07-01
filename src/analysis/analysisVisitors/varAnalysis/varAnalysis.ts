@@ -697,7 +697,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       blockOutputVars: new VarMap(),
     });
 
-    this.visitRootPipeline(formState.modComponent.blockPipeline, {
+    this.visitRootPipeline(formState.modComponent.brickPipeline, {
       starterBrickType: formState.type,
     });
   }

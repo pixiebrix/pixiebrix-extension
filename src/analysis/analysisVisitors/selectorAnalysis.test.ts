@@ -166,7 +166,7 @@ describe("SelectorAnalysis", () => {
 
     const formState = triggerFormStateFactory();
 
-    formState.modComponent.blockPipeline = [
+    formState.modComponent.brickPipeline = [
       {
         id: highlight.id,
         config: {
@@ -187,7 +187,7 @@ describe("SelectorAnalysis", () => {
         analysisId: "selector",
         message: expect.stringMatching(/Selector appears to contain generated/),
         position: {
-          path: "modComponent.blockPipeline.0.config.rootSelector",
+          path: "modComponent.brickPipeline.0.config.rootSelector",
         },
         type: "warning",
       },
@@ -195,7 +195,7 @@ describe("SelectorAnalysis", () => {
         analysisId: "selector",
         message: expect.stringMatching(/Selector appears to contain generated/),
         position: {
-          path: "modComponent.blockPipeline.0.config.elements.0.selector",
+          path: "modComponent.brickPipeline.0.config.elements.0.selector",
         },
         type: "warning",
       },
@@ -207,7 +207,7 @@ describe("SelectorAnalysis", () => {
 
     const formState = triggerFormStateFactory();
 
-    formState.modComponent.blockPipeline = [
+    formState.modComponent.brickPipeline = [
       {
         id: reader.id,
         config: {
@@ -228,7 +228,7 @@ describe("SelectorAnalysis", () => {
         analysisId: "selector",
         message: expect.stringMatching(/Selector appears to contain generated/),
         position: {
-          path: "modComponent.blockPipeline.0.config.selectors.simple",
+          path: "modComponent.brickPipeline.0.config.selectors.simple",
         },
         type: "warning",
       },
@@ -236,7 +236,7 @@ describe("SelectorAnalysis", () => {
         analysisId: "selector",
         message: expect.stringMatching(/Selector appears to contain generated/),
         position: {
-          path: "modComponent.blockPipeline.0.config.selectors.complex.selector",
+          path: "modComponent.brickPipeline.0.config.selectors.complex.selector",
         },
         type: "warning",
       },

@@ -71,7 +71,7 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
     },
     modComponent: {
       title,
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -111,8 +111,8 @@ function selectModComponent(
     title: modComponent.title,
     icon: modComponent.icon,
     action: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),

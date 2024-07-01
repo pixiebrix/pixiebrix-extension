@@ -45,7 +45,7 @@ export function ensureBrickPipelineUIState(
       makeInitialBrickPipelineUIState();
     const pipeline = state.modComponentFormStates.find(
       (x) => x.uuid === modComponentId,
-    )?.modComponent.blockPipeline;
+    )?.modComponent.brickPipeline;
 
     assertNotNullish(
       pipeline,
@@ -77,7 +77,7 @@ export function syncNodeUIStates(
   );
 
   const pipelineMap = getPipelineMap(
-    modComponentFormState.modComponent.blockPipeline,
+    modComponentFormState.modComponent.brickPipeline,
   );
 
   brickPipelineUIState.pipelineMap = pipelineMap;

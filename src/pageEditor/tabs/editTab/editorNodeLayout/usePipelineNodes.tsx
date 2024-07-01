@@ -226,7 +226,7 @@ const usePipelineNodes = (): {
   const starterBrickType = activeModComponentFormState.type;
   const { label: starterBrickLabel, icon: starterBrickIcon } =
     ADAPTERS.get(starterBrickType);
-  const rootPipeline = activeModComponentFormState.modComponent.blockPipeline;
+  const rootPipeline = activeModComponentFormState.modComponent.brickPipeline;
   const rootPipelineFlavor = getRootPipelineFlavor(starterBrickType);
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 

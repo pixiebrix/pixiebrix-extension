@@ -98,7 +98,7 @@ class CollectEventNamesVisitor extends PipelineVisitor {
   ): EventNameAnalysisResult {
     const visitor = new CollectEventNamesVisitor();
 
-    visitor.visitRootPipeline(formState.modComponent.blockPipeline);
+    visitor.visitRootPipeline(formState.modComponent.brickPipeline);
     visitor.visitStarterBrick(formState.starterBrick);
 
     return visitor.result;

@@ -29,7 +29,7 @@ const position: BrickPosition = {
 
 function brickModComponentFactory(expression: Expression<unknown>) {
   const formState = triggerFormStateFactory();
-  formState.modComponent.blockPipeline = [
+  formState.modComponent.brickPipeline = [
     brickConfigFactory({
       id: RemoteMethod.BLOCK_ID,
       config: {

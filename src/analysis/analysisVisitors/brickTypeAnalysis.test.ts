@@ -38,7 +38,7 @@ describe("BrickTypeAnalysis", () => {
   test("disallow effect in renderer", async () => {
     const formState = sidebarPanelFormStateFactory();
 
-    formState.modComponent.blockPipeline = [
+    formState.modComponent.brickPipeline = [
       createNewConfiguredBrick(ALERT_EFFECT_ID),
       createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
     ];
@@ -57,7 +57,7 @@ describe("BrickTypeAnalysis", () => {
   ])("allow %s in renderer", async (brickId) => {
     const formState = sidebarPanelFormStateFactory();
 
-    formState.modComponent.blockPipeline = [
+    formState.modComponent.brickPipeline = [
       createNewConfiguredBrick(brickId),
       createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
     ];

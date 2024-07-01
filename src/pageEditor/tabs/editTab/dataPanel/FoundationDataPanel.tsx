@@ -38,10 +38,10 @@ const FoundationDataPanel: React.FC = () => {
     selectActiveModComponentFormState,
   );
   const {
-    modComponent: { blockPipeline },
+    modComponent: { brickPipeline },
     starterBrick,
   } = activeModComponentFormState;
-  const firstBlockInstanceId = blockPipeline[0]?.instanceId;
+  const firstBlockInstanceId = brickPipeline[0]?.instanceId;
 
   const { record: firstBlockTraceRecord } = useSelector(
     makeSelectBrickTrace(firstBlockInstanceId),

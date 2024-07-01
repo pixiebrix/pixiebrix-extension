@@ -76,7 +76,7 @@ export function selectIntegrationDependencyVariables(
 ): Set<string> {
   const variables = new Set<string>();
   deepFindIntegrationDependencyVariables(
-    state.modComponent.blockPipeline,
+    state.modComponent.brickPipeline,
     variables,
   );
   return variables;

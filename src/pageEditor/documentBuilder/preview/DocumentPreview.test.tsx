@@ -52,7 +52,7 @@ function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
     const [activeElement, setActiveElement] = useState<string | null>(null);
     return (
       <DocumentPreview
-        documentBodyName="modComponent.blockPipeline[0].config.body"
+        documentBodyName="modComponent.brickPipeline[0].config.body"
         activeElement={activeElement}
         setActiveElement={setActiveElement}
       />
@@ -66,7 +66,7 @@ function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
       dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
         actions.setActiveNodeId(
-          formState.modComponent.blockPipeline[0].instanceId,
+          formState.modComponent.brickPipeline[0].instanceId,
         ),
       );
     },
@@ -176,14 +176,14 @@ describe("Show live preview", () => {
       const [activeElement, setActiveElement] = useState<string | null>(null);
       return (
         <DocumentPreview
-          documentBodyName="modComponent.blockPipeline[0].config.body.__value__[0].config.body"
+          documentBodyName="modComponent.brickPipeline[0].config.body.__value__[0].config.body"
           activeElement={activeElement}
           setActiveElement={setActiveElement}
         />
       );
     };
 
-    const pipelineField = formState.modComponent.blockPipeline[0].config
+    const pipelineField = formState.modComponent.brickPipeline[0].config
       .body as PipelineExpression;
 
     return render(<PreviewContainer />, {
