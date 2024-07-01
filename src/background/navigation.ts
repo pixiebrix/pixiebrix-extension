@@ -17,7 +17,10 @@
 
 import { type Target } from "@/types/messengerTypes";
 import { canAccessTab } from "@/permissions/permissionsUtils";
-import { isScriptableUrl, canAccessTab as canInjectTab } from "webext-content-scripts";
+import {
+  isScriptableUrl,
+  canAccessTab as canInjectTab,
+} from "webext-content-scripts";
 import { debounce } from "lodash";
 import { getTabUrl } from "webext-tools";
 import { isTargetReady } from "@/contentScript/ready";
