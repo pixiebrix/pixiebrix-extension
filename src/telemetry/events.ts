@@ -179,6 +179,7 @@ export const reservedKeys = [
   "extensionPointId",
   "extensions",
   "recipeId",
+  "recipeToActivate",
   "serviceId",
   "serviceVersion",
 ] as const;

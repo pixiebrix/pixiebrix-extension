@@ -169,7 +169,7 @@ export async function deactivateAllDeployedMods(): Promise<void> {
     optionsState,
   });
 
-  reportEvent("DeploymentDeactivateAll", {
+  reportEvent(Events.DEPLOYMENT_DEACTIVATE_ALL, {
     auto: true,
     deployments: modComponentsToDeactivate.map((x) => x._deployment.id),
   });

@@ -41,7 +41,7 @@ import * as registry from "@/registry/packageRegistry";
 import serviceRegistry from "@/integrations/registry";
 import { getUserData } from "@/auth/authStorage";
 import {
-  clearExtensionDebugLogs,
+  clearModComponentDebugLogs,
   clearLog,
   clearLogs,
   recordError,
@@ -108,7 +108,7 @@ declare global {
     RECORD_ERROR: typeof recordError;
     CLEAR_LOGS: typeof clearLogs;
     CLEAR_LOG: typeof clearLog;
-    CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
+    CLEAR_EXTENSION_DEBUG_LOGS: typeof clearModComponentDebugLogs;
 
     LOCATE_SERVICES_FOR_ID: typeof locator.locateAllForService;
     LOCATE_SERVICE: typeof locator.locate;
@@ -181,7 +181,7 @@ export default function registerMessenger(): void {
     RECORD_ERROR: recordError,
     CLEAR_LOGS: clearLogs,
     CLEAR_LOG: clearLog,
-    CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
+    CLEAR_EXTENSION_DEBUG_LOGS: clearModComponentDebugLogs,
 
     LOCATE_SERVICES_FOR_ID: locator.locateAllForService.bind(locator),
     LOCATE_SERVICE: locator.locate.bind(locator),

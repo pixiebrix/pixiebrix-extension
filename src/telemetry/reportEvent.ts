@@ -49,10 +49,6 @@ function transformEventData(data: UnknownObject): UnknownObject {
     data.recipeId = data.modId;
   }
 
-  if (data.modVersion) {
-    data.blueprintVersion = data.modVersion;
-  }
-
   if (data.modComponentId) {
     data.extensionId = data.modComponentId;
   }
@@ -63,6 +59,14 @@ function transformEventData(data: UnknownObject): UnknownObject {
 
   if (data.modComponents) {
     data.extensions = data.modComponents;
+  }
+
+  if (data.modToActivate) {
+    data.recipeToActivate = data.modToActivate;
+  }
+
+  if (data.modVersion) {
+    data.blueprintVersion = data.modVersion;
   }
 
   if (data.starterBrickId) {

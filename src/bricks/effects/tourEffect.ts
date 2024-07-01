@@ -133,7 +133,7 @@ export class TourEffect extends EffectABC {
       );
     }
 
-    const { extensionId } = logger.context;
+    const { modComponentId } = logger.context;
     const abortController = new AbortController();
     const stylesheetLink = await injectStylesheet(stylesheetUrl);
 
@@ -166,7 +166,7 @@ export class TourEffect extends EffectABC {
       );
     }
 
-    assertNotNullish(extensionId, "extensionId is required to run a tour");
+    assertNotNullish(modComponentId, "extensionId is required to run a tour");
 
     const tour = introJs()
       .setOptions({
