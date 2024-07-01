@@ -53,7 +53,7 @@ const currentPersistenceVersion = getMaxMigrationsVersion(migrations);
 describe("draftModComponentStorage", () => {
   test("removes one active form state", async () => {
     const formState = formStateFactory();
-    const nodeUIStates: Record<UUID, NodeUIState> = {
+    const nodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [formState.uuid]: {
         nodeId: formState.modComponent.brickPipeline[0].instanceId,
         dataPanel: {
@@ -90,7 +90,7 @@ describe("draftModComponentStorage", () => {
 
   test("removes inactive formState", async () => {
     const inactiveFormState = formStateFactory();
-    const inactiveNodeUIStates: Record<UUID, NodeUIState> = {
+    const inactiveNodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [inactiveFormState.uuid]: {
         nodeId: inactiveFormState.modComponent.brickPipeline[1].instanceId,
         dataPanel: {
@@ -99,7 +99,7 @@ describe("draftModComponentStorage", () => {
       } as BrickConfigurationUIState,
     };
     const activeFormState = formStateFactory();
-    const activeNodeUIStates: Record<UUID, NodeUIState> = {
+    const activeNodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [activeFormState.uuid]: {
         nodeId: activeFormState.modComponent.brickPipeline[0].instanceId,
         dataPanel: {
@@ -164,7 +164,7 @@ describe("draftModComponentStorage", () => {
     const formState1 = formStateFactory({
       modMetadata: mod,
     });
-    const formState1NodeUIStates: Record<UUID, NodeUIState> = {
+    const formState1NodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [formState1.uuid]: {
         nodeId: formState1.modComponent.brickPipeline[0].instanceId,
         dataPanel: {
@@ -175,7 +175,7 @@ describe("draftModComponentStorage", () => {
     const formState2 = formStateFactory({
       modMetadata: mod,
     });
-    const formState2NodeUIStates: Record<UUID, NodeUIState> = {
+    const formState2NodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [formState2.uuid]: {
         nodeId: formState2.modComponent.brickPipeline[0].instanceId,
         dataPanel: {
@@ -184,7 +184,7 @@ describe("draftModComponentStorage", () => {
       } as BrickConfigurationUIState,
     };
     const formState3 = formStateFactory();
-    const formState3NodeUIStates: Record<UUID, NodeUIState> = {
+    const formState3NodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [formState3.uuid]: {
         nodeId: formState3.modComponent.brickPipeline[1].instanceId,
         dataPanel: {
@@ -256,7 +256,7 @@ describe("draftModComponentStorage", () => {
     const formState1 = formStateFactory({
       modMetadata: mod,
     });
-    const formState1NodeUIStates: Record<UUID, NodeUIState> = {
+    const formState1NodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [formState1.uuid]: {
         nodeId: formState1.modComponent.brickPipeline[0].instanceId,
         dataPanel: {
@@ -267,7 +267,7 @@ describe("draftModComponentStorage", () => {
     const formState2 = formStateFactory({
       modMetadata: mod,
     });
-    const formState2NodeUIStates: Record<UUID, NodeUIState> = {
+    const formState2NodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [formState2.uuid]: {
         nodeId: formState2.modComponent.brickPipeline[0].instanceId,
         dataPanel: {
@@ -276,7 +276,7 @@ describe("draftModComponentStorage", () => {
       } as BrickConfigurationUIState,
     };
     const formState3 = formStateFactory();
-    const formState3NodeUIStates: Record<UUID, NodeUIState> = {
+    const formState3NodeUIStates: Record<UUID, BrickConfigurationUIState> = {
       [formState3.uuid]: {
         nodeId: formState3.modComponent.brickPipeline[1].instanceId,
         dataPanel: {
