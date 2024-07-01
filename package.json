@@ -222,7 +222,6 @@
     "@types/json-stringify-safe": "^5.0.3",
     "@types/lodash": "^4.17.5",
     "@types/mark.js": "^8.11.12",
-    "@types/marked": "^6.0.0",
     "@types/mustache": "^4.2.5",
     "@types/node": "^20.14.8",
     "@types/nunjucks": "^3.2.6",
