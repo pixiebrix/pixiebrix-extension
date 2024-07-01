@@ -144,6 +144,7 @@ export class ActivateModPage extends BasePageObject {
   keyboardShortcutDocumentationLink = this.getByRole("link", {
     name: "configuring keyboard shortcuts",
   });
+
   configureQuickbarShortcutLink = this.getByRole("link", {
     name: "configured your Quick Bar",
   });
