@@ -593,7 +593,7 @@ export const editorSlice = createSlice({
       state.modComponentFormStates.push({
         ...modComponentFormState,
         uuid: newId,
-        modMetadata: modMetadata,
+        modMetadata,
         installed: false, // Can't "reset" this, only remove or save
       });
       state.dirty[newId] = true;
