@@ -77,7 +77,7 @@ const renderWidget = (
         // Default empty, let initialValues override if needed
         integrationDependencies: [],
         ...initialValues,
-        modComponent: { blockPipeline: [{ config: { service: null } }] },
+        modComponent: { brickPipeline: [{ config: { service: null } }] },
       }}
       onSubmit={jest.fn()}
     >
@@ -215,7 +215,7 @@ describe("ServiceWidget", () => {
 
     expect(state).toEqual({
       modComponent: {
-        blockPipeline: [
+        brickPipeline: [
           {
             config: {
               service: toExpression("var", "@jest2"),

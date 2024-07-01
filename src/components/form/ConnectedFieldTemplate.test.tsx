@@ -169,7 +169,7 @@ describe("ConnectedFieldTemplate", () => {
           initialValues: formState,
           initialErrors: {
             modComponent: {
-              blockPipeline: [
+              brickPipeline: [
                 {
                   config: {
                     testField: "test formik error",
