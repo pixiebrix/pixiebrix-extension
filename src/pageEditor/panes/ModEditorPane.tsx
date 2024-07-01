@@ -83,7 +83,7 @@ const ModEditorPane: React.VFC = () => {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} data-testid={"modEditorPane"}>
       <EditorTabLayout key={layoutKey} tabs={tabItems} />
     </div>
   );
