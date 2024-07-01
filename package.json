@@ -206,7 +206,6 @@
     "@types/dompurify": "^3.0.5",
     "@types/downloadjs": "^1.4.6",
     "@types/gapi.client": "^1.0.8",
-    "@types/gapi.client.discovery-v1": "^0.0.4",
     "@types/gapi.client.drive-v3": "^0.0.4",
     "@types/gapi.client.oauth2-v2": "^0.0.4",
     "@types/gapi.client.sheets-v4": "^0.0.4",
