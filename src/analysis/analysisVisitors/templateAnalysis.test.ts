@@ -27,7 +27,7 @@ const position: BrickPosition = {
   path: "test.path.property",
 };
 
-function brickModComponentFactory(expression: Expression<unknown>) {
+function httpBrickModComponentFactory(expression: Expression<unknown>) {
   const formState = triggerFormStateFactory();
   formState.modComponent.brickPipeline = [
     brickConfigFactory({
@@ -66,7 +66,7 @@ describe("TemplateAnalysis", () => {
     "accepts valid mustache [%s]",
     async (template) => {
       const analysis = new TemplateAnalysis();
-      const formState = brickModComponentFactory(
+      const formState = httpBrickModComponentFactory(
         toExpression("mustache", template),
       );
 
@@ -80,7 +80,7 @@ describe("TemplateAnalysis", () => {
     "rejects mustache template in non-mustache expression [%s]",
     async (template) => {
       const analysis = new TemplateAnalysis();
-      const formState = brickModComponentFactory(
+      const formState = httpBrickModComponentFactory(
         toExpression("nunjucks", template),
       );
 
@@ -96,7 +96,7 @@ describe("TemplateAnalysis", () => {
     "rejects invalid nunjucks [%s]",
     async (template) => {
       const analysis = new TemplateAnalysis();
-      const formState = brickModComponentFactory(
+      const formState = httpBrickModComponentFactory(
         toExpression("nunjucks", template),
       );
 
