@@ -46,35 +46,39 @@ test.describe("Local Integrations Page", () => {
       "Automation Anywhere Control Room",
     );
 
-    await page.getByLabel("Label").fill("AA Control Room");
+    await localIntegrationsPage.getByLabel("Label").fill("AA Control Room");
 
     await page
       .getByTestId("toggle-config.folderId")
       .getByRole("button")
       .click();
-    await page.getByLabel("Folder ID").click();
+    await localIntegrationsPage.getByLabel("Folder ID").click();
 
-    await expect(page.getByLabel("Folder ID")).toBeFocused();
+    await expect(localIntegrationsPage.getByLabel("Folder ID")).toBeFocused();
 
     await page.keyboard.press("Tab");
 
     // Verify that the numeric text field is validated
     await expect(
-      page.getByText("String does not match pattern."),
+      localIntegrationsPage.getByText("String does not match pattern."),
     ).toBeVisible();
 
     // Verify that the other fields are also validated
-    await page.getByLabel("Control Room URL").click();
-    await expect(page.getByLabel("Control Room URL")).toBeFocused();
+    await localIntegrationsPage.getByLabel("Control Room URL").click();
+    await expect(
+      localIntegrationsPage.getByLabel("Control Room URL"),
+    ).toBeFocused();
 
     await page.keyboard.press("Tab");
     await expect(
-      page.getByText("controlRoomUrl is a required field"),
+      localIntegrationsPage.getByText("controlRoomUrl is a required field"),
     ).toBeVisible();
 
-    await expect(page.getByLabel("Username")).toBeFocused();
+    await expect(localIntegrationsPage.getByLabel("Username")).toBeFocused();
 
     await page.keyboard.press("Tab");
-    await expect(page.getByText("username is a required field")).toBeVisible();
+    await expect(
+      localIntegrationsPage.getByText("username is a required field"),
+    ).toBeVisible();
   });
 });
