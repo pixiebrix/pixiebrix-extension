@@ -23,13 +23,7 @@ import stylesheetUrl from "@/vendors/intro.js/introjs.scss?loadAsUrl";
 import pDefer from "p-defer";
 import { BusinessError, CancelError, PropError } from "@/errors/businessErrors";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/bricks/rootModeHelpers";
-import {
-  isTourInProgress,
-  markTourEnd,
-  markTourStart,
-  markTourStep,
-} from "@/starterBricks/tour/tourController";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
 import { $safeFind } from "@/utils/domUtils";
 import { type TooltipPosition } from "intro.js/src/core/steps";
@@ -139,8 +133,7 @@ export class TourEffect extends EffectABC {
       );
     }
 
-    const { extensionId, label, extensionLabel, blueprintId } = logger.context;
-    const nonce = uuidv4();
+    const { extensionId } = logger.context;
     const abortController = new AbortController();
     const stylesheetLink = await injectStylesheet(stylesheetUrl);
 
@@ -161,86 +154,55 @@ export class TourEffect extends EffectABC {
 
     const { resolve, reject, promise: tourPromise } = pDefer();
 
-    try {
-      if (isTourInProgress()) {
-        throw new BusinessError("A tour is already in progress");
-      }
+    const [firstStep] = steps;
+    assertNotNullish(firstStep, "Must provide at least one step");
 
-      const [firstStep] = steps;
-      assertNotNullish(firstStep, "Must provide at least one step");
-
-      if (
-        !isEmpty(firstStep.element) &&
-        $safeFind(firstStep.element, $root).length === 0
-      ) {
-        throw new BusinessError(
-          "No matching element found for first step in tour",
-        );
-      }
-
-      assertNotNullish(extensionId, "extensionId is required to run a tour");
-
-      // Try to identify the tour via step name. If step name is not provided, identify via ModComponentBase.label.
-      // The Show Tour Brick is run as part of buttons/triggers, so the label won't affect the auto-run behavior
-      // for tour extensions.
-      markTourStart(
-        nonce,
-        {
-          id: extensionId,
-          label: label ?? extensionLabel ?? "",
-          _recipe: blueprintId ? { id: blueprintId } : undefined,
-        },
-        { abortController, context: logger.context },
+    if (
+      !isEmpty(firstStep.element) &&
+      $safeFind(firstStep.element, $root).length === 0
+    ) {
+      throw new BusinessError(
+        "No matching element found for first step in tour",
       );
-
-      const tour = introJs()
-        .setOptions({
-          showProgress,
-          showBullets,
-          disableInteraction,
-          steps: steps.map(({ element, ...rest }) => ({
-            ...rest,
-            element: isEmpty(element)
-              ? undefined
-              : $safeFind(element, $root).get(0),
-          })),
-        })
-        .onafterchange(function () {
-          // XXX: :sad: can't mark individual steps via markTourStep because intro.js doesn't provide a way to hook into
-          // the individual step. There's a PR that pending: https://github.com/usablica/intro.js/pull/1266/files
-          const currentStep = this._currentStep;
-          const title = this._introItems[currentStep]?.title;
-          const label = title || `Step ${currentStep}`;
-          markTourStep(nonce, { step: label, context: logger.context });
-        })
-        .oncomplete(() => {
-          // Put here instead of `finally` below because the tourInProgress error shouldn't cause the link to be removed
-          // because it will break the styling of the tour in progress
-          removeStylesheet();
-          resolve();
-        })
-        .onexit(() => {
-          // Put here instead of `finally` below because the tourInProgress error shouldn't cause the link to be removed
-          // because it will break the styling of the tour in progress
-          removeStylesheet();
-          reject(new CancelError("User cancelled the tour"));
-        });
-
-      // The types are incorrect. start() returns a promise, not the instance
-      await tour.start();
-
-      const handleAbort = async () => {
-        await tour.exit(true);
-      };
-
-      abortController.signal.addEventListener("abort", handleAbort);
-      blockAbortSignal?.addEventListener("abort", handleAbort);
-
-      await tourPromise;
-      markTourEnd(nonce, { context: logger.context });
-    } catch (error) {
-      markTourEnd(nonce, { error, context: logger.context });
-      throw error;
     }
+
+    assertNotNullish(extensionId, "extensionId is required to run a tour");
+
+    const tour = introJs()
+      .setOptions({
+        showProgress,
+        showBullets,
+        disableInteraction,
+        steps: steps.map(({ element, ...rest }) => ({
+          ...rest,
+          element: isEmpty(element)
+            ? undefined
+            : $safeFind(element, $root).get(0),
+        })),
+      })
+      .oncomplete(() => {
+        // Put here instead of `finally` below because the tourInProgress error shouldn't cause the link to be removed
+        // because it will break the styling of the tour in progress
+        removeStylesheet();
+        resolve();
+      })
+      .onexit(() => {
+        // Put here instead of `finally` below because the tourInProgress error shouldn't cause the link to be removed
+        // because it will break the styling of the tour in progress
+        removeStylesheet();
+        reject(new CancelError("User cancelled the tour"));
+      });
+
+    // The types are incorrect. start() returns a promise, not the instance
+    await tour.start();
+
+    const handleAbort = async () => {
+      await tour.exit(true);
+    };
+
+    abortController.signal.addEventListener("abort", handleAbort);
+    blockAbortSignal?.addEventListener("abort", handleAbort);
+
+    await tourPromise;
   }
 }

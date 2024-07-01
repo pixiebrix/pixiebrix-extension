@@ -24,7 +24,6 @@ import { DocumentRenderer } from "@/bricks/renderers/document";
 import { type BrickConfig } from "@/bricks/types";
 import { uuidv4 } from "@/types/helpers";
 import { defaultBrickConfig } from "@/bricks/util";
-import TourStep from "@/bricks/transformers/tourStep/tourStep";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
@@ -237,24 +236,6 @@ export function getExampleBrickConfig(
           createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
         ]),
         isRootAware: true,
-      };
-    }
-
-    case TourStep.BRICK_ID: {
-      return {
-        title: "Example Step",
-        body: "Step content. **Markdown** is supported.",
-        appearance: {
-          showOverlay: true,
-          scroll: {
-            behavior: "smooth",
-          },
-          // Supply empty appearance configs to avoid errors when rendering
-          wait: {},
-          highlight: {},
-          popover: {},
-          controls: {},
-        },
       };
     }
 

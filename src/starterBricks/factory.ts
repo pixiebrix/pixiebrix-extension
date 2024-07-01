@@ -21,7 +21,6 @@ import { fromJS as deserializeContextMenu } from "@/starterBricks/contextMenu/co
 import { fromJS as deserializeSidebar } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import { fromJS as deserializeQuickBar } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { fromJS as deserializeQuickBarProvider } from "@/starterBricks/quickBarProvider/quickBarProviderStarterBrick";
-import { fromJS as deserializeTour } from "@/starterBricks/tour/tourStarterBrick";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getPlatform } from "@/platform/platformContext";
@@ -34,7 +33,6 @@ const TYPE_MAP = {
   actionPanel: deserializeSidebar,
   quickBar: deserializeQuickBar,
   quickBarProvider: deserializeQuickBarProvider,
-  tour: deserializeTour,
 };
 
 export function fromJS(config: StarterBrickDefinitionLike): StarterBrick {

@@ -21,32 +21,9 @@ import {
   type SchemaProperties,
   type UiSchema,
 } from "@/types/schemaTypes";
-import { castArray, intersection, isEmpty, split, uniq } from "lodash";
+import { castArray, intersection, isEmpty, uniq } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
-
-/**
- * Helper method to get the schema of a sub-property. Does not currently handle array indexes or allOf/oneOf/anyOf.
- * @param schema the JSON Schema
- * @param path the property path
- */
-export function getSubSchema(schema: Schema, path: string): Schema {
-  const parts = split(path, ".");
-  let subSchema: Schema = schema;
-
-  for (const part of parts) {
-    // eslint-disable-next-line security/detect-object-injection -- expected that this is called locally
-    const nextSubSchema = subSchema.properties?.[part];
-
-    if (typeof nextSubSchema === "boolean" || nextSubSchema == null) {
-      throw new TypeError(`Invalid property path: ${path}`);
-    }
-
-    subSchema = nextSubSchema;
-  }
-
-  return subSchema;
-}
 
 /**
  * Return the names of top-level required properties that are missing or blank in an object.

@@ -42,8 +42,6 @@ import DocumentOptions from "@/pageEditor/documentBuilder/edit/DocumentOptions";
 import RemoteMethodOptions, {
   REMOTE_METHOD_ID,
 } from "@/pageEditor/fields/RemoteMethodOptions";
-import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
-import TourStepOptions from "@/bricks/transformers/tourStep/TourStepOptions";
 import { ALERT_EFFECT_ID } from "@/bricks/effects/alert";
 import AlertOptions from "@/pageEditor/fields/AlertOptions";
 import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
@@ -78,7 +76,6 @@ export default function registerEditors() {
   optionsRegistry.set(DATABASE_PUT_ID, DatabasePutOptions);
   optionsRegistry.set(REMOTE_METHOD_ID, RemoteMethodOptions);
   optionsRegistry.set(DocumentRenderer.BRICK_ID, DocumentOptions);
-  optionsRegistry.set(TourStepTransformer.BRICK_ID, TourStepOptions);
   optionsRegistry.set(ALERT_EFFECT_ID, AlertOptions);
   optionsRegistry.set(JQueryReader.BRICK_ID, JQueryReaderOptions);
   optionsRegistry.set(AssignModVariable.BRICK_ID, AssignModVariableOptions);

@@ -17,12 +17,11 @@
 
 import { createPopper, type Instance as PopperInstance } from "@popperjs/core";
 import { type IFrameComponent, iframeResizer } from "iframe-resizer";
-import { once, trimEnd } from "lodash";
+import { trimEnd } from "lodash";
 import popoverStyleUrl from "./popover.scss?loadAsUrl";
 import injectStylesheet from "@/utils/injectStylesheet";
 import { uuidv4, validateUUID } from "@/types/helpers";
 import { setTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
-import { getThisFrame } from "webext-messenger";
 import { html } from "code-tag";
 import { setAnimationFrameInterval } from "@/utils/domUtils";
 import { ensureTooltipsContainer } from "@/contentScript/tooltipDom";
@@ -117,27 +116,6 @@ function popoverFactory(initialUrl: URL): HTMLElement {
   resizerMap.set(tooltip, resizer!);
   return tooltip;
 }
-
-/**
- * Allocate a popover not tied to any panel nonce.
- */
-async function preAllocatePopover(): Promise<void> {
-  const target = await getThisFrame();
-
-  const frameSource = new URL(browser.runtime.getURL("ephemeralPanel.html"));
-  frameSource.searchParams.set("opener", JSON.stringify(target));
-  frameSource.searchParams.set("mode", "popover");
-
-  popoverFactory(frameSource);
-}
-
-/**
- * Initialize the popover pool.
- */
-export const initPopoverPool = once(async () => {
-  void injectStylesheet(popoverStyleUrl);
-  await preAllocatePopover();
-});
 
 /**
  * Reclaim a popover for the popover pool

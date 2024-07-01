@@ -28,7 +28,6 @@ import triggerModComponent from "@/pageEditor/starterBricks/trigger";
 import contextMenuModComponent from "@/pageEditor/starterBricks/contextMenu";
 import sidebarPanelModComponent from "@/pageEditor/starterBricks/sidebar";
 import quickBarProviderModComponent from "@/pageEditor/starterBricks/quickBarProvider";
-import tourModComponent from "@/pageEditor/starterBricks/tour";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -43,7 +42,6 @@ export const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>(
     [StarterBrickTypes.BUTTON, buttonModComponent],
     [StarterBrickTypes.QUICK_BAR_ACTION, quickBarActionModComponent],
     [StarterBrickTypes.DYNAMIC_QUICK_BAR, quickBarProviderModComponent],
-    [StarterBrickTypes.TOUR, tourModComponent],
   ],
 );
 
