@@ -26,12 +26,12 @@ const MatchRulesSection: React.FunctionComponent<{
 }> = ({ isLocked }) => (
   <ConnectedCollapsibleFieldSection title="Advanced: Match Rules">
     <UrlPatternField
-      name="extensionPoint.definition.isAvailable.urlPatterns"
+      name="starterBrick.definition.isAvailable.urlPatterns"
       {...makeLockableFieldProps("URL Patterns", isLocked)}
     />
 
     <SelectorMatchField
-      name="extensionPoint.definition.isAvailable.selectors"
+      name="starterBrick.definition.isAvailable.selectors"
       {...makeLockableFieldProps("Selectors", isLocked)}
     />
   </ConnectedCollapsibleFieldSection>

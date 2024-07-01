@@ -148,7 +148,7 @@ function useUpsertModComponentFormState(): SaveCallback {
         `No adapter found for ${modComponentFormState.type}`,
       );
 
-      const starterBrickId = modComponentFormState.extensionPoint.metadata.id;
+      const starterBrickId = modComponentFormState.starterBrick.metadata.id;
       const hasInnerStarterBrick = isInnerDefinitionRegistryId(starterBrickId);
 
       let isEditable = false;

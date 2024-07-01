@@ -32,7 +32,7 @@ import { joinName } from "@/utils/formUtils";
 const SidebarConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => {
-  const fieldName = partial(joinName, "extensionPoint.definition");
+  const fieldName = partial(joinName, "starterBrick.definition");
 
   const [{ value: trigger }] = useField<Trigger>(fieldName("trigger"));
 
@@ -70,14 +70,14 @@ const SidebarConfiguration: React.FC<{
   return (
     <>
       <ConnectedFieldTemplate
-        name="extension.heading"
+        name="modComponent.heading"
         // If you change this label, update the field title in ShowSidebar
         label="Tab Title"
         description="The text that will appear in the tab along the top of the Sidebar Panel"
       />
 
       <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
+        name="starterBrick.definition.isAvailable.matchPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
       />
 

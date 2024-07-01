@@ -38,7 +38,7 @@ import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
 import { type EditablePackageMetadata } from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
@@ -205,7 +205,7 @@ describe("renders", () => {
 
   test("the first selected node", async () => {
     const formState = getPlainFormState();
-    const { instanceId } = formState.extension.blockPipeline[0];
+    const { instanceId } = formState.modComponent.brickPipeline[0];
     const { asFragment } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
@@ -343,7 +343,7 @@ describe("can add a node", () => {
     const activeModComponentFormState =
       selectActiveModComponentFormState(reduxState);
     const jqNodeId = (
-      activeModComponentFormState.extension.blockPipeline[1].config
+      activeModComponentFormState.modComponent.brickPipeline[1].config
         .body as PipelineExpression
     ).__value__[0].instanceId;
     const addButtonInSubPipeline = screen.getByTestId(
@@ -366,7 +366,7 @@ describe("can add a node", () => {
 async function renderEditorPaneWithBasicFormState() {
   const modComponentFormState = getFormStateWithSubPipelines();
   const activeNodeId =
-    modComponentFormState.extension.blockPipeline[0].instanceId;
+    modComponentFormState.modComponent.brickPipeline[0].instanceId;
   const utils = render(
     <div>
       <EditorPane />
@@ -620,7 +620,7 @@ describe("validation", () => {
   test("validates string templates", async () => {
     const formState = getFormStateWithSubPipelines();
     const subEchoNode = (
-      formState.extension.blockPipeline[1].config.body as PipelineExpression
+      formState.modComponent.brickPipeline[1].config.body as PipelineExpression
     ).__value__[0];
     const { container } = render(<EditorPane />, {
       setupRedux(dispatch) {
@@ -658,7 +658,7 @@ describe("validation", () => {
 
     // Selecting the Echo brick in the first mod component
     const { instanceId: echoBlockInstanceId } =
-      modComponent1.extension.blockPipeline[0];
+      modComponent1.modComponent.brickPipeline[0];
     const { container, getReduxStore } = render(
       <>
         <EditorPane />
@@ -744,7 +744,7 @@ describe("validation", () => {
 
   test("validates multiple renderers on add", async () => {
     const formState = getPlainFormState();
-    formState.extension.blockPipeline.push(
+    formState.modComponent.brickPipeline.push(
       brickConfigFactory({
         id: MarkdownRenderer.BRICK_ID,
         config: {
@@ -781,7 +781,7 @@ describe("validation", () => {
 
   test("validates that renderer is the last node on move", async () => {
     const formState = getPlainFormState();
-    formState.extension.blockPipeline.push(
+    formState.modComponent.brickPipeline.push(
       brickConfigFactory({
         id: MarkdownRenderer.BRICK_ID,
         config: {
@@ -791,7 +791,7 @@ describe("validation", () => {
     );
 
     // Selecting the last node (renderer)
-    const { instanceId } = formState.extension.blockPipeline[2];
+    const { instanceId } = formState.modComponent.brickPipeline[2];
     const { container } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
@@ -843,7 +843,7 @@ describe("validation", () => {
           dispatch(
             editorActions.addNode({
               block: disallowedBlockConfig,
-              pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
+              pipelinePath: PIPELINE_BRICKS_FIELD_NAME,
               pipelineIndex: 0,
             }),
           );

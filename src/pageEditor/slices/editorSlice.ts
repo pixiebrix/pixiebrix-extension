@@ -133,10 +133,10 @@ const cloneActiveModComponent = createAsyncThunk<
       draft.uuid = uuidv4();
       draft.label += " (Copy)";
       // Remove from its mod, if any (the user can add it to any mod after creation)
-      delete draft.recipe;
+      delete draft.modMetadata;
       // Re-generate instance IDs for all the bricks in the mod component
-      draft.extension.blockPipeline = await normalizePipelineForEditor(
-        draft.extension.blockPipeline,
+      draft.modComponent.brickPipeline = await normalizePipelineForEditor(
+        draft.modComponent.brickPipeline,
       );
     },
   );
@@ -249,7 +249,7 @@ const checkAvailableDraftModComponents = createAsyncThunk<
   const tabUrl = await getCurrentInspectedURL();
   const availableFormStateIds = await Promise.all(
     notDeletedFormStates.map(
-      async ({ uuid, extensionPoint: formStateStarterBrick }) => {
+      async ({ uuid, starterBrick: formStateStarterBrick }) => {
         const isAvailable = await isStarterBrickFormStateAvailable(
           tabUrl,
           formStateStarterBrick,
@@ -283,7 +283,7 @@ const checkActiveModComponentAvailability = createAsyncThunk<
   // Calculate new availability for the active mod component
   const isAvailable = await isStarterBrickFormStateAvailable(
     tabUrl,
-    activeModComponentFormState.extensionPoint,
+    activeModComponentFormState.starterBrick,
   );
   // Calculate the new draft mod component availability, depending on the
   // new availability of the active mod component -- should be a unique list of ids,
@@ -411,7 +411,7 @@ export const editorSlice = createSlice({
 
       if (!modComponentFormState.installed) {
         state.knownEditableBrickIds.push(
-          modComponentFormState.extensionPoint.metadata.id,
+          modComponentFormState.starterBrick.metadata.id,
         );
       }
 
@@ -556,10 +556,10 @@ export const editorSlice = createSlice({
       const modMetadata = action.payload;
       const modComponentFormStates = state.modComponentFormStates.filter(
         (modComponentFormState) =>
-          modComponentFormState.recipe?.id === modMetadata?.id,
+          modComponentFormState.modMetadata?.id === modMetadata?.id,
       );
       for (const formState of modComponentFormStates) {
-        formState.recipe = modMetadata;
+        formState.modMetadata = modMetadata;
       }
     },
     showAddToModModal(state) {
@@ -593,7 +593,7 @@ export const editorSlice = createSlice({
       state.modComponentFormStates.push({
         ...modComponentFormState,
         uuid: newId,
-        recipe: modMetadata,
+        modMetadata,
         installed: false, // Can't "reset" this, only remove or save
       });
       state.dirty[newId] = true;
@@ -634,10 +634,10 @@ export const editorSlice = createSlice({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
         state.modComponentFormStates[modComponentFormStateIndex]!;
       assertNotNullish(
-        modComponentFormState.recipe,
+        modComponentFormState.modMetadata,
         "Mod component form state has no mod definition",
       );
-      const modId = modComponentFormState.recipe.id;
+      const modId = modComponentFormState.modMetadata.id;
       state.deletedModComponentFormStatesByModId[modId] ??= [];
 
       state.deletedModComponentFormStatesByModId[modId].push(
@@ -653,7 +653,7 @@ export const editorSlice = createSlice({
         state.modComponentFormStates.push({
           ...modComponentFormState,
           uuid: newId,
-          recipe: undefined,
+          modMetadata: undefined,
         });
         state.dirty[newId] = true;
         ensureBrickPipelineUIState(state, newId);
@@ -869,7 +869,7 @@ export const editorSlice = createSlice({
         editor: state,
       });
       const modFormStates = notDeletedFormStates.filter(
-        (formState) => formState.recipe?.id === modId,
+        (formState) => formState.modMetadata?.id === modId,
       );
       for (const formState of modFormStates) {
         formState.optionsArgs = action.payload;
@@ -1007,7 +1007,7 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 3,
+  version: 4,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: [
     "inserting",

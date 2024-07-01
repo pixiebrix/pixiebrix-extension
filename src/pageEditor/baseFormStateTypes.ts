@@ -50,15 +50,30 @@ export type BaseStarterBrickState = {
   };
 };
 
-export interface BaseModComponentState {
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type BaseModComponentStateV1 = {
   blockPipeline: BrickPipeline;
-}
+};
+
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type BaseModComponentStateV2 = Except<
+  BaseModComponentStateV1,
+  "blockPipeline"
+> & {
+  brickPipeline: BrickPipeline;
+};
+
+export type BaseModComponentState = BaseModComponentStateV2;
 
 /**
  * @deprecated - Do not use versioned state types directly
  */
 export interface BaseFormStateV1<
-  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TModComponent extends BaseModComponentStateV1 = BaseModComponentStateV1,
   TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > {
   /**
@@ -130,7 +145,7 @@ export interface BaseFormStateV1<
  * @deprecated - Do not use versioned state types directly
  */
 export type BaseFormStateV2<
-  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TModComponent extends BaseModComponentStateV1 = BaseModComponentStateV1,
   TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<BaseFormStateV1<TModComponent, TStarterBrick>, "services"> & {
   /**
@@ -142,11 +157,46 @@ export type BaseFormStateV2<
   integrationDependencies: IntegrationDependencyV2[];
 };
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type BaseFormStateV3<
+  TModComponent extends BaseModComponentStateV2 = BaseModComponentStateV2,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
+> = Except<
+  BaseFormStateV2<BaseModComponentStateV1, TStarterBrick>,
+  "recipe" | "extension" | "extensionPoint"
+> & {
+  /**
+   * @since 2.0.5
+   * Part of the Page Editor renaming effort
+   * `extensionPoint` to `starterBrick`
+   */
+  starterBrick: TStarterBrick;
+
+  /**
+   * @since 2.0.5
+   * Part of the Page Editor renaming effort
+   * `extension` to `modComponent`
+   */
+  modComponent: TModComponent;
+
+  /**
+   * @since 2.0.5
+   * Part of the Page Editor renaming effort
+   * `recipe` to `modMetadata`
+   * Information about the mod used to install the mod component, or `undefined`
+   * if the mod component is not part of a mod.
+   * @see ModComponentBase._recipe
+   */
+  modMetadata: ModComponentBase["_recipe"] | undefined;
+};
+
 export type BaseFormState<
   TModComponent extends BaseModComponentState = BaseModComponentState,
   TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<
-  BaseFormStateV2<TModComponent, TStarterBrick>,
+  BaseFormStateV3<TModComponent, TStarterBrick>,
   "integrationDependencies"
 > & {
   /**

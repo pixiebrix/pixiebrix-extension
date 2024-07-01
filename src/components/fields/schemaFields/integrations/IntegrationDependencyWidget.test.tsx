@@ -77,14 +77,14 @@ const renderWidget = (
         // Default empty, let initialValues override if needed
         integrationDependencies: [],
         ...initialValues,
-        extension: { blockPipeline: [{ config: { service: null } }] },
+        modComponent: { brickPipeline: [{ config: { service: null } }] },
       }}
       onSubmit={jest.fn()}
     >
       {({ values }) => (
         <>
           <IntegrationDependencyWidget
-            name="extension.blockPipeline.0.config.service"
+            name="modComponent.brickPipeline.0.config.service"
             schema={schema}
             {...props}
           />
@@ -214,8 +214,8 @@ describe("ServiceWidget", () => {
     const state = JSON.parse(screen.getByTestId("values").textContent);
 
     expect(state).toEqual({
-      extension: {
-        blockPipeline: [
+      modComponent: {
+        brickPipeline: [
           {
             config: {
               service: toExpression("var", "@jest2"),

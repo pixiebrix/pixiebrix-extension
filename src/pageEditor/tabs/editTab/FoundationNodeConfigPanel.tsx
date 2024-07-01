@@ -65,8 +65,7 @@ const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
 const FoundationNodeConfigPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showVersionField = flagOn("page-editor-developer");
-  const { extensionPoint: starterBrick } =
-    useSelector(selectActiveModComponentFormState) ?? {};
+  const { starterBrick } = useSelector(selectActiveModComponentFormState) ?? {};
   assertNotNullish(
     starterBrick,
     "starterBrick not found in active mod component form state",

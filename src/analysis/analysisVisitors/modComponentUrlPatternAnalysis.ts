@@ -31,11 +31,11 @@ const hostRegexp = /^(\*|(^(\*\.)?[^*/]+))$/;
 // All URLs is required for certain interactions, e.g., taking screenshots without activeTab
 const allUrls = "<all_urls>";
 
-const urlPatternFields = ["extensionPoint.definition.isAvailable.urlPatterns"];
+const urlPatternFields = ["starterBrick.definition.isAvailable.urlPatterns"];
 
 const stringUrlFields = [
-  "extensionPoint.definition.documentUrlPatterns",
-  "extensionPoint.definition.isAvailable.matchPatterns",
+  "starterBrick.definition.documentUrlPatterns",
+  "starterBrick.definition.isAvailable.matchPatterns",
   "permissions.origins",
 ];
 

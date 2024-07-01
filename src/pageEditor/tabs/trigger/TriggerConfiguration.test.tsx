@@ -25,8 +25,8 @@ describe("TriggerConfiguration", () => {
         instanceId: uuidv4(),
       },
     ]);
-    formState.extensionPoint.definition.trigger = "custom";
-    formState.extensionPoint.definition.customEvent = { eventName: null };
+    formState.starterBrick.definition.trigger = "custom";
+    formState.starterBrick.definition.customEvent = { eventName: null };
 
     const { asFragment } = render(<TriggerConfiguration isLocked={false} />, {
       initialValues: formState,

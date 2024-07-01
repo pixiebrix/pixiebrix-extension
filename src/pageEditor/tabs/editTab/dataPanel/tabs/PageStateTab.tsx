@@ -49,7 +49,7 @@ const PageStateTab: React.VFC = () => {
     async () => {
       const context = {
         modComponentId: activeModComponentFormState?.uuid,
-        modId: activeModComponentFormState?.recipe?.id,
+        modId: activeModComponentFormState?.modMetadata?.id,
       };
 
       const [shared, mod, local] = await Promise.all([
@@ -57,7 +57,7 @@ const PageStateTab: React.VFC = () => {
           namespace: StateNamespaces.PUBLIC,
           ...context,
         }),
-        activeModComponentFormState?.recipe
+        activeModComponentFormState?.modMetadata
           ? getPageState(inspectedTab, {
               namespace: StateNamespaces.MOD,
               ...context,

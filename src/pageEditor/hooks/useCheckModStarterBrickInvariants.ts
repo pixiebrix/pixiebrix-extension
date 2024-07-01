@@ -53,7 +53,7 @@ function useCheckModStarterBrickInvariants(): (
    *  - For each clean mod component, every entry in definitions should exist
    *    in the {modDefinition.definitions} object
    *  - For each dirty mod component with @internal starter brick definition,
-   *    formState.extensionPoint.definition should exist in the
+   *    formState.starterBrick.definition should exist in the
    *    {modDefinition.definitions} object, but the key may be different,
    *    e.g. "extensionPoint" vs. "extensionPoint3" in the modDefinition,
    *    also need to run it through the adapter because of some cleanup logic
@@ -80,9 +80,7 @@ function useCheckModStarterBrickInvariants(): (
       }
 
       for (const formState of dirtyModComponentFormStates) {
-        if (
-          !isInnerDefinitionRegistryId(formState.extensionPoint.metadata.id)
-        ) {
+        if (!isInnerDefinitionRegistryId(formState.starterBrick.metadata.id)) {
           continue;
         }
 
