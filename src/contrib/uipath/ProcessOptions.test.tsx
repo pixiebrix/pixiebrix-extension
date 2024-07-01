@@ -90,7 +90,7 @@ function makeBaseState() {
 function renderOptions(formState: ModComponentFormState = makeBaseState()) {
   return render(
     <Formik onSubmit={jest.fn()} initialValues={formState}>
-      <ProcessOptions name="extension.blockPipeline.0" configKey="config" />
+      <ProcessOptions name="modComponent.brickPipeline.0" configKey="config" />
     </Formik>,
   );
 }
@@ -125,7 +125,7 @@ describe("UiPath Options", () => {
     );
 
     const base = makeBaseState();
-    base.extension.blockPipeline[0].config.uipath = toExpression(
+    base.modComponent.brickPipeline[0].config.uipath = toExpression(
       "var",
       "@uipath",
     );
@@ -173,11 +173,11 @@ describe("UiPath Options", () => {
     );
 
     const base = makeBaseState();
-    base.extension.blockPipeline[0].config.uipath = toExpression(
+    base.modComponent.brickPipeline[0].config.uipath = toExpression(
       "var",
       "@uipath",
     );
-    base.extension.blockPipeline[0].config.awaitResult = true;
+    base.modComponent.brickPipeline[0].config.awaitResult = true;
 
     renderOptions(base);
 

@@ -20,7 +20,7 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import userEvent from "@testing-library/user-event";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import bricksRegistry from "@/bricks/registry";
@@ -80,7 +80,7 @@ describe("AddBrickModal", () => {
         dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
           actions.showAddBlockModal({
-            path: PIPELINE_BLOCKS_FIELD_NAME,
+            path: PIPELINE_BRICKS_FIELD_NAME,
             flavor: PipelineFlavor.AllBricks,
             index: 0,
           }),

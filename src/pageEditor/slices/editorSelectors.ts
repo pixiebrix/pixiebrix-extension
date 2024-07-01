@@ -151,7 +151,8 @@ const dirtyOptionValuesForModIdSelector = createSelector(
   selectNotDeletedModComponentFormStates,
   (_state: EditorRootState, modId: RegistryId) => modId,
   (formStates, modId) =>
-    formStates.find((formState) => formState.recipe?.id === modId)?.optionsArgs,
+    formStates.find((formState) => formState.modMetadata?.id === modId)
+      ?.optionsArgs,
 );
 
 export const selectDirtyOptionValuesForModId =
@@ -194,7 +195,7 @@ const modIsDirtySelector = createSelector(
     selectDeletedComponentFormStatesByModId(state)[modId],
   ({ editor }: EditorRootState, modId: RegistryId) =>
     editor.modComponentFormStates
-      .filter((formState) => formState.recipe?.id === modId)
+      .filter((formState) => formState.modMetadata?.id === modId)
       .map((formState) => formState.uuid),
   (
     isModComponentDirtyById,
@@ -238,8 +239,8 @@ export const selectInstalledModMetadatas = createSelector(
   selectActivatedModComponents,
   (formStates, activatedModComponents) => {
     const formStateModMetadatas: Array<ModComponentBase["_recipe"]> = formStates
-      .filter((formState) => Boolean(formState.recipe))
-      .map((formState) => formState.recipe);
+      .filter((formState) => Boolean(formState.modMetadata))
+      .map((formState) => formState.modMetadata);
     const activatedModComponentModMetadatas: Array<
       ModComponentBase["_recipe"]
     > = activatedModComponents

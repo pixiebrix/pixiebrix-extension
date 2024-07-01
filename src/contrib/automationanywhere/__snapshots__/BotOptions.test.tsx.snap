@@ -14,7 +14,7 @@ exports[`BotOptions should require selected integration 1`] = `
     </div>
     <label
       class="label form-label"
-      for="extension.blockPipeline.0.config.service"
+      for="modComponent.brickPipeline.0.config.service"
     >
       Integration
     </label>
@@ -67,7 +67,7 @@ exports[`BotOptions should require selected integration 1`] = `
                     autocomplete="off"
                     autocorrect="off"
                     class=""
-                    id="extension.blockPipeline.0.config.service"
+                    id="modComponent.brickPipeline.0.config.service"
                     role="combobox"
                     spellcheck="false"
                     style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
@@ -103,7 +103,7 @@ exports[`BotOptions should require selected integration 1`] = `
               </div>
             </div>
             <input
-              name="extension.blockPipeline.0.config.service"
+              name="modComponent.brickPipeline.0.config.service"
               type="hidden"
               value=""
             />

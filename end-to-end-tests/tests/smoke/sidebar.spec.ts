@@ -37,7 +37,7 @@ test.describe("sidebar page smoke test", () => {
     // The default integration values are not immediately loaded and are temporarily empty.
     // If we try activating too fast, the activation will fail due to missing configuration, so we wait for the values to load.
     await expect(
-      page.getByText("OpenAI — ✨ Built-in", { exact: true }),
+      modActivationPage.getByText("OpenAI — ✨ Built-in", { exact: true }),
     ).toBeVisible();
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 

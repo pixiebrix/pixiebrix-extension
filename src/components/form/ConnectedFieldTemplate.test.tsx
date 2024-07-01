@@ -98,7 +98,7 @@ describe("ConnectedFieldTemplate", () => {
         ),
       );
 
-      const path = "extension.blockPipeline[0].config.testField";
+      const path = "modComponent.brickPipeline[0].config.testField";
 
       const analysisAnnotation: AnalysisAnnotation = {
         analysisId: "test",
@@ -147,7 +147,7 @@ describe("ConnectedFieldTemplate", () => {
         ),
       );
 
-      const path = "extension.blockPipeline[0].config.testField";
+      const path = "modComponent.brickPipeline[0].config.testField";
 
       const analysisAnnotation: AnalysisAnnotation = {
         analysisId: "test",
@@ -168,8 +168,8 @@ describe("ConnectedFieldTemplate", () => {
         {
           initialValues: formState,
           initialErrors: {
-            extension: {
-              blockPipeline: [
+            modComponent: {
+              brickPipeline: [
                 {
                   config: {
                     testField: "test formik error",
@@ -212,7 +212,7 @@ describe("ConnectedFieldTemplate", () => {
         ),
       );
 
-      const path = "extension.blockPipeline[0].config.testField";
+      const path = "modComponent.brickPipeline[0].config.testField";
 
       const analysisAnnotation1: AnalysisAnnotation = {
         analysisId: "test1",
@@ -281,7 +281,7 @@ describe("ConnectedFieldTemplate", () => {
         ),
       );
 
-      const path = "extension.blockPipeline[0].config.testField";
+      const path = "modComponent.brickPipeline[0].config.testField";
 
       const annotations: AnalysisAnnotation[] = [
         // The annotation appears normally when detail matches the field value

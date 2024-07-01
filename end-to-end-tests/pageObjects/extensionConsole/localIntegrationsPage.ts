@@ -17,14 +17,13 @@
 
 import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
+import { BasePageObject } from "../basePageObject";
 
-export class LocalIntegrationsPage {
+export class LocalIntegrationsPage extends BasePageObject {
   private readonly extensionConsoleUrl?: string;
 
-  constructor(
-    private readonly page: Page,
-    extensionId?: string,
-  ) {
+  constructor(page: Page, extensionId?: string) {
+    super(page);
     this.extensionConsoleUrl =
       extensionId && getBaseExtensionConsoleUrl(extensionId);
   }
@@ -34,30 +33,26 @@ export class LocalIntegrationsPage {
       await this.page.goto(this.extensionConsoleUrl);
     }
 
-    await this.page
-      .getByRole("link", {
-        name: "Local Integrations",
-      })
-      .click();
+    await this.getByRole("link", {
+      name: "Local Integrations",
+    }).click();
 
     await expect(
-      this.page.getByRole("heading", { name: "Local Integrations" }),
+      this.getByRole("heading", { name: "Local Integrations" }),
     ).toBeVisible();
 
-    await expect(this.page.getByTestId("loader")).toBeHidden();
+    await expect(this.getByTestId("loader")).toBeHidden();
   }
 
   async createNewIntegration(integrationName: string) {
-    await this.page
-      .getByRole("button", { name: "Add Local Integration" })
-      .click();
+    await this.getByRole("button", { name: "Add Local Integration" }).click();
 
-    await this.page
-      .getByPlaceholder("Start typing to find results")
-      .fill(integrationName);
+    await this.getByPlaceholder("Start typing to find results").fill(
+      integrationName,
+    );
 
-    await this.page.getByText(integrationName).first().click();
+    await this.getByText(integrationName).first().click();
 
-    await this.page.getByTestId(`${integrationName} detail button`).click();
+    await this.getByTestId(`${integrationName} detail button`).click();
   }
 }

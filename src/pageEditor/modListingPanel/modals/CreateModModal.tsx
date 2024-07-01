@@ -72,7 +72,7 @@ function useInitialFormState({
   const scope = useSelector(selectScope);
 
   const activeModId =
-    activeModComponentFormState?.recipe?.id ?? activeMod?.metadata?.id;
+    activeModComponentFormState?.modMetadata?.id ?? activeMod?.metadata?.id;
   const dirtyModMetadata = useSelector(
     selectDirtyMetadataForModId(activeModId),
   );
@@ -150,7 +150,7 @@ const CreateModModalBody: React.FC = () => {
   // is open, and a mod is active, then we're performing a "Save as New" on that mod.
   const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId =
-    directlyActiveModId ?? activeModComponentFormState?.recipe?.id;
+    directlyActiveModId ?? activeModComponentFormState?.modMetadata?.id;
   const { data: activeMod, isFetching: isModFetching } =
     useOptionalModDefinition(activeModId);
 

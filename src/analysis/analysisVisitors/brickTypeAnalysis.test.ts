@@ -36,16 +36,16 @@ beforeAll(() => {
 
 describe("BrickTypeAnalysis", () => {
   test("disallow effect in renderer", async () => {
-    const modComponent = sidebarPanelFormStateFactory();
+    const formState = sidebarPanelFormStateFactory();
 
-    modComponent.extension.blockPipeline = [
+    formState.modComponent.brickPipeline = [
       createNewConfiguredBrick(ALERT_EFFECT_ID),
       createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
     ];
 
     const analysis = new BrickTypeAnalysis();
 
-    await analysis.run(modComponent);
+    await analysis.run(formState);
 
     expect(analysis.getAnnotations()).toHaveLength(1);
   });
@@ -55,16 +55,16 @@ describe("BrickTypeAnalysis", () => {
     CancelEffect.BRICK_ID,
     ErrorEffect.BRICK_ID,
   ])("allow %s in renderer", async (brickId) => {
-    const modComponent = sidebarPanelFormStateFactory();
+    const formState = sidebarPanelFormStateFactory();
 
-    modComponent.extension.blockPipeline = [
+    formState.modComponent.brickPipeline = [
       createNewConfiguredBrick(brickId),
       createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
     ];
 
     const analysis = new BrickTypeAnalysis();
 
-    await analysis.run(modComponent);
+    await analysis.run(formState);
 
     expect(analysis.getAnnotations()).toHaveLength(0);
   });

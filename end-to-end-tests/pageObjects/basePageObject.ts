@@ -24,8 +24,9 @@ import { type Locator, type Page } from "playwright";
  *
  * @example
  * class LoginPage extends BasePageObject {
- *   const usernameInput = this.getByPlaceholder('Username');
- *   const passwordInput = this.getByPlaceholder('Password');
+ *   // define common locators at the top.
+ *   usernameInput = this.getByPlaceholder('Username');
+ *   passwordInput = this.getByPlaceholder('Password');
  *
  *   async login(username, password) {
  *     await usernameInput.fill(username);
@@ -56,7 +57,7 @@ import { type Locator, type Page } from "playwright";
  * const username = await dashboardPage.userProfile.getUsername();
  *
  * @param {Locator|Page} rootLocatorOrPage The root locator scoping this page object.
- * If a Page is provided, the root locator will be the body.
+ * If a Page is provided, the root locator will be `locator("html")`.
  */
 export class BasePageObject {
   readonly root: Locator;
@@ -76,7 +77,7 @@ export class BasePageObject {
       this.root = rootLocatorOrPage;
       this.page = rootLocatorOrPage.page();
     } else {
-      this.root = rootLocatorOrPage.locator("body");
+      this.root = rootLocatorOrPage.locator("html");
       this.page = rootLocatorOrPage;
     }
 

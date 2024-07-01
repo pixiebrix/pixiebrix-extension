@@ -18,7 +18,7 @@
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import { generateFreshOutputKey, getPipelineMap } from "./editHelpers";
 import {
@@ -41,22 +41,22 @@ describe("getPipelineMap", () => {
     const firstBlock = pipeline[0];
     expect(pipelineMap[firstBlock.instanceId]).toEqual({
       blockId: firstBlock.id,
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.0`,
       blockConfig: firstBlock,
       index: 0,
       pipeline,
-      pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
+      pipelinePath: PIPELINE_BRICKS_FIELD_NAME,
       parentNodeId: undefined,
     });
 
     const secondBlock = pipeline[1];
     expect(pipelineMap[secondBlock.instanceId]).toEqual({
       blockId: secondBlock.id,
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.1`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.1`,
       blockConfig: secondBlock,
       index: 1,
       pipeline,
-      pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
+      pipelinePath: PIPELINE_BRICKS_FIELD_NAME,
       parentNodeId: undefined,
     });
   });
@@ -80,22 +80,22 @@ describe("getPipelineMap", () => {
 
     expect(pipelineMap[subPipelineFirstBlock.instanceId]).toEqual({
       blockId: subPipelineFirstBlock.id,
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__.0`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.__value__.0`,
       blockConfig: subPipelineFirstBlock,
       index: 0,
       pipeline: subPipeline,
-      pipelinePath: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__`,
+      pipelinePath: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.__value__`,
       parentNodeId: forEachBrick.instanceId,
     });
 
     const subPipelineSecondBlock = subPipeline[1];
     expect(pipelineMap[subPipelineSecondBlock.instanceId]).toEqual({
       blockId: subPipelineSecondBlock.id,
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__.1`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.__value__.1`,
       blockConfig: subPipelineSecondBlock,
       index: 1,
       pipeline: subPipeline,
-      pipelinePath: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__`,
+      pipelinePath: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.__value__`,
       parentNodeId: forEachBrick.instanceId,
     });
   });
@@ -122,22 +122,22 @@ describe("getPipelineMap", () => {
     const subPipelineFirstBlock = subPipeline[0];
     expect(pipelineMap[subPipelineFirstBlock.instanceId]).toEqual({
       blockId: subPipelineFirstBlock.id,
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.0`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.0`,
       blockConfig: subPipelineFirstBlock,
       index: 0,
       pipeline: subPipeline,
-      pipelinePath: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__`,
+      pipelinePath: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__`,
       parentNodeId: documentBrick.instanceId,
     });
 
     const subPipelineSecondBlock = subPipeline[1];
     expect(pipelineMap[subPipelineSecondBlock.instanceId]).toEqual({
       blockId: subPipelineSecondBlock.id,
-      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.1`,
+      path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.1`,
       blockConfig: subPipelineSecondBlock,
       index: 1,
       pipeline: subPipeline,
-      pipelinePath: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__`,
+      pipelinePath: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__`,
       parentNodeId: documentBrick.instanceId,
     });
   });

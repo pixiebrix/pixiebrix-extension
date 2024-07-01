@@ -367,7 +367,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
         >
           <textarea
             class="form-control"
-            name="extension.blockPipeline.1.comments"
+            name="modComponent.brickPipeline.1.comments"
             rows="1"
           />
         </div>

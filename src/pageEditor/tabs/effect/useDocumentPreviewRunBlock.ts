@@ -105,10 +105,10 @@ export default function useDocumentPreviewRunBlock(
 
   const {
     uuid: modComponentId,
-    recipe: mod,
+    modMetadata: mod,
     apiVersion,
     integrationDependencies,
-    extensionPoint: starterBrick,
+    starterBrick,
   } = useSelector(selectActiveModComponentFormState);
 
   const { blockConfig } = useSelector(

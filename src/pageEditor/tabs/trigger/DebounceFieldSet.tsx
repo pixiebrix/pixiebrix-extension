@@ -18,7 +18,7 @@ const DebounceFieldSet: React.FC<{
 }> = ({ isLocked }) => {
   const { setFieldValue } = useFormikContext<TriggerFormState>();
 
-  const fieldName = partial(joinName, "extensionPoint.definition");
+  const fieldName = partial(joinName, "starterBrick.definition");
 
   const [{ value: debounce }] = useField<DebounceOptions | null>(
     fieldName("debounce"),

@@ -26,7 +26,7 @@ import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import recipeRegistry from "@/modDefinitions/registry";
+import modRegistry from "@/modDefinitions/registry";
 import blockRegistry from "@/bricks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
@@ -104,8 +104,8 @@ jest.mock("@/bricks/registry", () => ({
 jest.mock("@/modDefinitions/registry");
 
 describe("Collecting available vars", () => {
-  function mockBlueprintWithOptions(optionsSchema: any) {
-    jest.mocked(recipeRegistry.lookup).mockResolvedValue(
+  function mockModWithOptions(optionsSchema: any) {
+    jest.mocked(modRegistry.lookup).mockResolvedValue(
       defaultModDefinitionFactory({
         options: {
           schema: optionsSchema,
@@ -125,7 +125,7 @@ describe("Collecting available vars", () => {
     });
 
     test("collects the context vars", async () => {
-      mockBlueprintWithOptions({
+      mockModWithOptions({
         properties: {
           foo: {
             type: "string",
@@ -133,7 +133,7 @@ describe("Collecting available vars", () => {
         },
       });
 
-      const extension = formStateFactory(
+      const formState = formStateFactory(
         {
           // Test both the PixieBrix api integration and a sample third-party service
           integrationDependencies: [
@@ -147,19 +147,19 @@ describe("Collecting available vars", () => {
           optionsArgs: {
             foo: "bar",
           },
-          recipe: modMetadataFactory({
-            id: validateRegistryId("test/recipe"),
+          modMetadata: modMetadataFactory({
+            id: validateRegistryId("test/mod"),
           }),
         },
         [brickConfigFactory()],
       );
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       const knownVars = analysis.getKnownVars();
       expect(knownVars.size).toBe(1);
 
-      const foundationKnownVars = knownVars.get("extension.blockPipeline.0");
+      const foundationKnownVars = knownVars.get("modComponent.brickPipeline.0");
       expect(foundationKnownVars.isVariableDefined("@input.title")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@input.url")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@input.lang")).toBeTrue();
@@ -177,24 +177,24 @@ describe("Collecting available vars", () => {
     });
 
     test("collects the output key", async () => {
-      const extension = formStateFactory(undefined, [
+      const formState = formStateFactory(undefined, [
         brickConfigFactory({
           outputKey: validateOutputKey("foo"),
         }),
         brickConfigFactory(),
       ]);
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       const block0Vars = analysis
         .getKnownVars()
-        .get("extension.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       expect(block0Vars.isVariableDefined("@foo")).toBeFalse();
 
       const block1Vars = analysis
         .getKnownVars()
-        .get("extension.blockPipeline.1");
+        .get("modComponent.brickPipeline.1");
 
       expect(block1Vars.isVariableDefined("@foo")).toBeTrue();
 
@@ -203,7 +203,7 @@ describe("Collecting available vars", () => {
     });
 
     test("collects the output key of a conditional block", async () => {
-      const extension = formStateFactory(undefined, [
+      const formState = formStateFactory(undefined, [
         brickConfigFactory({
           if: true,
           outputKey: validateOutputKey("foo"),
@@ -211,17 +211,17 @@ describe("Collecting available vars", () => {
         brickConfigFactory(),
       ]);
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       const block0Vars = analysis
         .getKnownVars()
-        .get("extension.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       expect(block0Vars.isVariableDefined("@foo")).toBeFalse();
 
       const block1Vars = analysis
         .getKnownVars()
-        .get("extension.blockPipeline.1");
+        .get("modComponent.brickPipeline.1");
 
       expect(block1Vars.isVariableDefined("@foo")).toBeTrue();
 
@@ -234,13 +234,13 @@ describe("Collecting available vars", () => {
     it("collects actual mod variables", async () => {
       const analysis = new VarAnalysis({ modState: { foo: 42 } });
 
-      const extension = formStateFactory({}, [brickConfigFactory()]);
+      const formState = formStateFactory({}, [brickConfigFactory()]);
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       const foundationKnownVars = analysis
         .getKnownVars()
-        .get("extension.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       expect(foundationKnownVars.isVariableDefined("@mod")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@mod.foo")).toBeTrue();
@@ -254,13 +254,13 @@ describe("Collecting available vars", () => {
         },
       });
 
-      const extension = formStateFactory({}, [brickConfigFactory()]);
+      const formState = formStateFactory({}, [brickConfigFactory()]);
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       const foundationKnownVars = analysis
         .getKnownVars()
-        .get("extension.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       console.log(JSON.stringify(foundationKnownVars));
 
@@ -284,13 +284,13 @@ describe("Collecting available vars", () => {
     it("handles inferred mod variables", async () => {
       const analysis = new VarAnalysis({ modVariables: [{ foo: {} }] });
 
-      const extension = formStateFactory({}, [brickConfigFactory()]);
+      const formState = formStateFactory({}, [brickConfigFactory()]);
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       const foundationKnownVars = analysis
         .getKnownVars()
-        .get("extension.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       expect(foundationKnownVars.isVariableDefined("@mod")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@mod.foo")).toBeTrue();
@@ -298,34 +298,34 @@ describe("Collecting available vars", () => {
     });
   });
 
-  describe("blueprint @options", () => {
+  describe("mod @options", () => {
     beforeEach(() => {
       analysis = new VarAnalysis();
     });
 
     test.each([{}, null, undefined])("no options", async (optionsSchema) => {
-      mockBlueprintWithOptions(optionsSchema);
+      mockModWithOptions(optionsSchema);
 
-      const extension = formStateFactory(
+      const formState = formStateFactory(
         {
-          recipe: modMetadataFactory({
-            id: validateRegistryId("test/recipe"),
+          modMetadata: modMetadataFactory({
+            id: validateRegistryId("test/mod"),
           }),
         },
         [brickConfigFactory()],
       );
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       const foundationKnownVars = analysis
         .getKnownVars()
-        .get("extension.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
       expect(foundationKnownVars.isVariableDefined("@options")).toBeFalse();
     });
 
-    test("read values from blueprint and extension", async () => {
-      mockBlueprintWithOptions({
+    test("read values from mod and mod component", async () => {
+      mockModWithOptions({
         properties: {
           foo: {
             type: "string",
@@ -336,36 +336,36 @@ describe("Collecting available vars", () => {
         },
       });
 
-      const extension = formStateFactory(
+      const formState = formStateFactory(
         {
-          // Let this extension to have a service reference
+          // Let this mod component have an integration reference
           optionsArgs: {
             bar: "qux",
             baz: "quux",
           },
-          recipe: modMetadataFactory({
-            id: validateRegistryId("test/recipe"),
+          modMetadata: modMetadataFactory({
+            id: validateRegistryId("test/mod"),
           }),
         },
         [brickConfigFactory()],
       );
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       const foundationKnownVars = analysis
         .getKnownVars()
-        .get("extension.blockPipeline.0");
+        .get("modComponent.brickPipeline.0");
 
-      // A variable defined in the blueprint
+      // A variable defined in the mod
       expect(foundationKnownVars.isVariableDefined("@options.foo")).toBeTrue();
-      // A variable defined in the blueprint and extension options
+      // A variable defined in the mod and mod component options
       expect(foundationKnownVars.isVariableDefined("@options.bar")).toBeTrue();
-      // A variable defined in the extension options but not in the blueprint
+      // A variable defined in the mod component options but not in the mod
       expect(foundationKnownVars.isVariableDefined("@options.baz")).toBeTrue();
     });
 
     test("sets DEFINITELY for required options", async () => {
-      mockBlueprintWithOptions({
+      mockModWithOptions({
         properties: {
           foo: {
             type: "string",
@@ -377,29 +377,29 @@ describe("Collecting available vars", () => {
         required: ["foo"],
       });
 
-      const extension = formStateFactory(
+      const formState = formStateFactory(
         {
-          recipe: modMetadataFactory({
-            id: validateRegistryId("test/recipe"),
+          modMetadata: modMetadataFactory({
+            id: validateRegistryId("test/mod"),
           }),
         },
         [brickConfigFactory()],
       );
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       const knownVars = analysis.getKnownVars();
 
-      const optionsVars = knownVars.get("extension.blockPipeline.0").getMap()[
-        "options:test/recipe"
-      ]["@options"];
+      const optionsVars = knownVars
+        .get("modComponent.brickPipeline.0")
+        .getMap()["options:test/mod"]["@options"];
 
       expect(optionsVars.foo[SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
       expect(optionsVars.bar[SELF_EXISTENCE]).toBe(VarExistence.MAYBE);
     });
 
     test("sets DEFINITELY for the actually set values", async () => {
-      mockBlueprintWithOptions({
+      mockModWithOptions({
         properties: {
           foo: {
             type: "string",
@@ -407,10 +407,10 @@ describe("Collecting available vars", () => {
         },
       });
 
-      const extension = formStateFactory(
+      const formState = formStateFactory(
         {
-          recipe: modMetadataFactory({
-            id: validateRegistryId("test/recipe"),
+          modMetadata: modMetadataFactory({
+            id: validateRegistryId("test/mod"),
           }),
           optionsArgs: {
             foo: "bar",
@@ -419,13 +419,13 @@ describe("Collecting available vars", () => {
         [brickConfigFactory()],
       );
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       const knownVars = analysis.getKnownVars();
 
-      const optionsVars = knownVars.get("extension.blockPipeline.0").getMap()[
-        "options:test/recipe"
-      ]["@options"];
+      const optionsVars = knownVars
+        .get("modComponent.brickPipeline.0")
+        .getMap()["options:test/mod"]["@options"];
 
       expect(optionsVars.foo[SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
     });
@@ -435,7 +435,7 @@ describe("Collecting available vars", () => {
     const outputKey = validateOutputKey("foo");
 
     async function runAnalysisWithOutputSchema(outputSchema: Schema) {
-      const extension = formStateFactory(undefined, [
+      const formState = formStateFactory(undefined, [
         brickConfigFactory({
           outputKey,
         }),
@@ -444,7 +444,7 @@ describe("Collecting available vars", () => {
       jest.mocked(blockRegistry.allTyped).mockResolvedValue(
         new Map([
           [
-            extension.extension.blockPipeline[0].id,
+            formState.modComponent.brickPipeline[0].id,
             {
               block: {
                 // HtmlReader's output schema, see @/bricks/readers/HtmlReader.ts
@@ -455,9 +455,9 @@ describe("Collecting available vars", () => {
         ]) as any,
       );
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
-      return analysis.getKnownVars().get("extension.blockPipeline.1");
+      return analysis.getKnownVars().get("modComponent.brickPipeline.1");
     }
 
     test("reads output schema of a block when defined", async () => {
@@ -729,28 +729,28 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const extension = formStateFactory(undefined, [
+      const formState = formStateFactory(undefined, [
         ifElseBlock,
         brickConfigFactory(),
       ]);
 
-      await analysis.run(extension);
+      await analysis.run(formState);
     });
 
     test("adds if-else output after the brick", async () => {
       expect(
         analysis
           .getKnownVars()
-          .get("extension.blockPipeline.1")
+          .get("modComponent.brickPipeline.1")
           .isVariableDefined("@ifOutput"),
       ).toBeTrue();
     });
 
     test.each([
-      "extension.blockPipeline.0.config.if.__value__.0",
-      "extension.blockPipeline.0.config.if.__value__.1",
-      "extension.blockPipeline.0.config.else.__value__.0",
-      "extension.blockPipeline.0.config.else.__value__.1",
+      "modComponent.brickPipeline.0.config.if.__value__.0",
+      "modComponent.brickPipeline.0.config.if.__value__.1",
+      "modComponent.brickPipeline.0.config.else.__value__.0",
+      "modComponent.brickPipeline.0.config.else.__value__.1",
     ])(
       "doesn't add if-else output to sub pipelines (%s)",
       async (blockPath) => {
@@ -763,7 +763,7 @@ describe("Collecting available vars", () => {
     test("doesn't leak sub pipeline outputs", async () => {
       const block1Vars = analysis
         .getKnownVars()
-        .get("extension.blockPipeline.1");
+        .get("modComponent.brickPipeline.1");
       expect(block1Vars.isVariableDefined("@foo")).toBeFalse();
       expect(block1Vars.isVariableDefined("@bar")).toBeFalse();
     });
@@ -793,16 +793,16 @@ describe("Collecting available vars", () => {
         ]),
       );
 
-      const extension = formStateFactory(undefined, [
+      const formState = formStateFactory(undefined, [
         brickConfiguration,
         brickConfiguration,
       ]);
 
       analysis = new VarAnalysis();
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       const knownVars = analysis.getKnownVars();
-      const varMap = knownVars.get("extension.blockPipeline.1");
+      const varMap = knownVars.get("modComponent.brickPipeline.1");
 
       // Check optional chaining handled for first variable
       expect(varMap.isVariableDefined("@input")).toBeTrue();
@@ -840,16 +840,16 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const extension = formStateFactory(undefined, [documentRendererBrick]);
+      const formState = formStateFactory(undefined, [documentRendererBrick]);
 
       analysis = new VarAnalysis();
-      await analysis.run(extension);
+      await analysis.run(formState);
     });
 
     test("adds the list element key list body", () => {
       const knownVars = analysis.getKnownVars();
       const listElementVarMap = knownVars.get(
-        "extension.blockPipeline.0.config.body.0.config.element.__value__",
+        "modComponent.brickPipeline.0.config.body.0.config.element.__value__",
       );
 
       expect(listElementVarMap.isVariableDefined("@element")).toBeTrue();
@@ -865,7 +865,7 @@ describe("Collecting available vars", () => {
         'Variable "@foo" might not be defined',
       );
       expect(annotations[0].position.path).toBe(
-        "extension.blockPipeline.0.config.body.0.config.element.__value__.config.text",
+        "modComponent.brickPipeline.0.config.body.0.config.element.__value__.config.text",
       );
 
       // Not available in to the peer element to the list
@@ -873,7 +873,7 @@ describe("Collecting available vars", () => {
         'Variable "@element" might not be defined',
       );
       expect(annotations[1].position.path).toBe(
-        "extension.blockPipeline.0.config.body.1.config.text",
+        "modComponent.brickPipeline.0.config.body.1.config.text",
       );
     });
   });
@@ -908,16 +908,16 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const extension = formStateFactory(undefined, [documentRendererBrick]);
+      const formState = formStateFactory(undefined, [documentRendererBrick]);
 
       analysis = new VarAnalysis();
-      await analysis.run(extension);
+      await analysis.run(formState);
     });
 
     test("adds the list element key list body", () => {
       const knownVars = analysis.getKnownVars();
       const buttonPipelineVarMap = knownVars.get(
-        "extension.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0",
+        "modComponent.brickPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0",
       );
 
       expect(buttonPipelineVarMap.isVariableDefined("@input")).toBeTrue();
@@ -934,7 +934,7 @@ describe("Collecting available vars", () => {
         message: 'Variable "@foo" might not be defined',
         type: "warning",
         position: {
-          path: "extension.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0.config.text",
+          path: "modComponent.brickPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0.config.text",
         },
         detail: {
           expression: expect.toBeObject(),
@@ -955,20 +955,20 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const extension = formStateFactory(undefined, [
+      const formState = formStateFactory(undefined, [
         tryExceptBlock,
         brickConfigFactory(),
       ]);
 
       analysis = new VarAnalysis();
-      await analysis.run(extension);
+      await analysis.run(formState);
     });
 
     test("adds the error key to the except branch", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("extension.blockPipeline.0.config.except.__value__.0")
+          .get("modComponent.brickPipeline.0.config.except.__value__.0")
           .isVariableDefined("@error"),
       ).toBeTrue();
     });
@@ -977,7 +977,7 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("extension.blockPipeline.0.config.try.__value__.0")
+          .get("modComponent.brickPipeline.0.config.try.__value__.0")
           .isVariableDefined("@error"),
       ).toBeFalse();
     });
@@ -995,20 +995,20 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const extension = formStateFactory(undefined, [
+      const formState = formStateFactory(undefined, [
         forEachBlock,
         brickConfigFactory(),
       ]);
 
       analysis = new VarAnalysis();
-      await analysis.run(extension);
+      await analysis.run(formState);
     });
 
     test("adds the element key to the sub pipeline", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("extension.blockPipeline.0.config.body.__value__.0")
+          .get("modComponent.brickPipeline.0.config.body.__value__.0")
           .isVariableDefined("@element"),
       ).toBeTrue();
     });
@@ -1031,27 +1031,27 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const extension = formStateFactory(undefined, [
+      const formState = formStateFactory(undefined, [
         forEachBlock,
         brickConfigFactory(),
       ]);
 
       analysis = new VarAnalysis();
-      await analysis.run(extension);
+      await analysis.run(formState);
     });
 
     test("adds for-each output after the brick", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("extension.blockPipeline.1")
+          .get("modComponent.brickPipeline.1")
           .isVariableDefined("@forEachOutput"),
       ).toBeTrue();
     });
 
     test.each([
-      "extension.blockPipeline.0.config.body.__value__.0",
-      "extension.blockPipeline.0.config.body.__value__.1",
+      "modComponent.brickPipeline.0.config.body.__value__.0",
+      "modComponent.brickPipeline.0.config.body.__value__.1",
     ])("doesn't add for-each output to sub pipelines (%s)", (blockPath) => {
       expect(
         analysis
@@ -1065,7 +1065,7 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("extension.blockPipeline.1")
+          .get("modComponent.brickPipeline.1")
           .isVariableDefined("@foo"),
       ).toBeFalse();
     });
@@ -1074,7 +1074,7 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("extension.blockPipeline.0.config.body.__value__.0")
+          .get("modComponent.brickPipeline.0.config.body.__value__.0")
           .isVariableDefined("@element"),
       ).toBeTrue();
     });
@@ -1083,18 +1083,18 @@ describe("Collecting available vars", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("extension.blockPipeline.1")
+          .get("modComponent.brickPipeline.1")
           .isVariableDefined("@element"),
       ).toBeFalse();
     });
 
     test.each([
-      "extension.blockPipeline.0.config.body.__value__.0",
-      "extension.blockPipeline.0.config.body.__value__.1",
+      "modComponent.brickPipeline.0.config.body.__value__.0",
+      "modComponent.brickPipeline.0.config.body.__value__.1",
     ])("source of the @element key if the For-Each block (%s)", (blockPath) => {
       const blockVars = analysis.getKnownVars().get(blockPath).getMap();
 
-      const expectedForEachBlockPath = "extension.blockPipeline.0";
+      const expectedForEachBlockPath = "modComponent.brickPipeline.0";
 
       // Find the source that provided the @element variable
       const actualForEachBlockPath = Object.entries(blockVars).find(
@@ -1122,7 +1122,7 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const extension = formStateFactory(undefined, [
+      const formState = formStateFactory(undefined, [
         customFormBlock,
         brickConfigFactory(),
       ]);
@@ -1140,14 +1140,14 @@ describe("Collecting available vars", () => {
       );
 
       analysis = new VarAnalysis();
-      await analysis.run(extension);
+      await analysis.run(formState);
     });
 
     test("adds the `values` to the onsubmit handler", () => {
       expect(
         analysis
           .getKnownVars()
-          .get("extension.blockPipeline.0.config.onSubmit.__value__.0")
+          .get("modComponent.brickPipeline.0.config.onSubmit.__value__.0")
           .isVariableDefined("@values"),
       ).toBeTrue();
     });
@@ -1155,7 +1155,7 @@ describe("Collecting available vars", () => {
     test("adds the form fields to the onsubmit handler", () => {
       const blockVars = analysis
         .getKnownVars()
-        .get("extension.blockPipeline.0.config.onSubmit.__value__.0");
+        .get("modComponent.brickPipeline.0.config.onSubmit.__value__.0");
 
       expect(blockVars.isVariableDefined("@values.foo")).toBeTrue();
       expect(blockVars.isVariableDefined("@values.bar")).toBeFalse();
@@ -1164,7 +1164,7 @@ describe("Collecting available vars", () => {
 });
 
 describe("Invalid template", () => {
-  let extension: ModComponentFormState;
+  let formState: ModComponentFormState;
   let analysis: VarAnalysis;
 
   beforeEach(() => {
@@ -1187,30 +1187,30 @@ describe("Invalid template", () => {
       },
     };
 
-    extension = formStateFactory(undefined, [invalidEchoBlock, validEchoBlock]);
+    formState = formStateFactory(undefined, [invalidEchoBlock, validEchoBlock]);
 
     analysis = new VarAnalysis();
   });
 
   test("analysis doesn't throw", async () => {
-    await expect(analysis.run(extension)).toResolve();
+    await expect(analysis.run(formState)).toResolve();
   });
 
   test("analysis doesn't annotate invalid template", async () => {
-    await analysis.run(extension);
+    await analysis.run(formState);
     const annotations = analysis.getAnnotations();
 
     // Only the second (index = 1) block should be annotated
     expect(annotations).toHaveLength(1);
     expect(annotations[0].position.path).toBe(
-      "extension.blockPipeline.1.config.message",
+      "modComponent.brickPipeline.1.config.message",
     );
   });
 });
 
 describe("var expression annotations", () => {
   test("doesn't annotate valid expressions", async () => {
-    const extension = formStateFactory(undefined, [
+    const formState = formStateFactory(undefined, [
       brickConfigFactory({
         outputKey: validateOutputKey("foo"),
       }),
@@ -1223,13 +1223,13 @@ describe("var expression annotations", () => {
     ]);
 
     const analysis = new VarAnalysis();
-    await analysis.run(extension);
+    await analysis.run(formState);
 
     expect(analysis.getAnnotations()).toHaveLength(0);
   });
 
   test("doesn't annotate empty variable", async () => {
-    const extension = formStateFactory(undefined, [
+    const formState = formStateFactory(undefined, [
       {
         id: EchoBrick.BLOCK_ID,
         config: {
@@ -1239,13 +1239,13 @@ describe("var expression annotations", () => {
     ]);
 
     const analysis = new VarAnalysis();
-    await analysis.run(extension);
+    await analysis.run(formState);
 
     expect(analysis.getAnnotations()).toHaveLength(0);
   });
 
   test("annotates variable which doesn't start with @", async () => {
-    const extension = formStateFactory(undefined, [
+    const formState = formStateFactory(undefined, [
       {
         id: EchoBrick.BLOCK_ID,
         config: {
@@ -1255,7 +1255,7 @@ describe("var expression annotations", () => {
     ]);
 
     const analysis = new VarAnalysis();
-    await analysis.run(extension);
+    await analysis.run(formState);
 
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(1);
@@ -1265,7 +1265,7 @@ describe("var expression annotations", () => {
   });
 
   test("annotates variable which is just whitespace", async () => {
-    const extension = formStateFactory(undefined, [
+    const formState = formStateFactory(undefined, [
       {
         id: EchoBrick.BLOCK_ID,
         config: {
@@ -1275,7 +1275,7 @@ describe("var expression annotations", () => {
     ]);
 
     const analysis = new VarAnalysis();
-    await analysis.run(extension);
+    await analysis.run(formState);
 
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(1);
@@ -1283,7 +1283,7 @@ describe("var expression annotations", () => {
   });
 
   test("return a generic error message for a single @ character", async () => {
-    const extension = formStateFactory(undefined, [
+    const formState = formStateFactory(undefined, [
       {
         id: EchoBrick.BLOCK_ID,
         config: {
@@ -1293,7 +1293,7 @@ describe("var expression annotations", () => {
     ]);
 
     const analysis = new VarAnalysis();
-    await analysis.run(extension);
+    await analysis.run(formState);
 
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(1);
@@ -1303,7 +1303,7 @@ describe("var expression annotations", () => {
 
 describe("var analysis integration tests", () => {
   it("should handle trigger event", async () => {
-    const extension = triggerFormStateFactory(undefined, [
+    const formState = triggerFormStateFactory(undefined, [
       {
         id: EchoBrick.BLOCK_ID,
         config: {
@@ -1315,17 +1315,17 @@ describe("var analysis integration tests", () => {
       },
     ]);
 
-    extension.extensionPoint.definition.trigger = "keypress";
+    formState.starterBrick.definition.trigger = "keypress";
 
     const analysis = new VarAnalysis();
-    await analysis.run(extension);
+    await analysis.run(formState);
 
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(0);
   });
 
   it("should handle trigger custom event", async () => {
-    const extension = triggerFormStateFactory(undefined, [
+    const formState = triggerFormStateFactory(undefined, [
       {
         id: EchoBrick.BLOCK_ID,
         config: {
@@ -1337,17 +1337,17 @@ describe("var analysis integration tests", () => {
       },
     ]);
 
-    extension.extensionPoint.definition.trigger = "custom";
+    formState.starterBrick.definition.trigger = "custom";
 
     const analysis = new VarAnalysis();
-    await analysis.run(extension);
+    await analysis.run(formState);
 
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(0);
   });
 
   it("should handle trigger selectionchange event", async () => {
-    const extension = triggerFormStateFactory(undefined, [
+    const formState = triggerFormStateFactory(undefined, [
       {
         id: EchoBrick.BLOCK_ID,
         config: {
@@ -1360,10 +1360,10 @@ describe("var analysis integration tests", () => {
       },
     ]);
 
-    extension.extensionPoint.definition.trigger = "selectionchange";
+    formState.starterBrick.definition.trigger = "selectionchange";
 
     const analysis = new VarAnalysis();
-    await analysis.run(extension);
+    await analysis.run(formState);
 
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(1);
