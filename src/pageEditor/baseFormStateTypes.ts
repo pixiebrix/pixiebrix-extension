@@ -142,11 +142,40 @@ export type BaseFormStateV2<
   integrationDependencies: IntegrationDependencyV2[];
 };
 
-export type BaseFormState<
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type BaseFormStateV3<
   TModComponent extends BaseModComponentState = BaseModComponentState,
   TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<
   BaseFormStateV2<TModComponent, TStarterBrick>,
+  "recipe" | "extension" | "extensionPoint"
+> & {
+  /**
+   * @since 2.0.4, part of Page Editor renaming effort
+   * `extensionPoint` to `starterBrick`
+   * `extension` to `modComponent`
+   * `recipe` to `mod`
+   */
+
+  starterBrick: TStarterBrick;
+
+  modComponent: TModComponent;
+
+  /**
+   * Information about the mod used to install the mod component, or `undefined`
+   * if the mod component is not part of a mod.
+   * @see ModComponentBase._recipe
+   */
+  mod: ModComponentBase["_recipe"] | undefined;
+};
+
+export type BaseFormState<
+  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
+> = Except<
+  BaseFormStateV3<TModComponent, TStarterBrick>,
   "integrationDependencies"
 > & {
   /**
