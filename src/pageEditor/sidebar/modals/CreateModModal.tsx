@@ -201,28 +201,24 @@ const CreateModModalBody: React.FC = () => {
         name="id"
         label="Mod ID"
         description={FieldDescriptions.MOD_ID}
-        widerLabel
         showUntouchedErrors
         as={RegistryIdWidget}
       />
       <ConnectedFieldTemplate
         name="name"
         label="Name"
-        widerLabel
         description={FieldDescriptions.MOD_NAME}
         showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="version"
         label="Version"
-        widerLabel
         description={FieldDescriptions.MOD_VERSION}
         showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="description"
         label="Description"
-        widerLabel
         description={FieldDescriptions.MOD_DESCRIPTION}
         showUntouchedErrors
       />

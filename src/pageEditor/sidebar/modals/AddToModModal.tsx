@@ -168,7 +168,6 @@ const AddToModModal: React.FC = () => {
           description="Choose a mod"
           as={SelectWidget}
           options={selectOptions}
-          widerLabel
         />
         <ConnectedFieldTemplate
           name="moveOrCopy"
