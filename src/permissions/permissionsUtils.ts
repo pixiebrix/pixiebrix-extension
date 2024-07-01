@@ -17,13 +17,12 @@
 
 import { type Manifest, type Permissions } from "webextension-polyfill";
 import { uniq } from "lodash";
-import { isScriptableUrl } from "webext-content-scripts";
-import { extractAdditionalPermissions } from "webext-permissions";
 import {
-  getTabUrl,
+  isScriptableUrl,
   canAccessTab as _canAccessTab,
-  type Target,
-} from "webext-tools";
+} from "webext-content-scripts";
+import { extractAdditionalPermissions } from "webext-permissions";
+import { getTabUrl, type Target } from "webext-tools";
 import {
   isPermissionsStatus,
   type PermissionsStatus,
