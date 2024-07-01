@@ -44,7 +44,6 @@ import {
   selectModComponentIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
-import useSaveStandaloneModComponent from "@/pageEditor/hooks/useSaveStandaloneModComponent";
 import useResetModComponent from "@/pageEditor/hooks/useResetModComponent";
 import {
   useRemoveModComponentFromStorage,
@@ -104,10 +103,6 @@ const DraftModComponentListItem: React.FunctionComponent<
     await disableOverlay(inspectedTab);
   }, []);
 
-  const {
-    save: saveStandaloneModComponent,
-    isSaving: isSavingStandaloneModComponent,
-  } = useSaveStandaloneModComponent();
   const resetModComponent = useResetModComponent();
   const { save: saveMod, isSaving: isSavingMod } = useSaveMod();
 
@@ -128,13 +123,11 @@ const DraftModComponentListItem: React.FunctionComponent<
     if (modComponentFormState.modMetadata) {
       await saveMod(modComponentFormState.modMetadata?.id);
     } else {
-      await saveStandaloneModComponent(modComponentFormState);
+      dispatch(actions.showCreateModModal({ keepLocalCopy: false }));
     }
   };
 
-  const isSaving = modComponentFormState.modMetadata
-    ? isSavingMod
-    : isSavingStandaloneModComponent;
+  const isSaving = modComponentFormState.modMetadata ? isSavingMod : false;
 
   const onReset = async () =>
     resetModComponent({ modComponentId: modComponentFormState.uuid });
