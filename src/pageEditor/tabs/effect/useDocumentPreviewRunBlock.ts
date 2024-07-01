@@ -105,7 +105,7 @@ export default function useDocumentPreviewRunBlock(
 
   const {
     uuid: modComponentId,
-    mod,
+    modMetadata: mod,
     apiVersion,
     integrationDependencies,
     starterBrick,

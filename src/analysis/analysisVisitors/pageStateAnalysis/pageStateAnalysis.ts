@@ -98,7 +98,7 @@ class PageStateVisitor extends AnalysisVisitorWithResolvedBricksABC {
   }
 
   override async run(formState: ModComponentFormState): Promise<void> {
-    this.isInMod = Boolean(formState.mod);
+    this.isInMod = Boolean(formState.modMetadata);
     await super.run(formState);
   }
 }

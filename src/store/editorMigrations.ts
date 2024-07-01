@@ -128,7 +128,7 @@ function migrateFormStateV2(state: BaseFormStateV2): BaseFormStateV3 {
     ...omit(state, "recipe", "extension", "extensionPoint"),
     modComponent: state.extension,
     starterBrick: state.extensionPoint,
-    mod: state.recipe,
+    modMetadata: state.recipe,
   };
 }
 

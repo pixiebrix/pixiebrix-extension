@@ -73,7 +73,7 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   integrationDependencies(): IntegrationDependency[] {
     return [];
   },
-  mod: undefined,
+  modMetadata: undefined,
   type: StarterBrickTypes.SIDEBAR_PANEL,
   label: (i: number) => `Element ${i}`,
   modComponent: baseModComponentStateFactory,

@@ -200,8 +200,8 @@ describe("editor state migrations", () => {
 
   function unmigrateFormStateV2(formState: BaseFormStateV3): BaseFormStateV2 {
     return {
-      ...omit(formState, ["mod", "modComponent", "starterBrick"]),
-      recipe: formState.mod,
+      ...omit(formState, ["modMetadata", "modComponent", "starterBrick"]),
+      recipe: formState.modMetadata,
       extension: formState.modComponent,
       extensionPoint: formState.starterBrick,
     };
@@ -249,7 +249,7 @@ describe("editor state migrations", () => {
     it("migrates state with elements with services and deleted elements", () => {
       const fooElement1 = unmigrateFormStateV2(
         formStateFactory({
-          mod: modMetadataFactory({
+          modMetadata: modMetadataFactory({
             id: validateRegistryId("foo"),
           }),
           integrationDependencies: [
@@ -264,7 +264,7 @@ describe("editor state migrations", () => {
       );
       const fooElement2 = unmigrateFormStateV2(
         formStateFactory({
-          mod: modMetadataFactory({
+          modMetadata: modMetadataFactory({
             id: validateRegistryId("foo"),
           }),
           integrationDependencies: [
@@ -279,7 +279,7 @@ describe("editor state migrations", () => {
       );
       const barElement = unmigrateFormStateV2(
         formStateFactory({
-          mod: modMetadataFactory({
+          modMetadata: modMetadataFactory({
             id: validateRegistryId("bar"),
           }),
           integrationDependencies: [

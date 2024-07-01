@@ -175,7 +175,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
       getPageState(inspectedTab, {
         namespace: StateNamespaces.MOD,
         modComponentId: null,
-        modId: activeModComponentFormState.mod?.id,
+        modId: activeModComponentFormState.modMetadata?.id,
       }),
     [],
   );

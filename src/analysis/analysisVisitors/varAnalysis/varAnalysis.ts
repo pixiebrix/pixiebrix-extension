@@ -310,11 +310,11 @@ async function setOptionsVars(
   formState: ModComponentFormState,
   contextVars: VarMap,
 ): Promise<void> {
-  if (formState.mod == null) {
+  if (formState.modMetadata == null) {
     return;
   }
 
-  const modId = formState.mod.id;
+  const modId = formState.modMetadata.id;
   const mod = await modRegistry.lookup(modId);
   const optionsSchema = mod?.options?.schema;
   if (isEmpty(optionsSchema)) {

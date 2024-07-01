@@ -301,7 +301,7 @@ describe("useCheckModStarterBrickInvariants", () => {
       integrationDependencies: [],
     });
     const formState = await modComponentToFormState(activatedModComponent);
-    delete formState.mod;
+    delete formState.modMetadata;
 
     const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
       setupRedux(dispatch) {

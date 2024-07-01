@@ -210,7 +210,7 @@ describe("selectVariables", () => {
       permissions: emptyPermissionsFactory(),
       optionsArgs: {},
       type: "actionPanel",
-      mod: null,
+      modMetadata: null,
       modComponent: {
         blockPipeline: [
           {

@@ -147,7 +147,7 @@ describe("Collecting available vars", () => {
           optionsArgs: {
             foo: "bar",
           },
-          mod: modMetadataFactory({
+          modMetadata: modMetadataFactory({
             id: validateRegistryId("test/mod"),
           }),
         },
@@ -308,7 +308,7 @@ describe("Collecting available vars", () => {
 
       const formState = formStateFactory(
         {
-          mod: modMetadataFactory({
+          modMetadata: modMetadataFactory({
             id: validateRegistryId("test/mod"),
           }),
         },
@@ -343,7 +343,7 @@ describe("Collecting available vars", () => {
             bar: "qux",
             baz: "quux",
           },
-          mod: modMetadataFactory({
+          modMetadata: modMetadataFactory({
             id: validateRegistryId("test/mod"),
           }),
         },
@@ -379,7 +379,7 @@ describe("Collecting available vars", () => {
 
       const formState = formStateFactory(
         {
-          mod: modMetadataFactory({
+          modMetadata: modMetadataFactory({
             id: validateRegistryId("test/mod"),
           }),
         },
@@ -409,7 +409,7 @@ describe("Collecting available vars", () => {
 
       const formState = formStateFactory(
         {
-          mod: modMetadataFactory({
+          modMetadata: modMetadataFactory({
             id: validateRegistryId("test/mod"),
           }),
           optionsArgs: {

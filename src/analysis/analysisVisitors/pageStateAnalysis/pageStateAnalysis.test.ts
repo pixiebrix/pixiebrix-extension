@@ -129,7 +129,9 @@ describe("PageStateAnalysis", () => {
         },
       ]);
 
-      state.mod = { id: registryIdFactory() } as BaseFormState["mod"];
+      state.modMetadata = {
+        id: registryIdFactory(),
+      } as BaseFormState["modMetadata"];
 
       const analysis = new PageStateAnalysis();
       await analysis.run(state);

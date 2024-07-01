@@ -353,8 +353,12 @@ describe("removeElement", () => {
 describe("removeModData", () => {
   test("removes expanded active mod", () => {
     const modMetadata = modMetadataFactory();
-    const modComponentFormState1 = formStateFactory({ mod: modMetadata });
-    const modComponentFormState2 = formStateFactory({ mod: modMetadata });
+    const modComponentFormState1 = formStateFactory({
+      modMetadata: modMetadata,
+    });
+    const modComponentFormState2 = formStateFactory({
+      modMetadata: modMetadata,
+    });
     const orphanModComponentFormState = formStateFactory();
     const state: EditorState = {
       ...initialState,

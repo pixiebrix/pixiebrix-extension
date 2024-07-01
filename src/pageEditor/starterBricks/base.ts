@@ -123,7 +123,7 @@ export function baseFromModComponent<T extends StarterBrickType>(
   | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
-  | "mod"
+  | "modMetadata"
 > & { type: T } {
   return {
     uuid: config.id,
@@ -135,7 +135,7 @@ export function baseFromModComponent<T extends StarterBrickType>(
     permissions: config.permissions ?? {},
     optionsArgs: config.optionsArgs ?? {},
     type,
-    mod: config._recipe,
+    modMetadata: config._recipe,
   };
 }
 
@@ -146,9 +146,9 @@ export function initModOptionsIfNeeded<TFormState extends BaseFormState>(
   modComponentFormState: TFormState,
   modDefinitions: ModDefinition[],
 ) {
-  if (modComponentFormState.mod?.id) {
+  if (modComponentFormState.modMetadata?.id) {
     const mod = modDefinitions?.find(
-      (x) => x.metadata.id === modComponentFormState.mod?.id,
+      (x) => x.metadata.id === modComponentFormState.modMetadata?.id,
     );
 
     if (mod?.options == null) {
@@ -176,7 +176,7 @@ export function baseSelectModComponent({
   integrationDependencies,
   permissions,
   starterBrick,
-  mod,
+  modMetadata: mod,
 }: BaseFormState): Pick<
   ModComponentBase,
   | "id"
@@ -212,7 +212,7 @@ export function makeInitialBaseState(
     modComponent: {
       blockPipeline: [],
     },
-    mod: undefined,
+    modMetadata: undefined,
   };
 }
 

@@ -44,5 +44,5 @@ export function getModComponentItemId(item: ModComponentSidebarItem): UUID {
 }
 
 export function isModSidebarItem(item: SidebarItem): item is ModSidebarItem {
-  return "modMetadata" in item;
+  return "modMetadata" in item && "modComponents" in item;
 }

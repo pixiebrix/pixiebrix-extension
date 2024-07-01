@@ -133,7 +133,7 @@ const cloneActiveModComponent = createAsyncThunk<
       draft.uuid = uuidv4();
       draft.label += " (Copy)";
       // Remove from its mod, if any (the user can add it to any mod after creation)
-      delete draft.mod;
+      delete draft.modMetadata;
       // Re-generate instance IDs for all the bricks in the mod component
       draft.modComponent.blockPipeline = await normalizePipelineForEditor(
         draft.modComponent.blockPipeline,
@@ -556,10 +556,10 @@ export const editorSlice = createSlice({
       const modMetadata = action.payload;
       const modComponentFormStates = state.modComponentFormStates.filter(
         (modComponentFormState) =>
-          modComponentFormState.mod?.id === modMetadata?.id,
+          modComponentFormState.modMetadata?.id === modMetadata?.id,
       );
       for (const formState of modComponentFormStates) {
-        formState.mod = modMetadata;
+        formState.modMetadata = modMetadata;
       }
     },
     showAddToModModal(state) {
@@ -593,7 +593,7 @@ export const editorSlice = createSlice({
       state.modComponentFormStates.push({
         ...modComponentFormState,
         uuid: newId,
-        mod: modMetadata,
+        modMetadata: modMetadata,
         installed: false, // Can't "reset" this, only remove or save
       });
       state.dirty[newId] = true;
@@ -634,10 +634,10 @@ export const editorSlice = createSlice({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
         state.modComponentFormStates[modComponentFormStateIndex]!;
       assertNotNullish(
-        modComponentFormState.mod,
+        modComponentFormState.modMetadata,
         "Mod component form state has no mod definition",
       );
-      const modId = modComponentFormState.mod.id;
+      const modId = modComponentFormState.modMetadata.id;
       state.deletedModComponentFormStatesByModId[modId] ??= [];
 
       state.deletedModComponentFormStatesByModId[modId].push(
@@ -653,7 +653,7 @@ export const editorSlice = createSlice({
         state.modComponentFormStates.push({
           ...modComponentFormState,
           uuid: newId,
-          mod: undefined,
+          modMetadata: undefined,
         });
         state.dirty[newId] = true;
         ensureBrickPipelineUIState(state, newId);
@@ -869,7 +869,7 @@ export const editorSlice = createSlice({
         editor: state,
       });
       const modFormStates = notDeletedFormStates.filter(
-        (formState) => formState.mod?.id === modId,
+        (formState) => formState.modMetadata?.id === modId,
       );
       for (const formState of modFormStates) {
         formState.optionsArgs = action.payload;

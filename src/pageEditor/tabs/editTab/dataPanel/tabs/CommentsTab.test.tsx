@@ -35,7 +35,7 @@ const commentsFieldName = "modComponent.blockPipeline.0.comments";
 const initialComments = "Hello world!";
 const formStateWithComments = menuItemFormStateFactory(
   {
-    mod: modMetadataFactory(),
+    modMetadata: modMetadataFactory(),
   },
   [
     brickConfigFactory({
@@ -55,7 +55,7 @@ const renderCommentsTab = (formState = formStateWithComments) => {
         <CommentsTab
           brickId={brickId}
           brickCommentsFieldName={commentsFieldName}
-          modId={formState.mod?.id}
+          modId={formState.modMetadata?.id}
         />
       </Formik>
     </Tab.Container>,
@@ -110,7 +110,7 @@ describe("CommentsTab", () => {
     expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {
       commentsLength: expectedComments.length,
       brickId: expectedBrickId,
-      modId: formStateWithComments.mod.id,
+      modId: formStateWithComments.modMetadata.id,
     });
   });
 });

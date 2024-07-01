@@ -156,20 +156,25 @@ export type BaseFormStateV3<
    * @since 2.0.5
    * Part of the Page Editor renaming effort
    * `extensionPoint` to `starterBrick`
-   * `extension` to `modComponent`
-   * `recipe` to `mod`
    */
-
   starterBrick: TStarterBrick;
 
+  /**
+   * @since 2.0.5
+   * Part of the Page Editor renaming effort
+   * `extension` to `modComponent`
+   */
   modComponent: TModComponent;
 
   /**
+   * @since 2.0.5
+   * Part of the Page Editor renaming effort
+   * `recipe` to `modMetadata`
    * Information about the mod used to install the mod component, or `undefined`
    * if the mod component is not part of a mod.
    * @see ModComponentBase._recipe
    */
-  mod: ModComponentBase["_recipe"] | undefined;
+  modMetadata: ModComponentBase["_recipe"] | undefined;
 };
 
 export type BaseFormState<

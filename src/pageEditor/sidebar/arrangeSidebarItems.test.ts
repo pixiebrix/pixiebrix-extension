@@ -50,7 +50,7 @@ const ID_FOO_B = uuidv4();
 const formStateModComponentFooB: ButtonFormState = menuItemFormStateFactory({
   uuid: ID_FOO_B,
   label: "B",
-  mod: modMetadataFoo,
+  modMetadata: modMetadataFoo,
 });
 
 const ID_ORPHAN_C = uuidv4();
@@ -70,7 +70,7 @@ const ID_BAR_E = uuidv4();
 const formStateModComponentBarE: ButtonFormState = menuItemFormStateFactory({
   uuid: ID_BAR_E,
   label: "E",
-  mod: modMetadataBar,
+  modMetadata: modMetadataBar,
 });
 
 const ID_BAR_F = uuidv4();

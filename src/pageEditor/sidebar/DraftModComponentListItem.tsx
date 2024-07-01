@@ -80,9 +80,9 @@ const DraftModComponentListItem: React.FunctionComponent<
 
   const isActive =
     activeModComponentFormState?.uuid === modComponentFormState.uuid;
-  const modId = modComponentFormState.mod?.id;
-  const isSiblingOfActiveListItem = activeModComponentFormState?.mod?.id
-    ? modId === activeModComponentFormState?.mod?.id
+  const modId = modComponentFormState.modMetadata?.id;
+  const isSiblingOfActiveListItem = activeModComponentFormState?.modMetadata?.id
+    ? modId === activeModComponentFormState?.modMetadata?.id
     : false;
   const isChildOfActiveListItem = modId === activeModId;
   const isRelativeOfActiveListItem =
@@ -125,14 +125,14 @@ const DraftModComponentListItem: React.FunctionComponent<
     });
 
   const onSave = async () => {
-    if (modComponentFormState.mod) {
-      await saveMod(modComponentFormState.mod?.id);
+    if (modComponentFormState.modMetadata) {
+      await saveMod(modComponentFormState.modMetadata?.id);
     } else {
       await saveStandaloneModComponent(modComponentFormState);
     }
   };
 
-  const isSaving = modComponentFormState.mod
+  const isSaving = modComponentFormState.modMetadata
     ? isSavingMod
     : isSavingStandaloneModComponent;
 
@@ -209,14 +209,14 @@ const DraftModComponentListItem: React.FunctionComponent<
           onReset={modComponentFormState.installed ? onReset : undefined}
           isDirty={isDirty}
           onAddToMod={
-            modComponentFormState.mod
+            modComponentFormState.modMetadata
               ? undefined
               : async () => {
                   dispatch(actions.showAddToModModal());
                 }
           }
           onRemoveFromMod={
-            modComponentFormState.mod
+            modComponentFormState.modMetadata
               ? async () => {
                   dispatch(actions.showRemoveFromModModal());
                 }

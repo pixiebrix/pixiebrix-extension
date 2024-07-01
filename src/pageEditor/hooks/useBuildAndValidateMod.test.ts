@@ -180,7 +180,7 @@ describe("useBuildAndValidateMod", () => {
     });
 
     const dirtyFormState1 = formStateFactory({
-      mod: modMetadata,
+      modMetadata,
     });
 
     const { result, getReduxStore } = renderHook(

@@ -44,7 +44,8 @@ function useResetMod(): (modId: RegistryId) => Promise<void> {
       await Promise.all(
         modComponentFormStates
           .filter(
-            (modComponentFormState) => modComponentFormState.mod?.id === modId,
+            (modComponentFormState) =>
+              modComponentFormState.modMetadata?.id === modId,
           )
           .map(async (modComponentFormState) =>
             resetModComponent({

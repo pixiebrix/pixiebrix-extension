@@ -167,7 +167,7 @@ const DataPanel: React.FC = () => {
 
   useEffect(() => {
     reportEvent(Events.DATA_PANEL_TAB_VIEW, {
-      modId: activeModComponentFormState.mod?.id,
+      modId: activeModComponentFormState.modMetadata?.id,
       brickId,
       tabName: activeTabKey,
     });
@@ -407,7 +407,7 @@ const DataPanel: React.FC = () => {
           </DataTab>
           <CommentsTab
             brickId={brickConfig.id}
-            modId={activeModComponentFormState.mod?.id}
+            modId={activeModComponentFormState.modMetadata?.id}
             brickCommentsFieldName={brickCommentsFieldName}
           />
         </Tab.Content>

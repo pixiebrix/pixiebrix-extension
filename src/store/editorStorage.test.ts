@@ -162,7 +162,7 @@ describe("draftModComponentStorage", () => {
   test("removes active recipe", async () => {
     const mod = modMetadataFactory();
     const formState1 = formStateFactory({
-      mod,
+      modMetadata: mod,
     });
     const formState1NodeUIStates: Record<UUID, NodeUIState> = {
       [formState1.uuid]: {
@@ -173,7 +173,7 @@ describe("draftModComponentStorage", () => {
       } as NodeUIState,
     };
     const formState2 = formStateFactory({
-      mod,
+      modMetadata: mod,
     });
     const formState2NodeUIStates: Record<UUID, NodeUIState> = {
       [formState2.uuid]: {
@@ -254,7 +254,7 @@ describe("draftModComponentStorage", () => {
   test("removes inactive recipe", async () => {
     const mod = modMetadataFactory();
     const formState1 = formStateFactory({
-      mod,
+      modMetadata: mod,
     });
     const formState1NodeUIStates: Record<UUID, NodeUIState> = {
       [formState1.uuid]: {
@@ -265,7 +265,7 @@ describe("draftModComponentStorage", () => {
       } as NodeUIState,
     };
     const formState2 = formStateFactory({
-      mod,
+      modMetadata: mod,
     });
     const formState2NodeUIStates: Record<UUID, NodeUIState> = {
       [formState2.uuid]: {
