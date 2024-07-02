@@ -27,7 +27,7 @@ import { compact, flatMap, isEmpty, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   type BrickPipelineUIState,
-  type TabUIState,
+  type DataPanelTabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -285,7 +285,7 @@ export function selectActiveBrickPipelineUIState({
   return editor.brickPipelineUIStateById[editor.activeModComponentId];
 }
 
-export const selectActiveNodeUIState = createSelector(
+export const selectActiveBrickConfigurationUIState = createSelector(
   selectActiveBrickPipelineUIState,
   (brickPipelineUIState) =>
     brickPipelineUIState?.nodeUIStates[brickPipelineUIState.activeNodeId],
@@ -343,47 +343,49 @@ export const selectActiveModComponentNodeInfo =
   (instanceId: UUID) => (state: EditorRootState) =>
     activeModComponentNodeInfoSelector(state, instanceId);
 
-const parentBlockInfoSelector = createSelector(
+const parentNodeInfoSelector = createSelector(
   selectActiveBrickPipelineUIState,
-  (state: EditorRootState, instanceId: UUID) => instanceId,
-  (uiState: BrickPipelineUIState, instanceId: UUID) => {
-    if (uiState == null) {
+  (state: EditorRootState, nodeId: UUID) => nodeId,
+  (brickPipelineUIState: BrickPipelineUIState, nodeId: UUID) => {
+    if (brickPipelineUIState == null) {
       return null;
     }
 
     // eslint-disable-next-line security/detect-object-injection -- UUID
-    const { parentNodeId } = uiState.pipelineMap[instanceId] ?? {};
+    const { parentNodeId } = brickPipelineUIState.pipelineMap[nodeId] ?? {};
     if (!parentNodeId) {
       return null;
     }
 
     // eslint-disable-next-line security/detect-object-injection -- UUID
-    return uiState.pipelineMap[parentNodeId];
+    return brickPipelineUIState.pipelineMap[parentNodeId];
   },
 );
 
 /**
- * Return the block with the pipeline that contains the given node.
- * @param instanceId the block instanceId
+ * Return the brick with the pipeline that contains the given node.
+ * @param nodeId the instance id of the brick pipeline node
  */
-export const selectParentBlockInfo =
-  (instanceId: UUID) => (state: EditorRootState) =>
-    parentBlockInfoSelector(state, instanceId);
+export const selectParentNodeInfo =
+  (nodeId: UUID) => (state: EditorRootState) =>
+    parentNodeInfoSelector(state, nodeId);
 
 export const selectNodeDataPanelTabSelected: (
   rootState: EditorRootState,
 ) => Nullishable<DataPanelTabKey> = createSelector(
-  selectActiveNodeUIState,
-  (nodeUIState) => nodeUIState?.dataPanel.activeTabKey,
+  selectActiveBrickConfigurationUIState,
+  (brickConfigurationUIState) =>
+    brickConfigurationUIState?.dataPanel.activeTabKey,
 );
 
 export function selectNodeDataPanelTabState(
   rootState: EditorRootState,
   tabKey: DataPanelTabKey,
-): Nullishable<TabUIState> {
-  const nodeUIState = selectActiveNodeUIState(rootState);
+): Nullishable<DataPanelTabUIState> {
+  const brickConfigurationUIState =
+    selectActiveBrickConfigurationUIState(rootState);
   // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
-  return nodeUIState?.dataPanel[tabKey];
+  return brickConfigurationUIState?.dataPanel[tabKey];
 }
 
 /**

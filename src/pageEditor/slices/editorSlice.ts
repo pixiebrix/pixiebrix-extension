@@ -39,7 +39,7 @@ import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveModComponentFormState,
   selectActiveBrickPipelineUIState,
-  selectActiveNodeUIState,
+  selectActiveBrickConfigurationUIState,
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
 } from "./editorSelectors";
@@ -57,7 +57,7 @@ import {
   removeModData,
   setActiveModId,
   setActiveNodeId,
-  syncNodeUIStates,
+  syncBrickConfigurationUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
@@ -380,7 +380,7 @@ export const editorSlice = createSlice({
       // Make sure we're not keeping any private data around from Page Editor sessions
       void clearModComponentTraces(modComponentFormState.uuid);
 
-      syncNodeUIStates(state, modComponentFormState);
+      syncBrickConfigurationUIStates(state, modComponentFormState);
     },
     showHomePane(state) {
       state.activeModComponentId = null;
@@ -441,7 +441,7 @@ export const editorSlice = createSlice({
         modComponentFormState as Draft<ModComponentFormState>;
       state.dirty[modComponentFormState.uuid] = true;
 
-      syncNodeUIStates(state, modComponentFormState);
+      syncBrickConfigurationUIStates(state, modComponentFormState);
     },
     partialUpdateModComponentFormState(
       state,
@@ -479,8 +479,9 @@ export const editorSlice = createSlice({
       setActiveNodeId(state, action.payload);
     },
     setNodeDataPanelTabSelected(state, action: PayloadAction<DataPanelTabKey>) {
-      const nodeUIState = validateNodeUIState(state);
-      nodeUIState.dataPanel.activeTabKey = action.payload;
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+      brickConfigurationUIState.dataPanel.activeTabKey = action.payload;
     },
 
     /**
@@ -492,9 +493,10 @@ export const editorSlice = createSlice({
     ) {
       const { tabKey, query } = action.payload;
 
-      const nodeUIState = validateNodeUIState(state);
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
 
-      nodeUIState.dataPanel[tabKey].query = query;
+      brickConfigurationUIState.dataPanel[tabKey].query = query;
     },
 
     /**
@@ -508,21 +510,26 @@ export const editorSlice = createSlice({
       }>,
     ) {
       const { tabKey, expandedState } = action.payload;
-      const nodeUIState = validateNodeUIState(state);
-      nodeUIState.dataPanel[tabKey].treeExpandedState = expandedState;
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+      brickConfigurationUIState.dataPanel[tabKey].treeExpandedState =
+        expandedState;
     },
     setActiveBuilderPreviewElement(
       state,
       action: PayloadAction<string | null>,
     ) {
       const activeElement = action.payload;
-      const nodeUIState = validateNodeUIState(state);
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
 
-      nodeUIState.dataPanel[DataPanelTabKey.Preview].activeElement =
-        activeElement;
+      brickConfigurationUIState.dataPanel[
+        DataPanelTabKey.Preview
+      ].activeElement = activeElement;
 
-      nodeUIState.dataPanel[DataPanelTabKey.Outline].activeElement =
-        activeElement;
+      brickConfigurationUIState.dataPanel[
+        DataPanelTabKey.Outline
+      ].activeElement = activeElement;
     },
 
     copyBlockConfig(state, action: PayloadAction<BrickConfig>) {
@@ -744,7 +751,7 @@ export const editorSlice = createSlice({
       }
 
       pipeline.splice(pipelineIndex, 0, block);
-      syncNodeUIStates(state, modComponentFormState);
+      syncBrickConfigurationUIStates(state, modComponentFormState);
       assertNotNullish(block.instanceId, "Block instanceId not found");
       setActiveNodeId(state, block.instanceId);
       state.dirty[modComponentFormState.uuid] = true;
@@ -793,7 +800,7 @@ export const editorSlice = createSlice({
       }
 
       // Make sure the pipeline map is updated
-      syncNodeUIStates(state, activeModComponentFormState);
+      syncBrickConfigurationUIStates(state, activeModComponentFormState);
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
@@ -837,7 +844,7 @@ export const editorSlice = createSlice({
 
       removeUnusedDependencies(activeModComponentFormState);
 
-      syncNodeUIStates(state, activeModComponentFormState);
+      syncBrickConfigurationUIStates(state, activeModComponentFormState);
 
       activeBrickPipelineUIState.activeNodeId =
         nextActiveNode?.instanceId ?? FOUNDATION_NODE_ID;
@@ -880,7 +887,7 @@ export const editorSlice = createSlice({
       state,
       { payload }: PayloadAction<{ id: string; isExpanded: boolean }>,
     ) {
-      const uiState = selectActiveNodeUIState({
+      const uiState = selectActiveBrickConfigurationUIState({
         editor: state,
       });
       assertNotNullish(uiState, "Active node UI state not found");
@@ -895,22 +902,25 @@ export const editorSlice = createSlice({
     expandBrickPipelineNode(state, action: PayloadAction<UUID>) {
       const nodeId = action.payload;
       const brickPipelineUIState = validateBrickPipelineUIState(state);
-      const nodeUIState = brickPipelineUIState.nodeUIStates[nodeId];
+      const brickConfigurationUIState =
+        brickPipelineUIState.nodeUIStates[nodeId];
       assertNotNullish(
-        nodeUIState,
+        brickConfigurationUIState,
         `Node UI state not found for id: ${nodeId}`,
       );
-      nodeUIState.collapsed = false;
+      brickConfigurationUIState.collapsed = false;
     },
     toggleCollapseBrickPipelineNode(state, action: PayloadAction<UUID>) {
       const nodeId = action.payload;
       const brickPipelineUIState = validateBrickPipelineUIState(state);
-      const nodeUIState = brickPipelineUIState.nodeUIStates[nodeId];
+      const brickConfigurationUIState =
+        brickPipelineUIState.nodeUIStates[nodeId];
       assertNotNullish(
-        nodeUIState,
+        brickConfigurationUIState,
         `Node UI state not found for id: ${nodeId}`,
       );
-      nodeUIState.collapsed = !nodeUIState.collapsed;
+      brickConfigurationUIState.collapsed =
+        !brickConfigurationUIState.collapsed;
     },
     setDataSectionExpanded(
       state,
@@ -1035,15 +1045,15 @@ function validateBrickPipelineUIState(state: Draft<EditorState>) {
   return brickPipelineUIState;
 }
 
-function validateNodeUIState(state: Draft<EditorState>) {
+function validateBrickConfigurationUIState(state: Draft<EditorState>) {
   const brickPipelineUIState = validateBrickPipelineUIState(state);
 
-  const nodeUIState =
+  const brickConfigurationUIState =
     brickPipelineUIState.nodeUIStates[brickPipelineUIState.activeNodeId];
 
   assertNotNullish(
-    nodeUIState,
+    brickConfigurationUIState,
     `Brick Pipeline UI state not found for activeNodeId: ${brickPipelineUIState.activeNodeId}`,
   );
-  return nodeUIState;
+  return brickConfigurationUIState;
 }
