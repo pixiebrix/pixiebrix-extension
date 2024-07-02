@@ -16,7 +16,6 @@
  */
 
 import { type BrowserContext, type Page, expect } from "@playwright/test";
-import { ensureVisibility } from "../utils";
 
 export const openExtensionConsoleFromAdmin = async (
   adminPage: Page,
