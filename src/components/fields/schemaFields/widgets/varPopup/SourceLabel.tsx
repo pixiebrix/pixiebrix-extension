@@ -8,14 +8,14 @@ import { type TypedBrickMap } from "@/bricks/registry";
 type SourceLabelProps = {
   source: string;
   extensionPointLabel: string;
-  blocksInfo: NodeInfo[];
+  nodeInfo: NodeInfo[];
   allBlocks: TypedBrickMap;
 };
 
 const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
   source,
   extensionPointLabel,
-  blocksInfo,
+  nodeInfo,
   allBlocks,
 }) => {
   const [kind] = source.split(":");
@@ -42,7 +42,7 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
     }
 
     default: {
-      const blockConfig = blocksInfo.find((block) => block.path === source)
+      const blockConfig = nodeInfo.find((block) => block.path === source)
         ?.blockConfig;
       if (blockConfig == null) {
         label = source;

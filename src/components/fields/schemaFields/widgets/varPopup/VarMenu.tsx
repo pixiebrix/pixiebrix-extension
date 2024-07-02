@@ -255,7 +255,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
                 <SourceLabel
                   source={source}
                   extensionPointLabel={starterBrickLabel}
-                  blocksInfo={blocksInfo}
+                  nodeInfo={blocksInfo}
                   allBlocks={allBricks}
                 />
                 <VariablesTree
@@ -273,7 +273,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
             <SourceLabel
               source={source}
               extensionPointLabel={starterBrickLabel}
-              blocksInfo={blocksInfo}
+              nodeInfo={blocksInfo}
               allBlocks={allBricks}
             />
             <VariablesTree
