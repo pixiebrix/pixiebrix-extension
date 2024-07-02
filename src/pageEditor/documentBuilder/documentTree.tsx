@@ -20,7 +20,7 @@ import BlockElement from "@/pageEditor/documentBuilder/render/BlockElement";
 import { get } from "lodash";
 import { Col, Container, Row, Image } from "react-bootstrap";
 import {
-  type BuildDocumentBuilderBranch,
+  type BuildDocumentBuilderSubtree,
   type ButtonElementConfig,
   type DocumentBuilderComponent,
   type DocumentBuilderElement,
@@ -59,7 +59,7 @@ const UnknownType: React.FC<{ componentType: string }> = ({
   <div className="text-danger">Unknown component type: {componentType}</div>
 );
 
-export const buildDocumentBuilderBranch: BuildDocumentBuilderBranch = (
+export const buildDocumentBuilderSubtree: BuildDocumentBuilderSubtree = (
   root,
   tracePath,
 ) => {
@@ -84,16 +84,16 @@ export const buildDocumentBuilderBranch: BuildDocumentBuilderBranch = (
   ) {
     documentBuilderComponent.props.children = root.children.map(
       (child, index) => {
-        const branch = buildDocumentBuilderBranch(child, {
+        const subtree = buildDocumentBuilderSubtree(child, {
           staticId: joinPathParts(staticId, root.type, "children"),
           branches: [...branches, { staticId, index }],
         });
 
-        if (branch == null) {
+        if (subtree == null) {
           return null;
         }
 
-        const { Component, props } = branch;
+        const { Component, props } = subtree;
         // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
         return <Component key={index} {...props} />;
       },
@@ -265,7 +265,7 @@ export function getDocumentBuilderComponent(
         elementKey: config.elementKey,
         config: config.element,
         tracePath,
-        buildDocumentBuilderBranch,
+        buildDocumentBuilderSubtree,
       };
 
       return {
