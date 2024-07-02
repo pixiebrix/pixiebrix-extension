@@ -38,7 +38,7 @@ type Config = {
 function useResetModComponent(): (useResetConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
-  const installed = useSelector(selectActivatedModComponents);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
   const { data: mods } = useAllModDefinitions();
   const { showConfirmation } = useModals();
 
@@ -62,20 +62,22 @@ function useResetModComponent(): (useResetConfig: Config) => Promise<void> {
       });
 
       try {
-        const modComponent = installed.find((x) => x.id === modComponentId);
+        const modComponent = activatedModComponents.find(
+          (x) => x.id === modComponentId,
+        );
         if (modComponent == null) {
           dispatch(actions.removeModComponentFormState(modComponentId));
         } else {
           const formState = await modComponentToFormState(modComponent);
           initModOptionsIfNeeded(formState, compact(mods));
-          dispatch(actions.resetInstalled(formState));
+          dispatch(actions.resetActivatedModComponentFormState(formState));
         }
       } catch (error) {
         reportError(error);
         dispatch(actions.adapterError({ uuid: modComponentId, error }));
       }
     },
-    [dispatch, mods, sessionId, installed, showConfirmation],
+    [dispatch, mods, sessionId, activatedModComponents, showConfirmation],
   );
 }
 

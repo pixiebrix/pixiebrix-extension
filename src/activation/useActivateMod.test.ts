@@ -21,9 +21,9 @@ import useActivateMod from "./useActivateMod";
 import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/contextMenuTypes";
-import { uninstallMod } from "@/store/uninstallUtils";
+import { deactivateMod } from "@/store/deactivateUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
@@ -43,7 +43,7 @@ import type MockAdapter from "axios-mock-adapter";
 jest.mock("@/contentScript/messenger/api");
 
 const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
-const uninstallModMock = jest.mocked(uninstallMod);
+const deactivateModMock = jest.mocked(deactivateMod);
 const reactivateEveryTabMock = jest.mocked(reloadModsEveryTab);
 
 function setupInputs(): {
@@ -51,7 +51,7 @@ function setupInputs(): {
   modDefinition: ModDefinition;
 } {
   const formValues: WizardValues = {
-    extensions: { 0: true },
+    modComponents: { 0: true },
     integrationDependencies: [],
     optionsArgs: {},
   };
@@ -115,7 +115,7 @@ describe("useActivateMod", () => {
     setUserAcceptedPermissions(false);
 
     const {
-      result: { current: activateRecipe },
+      result: { current: activateMod },
       getReduxStore,
     } = renderHook(() => useActivateMod("marketplace"), {
       setupRedux(dispatch, { store }) {
@@ -123,7 +123,7 @@ describe("useActivateMod", () => {
       },
     });
 
-    const { success, error } = await activateRecipe(formValues, modDefinition);
+    const { success, error } = await activateMod(formValues, modDefinition);
 
     expect(success).toBe(false);
     expect(error).toBe("You must accept browser permissions to activate.");
@@ -131,7 +131,7 @@ describe("useActivateMod", () => {
     const { dispatch } = getReduxStore();
 
     expect(dispatch).not.toHaveBeenCalled();
-    expect(uninstallModMock).not.toHaveBeenCalled();
+    expect(deactivateModMock).not.toHaveBeenCalled();
     expect(reactivateEveryTabMock).not.toHaveBeenCalled();
   });
 
@@ -141,7 +141,7 @@ describe("useActivateMod", () => {
     setUserAcceptedPermissions(false);
 
     const {
-      result: { current: activateRecipe },
+      result: { current: activateMod },
     } = renderHook(
       () => useActivateMod("marketplace", { checkPermissions: false }),
       {
@@ -151,19 +151,19 @@ describe("useActivateMod", () => {
       },
     );
 
-    const { success, error } = await activateRecipe(formValues, modDefinition);
+    const { success, error } = await activateMod(formValues, modDefinition);
 
     expect(success).toBe(true);
     expect(error).toBeUndefined();
   });
 
-  it("calls uninstallRecipe, installs to extensionsSlice, and calls reactivateEveryTab, if permissions are granted", async () => {
+  it("calls deactivateMod, activates to modComponentsSlice, and calls reactivateEveryTab, if permissions are granted", async () => {
     const { formValues, modDefinition } = setupInputs();
     setModHasPermissions(false);
     setUserAcceptedPermissions(true);
 
     const {
-      result: { current: activateRecipe },
+      result: { current: activateMod },
       getReduxStore,
       act,
     } = renderHook(() => useActivateMod("extensionConsole"), {
@@ -175,7 +175,7 @@ describe("useActivateMod", () => {
     let success: boolean;
     let error: unknown;
     await act(async () => {
-      const result = await activateRecipe(formValues, modDefinition);
+      const result = await activateMod(formValues, modDefinition);
       success = result.success;
       error = result.error;
     });
@@ -185,14 +185,14 @@ describe("useActivateMod", () => {
 
     const { dispatch } = getReduxStore();
 
-    expect(uninstallModMock).toHaveBeenCalledWith(
+    expect(deactivateModMock).toHaveBeenCalledWith(
       modDefinition.metadata.id,
       expect.toBeArray(),
       dispatch,
     );
 
     expect(dispatch).toHaveBeenCalledWith(
-      extensionsSlice.actions.activateMod({
+      modComponentsSlice.actions.activateMod({
         modDefinition,
         configuredDependencies: [],
         optionsArgs: {},
@@ -237,7 +237,7 @@ describe("useActivateMod", () => {
     appApiMock.onPost("/api/databases/").reply(201, createdDatabase);
 
     const {
-      result: { current: activateRecipe },
+      result: { current: activateMod },
       getReduxStore,
       act,
     } = renderHook(() => useActivateMod("marketplace"), {
@@ -249,7 +249,7 @@ describe("useActivateMod", () => {
     let success: boolean;
     let error: unknown;
     await act(async () => {
-      const result = await activateRecipe(formValues, modDefinition);
+      const result = await activateMod(formValues, modDefinition);
       success = result.success;
       error = result.error;
     });
@@ -260,7 +260,7 @@ describe("useActivateMod", () => {
     const { dispatch } = getReduxStore();
 
     expect(dispatch).toHaveBeenCalledWith(
-      extensionsSlice.actions.activateMod({
+      modComponentsSlice.actions.activateMod({
         modDefinition,
         configuredDependencies: [],
         optionsArgs: {
@@ -311,7 +311,7 @@ describe("useActivateMod", () => {
     const errorMessage = "Error creating database";
 
     const {
-      result: { current: activateRecipe },
+      result: { current: activateMod },
       act,
     } = renderHook(() => useActivateMod("marketplace"), {
       setupRedux(dispatch, { store }) {
@@ -322,7 +322,7 @@ describe("useActivateMod", () => {
     let success: boolean;
     let error: unknown;
     await act(async () => {
-      const result = await activateRecipe(formValues, modDefinition);
+      const result = await activateMod(formValues, modDefinition);
       success = result.success;
       error = result.error;
     });

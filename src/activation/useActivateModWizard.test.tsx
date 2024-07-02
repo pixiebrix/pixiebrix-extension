@@ -46,7 +46,7 @@ jest.mock("@/hooks/useAsyncModOptionsValidationSchema", () => ({
   default: jest.fn(() => valueToAsyncState({})),
 }));
 
-describe("useActivateRecipeWizard", () => {
+describe("useActivateModWizard", () => {
   test("show personalized tab", () => {
     const spy = jest.spyOn(redux, "useSelector");
     spy.mockReturnValue([]);

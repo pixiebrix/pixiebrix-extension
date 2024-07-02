@@ -234,7 +234,7 @@ export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
     editor.visibleModalKey === ModalKey.SAVE_DATA_INTEGRITY_ERROR,
 });
 
-export const selectInstalledModMetadatas = createSelector(
+export const selectActivatedModMetadatas = createSelector(
   selectModComponentFormStates,
   selectActivatedModComponents,
   (formStates, activatedModComponents) => {

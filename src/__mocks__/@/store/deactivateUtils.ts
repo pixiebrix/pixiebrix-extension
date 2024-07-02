@@ -15,6 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const uninstallMod = jest.fn();
-export const uninstallModComponents = jest.fn();
+export const deactivateMod = jest.fn();
+export const deactivateModComponents = jest.fn();
 export const removeModComponentsFromAllTabs = jest.fn();

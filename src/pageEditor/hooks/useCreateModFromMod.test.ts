@@ -94,7 +94,7 @@ describe("useCreateModFromMod", () => {
   it("does not throw an error if the mod fails the compareModComponentCounts check", async () => {
     compareModComponentCountsMock.mockReturnValue(() => false);
     const modMetadata = modMetadataFactory();
-    const installedModDefinition = modDefinitionFactory({
+    const activatedModDefinition = modDefinitionFactory({
       metadata: modMetadata,
       extensionPoints: array(modComponentDefinitionFactory, 2),
     });
@@ -107,7 +107,7 @@ describe("useCreateModFromMod", () => {
       setupRedux(dispatch) {
         dispatch(
           modComponentsActions.activateMod({
-            modDefinition: installedModDefinition,
+            modDefinition: activatedModDefinition,
             screen: "pageEditor",
             isReactivate: false,
           }),
@@ -117,7 +117,7 @@ describe("useCreateModFromMod", () => {
 
     await hookAct(async () => {
       await result.current.createModFromMod(
-        installedModDefinition,
+        activatedModDefinition,
         modMetadata,
       );
     });
@@ -128,7 +128,7 @@ describe("useCreateModFromMod", () => {
   it("does not throw an error if the mod fails the checkModStarterBrickInvariants check", async () => {
     checkModStarterBrickInvariantsMock.mockReturnValue(async () => false);
     const modMetadata = modMetadataFactory();
-    const installedModDefinition = modDefinitionFactory({
+    const activatedModDefinition = modDefinitionFactory({
       metadata: modMetadata,
       extensionPoints: array(modComponentDefinitionFactory, 2),
     });
@@ -141,7 +141,7 @@ describe("useCreateModFromMod", () => {
       setupRedux(dispatch) {
         dispatch(
           modComponentsActions.activateMod({
-            modDefinition: installedModDefinition,
+            modDefinition: activatedModDefinition,
             screen: "pageEditor",
             isReactivate: false,
           }),
@@ -151,7 +151,7 @@ describe("useCreateModFromMod", () => {
 
     await hookAct(async () => {
       await result.current.createModFromMod(
-        installedModDefinition,
+        activatedModDefinition,
         modMetadata,
       );
     });

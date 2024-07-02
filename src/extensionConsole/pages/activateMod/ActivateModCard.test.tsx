@@ -50,7 +50,7 @@ const activateModCallbackMock =
 
 jest.mock("@/activation/useActivateMod.ts");
 
-const activateRecipeHookMock = jest.mocked(useActivateMod);
+const activateModHookMock = jest.mocked(useActivateMod);
 
 jest.mock("@/extensionConsole/pages/useRegistryIdParam", () => ({
   __esModule: true,
@@ -60,7 +60,7 @@ jest.mock("@/extensionConsole/pages/useRegistryIdParam", () => ({
 global.chrome.commands.getAll = jest.fn();
 
 function setupMod(modDefinition: ModDefinition) {
-  const recipeResponse: RetrieveRecipeResponse = {
+  const modResponse: RetrieveRecipeResponse = {
     config: modDefinition,
     updated_at: modDefinition.updated_at,
     sharing: {
@@ -71,7 +71,7 @@ function setupMod(modDefinition: ModDefinition) {
 
   appApiMock
     .onGet(`/api/recipes/${encodeURIComponent(testModId)}/`)
-    .reply(200, recipeResponse)
+    .reply(200, modResponse)
     // Databases, organizations, etc.
     .onGet()
     .reply(200, []);
@@ -80,17 +80,17 @@ function setupMod(modDefinition: ModDefinition) {
 beforeEach(() => {
   appApiMock.reset();
   jest.clearAllMocks();
-  activateRecipeHookMock.mockReturnValue(activateModCallbackMock);
+  activateModHookMock.mockReturnValue(activateModCallbackMock);
 });
 
 // Activate Mod Card is always rendered when the mod has already been found
 const ModCard: React.FC = () => {
-  const recipeState = useGetModDefinitionQuery({
+  const modState = useGetModDefinitionQuery({
     modId: testModId,
   });
   return (
     <MemoryRouter>
-      <AsyncStateGate state={recipeState}>
+      <AsyncStateGate state={modState}>
         {() => <ActivateModCard />}
       </AsyncStateGate>
     </MemoryRouter>
@@ -172,7 +172,7 @@ describe("ActivateModCard", () => {
     await waitForEffect();
     expect(activateModCallbackMock).toHaveBeenCalledWith(
       {
-        extensions: { "0": true },
+        modComponents: { "0": true },
         optionsArgs: {},
         integrationDependencies: [],
       },

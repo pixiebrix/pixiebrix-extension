@@ -29,7 +29,7 @@ import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as modComponentsActions } from "@/store/extensionsSlice";
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
-import { removeModComponentsFromAllTabs } from "@/store/uninstallUtils";
+import { removeModComponentsFromAllTabs } from "@/store/deactivateUtils";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 
 type Config = {

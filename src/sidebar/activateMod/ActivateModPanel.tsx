@@ -39,7 +39,7 @@ import useActivateMod from "@/activation/useActivateMod";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useActivateModWizard, {
-  type UseActivateRecipeWizardResult,
+  type UseActivateModWizardResult,
 } from "@/activation/useActivateModWizard";
 import RequireMods, {
   type RequiredModDefinition,
@@ -212,7 +212,7 @@ export const SuccessPanel: React.FC<{
 );
 
 const ActivateModPanelContent: React.FC<
-  RequiredModDefinition & UseActivateRecipeWizardResult
+  RequiredModDefinition & UseActivateModWizardResult
 > = ({
   modDefinition,
   includesQuickBar,

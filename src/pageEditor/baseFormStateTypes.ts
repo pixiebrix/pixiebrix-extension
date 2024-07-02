@@ -127,7 +127,7 @@ export interface BaseFormStateV1<
   extension: TModComponent;
 
   /**
-   * Information about the mod used to install the mod component, or `undefined`
+   * Information about the mod used to activate the mod component, or `undefined`
    * if the mod component is not part of a mod.
    * @see ModComponentBase._recipe
    */
@@ -185,7 +185,7 @@ export type BaseFormStateV3<
    * @since 2.0.5
    * Part of the Page Editor renaming effort
    * `recipe` to `modMetadata`
-   * Information about the mod used to install the mod component, or `undefined`
+   * Information about the mod used to activate the mod component, or `undefined`
    * if the mod component is not part of a mod.
    * @see ModComponentBase._recipe
    */

@@ -79,7 +79,7 @@ export function createActivationRelativeUrl(
   }
 
   for (const mod of mods) {
-    // `id[]` syntax works in extension both single and multiple values
+    // `id[]` syntax works in mod component both single and multiple values
     searchParams.append("id[]", mod.modId);
   }
 

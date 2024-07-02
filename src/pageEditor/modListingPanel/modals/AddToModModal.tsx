@@ -23,7 +23,7 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import {
   selectActiveModComponentFormState,
   selectEditorModalVisibilities,
-  selectInstalledModMetadatas,
+  selectActivatedModMetadatas,
 } from "@/pageEditor/slices/editorSelectors";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import notify from "@/utils/notify";
@@ -62,7 +62,7 @@ const AddToModModal: React.FC = () => {
   const { isAddToModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
-  const activatedModMetadatas = useSelector(selectInstalledModMetadatas);
+  const activatedModMetadatas = useSelector(selectActivatedModMetadatas);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );

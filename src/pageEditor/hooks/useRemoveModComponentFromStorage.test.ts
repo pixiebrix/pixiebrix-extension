@@ -16,7 +16,7 @@
  */
 
 import { renderHook } from "@/pageEditor/testHelpers";
-import { removeModComponentsFromAllTabs } from "@/store/uninstallUtils";
+import { removeModComponentsFromAllTabs } from "@/store/deactivateUtils";
 import { useRemoveModComponentFromStorage } from "./useRemoveModComponentFromStorage";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as modComponentsActions } from "@/store/extensionsSlice";
