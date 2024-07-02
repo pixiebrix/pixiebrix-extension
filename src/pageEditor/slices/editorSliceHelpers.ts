@@ -25,7 +25,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
-  makeInitialNodeUIState,
+  makeInitialBrickConfigurationUIState,
 } from "@/pageEditor/uiState/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { type BrickPipelineUIState } from "@/pageEditor/uiState/uiStateTypes";
@@ -61,7 +61,7 @@ export function ensureNodeUIState(
   state: Draft<BrickPipelineUIState>,
   nodeId: UUID,
 ) {
-  state.nodeUIStates[nodeId] ??= makeInitialNodeUIState(nodeId);
+  state.nodeUIStates[nodeId] ??= makeInitialBrickConfigurationUIState(nodeId);
 }
 
 export function syncNodeUIStates(

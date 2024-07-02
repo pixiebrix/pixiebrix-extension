@@ -20,7 +20,7 @@ import { initialState } from "@/pageEditor/slices/editorSlice";
 import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
-  makeInitialNodeUIState,
+  makeInitialBrickConfigurationUIState,
 } from "@/pageEditor/uiState/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
@@ -94,7 +94,8 @@ describe("ensureNodeUIState", () => {
       pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
       activeNodeId: nodeId,
     };
-    const nodeState: BrickConfigurationUIState = makeInitialNodeUIState(nodeId);
+    const nodeState: BrickConfigurationUIState =
+      makeInitialBrickConfigurationUIState(nodeId);
     uiState.nodeUIStates = {
       ...uiState.nodeUIStates,
       [nodeId]: {
@@ -140,7 +141,7 @@ describe("syncNodeUIStates", () => {
       pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
       activeNodeId: invalidNodeId,
     };
-    const nodeState = makeInitialNodeUIState(nodeId);
+    const nodeState = makeInitialBrickConfigurationUIState(nodeId);
     uiState.nodeUIStates = {
       ...uiState.nodeUIStates,
       [nodeId]: {
@@ -150,7 +151,7 @@ describe("syncNodeUIStates", () => {
           activeTabKey: "rendered",
         },
       },
-      [invalidNodeId]: makeInitialNodeUIState(invalidNodeId),
+      [invalidNodeId]: makeInitialBrickConfigurationUIState(invalidNodeId),
     };
     const editorState: EditorState = {
       ...initialState,
@@ -235,7 +236,7 @@ describe("setActiveNodeId", () => {
       ...makeInitialBrickPipelineUIState(),
       pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
     };
-    const nodeState = makeInitialNodeUIState(nodeId);
+    const nodeState = makeInitialBrickConfigurationUIState(nodeId);
     uiState.nodeUIStates = {
       ...uiState.nodeUIStates,
       [nodeId]: {
