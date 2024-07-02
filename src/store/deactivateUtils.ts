@@ -36,7 +36,7 @@ import { type UUID } from "@/types/stringTypes";
 /**
  * Use this helper outside the Page Editor context to deactivate a mod and all of its mod components.
  *
- * Uninstalls from:
+ * Removes from:
  * - Extension Options slice
  * - Draft mod components slice (i.e., Page Editor state)
  * - Notifies all tabs to remove the mod components
@@ -73,9 +73,6 @@ export async function deactivateModComponents(
   removeModComponentsFromAllTabs(modComponentIds);
 }
 
-/**
- * Deactivates the mod components from all open tabs
- */
 export function removeModComponentsFromAllTabs(modComponentIds: UUID[]): void {
   for (const modComponentId of modComponentIds) {
     removeModComponentForEveryTab(modComponentId);
