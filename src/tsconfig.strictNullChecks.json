@@ -27,7 +27,7 @@
     "./__mocks__/@/icons/getSvgIcon.ts",
     "./__mocks__/@/icons/list.ts",
     "./__mocks__/@/sandbox/messenger/api.ts",
-    "./__mocks__/@/store/uninstallUtils.ts",
+    "./__mocks__/@/store/deactivateUtils.ts",
     "./__mocks__/@/telemetry/logging.ts",
     "./__mocks__/@/telemetry/reportError.ts",
     "./__mocks__/@/telemetry/reportEvent.ts",

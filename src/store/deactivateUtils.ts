@@ -30,7 +30,7 @@ import { type UUID } from "@/types/stringTypes";
 /**
  * @file utility methods to deactivate mods/mod components and remove from the existing tabs.
  *
- * Mocked in src/__mocks__/@/store/uninstallUtils.ts.
+ * Mocked in src/__mocks__/@/store/deactivateUtils.ts.
  */
 
 /**
