@@ -33,7 +33,7 @@ import { Events } from "@/telemetry/events";
 function useDeleteStandaloneModDefinitionAction(
   modViewItem: ModViewItem,
 ): (() => void) | null {
-  const { mod, status } = modViewItem;
+  const { mod, sharing, status } = modViewItem;
   const modals = useModals();
   const [deleteStandaloneModDefinition] =
     useDeleteStandaloneModDefinitionMutation();
@@ -41,6 +41,7 @@ function useDeleteStandaloneModDefinitionAction(
 
   const canDelete =
     isStandaloneModComponent(mod) &&
+    sharing.source.type === "Personal" &&
     // If the status is active, there is still likely a copy of the mod component saved on our server.
     // However, we want the user to have to deactivate the mod before deleting it from the server
     !isActive;
