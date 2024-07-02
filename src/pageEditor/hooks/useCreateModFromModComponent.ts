@@ -23,7 +23,10 @@ import { uuidv4 } from "@/types/helpers";
 import produce from "immer";
 import { useCallback } from "react";
 import { Events } from "@/telemetry/events";
-import { useCreateModDefinitionMutation } from "@/data/service/api";
+import {
+  useCreateModDefinitionMutation,
+  useDeleteStandaloneModDefinitionMutation,
+} from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
@@ -49,6 +52,8 @@ function useCreateModFromModComponent(
   const upsertModComponentFormState = useUpsertModComponentFormState();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const { buildAndValidateMod } = useBuildAndValidateMod();
+  const [deleteStandaloneModDefinition] =
+    useDeleteStandaloneModDefinitionMutation();
 
   const createModFromComponent = useCallback(
     (
@@ -107,9 +112,21 @@ function useCreateModFromModComponent(
           });
 
           if (!keepLocalCopy) {
-            await removeModComponentFromStorage({
-              modComponentId: activeModComponent.uuid,
-            });
+            await Promise.all([
+              // @since v2.0.5 - Remove standalone mod definition on the server as well as locally,
+              //  when the user converts to a mod and chooses not to keep a copy. This helps clean
+              //  up existing standalone mod components that shouldn't be needed any longer. If the
+              //  user wants to keep the standalone mod component around, they can simply choose
+              //  the "keep local copy" option when converting to a mod.
+              //  Also since v2.0.5, saving a standalone mod component in the page editor will call
+              //  this create hook with keepLocalCopy forced to false.
+              deleteStandaloneModDefinition({
+                extensionId: activeModComponent.uuid,
+              }),
+              removeModComponentFromStorage({
+                modComponentId: activeModComponent.uuid,
+              }),
+            ]);
           }
 
           reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
