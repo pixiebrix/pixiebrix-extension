@@ -22,7 +22,7 @@ import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectActiveModComponentNodeInfo,
-  selectParentBlockInfo,
+  selectParentNodeInfo,
 } from "@/pageEditor/slices/editorSelectors";
 import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SerializableResponse } from "@/types/messengerTypes";
@@ -95,11 +95,11 @@ const previewSlice = createSlice({
 });
 
 /**
- * Get a handler to run a "preview" of a document renderer block.
- * @param blockInstanceId the instance id (node id) of the block to run
+ * Get a handler to run a "preview" of a document renderer brick.
+ * @param brickInstanceId the node id of the brick to run
  */
 export default function useDocumentPreviewRunBlock(
-  blockInstanceId: UUID,
+  brickInstanceId: UUID,
 ): BlockPreviewRunBlock {
   const [state, dispatch] = useReducer(previewSlice.reducer, initialState);
 
@@ -111,33 +111,33 @@ export default function useDocumentPreviewRunBlock(
     starterBrick,
   } = useSelector(selectActiveModComponentFormState);
 
-  const { blockConfig } = useSelector(
-    selectActiveModComponentNodeInfo(blockInstanceId),
+  const { blockConfig: brickConfig } = useSelector(
+    selectActiveModComponentNodeInfo(brickInstanceId),
   );
 
   const {
-    data: blockInfo,
-    isLoading: isBlockLoading,
-    error: blockError,
-  } = usePreviewInfo(blockConfig.id);
+    data: previewInfo,
+    isLoading: isPreviewInfoLoading,
+    error: previewInfoError,
+  } = usePreviewInfo(brickConfig.id);
 
   useEffect(() => {
-    if (blockError) {
+    if (previewInfoError) {
       dispatch(
         previewSlice.actions.setError({
           error: {
             name: "BlockRegistryError",
             message: `Error loading brick from registry\n${getErrorMessage(
-              blockError,
+              previewInfoError,
             )}`,
           },
         }),
       );
     }
-  }, [blockError]);
+  }, [previewInfoError]);
 
   const traceRecord = useSelector(
-    selectActiveModComponentTraceForBrick(blockInstanceId),
+    selectActiveModComponentTraceForBrick(brickInstanceId),
   );
   const { data: serviceContext, isLoading: isLoadingServiceContext } =
     useAsyncState(
@@ -150,16 +150,16 @@ export default function useDocumentPreviewRunBlock(
   } as BrickArgsContext;
 
   // This defaults to "inherit" as described in the doc, see BrickConfig.rootMode
-  const blockRootMode = blockConfig.rootMode ?? "inherit";
+  const blockRootMode = brickConfig.rootMode ?? "inherit";
   const shouldUseStarterBrickRoot =
-    blockInfo?.isRootAware &&
+    previewInfo?.isRootAware &&
     blockRootMode === "inherit" &&
     isTriggerStarterBrick(starterBrick);
 
-  const parentBlockInfo = useSelector(selectParentBlockInfo(blockInstanceId));
+  const parentNodeInfo = useSelector(selectParentNodeInfo(brickInstanceId));
 
   // Assume the parent is a temp display brick for now
-  const titleField = parentBlockInfo?.blockConfig?.config?.title ?? "";
+  const titleField = parentNodeInfo?.blockConfig?.config?.title ?? "";
   const titleValue = isExpression(titleField)
     ? titleField.__value__
     : titleField;
@@ -167,7 +167,7 @@ export default function useDocumentPreviewRunBlock(
 
   const debouncedRun = useDebouncedCallback(
     async () => {
-      if (isLoadingServiceContext || isBlockLoading) {
+      if (isLoadingServiceContext || isPreviewInfoLoading) {
         return;
       }
 
@@ -187,7 +187,7 @@ export default function useDocumentPreviewRunBlock(
 
       // `panel` was the default before we added the location field
       const location: Location =
-        (parentBlockInfo?.blockConfig.config.location as Location) ?? "panel";
+        (parentNodeInfo?.blockConfig.config.location as Location) ?? "panel";
 
       try {
         await runRendererBrick(inspectedTab, {
@@ -198,7 +198,7 @@ export default function useDocumentPreviewRunBlock(
           args: {
             apiVersion,
             blockConfig: {
-              ...removeEmptyValues(blockConfig),
+              ...removeEmptyValues(brickConfig),
               if: undefined,
             },
             context,

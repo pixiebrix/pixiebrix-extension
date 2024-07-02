@@ -22,7 +22,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-export type BlockInfo = {
+export type NodeInfo = {
   blockId: RegistryId;
 
   /**
@@ -56,7 +56,7 @@ export type BlockInfo = {
 /**
  * The map of pipeline blocks. The key is the instanceId of the block.
  */
-export type PipelineMap = Record<UUID, BlockInfo>;
+export type PipelineMap = Record<UUID, NodeInfo>;
 
 export type TabUIState = {
   /**

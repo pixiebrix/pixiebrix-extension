@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison -- It seems to be the correct option for now */
 import React from "react";
-import { type BlockInfo } from "@/pageEditor/uiState/uiStateTypes";
+import { type NodeInfo } from "@/pageEditor/uiState/uiStateTypes";
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import styles from "./SourceLabel.module.scss";
 import { type TypedBrickMap } from "@/bricks/registry";
@@ -8,7 +8,7 @@ import { type TypedBrickMap } from "@/bricks/registry";
 type SourceLabelProps = {
   source: string;
   extensionPointLabel: string;
-  blocksInfo: BlockInfo[];
+  blocksInfo: NodeInfo[];
   allBlocks: TypedBrickMap;
 };
 
