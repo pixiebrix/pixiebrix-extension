@@ -21,7 +21,7 @@ import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { collectModOptions } from "@/store/extensionsUtils";
-import { deactivateMod } from "@/store/uninstallUtils";
+import { deactivateMod } from "@/store/deactivateUtils";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 
 type Reinstall = (modDefinition: ModDefinition) => Promise<void>;

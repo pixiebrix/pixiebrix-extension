@@ -29,7 +29,10 @@ import {
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";
-import { deactivateModComponents, deactivateMod } from "@/store/uninstallUtils";
+import {
+  deactivateModComponents,
+  deactivateMod,
+} from "@/store/deactivateUtils";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";

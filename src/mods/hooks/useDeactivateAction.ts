@@ -25,7 +25,10 @@ import {
 } from "@/utils/modUtils";
 import { useCallback } from "react";
 import useUserAction from "@/hooks/useUserAction";
-import { deactivateModComponents, deactivateMod } from "@/store/uninstallUtils";
+import {
+  deactivateModComponents,
+  deactivateMod,
+} from "@/store/deactivateUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type ModComponentState } from "@/store/extensionsTypes";

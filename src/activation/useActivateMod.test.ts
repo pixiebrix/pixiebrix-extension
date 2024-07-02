@@ -21,7 +21,7 @@ import useActivateMod from "./useActivateMod";
 import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/contextMenuTypes";
-import { deactivateMod } from "@/store/uninstallUtils";
+import { deactivateMod } from "@/store/deactivateUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";

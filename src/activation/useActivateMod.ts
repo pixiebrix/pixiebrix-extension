@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { deactivateMod } from "@/store/uninstallUtils";
+import { deactivateMod } from "@/store/deactivateUtils";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";

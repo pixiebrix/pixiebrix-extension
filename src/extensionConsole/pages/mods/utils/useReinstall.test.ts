@@ -18,7 +18,7 @@
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useReinstall from "./useReinstall";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { deactivateMod } from "@/store/uninstallUtils";
+import { deactivateMod } from "@/store/deactivateUtils";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
