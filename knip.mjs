@@ -45,6 +45,8 @@ const knipConfig = {
     "src/development/hooks/**",
     // Type-only strictNullChecks helper
     "src/types/typeOnlyMessengerRegistration.ts",
+    // End-to-end tests
+    "end-to-end-tests/**",
 
     // https://knip.dev/reference/jsdoc-tsdoc-tags/#tags-cli
     // Instead of adding files to this list, prefer adding a @knip JSDoc comment with explanation, like:

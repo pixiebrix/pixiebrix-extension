@@ -32,7 +32,7 @@ test("create, run, package, and update mod", async ({
   const pageEditorPage = await newPageEditorPage(page.url());
 
   const { modComponentName, modUuid } =
-    await pageEditorPage.addStarterBrick("Button");
+    await pageEditorPage.modListingPanel.addStarterBrick("Button");
 
   await test.step("Configure the Button brick", async () => {
     await page.bringToFront();

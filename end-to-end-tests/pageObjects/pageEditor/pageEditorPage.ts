@@ -15,22 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getBasePageEditorUrl } from "./constants";
+import { getBasePageEditorUrl } from "../constants";
 import { type Page, expect } from "@playwright/test";
-import { uuidv4 } from "@/types/helpers";
-import { ModsPage } from "./extensionConsole/modsPage";
-import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshop/workshopPage";
+import { ModsPage } from "../extensionConsole/modsPage";
+import { WorkshopPage } from "../extensionConsole/workshop/workshopPage";
 import { type UUID } from "@/types/stringTypes";
-import { BasePageObject } from "./basePageObject";
-
-// Starter brick names as shown in the Page Editor UI
-export type StarterBrickName =
-  | "Context Menu"
-  | "Trigger"
-  | "Button"
-  | "Quick Bar Action"
-  | "Dynamic Quick Bar"
-  | "Sidebar Panel";
+import { BasePageObject } from "../basePageObject";
+import { ModListingPanel } from "./modListingPanel";
 
 /**
  * Page object for the Page Editor. Prefer the newPageEditorPage fixture in testBase.ts to directly creating an
@@ -43,6 +34,8 @@ export class PageEditorPage extends BasePageObject {
   private readonly pageEditorUrl: string;
   private readonly savedStandaloneModNames: string[] = [];
   private readonly savedPackageModIds: string[] = [];
+
+  modListingPanel = new ModListingPanel(this.getByTestId("modListingPanel"));
 
   templateGalleryButton = this.getByRole("button", {
     name: "Launch Template Gallery",
@@ -76,25 +69,6 @@ export class PageEditorPage extends BasePageObject {
     // See EditorPane.tsx:REDUX_SYNC_WAIT_MILLIS
     // eslint-disable-next-line playwright/no-wait-for-timeout -- Wait for Redux to update
     await this.page.waitForTimeout(500);
-  }
-
-  /**
-   * Adds a starter brick in the Page Editor. Generates a unique mod name to prevent
-   * test collision.
-   *
-   * @param starterBrickName the starter brick name to add, corresponding to the name shown in the Page Editor UI,
-   * not the underlying type
-   * @returns modName the generated mod name
-   */
-  async addStarterBrick(starterBrickName: StarterBrickName) {
-    const modUuid = uuidv4();
-    const modComponentName = `Test ${starterBrickName} ${modUuid}`;
-    await this.getByRole("button", { name: "Add", exact: true }).click();
-    await this.locator("[role=button].dropdown-item", {
-      hasText: starterBrickName,
-    }).click();
-
-    return { modComponentName, modUuid };
   }
 
   async setStarterBrickName(modComponentName: string) {
@@ -142,12 +116,6 @@ export class PageEditorPage extends BasePageObject {
     await this.waitForReduxUpdate();
   }
 
-  getModListItemByName(modName: string) {
-    return this.locator(".list-group-item")
-      .locator("span", { hasText: modName })
-      .first();
-  }
-
   /**
    * Save a selected packaged mod. Prefer saveStandaloneMod for standalone mods.
    */
@@ -170,15 +138,11 @@ export class PageEditorPage extends BasePageObject {
   }
 
   async saveStandaloneMod(modName: string) {
-    // We need to wait at least 500ms to permit the page editor to persist the mod changes to redux before saving.
-    // https://github.com/pixiebrix/pixiebrix-extension/blob/277eab74d2c85c2d16053bbcd27023d2612f9e31/src/pageEditor/panes/EditorPane.tsx#L48
-    // eslint-disable-next-line playwright/no-wait-for-timeout -- see above
-    await this.page.waitForTimeout(600);
-    const modListItem = this.locator(".list-group-item", {
-      hasText: modName,
-    });
-    await modListItem.click();
-    await modListItem.locator("[data-icon=save]").click();
+    // Wait for redux to persist the page editor mod changes before saving.
+    await this.waitForReduxUpdate();
+    const modListItem = this.modListingPanel.getModListItemByName(modName);
+    await modListItem.activate();
+    await modListItem.saveButton.click();
     await expect(this.getByText("Saved Mod")).toBeVisible();
     this.savedStandaloneModNames.push(modName);
   }
@@ -194,7 +158,8 @@ export class PageEditorPage extends BasePageObject {
   }) {
     const modName = `${modNameRoot} ${modUuid}`;
 
-    await this.getByLabel(`${modComponentName} - Ellipsis`).click();
+    const modListItem = this.modListingPanel.getModListItemByName(modName);
+    await modListItem.menuButton.click();
     await this.getByRole("button", { name: "Add to mod" }).click();
 
     await this.getByText("Select...Choose a mod").click();
