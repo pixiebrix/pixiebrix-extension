@@ -1089,7 +1089,6 @@
     "./pageEditor/hooks/useRemoveModComponentFromStorage.tsx",
     "./pageEditor/hooks/useResetModComponent.ts",
     "./pageEditor/hooks/useResetMod.ts",
-    "./pageEditor/hooks/useSaveStandaloneModComponent.ts",
     "./pageEditor/hooks/useUpsertModComponentFormState.ts",
     "./pageEditor/modals/addBrickModal/BrickDetail.tsx",
     "./pageEditor/modals/addBrickModal/BrickGridItem.tsx",
