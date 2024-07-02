@@ -47,32 +47,32 @@ function useDeactivateAction(modViewItem: ModViewItem): (() => void) | null {
 
   // Without memoization, the selector reference changes on every render, which causes useModPermissions
   // to recompute, spamming the background worker with service locator requests
-  const memoizedExtensionsSelector = useCallback(
+  const memoizedModComponentsSelector = useCallback(
     (state: { options: ModComponentState }) =>
       selectComponentsFromMod(state, mod),
     [mod],
   );
 
-  const extensionsFromMod = useSelector(memoizedExtensionsSelector);
+  const modComponentsFromMod = useSelector(memoizedModComponentsSelector);
 
   const deactivate = useUserAction(
     async () => {
       if (isModDefinition(mod)) {
-        const blueprintId = mod.metadata.id;
-        await deactivateMod(blueprintId, extensionsFromMod, dispatch);
+        const modId = mod.metadata.id;
+        await deactivateMod(modId, modComponentsFromMod, dispatch);
 
         reportEvent(Events.MOD_REMOVE, {
-          blueprintId,
+          blueprintId: modId,
         });
       } else {
         await deactivateModComponents(
-          extensionsFromMod.map(({ id }) => id),
+          modComponentsFromMod.map(({ id }) => id),
           dispatch,
         );
 
-        for (const extension of extensionsFromMod) {
+        for (const modComponent of modComponentsFromMod) {
           reportEvent(Events.MOD_COMPONENT_REMOVE, {
-            extensionId: extension.id,
+            extensionId: modComponent.id,
           });
         }
       }
@@ -81,7 +81,7 @@ function useDeactivateAction(modViewItem: ModViewItem): (() => void) | null {
       successMessage: `Deactivated mod: ${getLabel(mod)}`,
       errorMessage: `Error deactivating mod: ${getLabel(mod)}`,
     },
-    [mod, extensionsFromMod],
+    [mod, modComponentsFromMod],
   );
 
   return isActive && !isRestricted ? deactivate : null;
