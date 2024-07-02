@@ -25,7 +25,7 @@ import {
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   ensureBrickPipelineUIState,
-  ensureNodeUIState,
+  ensureBrickConfigurationUIState,
   removeModComponentFormState,
   removeModData,
   setActiveModId,
@@ -107,7 +107,7 @@ describe("ensureNodeUIState", () => {
       },
     };
     const newUiState = produce(uiState, (draft) => {
-      ensureNodeUIState(draft, nodeId);
+      ensureBrickConfigurationUIState(draft, nodeId);
     });
 
     expect(newUiState).toEqual(uiState);
@@ -123,8 +123,8 @@ describe("ensureNodeUIState", () => {
       activeNodeId: node1Id,
     };
     const newUiState = produce(uiState, (draft) => {
-      ensureNodeUIState(draft, node1Id);
-      ensureNodeUIState(draft, node2Id);
+      ensureBrickConfigurationUIState(draft, node1Id);
+      ensureBrickConfigurationUIState(draft, node2Id);
     });
 
     expect(newUiState.nodeUIStates).toContainKeys([node1Id, node2Id]);

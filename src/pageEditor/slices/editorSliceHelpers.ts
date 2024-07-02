@@ -57,7 +57,7 @@ export function ensureBrickPipelineUIState(
   }
 }
 
-export function ensureNodeUIState(
+export function ensureBrickConfigurationUIState(
   state: Draft<BrickPipelineUIState>,
   nodeId: UUID,
 ) {
@@ -87,19 +87,19 @@ export function syncNodeUIStates(
     brickPipelineUIState.activeNodeId = FOUNDATION_NODE_ID;
   }
 
-  // Remove NodeUIStates for invalid IDs
+  // Remove BrickConfigurationUIStates for invalid node IDs
   for (const nodeId of Object.keys(
     brickPipelineUIState.nodeUIStates,
   ) as UUID[]) {
-    // Don't remove the foundation NodeUIState
+    // Don't remove the foundation BrickConfigurationUIState
     if (nodeId !== FOUNDATION_NODE_ID && pipelineMap[nodeId] == null) {
       delete brickPipelineUIState.nodeUIStates[nodeId];
     }
   }
 
-  // Add missing NodeUIStates
+  // Add missing BrickConfigurationUIStates
   for (const nodeId of Object.keys(pipelineMap) as UUID[]) {
-    ensureNodeUIState(brickPipelineUIState, nodeId);
+    ensureBrickConfigurationUIState(brickPipelineUIState, nodeId);
   }
 }
 
@@ -115,7 +115,7 @@ export function setActiveNodeId(state: Draft<EditorState>, nodeId: UUID) {
     brickPipelineUIState,
     `No Brick Pipeline UI state found for active mod component: ${state.activeModComponentId}`,
   );
-  ensureNodeUIState(brickPipelineUIState, nodeId);
+  ensureBrickConfigurationUIState(brickPipelineUIState, nodeId);
   brickPipelineUIState.activeNodeId = nodeId;
 }
 
