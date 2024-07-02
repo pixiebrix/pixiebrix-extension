@@ -19,13 +19,13 @@ import { type UUID } from "@/types/stringTypes";
 import {
   type BrickPipelineUIState,
   type BrickConfigurationUIState,
-  type TabUIState,
+  type DataPanelTabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;
 
-function makeInitialDataTabState(): TabUIState {
+function makeInitialDataTabState(): DataPanelTabUIState {
   return {
     query: "",
     treeExpandedState: {},

@@ -27,7 +27,7 @@ import { compact, flatMap, isEmpty, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   type BrickPipelineUIState,
-  type TabUIState,
+  type DataPanelTabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -381,7 +381,7 @@ export const selectNodeDataPanelTabSelected: (
 export function selectNodeDataPanelTabState(
   rootState: EditorRootState,
   tabKey: DataPanelTabKey,
-): Nullishable<TabUIState> {
+): Nullishable<DataPanelTabUIState> {
   const brickConfigurationUIState =
     selectActiveBrickConfigurationUIState(rootState);
   // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings

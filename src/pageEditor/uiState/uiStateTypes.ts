@@ -58,7 +58,7 @@ export type NodeInfo = {
  */
 export type PipelineMap = Record<UUID, NodeInfo>;
 
-export type TabUIState = {
+export type DataPanelTabUIState = {
   /**
    * The filter query of the JsonTree component
    */
@@ -84,7 +84,7 @@ export type BrickConfigurationUIState = {
   /**
    * UI state of the Tabs in the data panel
    */
-  dataPanel: Record<DataPanelTabKey, TabUIState> & {
+  dataPanel: Record<DataPanelTabKey, DataPanelTabUIState> & {
     /**
      * Which tab is active in the data panel of the editor UI
      */
