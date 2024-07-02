@@ -17,7 +17,7 @@
 
 import { BasePageObject } from "../basePageObject";
 import { uuidv4 } from "@/types/helpers";
-import { Locator } from "@playwright/test";
+import { type Locator } from "@playwright/test";
 
 // Starter brick names as shown in the Page Editor UI
 export type StarterBrickName =
