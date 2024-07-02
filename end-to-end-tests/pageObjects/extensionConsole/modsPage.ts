@@ -38,9 +38,10 @@ export class ModsPage extends BasePageObject {
     // TODO: remove once fixed: https://github.com/pixiebrix/pixiebrix-extension/issues/8458
     const registryPromise = this.page
       .context()
-      .waitForEvent("requestfinished", (request) =>
-        request.url().includes("/api/registry/bricks/"),
-      );
+      .waitForEvent("requestfinished", {
+        predicate: (request) => request.url().includes("/api/registry/bricks/"),
+        timeout: 10_000,
+      });
     await this.page.goto(this.extensionConsoleUrl);
     await expect(this.getByText("Extension Console")).toBeVisible();
     await registryPromise;
