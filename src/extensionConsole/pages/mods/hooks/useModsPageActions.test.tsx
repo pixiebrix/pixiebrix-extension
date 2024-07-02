@@ -34,7 +34,7 @@ import {
   deactivateMod,
 } from "@/store/deactivateUtils";
 import { renderHook } from "@/extensionConsole/testHelpers";
-import { actions as extensionActions } from "@/store/extensionsSlice";
+import { actions as modComponentActions } from "@/store/extensionsSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
@@ -97,18 +97,18 @@ const mockHooks = ({
 };
 
 const modViewItemFactory = ({
-  isExtension,
+  isModComponent,
   sharingType,
   status,
   unavailable = false,
 }: {
-  isExtension: boolean;
+  isModComponent: boolean;
   sharingType: SharingType;
   status: ModStatus;
   unavailable?: boolean;
 }) =>
   ({
-    mod: isExtension ? modComponentFactory() : defaultModDefinitionFactory(),
+    mod: isModComponent ? modComponentFactory() : defaultModDefinitionFactory(),
     sharing: {
       source: {
         type: sharingType,
@@ -126,7 +126,7 @@ describe("useModsPageActions", () => {
   test("cloud mod component", () => {
     mockHooks();
     const standaloneModDefinition = modViewItemFactory({
-      isExtension: true,
+      isModComponent: true,
       sharingType: "Personal",
       status: "Inactive",
     });
@@ -140,7 +140,7 @@ describe("useModsPageActions", () => {
   test("active personal mod component", () => {
     mockHooks();
     const personalModComponent = modViewItemFactory({
-      isExtension: true,
+      isModComponent: true,
       sharingType: "Personal",
       status: "Active",
     });
@@ -157,7 +157,7 @@ describe("useModsPageActions", () => {
   test("active personal mod", () => {
     mockHooks();
     const personalMod = modViewItemFactory({
-      isExtension: false,
+      isModComponent: false,
       sharingType: "Personal",
       status: "Active",
     });
@@ -181,7 +181,7 @@ describe("useModsPageActions", () => {
   test("inactive personal mod", () => {
     mockHooks();
     const personalMod = modViewItemFactory({
-      isExtension: false,
+      isModComponent: false,
       sharingType: "Personal",
       status: "Inactive",
     });
@@ -198,7 +198,7 @@ describe("useModsPageActions", () => {
   test("active team mod", () => {
     mockHooks();
     const teamMod = modViewItemFactory({
-      isExtension: false,
+      isModComponent: false,
       sharingType: "Team",
       status: "Active",
     });
@@ -215,7 +215,7 @@ describe("useModsPageActions", () => {
   test("inactive team mod", () => {
     mockHooks();
     const teamMod = modViewItemFactory({
-      isExtension: false,
+      isModComponent: false,
       sharingType: "Team",
       status: "Inactive",
     });
@@ -237,7 +237,7 @@ describe("useModsPageActions", () => {
     });
 
     const teamMod = modViewItemFactory({
-      isExtension: false,
+      isModComponent: false,
       sharingType: "Team",
       status: "Inactive",
     });
@@ -261,7 +261,7 @@ describe("useModsPageActions", () => {
   test("public mod", () => {
     mockHooks();
     const publicMod = modViewItemFactory({
-      isExtension: false,
+      isModComponent: false,
       sharingType: "Personal",
       status: "Active",
     });
@@ -285,7 +285,7 @@ describe("useModsPageActions", () => {
   test("team deployment for unrestricted user", () => {
     mockHooks({ restricted: false });
     const deploymentItem = modViewItemFactory({
-      isExtension: false,
+      isModComponent: false,
       sharingType: "Deployment",
       status: "Active",
     });
@@ -299,7 +299,7 @@ describe("useModsPageActions", () => {
   test("restricted team deployment", () => {
     mockHooks({ restricted: true });
     const deploymentItem = modViewItemFactory({
-      isExtension: false,
+      isModComponent: false,
       sharingType: "Deployment",
       status: "Active",
     });
@@ -310,10 +310,10 @@ describe("useModsPageActions", () => {
     expectActions(["viewLogs"], actions);
   });
 
-  test("blueprint with missing permissions", () => {
+  test("mod with missing permissions", () => {
     mockHooks({ hasPermissions: false });
     const deploymentItem = modViewItemFactory({
-      isExtension: false,
+      isModComponent: false,
       sharingType: "Team",
       status: "Active",
     });
@@ -337,7 +337,7 @@ describe("useModsPageActions", () => {
   test("mod with access revoked", () => {
     mockHooks();
     const modItem = modViewItemFactory({
-      isExtension: false,
+      isModComponent: false,
       sharingType: "Team",
       status: "Active",
       unavailable: true,
@@ -352,7 +352,7 @@ describe("useModsPageActions", () => {
   test("paused deployment with unrestricted user", () => {
     mockHooks({ restricted: false });
     const deploymentItem = modViewItemFactory({
-      isExtension: false,
+      isModComponent: false,
       sharingType: "Deployment",
       status: "Paused",
     });
@@ -362,14 +362,14 @@ describe("useModsPageActions", () => {
     } = renderHook(() => useModsPageActions(deploymentItem));
 
     // Unrestricted users (e.g., developers) need to be able to deactivate/reactivate a deployment to use a later
-    // version of the blueprint for development/testing.
+    // version of the mod for development/testing.
     expectActions(["viewLogs", "deactivate", "reactivate"], actions);
   });
 
   test("paused deployment with restricted user", () => {
     mockHooks({ restricted: true });
     const deploymentItem = modViewItemFactory({
-      isExtension: false,
+      isModComponent: false,
       sharingType: "Deployment",
       status: "Paused",
     });
@@ -384,7 +384,7 @@ describe("useModsPageActions", () => {
   test("cannot publish without publish-to-marketplace flag", () => {
     mockHooks({ canPublish: false });
     const personalModComponent = modViewItemFactory({
-      isExtension: true,
+      isModComponent: true,
       sharingType: "Personal",
       status: "Active",
     });
@@ -452,15 +452,15 @@ describe("useModsPageActions", () => {
 });
 
 describe("actions", () => {
-  describe("uninstall", () => {
+  describe("deactivate", () => {
     beforeEach(() => {
       mockHooks();
     });
 
-    test("calls uninstallMod for a mod", () => {
+    test("calls deactivate for a mod", () => {
       mockHooks();
       const modViewItem = modViewItemFactory({
-        isExtension: false,
+        isModComponent: false,
         sharingType: "Personal",
         status: "Active",
       });
@@ -481,13 +481,13 @@ describe("actions", () => {
       expect(deactivateModComponents).not.toHaveBeenCalled();
     });
 
-    test("calls uninstallModComponents for an mod component", () => {
+    test("calls deactivateModComponents for a mod component", () => {
       mockHooks();
 
       const standaloneModDefinition = standaloneModDefinitionFactory();
 
       const modViewItem = modViewItemFactory({
-        isExtension: true,
+        isModComponent: true,
         sharingType: "Personal",
         status: "Active",
       });
@@ -500,12 +500,12 @@ describe("actions", () => {
       } = renderHook(() => useModsPageActions(modViewItem), {
         setupRedux(dispatch) {
           dispatch(
-            extensionActions.activateStandaloneModDefinition(
+            modComponentActions.activateStandaloneModDefinition(
               standaloneModDefinition,
             ),
           );
           dispatch(
-            extensionActions.activateStandaloneModDefinition(
+            modComponentActions.activateStandaloneModDefinition(
               standaloneModDefinitionFactory(),
             ),
           );
