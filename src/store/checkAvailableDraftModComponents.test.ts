@@ -92,7 +92,9 @@ describe("checkAvailableDraftModComponents", () => {
     store.dispatch(
       actions.addModComponentFormState(unavailableDraftModComponent),
     );
-    store.dispatch(actions.selectInstalled(availableDraftModComponent));
+    store.dispatch(
+      actions.selectActivatedModComponentFormState(availableDraftModComponent),
+    );
 
     jest
       .mocked(checkAvailable)

@@ -22,7 +22,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-export type BlockInfo = {
+export type NodeInfo = {
   blockId: RegistryId;
 
   /**
@@ -56,9 +56,9 @@ export type BlockInfo = {
 /**
  * The map of pipeline blocks. The key is the instanceId of the block.
  */
-export type PipelineMap = Record<UUID, BlockInfo>;
+export type PipelineMap = Record<UUID, NodeInfo>;
 
-export type TabUIState = {
+export type DataPanelTabUIState = {
   /**
    * The filter query of the JsonTree component
    */
@@ -75,7 +75,7 @@ export type TabUIState = {
   activeElement: string | null;
 };
 
-export type NodeUIState = {
+export type BrickConfigurationUIState = {
   /**
    * Identifier for the node in the editor, either the foundation or a block uuid
    */
@@ -84,7 +84,7 @@ export type NodeUIState = {
   /**
    * UI state of the Tabs in the data panel
    */
-  dataPanel: Record<DataPanelTabKey, TabUIState> & {
+  dataPanel: Record<DataPanelTabKey, DataPanelTabUIState> & {
     /**
      * Which tab is active in the data panel of the editor UI
      */
@@ -119,5 +119,5 @@ export type BrickPipelineUIState = {
   /**
    * UI state of bricks in the mod component pipeline, including the starter brick
    */
-  nodeUIStates: Record<UUID, NodeUIState>;
+  nodeUIStates: Record<UUID, BrickConfigurationUIState>;
 };

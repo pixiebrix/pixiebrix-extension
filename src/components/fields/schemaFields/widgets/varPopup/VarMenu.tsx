@@ -255,8 +255,8 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
                 <SourceLabel
                   source={source}
                   extensionPointLabel={starterBrickLabel}
-                  blocksInfo={blocksInfo}
-                  allBlocks={allBricks}
+                  nodes={blocksInfo}
+                  allBricks={allBricks}
                 />
                 <VariablesTree
                   vars={vars}
@@ -273,8 +273,8 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
             <SourceLabel
               source={source}
               extensionPointLabel={starterBrickLabel}
-              blocksInfo={blocksInfo}
-              allBlocks={allBricks}
+              nodes={blocksInfo}
+              allBricks={allBricks}
             />
             <VariablesTree
               vars={filterVarMapByVariable(vars, likelyVariable)}

@@ -20,22 +20,22 @@ import { initialState } from "@/pageEditor/slices/editorSlice";
 import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
-  makeInitialNodeUIState,
+  makeInitialBrickConfigurationUIState,
 } from "@/pageEditor/uiState/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   ensureBrickPipelineUIState,
-  ensureNodeUIState,
+  ensureBrickConfigurationUIState,
   removeModComponentFormState,
   removeModData,
   setActiveModId,
   setActiveNodeId,
-  syncNodeUIStates,
+  syncBrickConfigurationUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { produce } from "immer";
 import {
   type BrickPipelineUIState,
-  type NodeUIState,
+  type BrickConfigurationUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -85,7 +85,7 @@ describe("ensureBrickPipelineUIState", () => {
   });
 });
 
-describe("ensureNodeUIState", () => {
+describe("ensureBrickConfigurationUIState", () => {
   test("does not affect existing node state", () => {
     const formState = formStateFactory();
     const nodeId = formState.modComponent.brickPipeline[0].instanceId;
@@ -94,7 +94,8 @@ describe("ensureNodeUIState", () => {
       pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
       activeNodeId: nodeId,
     };
-    const nodeState: NodeUIState = makeInitialNodeUIState(nodeId);
+    const nodeState: BrickConfigurationUIState =
+      makeInitialBrickConfigurationUIState(nodeId);
     uiState.nodeUIStates = {
       ...uiState.nodeUIStates,
       [nodeId]: {
@@ -106,7 +107,7 @@ describe("ensureNodeUIState", () => {
       },
     };
     const newUiState = produce(uiState, (draft) => {
-      ensureNodeUIState(draft, nodeId);
+      ensureBrickConfigurationUIState(draft, nodeId);
     });
 
     expect(newUiState).toEqual(uiState);
@@ -122,8 +123,8 @@ describe("ensureNodeUIState", () => {
       activeNodeId: node1Id,
     };
     const newUiState = produce(uiState, (draft) => {
-      ensureNodeUIState(draft, node1Id);
-      ensureNodeUIState(draft, node2Id);
+      ensureBrickConfigurationUIState(draft, node1Id);
+      ensureBrickConfigurationUIState(draft, node2Id);
     });
 
     expect(newUiState.nodeUIStates).toContainKeys([node1Id, node2Id]);
@@ -140,7 +141,7 @@ describe("syncNodeUIStates", () => {
       pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
       activeNodeId: invalidNodeId,
     };
-    const nodeState = makeInitialNodeUIState(nodeId);
+    const nodeState = makeInitialBrickConfigurationUIState(nodeId);
     uiState.nodeUIStates = {
       ...uiState.nodeUIStates,
       [nodeId]: {
@@ -150,7 +151,7 @@ describe("syncNodeUIStates", () => {
           activeTabKey: "rendered",
         },
       },
-      [invalidNodeId]: makeInitialNodeUIState(invalidNodeId),
+      [invalidNodeId]: makeInitialBrickConfigurationUIState(invalidNodeId),
     };
     const editorState: EditorState = {
       ...initialState,
@@ -161,7 +162,7 @@ describe("syncNodeUIStates", () => {
       activeModComponentId: formState.uuid,
     };
     const newEditorState = produce(editorState, (draft) => {
-      syncNodeUIStates(draft, formState);
+      syncBrickConfigurationUIStates(draft, formState);
     });
 
     expect(selectActiveNodeId({ editor: newEditorState })).toEqual(
@@ -188,7 +189,7 @@ describe("syncNodeUIStates", () => {
       },
     };
     const newEditorState = produce(editorState, (draft) => {
-      syncNodeUIStates(draft, formState);
+      syncBrickConfigurationUIStates(draft, formState);
     });
 
     // Maintains the foundation node state and adds the block node state for both blocks in the pipeline
@@ -235,7 +236,7 @@ describe("setActiveNodeId", () => {
       ...makeInitialBrickPipelineUIState(),
       pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
     };
-    const nodeState = makeInitialNodeUIState(nodeId);
+    const nodeState = makeInitialBrickConfigurationUIState(nodeId);
     uiState.nodeUIStates = {
       ...uiState.nodeUIStates,
       [nodeId]: {

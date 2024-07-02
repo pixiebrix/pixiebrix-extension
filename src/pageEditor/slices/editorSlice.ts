@@ -39,7 +39,7 @@ import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveModComponentFormState,
   selectActiveBrickPipelineUIState,
-  selectActiveNodeUIState,
+  selectActiveBrickConfigurationUIState,
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
 } from "./editorSelectors";
@@ -57,7 +57,7 @@ import {
   removeModData,
   setActiveModId,
   setActiveNodeId,
-  syncNodeUIStates,
+  syncBrickConfigurationUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
@@ -150,12 +150,12 @@ const cloneActiveModComponent = createAsyncThunk<
   );
 });
 
-type AvailableInstalled = {
-  availableInstalledIds: UUID[];
+type AvailableActivatedModComponents = {
+  availableActivatedModComponentIds: UUID[];
 };
 
 const checkAvailableActivatedModComponents = createAsyncThunk<
-  AvailableInstalled,
+  AvailableActivatedModComponents,
   void,
   { state: EditorRootState & ModComponentsRootState }
 >("editor/checkAvailableActivatedModComponents", async (arg, thunkAPI) => {
@@ -180,12 +180,12 @@ const checkAvailableActivatedModComponents = createAsyncThunk<
       const activatedStarterBrick = activatedStarterBricks.get(
         x.extensionPointId,
       );
-      // Not installed means not available
+      // Not activated means not available
       if (activatedStarterBrick == null) {
         return false;
       }
 
-      // QuickBar is installed on every page, need to filter by the documentUrlPatterns
+      // QuickBar is activated on every page, need to filter by the documentUrlPatterns
       if (
         QuickBarStarterBrickABC.isQuickBarStarterBrick(activatedStarterBrick)
       ) {
@@ -200,7 +200,7 @@ const checkAvailableActivatedModComponents = createAsyncThunk<
     .map((x) => x.id);
 
   // Note: we can take out this filter if and when we persist the editor
-  // slice and remove installed mod components when they become draft form states
+  // slice and remove activated mod components when they become draft form states
   const notDraftActivated = notDeletedModComponents.filter(
     (modComponent) =>
       !notDeletedFormStates.some(
@@ -209,11 +209,11 @@ const checkAvailableActivatedModComponents = createAsyncThunk<
       ),
   );
 
-  const availableInstalledIds = notDraftActivated
+  const availableActivatedModComponentIds = notDraftActivated
     .filter((x) => availableStarterBrickIds.includes(x.id))
     .map((x) => x.id);
 
-  return { availableInstalledIds };
+  return { availableActivatedModComponentIds };
 });
 
 async function isStarterBrickFormStateAvailable(
@@ -346,7 +346,10 @@ export const editorSlice = createSlice({
       state.activeModComponentId = uuid;
       state.selectionSeq++;
     },
-    selectInstalled(state, action: PayloadAction<ModComponentFormState>) {
+    selectActivatedModComponentFormState(
+      state,
+      action: PayloadAction<ModComponentFormState>,
+    ) {
       const modComponentFormState =
         action.payload as Draft<ModComponentFormState>;
       const index = state.modComponentFormStates.findIndex(
@@ -360,7 +363,10 @@ export const editorSlice = createSlice({
 
       setActiveModComponentId(state, modComponentFormState);
     },
-    resetInstalled(state, actions: PayloadAction<ModComponentFormState>) {
+    resetActivatedModComponentFormState(
+      state,
+      actions: PayloadAction<ModComponentFormState>,
+    ) {
       const modComponentFormState =
         actions.payload as Draft<ModComponentFormState>;
       const index = state.modComponentFormStates.findIndex(
@@ -380,7 +386,7 @@ export const editorSlice = createSlice({
       // Make sure we're not keeping any private data around from Page Editor sessions
       void clearModComponentTraces(modComponentFormState.uuid);
 
-      syncNodeUIStates(state, modComponentFormState);
+      syncBrickConfigurationUIStates(state, modComponentFormState);
     },
     showHomePane(state) {
       state.activeModComponentId = null;
@@ -441,7 +447,7 @@ export const editorSlice = createSlice({
         modComponentFormState as Draft<ModComponentFormState>;
       state.dirty[modComponentFormState.uuid] = true;
 
-      syncNodeUIStates(state, modComponentFormState);
+      syncBrickConfigurationUIStates(state, modComponentFormState);
     },
     partialUpdateModComponentFormState(
       state,
@@ -479,8 +485,9 @@ export const editorSlice = createSlice({
       setActiveNodeId(state, action.payload);
     },
     setNodeDataPanelTabSelected(state, action: PayloadAction<DataPanelTabKey>) {
-      const nodeUIState = validateNodeUIState(state);
-      nodeUIState.dataPanel.activeTabKey = action.payload;
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+      brickConfigurationUIState.dataPanel.activeTabKey = action.payload;
     },
 
     /**
@@ -492,9 +499,10 @@ export const editorSlice = createSlice({
     ) {
       const { tabKey, query } = action.payload;
 
-      const nodeUIState = validateNodeUIState(state);
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
 
-      nodeUIState.dataPanel[tabKey].query = query;
+      brickConfigurationUIState.dataPanel[tabKey].query = query;
     },
 
     /**
@@ -508,21 +516,26 @@ export const editorSlice = createSlice({
       }>,
     ) {
       const { tabKey, expandedState } = action.payload;
-      const nodeUIState = validateNodeUIState(state);
-      nodeUIState.dataPanel[tabKey].treeExpandedState = expandedState;
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+      brickConfigurationUIState.dataPanel[tabKey].treeExpandedState =
+        expandedState;
     },
     setActiveBuilderPreviewElement(
       state,
       action: PayloadAction<string | null>,
     ) {
       const activeElement = action.payload;
-      const nodeUIState = validateNodeUIState(state);
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
 
-      nodeUIState.dataPanel[DataPanelTabKey.Preview].activeElement =
-        activeElement;
+      brickConfigurationUIState.dataPanel[
+        DataPanelTabKey.Preview
+      ].activeElement = activeElement;
 
-      nodeUIState.dataPanel[DataPanelTabKey.Outline].activeElement =
-        activeElement;
+      brickConfigurationUIState.dataPanel[
+        DataPanelTabKey.Outline
+      ].activeElement = activeElement;
     },
 
     copyBlockConfig(state, action: PayloadAction<BrickConfig>) {
@@ -744,7 +757,7 @@ export const editorSlice = createSlice({
       }
 
       pipeline.splice(pipelineIndex, 0, block);
-      syncNodeUIStates(state, modComponentFormState);
+      syncBrickConfigurationUIStates(state, modComponentFormState);
       assertNotNullish(block.instanceId, "Block instanceId not found");
       setActiveNodeId(state, block.instanceId);
       state.dirty[modComponentFormState.uuid] = true;
@@ -793,7 +806,7 @@ export const editorSlice = createSlice({
       }
 
       // Make sure the pipeline map is updated
-      syncNodeUIStates(state, activeModComponentFormState);
+      syncBrickConfigurationUIStates(state, activeModComponentFormState);
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
@@ -837,7 +850,7 @@ export const editorSlice = createSlice({
 
       removeUnusedDependencies(activeModComponentFormState);
 
-      syncNodeUIStates(state, activeModComponentFormState);
+      syncBrickConfigurationUIStates(state, activeModComponentFormState);
 
       activeBrickPipelineUIState.activeNodeId =
         nextActiveNode?.instanceId ?? FOUNDATION_NODE_ID;
@@ -880,7 +893,7 @@ export const editorSlice = createSlice({
       state,
       { payload }: PayloadAction<{ id: string; isExpanded: boolean }>,
     ) {
-      const uiState = selectActiveNodeUIState({
+      const uiState = selectActiveBrickConfigurationUIState({
         editor: state,
       });
       assertNotNullish(uiState, "Active node UI state not found");
@@ -895,22 +908,25 @@ export const editorSlice = createSlice({
     expandBrickPipelineNode(state, action: PayloadAction<UUID>) {
       const nodeId = action.payload;
       const brickPipelineUIState = validateBrickPipelineUIState(state);
-      const nodeUIState = brickPipelineUIState.nodeUIStates[nodeId];
+      const brickConfigurationUIState =
+        brickPipelineUIState.nodeUIStates[nodeId];
       assertNotNullish(
-        nodeUIState,
+        brickConfigurationUIState,
         `Node UI state not found for id: ${nodeId}`,
       );
-      nodeUIState.collapsed = false;
+      brickConfigurationUIState.collapsed = false;
     },
     toggleCollapseBrickPipelineNode(state, action: PayloadAction<UUID>) {
       const nodeId = action.payload;
       const brickPipelineUIState = validateBrickPipelineUIState(state);
-      const nodeUIState = brickPipelineUIState.nodeUIStates[nodeId];
+      const brickConfigurationUIState =
+        brickPipelineUIState.nodeUIStates[nodeId];
       assertNotNullish(
-        nodeUIState,
+        brickConfigurationUIState,
         `Node UI state not found for id: ${nodeId}`,
       );
-      nodeUIState.collapsed = !nodeUIState.collapsed;
+      brickConfigurationUIState.collapsed =
+        !brickConfigurationUIState.collapsed;
     },
     setDataSectionExpanded(
       state,
@@ -951,9 +967,10 @@ export const editorSlice = createSlice({
       })
       .addCase(
         checkAvailableActivatedModComponents.fulfilled,
-        (state, { payload: { availableInstalledIds } }) => {
+        (state, { payload: { availableActivatedModComponentIds } }) => {
           state.isPendingAvailableActivatedModComponents = false;
-          state.availableActivatedModComponentIds = availableInstalledIds;
+          state.availableActivatedModComponentIds =
+            availableActivatedModComponentIds;
         },
       )
       .addCase(
@@ -1035,15 +1052,15 @@ function validateBrickPipelineUIState(state: Draft<EditorState>) {
   return brickPipelineUIState;
 }
 
-function validateNodeUIState(state: Draft<EditorState>) {
+function validateBrickConfigurationUIState(state: Draft<EditorState>) {
   const brickPipelineUIState = validateBrickPipelineUIState(state);
 
-  const nodeUIState =
+  const brickConfigurationUIState =
     brickPipelineUIState.nodeUIStates[brickPipelineUIState.activeNodeId];
 
   assertNotNullish(
-    nodeUIState,
+    brickConfigurationUIState,
     `Brick Pipeline UI state not found for activeNodeId: ${brickPipelineUIState.activeNodeId}`,
   );
-  return nodeUIState;
+  return brickConfigurationUIState;
 }

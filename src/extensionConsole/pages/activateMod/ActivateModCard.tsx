@@ -141,7 +141,7 @@ const ActivateModCard: React.FC = () => {
               <div>
                 <h4>{label}</h4>
               </div>
-              <Component mod={mod} reinstall={isReactivate} />
+              <Component mod={mod} />
             </div>
           ))}
         </Card.Body>

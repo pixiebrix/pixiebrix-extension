@@ -28,7 +28,7 @@ sessionChangesListenerMiddleware.startListening({
     actions.addNode,
     actions.moveNode,
     actions.removeNode,
-    actions.resetInstalled,
+    actions.resetActivatedModComponentFormState,
     actions.removeModComponentFormState,
     actions.editModMetadata,
     actions.editModOptionsDefinitions,
