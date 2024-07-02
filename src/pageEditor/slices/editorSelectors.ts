@@ -285,7 +285,7 @@ export function selectActiveBrickPipelineUIState({
   return editor.brickPipelineUIStateById[editor.activeModComponentId];
 }
 
-export const selectActiveNodeUIState = createSelector(
+export const selectActiveBrickConfigurationUIState = createSelector(
   selectActiveBrickPipelineUIState,
   (brickPipelineUIState) =>
     brickPipelineUIState?.nodeUIStates[brickPipelineUIState.activeNodeId],
@@ -373,17 +373,19 @@ export const selectParentBlockInfo =
 export const selectNodeDataPanelTabSelected: (
   rootState: EditorRootState,
 ) => Nullishable<DataPanelTabKey> = createSelector(
-  selectActiveNodeUIState,
-  (nodeUIState) => nodeUIState?.dataPanel.activeTabKey,
+  selectActiveBrickConfigurationUIState,
+  (brickConfigurationUIState) =>
+    brickConfigurationUIState?.dataPanel.activeTabKey,
 );
 
 export function selectNodeDataPanelTabState(
   rootState: EditorRootState,
   tabKey: DataPanelTabKey,
 ): Nullishable<TabUIState> {
-  const nodeUIState = selectActiveNodeUIState(rootState);
+  const brickConfigurationUIState =
+    selectActiveBrickConfigurationUIState(rootState);
   // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
-  return nodeUIState?.dataPanel[tabKey];
+  return brickConfigurationUIState?.dataPanel[tabKey];
 }
 
 /**

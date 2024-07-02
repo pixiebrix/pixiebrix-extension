@@ -39,7 +39,7 @@ import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveModComponentFormState,
   selectActiveBrickPipelineUIState,
-  selectActiveNodeUIState,
+  selectActiveBrickConfigurationUIState,
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
 } from "./editorSelectors";
@@ -880,7 +880,7 @@ export const editorSlice = createSlice({
       state,
       { payload }: PayloadAction<{ id: string; isExpanded: boolean }>,
     ) {
-      const uiState = selectActiveNodeUIState({
+      const uiState = selectActiveBrickConfigurationUIState({
         editor: state,
       });
       assertNotNullish(uiState, "Active node UI state not found");
