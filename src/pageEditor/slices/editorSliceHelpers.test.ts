@@ -85,7 +85,7 @@ describe("ensureBrickPipelineUIState", () => {
   });
 });
 
-describe("ensureNodeUIState", () => {
+describe("ensureBrickConfigurationUIState", () => {
   test("does not affect existing node state", () => {
     const formState = formStateFactory();
     const nodeId = formState.modComponent.brickPipeline[0].instanceId;
