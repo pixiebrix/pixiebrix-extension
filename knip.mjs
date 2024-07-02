@@ -45,7 +45,6 @@ const knipConfig = {
     "src/development/hooks/**",
     // Type-only strictNullChecks helper
     "src/types/typeOnlyMessengerRegistration.ts",
-    // End-to-end tests
     "end-to-end-tests/**",
 
     // https://knip.dev/reference/jsdoc-tsdoc-tags/#tags-cli

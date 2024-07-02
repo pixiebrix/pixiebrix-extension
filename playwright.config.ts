@@ -39,7 +39,7 @@ export default defineConfig<{ chromiumChannel: string }>({
     trace: CI ? "on-first-retry" : "retain-on-failure",
 
     /* Set the default timeout for actions such as `click` */
-    actionTimeout: 5000,
+    actionTimeout: 5_000,
 
     /* Set the default timeout for page navigations */
     navigationTimeout: 10_000,

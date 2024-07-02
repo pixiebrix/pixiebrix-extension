@@ -19,8 +19,7 @@ import { BasePageObject } from "../basePageObject";
 import { uuidv4 } from "@/types/helpers";
 import { type Locator } from "@playwright/test";
 
-// Starter brick names as shown in the Page Editor UI
-export type StarterBrickName =
+export type StarterBrickUIName =
   | "Context Menu"
   | "Trigger"
   | "Button"
@@ -57,7 +56,7 @@ export class ModListingPanel extends BasePageObject {
    * not the underlying type
    * @returns modName the generated mod name
    */
-  async addStarterBrick(starterBrickName: StarterBrickName) {
+  async addStarterBrick(starterBrickName: StarterBrickUIName) {
     const modUuid = uuidv4();
     const modComponentName = `Test ${starterBrickName} ${modUuid}`;
     await this.addButton.click();
@@ -70,9 +69,7 @@ export class ModListingPanel extends BasePageObject {
 
   getModListItemByName(modName: string) {
     return new ModListItem(
-      this.locator(".list-group-item")
-        .locator("span", { hasText: modName })
-        .first(),
+      this.locator(".list-group-item", { hasText: modName }).first(),
       modName,
     );
   }

@@ -158,7 +158,8 @@ export class PageEditorPage extends BasePageObject {
   }) {
     const modName = `${modNameRoot} ${modUuid}`;
 
-    const modListItem = this.modListingPanel.getModListItemByName(modName);
+    const modListItem =
+      this.modListingPanel.getModListItemByName(modComponentName);
     await modListItem.menuButton.click();
     await this.getByRole("button", { name: "Add to mod" }).click();
 
