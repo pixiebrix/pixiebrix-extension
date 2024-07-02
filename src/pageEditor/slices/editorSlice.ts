@@ -479,8 +479,9 @@ export const editorSlice = createSlice({
       setActiveNodeId(state, action.payload);
     },
     setNodeDataPanelTabSelected(state, action: PayloadAction<DataPanelTabKey>) {
-      const nodeUIState = validateNodeUIState(state);
-      nodeUIState.dataPanel.activeTabKey = action.payload;
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+      brickConfigurationUIState.dataPanel.activeTabKey = action.payload;
     },
 
     /**
@@ -492,9 +493,10 @@ export const editorSlice = createSlice({
     ) {
       const { tabKey, query } = action.payload;
 
-      const nodeUIState = validateNodeUIState(state);
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
 
-      nodeUIState.dataPanel[tabKey].query = query;
+      brickConfigurationUIState.dataPanel[tabKey].query = query;
     },
 
     /**
@@ -508,21 +510,26 @@ export const editorSlice = createSlice({
       }>,
     ) {
       const { tabKey, expandedState } = action.payload;
-      const nodeUIState = validateNodeUIState(state);
-      nodeUIState.dataPanel[tabKey].treeExpandedState = expandedState;
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+      brickConfigurationUIState.dataPanel[tabKey].treeExpandedState =
+        expandedState;
     },
     setActiveBuilderPreviewElement(
       state,
       action: PayloadAction<string | null>,
     ) {
       const activeElement = action.payload;
-      const nodeUIState = validateNodeUIState(state);
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
 
-      nodeUIState.dataPanel[DataPanelTabKey.Preview].activeElement =
-        activeElement;
+      brickConfigurationUIState.dataPanel[
+        DataPanelTabKey.Preview
+      ].activeElement = activeElement;
 
-      nodeUIState.dataPanel[DataPanelTabKey.Outline].activeElement =
-        activeElement;
+      brickConfigurationUIState.dataPanel[
+        DataPanelTabKey.Outline
+      ].activeElement = activeElement;
     },
 
     copyBlockConfig(state, action: PayloadAction<BrickConfig>) {
@@ -895,22 +902,25 @@ export const editorSlice = createSlice({
     expandBrickPipelineNode(state, action: PayloadAction<UUID>) {
       const nodeId = action.payload;
       const brickPipelineUIState = validateBrickPipelineUIState(state);
-      const nodeUIState = brickPipelineUIState.nodeUIStates[nodeId];
+      const brickConfigurationUIState =
+        brickPipelineUIState.nodeUIStates[nodeId];
       assertNotNullish(
-        nodeUIState,
+        brickConfigurationUIState,
         `Node UI state not found for id: ${nodeId}`,
       );
-      nodeUIState.collapsed = false;
+      brickConfigurationUIState.collapsed = false;
     },
     toggleCollapseBrickPipelineNode(state, action: PayloadAction<UUID>) {
       const nodeId = action.payload;
       const brickPipelineUIState = validateBrickPipelineUIState(state);
-      const nodeUIState = brickPipelineUIState.nodeUIStates[nodeId];
+      const brickConfigurationUIState =
+        brickPipelineUIState.nodeUIStates[nodeId];
       assertNotNullish(
-        nodeUIState,
+        brickConfigurationUIState,
         `Node UI state not found for id: ${nodeId}`,
       );
-      nodeUIState.collapsed = !nodeUIState.collapsed;
+      brickConfigurationUIState.collapsed =
+        !brickConfigurationUIState.collapsed;
     },
     setDataSectionExpanded(
       state,
@@ -1035,15 +1045,15 @@ function validateBrickPipelineUIState(state: Draft<EditorState>) {
   return brickPipelineUIState;
 }
 
-function validateNodeUIState(state: Draft<EditorState>) {
+function validateBrickConfigurationUIState(state: Draft<EditorState>) {
   const brickPipelineUIState = validateBrickPipelineUIState(state);
 
-  const nodeUIState =
+  const brickConfigurationUIState =
     brickPipelineUIState.nodeUIStates[brickPipelineUIState.activeNodeId];
 
   assertNotNullish(
-    nodeUIState,
+    brickConfigurationUIState,
     `Brick Pipeline UI state not found for activeNodeId: ${brickPipelineUIState.activeNodeId}`,
   );
-  return nodeUIState;
+  return brickConfigurationUIState;
 }
