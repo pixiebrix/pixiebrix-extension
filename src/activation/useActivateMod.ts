@@ -59,7 +59,7 @@ function selectActivateEventData(modDefinition: ModDefinition) {
 }
 
 /**
- * React hook to install a mod.
+ * React hook to activate a mod.
  *
  * Prompts the user to grant permissions if PixieBrix does not already have the required permissions.
  * @param source The source of the activation, only used for reporting purposes

@@ -25,7 +25,6 @@ export type WizardStep = {
   label: string;
   Component: React.FunctionComponent<{
     mod: ModDefinition;
-    reinstall: boolean;
   }>;
 };
 

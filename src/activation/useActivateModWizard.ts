@@ -167,7 +167,7 @@ export function wizardStateFactory({
   };
 
   const validationSchema = Yup.object().shape({
-    extensions: Yup.object().shape(
+    modComponents: Yup.object().shape(
       Object.fromEntries(
         modComponentDefinitions.map((_, index) => [
           index,
