@@ -30,18 +30,18 @@ import { type UUID } from "@/types/stringTypes";
 /**
  * @file utility methods to deactivate mods/mod components and remove from the existing tabs.
  *
- * Mocked in src/__mocks__/@/store/uninstallUtils.ts.
+ * Mocked in src/__mocks__/@/store/deactivateUtils.ts.
  */
 
 /**
- * Use this helper outside the Page Editor context to uninstall a mod and all of its mod components.
+ * Use this helper outside the Page Editor context to deactivate a mod and all of its mod components.
  *
- * Uninstalls from:
+ * Removes from:
  * - Extension Options slice
  * - Draft mod components slice (i.e., Page Editor state)
  * - Notifies all tabs to remove the mod components
  */
-export async function uninstallMod(
+export async function deactivateMod(
   modId: RegistryId,
   modComponents: SerializedModComponent[],
   dispatch: Dispatch<unknown>,
@@ -60,9 +60,9 @@ export async function uninstallMod(
 }
 
 /**
- * Use this helper outside the Page Editor context to uninstall a collections of mod components.
+ * Use this helper outside the Page Editor context to deactivate a collections of mod components.
  */
-export async function uninstallModComponents(
+export async function deactivateModComponents(
   modComponentIds: UUID[],
   dispatch: Dispatch<unknown>,
 ): Promise<void> {
@@ -73,9 +73,6 @@ export async function uninstallModComponents(
   removeModComponentsFromAllTabs(modComponentIds);
 }
 
-/**
- * Uninstalls the extensions from all open tabs
- */
 export function removeModComponentsFromAllTabs(modComponentIds: UUID[]): void {
   for (const modComponentId of modComponentIds) {
     removeModComponentForEveryTab(modComponentId);

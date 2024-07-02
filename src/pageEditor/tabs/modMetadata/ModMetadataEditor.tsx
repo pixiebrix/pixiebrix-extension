@@ -69,19 +69,19 @@ const selectFirstModComponent = createSelector(
 
 const OldModVersionAlert: React.FunctionComponent<{
   modId: RegistryId;
-  installedModVersion: string;
+  activatedModVersion: string;
   latestModVersion: string;
 }> = ({
   modId,
-  installedModVersion,
+  activatedModVersion,
   latestModVersion,
 }: {
   modId: RegistryId;
-  installedModVersion: string;
+  activatedModVersion: string;
   latestModVersion: string;
 }) => (
   <Alert variant="warning">
-    You are editing version {installedModVersion} of this mod, the latest
+    You are editing version {activatedModVersion} of this mod, the latest
     version is {latestModVersion}. To get the latest version,{" "}
     <a
       href={`/options.html#${getActivateModHashRoute(modId)}`}
@@ -105,16 +105,16 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
     error,
   } = useOptionalModDefinition(modId);
 
-  // Select a single mod component for the mod to check the installed version.
+  // Select a single mod component for the mod to check the activated version.
   // We rely on the assumption that every component in the mod has the same version.
   const modDefinitionComponent = useSelector(selectFirstModComponent);
 
-  const installedModVersion = modDefinitionComponent?._recipe?.version;
+  const activatedModVersion = modDefinitionComponent?._recipe?.version;
   const latestModVersion = modDefinition?.metadata?.version;
   const showOldModVersionWarning =
-    installedModVersion &&
+    activatedModVersion &&
     latestModVersion &&
-    lt(installedModVersion, latestModVersion);
+    lt(activatedModVersion, latestModVersion);
 
   const dirtyMetadata = useSelector(selectDirtyMetadataForModId(modId));
   const savedMetadata = modDefinition?.metadata;
@@ -157,7 +157,7 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
           {showOldModVersionWarning && (
             <OldModVersionAlert
               modId={modId}
-              installedModVersion={installedModVersion}
+              activatedModVersion={activatedModVersion}
               latestModVersion={latestModVersion}
             />
           )}

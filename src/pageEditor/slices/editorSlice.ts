@@ -150,12 +150,12 @@ const cloneActiveModComponent = createAsyncThunk<
   );
 });
 
-type AvailableInstalled = {
-  availableInstalledIds: UUID[];
+type AvailableActivatedModComponents = {
+  availableActivatedModComponentIds: UUID[];
 };
 
 const checkAvailableActivatedModComponents = createAsyncThunk<
-  AvailableInstalled,
+  AvailableActivatedModComponents,
   void,
   { state: EditorRootState & ModComponentsRootState }
 >("editor/checkAvailableActivatedModComponents", async (arg, thunkAPI) => {
@@ -180,12 +180,12 @@ const checkAvailableActivatedModComponents = createAsyncThunk<
       const activatedStarterBrick = activatedStarterBricks.get(
         x.extensionPointId,
       );
-      // Not installed means not available
+      // Not activated means not available
       if (activatedStarterBrick == null) {
         return false;
       }
 
-      // QuickBar is installed on every page, need to filter by the documentUrlPatterns
+      // QuickBar is activated on every page, need to filter by the documentUrlPatterns
       if (
         QuickBarStarterBrickABC.isQuickBarStarterBrick(activatedStarterBrick)
       ) {
@@ -200,7 +200,7 @@ const checkAvailableActivatedModComponents = createAsyncThunk<
     .map((x) => x.id);
 
   // Note: we can take out this filter if and when we persist the editor
-  // slice and remove installed mod components when they become draft form states
+  // slice and remove activated mod components when they become draft form states
   const notDraftActivated = notDeletedModComponents.filter(
     (modComponent) =>
       !notDeletedFormStates.some(
@@ -209,11 +209,11 @@ const checkAvailableActivatedModComponents = createAsyncThunk<
       ),
   );
 
-  const availableInstalledIds = notDraftActivated
+  const availableActivatedModComponentIds = notDraftActivated
     .filter((x) => availableStarterBrickIds.includes(x.id))
     .map((x) => x.id);
 
-  return { availableInstalledIds };
+  return { availableActivatedModComponentIds };
 });
 
 async function isStarterBrickFormStateAvailable(
@@ -346,7 +346,10 @@ export const editorSlice = createSlice({
       state.activeModComponentId = uuid;
       state.selectionSeq++;
     },
-    selectInstalled(state, action: PayloadAction<ModComponentFormState>) {
+    selectActivatedModComponentFormState(
+      state,
+      action: PayloadAction<ModComponentFormState>,
+    ) {
       const modComponentFormState =
         action.payload as Draft<ModComponentFormState>;
       const index = state.modComponentFormStates.findIndex(
@@ -360,7 +363,10 @@ export const editorSlice = createSlice({
 
       setActiveModComponentId(state, modComponentFormState);
     },
-    resetInstalled(state, actions: PayloadAction<ModComponentFormState>) {
+    resetActivatedModComponentFormState(
+      state,
+      actions: PayloadAction<ModComponentFormState>,
+    ) {
       const modComponentFormState =
         actions.payload as Draft<ModComponentFormState>;
       const index = state.modComponentFormStates.findIndex(
@@ -961,9 +967,10 @@ export const editorSlice = createSlice({
       })
       .addCase(
         checkAvailableActivatedModComponents.fulfilled,
-        (state, { payload: { availableInstalledIds } }) => {
+        (state, { payload: { availableActivatedModComponentIds } }) => {
           state.isPendingAvailableActivatedModComponents = false;
-          state.availableActivatedModComponentIds = availableInstalledIds;
+          state.availableActivatedModComponentIds =
+            availableActivatedModComponentIds;
         },
       )
       .addCase(
