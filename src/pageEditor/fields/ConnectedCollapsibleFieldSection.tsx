@@ -15,9 +15,13 @@ const ConnectedCollapsibleFieldSection = ({
   initialExpanded?: boolean;
 }) => {
   const dispatch = useDispatch();
-  const UIState = useSelector(selectActiveBrickConfigurationUIState);
+  const brickConfigurationUIState = useSelector(
+    selectActiveBrickConfigurationUIState,
+  );
   // Allow to fail gracefully using nullish coalescing operator
-  const isExpanded = UIState?.expandedFieldSections?.[title] ?? initialExpanded;
+  const isExpanded =
+    brickConfigurationUIState?.expandedFieldSections?.[title] ??
+    initialExpanded;
 
   return (
     <CollapsibleFieldSection
