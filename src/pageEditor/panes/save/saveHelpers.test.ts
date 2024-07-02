@@ -804,7 +804,7 @@ describe("buildNewMod", () => {
         totalModComponentCount,
       )();
 
-      // Install the mod
+      // Activate the mod
       const state = modComponentsSlice.reducer(
         { extensions: [] },
         modComponentsSlice.actions.activateMod({
@@ -825,7 +825,7 @@ describe("buildNewMod", () => {
           // Mock this lookup for the adapter call that follows
           jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
-          // Mod was installed, so get the mod component from state
+          // Mod was activated, so get the mod component from state
           const modComponent = state.extensions[i];
 
           // Load the adapter for this mod component

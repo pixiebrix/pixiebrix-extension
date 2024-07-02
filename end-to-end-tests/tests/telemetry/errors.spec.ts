@@ -24,7 +24,12 @@ async function waitForBackgroundPageRequest(
 
     expect(offscreenPage?.url()).toBeDefined();
   }).toPass({ timeout: 5000 });
-  return offscreenPage?.waitForRequest(errorServiceEndpoint);
+  return offscreenPage?.waitForRequest(errorServiceEndpoint, {
+    // TODO: due to Datadog SDK implementation, it will take ~30 seconds for the
+    //  request to be sent. We should figure out a way to induce the request to be sent sooner.
+    //  See this datadog support request: https://help.datadoghq.com/hc/en-us/requests/1754158
+    timeout: 35_000,
+  });
 }
 
 const ERROR_SERVICE_ENDPOINT = "https://browser-intake-datadoghq.com/api/v2/*";
@@ -33,9 +38,6 @@ async function getErrorsFromRequest(
   extensionId: string,
   context: BrowserContext,
 ) {
-  // TODO: due to Datadog SDK implementation, it will take ~30 seconds for the
-  //  request to be sent. We should figure out a way to induce the request to be sent sooner.
-  //  See this datadog support request: https://help.datadoghq.com/hc/en-us/requests/1754158
   const request = await waitForBackgroundPageRequest(
     context,
     extensionId,

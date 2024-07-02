@@ -18,14 +18,14 @@
 import { type UUID } from "@/types/stringTypes";
 import {
   type BrickPipelineUIState,
-  type NodeUIState,
-  type TabUIState,
+  type BrickConfigurationUIState,
+  type DataPanelTabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;
 
-function makeInitialDataTabState(): TabUIState {
+function makeInitialDataTabState(): DataPanelTabUIState {
   return {
     query: "",
     treeExpandedState: {},
@@ -33,8 +33,10 @@ function makeInitialDataTabState(): TabUIState {
   };
 }
 
-export function makeInitialNodeUIState(nodeId: UUID): NodeUIState {
-  const nodeUIState: NodeUIState = {
+export function makeInitialBrickConfigurationUIState(
+  nodeId: UUID,
+): BrickConfigurationUIState {
+  const brickConfigurationUIState: BrickConfigurationUIState = {
     nodeId,
     // @ts-expect-error -- initializing the Tab states down below
     dataPanel: {
@@ -46,10 +48,10 @@ export function makeInitialNodeUIState(nodeId: UUID): NodeUIState {
 
   for (const tab of Object.values(DataPanelTabKey)) {
     // eslint-disable-next-line security/detect-object-injection -- tab comes from a known enum
-    nodeUIState.dataPanel[tab] = makeInitialDataTabState();
+    brickConfigurationUIState.dataPanel[tab] = makeInitialDataTabState();
   }
 
-  return nodeUIState;
+  return brickConfigurationUIState;
 }
 
 export function makeInitialBrickPipelineUIState(): BrickPipelineUIState {
@@ -57,7 +59,8 @@ export function makeInitialBrickPipelineUIState(): BrickPipelineUIState {
     pipelineMap: {},
     activeNodeId: FOUNDATION_NODE_ID,
     nodeUIStates: {
-      [FOUNDATION_NODE_ID]: makeInitialNodeUIState(FOUNDATION_NODE_ID),
+      [FOUNDATION_NODE_ID]:
+        makeInitialBrickConfigurationUIState(FOUNDATION_NODE_ID),
     },
   };
 }

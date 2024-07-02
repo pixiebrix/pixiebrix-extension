@@ -101,6 +101,7 @@ const EditorPane: React.VFC = () => {
         validateOnMount={false}
         validateOnChange={false}
         validateOnBlur={false}
+        data-testid="editorPane"
       >
         {({ values }) => <EditorPaneContent modComponentFormState={values} />}
       </Formik>

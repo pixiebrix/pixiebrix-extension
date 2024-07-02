@@ -21,7 +21,7 @@ import styles from "./Entry.module.scss";
 import {
   ModHasUpdateIcon,
   UnsavedChangesIcon,
-} from "@/pageEditor/sidebar/ModComponentIcons";
+} from "@/pageEditor/modListingPanel/ModComponentIcons";
 import { Accordion, ListGroup } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -40,7 +40,7 @@ import {
   selectModIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
 import * as semver from "semver";
-import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
+import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
 import { useGetModDefinitionQuery } from "@/data/service/api";
 
 export type ModListItemProps = PropsWithChildren<{
@@ -67,7 +67,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
-  const { id: modId, name: savedName, version: installedVersion } = modMetadata;
+  const { id: modId, name: savedName, version: activatedVersion } = modMetadata;
   const isActive = activeModId === modId;
 
   // TODO: Fix this so it pulls from registry, after registry single-item-api-fetch is implemented
@@ -85,8 +85,8 @@ const ModListItem: React.FC<ModListItemProps> = ({
 
   const hasUpdate =
     latestModVersion != null &&
-    installedVersion != null &&
-    semver.gt(latestModVersion, installedVersion);
+    activatedVersion != null &&
+    semver.gt(latestModVersion, activatedVersion);
 
   const caretIcon = expandedModId === modId ? faCaretDown : faCaretRight;
 
@@ -115,7 +115,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
         {hasUpdate && (
           <span className={cx(styles.icon, "text-warning")}>
             <ModHasUpdateIcon
-              title={`You are editing version ${installedVersion} of this mod, the latest version is ${latestModVersion}.`}
+              title={`You are editing version ${activatedVersion} of this mod, the latest version is ${latestModVersion}.`}
             />
           </span>
         )}

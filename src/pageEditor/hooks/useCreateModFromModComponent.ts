@@ -137,7 +137,7 @@ function useCreateModFromModComponent(
             // Error is already handled by buildAndValidateMod.
           } else {
             throw error;
-          } // Other errors can be thrown during mod installation
+          } // Other errors can be thrown during mod activation
         }
       }),
     [

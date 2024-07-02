@@ -15,20 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import SaveButton from "@/pageEditor/sidebar/SaveButton";
-import { type ComponentMeta, type ComponentStory } from "@storybook/react";
-
-export default {
-  title: "Sidebar/SaveButton",
-  component: SaveButton,
-  argTypes: {
-    onClick: { action: "clicked" },
-  },
-} as ComponentMeta<typeof SaveButton>;
-
-const Template: ComponentStory<typeof SaveButton> = (args) => (
-  <SaveButton {...args} />
-);
-
-export const Default = Template.bind({});
+export const deactivateMod = jest.fn();
+export const deactivateModComponents = jest.fn();
+export const removeModComponentsFromAllTabs = jest.fn();

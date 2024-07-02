@@ -1,6 +1,6 @@
 import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveNodeUIState } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveBrickConfigurationUIState } from "@/pageEditor/slices/editorSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import React from "react";
 
@@ -15,9 +15,13 @@ const ConnectedCollapsibleFieldSection = ({
   initialExpanded?: boolean;
 }) => {
   const dispatch = useDispatch();
-  const UIState = useSelector(selectActiveNodeUIState);
+  const brickConfigurationUIState = useSelector(
+    selectActiveBrickConfigurationUIState,
+  );
   // Allow to fail gracefully using nullish coalescing operator
-  const isExpanded = UIState?.expandedFieldSections?.[title] ?? initialExpanded;
+  const isExpanded =
+    brickConfigurationUIState?.expandedFieldSections?.[title] ??
+    initialExpanded;
 
   return (
     <CollapsibleFieldSection
