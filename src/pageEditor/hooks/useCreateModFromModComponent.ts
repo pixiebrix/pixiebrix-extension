@@ -100,8 +100,6 @@ function useCreateModFromModComponent(
           await upsertModComponentFormState({
             modComponentFormState: newModComponent,
             options: {
-              // Don't push to cloud since we're saving it with the mod
-              pushToCloud: false,
               // Permissions are already checked above
               checkPermissions: false,
               // Need to provide user feedback
