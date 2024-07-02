@@ -20,12 +20,12 @@ import React, { useCallback } from "react";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ListGroup } from "react-bootstrap";
-import { getLabel } from "@/pageEditor/sidebar/common";
+import { getLabel } from "@/pageEditor/modListingPanel/common";
 import {
   ModComponentIcon,
   NotAvailableIcon,
   UnsavedChangesIcon,
-} from "@/pageEditor/sidebar/ModComponentIcons";
+} from "@/pageEditor/modListingPanel/ModComponentIcons";
 import { type UUID } from "@/types/stringTypes";
 import {
   disableOverlay,
@@ -43,7 +43,7 @@ import {
   selectActiveModId,
   selectModComponentIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
+import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
 import useSaveStandaloneModComponent from "@/pageEditor/hooks/useSaveStandaloneModComponent";
 import useResetModComponent from "@/pageEditor/hooks/useResetModComponent";
 import {

@@ -21,7 +21,7 @@ import styles from "./Entry.module.scss";
 import {
   ModHasUpdateIcon,
   UnsavedChangesIcon,
-} from "@/pageEditor/sidebar/ModComponentIcons";
+} from "@/pageEditor/modListingPanel/ModComponentIcons";
 import { Accordion, ListGroup } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -40,7 +40,7 @@ import {
   selectModIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
 import * as semver from "semver";
-import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
+import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
 import { useGetModDefinitionQuery } from "@/data/service/api";
 
 export type ModListItemProps = PropsWithChildren<{

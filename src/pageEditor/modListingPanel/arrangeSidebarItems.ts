@@ -25,7 +25,7 @@ import {
   type ModComponentSidebarItem,
   type ModSidebarItem,
   type SidebarItem,
-} from "@/pageEditor/sidebar/common";
+} from "@/pageEditor/modListingPanel/common";
 
 type ArrangeSidebarItemsArgs = {
   modComponentFormStates: ModComponentFormState[];
