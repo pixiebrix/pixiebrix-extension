@@ -26,8 +26,7 @@ import {
   saveModComponentState,
 } from "@/store/extensionsStorage";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { forEachTab } from "@/utils/extensionUtils";
-import { queueReloadFrameMods } from "@/contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
@@ -261,7 +260,9 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
     saveModComponentState(optionsState),
     saveSidebarState(sidebarState),
   ]);
-  await forEachTab(queueReloadFrameMods);
+
+  reloadModsEveryTab();
+
   return newModConfigs.length > 0;
 }
 
