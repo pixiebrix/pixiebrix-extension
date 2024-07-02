@@ -64,7 +64,7 @@ export function ensureBrickConfigurationUIState(
   state.nodeUIStates[nodeId] ??= makeInitialBrickConfigurationUIState(nodeId);
 }
 
-export function syncNodeUIStates(
+export function syncBrickConfigurationUIStates(
   state: Draft<EditorState>,
   modComponentFormState: ModComponentFormState,
 ) {

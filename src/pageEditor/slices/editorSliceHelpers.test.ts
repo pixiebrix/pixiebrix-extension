@@ -30,7 +30,7 @@ import {
   removeModData,
   setActiveModId,
   setActiveNodeId,
-  syncNodeUIStates,
+  syncBrickConfigurationUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { produce } from "immer";
 import {
@@ -162,7 +162,7 @@ describe("syncNodeUIStates", () => {
       activeModComponentId: formState.uuid,
     };
     const newEditorState = produce(editorState, (draft) => {
-      syncNodeUIStates(draft, formState);
+      syncBrickConfigurationUIStates(draft, formState);
     });
 
     expect(selectActiveNodeId({ editor: newEditorState })).toEqual(
@@ -189,7 +189,7 @@ describe("syncNodeUIStates", () => {
       },
     };
     const newEditorState = produce(editorState, (draft) => {
-      syncNodeUIStates(draft, formState);
+      syncBrickConfigurationUIStates(draft, formState);
     });
 
     // Maintains the foundation node state and adds the block node state for both blocks in the pipeline
