@@ -26,10 +26,11 @@ import { canParseUrl } from "@/utils/urlUtils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { setPartnerAuthData } from "@/auth/authStorage";
 import { stringToBase64 } from "uint8array-extras";
-import { getApiClient } from "@/data/service/apiClient";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
 import { removeOAuth2Token } from "@/background/messenger/api";
+import axios from "axios";
+import { getBaseURL } from "@/data/service/baseService";
 
 /**
  * Launch the browser's web auth flow get a partner token for communicating with the PixieBrix server.
@@ -96,19 +97,26 @@ export async function launchAuthIntegration({
     // `refresh_token` only returned if offline_access scope is requested
     const refreshToken = (newAuthData.refresh_token ?? null) as string | null;
 
-    // Make a single call to the PixieBrix server with the JWT in order verify the JWT is valid for the Control Room and
-    // to set up the ControlRoomPrincipal. If the token is rejected by the Control Room, the PixieBrix server will
-    // return a 401.
-    // Once the value is set on setPartnerAuthData, a cascade of network requests will happen which causes a race condition
-    // in just-in-time user initialization.
-    const apiClient = await getApiClient();
+    // Can't use the regular getApiClient() here due to the auth interceptor library having an axios
+    // dependency version conflict in the app project where we import all the messenger functions
+    //  See @/data/service/apiClient.ts
+    const apiClient = axios.create({
+      baseURL: await getBaseURL(),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "X-Control-Room": controlRoomUrl,
+        Accept: "application/json; version=1.0",
+      },
+    });
     try {
-      await apiClient.get("/api/me/", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "X-Control-Room": controlRoomUrl,
-        },
-      });
+      // Make a single call to the PixieBrix server with the JWT in order
+      // verify the JWT is valid for the Control Room and to set up the
+      // ControlRoomPrincipal. If the token is rejected by the Control Room,
+      // the PixieBrix server will return a 401.
+      // Once the value is set on setPartnerAuthData, a cascade of network
+      // requests will happen which causes a race condition in just-in-time
+      // user initialization.
+      await apiClient.get("/api/me/");
     } catch (error) {
       const axiosError = selectAxiosError(error);
       if (!axiosError || !isAuthenticationAxiosError(axiosError)) {
