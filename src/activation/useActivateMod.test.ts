@@ -157,7 +157,7 @@ describe("useActivateMod", () => {
     expect(error).toBeUndefined();
   });
 
-  it("calls deactivateMod, activates to extensionsSlice, and calls reactivateEveryTab, if permissions are granted", async () => {
+  it("calls deactivateMod, activates to modComponentsSlice, and calls reactivateEveryTab, if permissions are granted", async () => {
     const { formValues, modDefinition } = setupInputs();
     setModHasPermissions(false);
     setUserAcceptedPermissions(true);

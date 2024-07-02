@@ -19,7 +19,7 @@ import { type WizardValues } from "@/activation/wizardTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/extensionsSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { deactivateMod } from "@/store/deactivateUtils";
@@ -85,7 +85,7 @@ function useActivateMod(
       if (source === "extensionConsole") {
         // Note: The prefix "Marketplace" on the telemetry event name
         // here is legacy terminology from before the public marketplace
-        // was created. It refers to the mod-list part of the extension
+        // was created. It refers to the mod-list part of the mod component
         // console, to distinguish that from the workshop.
         // It's being kept to keep our metrics history clean.
         reportEvent(Events.MARKETPLACE_ACTIVATE, {
@@ -112,7 +112,7 @@ function useActivateMod(
             if (source === "extensionConsole") {
               // Note: The prefix "Marketplace" on the telemetry event name
               // here is legacy terminology from before the public marketplace
-              // was created. It refers to the mod-list part of the extension
+              // was created. It refers to the mod-list part of the mod component
               // console, to distinguish that from the workshop.
               // It's being kept like this so our metrics history stays clean.
               reportEvent(Events.MARKETPLACE_REJECT_PERMISSIONS, {
@@ -150,7 +150,7 @@ function useActivateMod(
         );
 
         dispatch(
-          extensionsSlice.actions.activateMod({
+          modComponentsSlice.actions.activateMod({
             modDefinition,
             configuredDependencies: integrationDependencies,
             optionsArgs,
