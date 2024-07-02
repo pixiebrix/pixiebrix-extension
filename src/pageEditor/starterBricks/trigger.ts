@@ -70,7 +70,7 @@ function fromNativeElement(
         showErrors: true,
         intervalMillis: undefined,
         // Use `background: true` for the default for "load" trigger to 1) match the pre-1.8.7 behavior, and 2)
-        // cause the trigger to run by default when the mod component is installed
+        // cause the trigger to run by default when the mod component is activated
         background: true,
         debounce: undefined,
         customEvent: undefined,

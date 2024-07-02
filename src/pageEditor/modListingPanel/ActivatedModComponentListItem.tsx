@@ -115,7 +115,9 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           }
         }
 
-        dispatch(actions.selectInstalled(modComponentFormState));
+        dispatch(
+          actions.selectActivatedModComponentFormState(modComponentFormState),
+        );
         dispatch(actions.checkActiveModComponentAvailability());
 
         if (type === "actionPanel") {
@@ -153,7 +155,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
       })}
       action
       active={isActive}
-      key={`installed-${modComponent.id}`}
+      key={`activated-${modComponent.id}`}
       onMouseEnter={
         isButton ? async () => showOverlay(modComponent.id) : undefined
       }

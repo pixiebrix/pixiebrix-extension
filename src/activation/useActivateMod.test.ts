@@ -21,7 +21,7 @@ import useActivateMod from "./useActivateMod";
 import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/contextMenuTypes";
-import { uninstallMod } from "@/store/uninstallUtils";
+import { deactivateMod } from "@/store/uninstallUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
@@ -43,7 +43,7 @@ import type MockAdapter from "axios-mock-adapter";
 jest.mock("@/contentScript/messenger/api");
 
 const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
-const uninstallModMock = jest.mocked(uninstallMod);
+const uninstallModMock = jest.mocked(deactivateMod);
 const reactivateEveryTabMock = jest.mocked(reloadModsEveryTab);
 
 function setupInputs(): {

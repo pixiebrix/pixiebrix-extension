@@ -25,7 +25,7 @@ import {
 } from "@/utils/modUtils";
 import { useCallback } from "react";
 import useUserAction from "@/hooks/useUserAction";
-import { uninstallModComponents, uninstallMod } from "@/store/uninstallUtils";
+import { deactivateModComponents, deactivateMod } from "@/store/uninstallUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type ModComponentState } from "@/store/extensionsTypes";
@@ -56,13 +56,13 @@ function useDeactivateAction(modViewItem: ModViewItem): (() => void) | null {
     async () => {
       if (isModDefinition(mod)) {
         const blueprintId = mod.metadata.id;
-        await uninstallMod(blueprintId, extensionsFromMod, dispatch);
+        await deactivateMod(blueprintId, extensionsFromMod, dispatch);
 
         reportEvent(Events.MOD_REMOVE, {
           blueprintId,
         });
       } else {
-        await uninstallModComponents(
+        await deactivateModComponents(
           extensionsFromMod.map(({ id }) => id),
           dispatch,
         );

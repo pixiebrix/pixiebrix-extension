@@ -76,7 +76,7 @@ describe("DataPanel state", () => {
   beforeEach(() => {
     state = editorSlice.reducer(
       initialState,
-      actions.selectInstalled(formStateFactory()),
+      actions.selectActivatedModComponentFormState(formStateFactory()),
     );
   });
 
@@ -145,7 +145,10 @@ describe("Add/Remove Bricks", () => {
     blockRegistry.clear();
     blockRegistry.register([echoBrick, teapotBrick]);
 
-    editor = editorSlice.reducer(initialState, actions.selectInstalled(source));
+    editor = editorSlice.reducer(
+      initialState,
+      actions.selectActivatedModComponentFormState(source),
+    );
   });
 
   test("Add Brick", async () => {
