@@ -100,7 +100,7 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
             databaseOptions,
             optionsValidationSchema,
             initialModOptions: mod.initialOptions,
-            installedExtensions: activatedModComponents,
+            activatedModComponents: activatedModComponents,
           });
 
           const result = await activate(

@@ -31,9 +31,9 @@ export type WizardStep = {
 
 export type WizardValues = {
   /**
-   * Mapping from extension index to whether or not it's toggled.
+   * Mapping from mod component index to whether or not it's toggled.
    */
-  extensions: Record<string, boolean>;
+  modComponents: Record<string, boolean>;
 
   /**
    * Integration dependencies for the mod

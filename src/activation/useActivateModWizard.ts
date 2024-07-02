@@ -65,7 +65,7 @@ function forcePrimitive(value: unknown): Primitive | undefined {
   return isPrimitive(value) ? value : undefined;
 }
 
-export type UseActivateRecipeWizardResult = {
+export type UseActivateModWizardResult = {
   wizardSteps: WizardStep[];
   initialValues: WizardValues;
   validationSchema: Yup.AnyObjectSchema;
@@ -75,26 +75,26 @@ export function wizardStateFactory({
   modDefinition,
   defaultAuthOptions = {},
   databaseOptions,
-  installedExtensions,
+  activatedModComponents,
   optionsValidationSchema,
   initialModOptions,
 }: {
   modDefinition: ModDefinition;
   defaultAuthOptions: Record<RegistryId, AuthOption>;
   databaseOptions: Option[];
-  installedExtensions: ActivatedModComponent[];
+  activatedModComponents: ActivatedModComponent[];
   optionsValidationSchema: AnyObjectSchema;
   initialModOptions: UnknownObject;
-}): UseActivateRecipeWizardResult {
+}): UseActivateModWizardResult {
   const modComponentDefinitions = modDefinition.extensionPoints ?? [];
 
-  const activatedModComponents = installedExtensions?.filter(
-    (extension) => extension._recipe?.id === modDefinition.metadata.id,
+  const activatedModComponentsForMod = activatedModComponents?.filter(
+    (x) => x._recipe?.id === modDefinition.metadata.id,
   );
 
-  const installedOptions = collectModOptions(activatedModComponents);
-  const installedIntegrationConfigs = Object.fromEntries(
-    collectConfiguredIntegrationDependencies(activatedModComponents).map(
+  const activatedOptions = collectModOptions(activatedModComponentsForMod);
+  const activatedIntegrationConfigs = Object.fromEntries(
+    collectConfiguredIntegrationDependencies(activatedModComponentsForMod).map(
       ({ integrationId, configId }) => [integrationId, configId],
     ),
   );
@@ -103,9 +103,9 @@ export function wizardStateFactory({
   const integrationDependencies = unconfiguredIntegrationDependencies.map(
     (unconfiguredDependency) => ({
       ...unconfiguredDependency,
-      // Prefer the installed dependency for reinstall cases, otherwise use the default
+      // Prefer the activated dependency for reactivate cases, otherwise use the default
       configId:
-        installedIntegrationConfigs[unconfiguredDependency.integrationId] ??
+        activatedIntegrationConfigs[unconfiguredDependency.integrationId] ??
         defaultAuthOptions[unconfiguredDependency.integrationId]?.value,
     }),
   );
@@ -129,17 +129,17 @@ export function wizardStateFactory({
   });
 
   const initialValues: WizardValues = {
-    extensions: Object.fromEntries(
-      // By default, all extensions in the recipe should be toggled on
+    modComponents: Object.fromEntries(
+      // By default, all mod components in the mod should be toggled on
       modComponentDefinitions.map((_, index) => [index, true]),
     ),
     integrationDependencies,
     optionsArgs: mapValues(
       modDefinition.options?.schema?.properties ?? {},
       (optionSchema: Schema, name: string) => {
-        const installedValue = installedOptions[name];
-        if (installedValue) {
-          return forcePrimitive(installedValue);
+        const activatedValue = activatedOptions[name];
+        if (activatedValue) {
+          return forcePrimitive(activatedValue);
         }
 
         if (
@@ -199,8 +199,8 @@ function useActivateModWizard(
   modDefinition: ModDefinition,
   defaultAuthOptions: Record<RegistryId, AuthOption> = {},
   initialOptions: UnknownObject = {},
-): FetchableAsyncState<UseActivateRecipeWizardResult> {
-  const installedExtensions = useSelector(selectActivatedModComponents);
+): FetchableAsyncState<UseActivateModWizardResult> {
+  const activatedModComponents = useSelector(selectActivatedModComponents);
   const optionsValidationSchemaState = useAsyncModOptionsValidationSchema(
     modDefinition.options?.schema,
   );
@@ -216,7 +216,7 @@ function useActivateModWizard(
         modDefinition,
         defaultAuthOptions,
         databaseOptions,
-        installedExtensions,
+        activatedModComponents,
         optionsValidationSchema,
         initialModOptions: initialOptions,
       }),
