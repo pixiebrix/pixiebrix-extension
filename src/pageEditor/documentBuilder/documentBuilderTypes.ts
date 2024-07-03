@@ -145,7 +145,7 @@ export type DynamicPath = {
   }>;
 };
 
-export type BuildDocumentBuilderBranch = (
+export type BuildDocumentBuilderSubtree = (
   root: DocumentBuilderElement,
   tracePath: DynamicPath,
 ) => DocumentBuilderComponent | null;

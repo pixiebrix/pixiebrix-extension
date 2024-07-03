@@ -23,7 +23,7 @@ import blockRegistry from "@/bricks/registry";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import { buildDocumentBuilderBranch } from "./documentTree";
+import { buildDocumentBuilderSubtree } from "./documentTree";
 import {
   type DocumentBuilderElement,
   type DocumentBuilderElementType,
@@ -46,7 +46,7 @@ describe("When rendered in panel", () => {
   });
 
   const renderDocument = (config: DocumentBuilderElement) => {
-    const branch = buildDocumentBuilderBranch(config, {
+    const branch = buildDocumentBuilderSubtree(config, {
       staticId: "body",
       branches: [],
     });
