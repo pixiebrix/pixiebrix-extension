@@ -26,17 +26,17 @@ const quickbarActionId = validateRegistryId("@pixiebrix/quickbar/add");
 
 export function getExampleBrickPipeline(type: StarterBrickType): BrickPipeline {
   if (type === "actionPanel") {
-    const documentBuilderBlock = createNewConfiguredBrick(documentBrickId);
-    return [documentBuilderBlock];
+    const documentBuilderBrick = createNewConfiguredBrick(documentBrickId);
+    return [documentBuilderBrick];
   }
 
   if (type === "quickBarProvider") {
-    const quickbarActionBlock = createNewConfiguredBrick(quickbarActionId);
-    quickbarActionBlock.config = {
+    const quickbarActionBrick = createNewConfiguredBrick(quickbarActionId);
+    quickbarActionBrick.config = {
       title: "Example Action",
       action: toExpression("pipeline", []),
     };
-    return [quickbarActionBlock];
+    return [quickbarActionBrick];
   }
 
   return [];
