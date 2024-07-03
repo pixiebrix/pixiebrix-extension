@@ -20,7 +20,7 @@ import { type BrickConfig } from "@/bricks/types";
 import CommentEffect from "@/bricks/effects/comment";
 import { isNullOrBlank } from "@/utils/stringUtils";
 
-import styles from "./brickSummary.module.scss";
+import styles from "./nodeSummary.module.scss";
 
 /**
  * Returns a React element to display in the Page Editor brick outline.
