@@ -1011,7 +1011,7 @@
     "./mv3/SessionStorage.test.ts",
     "./mv3/SessionStorage.ts",
     "./mv3/api.ts",
-    "./pageEditor/NonScriptablePage.tsx",
+    "./pageEditor/panes/NonScriptablePage.tsx",
     "./pageEditor/TabConnectionErrorBanner.tsx",
     "./pageEditor/baseFormStateTypes.ts",
     "./pageEditor/brickSummary.tsx",

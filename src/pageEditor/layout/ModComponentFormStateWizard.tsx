@@ -28,7 +28,7 @@ import LogsTab, { LOGS_EVENT_KEY } from "@/pageEditor/tabs/logs/LogsTab";
 import EditTab from "@/pageEditor/tabs/editTab/EditTab";
 import { useDispatch } from "react-redux";
 import cx from "classnames";
-import LogNavItemBadge from "./tabs/logs/NavItemBadge";
+import LogNavItemBadge from "../tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";

@@ -26,7 +26,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import Effect from "@/components/Effect";
-import ModComponentFormStateWizard from "@/pageEditor/ModComponentFormStateWizard";
+import ModComponentFormStateWizard from "@/pageEditor/layout/ModComponentFormStateWizard";
 import { logActions } from "@/components/logViewer/logSlice";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
