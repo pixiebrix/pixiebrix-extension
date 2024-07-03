@@ -55,7 +55,7 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { toExpression } from "@/utils/expressionUtils";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
-import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import pixiebrixIntegrationDependencyFactory from "@/integrations/util/pixiebrixIntegrationDependencyFactory";
 
 jest.mocked(services.locate).mockResolvedValue(

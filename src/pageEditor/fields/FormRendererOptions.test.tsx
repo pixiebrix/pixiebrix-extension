@@ -1,4 +1,4 @@
-import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { sidebarPanelFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { render } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";

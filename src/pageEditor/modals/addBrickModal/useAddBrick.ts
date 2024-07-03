@@ -35,7 +35,7 @@ import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import { type Analysis } from "@/analysis/analysisTypes";
 import { produce } from "immer";
-import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { joinPathParts } from "@/utils/formUtils";

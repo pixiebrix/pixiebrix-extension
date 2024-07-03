@@ -27,7 +27,7 @@ import {
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
+import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BusinessError } from "@/errors/businessErrors";
 import {

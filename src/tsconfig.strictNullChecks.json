@@ -1053,7 +1053,7 @@
     "./pageEditor/documentBuilder/utils.ts",
     "./pageEditor/editorPermissionsHelpers.ts",
     "./pageEditor/events.ts",
-    "./pageEditor/exampleBrickConfigs.ts",
+    "./bricks/exampleBrickConfigs.ts",
     "./pageEditor/fields/ApiVersionField.tsx",
     "./pageEditor/fields/CollapsibleFieldSection.test.tsx",
     "./pageEditor/fields/CollapsibleFieldSection.tsx",

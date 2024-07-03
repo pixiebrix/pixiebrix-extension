@@ -18,7 +18,7 @@
 import { type BrickPipeline } from "@/bricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { toExpression } from "@/utils/expressionUtils";
 
 const documentBrickId = validateRegistryId("@pixiebrix/document");
