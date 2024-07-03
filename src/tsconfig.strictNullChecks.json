@@ -1113,7 +1113,7 @@
     "./pageEditor/panes/insert/InsertButtonPane.tsx",
     "./pageEditor/panes/save/SaveDataIntegrityErrorModal.tsx",
     "./pageEditor/panes/save/saveHelpers.ts",
-    "./pageEditor/panes/save/savingModComponentSlice.ts",
+    "./pageEditor/store/savingModComponent/savingModComponentSlice.ts",
     "./pageEditor/protocol.ts",
     "./pageEditor/modListingPanel/ActionMenu.stories.tsx",
     "./pageEditor/modListingPanel/ActionMenu.tsx",

@@ -25,7 +25,7 @@ import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { appApi } from "@/data/service/api";
 import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
-import { savingModComponentSlice } from "@/pageEditor/panes/save/savingModComponentSlice";
+import { savingModComponentSlice } from "@/pageEditor/store/savingModComponent/savingModComponentSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { persistModComponentOptionsConfig } from "@/store/extensionsStorage";
 import integrationsSlice, {
