@@ -19,7 +19,7 @@ import React from "react";
 import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
 import { useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
-import Modals from "./Modals";
+import Modals from "./modals/Modals";
 import { selectIsInsertingNewStarterBrick } from "@/pageEditor/slices/editorSelectors";
 import EditorContent from "@/pageEditor/EditorContent";
 import styles from "./Editor.module.scss";
