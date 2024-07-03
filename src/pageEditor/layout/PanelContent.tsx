@@ -25,7 +25,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import TabConnectionErrorBanner from "@/pageEditor/TabConnectionErrorBanner";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginCard from "@/pageEditor/components/LoginCard";
-import EditorLayout from "@/pageEditor/EditorLayout";
+import EditorLayout from "@/pageEditor/layout/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
 import {
