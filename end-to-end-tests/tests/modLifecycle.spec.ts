@@ -44,7 +44,7 @@ test("create, run, package, and update mod", async ({
   });
 
   await test.step("Add the Extract from Page brick and configure it", async () => {
-    await pageEditorPage.addBrickToModComponent("extract from page");
+    await pageEditorPage.brickActionsPanel.addBrick("extract from page");
 
     await pageEditorPage.getByPlaceholder("Property name").fill("searchText");
     await expect(pageEditorPage.getByPlaceholder("Property name")).toHaveValue(
@@ -55,9 +55,12 @@ test("create, run, package, and update mod", async ({
   });
 
   await test.step("Add the YouTube search brick and configure it", async () => {
-    await pageEditorPage.addBrickToModComponent("YouTube search in new tab", {
-      index: 1,
-    });
+    await pageEditorPage.brickActionsPanel.addBrick(
+      "YouTube search in new tab",
+      {
+        index: 1,
+      },
+    );
 
     await pageEditorPage.getByLabel("Query").click();
     await pageEditorPage.fillInBrickField(

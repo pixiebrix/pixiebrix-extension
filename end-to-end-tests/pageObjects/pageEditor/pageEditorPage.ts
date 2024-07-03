@@ -22,6 +22,7 @@ import { WorkshopPage } from "../extensionConsole/workshop/workshopPage";
 import { type UUID } from "@/types/stringTypes";
 import { BasePageObject } from "../basePageObject";
 import { ModListingPanel } from "./modListingPanel";
+import { BrickActionsPanel } from "./brickActionsPanel";
 
 /**
  * Page object for the Page Editor. Prefer the newPageEditorPage fixture in testBase.ts to directly creating an
@@ -36,6 +37,9 @@ export class PageEditorPage extends BasePageObject {
   private readonly savedPackageModIds: string[] = [];
 
   modListingPanel = new ModListingPanel(this.getByTestId("modListingPanel"));
+  brickActionsPanel = new BrickActionsPanel(
+    this.getByTestId("brickActionsPanel"),
+  );
 
   templateGalleryButton = this.getByRole("button", {
     name: "Launch Template Gallery",
@@ -79,20 +83,6 @@ export class PageEditorPage extends BasePageObject {
   async fillInBrickField(fieldLabel: string, value: string) {
     await this.getByLabel(fieldLabel).fill(value);
     await this.waitForReduxUpdate();
-  }
-
-  async addBrickToModComponent(
-    brickName: string,
-    { index = 0 }: { index?: number } = {},
-  ) {
-    await this.getByTestId(/icon-button-.*-add-brick/)
-      .nth(index)
-      .click();
-
-    await this.getByTestId("tag-search-input").fill(brickName);
-    await this.getByRole("button", { name: brickName }).click();
-
-    await this.getByRole("button", { name: "Add brick" }).click();
   }
 
   async selectConnectedPageElement(connectedPage: Page) {
