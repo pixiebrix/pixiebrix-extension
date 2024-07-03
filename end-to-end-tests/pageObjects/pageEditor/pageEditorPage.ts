@@ -16,7 +16,7 @@
  */
 
 import { getBasePageEditorUrl } from "../constants";
-import { type Page, expect, Locator } from "@playwright/test";
+import { type Page, expect, type Locator } from "@playwright/test";
 import { ModsPage } from "../extensionConsole/modsPage";
 import { WorkshopPage } from "../extensionConsole/workshop/workshopPage";
 import { type UUID } from "@/types/stringTypes";
