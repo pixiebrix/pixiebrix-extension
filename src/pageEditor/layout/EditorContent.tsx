@@ -35,7 +35,7 @@ import {
 import {
   selectTabHasPermissions,
   selectTabIsConnectingToContentScript,
-} from "@/pageEditor/tabState/tabStateSelectors";
+} from "@/pageEditor/store/tabState/tabStateSelectors";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { selectPageEditorDimensions } from "@/pageEditor/utils";
 import { DefaultErrorComponent } from "@/components/ErrorBoundary";

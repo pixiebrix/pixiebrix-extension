@@ -19,7 +19,7 @@ import React from "react";
 import PanelContent from "./PanelContent";
 import { render } from "../testHelpers";
 import { navigationEvent } from "@/pageEditor/events";
-import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
+import { tabStateActions } from "@/pageEditor/store/tabState/tabStateSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { updateDraftModComponent } from "@/contentScript/messenger/api";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";

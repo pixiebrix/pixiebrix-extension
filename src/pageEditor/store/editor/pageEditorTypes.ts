@@ -28,7 +28,7 @@ import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
 import { type BrickPipelineUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
-import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
+import { type TabStateRootState } from "@/pageEditor/store/tabState/tabStateTypes";
 import { type ModDefinitionsRootState } from "@/modDefinitions/modDefinitionsTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";

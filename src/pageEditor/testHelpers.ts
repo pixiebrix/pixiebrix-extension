@@ -31,7 +31,7 @@ import {
 } from "@/testUtils/testHelpers";
 import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
-import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
+import { tabStateSlice } from "@/pageEditor/store/tabState/tabStateSlice";
 import { appApi } from "@/data/service/api";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";

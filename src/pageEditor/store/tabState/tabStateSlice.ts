@@ -22,7 +22,7 @@ import {
   type FrameConnectionState,
   type TabState,
   type TabStateRootState,
-} from "@/pageEditor/tabState/tabStateTypes";
+} from "@/pageEditor/store/tabState/tabStateTypes";
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
