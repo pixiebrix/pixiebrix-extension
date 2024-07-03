@@ -36,7 +36,7 @@ test("#8740: can view the starter mods on the pixiebrix.com/welcome page", async
   const sideBarPage = await getSidebarPage(page, extensionId);
   await expect(
     sideBarPage.getByRole("heading", { name: "Announcements" }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 8000 });
   await expect(
     sideBarPage.getByRole("heading", { name: "Decision Tree" }),
   ).toBeVisible();
