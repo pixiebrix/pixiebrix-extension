@@ -21,7 +21,7 @@ import getElementCollectionName from "@/pageEditor/documentBuilder/edit/getEleme
 import { produce } from "immer";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { useCallback } from "react";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch } from "react-redux";
 
 function useDeleteElement(documentBodyName: string) {

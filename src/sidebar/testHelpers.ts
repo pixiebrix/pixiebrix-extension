@@ -29,7 +29,7 @@ import { appApi } from "@/data/service/api";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
-import sessionSlice from "@/pageEditor/slices/sessionSlice";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 
 const configureStoreForTests = () =>
   configureStore({

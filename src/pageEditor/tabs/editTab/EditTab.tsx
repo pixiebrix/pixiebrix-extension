@@ -25,12 +25,12 @@ import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useModComponentTrace from "@/pageEditor/hooks/useModComponentTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { useDispatch, useSelector } from "react-redux";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import {
   selectActiveNodeId,
   selectIsDataPanelExpanded,
   selectPipelineMap,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import UnsupportedRuntimeVersion from "@/pageEditor/tabs/editTab/UnsupportedRuntimeVersion";
 import TooltipIconButton from "@/components/TooltipIconButton";
@@ -43,7 +43,7 @@ import cx from "classnames";
 import useReportTraceError from "./useReportTraceError";
 import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
 import { type UUID } from "@/types/stringTypes";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const EditTab: React.FC<{

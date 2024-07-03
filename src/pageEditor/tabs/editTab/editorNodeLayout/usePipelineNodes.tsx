@@ -50,7 +50,7 @@ import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import {
   actions,
   actions as editorActions,
-} from "@/pageEditor/slices/editorSlice";
+} from "@/pageEditor/store/editor/editorSlice";
 import BrickIcon from "@/components/BrickIcon";
 import {
   decideBlockStatus,
@@ -59,16 +59,16 @@ import {
 import { type Except } from "type-fest";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveModComponentTraces } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
   selectCollapsedNodes,
   selectActiveBuilderPreviewElement,
   selectPipelineMap,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import { type Branch, type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
@@ -80,7 +80,7 @@ import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName, joinPathParts } from "@/utils/formUtils";
 import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/pageEditor/documentBuilder/preview/ElementPreview";
-import { getBrickOutlineSummary } from "@/pageEditor/brickSummary";
+import { getBrickPipelineNodeSummary } from "@/pageEditor/tabs/editTab/editorNodeLayout/nodeSummary";
 import { BrickTypes } from "@/runtime/runtimeTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
@@ -425,7 +425,7 @@ const usePipelineNodes = (): {
         brickLabel: isNullOrBlank(blockConfig.label)
           ? block?.name
           : blockConfig.label,
-        brickSummary: getBrickOutlineSummary(blockConfig),
+        brickSummary: getBrickPipelineNodeSummary(blockConfig),
         outputKey: expanded ? undefined : blockConfig.outputKey,
       };
     }

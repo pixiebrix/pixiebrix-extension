@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
 import IdentityTransformerOptions from "@/bricks/transformers/IdentityTransformerOptions";
-import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
+import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import brickRegistry from "@/bricks/registry";
 import { screen } from "@testing-library/react";

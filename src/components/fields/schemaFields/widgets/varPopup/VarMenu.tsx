@@ -23,14 +23,14 @@ import VariablesTree from "./VariablesTree";
 import {
   selectActiveModComponentFormState,
   selectPipelineMap,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import SourceLabel from "./SourceLabel";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useAsyncEffect } from "use-async-effect";
 import { computePosition, flip, offset, size } from "@floating-ui/dom";
 import getMenuOptions from "./getMenuOptions";
-import { selectActiveNodeTrace } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveNodeTrace } from "@/pageEditor/store/runtime/runtimeSelectors";
 import {
   filterOptionsByVariable,
   filterVarMapByVariable,
@@ -38,7 +38,7 @@ import {
 import cx from "classnames";
 import VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import useKeyboardNavigation from "@/components/fields/schemaFields/widgets/varPopup/useKeyboardNavigation";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import useAsyncState from "@/hooks/useAsyncState";
 import { getPageState } from "@/contentScript/messenger/api";
 import { isEmpty } from "lodash";

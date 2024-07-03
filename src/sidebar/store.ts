@@ -48,10 +48,10 @@ import {
   sessionChangesSlice,
   sessionChangesStateSyncActions,
 } from "@/store/sessionChanges/sessionChangesSlice";
-import sessionSlice from "@/pageEditor/slices/sessionSlice";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 import { type AuthState } from "@/auth/authTypes";
 import { type ModDefinitionsState } from "@/modDefinitions/modDefinitionsTypes";
-import { type SessionState } from "@/pageEditor/slices/sessionSliceTypes";
+import { type SessionState } from "@/pageEditor/store/session/sessionSliceTypes";
 import { type SessionChangesState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import { type SidebarState } from "@/types/sidebarTypes";

@@ -20,7 +20,7 @@ import {
   type EditorStateV1,
   type EditorStateV2,
   type EditorStateV4,
-} from "@/pageEditor/pageEditorTypes";
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { mapValues, omit } from "lodash";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import {
@@ -37,7 +37,7 @@ import {
   type BaseFormStateV2,
   type BaseModComponentStateV2,
   type BaseModComponentStateV1,
-} from "@/pageEditor/baseFormStateTypes";
+} from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type PersistedState } from "redux-persist";
 import {
   migrateEditorStateV1,

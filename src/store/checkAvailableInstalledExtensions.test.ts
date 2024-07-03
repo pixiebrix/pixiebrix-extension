@@ -16,11 +16,11 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
+import { actions, editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 import { getRunningStarterBricks } from "@/contentScript/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { RemoteButtonStarterBrick } from "@/starterBricks/button/buttonStarterBrick";

@@ -30,7 +30,7 @@ import {
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { useSelector } from "react-redux";
-import { selectActiveBuilderPreviewElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 
 const useScrollIntoViewEffect = (
   active = false,

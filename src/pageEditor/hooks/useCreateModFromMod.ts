@@ -18,12 +18,12 @@
 import { useCreateModDefinitionMutation } from "@/data/service/api";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
-import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
   selectDirtyModOptionsDefinitions,
   selectKeepLocalCopyOnCreateMod,
-} from "@/pageEditor/slices/editorSelectors";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import { collectModOptions } from "@/store/extensionsUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -31,7 +31,7 @@ import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Events } from "@/telemetry/events";
 import { actions as modComponentActions } from "@/store/extensionsSlice";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
 

@@ -19,20 +19,20 @@ import React, { useEffect } from "react";
 import {
   actions,
   actions as editorActions,
-} from "@/pageEditor/slices/editorSlice";
+} from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import Effect from "@/components/Effect";
-import ModComponentFormStateWizard from "@/pageEditor/ModComponentFormStateWizard";
+import ModComponentFormStateWizard from "@/pageEditor/layout/ModComponentFormStateWizard";
 import { logActions } from "@/components/logViewer/logSlice";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   selectActiveModComponentFormState,
   selectEditorUpdateKey,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but

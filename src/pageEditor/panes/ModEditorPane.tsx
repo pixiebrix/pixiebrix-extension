@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
   selectEditorUpdateKey,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { Alert } from "react-bootstrap";
 import Centered from "@/components/Centered";
 import EditorTabLayout, {

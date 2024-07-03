@@ -16,7 +16,7 @@
  */
 
 import { useDispatch } from "react-redux";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
 const elementsParentRegexp =
   /(?<parentElementName>.*)\.((config\.element\.__value__)|(children\.\d+))/;

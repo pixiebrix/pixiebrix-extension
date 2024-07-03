@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type EditorState } from "@/pageEditor/pageEditorTypes";
-import { initialState } from "@/pageEditor/slices/editorSlice";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { initialState } from "@/pageEditor/store/editor/editorSlice";
 import { type UUID } from "@/types/stringTypes";
-import { type BrickConfigurationUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { type BrickConfigurationUIState } from "@/pageEditor/store/editor/uiStateTypes";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   getEditorState,

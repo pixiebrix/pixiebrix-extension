@@ -23,7 +23,7 @@ import { type StarterBrickType } from "@/types/starterBrickTypes";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Target } from "@/types/messengerTypes";
-import { type BaseFormState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 
 /**

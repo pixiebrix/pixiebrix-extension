@@ -25,7 +25,7 @@ import PipelineFooterNode, {
   type PipelineFooterNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { type BrickNodeProps } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import usePipelineNodes from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes";
 
 const EditorNodeLayout: React.FC = () => {
