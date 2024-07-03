@@ -19,7 +19,7 @@ import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { navigationEvent } from "@/pageEditor/events";
 import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
-import { persistor } from "@/pageEditor/store";
+import { persistor } from "@/pageEditor/store/store";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import TabConnectionErrorBanner from "@/pageEditor/TabConnectionErrorBanner";
