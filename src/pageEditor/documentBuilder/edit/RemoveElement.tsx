@@ -20,7 +20,7 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import useDeleteElement from "@/pageEditor/documentBuilder/hooks/useDeleteElement";
-import { selectActiveBuilderPreviewElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 import { useSelector } from "react-redux";
 
 type RemoveElementProps = {

@@ -20,10 +20,10 @@ import { authSlice } from "@/auth/authSlice";
 import modComponentsSlice from "@/store/extensionsSlice";
 import integrationsSlice from "@/integrations/store/integrationsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
-import sessionSlice from "@/pageEditor/slices/sessionSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 import { savingModComponentSlice } from "@/pageEditor/panes/save/savingModComponentSlice";
-import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
+import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import {
   createRenderHookWithWrappers,

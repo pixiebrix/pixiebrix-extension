@@ -20,12 +20,12 @@ import {
   actions,
   initialState,
   persistEditorConfig,
-} from "@/pageEditor/slices/editorSlice";
+} from "@/pageEditor/store/editor/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   type EditorRootState,
   type EditorState,
-} from "@/pageEditor/pageEditorTypes";
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import blockRegistry from "@/bricks/registry";
 import {

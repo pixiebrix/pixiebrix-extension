@@ -20,7 +20,7 @@ import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
 import { useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import Modals from "../modals/Modals";
-import { selectIsInsertingNewStarterBrick } from "@/pageEditor/slices/editorSelectors";
+import { selectIsInsertingNewStarterBrick } from "@/pageEditor/store/editor/editorSelectors";
 import EditorContent from "@/pageEditor/layout/EditorContent";
 import styles from "./EditorLayout.module.scss";
 import RestrictedPane from "@/pageEditor/panes/RestrictedPane";

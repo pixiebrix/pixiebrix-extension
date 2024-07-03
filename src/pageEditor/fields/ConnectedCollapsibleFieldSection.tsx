@@ -1,7 +1,7 @@
 import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveBrickConfigurationUIState } from "@/pageEditor/slices/editorSelectors";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { selectActiveBrickConfigurationUIState } from "@/pageEditor/store/editor/editorSelectors";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import React from "react";
 
 const ConnectedCollapsibleFieldSection = ({

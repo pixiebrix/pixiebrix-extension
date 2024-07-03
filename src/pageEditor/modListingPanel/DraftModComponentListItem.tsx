@@ -17,7 +17,7 @@
 
 import styles from "./Entry.module.scss";
 import React, { useCallback } from "react";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ListGroup } from "react-bootstrap";
 import { getLabel } from "@/pageEditor/modListingPanel/common";
@@ -36,13 +36,13 @@ import { openSidePanel } from "@/utils/sidePanelUtils";
 import cx from "classnames";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   selectActiveModComponentFormState,
   selectActiveModId,
   selectModComponentIsDirty,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
 import useSaveStandaloneModComponent from "@/pageEditor/hooks/useSaveStandaloneModComponent";
 import useResetModComponent from "@/pageEditor/hooks/useResetModComponent";

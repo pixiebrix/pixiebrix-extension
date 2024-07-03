@@ -21,7 +21,7 @@ import {
   selectIsModComponentDirtyById,
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 
 export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
   selectNotDeletedActivatedModComponents,

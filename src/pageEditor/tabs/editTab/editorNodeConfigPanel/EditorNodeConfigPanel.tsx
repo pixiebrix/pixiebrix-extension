@@ -27,7 +27,7 @@ import getType from "@/runtime/getType";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 import { useSelector } from "react-redux";
-import { selectActiveNodeInfo } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveNodeInfo } from "@/pageEditor/store/editor/editorSelectors";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { MARKETPLACE_URL } from "@/urlConstants";
 import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview";

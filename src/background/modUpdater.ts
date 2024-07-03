@@ -30,8 +30,8 @@ import { groupBy, isEmpty, uniq } from "lodash";
 import { forEachTab } from "@/utils/extensionUtils";
 import { queueReloadFrameMods } from "@/contentScript/messenger/api";
 import { getEditorState, saveEditorState } from "@/store/editorStorage";
-import type { EditorState } from "@/pageEditor/pageEditorTypes";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import type { EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import type {
   ActivatedModComponent,
   SerializedModComponent,

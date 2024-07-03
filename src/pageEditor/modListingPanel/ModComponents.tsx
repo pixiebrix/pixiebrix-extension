@@ -32,13 +32,13 @@ import {
   selectModComponentAvailability,
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import useResetMod from "@/pageEditor/hooks/useResetMod";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import ModComponentListItem from "./ModComponentListItem";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
 

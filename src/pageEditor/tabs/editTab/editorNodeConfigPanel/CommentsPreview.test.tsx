@@ -19,10 +19,10 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview";
 import React from "react";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { actions } from "@/pageEditor/slices/editorSlice";
-import { selectNodeDataPanelTabSelected } from "@/pageEditor/slices/editorSelectors";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { selectNodeDataPanelTabSelected } from "@/pageEditor/store/editor/editorSelectors";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 const renderCommentsPreview = (comments: string) => {
   const formState = formStateFactory();

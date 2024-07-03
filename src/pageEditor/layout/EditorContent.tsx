@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
@@ -31,7 +31,7 @@ import {
   selectActiveModId,
   selectErrorState,
   selectModComponentAvailability,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import {
   selectTabHasPermissions,
   selectTabIsConnectingToContentScript,

@@ -43,7 +43,7 @@ import {
 import useAsyncEffect from "use-async-effect";
 import CommentEffect from "@/bricks/effects/comment";
 import useAsyncState from "@/hooks/useAsyncState";
-import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/store/editor/editorSelectors";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { BrickTypes } from "@/runtime/runtimeTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";

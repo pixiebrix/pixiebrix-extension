@@ -19,7 +19,7 @@ import type React from "react";
 import { useCallback } from "react";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact, get } from "lodash";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,8 +27,8 @@ import {
   selectActiveModComponentFormState,
   selectAddBlockLocation,
   selectPipelineMap,
-} from "@/pageEditor/slices/editorSelectors";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
 import { type BrickConfig } from "@/bricks/types";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";

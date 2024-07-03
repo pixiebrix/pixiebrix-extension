@@ -18,10 +18,10 @@
 import React from "react";
 import { render, screen, within } from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import brickRegistry from "@/bricks/registry";
-import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
   echoBrick,
   teapotBrick,

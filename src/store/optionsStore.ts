@@ -50,7 +50,7 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { type ModsPageRootState } from "@/extensionConsole/pages/mods/modsPageSelectors";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
-import sessionSlice from "@/pageEditor/slices/sessionSlice";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 import {
   persistSessionChangesConfig,
   sessionChangesSlice,
@@ -58,7 +58,7 @@ import {
 } from "@/store/sessionChanges/sessionChangesSlice";
 import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
 import { createStateSyncMiddleware } from "redux-state-sync";
-import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
+import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTypes";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { boolean } from "@/utils/typeUtils";
 import defaultMiddlewareConfig, {

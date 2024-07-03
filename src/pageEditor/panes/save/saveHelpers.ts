@@ -47,7 +47,7 @@ import {
   type SerializedModComponent,
 } from "@/types/modComponentTypes";
 import { type SafeString } from "@/types/stringTypes";
-import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { freshIdentifier } from "@/utils/variableUtils";
 import {
   type IntegrationDependency,

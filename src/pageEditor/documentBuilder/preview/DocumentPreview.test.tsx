@@ -26,7 +26,7 @@ import DocumentPreview from "@/pageEditor/documentBuilder/preview/DocumentPrevie
 import userEvent from "@testing-library/user-event";
 import { render } from "@/pageEditor/testHelpers";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import blockRegistry from "@/bricks/registry";

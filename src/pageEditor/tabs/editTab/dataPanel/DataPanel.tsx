@@ -27,7 +27,7 @@ import BrickPreview, {
 } from "@/pageEditor/tabs/effect/BrickPreview";
 import useReduxState from "@/hooks/useReduxState";
 import { useSelector } from "react-redux";
-import { selectActiveModComponentTraces } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { type JsonObject } from "type-fest";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
@@ -43,8 +43,8 @@ import {
   selectActiveNodeId,
   selectActiveNodeInfo,
   selectActiveBuilderPreviewElement,
-} from "@/pageEditor/slices/editorSelectors";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import Alert from "@/components/Alert";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";

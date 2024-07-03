@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
+import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTypes";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { uuidv4 } from "@/types/helpers";
 import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelectors";
-import { initialState as initialSessionState } from "@/pageEditor/slices/sessionSlice";
+import { initialState as initialSessionState } from "@/pageEditor/store/session/sessionSlice";
 import { initialState as initialSessionChangesState } from "@/store/sessionChanges/sessionChangesSlice";
 
 describe("selectIsStaleSession", () => {

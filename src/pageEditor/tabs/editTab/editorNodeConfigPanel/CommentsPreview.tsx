@@ -23,7 +23,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStickyNote } from "@fortawesome/free-regular-svg-icons";
 import styles from "./CommentsPreview.module.scss";
 import { useDispatch } from "react-redux";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 
 const CommentsPreview: React.FunctionComponent<{
   comments: string;

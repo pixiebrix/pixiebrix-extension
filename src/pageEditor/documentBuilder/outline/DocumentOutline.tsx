@@ -25,10 +25,10 @@ import Tree, {
   type TreeSourcePosition,
 } from "@atlaskit/tree";
 import { useDispatch, useSelector } from "react-redux";
-import { type RootState } from "@/pageEditor/pageEditorTypes";
-import { selectNodeDataPanelTabState } from "@/pageEditor/slices/editorSelectors";
+import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { selectTreeData } from "@/pageEditor/documentBuilder/outline/outlineHelpers";
 import OutlineItem, {
   LEVEL_PADDING_PX,

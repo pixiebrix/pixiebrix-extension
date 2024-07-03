@@ -32,7 +32,7 @@ import {
   updateDraftModComponent,
   removeActivatedModComponent,
 } from "@/contentScript/messenger/api";
-import { selectActiveModComponentFormState } from "../slices/editorSelectors";
+import { selectActiveModComponentFormState } from "../store/editor/editorSelectors";
 import { formStateToDraftModComponent } from "../starterBricks/adapter";
 import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
 import ReduxPersistenceContext, {
@@ -42,7 +42,7 @@ import {
   type StarterBrickType,
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
-import type { EditorState } from "@/pageEditor/pageEditorTypes";
+import type { EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import DimensionGate from "@/pageEditor/components/DimensionGate";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";

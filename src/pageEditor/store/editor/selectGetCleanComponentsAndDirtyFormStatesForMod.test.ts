@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import { initialState as editorInitialState } from "@/pageEditor/slices/editorSlice";
+import { initialState as editorInitialState } from "@/pageEditor/store/editor/editorSlice";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
@@ -26,7 +26,7 @@ import {
 } from "@/testUtils/factories/modComponentFactories";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import {
   type InnerDefinitionRef,
   DefinitionKinds,

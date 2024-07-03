@@ -30,7 +30,7 @@ import {
   type EditorState,
   ModalKey,
   type ModMetadataFormState,
-} from "@/pageEditor/pageEditorTypes";
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
 import { cloneDeep, compact, get, pull, uniq } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
@@ -58,7 +58,7 @@ import {
   setActiveModId,
   setActiveNodeId,
   syncBrickConfigurationUIStates,
-} from "@/pageEditor/slices/editorSliceHelpers";
+} from "@/pageEditor/store/editor/editorSliceHelpers";
 import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";

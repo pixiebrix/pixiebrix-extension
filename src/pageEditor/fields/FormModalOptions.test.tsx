@@ -22,7 +22,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
 import { screen } from "@testing-library/react";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   baseModComponentStateFactory,
   formStateFactory,

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type EditorState } from "@/pageEditor/pageEditorTypes";
-import { initialState } from "@/pageEditor/slices/editorSlice";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { initialState } from "@/pageEditor/store/editor/editorSlice";
 import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
@@ -31,7 +31,7 @@ import {
   setActiveModId,
   setActiveNodeId,
   syncBrickConfigurationUIStates,
-} from "@/pageEditor/slices/editorSliceHelpers";
+} from "@/pageEditor/store/editor/editorSliceHelpers";
 import { produce } from "immer";
 import {
   type BrickPipelineUIState,
@@ -47,7 +47,7 @@ import {
   selectDirtyOptionsDefinitionsForModId,
   selectModComponentFormStates,
   selectExpandedModId,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 

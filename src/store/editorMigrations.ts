@@ -33,7 +33,7 @@ import {
   type EditorStateV1,
   type EditorStateV3,
   type EditorStateV4,
-} from "@/pageEditor/pageEditorTypes";
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 export const migrations: MigrationManifest = {

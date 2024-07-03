@@ -16,7 +16,7 @@
  */
 
 import { render, screen } from "@/pageEditor/testHelpers";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import React from "react";
 import EditorContent from "@/pageEditor/layout/EditorContent";

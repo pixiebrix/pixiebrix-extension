@@ -1,7 +1,7 @@
 import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
 import { sidebarPanelFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { render } from "@/pageEditor/testHelpers";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { screen } from "@testing-library/react";
 import React from "react";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";

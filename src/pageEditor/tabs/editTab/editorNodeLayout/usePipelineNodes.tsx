@@ -50,7 +50,7 @@ import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import {
   actions,
   actions as editorActions,
-} from "@/pageEditor/slices/editorSlice";
+} from "@/pageEditor/store/editor/editorSlice";
 import BrickIcon from "@/components/BrickIcon";
 import {
   decideBlockStatus,
@@ -59,14 +59,14 @@ import {
 import { type Except } from "type-fest";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveModComponentTraces } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
   selectCollapsedNodes,
   selectActiveBuilderPreviewElement,
   selectPipelineMap,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type Branch, type OutputKey } from "@/types/runtimeTypes";

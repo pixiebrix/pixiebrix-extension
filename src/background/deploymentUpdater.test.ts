@@ -35,7 +35,7 @@ import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import {
   editorSlice,
   initialState as initialEditorState,
-} from "@/pageEditor/slices/editorSlice";
+} from "@/pageEditor/store/editor/editorSlice";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ButtonFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { parsePackage } from "@/registry/packageRegistry";

@@ -17,12 +17,12 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type EditorState } from "@/pageEditor/pageEditorTypes";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { produce } from "immer";
 import {
   removeModComponentFormState,
   removeModData,
-} from "@/pageEditor/slices/editorSliceHelpers";
+} from "@/pageEditor/store/editor/editorSliceHelpers";
 import {
   readReduxStorage,
   setReduxStorage,

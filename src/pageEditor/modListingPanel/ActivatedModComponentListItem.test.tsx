@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import ActivatedModComponentListItem from "@/pageEditor/modListingPanel/ActivatedModComponentListItem";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";

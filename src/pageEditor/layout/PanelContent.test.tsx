@@ -22,7 +22,7 @@ import { navigationEvent } from "@/pageEditor/events";
 import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { updateDraftModComponent } from "@/contentScript/messenger/api";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 

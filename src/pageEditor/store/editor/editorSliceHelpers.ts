@@ -19,7 +19,7 @@ import { type Draft } from "immer";
 import {
   type EditorState,
   type ModMetadataFormState,
-} from "@/pageEditor/pageEditorTypes";
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {

@@ -20,7 +20,7 @@ import {
   type EditorStateV1,
   type EditorStateV2,
   type EditorStateV4,
-} from "@/pageEditor/pageEditorTypes";
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { mapValues, omit } from "lodash";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import {

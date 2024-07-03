@@ -19,13 +19,13 @@ import JsonTree, {
   type JsonTreeProps,
   type TreeExpandedState,
 } from "@/components/jsonTree/JsonTree";
-import { selectNodeDataPanelTabState } from "@/pageEditor/slices/editorSelectors";
+import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { type Except } from "type-fest";
 import { type DataPanelTabKey } from "./dataPanelTypes";
-import { actions } from "@/pageEditor/slices/editorSlice";
-import { type RootState } from "@/pageEditor/pageEditorTypes";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 type DataTabJsonTreeProps = Except<
   JsonTreeProps,

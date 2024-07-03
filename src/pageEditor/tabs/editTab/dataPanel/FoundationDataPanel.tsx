@@ -17,7 +17,7 @@
 
 import React from "react";
 import { useSelector } from "react-redux";
-import { makeSelectBrickTrace } from "@/pageEditor/slices/runtimeSelectors";
+import { makeSelectBrickTrace } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import StarterBrickPreview from "@/pageEditor/tabs/effect/StarterBrickPreview";
@@ -28,7 +28,7 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import DataTabJsonTree from "./DataTabJsonTree";
 import StateTab from "./tabs/StateTab";
 import ConfigurationTab from "./tabs/ConfigurationTab";
-import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 
 const FoundationDataPanel: React.FC = () => {
   const { flagOn } = useFlags();

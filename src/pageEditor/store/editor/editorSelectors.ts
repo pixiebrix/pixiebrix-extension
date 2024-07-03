@@ -21,7 +21,7 @@ import {
   type EditorState,
   ModalKey,
   type RootState,
-} from "@/pageEditor/pageEditorTypes";
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { compact, flatMap, isEmpty, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";

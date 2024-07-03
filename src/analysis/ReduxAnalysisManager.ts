@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectActiveModComponentFormState } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import {
   type AnyAction,
   type ListenerEffect,
@@ -29,7 +29,7 @@ import {
   type TypedActionCreator,
 } from "@reduxjs/toolkit/dist/listenerMiddleware/types";
 import { type Analysis } from "./analysisTypes";
-import { type RootState } from "@/pageEditor/pageEditorTypes";
+import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { debounce } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 import AsyncAnalysisQueue from "./asyncAnalysisQueue";
