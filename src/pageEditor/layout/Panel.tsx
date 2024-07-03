@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import store from "./store";
+import store from "../store";
 import { Provider } from "react-redux";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBricks from "@/contrib/registerContribBricks";

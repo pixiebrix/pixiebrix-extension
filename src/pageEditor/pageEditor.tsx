@@ -26,7 +26,7 @@ import { initMessengerLogging } from "@/development/messengerLogging";
 
 import ReactDOM from "react-dom";
 import React from "react";
-import Panel from "@/pageEditor/Panel";
+import Panel from "@/pageEditor/layout/Panel";
 import { watchNavigation } from "@/pageEditor/protocol";
 import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
