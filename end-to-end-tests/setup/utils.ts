@@ -47,5 +47,6 @@ export const openExtensionConsoleFromAdmin = async (
     await expect(extensionConsolePage.getByText(userName)).toBeVisible();
   }).toPass({ timeout: 15_000 });
 
-  return extensionConsolePage;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- needed for strict null check
+  return extensionConsolePage as Page;
 };
