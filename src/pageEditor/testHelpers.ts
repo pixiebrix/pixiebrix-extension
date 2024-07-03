@@ -22,7 +22,7 @@ import integrationsSlice from "@/integrations/store/integrationsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import sessionSlice from "@/pageEditor/store/session/sessionSlice";
-import { savingModComponentSlice } from "@/pageEditor/store/savingModComponent/savingModComponentSlice";
+import { savingModComponentSlice } from "@/pageEditor/store/savingModComponentSlice";
 import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import {
