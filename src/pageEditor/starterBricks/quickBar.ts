@@ -38,7 +38,7 @@ import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarte
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type QuickBarFormState } from "./formStateTypes";
-import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
+import { type SingleLayerReaderConfig } from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
   type QuickBarDefinition,
   type QuickBarConfig,

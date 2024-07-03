@@ -23,7 +23,7 @@ import {
   type BaseFormStateV2,
   type BaseModComponentStateV1,
   type BaseModComponentStateV2,
-} from "@/pageEditor/baseFormStateTypes";
+} from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,

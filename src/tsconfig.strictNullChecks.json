@@ -1013,7 +1013,7 @@
     "./mv3/api.ts",
     "./pageEditor/panes/NonScriptablePage.tsx",
     "./pageEditor/TabConnectionErrorBanner.tsx",
-    "./pageEditor/baseFormStateTypes.ts",
+    "./pageEditor/store/editor/baseFormStateTypes.ts",
     "./pageEditor/tabs/editTab/editorNodeLayout/nodeSummary.tsx",
     "./pageEditor/components/DimensionGate.tsx",
     "./pageEditor/components/LoginCard.stories.tsx",

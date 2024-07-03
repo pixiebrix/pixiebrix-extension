@@ -81,7 +81,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { createMigrate } from "redux-persist";
 import { migrations } from "@/store/editorMigrations";
-import { type BaseStarterBrickState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseStarterBrickState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
   getCurrentInspectedURL,
   inspectedTab,

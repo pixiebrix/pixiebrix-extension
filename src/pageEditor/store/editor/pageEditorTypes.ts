@@ -39,7 +39,7 @@ import {
   type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
-} from "@/pageEditor/baseFormStateTypes";
+} from "@/pageEditor/store/editor/baseFormStateTypes";
 
 export type AddBrickLocation = {
   /**

@@ -57,7 +57,7 @@ import {
   type BaseModComponentState,
   type BaseFormState,
   type SingleLayerReaderConfig,
-} from "@/pageEditor/baseFormStateTypes";
+} from "@/pageEditor/store/editor/baseFormStateTypes";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import {
   type Availability,

@@ -37,7 +37,7 @@ import {
   type BaseFormStateV2,
   type BaseModComponentStateV2,
   type BaseModComponentStateV1,
-} from "@/pageEditor/baseFormStateTypes";
+} from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type PersistedState } from "redux-persist";
 import {
   migrateEditorStateV1,
