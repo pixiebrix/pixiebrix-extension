@@ -23,7 +23,7 @@ import registerContribBricks from "@/contrib/registerContribBricks";
 import registerEditors from "@/contrib/editors";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
-import PanelContent from "@/pageEditor/PanelContent";
+import PanelContent from "@/pageEditor/layout/PanelContent";
 import InvalidatedContextGate from "@/components/InvalidatedContextGate";
 import TabInspectionGate from "@/pageEditor/context/TabInspectionGate";
 

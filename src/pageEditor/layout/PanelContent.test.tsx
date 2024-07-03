@@ -17,7 +17,7 @@
 
 import React from "react";
 import PanelContent from "./PanelContent";
-import { render } from "./testHelpers";
+import { render } from "../testHelpers";
 import { navigationEvent } from "@/pageEditor/events";
 import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";

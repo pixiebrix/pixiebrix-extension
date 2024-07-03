@@ -32,8 +32,8 @@ import {
   updateDraftModComponent,
   removeActivatedModComponent,
 } from "@/contentScript/messenger/api";
-import { selectActiveModComponentFormState } from "./slices/editorSelectors";
-import { formStateToDraftModComponent } from "./starterBricks/adapter";
+import { selectActiveModComponentFormState } from "../slices/editorSelectors";
+import { formStateToDraftModComponent } from "../starterBricks/adapter";
 import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
