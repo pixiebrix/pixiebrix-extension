@@ -25,7 +25,7 @@ import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
-import { type BrickPipelineUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { type BrickPipelineUIState } from "@/pageEditor/store/editor/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
 import { type TabStateRootState } from "@/pageEditor/store/tabState/tabStateTypes";

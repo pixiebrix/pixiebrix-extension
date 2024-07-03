@@ -28,7 +28,7 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import {
   type BrickPipelineUIState,
   type DataPanelTabUIState,
-} from "@/pageEditor/uiState/uiStateTypes";
+} from "@/pageEditor/store/editor/uiStateTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { deserializeError } from "serialize-error";

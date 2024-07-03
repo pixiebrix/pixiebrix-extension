@@ -21,7 +21,7 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { clearModComponentTraces } from "@/telemetry/trace";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import { type BrickConfig } from "@/bricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import {

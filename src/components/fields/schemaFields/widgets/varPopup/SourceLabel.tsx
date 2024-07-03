@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison -- It seems to be the correct option for now */
 import React from "react";
-import { type NodeInfo } from "@/pageEditor/uiState/uiStateTypes";
+import { type NodeInfo } from "@/pageEditor/store/editor/uiStateTypes";
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import styles from "./SourceLabel.module.scss";
 import { type TypedBrickMap } from "@/bricks/registry";

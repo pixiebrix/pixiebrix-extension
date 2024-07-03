@@ -21,7 +21,7 @@ import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
   makeInitialBrickConfigurationUIState,
-} from "@/pageEditor/uiState/uiState";
+} from "@/pageEditor/store/editor/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   ensureBrickPipelineUIState,
@@ -36,7 +36,7 @@ import { produce } from "immer";
 import {
   type BrickPipelineUIState,
   type BrickConfigurationUIState,
-} from "@/pageEditor/uiState/uiStateTypes";
+} from "@/pageEditor/store/editor/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import {
   selectActiveModComponentId,

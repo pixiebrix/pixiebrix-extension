@@ -68,7 +68,7 @@ import {
   selectPipelineMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import { type Branch, type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";

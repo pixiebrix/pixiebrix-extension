@@ -20,7 +20,7 @@ import {
   type BrickPipelineUIState,
   type BrickConfigurationUIState,
   type DataPanelTabUIState,
-} from "@/pageEditor/uiState/uiStateTypes";
+} from "@/pageEditor/store/editor/uiStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;

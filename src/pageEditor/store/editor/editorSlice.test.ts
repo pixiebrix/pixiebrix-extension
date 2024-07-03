@@ -26,7 +26,7 @@ import {
   type EditorRootState,
   type EditorState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import blockRegistry from "@/bricks/registry";
 import {
   echoBrick,

@@ -25,7 +25,7 @@ import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useModComponentTrace from "@/pageEditor/hooks/useModComponentTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { useDispatch, useSelector } from "react-redux";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import {
   selectActiveNodeId,
   selectIsDataPanelExpanded,

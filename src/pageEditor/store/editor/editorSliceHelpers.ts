@@ -26,9 +26,9 @@ import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
   makeInitialBrickConfigurationUIState,
-} from "@/pageEditor/uiState/uiState";
+} from "@/pageEditor/store/editor/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
-import { type BrickPipelineUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { type BrickPipelineUIState } from "@/pageEditor/store/editor/uiStateTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { clearModComponentTraces } from "@/telemetry/trace";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
