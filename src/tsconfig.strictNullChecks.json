@@ -1014,7 +1014,7 @@
     "./pageEditor/panes/NonScriptablePage.tsx",
     "./pageEditor/TabConnectionErrorBanner.tsx",
     "./pageEditor/baseFormStateTypes.ts",
-    "./pageEditor/brickSummary.tsx",
+    "./pageEditor/tabs/editTab/editorNodeLayout/brickSummary.tsx",
     "./pageEditor/components/DimensionGate.tsx",
     "./pageEditor/components/LoginCard.stories.tsx",
     "./pageEditor/components/LoginCard.tsx",
