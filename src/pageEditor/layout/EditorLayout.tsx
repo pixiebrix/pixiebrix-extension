@@ -22,7 +22,7 @@ import useFlags from "@/hooks/useFlags";
 import Modals from "../modals/Modals";
 import { selectIsInsertingNewStarterBrick } from "@/pageEditor/slices/editorSelectors";
 import EditorContent from "@/pageEditor/layout/EditorContent";
-import styles from "../Editor.module.scss";
+import styles from "./EditorLayout.module.scss";
 import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
 import InsertPane from "@/pageEditor/panes/insert/InsertPane";
 import useCurrentInspectedUrl from "../hooks/useCurrentInspectedUrl";
