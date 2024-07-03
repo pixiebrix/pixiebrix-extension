@@ -16,19 +16,21 @@
  */
 
 import { getBasePageEditorUrl } from "../constants";
-import { type Page, expect } from "@playwright/test";
+import { type Page, expect, type Locator } from "@playwright/test";
 import { ModsPage } from "../extensionConsole/modsPage";
 import { WorkshopPage } from "../extensionConsole/workshop/workshopPage";
 import { type UUID } from "@/types/stringTypes";
 import { BasePageObject } from "../basePageObject";
 import { ModListingPanel } from "./modListingPanel";
+import { BrickActionsPanel } from "./brickActionsPanel";
+import { BrickConfigurationPanel } from "./brickConfigurationPanel";
+import { DataPanel } from "./dataPanel";
+import { ModEditorPane } from "./modEditorPane";
+import { ModifiesModState } from "./utils";
 
 /**
  * Page object for the Page Editor. Prefer the newPageEditorPage fixture in testBase.ts to directly creating an
  * instance of this class to take advantage of automatic cleanup of saved mods.
- *
- * @knip usage of PageEditorPage indirectly via the newPageEditorPage fixture in testBase.ts causes a
- * false-positive
  */
 export class PageEditorPage extends BasePageObject {
   private readonly pageEditorUrl: string;
@@ -36,6 +38,16 @@ export class PageEditorPage extends BasePageObject {
   private readonly savedPackageModIds: string[] = [];
 
   modListingPanel = new ModListingPanel(this.getByTestId("modListingPanel"));
+  brickActionsPanel = new BrickActionsPanel(
+    this.getByTestId("brickActionsPanel"),
+  );
+
+  modEditorPane = new ModEditorPane(this.getByTestId("modEditorPane"));
+  brickConfigurationPanel = new BrickConfigurationPanel(
+    this.getByTestId("brickConfigurationPanel"),
+  );
+
+  dataPanel = new DataPanel(this.getByTestId("dataPanel"));
 
   templateGalleryButton = this.getByRole("button", {
     name: "Launch Template Gallery",
@@ -65,37 +77,13 @@ export class PageEditorPage extends BasePageObject {
     await this.page.bringToFront();
   }
 
-  async waitForReduxUpdate() {
-    // See EditorPane.tsx:REDUX_SYNC_WAIT_MILLIS
-    // eslint-disable-next-line playwright/no-wait-for-timeout -- Wait for Redux to update
-    await this.page.waitForTimeout(500);
-  }
-
-  async setStarterBrickName(modComponentName: string) {
-    await this.fillInBrickField("Name", modComponentName);
-    await this.waitForReduxUpdate();
-  }
-
-  async fillInBrickField(fieldLabel: string, value: string) {
-    await this.getByLabel(fieldLabel).fill(value);
-    await this.waitForReduxUpdate();
-  }
-
-  async addBrickToModComponent(
-    brickName: string,
-    { index = 0 }: { index?: number } = {},
+  /** Used for interactions that require selecting an element on the connected page, such as the button starter brick */
+  @ModifiesModState
+  async selectConnectedPageElement(
+    connectedPage: Page,
+    selectLocator: Locator,
+    expectedElementSelector: string,
   ) {
-    await this.getByTestId(/icon-button-.*-add-brick/)
-      .nth(index)
-      .click();
-
-    await this.getByTestId("tag-search-input").fill(brickName);
-    await this.getByRole("button", { name: brickName }).click();
-
-    await this.getByRole("button", { name: "Add brick" }).click();
-  }
-
-  async selectConnectedPageElement(connectedPage: Page) {
     // Without focusing first, the click doesn't enable selection tool ¯\_(ツ)_/¯
     await this.getByLabel("Select element").focus();
     await this.getByLabel("Select element").click();
@@ -104,16 +92,12 @@ export class PageEditorPage extends BasePageObject {
     await expect(
       connectedPage.getByText("Selection Tool: 0 matching"),
     ).toBeVisible();
-    await connectedPage
-      .getByRole("heading", { name: "Transaction Table" })
-      .click();
+    await selectLocator.click();
 
     await this.page.bringToFront();
     await expect(this.getByPlaceholder("Select an element")).toHaveValue(
-      "#root h1",
+      expectedElementSelector,
     );
-
-    await this.waitForReduxUpdate();
   }
 
   /**
@@ -138,8 +122,6 @@ export class PageEditorPage extends BasePageObject {
   }
 
   async saveStandaloneMod(modName: string) {
-    // Wait for redux to persist the page editor mod changes before saving.
-    await this.waitForReduxUpdate();
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.activate();
     await modListItem.saveButton.click();
