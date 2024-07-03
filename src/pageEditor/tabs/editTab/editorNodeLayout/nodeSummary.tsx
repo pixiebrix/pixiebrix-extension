@@ -27,7 +27,7 @@ import styles from "./brickSummary.module.scss";
  * @param brickConfig the configured brick
  * @since 1.8.5
  */
-export function getBrickOutlineSummary(
+export function getBrickPipelineNodeSummary(
   brickConfig: BrickConfig,
 ): ReactElement | undefined {
   // In the future, we might consider defining this on the brick itself, but that would require importing React.

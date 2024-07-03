@@ -80,7 +80,7 @@ import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName, joinPathParts } from "@/utils/formUtils";
 import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/pageEditor/documentBuilder/preview/ElementPreview";
-import { getBrickOutlineSummary } from "@/pageEditor/tabs/editTab/editorNodeLayout/brickSummary";
+import { getBrickPipelineNodeSummary } from "@/pageEditor/tabs/editTab/editorNodeLayout/nodeSummary";
 import { BrickTypes } from "@/runtime/runtimeTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
@@ -425,7 +425,7 @@ const usePipelineNodes = (): {
         brickLabel: isNullOrBlank(blockConfig.label)
           ? block?.name
           : blockConfig.label,
-        brickSummary: getBrickOutlineSummary(blockConfig),
+        brickSummary: getBrickPipelineNodeSummary(blockConfig),
         outputKey: expanded ? undefined : blockConfig.outputKey,
       };
     }
