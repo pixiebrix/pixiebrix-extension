@@ -21,7 +21,7 @@ import { useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import Modals from "../modals/Modals";
 import { selectIsInsertingNewStarterBrick } from "@/pageEditor/slices/editorSelectors";
-import EditorContent from "@/pageEditor/EditorContent";
+import EditorContent from "@/pageEditor/layout/EditorContent";
 import styles from "../Editor.module.scss";
 import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
 import InsertPane from "@/pageEditor/panes/insert/InsertPane";

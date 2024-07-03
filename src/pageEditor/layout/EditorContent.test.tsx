@@ -19,7 +19,7 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import React from "react";
-import EditorContent from "@/pageEditor/EditorContent";
+import EditorContent from "@/pageEditor/layout/EditorContent";
 import { getRunningStarterBricks } from "@/contentScript/messenger/api";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
