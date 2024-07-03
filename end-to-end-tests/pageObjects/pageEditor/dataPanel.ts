@@ -16,21 +16,5 @@
  */
 
 import { BasePageObject } from "../basePageObject";
-import { ModifiesModState } from "./utils";
 
-export class BrickActionsPanel extends BasePageObject {
-  getAddBrickButton(n: number) {
-    return this.getByTestId(/icon-button-.*-add-brick/).nth(n);
-  }
-
-  @ModifiesModState
-  async addBrick(brickName: string, { index = 0 }: { index?: number } = {}) {
-    await this.getAddBrickButton(index).click();
-
-    // Add brick modal
-    await this.page.getByTestId("tag-search-input").fill(brickName);
-    await this.page.getByRole("button", { name: brickName }).first().click();
-
-    await this.page.getByRole("button", { name: "Add brick" }).click();
-  }
-}
+export class DataPanel extends BasePageObject {}

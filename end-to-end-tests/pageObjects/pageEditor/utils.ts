@@ -15,22 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BasePageObject } from "../basePageObject";
-import { ModifiesModState } from "./utils";
+import { type BasePageObject } from "../basePageObject";
 
-export class BrickActionsPanel extends BasePageObject {
-  getAddBrickButton(n: number) {
-    return this.getByTestId(/icon-button-.*-add-brick/).nth(n);
-  }
+type AsyncFunction<T> = (...args: any[]) => Promise<T>;
 
-  @ModifiesModState
-  async addBrick(brickName: string, { index = 0 }: { index?: number } = {}) {
-    await this.getAddBrickButton(index).click();
-
-    // Add brick modal
-    await this.page.getByTestId("tag-search-input").fill(brickName);
-    await this.page.getByRole("button", { name: brickName }).first().click();
-
-    await this.page.getByRole("button", { name: "Add brick" }).click();
-  }
+// Decorator used for functions that modify the state of the mod.
+// This is used to wait for Redux to update before continuing.
+export function ModifiesModState<T>(
+  value: AsyncFunction<T>,
+  context: ClassMethodDecoratorContext<BasePageObject, AsyncFunction<T>>,
+) {
+  return async function (this: BasePageObject, ...args: any[]): Promise<T> {
+    const result = await value.apply(this, args);
+    // See EditorPane.tsx:REDUX_SYNC_WAIT_MILLIS
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- Wait for Redux to update
+    await this.page.waitForTimeout(500);
+    return result;
+  };
 }
