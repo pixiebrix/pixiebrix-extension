@@ -36,7 +36,7 @@ import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import analysisSlice from "@/analysis/analysisSlice";
-import pageEditorAnalysisManager from "../analysisManager";
+import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/store/tabState/tabStateSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";

@@ -30,7 +30,7 @@ import {
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
 import analysisSlice from "@/analysis/analysisSlice";
-import pageEditorAnalysisManager from "./analysisManager";
+import pageEditorAnalysisManager from "./store/analysisManager";
 import { tabStateSlice } from "@/pageEditor/store/tabState/tabStateSlice";
 import { appApi } from "@/data/service/api";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";

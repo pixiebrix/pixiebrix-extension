@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { useAsyncEffect } from "use-async-effect";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { getExampleBrickPipeline } from "@/pageEditor/exampleStarterBrickConfigs";
+import { getExampleBrickPipeline } from "@/pageEditor/panes/insert/exampleStarterBrickConfigs";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import reportEvent from "@/telemetry/reportEvent";
