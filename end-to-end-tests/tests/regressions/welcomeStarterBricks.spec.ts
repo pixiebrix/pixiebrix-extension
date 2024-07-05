@@ -25,7 +25,7 @@ test("#8740: can view the starter mods on the pixiebrix.com/welcome page", async
   page,
   extensionId,
 }) => {
-  const modId = "@e2e-testing/test-sidebar-navigation";
+  const modId = "@e2e-testing/open-sidebar-via-quickbar";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
