@@ -27,7 +27,7 @@ import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
-import { selectModMetadata } from "@/pageEditor/utils";
+import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils";
 import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/store/editor/editorSelectors";
 import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
@@ -84,7 +84,7 @@ function useCreateModFromModComponent(
           }).unwrap();
 
           const newModComponent = produce(newModComponentFormState, (draft) => {
-            draft.modMetadata = selectModMetadata(
+            draft.modMetadata = mapModDefinitionUpsertResponseToModMetadata(
               newModDefinition,
               upsertResponse,
             );

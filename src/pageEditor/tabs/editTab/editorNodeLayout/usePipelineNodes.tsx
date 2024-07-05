@@ -34,9 +34,9 @@ import {
 } from "@/telemetry/traceHelpers";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import {
-  getBlockAnnotations,
+  filterBrickAnnotations,
   getDocumentBuilderPipelinePaths,
-  getFoundationNodeAnnotations,
+  filterStarterBrickAnalysisAnnotations,
   getVariableKeyForSubPipeline,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
@@ -413,7 +413,7 @@ const usePipelineNodes = (): {
       // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
       const blockPath = maybePipelineMap?.[nodeId]?.path;
       const blockAnnotations = blockPath
-        ? getBlockAnnotations(blockPath, annotations)
+        ? filterBrickAnnotations(blockPath, annotations)
         : [];
 
       contentProps = {
@@ -717,7 +717,7 @@ const usePipelineNodes = (): {
       icon: starterBrickIcon,
       runStatus: decideFoundationStatus({
         hasTraces: modComponentHasTraces,
-        blockAnnotations: getFoundationNodeAnnotations(annotations),
+        blockAnnotations: filterStarterBrickAnalysisAnnotations(annotations),
       }),
       brickLabel: starterBrickLabel,
       outputKey: "input" as OutputKey,
