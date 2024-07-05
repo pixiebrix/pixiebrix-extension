@@ -237,9 +237,9 @@ export function filterStarterBrickAnalysisAnnotations(
   );
 }
 
-export function filterBrickAnnotations(
-  brickPath: string,
+export function filterAnnotationsByBrickPath(
   annotations: AnalysisAnnotation[],
+  brickPath: string,
 ): AnalysisAnnotation[] {
   const pathLength = brickPath.length;
 
