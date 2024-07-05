@@ -25,14 +25,12 @@ test("#8740: can view the starter mods on the pixiebrix.com/welcome page", async
   page,
   extensionId,
 }) => {
-  const modId = "@e2e-testing/test-sidebar-navigation";
+  const modId = "@e2e-testing/open-sidebar-via-quickbar";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
   await page.goto("https://pixiebrix.com/welcome");
-  // eslint-disable-next-line playwright/no-networkidle -- Ensure page and content script is done loading
-  await page.waitForLoadState("networkidle");
   await runModViaQuickBar(page, "Open Sidebar");
 
   const sideBarPage = await getSidebarPage(page, extensionId);
