@@ -16,8 +16,7 @@
  */
 
 import React from "react";
-import BrickHistory from "@/extensionConsole/pages/brickEditor/BrickHistory";
-
+import PackageHistory from "@/extensionConsole/pages/packageEditor/PackageHistory";
 import { act, screen, waitFor } from "@testing-library/react";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
@@ -39,7 +38,7 @@ describe("BrickHistory", () => {
   const testBrickId = uuidSequence(1);
 
   const renderBrickHistory = async () => {
-    const utils = render(<BrickHistory brickId={testBrickId} />);
+    const utils = render(<PackageHistory packageId={testBrickId} />);
     // Wait for the currentVersion effect to resolve
     await waitForEffect();
     return utils;

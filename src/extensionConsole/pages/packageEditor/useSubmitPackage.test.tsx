@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import useSubmitBrick from "@/extensionConsole/pages/brickEditor/useSubmitBrick";
+import useSubmitPackage from "@/extensionConsole/pages/packageEditor/useSubmitPackage";
 import { act, renderHook } from "@testing-library/react-hooks";
 import { Provider } from "react-redux";
 import { type AuthState } from "@/auth/authTypes";
@@ -67,7 +67,7 @@ function testStore(initialState?: {
   });
 }
 
-describe("useSubmitBrick", () => {
+describe("useSubmitPackage", () => {
   beforeEach(() => {
     appApiMock.reset();
   });
@@ -77,7 +77,7 @@ describe("useSubmitBrick", () => {
 
     resetTestMiddleware();
 
-    const { result } = renderHook(() => useSubmitBrick({ create: false }), {
+    const { result } = renderHook(() => useSubmitPackage({ create: false }), {
       wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
     });
 
@@ -128,7 +128,7 @@ describe("useSubmitBrick", () => {
 
     resetTestMiddleware();
 
-    const { result } = renderHook(() => useSubmitBrick({ create: false }), {
+    const { result } = renderHook(() => useSubmitPackage({ create: false }), {
       wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
     });
 
@@ -175,7 +175,7 @@ describe("useSubmitBrick", () => {
 
     const showConfirmation = jest.fn().mockResolvedValue(false);
 
-    const { result } = renderHook(() => useSubmitBrick({ create: false }), {
+    const { result } = renderHook(() => useSubmitPackage({ create: false }), {
       wrapper: ({ children }) => (
         <ModalContext.Provider value={{ showConfirmation }}>
           <Provider store={store}>{children}</Provider>

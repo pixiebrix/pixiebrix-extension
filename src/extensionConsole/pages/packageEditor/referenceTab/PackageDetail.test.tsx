@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import BrickDetail from "./BrickDetail";
+import PackageDetail from "./PackageDetail";
 import { TableRenderer } from "@/bricks/renderers/table";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/extensionConsole/testHelpers";
@@ -30,9 +30,13 @@ test.each([
   ["@pixiebrix/table", new TableRenderer()],
 ])(
   "renders %s brick in loading state",
-  async (brickName: string, brick: Metadata) => {
+  async (_brickName: string, packageVersion: Metadata) => {
     const { asFragment } = render(
-      <BrickDetail brick={brick} brickConfig={null} isBrickConfigLoading />,
+      <PackageDetail
+        packageVersion={packageVersion}
+        packageConfig={null}
+        isPackageConfigLoading
+      />,
     );
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
@@ -41,10 +45,10 @@ test.each([
 
 test("renders @pixiebrix/table loaded", async () => {
   const { asFragment } = render(
-    <BrickDetail
-      brick={new TableRenderer()}
-      brickConfig={null}
-      isBrickConfigLoading={false}
+    <PackageDetail
+      packageVersion={new TableRenderer()}
+      packageConfig={null}
+      isPackageConfigLoading={false}
     />,
   );
   await waitForEffect();

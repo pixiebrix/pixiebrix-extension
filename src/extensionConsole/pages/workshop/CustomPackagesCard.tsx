@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import {
   faBars,
   faBolt,
@@ -26,11 +26,11 @@ import {
   faStoreAlt,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import styles from "./CustomBricksCard.module.scss";
+import styles from "./CustomPackagesCard.module.scss";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Column } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
+import { type EnrichedPackage, type NavigateProps } from "./workshopTypes";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import AsyncCard from "@/components/asyncCard/AsyncCard";
 import {
@@ -39,7 +39,7 @@ import {
 } from "@/extensionConsole/pages/workshop/workshopUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-type TableColumn = Column<EnrichedBrick>;
+type TableColumn = Column<EnrichedPackage>;
 function inferIcon(
   kind: KindFilterValue,
   verboseName: Nullishable<string>,
@@ -93,7 +93,7 @@ function inferIcon(
   }
 }
 
-const KindIcon: React.FunctionComponent<{ brick: EnrichedBrick }> = ({
+const KindIcon: React.FunctionComponent<{ brick: EnrichedPackage }> = ({
   brick: { kind, verbose_name },
 }) => (
   <FontAwesomeIcon
@@ -102,7 +102,7 @@ const KindIcon: React.FunctionComponent<{ brick: EnrichedBrick }> = ({
   />
 );
 
-const columnFactory = (): TableColumn[] => [
+const COLUMNS: TableColumn[] = [
   {
     Header: "Name",
     accessor: "name",
@@ -135,26 +135,25 @@ const columnFactory = (): TableColumn[] => [
     Header: "Version",
     accessor: "version",
   },
-];
+] as const;
 
-const CustomBricksCard: React.FunctionComponent<
+const CustomPackagesCard: React.FunctionComponent<
   NavigateProps & {
-    bricks: EnrichedBrick[];
+    packages: EnrichedPackage[];
     maxRows?: number;
     isFetching: boolean;
     error: unknown;
   }
-> = ({ navigate, bricks, isFetching, error }) => {
-  const columns = useMemo(() => columnFactory(), []);
+> = ({ navigate, packages, isFetching, error }) => {
   return (
-    <AsyncCard header="Custom Bricks" isLoading={isFetching} error={error}>
+    <AsyncCard header="Custom Packages" isLoading={isFetching} error={error}>
       {() => (
         <PaginatedTable
-          columns={columns}
-          data={bricks}
-          rowProps={(brick: EnrichedBrick) => ({
+          columns={COLUMNS}
+          data={packages}
+          rowProps={(editablePackage: EnrichedPackage) => ({
             onClick() {
-              navigate(`/workshop/bricks/${brick.id}`);
+              navigate(`/workshop/bricks/${editablePackage.id}`);
             },
             className: `${styles.customRow}`,
           })}
@@ -165,4 +164,4 @@ const CustomBricksCard: React.FunctionComponent<
   );
 };
 
-export default CustomBricksCard;
+export default CustomPackagesCard;

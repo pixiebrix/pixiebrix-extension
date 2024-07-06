@@ -23,7 +23,7 @@ import { Button, Form } from "react-bootstrap";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import Editor, { type EditorValues } from "./Editor";
-import useSubmitBrick from "./useSubmitBrick";
+import useSubmitPackage from "./useSubmitPackage";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 
 const initialValue: EditorValues = {
@@ -33,9 +33,9 @@ const initialValue: EditorValues = {
 };
 
 const CreatePage: React.FunctionComponent = () => {
-  useSetDocumentTitle("Create Brick");
+  useSetDocumentTitle("Create Package");
 
-  const { submit, validate } = useSubmitBrick({
+  const { submit, validate } = useSubmitPackage({
     create: true,
   });
 
@@ -47,19 +47,19 @@ const CreatePage: React.FunctionComponent = () => {
             <div className="flex-grow-1">
               <PageTitle
                 icon={faHammer}
-                title="Create New Brick"
+                title="Create New Package"
                 documentationUrl="https://docs.pixiebrix.com/developing-mods/advanced-workshop"
               />
             </div>
             <div className="flex-grow-1 text-right">
               <Button disabled={!isValid} type="submit">
-                {values.public ? "Publish Brick" : "Create Brick"}
+                {values.public ? "Publish Package" : "Create Package"}
               </Button>
             </div>
           </div>
           <div className="pb-4">
             <p>
-              Create a new brick and optionally share it with your teammates
+              Create a new package and optionally share it with your teammates
               and/or the PixieBrix community
             </p>
           </div>

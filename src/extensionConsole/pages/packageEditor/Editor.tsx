@@ -30,13 +30,13 @@ import CodeEditor from "./CodeEditor";
 import SharingTable from "./SharingTable";
 import { sortBy } from "lodash";
 import { type UUID } from "@/types/stringTypes";
-import BrickReference from "@/extensionConsole/pages/brickEditor/referenceTab/BrickReference";
-import serviceRegistry from "@/integrations/registry";
-import blockRegistry from "@/bricks/registry";
-import extensionPointRegistry from "@/starterBricks/registry";
+import PackageReference from "@/extensionConsole/pages/packageEditor/referenceTab/PackageReference";
+import integrationRegistry from "@/integrations/registry";
+import brickRegistry from "@/bricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import notify from "@/utils/notify";
-import BrickHistory from "@/extensionConsole/pages/brickEditor/BrickHistory";
+import PackageHistory from "@/extensionConsole/pages/packageEditor/PackageHistory";
 import { useParams } from "react-router";
 import LogCard from "@/components/logViewer/LogCard";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
@@ -95,10 +95,10 @@ export function useOpenEditorTab(): (id: RegistryId) => Promise<void> {
       }
 
       if (brick) {
-        console.debug("Open editor for brick: %s", brickId, { brick });
+        console.debug("Open editor for package: %s", brickId, { brick });
         window.open(getExtensionConsoleUrl(`workshop/bricks/${brick.id}`));
       } else {
-        notify.warning(`You cannot edit brick: ${brickId}`);
+        notify.warning(`You cannot edit package: ${brickId}`);
       }
     },
     [getEditablePackages],
@@ -110,29 +110,29 @@ const Content = ({ showLogs }: { showLogs: boolean }) => {
   const [editorWidth, setEditorWidth] = useState<number>();
   const [selectedReference, setSelectedReference] = useState<Metadata>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
-  const { id: brickId } = useParams<{ id: UUID }>();
+  const { id: packageId } = useParams<{ id: UUID }>();
 
   const { data: bricks } = useAsyncState(async () => {
-    const [extensionPoints, bricks, services] = await Promise.all([
-      extensionPointRegistry.all(),
-      blockRegistry.all(),
-      serviceRegistry.all(),
+    const [starterBricks, bricks, integrations] = await Promise.all([
+      starterBrickRegistry.all(),
+      brickRegistry.all(),
+      integrationRegistry.all(),
     ]);
-    return [...extensionPoints, ...bricks, ...services];
+    return [...starterBricks, ...bricks, ...integrations];
   }, []);
 
   const openReference = useCallback(
     (id: string) => {
       const brick = bricks?.find((x) => x.id === id);
       if (brick) {
-        console.debug("Open reference for brick: %s", brick.id, { brick });
+        console.debug("Open reference for package: %s", brick.id, { brick });
         setSelectedReference(brick);
         setTab("reference");
       } else {
-        console.debug("Known bricks", {
+        console.debug("Known packages", {
           bricks: sortBy(bricks.map((x) => x.id)),
         });
-        notify.warning(`Cannot find brick: ${id}`);
+        notify.warning(`Cannot find package: ${id}`);
       }
     },
     [setTab, bricks, setSelectedReference],
@@ -177,7 +177,7 @@ const Content = ({ showLogs }: { showLogs: boolean }) => {
             </Nav.Link>
             {showLogs && <Nav.Link eventKey="logs">Logs</Nav.Link>}
             <Nav.Link eventKey="reference">Reference</Nav.Link>
-            <Nav.Link eventKey="history" disabled={!brickId}>
+            <Nav.Link eventKey="history" disabled={!packageId}>
               History
             </Nav.Link>
           </Nav>
@@ -203,19 +203,19 @@ const Content = ({ showLogs }: { showLogs: boolean }) => {
           )}
 
           <Tab.Pane eventKey="reference" className="p-0">
-            <BrickReference
+            <PackageReference
               key={selectedReference?.id}
-              bricks={bricks}
+              packages={bricks}
               initialSelected={selectedReference}
             />
           </Tab.Pane>
 
           <Tab.Pane eventKey="history" className="p-0">
-            {brickId ? (
-              <BrickHistory brickId={brickId} />
+            {packageId ? (
+              <PackageHistory packageId={packageId} />
             ) : (
               // This should never be shown since we disable the tab when creating a new brick
-              <div>Save the brick to view its version history</div>
+              <div>Save the package to view its version history</div>
             )}
           </Tab.Pane>
         </Tab.Content>

@@ -55,7 +55,7 @@ type SubmitCallbacks = {
   ) => Promise<void>;
 };
 
-function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
+function useSubmitPackage({ create = false }: SubmitOptions): SubmitCallbacks {
   const [, refresh] = useRefreshRegistries({ refreshOnMount: false });
   const modals = useModals();
   const reinstall = useReinstall();
@@ -74,9 +74,9 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
   const remove = useUserAction(
     async ({ id, name }: { id: UUID; name?: string }) => {
       const confirm = await modals.showConfirmation({
-        title: "Permanently Delete Brick",
+        title: "Permanently Delete Package",
         message: `Permanently delete ${
-          name ?? "brick"
+          name ?? "package"
         } from the server? This action cannot be undone.`,
         cancelCaption: "Cancel",
         submitCaption: "Permanently Delete",
@@ -92,8 +92,8 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
       dispatch(push("/workshop"));
     },
     {
-      successMessage: "Deleted brick",
-      errorMessage: "Error deleting brick",
+      successMessage: "Deleted package",
+      errorMessage: "Error deleting package",
       event: Events.PACKAGE_DELETE,
     },
     [dispatch, deletePackage, modals],
@@ -110,12 +110,12 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
         resetForm: (form: { values: EditorValues & { id: UUID } }) => void;
       },
     ) => {
-      const { config, reactivate: reinstallBlueprint } = values;
+      const { config, reactivate: reactivateMod } = values;
 
-      const unsavedBrickJson = loadBrickYaml(String(config)) as
+      const unsavedPackageJson = loadBrickYaml(String(config)) as
         | Definition
         | UnsavedModDefinition;
-      const { kind, metadata } = unsavedBrickJson;
+      const { kind, metadata } = unsavedPackageJson;
 
       try {
         const data = await (create
@@ -126,13 +126,13 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
         // We attach the handler below, and don't want it to block the save
         void (async () => {
           try {
-            if (kind === DefinitionKinds.MOD && reinstallBlueprint) {
+            if (kind === DefinitionKinds.MOD && reactivateMod) {
               // TypeScript doesn't have enough information that kind === PackageKinds.MOD distinguishes ModDefinition
               // from Definition
-              const unsavedRecipeDefinition =
-                unsavedBrickJson as UnsavedModDefinition;
+              const unsavedModDefinition =
+                unsavedPackageJson as UnsavedModDefinition;
               await reinstall({
-                ...unsavedRecipeDefinition,
+                ...unsavedModDefinition,
                 sharing: pick(data, ["organizations", "public"]),
                 ...pick(data, ["updated_at"]),
               });
@@ -149,7 +149,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
             reloadModsEveryTab();
           } catch (error) {
             notify.warning({
-              message: "Error re-activating bricks",
+              message: "Error re-activating mod",
               error,
             });
           }
@@ -203,4 +203,4 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
   return { submit, validate, remove: create ? null : remove };
 }
 
-export default useSubmitBrick;
+export default useSubmitPackage;

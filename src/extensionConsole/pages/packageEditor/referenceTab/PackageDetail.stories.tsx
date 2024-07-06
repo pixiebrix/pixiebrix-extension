@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import BrickDetail from "./BrickDetail";
+import PackageDetail from "./PackageDetail";
 import { TableRenderer } from "@/bricks/renderers/table";
 import { fromJS as nativeFromJS } from "@/bricks/transformers/brickFactory";
 import amazonSearch from "@contrib/bricks/amazon-search.yaml";
@@ -29,9 +29,9 @@ import brickRegistry from "@/bricks/registry";
 import { partial } from "lodash";
 
 export default {
-  title: "Components/BrickDetail",
-  component: BrickDetail,
-} as ComponentMeta<typeof BrickDetail>;
+  title: "Components/PackageDetail",
+  component: PackageDetail,
+} as ComponentMeta<typeof PackageDetail>;
 
 const fromJS = partial(nativeFromJS, brickRegistry);
 
@@ -47,24 +47,24 @@ function optionsStore(initialState?: unknown) {
   });
 }
 
-const Template: ComponentStory<typeof BrickDetail> = (args) => (
+const Template: ComponentStory<typeof PackageDetail> = (args) => (
   <Provider store={optionsStore()}>
-    <BrickDetail {...args} />
+    <PackageDetail {...args} />
   </Provider>
 );
 
 export const BuiltIn = Template.bind({});
 BuiltIn.args = {
-  brick: new TableRenderer(),
-  brickConfig: null,
-  isBrickConfigLoading: false,
+  packageVersion: new TableRenderer(),
+  packageConfig: null,
+  isPackageConfigLoading: false,
 };
 
 const amazonSearchBrick = fromJS(amazonSearch);
 const amazonSearchBrickConfig = brickToYaml(amazonSearch);
 export const AmazonSearch = Template.bind({});
 AmazonSearch.args = {
-  brick: amazonSearchBrick,
-  brickConfig: amazonSearchBrickConfig,
-  isBrickConfigLoading: false,
+  packageVersion: amazonSearchBrick,
+  packageConfig: amazonSearchBrickConfig,
+  isPackageConfigLoading: false,
 };
