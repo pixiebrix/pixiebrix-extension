@@ -23,6 +23,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type SidebarEntries, type SidebarState } from "@/types/sidebarTypes";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 describe("defaultEventKey", () => {
   it("returns null no content", () => {
@@ -147,9 +148,11 @@ describe("eventKeyForEntry", () => {
     expect(eventKeyForEntry(value)).toBeNull();
   });
 
-  it("uses recipeId for activateRecipe", () => {
-    const recipeId = validateRegistryId("@test/test-recipe");
-    const entry = sidebarEntryFactory("activateMods", { recipeId });
+  it("uses modId for activateRecipe", () => {
+    const modId = validateRegistryId("@test/test-recipe");
+    const entry = sidebarEntryFactory("activateMods", {
+      modComponentRef: modComponentRefFactory({ blueprintId: modId }),
+    });
     // Main part is an object hash of the mod ids
     expect(eventKeyForEntry(entry)).toStartWith("activate-");
   });
@@ -158,8 +161,10 @@ describe("eventKeyForEntry", () => {
     const extensionId = uuidv4();
     const extensionPointId = validateRegistryId("@test/test-starter-brick");
     const entry = sidebarEntryFactory("panel", {
-      extensionId,
-      extensionPointId,
+      modComponentRef: modComponentRefFactory({
+        extensionId,
+        extensionPointId,
+      }),
     });
     expect(eventKeyForEntry(entry)).toBe(`panel-${extensionId}`);
   });
@@ -168,12 +173,17 @@ describe("eventKeyForEntry", () => {
     const extensionId = uuidv4();
     const nonce = uuidv4();
 
-    const formEntry = sidebarEntryFactory("form", { extensionId, nonce });
+    const formEntry = sidebarEntryFactory("form", {
+      nonce,
+      modComponentRef: modComponentRefFactory({
+        extensionId,
+      }),
+    });
     expect(eventKeyForEntry(formEntry)).toBe(`form-${nonce}`);
 
     const temporaryPanelEntry = sidebarEntryFactory("temporaryPanel", {
-      extensionId,
       nonce,
+      modComponentRef: modComponentRefFactory({ extensionId }),
     });
     expect(eventKeyForEntry(temporaryPanelEntry)).toBe(
       `temporaryPanel-${nonce}`,

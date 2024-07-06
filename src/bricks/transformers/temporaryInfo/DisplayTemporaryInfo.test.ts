@@ -48,7 +48,6 @@ import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import pDefer from "p-defer";
-import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type RendererErrorPayload } from "@/types/rendererTypes";
 import {
   MergeStrategies,
@@ -60,6 +59,7 @@ import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";
 import { showModal } from "@/contentScript/modalDom";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 jest.mock("@/contentScript/modalDom");
 jest.mock("@/contentScript/sidebarController");
@@ -92,8 +92,7 @@ describe("DisplayTemporaryInfo", () => {
   });
 
   test("it returns run payload for sidebar panel", async () => {
-    const extensionId = uuidv4();
-    const blueprintId = registryIdFactory();
+    const modComponentRef = modComponentRefFactory();
 
     const config = getExampleBrickConfig(renderer.id);
     const pipeline = {
@@ -106,13 +105,12 @@ describe("DisplayTemporaryInfo", () => {
 
     await reducePipeline(pipeline, simpleInput({}), {
       ...testOptions("v3"),
-      logger: new ConsoleLogger({ extensionId, blueprintId }),
+      logger: new ConsoleLogger(modComponentRef),
     });
 
     // Show function will be called with a "loading" payload
     expect(showTemporarySidebarPanel).toHaveBeenCalledExactlyOnceWith({
-      blueprintId,
-      extensionId,
+      modComponentRef,
       nonce: expect.toBeString(),
       heading: expect.toBeString(),
       payload: expect.objectContaining({
@@ -122,8 +120,7 @@ describe("DisplayTemporaryInfo", () => {
 
     // Panel will be updated when the real payload is ready
     expect(updatePanelDefinition).toHaveBeenCalledExactlyOnceWith({
-      blueprintId,
-      extensionId,
+      modComponentRef,
       nonce: expect.toBeString(),
       heading: expect.toBeString(),
       payload: expect.objectContaining({
@@ -179,13 +176,11 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const extensionId = uuidv4();
+    const modComponentRef = modComponentRefFactory();
 
     const options = {
       ...testOptions("v3"),
-      logger: new ConsoleLogger({
-        extensionId,
-      }),
+      logger: new ConsoleLogger(modComponentRef),
     };
 
     await reducePipeline(pipeline, simpleInput({}), options);
@@ -195,10 +190,10 @@ describe("DisplayTemporaryInfo", () => {
 
     expect(waitForTemporaryPanel).toHaveBeenCalledWith({
       nonce: expect.toBeString(),
-      extensionId,
+      extensionId: modComponentRef.extensionId,
       location: "modal",
       entry: expect.objectContaining({
-        extensionId,
+        modComponentRef,
         heading: "Test Temp Panel",
         nonce: expect.toBeString(),
         payload: expect.toBeObject(),

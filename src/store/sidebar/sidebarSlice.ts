@@ -124,28 +124,34 @@ function findNextActiveKey(
   return null;
 }
 
-export function fixActiveTabOnRemove(
+/**
+ * Updates activeKey in place based on a removed entry. Mutates the state object.
+ */
+export function fixActiveTabOnRemoveInPlace(
   state: SidebarState,
   removedEntry: Nullishable<SidebarEntry>,
-) {
+): void {
   // Only update the active panel if the panel needs to change
   if (removedEntry && state.activeKey === eventKeyForEntry(removedEntry)) {
     const panels = [...state.forms, ...state.panels, ...state.temporaryPanels];
 
     const matchingExtension = panels.find(
       ({ modComponentRef: { extensionId } }) =>
-        "extensionId" in removedEntry &&
-        extensionId === removedEntry.extensionId,
+        "modComponentRef" in removedEntry &&
+        extensionId === removedEntry.modComponentRef.extensionId,
     );
 
     if (matchingExtension) {
       state.activeKey = eventKeyForEntry(matchingExtension);
     } else {
+      // No mod component match, try finding another panel for the mod
+
       const matchingMod = panels.find(
         ({ modComponentRef: { blueprintId } }) =>
-          "blueprintId" in removedEntry &&
-          // Need to check for removedEntry.blueprintId to avoid switching between ModComponentBases that don't have blueprint ids
-          blueprintId === removedEntry.blueprintId &&
+          "modComponentRef" in removedEntry &&
+          // Need to check for removedEntry.blueprintId to avoid switching between ModComponentBases that don't have
+          // an associate mod
+          blueprintId === removedEntry.modComponentRef.blueprintId &&
           blueprintId,
       );
 
@@ -219,7 +225,7 @@ const sidebarSlice = createSlice({
 
       const entry = remove(state.forms, (form) => form.nonce === nonce)[0];
 
-      fixActiveTabOnRemove(state, entry);
+      fixActiveTabOnRemoveInPlace(state, entry);
     },
     invalidatePanels(state) {
       for (const panel of state.panels) {
@@ -345,7 +351,7 @@ const sidebarSlice = createSlice({
         closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = false;
       }
 
-      fixActiveTabOnRemove(state, entry);
+      fixActiveTabOnRemoveInPlace(state, entry);
     },
     closeTab(state, action: PayloadAction<string>) {
       state.closedTabs[action.payload] = true;
@@ -381,7 +387,7 @@ const sidebarSlice = createSlice({
           const { removedEntry, forms } = action.payload;
 
           state.forms = castDraft(forms);
-          fixActiveTabOnRemove(state, removedEntry);
+          fixActiveTabOnRemoveInPlace(state, removedEntry);
         }
       })
       .addCase(addTemporaryPanel.fulfilled, (state, action) => {
@@ -396,7 +402,7 @@ const sidebarSlice = createSlice({
           const { removedEntry, temporaryPanels } = action.payload;
 
           state.temporaryPanels = castDraft(temporaryPanels);
-          fixActiveTabOnRemove(state, removedEntry);
+          fixActiveTabOnRemoveInPlace(state, removedEntry);
         }
       })
       .addCase(resolveTemporaryPanel.fulfilled, (state, action) => {
@@ -404,7 +410,7 @@ const sidebarSlice = createSlice({
           const { resolvedEntry, temporaryPanels } = action.payload;
 
           state.temporaryPanels = castDraft(temporaryPanels);
-          fixActiveTabOnRemove(state, resolvedEntry);
+          fixActiveTabOnRemoveInPlace(state, resolvedEntry);
         }
       });
   },

@@ -275,7 +275,8 @@ export type HydratedModComponent<Config extends UnknownObject = UnknownObject> =
   };
 
 /**
- * A reference to a ModComponentBase, including the associated mod and starter brick.
+ * A reference to a ModComponentBase, including the associated mod and starter brick. Prefer using the mod component's
+ * UUID directly if information about the mod and/or starter brick are not required.
  * @see ModComponentBase
  */
 export type ModComponentRef = {

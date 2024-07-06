@@ -89,7 +89,6 @@ export function sidebarEntryFactory<T = ModActivationPanelEntry>(
   type: "activateMods",
   override?: FactoryConfig<T>,
 ): ModActivationPanelEntry;
-
 export function sidebarEntryFactory<T = StaticPanelEntry>(
   type: "staticPanel",
   override?: FactoryConfig<T>,
