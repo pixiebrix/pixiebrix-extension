@@ -22,12 +22,11 @@ import { forEachTab } from "@/utils/extensionUtils";
 const queueReloadFrameMods = getNotifier("QUEUE_RELOAD_FRAME_MODS");
 
 /**
- * Convenience method to queue reloading mods in every/all tabs on that tab's next navigation.
+ * Queue reloading mods in every/all tabs on that tab's next navigation.
  *
- * XXX: only queues reload in the top-level frame.
+ * XXX: only queues mod reload in the top-level frame.
  *
- * @see reloadFrameMods
- * @see queueReloadFrameMods
+ * @see reloadModsEveryTab
  */
 export function queueReloadModEveryTab() {
   console.debug("Queue reload mods in every tab");
@@ -38,11 +37,10 @@ export function queueReloadModEveryTab() {
 const reloadFrameMods = getNotifier("RELOAD_FRAME_MODS");
 
 /**
- * Convenience method to reload mods in every/all tabs.
+ * Reload mods immediately in every/all tabs.
  *
  * XXX: only reloads mods in the top-level frame.
  *
- * @see reloadFrameMods
  * @see queueReloadFrameMods
  */
 export function reloadModsEveryTab(): void {
