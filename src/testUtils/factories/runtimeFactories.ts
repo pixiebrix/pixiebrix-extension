@@ -33,7 +33,14 @@ export const brickOptionsFactory = define<BrickOptions>({
     return {};
   },
   platform: (_i: number) => contentScriptPlatform,
-  logger: (_i: number) => new ConsoleLogger(modComponentRefFactory()),
+  logger(_i: number) {
+    const { blueprintId, ...rest } = modComponentRefFactory();
+    // MessageContext expects undefined instead of null for blueprintId
+    return new ConsoleLogger({
+      ...rest,
+      blueprintId: blueprintId ?? undefined,
+    });
+  },
   root: (_i: number) => document,
   runPipeline: (_i: number) =>
     jest.fn().mockRejectedValue(new Error("runPipeline mock not implemented")),
