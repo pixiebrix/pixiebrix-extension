@@ -64,11 +64,17 @@ import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactor
 jest.mock("@/contentScript/modalDom");
 jest.mock("@/contentScript/sidebarController");
 jest.mock("@/platform/panels/panelController");
-
 jest.mock("@/utils/iframeUtils");
 
 const displayTemporaryInfoBlock = new DisplayTemporaryInfo();
 const renderer = new DocumentRenderer();
+
+function reduceOptionsFactory() {
+  return {
+    ...testOptions("v3"),
+    logger: new ConsoleLogger(modComponentRefFactory()),
+  };
+}
 
 describe("DisplayTemporaryInfo", () => {
   beforeEach(() => {
@@ -157,7 +163,7 @@ describe("DisplayTemporaryInfo", () => {
         payload = entry.payload;
       });
 
-    await reducePipeline(pipeline, simpleInput({}), testOptions("v3"));
+    await reducePipeline(pipeline, simpleInput({}), reduceOptionsFactory());
 
     expect(isRendererErrorPayload(payload)).toBe(true);
     const error = payload as RendererErrorPayload;
@@ -202,6 +208,7 @@ describe("DisplayTemporaryInfo", () => {
   });
 
   test("it errors from frame", async () => {
+    const modComponentRef = modComponentRefFactory();
     jest.mocked(isLoadedInIframe).mockReturnValue(true);
 
     const config = getExampleBrickConfig(renderer.id);
@@ -215,13 +222,9 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const extensionId = uuidv4();
-
     const options = {
       ...testOptions("v3"),
-      logger: new ConsoleLogger({
-        extensionId,
-      }),
+      logger: new ConsoleLogger(modComponentRef),
     };
 
     await expect(
@@ -241,17 +244,8 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const extensionId = uuidv4();
-
-    const options = {
-      ...testOptions("v3"),
-      logger: new ConsoleLogger({
-        extensionId,
-      }),
-    };
-
     await expect(
-      reducePipeline(pipeline, simpleInput({}), options),
+      reducePipeline(pipeline, simpleInput({}), reduceOptionsFactory()),
     ).rejects.toThrow("Target must be an element for popover");
   });
 
@@ -269,17 +263,13 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const extensionId = uuidv4();
     const root = document.querySelector<HTMLElement>("#target");
 
-    const options = {
-      ...testOptions("v3"),
-      logger: new ConsoleLogger({
-        extensionId,
-      }),
-    };
-
-    await reducePipeline(pipeline, { ...simpleInput({}), root }, options);
+    await reducePipeline(
+      pipeline,
+      { ...simpleInput({}), root },
+      reduceOptionsFactory(),
+    );
 
     expect(showModal).not.toHaveBeenCalled();
     expect(showTemporarySidebarPanel).not.toHaveBeenCalled();
@@ -309,16 +299,7 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const extensionId = uuidv4();
-
-    const options = {
-      ...testOptions("v3"),
-      logger: new ConsoleLogger({
-        extensionId,
-      }),
-    };
-
-    void reducePipeline(pipeline, simpleInput({}), options);
+    void reducePipeline(pipeline, simpleInput({}), reduceOptionsFactory());
 
     await tick();
 
@@ -333,7 +314,7 @@ describe("DisplayTemporaryInfo", () => {
     deferredPromise.resolve();
   });
 
-  test("body receives updated mod variable on re-render", async () => {
+  test("body receives updated public mod variable on re-render", async () => {
     document.body.innerHTML = '<div><div id="target"></div></div>';
 
     const deferredPromise = pDefer<any>();
@@ -360,9 +341,12 @@ describe("DisplayTemporaryInfo", () => {
 
     const options = {
       ...testOptions("v3"),
-      logger: new ConsoleLogger({
-        extensionId,
-      }),
+      logger: new ConsoleLogger(
+        modComponentRefFactory({
+          extensionId,
+          blueprintId: null,
+        }),
+      ),
     };
 
     void reducePipeline(pipeline, simpleInput({}), options);
