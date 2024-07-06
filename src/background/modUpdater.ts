@@ -204,8 +204,8 @@ export function deactivateMod(
 
     // Remove the menu item UI from all mods. We must explicitly remove context menu items because otherwise the user
     // will see duplicate menu items because the old/new mod components have different UUIDs.
-    // `updateMods` calls `queueReloadFrameMods`. Therefore, if the user clicks on a tab where the new version of the mod
-    // component is not loaded yet, they'll get a notification to reload the page.
+    // `updateMods` calls `queueReloadModEveryTab`. Therefore, if the user clicks on a tab where the new version of the
+    // mod component is not loaded yet, they'll get a notification to reload the page.
     void uninstallContextMenu({ extensionId: activatedModComponent.id });
   }
 
