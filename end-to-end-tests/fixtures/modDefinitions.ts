@@ -142,7 +142,6 @@ export const test = pageContextFixture.extend<{
         );
         const parsedLastModDefinitionYaml = loadBrickYaml(lastModDefinition);
         const yamlDiff =
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- any is needed due to yaml typing
           diff(parsedLastModDefinitionYaml, parsedCurrentModDefinitionYaml) ||
           [];
 
