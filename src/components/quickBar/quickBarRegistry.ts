@@ -81,7 +81,7 @@ class QuickBarRegistry implements QuickBarProtocol {
    * Get the current actions registered with the Quick Bar.
    */
   get currentActions(): CustomAction[] {
-    // Return a copy, since this.actions is mutated in-place
+    // Return a copy, because this.actions is mutated in-place
     return [...this.actions];
   }
 
@@ -128,10 +128,10 @@ class QuickBarRegistry implements QuickBarProtocol {
   }
 
   /**
-   * Remove all actions added by a given mod component. Excludes the root action.
-   * @param modComponentId the ModComponentBase UUID
+   * Remove all actions added by a given mod component. Excludes generator root actions.
+   * @param modComponentId the mod component UUID
    */
-  removeModComponentActions(modComponentId: UUID): void {
+  removeModComponentLeafActions(modComponentId: UUID): void {
     remove(
       this.actions,
       (x) =>

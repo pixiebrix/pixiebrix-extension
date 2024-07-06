@@ -255,7 +255,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       abortSignal,
     }) => {
       // Remove the old results during re-generation because they're no longer relevant
-      quickBarRegistry.removeModComponentActions(modComponent.id);
+      quickBarRegistry.removeModComponentLeafActions(modComponent.id);
 
       if (
         rootActionId &&
