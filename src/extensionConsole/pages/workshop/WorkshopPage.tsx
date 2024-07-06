@@ -27,7 +27,7 @@ import workshopSlice, { type WorkshopState } from "@/store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
 import { push } from "connected-react-router";
-import UserDefinedPackagesCard from "./UserDefinedPackagesCard";
+import EditablePackagesCard from "./EditablePackagesCard";
 import { type EnrichedPackage, type NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
 import { mapKindToKindUiValue } from "@/extensionConsole/pages/workshop/workshopUtils";
@@ -235,7 +235,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
         </div>
       </div>
       <div className="mt-4">
-        <UserDefinedPackagesCard
+        <EditablePackagesCard
           navigate={navigate}
           packages={sortedPackages}
           isFetching={isLoading}

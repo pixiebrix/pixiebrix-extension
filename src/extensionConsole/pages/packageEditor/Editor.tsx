@@ -77,28 +77,32 @@ export function useOpenEditorTab(): (id: RegistryId) => Promise<void> {
     appApi.endpoints.getEditablePackages.useLazyQuery();
 
   return useCallback(
-    async (brickId: RegistryId) => {
-      let brick;
+    async (packageId: RegistryId) => {
+      let editablePackage;
 
       try {
         const editablePackages = await getEditablePackages(
           undefined,
           true,
         ).unwrap();
-        brick = editablePackages.find((x) => x.name === brickId);
+        editablePackage = editablePackages.find((x) => x.name === packageId);
       } catch (error) {
         notify.error({
-          message: `Something went wrong while opening ${brickId}`,
+          message: `Something went wrong while opening ${packageId}`,
           error,
         });
         return;
       }
 
-      if (brick) {
-        console.debug("Open editor for package: %s", brickId, { brick });
-        window.open(getExtensionConsoleUrl(`workshop/bricks/${brick.id}`));
+      if (editablePackage) {
+        console.debug("Open editor for package: %s", packageId, {
+          brick: editablePackage,
+        });
+        window.open(
+          getExtensionConsoleUrl(`workshop/bricks/${editablePackage.id}`),
+        );
       } else {
-        notify.warning(`You cannot edit package: ${brickId}`);
+        notify.warning(`You cannot edit package: ${packageId}`);
       }
     },
     [getEditablePackages],
@@ -112,7 +116,7 @@ const Content = ({ showLogs }: { showLogs: boolean }) => {
   const { errors, values, dirty } = useFormikContext<EditorValues>();
   const { id: packageId } = useParams<{ id: UUID }>();
 
-  const { data: bricks } = useAsyncState(async () => {
+  const { data: packageInstances } = useAsyncState(async () => {
     const [starterBricks, bricks, integrations] = await Promise.all([
       starterBrickRegistry.all(),
       brickRegistry.all(),
@@ -122,20 +126,24 @@ const Content = ({ showLogs }: { showLogs: boolean }) => {
   }, []);
 
   const openReference = useCallback(
-    (id: string) => {
-      const brick = bricks?.find((x) => x.id === id);
-      if (brick) {
-        console.debug("Open reference for package: %s", brick.id, { brick });
-        setSelectedReference(brick);
+    (registryId: string) => {
+      const packageInstance = packageInstances?.find(
+        (x) => x.id === registryId,
+      );
+      if (packageInstance) {
+        console.debug("Open reference for package: %s", packageInstance.id, {
+          package: packageInstance,
+        });
+        setSelectedReference(packageInstance);
         setTab("reference");
       } else {
         console.debug("Known packages", {
-          bricks: sortBy(bricks.map((x) => x.id)),
+          packages: sortBy(packageInstances.map((x) => x.id)),
         });
-        notify.warning(`Cannot find package: ${id}`);
+        notify.warning(`Cannot find package: ${registryId}`);
       }
     },
-    [setTab, bricks, setSelectedReference],
+    [setTab, packageInstances, setSelectedReference],
   );
 
   const openEditorTab = useOpenEditorTab();
@@ -205,7 +213,7 @@ const Content = ({ showLogs }: { showLogs: boolean }) => {
           <Tab.Pane eventKey="reference" className="p-0">
             <PackageReference
               key={selectedReference?.id}
-              packages={bricks}
+              packageInstances={packageInstances}
               initialSelected={selectedReference}
             />
           </Tab.Pane>

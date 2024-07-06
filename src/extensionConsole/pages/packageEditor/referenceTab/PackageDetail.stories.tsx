@@ -55,7 +55,7 @@ const Template: ComponentStory<typeof PackageDetail> = (args) => (
 
 export const BuiltIn = Template.bind({});
 BuiltIn.args = {
-  packageVersion: new TableRenderer(),
+  packageInstance: new TableRenderer(),
   packageConfig: null,
   isPackageConfigLoading: false,
 };
@@ -64,7 +64,7 @@ const amazonSearchBrick = fromJS(amazonSearch);
 const amazonSearchBrickConfig = brickToYaml(amazonSearch);
 export const AmazonSearch = Template.bind({});
 AmazonSearch.args = {
-  packageVersion: amazonSearchBrick,
+  packageInstance: amazonSearchBrick,
   packageConfig: amazonSearchBrickConfig,
   isPackageConfigLoading: false,
 };

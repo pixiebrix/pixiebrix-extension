@@ -26,7 +26,7 @@ import {
   faStoreAlt,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import styles from "./UserDefinedPackagesCard.module.scss";
+import styles from "./EditablePackagesCard.module.scss";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Column } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -137,7 +137,7 @@ const COLUMNS: TableColumn[] = [
   },
 ] as const;
 
-const UserDefinedPackagesCard: React.FunctionComponent<
+const EditablePackagesCard: React.FunctionComponent<
   NavigateProps & {
     packages: EnrichedPackage[];
     maxRows?: number;
@@ -162,4 +162,4 @@ const UserDefinedPackagesCard: React.FunctionComponent<
   </AsyncCard>
 );
 
-export default UserDefinedPackagesCard;
+export default EditablePackagesCard;

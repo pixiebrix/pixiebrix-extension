@@ -34,22 +34,22 @@ import { type Metadata, type Sharing } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 
 type SharingTagProps<T extends Metadata> = {
-  packageMetadata: T;
+  packageInstance: T;
   organizations: Organization[];
 };
 
 const SharingTag = <T extends Metadata>({
-  packageMetadata,
+  packageInstance,
   organizations,
 }: SharingTagProps<T>) => {
   const { data: sharing } = useAsyncState(async () => {
-    const packageVersion = await findPackage(packageMetadata.id);
+    const packageVersion = await findPackage(packageInstance.id);
     if (packageVersion?.config) {
       return packageVersion.config.sharing as Sharing;
     }
 
     return null;
-  }, [packageMetadata.id]);
+  }, [packageInstance.id]);
 
   const organization = useMemo(() => {
     if (!sharing) {
@@ -93,14 +93,14 @@ const SharingTag = <T extends Metadata>({
 };
 
 type OwnProps<T extends Metadata> = {
-  packageMetadata: T;
+  packageInstance: T;
   active?: boolean;
   onSelect: () => void;
   organizations: Organization[];
 };
 
 const PackageResult = <T extends Metadata>({
-  packageMetadata,
+  packageInstance,
   onSelect,
   active,
   organizations,
@@ -111,24 +111,24 @@ const PackageResult = <T extends Metadata>({
   >
     <div className="d-flex">
       <div className="mr-2 text-muted">
-        <BrickIcon brick={packageMetadata} />
+        <BrickIcon brick={packageInstance} />
       </div>
       <div className={cx("flex-grow-1", styles.titleColumn)}>
         <div className="d-flex justify-content-between">
           <div className={cx(styles.ellipsis, "mb-1")}>
-            {packageMetadata.name}
+            {packageInstance.name}
           </div>
-          <OfficialBadge id={packageMetadata.id} />
+          <OfficialBadge id={packageInstance.id} />
         </div>
         <div className="d-flex justify-content-between align-items-center gap-2">
           <code className={cx(styles.id, "flex-shrink-1 small")}>
-            {packageMetadata.id}
+            {packageInstance.id}
           </code>
           <div
             className={cx(styles.sharing, styles.ellipsis, "small text-right")}
           >
             <SharingTag
-              packageMetadata={packageMetadata}
+              packageInstance={packageInstance}
               organizations={organizations}
             />
           </div>

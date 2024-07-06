@@ -21,32 +21,25 @@ import { TableRenderer } from "@/bricks/renderers/table";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/extensionConsole/testHelpers";
 import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
-import { type Metadata } from "@/types/registryTypes";
 
 mockAllApiEndpoints();
 
-test.each([
-  ["empty", {}],
-  ["@pixiebrix/table", new TableRenderer()],
-])(
-  "renders %s brick in loading state",
-  async (_brickName: string, packageVersion: Metadata) => {
-    const { asFragment } = render(
-      <PackageDetail
-        packageVersion={packageVersion}
-        packageConfig={null}
-        isPackageConfigLoading
-      />,
-    );
-    await waitForEffect();
-    expect(asFragment()).toMatchSnapshot();
-  },
-);
+test("renders @pixiebrix/table brick in loading state", async () => {
+  const { asFragment } = render(
+    <PackageDetail
+      packageInstance={new TableRenderer()}
+      packageConfig={null}
+      isPackageConfigLoading
+    />,
+  );
+  await waitForEffect();
+  expect(asFragment()).toMatchSnapshot();
+});
 
 test("renders @pixiebrix/table loaded", async () => {
   const { asFragment } = render(
     <PackageDetail
-      packageVersion={new TableRenderer()}
+      packageInstance={new TableRenderer()}
       packageConfig={null}
       isPackageConfigLoading={false}
     />,

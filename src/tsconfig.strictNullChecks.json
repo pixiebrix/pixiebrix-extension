@@ -872,7 +872,7 @@
     "./extensionConsole/pages/settings/useDiagnostics.test.ts",
     "./extensionConsole/pages/settings/useDiagnostics.ts",
     "./extensionConsole/pages/useRegistryIdParam.ts",
-    "./extensionConsole/pages/workshop/UserDefinedPackagesCard.tsx",
+    "./extensionConsole/pages/workshop/EditablePackagesCard.tsx",
     "./extensionConsole/pages/workshop/WorkshopPage.test.tsx",
     "./extensionConsole/pages/workshop/WorkshopPage.tsx",
     "./extensionConsole/pages/workshop/workshopTypes.ts",

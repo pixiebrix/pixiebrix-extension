@@ -70,27 +70,27 @@ function makeArgumentYaml(schema: Schema): string {
 }
 
 type OwnProps<T extends Metadata> = {
-  packageVersion: T;
+  packageInstance: T;
   packageConfig: string;
   isPackageConfigLoading: boolean;
 };
 
 const PackageDetail = <T extends Metadata>({
-  packageVersion,
+  packageInstance,
   packageConfig,
   isPackageConfigLoading,
 }: OwnProps<T>) => {
   const schema =
-    "schema" in packageVersion
-      ? packageVersion.schema
-      : "inputSchema" in packageVersion
-        ? packageVersion.inputSchema
+    "schema" in packageInstance
+      ? packageInstance.schema
+      : "inputSchema" in packageInstance
+        ? packageInstance.inputSchema
         : {};
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: fix brick typing
-  const outputSchema = (packageVersion as any).outputSchema as Schema;
+  const outputSchema = (packageInstance as any).outputSchema as Schema;
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
-  const listing = listings[packageVersion.id];
+  const listing = listings[packageInstance.id];
 
   const copyHandler = useUserAction(
     async () => {
@@ -108,11 +108,11 @@ const PackageDetail = <T extends Metadata>({
       <div className="d-flex justify-content-between">
         <div>
           <h3 className="text-left">
-            {packageVersion.name}&nbsp;
-            <BrickIcon key={packageVersion.id} brick={packageVersion} />
+            {packageInstance.name}&nbsp;
+            <BrickIcon key={packageInstance.id} brick={packageInstance} />
           </h3>
           <p>
-            <code className="p-0">{packageVersion.id}</code>
+            <code className="p-0">{packageInstance.id}</code>
           </p>
         </div>
         {listing && (
@@ -130,7 +130,7 @@ const PackageDetail = <T extends Metadata>({
       </div>
 
       <DetailSection title="Description">
-        {packageVersion.description ?? (
+        {packageInstance.description ?? (
           <span className="text-muted">No description provided</span>
         )}
       </DetailSection>

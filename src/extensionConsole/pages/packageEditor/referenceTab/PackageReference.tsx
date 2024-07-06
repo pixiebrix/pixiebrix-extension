@@ -40,12 +40,12 @@ import { type Metadata } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 
 type OwnProps<T extends Metadata> = {
-  packages: T[];
+  packageInstances: T[];
   initialSelected?: T;
 };
 
 const PackageReference = ({
-  packages,
+  packageInstances,
   initialSelected,
 }: OwnProps<Metadata>) => {
   const [query, setQuery] = useState("");
@@ -55,11 +55,11 @@ const PackageReference = ({
   const sortedPackages = useMemo(
     () =>
       sortBy(
-        packages ?? [],
+        packageInstances ?? [],
         (x) => (isOfficial(x.id) ? 0 : 1),
         (x) => x.name,
       ),
-    [packages],
+    [packageInstances],
   );
 
   useEffect(() => {
@@ -127,7 +127,7 @@ const PackageReference = ({
             {results.map((result) => (
               <PackageResult
                 key={result.id}
-                packageMetadata={result}
+                packageInstance={result}
                 active={selected?.id === result.id}
                 onSelect={() => {
                   setSelected(result);
@@ -140,7 +140,7 @@ const PackageReference = ({
         <Col md={8} className={styles.detailColumn}>
           {selected ? (
             <PackageDetail
-              packageVersion={selected}
+              packageInstance={selected}
               packageConfig={packageConfig}
               isPackageConfigLoading={isPackageConfigLoading}
             />
