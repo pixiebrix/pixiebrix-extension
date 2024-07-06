@@ -31,7 +31,7 @@ test.describe("extension console workshop smoke test", () => {
     const pageTitle = await page.title();
     expect(pageTitle).toBe("Workshop | PixieBrix");
 
-    await expect(page.getByText("Custom Bricks")).toBeVisible();
+    await expect(page.getByText("Packages")).toBeVisible();
     const workshopListItems = page.getByRole("table").locator("tr");
 
     // Expect at least one workshop item visible in the list
