@@ -275,8 +275,7 @@ export type HydratedModComponent<Config extends UnknownObject = UnknownObject> =
   };
 
 /**
- * A reference to a ModComponentBase.
- *
+ * A reference to a ModComponentBase, including the associated mod and starter brick.
  * @see ModComponentBase
  */
 export type ModComponentRef = {
@@ -291,7 +290,7 @@ export type ModComponentRef = {
   blueprintId: Nullishable<RegistryId>;
 
   /**
-   * Registry id of the StarterBrick.
+   * Registry id of the mod component's StarterBrick.
    */
   extensionPointId: RegistryId;
 };

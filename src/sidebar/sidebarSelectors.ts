@@ -75,7 +75,7 @@ const extensionForEventKeySelector = createSelector(
     }
 
     return extensions.find(
-      (extension) => extension.id === sidebarEntry.componentRef.extensionId,
+      (extension) => extension.id === sidebarEntry.modComponentRef.extensionId,
     );
   },
 );
@@ -100,7 +100,7 @@ export const selectExtensionFromEventKey =
     }
 
     return extensions.find(
-      (extension) => extension.id === sidebarEntry.componentRef.extensionId,
+      (extension) => extension.id === sidebarEntry.modComponentRef.extensionId,
     );
   };
 

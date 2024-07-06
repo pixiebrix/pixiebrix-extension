@@ -209,7 +209,7 @@ const Tabs: React.FC = () => {
         >
           {panels.map((panel) => (
             <TabWithDivider
-              key={panel.componentRef.extensionId}
+              key={panel.modComponentRef.extensionId}
               active={isPanelActive(panel)}
               eventKey={eventKeyForEntry(panel)}
             >
@@ -224,7 +224,7 @@ const Tabs: React.FC = () => {
 
           {forms.map((form) => (
             <TabWithDivider
-              key={form.componentRef.extensionId}
+              key={form.modComponentRef.extensionId}
               active={isPanelActive(form)}
               eventKey={eventKeyForEntry(form)}
             >
@@ -309,15 +309,15 @@ const Tabs: React.FC = () => {
               // un-submitted form state/scroll position
               unmountOnExit={false}
               className={cx("full-height flex-grow", styles.paneOverrides)}
-              key={panel.componentRef.extensionId}
+              key={panel.modComponentRef.extensionId}
               eventKey={eventKeyForEntry(panel)}
             >
               <ErrorBoundary
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
                     panelType: panel.type,
-                    extensionId: panel.componentRef.extensionId,
-                    blueprintId: panel.componentRef.blueprintId,
+                    extensionId: panel.modComponentRef.extensionId,
+                    blueprintId: panel.modComponentRef.blueprintId,
                   });
                 }}
               >
@@ -335,7 +335,7 @@ const Tabs: React.FC = () => {
                   isRootPanel
                   payload={panel.payload}
                   onAction={permanentSidebarPanelAction}
-                  context={panel.componentRef}
+                  context={panel.modComponentRef}
                 />
               </ErrorBoundary>
             </Tab.Pane>
@@ -351,8 +351,8 @@ const Tabs: React.FC = () => {
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
                     panelType: form.type,
-                    extensionId: form.componentRef.extensionId,
-                    blueprintId: form.componentRef.blueprintId,
+                    extensionId: form.modComponentRef.extensionId,
+                    blueprintId: form.modComponentRef.blueprintId,
                   });
                 }}
               >

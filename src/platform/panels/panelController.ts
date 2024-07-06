@@ -107,8 +107,8 @@ export function updatePanelDefinition(
   // Panel entry may be undefined if the panel was registered with registerEmptyTemporaryPanel
   if (
     panel.entry &&
-    panel.entry.componentRef.extensionId !==
-      panelDefinition.componentRef.extensionId
+    panel.entry.modComponentRef.extensionId !==
+      panelDefinition.modComponentRef.extensionId
   ) {
     throw new Error("extensionId mismatch");
   }
@@ -205,7 +205,7 @@ function removePanelEntry(panelNonce: UUID): void {
   const panel = panels.get(panelNonce);
   if (panel?.entry) {
     extensionNonces
-      .get(panel.entry.componentRef.extensionId)
+      .get(panel.entry.modComponentRef.extensionId)
       ?.delete(panelNonce);
   }
 

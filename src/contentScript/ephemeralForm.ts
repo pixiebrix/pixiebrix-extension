@@ -54,7 +54,7 @@ export async function createFrameSource(
 export async function ephemeralForm(
   definition: FormDefinition,
   controller: AbortController,
-  componentRef: ModComponentRef,
+  modComponentRef: ModComponentRef,
 ): Promise<unknown> {
   expectContext("contentScript");
 
@@ -71,8 +71,8 @@ export async function ephemeralForm(
   // Pre-registering the form also allows the sidebar to know a form will be shown in computing the default
   // tab to show during sidebar initialization.
   const formPromise = registerForm({
-    componentRef,
     nonce: formNonce,
+    modComponentRef,
     definition,
   });
 
@@ -83,7 +83,7 @@ export async function ephemeralForm(
     await showSidebarForm({
       nonce: formNonce,
       form: definition,
-      componentRef,
+      modComponentRef,
     });
 
     // Two-way binding between sidebar and form. Listen for the user (or an action) closing the sidebar

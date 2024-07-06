@@ -43,8 +43,8 @@ const addFormPanel = createAsyncThunk<
 
   const [thisModComponentForms, otherForms] = partition(
     forms,
-    ({ componentRef }) =>
-      componentRef.extensionId === form.componentRef.extensionId,
+    ({ modComponentRef }) =>
+      modComponentRef.extensionId === form.modComponentRef.extensionId,
   );
 
   // The UUID must be fetched synchronously to ensure the `form` Proxy element doesn't expire

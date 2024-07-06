@@ -26,7 +26,7 @@ export type RegisteredForm = {
   /**
    * The Mod Component that created the form. Only 1 form can be registered per Mod Component.
    */
-  componentRef: ModComponentRef;
+  modComponentRef: ModComponentRef;
   definition: FormDefinition;
   registration: DeferredPromise<unknown>;
 };
@@ -45,7 +45,7 @@ export function getFormPanelSidebarEntries(): FormPanelEntry[] {
     .map(([nonce, form]) => ({
       type: "form",
       nonce,
-      componentRef: form.componentRef,
+      modComponentRef: form.modComponentRef,
       form: form.definition,
     }));
 }
@@ -59,9 +59,9 @@ export function getFormPanelSidebarEntries(): FormPanelEntry[] {
 export async function registerForm({
   nonce,
   definition,
-  componentRef,
+  modComponentRef,
 }: {
-  componentRef: ModComponentRef;
+  modComponentRef: ModComponentRef;
   nonce: UUID;
   definition: FormDefinition;
 }): Promise<unknown> {
@@ -74,7 +74,8 @@ export async function registerForm({
 
   const preexistingForms = [...forms.entries()].filter(
     ([_, registeredForm]) =>
-      registeredForm.componentRef.extensionId === componentRef.extensionId,
+      registeredForm.modComponentRef.extensionId ===
+      modComponentRef.extensionId,
   );
 
   if (preexistingForms.length > 0) {
@@ -83,7 +84,7 @@ export async function registerForm({
   }
 
   forms.set(nonce, {
-    componentRef,
+    modComponentRef,
     definition,
     registration,
   });

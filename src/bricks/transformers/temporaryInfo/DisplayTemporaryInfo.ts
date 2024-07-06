@@ -114,6 +114,7 @@ class DisplayTemporaryInfo extends TransformerABC {
 
     const target = isRootAware ? root : document;
     assumeNotNullish_UNSAFE(extensionId);
+    assumeNotNullish_UNSAFE(extensionPointId);
     // XXX: blueprintId can actually be nullish if not running on the context of a mod. But assume it's non-nullish
     //  for passing to the panel for now. The panel can gracefully handle nullish blueprintId.
     assumeNotNullish_UNSAFE(blueprintId);
@@ -123,7 +124,7 @@ class DisplayTemporaryInfo extends TransformerABC {
 
     const panelEntryMetadata: TemporaryPanelEntryMetadata = {
       heading: title,
-      componentRef: {
+      modComponentRef: {
         extensionId,
         blueprintId,
         extensionPointId,

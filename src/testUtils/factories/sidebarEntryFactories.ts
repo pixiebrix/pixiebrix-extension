@@ -56,20 +56,20 @@ const formDefinitionFactory = define<FormDefinition>({
 });
 export const formEntryFactory = define<FormPanelEntry>({
   type: "form",
-  componentRef: modComponentRefFactory,
+  modComponentRef: modComponentRefFactory,
   nonce: uuidSequence,
   form: formDefinitionFactory,
 });
 const temporaryPanelEntryFactory = define<TemporaryPanelEntry>({
   type: "temporaryPanel",
-  componentRef: modComponentRefFactory,
+  modComponentRef: modComponentRefFactory,
   heading: (n: number) => `Temporary Panel Test ${n}`,
   payload: null,
   nonce: uuidSequence,
 });
 const panelEntryFactory = define<PanelEntry>({
   type: "panel",
-  componentRef: modComponentRefFactory,
+  modComponentRef: modComponentRefFactory,
   heading: (n: number) => `Panel Test ${n}`,
   payload: null,
 });

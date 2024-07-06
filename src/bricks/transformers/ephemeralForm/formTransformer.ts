@@ -23,6 +23,7 @@ import { type BrickConfig } from "@/bricks/types";
 import { type FormDefinition } from "@/platform/forms/formTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const TEMPORARY_FORM_SCHEMA: Schema = {
   type: "object",
@@ -135,15 +136,19 @@ export class FormTransformer extends TransformerABC {
       controller.abort();
     });
 
-    if (logger.context.extensionId == null) {
-      throw new Error(`${this.name} must be run in a mod context`);
-    }
+    const { extensionId, blueprintId, extensionPointId } = logger.context;
+
+    assertNotNullish(extensionId, `${this.name} must be run in a mod context`);
+    assertNotNullish(
+      extensionPointId,
+      `${this.name} must be run in a starter brick context`,
+    );
 
     try {
       return await platform.form(formDefinition, controller, {
-        extensionId: logger.context.extensionId,
-        blueprintId: logger.context.blueprintId,
-        extensionPointId: logger.context.extensionPointId,
+        extensionId,
+        blueprintId,
+        extensionPointId,
       });
     } finally {
       controller.abort();

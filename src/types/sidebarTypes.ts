@@ -144,8 +144,10 @@ export type BaseModComponentPanelEntry = BasePanelEntry & {
    * The mod is used to:
    * - Give preference to mod side panels when using the "Show Sidebar" brick.
    * - Pass to the panel for actions that require the mod id, e.g., Get Page State, Set Page State, etc.
+   *
+   * @since 2.0.5 refactored to use a single property for the mod component id and the containing mod id
    */
-  componentRef: ModComponentRef;
+  modComponentRef: ModComponentRef;
   /**
    * Heading for tab name in the sidebar
    */
@@ -166,7 +168,7 @@ export type BaseModComponentPanelEntry = BasePanelEntry & {
 export function isBaseModComponentPanelEntry(
   panel: unknown,
 ): panel is BaseModComponentPanelEntry {
-  return (panel as BaseModComponentPanelEntry)?.componentRef != null;
+  return (panel as BaseModComponentPanelEntry)?.modComponentRef != null;
 }
 
 /**
@@ -216,7 +218,7 @@ export type FormPanelEntry = BasePanelEntry & {
   /**
    * The mod component that created the form.
    */
-  componentRef: ModComponentRef;
+  modComponentRef: ModComponentRef;
   /**
    * The form schema and configuration
    */

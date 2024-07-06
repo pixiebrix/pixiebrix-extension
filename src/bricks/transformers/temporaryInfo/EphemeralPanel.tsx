@@ -174,7 +174,7 @@ const EphemeralPanel: React.FC = () => {
             <PanelBody
               isRootPanel={false}
               payload={entry.payload}
-              context={entry.componentRef}
+              context={entry.modComponentRef}
               onAction={(action) => {
                 resolveTemporaryPanel(target, panelNonce, action);
               }}
@@ -216,7 +216,7 @@ const EphemeralPanel: React.FC = () => {
           <PanelBody
             isRootPanel={false}
             payload={entry.payload}
-            context={entry.componentRef}
+            context={entry.modComponentRef}
             onAction={(action) => {
               resolveTemporaryPanel(target, panelNonce, action);
             }}
