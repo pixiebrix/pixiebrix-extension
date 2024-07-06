@@ -27,7 +27,7 @@ import workshopSlice, { type WorkshopState } from "@/store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
 import { push } from "connected-react-router";
-import CustomPackagesCard from "./CustomPackagesCard";
+import UserDefinedPackagesCard from "./UserDefinedPackagesCard";
 import { type EnrichedPackage, type NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
 import { mapKindToKindUiValue } from "@/extensionConsole/pages/workshop/workshopUtils";
@@ -235,7 +235,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
         </div>
       </div>
       <div className="mt-4">
-        <CustomPackagesCard
+        <UserDefinedPackagesCard
           navigate={navigate}
           packages={sortedPackages}
           isFetching={isLoading}
@@ -257,7 +257,7 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => (
       description={
         <p>
           Text-based editor for advanced users to create and edit registry
-          packages. Mods created in the Page Editor can also be edited here.
+          packages. Mods created with the Page Editor can also be edited here
         </p>
       }
       documentationUrl="https://docs.pixiebrix.com/developing-mods/advanced-workshop"

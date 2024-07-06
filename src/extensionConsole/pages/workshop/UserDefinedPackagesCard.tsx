@@ -26,7 +26,7 @@ import {
   faStoreAlt,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import styles from "./CustomPackagesCard.module.scss";
+import styles from "./UserDefinedPackagesCard.module.scss";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Column } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -104,7 +104,7 @@ const KindIcon: React.FunctionComponent<{ brick: EnrichedPackage }> = ({
 
 const COLUMNS: TableColumn[] = [
   {
-    Header: "Name",
+    Header: "Package Name",
     accessor: "name",
     width: 250,
     Cell: ({ row, value }) => (
@@ -137,31 +137,29 @@ const COLUMNS: TableColumn[] = [
   },
 ] as const;
 
-const CustomPackagesCard: React.FunctionComponent<
+const UserDefinedPackagesCard: React.FunctionComponent<
   NavigateProps & {
     packages: EnrichedPackage[];
     maxRows?: number;
     isFetching: boolean;
     error: unknown;
   }
-> = ({ navigate, packages, isFetching, error }) => {
-  return (
-    <AsyncCard header="Custom Packages" isLoading={isFetching} error={error}>
-      {() => (
-        <PaginatedTable
-          columns={COLUMNS}
-          data={packages}
-          rowProps={(editablePackage: EnrichedPackage) => ({
-            onClick() {
-              navigate(`/workshop/bricks/${editablePackage.id}`);
-            },
-            className: `${styles.customRow}`,
-          })}
-          showSearchFilter={false}
-        />
-      )}
-    </AsyncCard>
-  );
-};
+> = ({ navigate, packages, isFetching, error }) => (
+  <AsyncCard header="Packages" isLoading={isFetching} error={error}>
+    {() => (
+      <PaginatedTable
+        columns={COLUMNS}
+        data={packages}
+        rowProps={(editablePackage: EnrichedPackage) => ({
+          onClick() {
+            navigate(`/workshop/bricks/${editablePackage.id}`);
+          },
+          className: `${styles.customRow}`,
+        })}
+        showSearchFilter={false}
+      />
+    )}
+  </AsyncCard>
+);
 
-export default CustomPackagesCard;
+export default UserDefinedPackagesCard;
