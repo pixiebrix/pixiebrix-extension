@@ -19,7 +19,20 @@
 import { getMethod, getNotifier } from "webext-messenger";
 import { forEachTab } from "@/utils/extensionUtils";
 
-export const queueReloadFrameMods = getNotifier("QUEUE_RELOAD_FRAME_MODS");
+const queueReloadFrameMods = getNotifier("QUEUE_RELOAD_FRAME_MODS");
+
+/**
+ * Convenience method to queue reloading mods in every/all tabs on that tab's next navigation.
+ *
+ * XXX: only queues reload in the top-level frame.
+ *
+ * @see reloadFrameMods
+ * @see queueReloadFrameMods
+ */
+export function queueReloadModEveryTab() {
+  console.debug("Queue reload mods in every tab");
+  void forEachTab(queueReloadFrameMods);
+}
 
 // Not exported because currently only used by reloadModsEveryTab
 const reloadFrameMods = getNotifier("RELOAD_FRAME_MODS");
@@ -30,6 +43,7 @@ const reloadFrameMods = getNotifier("RELOAD_FRAME_MODS");
  * XXX: only reloads mods in the top-level frame.
  *
  * @see reloadFrameMods
+ * @see queueReloadFrameMods
  */
 export function reloadModsEveryTab(): void {
   console.debug("Reload mods in every tab");
