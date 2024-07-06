@@ -141,8 +141,9 @@ export class FormTransformer extends TransformerABC {
 
     try {
       return await platform.form(formDefinition, controller, {
-        componentId: logger.context.extensionId,
-        modId: logger.context.blueprintId,
+        extensionId: logger.context.extensionId,
+        blueprintId: logger.context.blueprintId,
+        extensionPointId: logger.context.extensionPointId,
       });
     } finally {
       controller.abort();

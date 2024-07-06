@@ -44,7 +44,7 @@ function eventKeyForEntry(entry: Nullishable<SidebarEntry>): string | null {
   }
 
   if (isPanelEntry(entry)) {
-    return getEventKeyForPanel(entry.extensionId);
+    return getEventKeyForPanel(entry.componentRef.extensionId);
   }
 
   if (isStaticPanelEntry(entry)) {

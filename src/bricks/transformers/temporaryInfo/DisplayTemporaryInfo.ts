@@ -102,7 +102,7 @@ class DisplayTemporaryInfo extends TransformerABC {
     }>,
     {
       logger: {
-        context: { extensionId, blueprintId },
+        context: { extensionId, blueprintId, extensionPointId },
       },
       root = document,
       platform,
@@ -123,8 +123,11 @@ class DisplayTemporaryInfo extends TransformerABC {
 
     const panelEntryMetadata: TemporaryPanelEntryMetadata = {
       heading: title,
-      extensionId,
-      blueprintId,
+      componentRef: {
+        extensionId,
+        blueprintId,
+        extensionPointId,
+      },
     };
 
     const getPayload = async () => {

@@ -28,6 +28,7 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type FormDefinition } from "@/platform/forms/formTypes";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 const activateModPanelEntryFactory = define<ModActivationPanelEntry>({
   type: "activateMods",
@@ -55,29 +56,22 @@ const formDefinitionFactory = define<FormDefinition>({
 });
 export const formEntryFactory = define<FormPanelEntry>({
   type: "form",
-  extensionId: uuidSequence,
-  blueprintId: (n: number) =>
-    validateRegistryId(`@test/form-panel-recipe-test-${n}`),
+  componentRef: modComponentRefFactory,
   nonce: uuidSequence,
   form: formDefinitionFactory,
 });
 const temporaryPanelEntryFactory = define<TemporaryPanelEntry>({
   type: "temporaryPanel",
-  extensionId: uuidSequence,
-  blueprintId: null,
+  componentRef: modComponentRefFactory,
   heading: (n: number) => `Temporary Panel Test ${n}`,
   payload: null,
   nonce: uuidSequence,
 });
 const panelEntryFactory = define<PanelEntry>({
   type: "panel",
-  extensionId: uuidSequence,
-  blueprintId: (n: number) =>
-    validateRegistryId(`@test/panel-recipe-test-${n}`),
+  componentRef: modComponentRefFactory,
   heading: (n: number) => `Panel Test ${n}`,
   payload: null,
-  extensionPointId: (n: number) =>
-    validateRegistryId(`@test/panel-extension-point-test-${n}`),
 });
 export function sidebarEntryFactory<T = PanelEntry>(
   type: "panel",

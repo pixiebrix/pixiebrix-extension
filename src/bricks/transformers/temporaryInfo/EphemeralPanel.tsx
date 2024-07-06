@@ -174,10 +174,7 @@ const EphemeralPanel: React.FC = () => {
             <PanelBody
               isRootPanel={false}
               payload={entry.payload}
-              context={{
-                extensionId: entry.extensionId,
-                blueprintId: entry.blueprintId,
-              }}
+              context={entry.componentRef}
               onAction={(action) => {
                 resolveTemporaryPanel(target, panelNonce, action);
               }}
@@ -219,10 +216,7 @@ const EphemeralPanel: React.FC = () => {
           <PanelBody
             isRootPanel={false}
             payload={entry.payload}
-            context={{
-              extensionId: entry.extensionId,
-              blueprintId: entry.blueprintId,
-            }}
+            context={entry.componentRef}
             onAction={(action) => {
               resolveTemporaryPanel(target, panelNonce, action);
             }}

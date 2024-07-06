@@ -40,7 +40,7 @@ const addTemporaryPanel = createAsyncThunk<
 
   const [existingExtensionTemporaryPanels, otherTemporaryPanels] = partition(
     temporaryPanels,
-    (x) => x.extensionId === panel.extensionId,
+    (x) => x.componentRef.extensionId === panel.componentRef.extensionId,
   );
 
   // Cancel all panels for the extension, except if there's a placeholder that was added in setInitialPanels

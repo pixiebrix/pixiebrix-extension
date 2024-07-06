@@ -101,7 +101,7 @@ describe("sidebarSlice.addTemporaryPanel", () => {
     const existingPanel = sidebarEntryFactory("temporaryPanel");
     const otherExistingPanel = sidebarEntryFactory("temporaryPanel");
     const newPanel = sidebarEntryFactory("temporaryPanel", {
-      extensionId: existingPanel.extensionId,
+      extensionId: existingPanel.componentRef.extensionId,
     });
 
     const initialState: SidebarState = {
@@ -198,7 +198,7 @@ describe("removeTemporaryPanel", () => {
       extensionId: uuidv4(),
     });
     const newPanel = sidebarEntryFactory("temporaryPanel", {
-      extensionId: originalPanel.extensionId,
+      extensionId: originalPanel.componentRef.extensionId,
     });
 
     const initialState: SidebarState = {
@@ -532,15 +532,17 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
   it("sets activeKey to the active key of any panel with the same extensionId as the removedEntry if it exists", () => {
     const modId = validateRegistryId("test/123");
     const originalPanel = sidebarEntryFactory("panel", {
-      extensionId: uuidv4(),
-      blueprintId: modId,
+      componentRef: {
+        extensionId: uuidv4(),
+        blueprintId: modId,
+      },
     });
     const otherExistingPanel = sidebarEntryFactory("form", {
       extensionId: uuidv4(),
       blueprintId: modId,
     });
     const newPanel = sidebarEntryFactory("temporaryPanel", {
-      extensionId: originalPanel.extensionId,
+      extensionId: originalPanel.componentRef.extensionId,
       blueprintId: modId,
     });
 

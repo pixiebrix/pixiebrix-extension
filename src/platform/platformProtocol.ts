@@ -22,8 +22,7 @@ import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { FormDefinition } from "@/platform/forms/formTypes";
-import type { UUID } from "@/types/stringTypes";
-import type { RegistryId, SemVerString } from "@/types/registryTypes";
+import type { SemVerString } from "@/types/registryTypes";
 import type { JavaScriptPayload } from "@/sandbox/messenger/api";
 import type { Logger } from "@/types/loggerTypes";
 import type { AudioProtocol } from "@/platform/platformTypes/audioProtocol";
@@ -38,6 +37,7 @@ import type { SnippetShortcutMenuProtocol } from "@/platform/platformTypes/snipp
 import type { TextSelectionMenuProtocol } from "@/platform/platformTypes/textSelectionMenuProtocol";
 import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
 import type { QuickBarProtocol } from "@/platform/platformTypes/quickBarProtocol";
+import { ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * A protocol for the platform/environment running the mods.
@@ -90,7 +90,7 @@ export interface PlatformProtocol {
   form: (
     definition: FormDefinition,
     controller: AbortController,
-    context: { componentId: UUID; modId?: RegistryId },
+    componentRef: ModComponentRef,
   ) => Promise<unknown>;
 
   /**

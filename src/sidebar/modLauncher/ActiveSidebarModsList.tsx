@@ -124,7 +124,7 @@ export const ActiveSidebarModsList: React.FunctionComponent = () => {
         tableInstance.prepareRow(row);
         return (
           <ActiveSidebarModsListItem
-            key={row.original.extensionId}
+            key={row.original.componentRef.extensionId}
             panel={row.original}
           />
         );

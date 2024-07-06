@@ -20,17 +20,15 @@ import { type UUID } from "@/types/stringTypes";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { CancelError } from "@/errors/businessErrors";
 import { type FormPanelEntry } from "@/types/sidebarTypes";
-import { type RegistryId } from "@/types/registryTypes";
-import { type Nullishable } from "@/utils/nullishUtils";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 export type RegisteredForm = {
   /**
    * The Mod Component that created the form. Only 1 form can be registered per Mod Component.
    */
-  extensionId: UUID;
+  componentRef: ModComponentRef;
   definition: FormDefinition;
   registration: DeferredPromise<unknown>;
-  blueprintId: Nullishable<RegistryId>;
 };
 
 /**
@@ -47,29 +45,25 @@ export function getFormPanelSidebarEntries(): FormPanelEntry[] {
     .map(([nonce, form]) => ({
       type: "form",
       nonce,
-      extensionId: form.extensionId,
-      blueprintId: form.blueprintId ?? undefined,
+      componentRef: form.componentRef,
       form: form.definition,
     }));
 }
 
 /**
  * Register a form with the content script that resolves the form is either submitted or cancelled
- * @param extensionId the id of the extension that created the form
+ * @param componentRef the mod component that created the form
  * @param nonce the form nonce
  * @param definition the form definition
- * @param blueprintId the blueprint that contains the form
  */
 export async function registerForm({
-  extensionId,
   nonce,
   definition,
-  blueprintId,
+  componentRef,
 }: {
-  extensionId: UUID;
+  componentRef: ModComponentRef;
   nonce: UUID;
   definition: FormDefinition;
-  blueprintId: Nullishable<RegistryId>;
 }): Promise<unknown> {
   const registration = pDefer();
 
@@ -79,7 +73,8 @@ export async function registerForm({
   }
 
   const preexistingForms = [...forms.entries()].filter(
-    ([_, registeredForm]) => registeredForm.extensionId === extensionId,
+    ([_, registeredForm]) =>
+      registeredForm.componentRef.extensionId === componentRef.extensionId,
   );
 
   if (preexistingForms.length > 0) {
@@ -88,10 +83,9 @@ export async function registerForm({
   }
 
   forms.set(nonce, {
-    extensionId,
+    componentRef,
     definition,
     registration,
-    blueprintId,
   });
 
   return registration.promise;

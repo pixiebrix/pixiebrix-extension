@@ -209,7 +209,7 @@ const Tabs: React.FC = () => {
         >
           {panels.map((panel) => (
             <TabWithDivider
-              key={panel.extensionId}
+              key={panel.componentRef.extensionId}
               active={isPanelActive(panel)}
               eventKey={eventKeyForEntry(panel)}
             >
@@ -224,7 +224,7 @@ const Tabs: React.FC = () => {
 
           {forms.map((form) => (
             <TabWithDivider
-              key={form.extensionId}
+              key={form.componentRef.extensionId}
               active={isPanelActive(form)}
               eventKey={eventKeyForEntry(form)}
             >
@@ -309,15 +309,15 @@ const Tabs: React.FC = () => {
               // un-submitted form state/scroll position
               unmountOnExit={false}
               className={cx("full-height flex-grow", styles.paneOverrides)}
-              key={panel.extensionId}
+              key={panel.componentRef.extensionId}
               eventKey={eventKeyForEntry(panel)}
             >
               <ErrorBoundary
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
                     panelType: panel.type,
-                    extensionId: panel.extensionId,
-                    blueprintId: panel.blueprintId,
+                    extensionId: panel.componentRef.extensionId,
+                    blueprintId: panel.componentRef.blueprintId,
                   });
                 }}
               >
@@ -335,11 +335,7 @@ const Tabs: React.FC = () => {
                   isRootPanel
                   payload={panel.payload}
                   onAction={permanentSidebarPanelAction}
-                  context={{
-                    extensionId: panel.extensionId,
-                    extensionPointId: panel.extensionPointId,
-                    blueprintId: panel.blueprintId,
-                  }}
+                  context={panel.componentRef}
                 />
               </ErrorBoundary>
             </Tab.Pane>
@@ -355,8 +351,8 @@ const Tabs: React.FC = () => {
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
                     panelType: form.type,
-                    extensionId: form.extensionId,
-                    blueprintId: form.blueprintId,
+                    extensionId: form.componentRef.extensionId,
+                    blueprintId: form.componentRef.blueprintId,
                   });
                 }}
               >
