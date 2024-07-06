@@ -109,7 +109,7 @@ class QuickBarRegistry implements QuickBarProtocol {
       // nest the items because the parent item will be overwritten with no children.
       this.actions.push(action);
     } else {
-      // Put at the front of the list, so the action appear before the other actions with the same Priority
+      // Put at the front of the list, so the action appears before the other actions with the same Priority
       this.actions.unshift(action);
     }
 
