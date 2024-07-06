@@ -114,7 +114,7 @@ export function useSearchOptions(packages: EnrichedPackageMetadata[]) {
   };
 }
 
-const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
+const EditablePackagesSection: React.FunctionComponent<NavigateProps> = ({
   navigate,
 }) => {
   const dispatch = useDispatch();
@@ -135,24 +135,24 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
     kinds = [],
   } = useSelector(selectFilters);
 
-  const enrichPackages = useEnrichPackageMetadata(editablePackages);
+  const enrichedPackages = useEnrichPackageMetadata(editablePackages);
   const { scopeOptions, kindOptions, collectionOptions } =
-    useSearchOptions(enrichPackages);
+    useSearchOptions(enrichedPackages);
 
   const filtered = !isEmpty(scopes) || !isEmpty(collections) || !isEmpty(kinds);
 
   const fuse: Fuse<EnrichedPackageMetadata> = useMemo(
     () =>
-      new Fuse(enrichPackages, {
+      new Fuse(enrichedPackages, {
         keys: ["verbose_name", "name"],
       }),
-    [enrichPackages],
+    [enrichedPackages],
   );
 
   const sortedPackages = useMemo(() => {
     const results =
       query.trim() === ""
-        ? enrichPackages
+        ? enrichedPackages
         : fuse.search(query).map((x) => x.item);
 
     return results.filter(
@@ -162,7 +162,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
           (x.collection && collections.includes(x.collection))) &&
         (kinds.length === 0 || kinds.includes(mapKindToKindUiValue(x.kind))),
     );
-  }, [fuse, query, scopes, collections, kinds, enrichPackages]);
+  }, [fuse, query, scopes, collections, kinds, enrichedPackages]);
 
   return (
     <div className="max-950">
@@ -275,7 +275,7 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => (
         </Button>
       }
     >
-      <CustomBricksSection navigate={navigate} />
+      <EditablePackagesSection navigate={navigate} />
     </Page>
   </RequireScope>
 );
