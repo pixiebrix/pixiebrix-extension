@@ -67,7 +67,9 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<HydratedModComponent<QuickBarProviderConfig>>({
+const modComponentFactory = define<
+  HydratedModComponent<QuickBarProviderConfig>
+>({
   apiVersion: "v3",
   _hydratedModComponentBrand: undefined as never,
   id: uuidSequence,
@@ -76,9 +78,9 @@ const extensionFactory = define<HydratedModComponent<QuickBarProviderConfig>>({
   _recipe: undefined,
   label: "Test Extension",
   config: define<QuickBarProviderConfig>({
-    rootAction: {
+    rootAction: () => ({
       title: "Test Root Action",
-    },
+    }),
     generator: () => [] as BrickPipeline,
   }),
 });
@@ -109,7 +111,7 @@ describe("quickBarProviderExtension", () => {
     const starterBrick = fromJS(getPlatform(), starterBrickFactory());
 
     starterBrick.registerModComponent(
-      extensionFactory({
+      modComponentFactory({
         extensionPointId: starterBrick.id,
       }),
     );
@@ -117,6 +119,7 @@ describe("quickBarProviderExtension", () => {
     expect(quickBarRegistry.currentActions).toHaveLength(
       NUM_DEFAULT_QUICKBAR_ACTIONS,
     );
+
     await starterBrick.install();
     await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
@@ -166,7 +169,7 @@ describe("quickBarProviderExtension", () => {
     const starterBrick = fromJS(getPlatform(), starterBrickFactory());
 
     starterBrick.registerModComponent(
-      extensionFactory({
+      modComponentFactory({
         extensionPointId: starterBrick.id,
         config: {
           generator: [] as BrickPipeline,

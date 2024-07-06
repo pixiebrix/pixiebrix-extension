@@ -64,6 +64,7 @@ import {
   type QuickBarTargetMode,
 } from "@/starterBricks/quickBar/quickBarTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { getModComponentRef } from "@/utils/modUtils";
 
 export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarConfig> {
   static isQuickBarStarterBrick(
@@ -212,7 +213,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
 
     quickBarRegistry.addAction({
       id: modComponent.id,
-      extensionPointId: this.id,
+      modComponentRef: getModComponentRef(modComponent),
       name,
       icon,
       perform: async () => {

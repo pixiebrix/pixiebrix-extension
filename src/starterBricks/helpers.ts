@@ -184,6 +184,7 @@ export function acquireElement(
 
 /**
  * Returns the MessageContext associated with `modComponent`.
+ * @see mapMessageContextToModComponentRef
  */
 export function selectModComponentContext(
   modComponent: HydratedModComponent,
