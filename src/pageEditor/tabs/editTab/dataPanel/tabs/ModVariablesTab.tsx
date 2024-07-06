@@ -30,50 +30,51 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { type ShouldExpandNodeInitially } from "react-json-tree";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StateNamespaces } from "@/platform/state/stateController";
+import { resolveObj } from "@/utils/promiseUtils";
 
 // We used to expand nodes initially. But makes state hard to read when using async state with long values, e.g.,
-// ChatGPT responses
-const expandTopLevelNodes: ShouldExpandNodeInitially = (keyPath, data, level) =>
-  level <= 1;
+// long ChatGPT responses
+const expandTopLevelNodes: ShouldExpandNodeInitially = (
+  _keyPath,
+  _data,
+  level,
+) => level <= 1;
 
-const PageStateTab: React.VFC = () => {
+type StateValues = {
+  Private: UnknownObject | string;
+  Mod: UnknownObject | string;
+  Public: UnknownObject | string;
+};
+
+const ModVariablesTab: React.VFC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
 
-  const state = useAsyncState<{
-    Private: UnknownObject | string;
-    Mod: UnknownObject | string;
-    Public: UnknownObject | string;
-  }>(
+  const state = useAsyncState<StateValues>(
     async () => {
       const context = {
         modComponentId: activeModComponentFormState?.uuid,
         modId: activeModComponentFormState?.modMetadata?.id,
       };
 
-      const [shared, mod, local] = await Promise.all([
-        getPageState(inspectedTab, {
+      // Cast because `resolveObj` doesn't keep track of the keys
+      return resolveObj<UnknownObject | string>({
+        Public: getPageState(inspectedTab, {
           namespace: StateNamespaces.PUBLIC,
           ...context,
         }),
-        activeModComponentFormState?.modMetadata
+        Mod: activeModComponentFormState?.modMetadata
           ? getPageState(inspectedTab, {
               namespace: StateNamespaces.MOD,
               ...context,
             })
-          : Promise.resolve("Starter Brick is not in a mod"),
-        getPageState(inspectedTab, {
+          : Promise.resolve("Starter Brick is not in a mod package"),
+        Private: getPageState(inspectedTab, {
           namespace: StateNamespaces.PRIVATE,
           ...context,
         }),
-      ]);
-
-      return {
-        Private: local,
-        Mod: mod,
-        Public: shared,
-      };
+      }) as Promise<StateValues>;
     },
     [],
     {
@@ -86,7 +87,7 @@ const PageStateTab: React.VFC = () => {
   );
 
   return (
-    <DataTab eventKey={DataPanelTabKey.PageState}>
+    <DataTab eventKey={DataPanelTabKey.ModVariables}>
       <div className="mb-1 d-flex">
         <div>
           <Button
@@ -100,13 +101,13 @@ const PageStateTab: React.VFC = () => {
         </div>
         <div className="ml-2">
           <a
-            href="https://docs.pixiebrix.com/developing-mods/developer-concepts/data-context/using-page-state-advanced"
+            href="https://docs.pixiebrix.com/developing-mods/developer-concepts/data-context/using-mod-variables"
             target="_blank"
             rel="noreferrer"
           >
             <small>
               <FontAwesomeIcon icon={faExternalLinkAlt} />
-              &nbsp;Learn more about Page State
+              &nbsp;Learn more about Mod Variables
             </small>
           </a>
         </div>
@@ -127,4 +128,4 @@ const PageStateTab: React.VFC = () => {
   );
 };
 
-export default PageStateTab;
+export default ModVariablesTab;

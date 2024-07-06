@@ -26,7 +26,7 @@ import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-const StateTab: React.FC = () => {
+const ModComponentFormStateTab: React.FC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
@@ -54,4 +54,4 @@ const StateTab: React.FC = () => {
   );
 };
 
-export default StateTab;
+export default ModComponentFormStateTab;

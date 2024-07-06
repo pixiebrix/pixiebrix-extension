@@ -18,7 +18,7 @@
 import React from "react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
-import PageStateTab from "./PageStateTab";
+import ModVariablesTab from "./ModVariablesTab";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { getPageState } from "@/contentScript/messenger/api";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -27,7 +27,7 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
-describe("PageStateTab", () => {
+describe("ModVariablesTab", () => {
   beforeAll(() => {
     jest.mocked(getPageState).mockResolvedValue({
       foo: "bar",
@@ -37,8 +37,8 @@ describe("PageStateTab", () => {
 
   async function renderPageStateTab(formState: ModComponentFormState) {
     const utils = render(
-      <Tab.Container activeKey={DataPanelTabKey.PageState}>
-        <PageStateTab />
+      <Tab.Container activeKey={DataPanelTabKey.ModVariables}>
+        <ModVariablesTab />
       </Tab.Container>,
       {
         setupRedux(dispatch) {

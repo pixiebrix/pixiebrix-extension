@@ -17,7 +17,7 @@
 
 export enum DataPanelTabKey {
   Context = "context",
-  PageState = "pageState",
+  ModVariables = "modVariables",
   State = "state",
   BrickConfig = "blockConfig",
   Rendered = "rendered",
