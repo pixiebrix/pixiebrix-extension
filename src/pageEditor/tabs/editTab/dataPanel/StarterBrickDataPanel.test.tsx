@@ -24,7 +24,7 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import StarterBrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel";
 import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
 
-describe("FoundationDataPanel", () => {
+describe("StarterBrickDataPanel", () => {
   test("it renders with form state and trace data", async () => {
     const { formState, records } = formStateWithTraceDataFactory();
     const modComponentId = formState.uuid;
