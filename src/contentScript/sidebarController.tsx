@@ -470,10 +470,12 @@ export function updateHeading(extensionId: UUID, heading: string): void {
 }
 
 export function upsertPanel(
-  { extensionId, extensionPointId, blueprintId }: ModComponentRef,
+  modComponentRef: ModComponentRef,
   heading: string,
   payload: PanelPayload,
 ): void {
+  const { extensionId, extensionPointId, blueprintId } = modComponentRef;
+
   const entry = panels.find(
     (panel) => panel.modComponentRef.extensionId === extensionId,
   );
@@ -502,11 +504,7 @@ export function upsertPanel(
     );
     panels.push({
       type: "panel",
-      modComponentRef: {
-        extensionId,
-        extensionPointId,
-        blueprintId,
-      },
+      modComponentRef,
       heading,
       payload,
     });

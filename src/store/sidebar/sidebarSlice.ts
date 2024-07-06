@@ -149,9 +149,8 @@ export function fixActiveTabOnRemoveInPlace(
       const matchingMod = panels.find(
         ({ modComponentRef: { blueprintId } }) =>
           "modComponentRef" in removedEntry &&
-          // Need to check for removedEntry.blueprintId to avoid switching between ModComponentBases that don't have
-          // an associate mod
           blueprintId === removedEntry.modComponentRef.blueprintId &&
+          // Require blueprintId to avoid switching between panels of standalone mod components
           blueprintId,
       );
 
