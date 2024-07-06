@@ -18,7 +18,10 @@
 import { expect, test } from "../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
+import {
+  ActivateModPage,
+  ModsPage,
+} from "../pageObjects/extensionConsole/modsPage";
 import { clickAndWaitForNewPage } from "end-to-end-tests/utils";
 import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshop/workshopPage";
 
@@ -115,22 +118,15 @@ test("create, run, package, and update mod", async ({
     await modsPage.goto();
 
     await modsPage.viewActiveMods();
-    const modListing = modsPage.modTableItemById(modId);
+    await expect(modsPage.modTableItemById(modId)).toContainText(
+      "version 1.0.1",
+    );
+    await modsPage.actionForModByName(modId, "Reactivate");
 
-    await expect(
-      modListing.getByRole("button", { name: "Update" }),
-    ).toBeVisible();
-    await modListing.getByRole("button", { name: "Update" }).click();
+    const modActivatePage = new ActivateModPage(newPage, extensionId, modId);
 
-    await expect(modsPage.locator("form")).toContainText(
+    await expect(modActivatePage.locator("form")).toContainText(
       "Created through Playwright Automation",
     );
-
-    await expect(
-      modsPage.getByRole("button", { name: "Reactivate" }),
-    ).toBeVisible();
-    await modsPage.getByRole("button", { name: "Reactivate" }).click();
-
-    await expect(modListing).toContainText("version 1.0.1");
   });
 });

@@ -1,0 +1,20 @@
+[
+  {
+    "kind": "E",
+    "path": [
+      "metadata",
+      "version"
+    ],
+    "lhs": "1.0.0",
+    "rhs": "1.0.1"
+  },
+  {
+    "kind": "E",
+    "path": [
+      "metadata",
+      "description"
+    ],
+    "lhs": "Created with the PixieBrix Page Editor",
+    "rhs": "Created through Playwright Automation"
+  }
+]

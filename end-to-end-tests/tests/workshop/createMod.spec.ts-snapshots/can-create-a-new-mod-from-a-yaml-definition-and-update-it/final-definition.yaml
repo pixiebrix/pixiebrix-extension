@@ -10,7 +10,7 @@ metadata:
   id: "@extension-e2e-test-unaffiliated/simple-sidebar-panel-00000000-0000-0000-0000-000000000000"
   name: Simple Sidebar Panel
   version: 1.0.0
-  description: Created with the PixieBrix Page Editor
+  description: Created in end to end tests
 apiVersion: v3
 definitions:
   extensionPoint:
@@ -34,7 +34,7 @@ definitions:
 extensionPoints:
   - label: Simple Sidebar Panel
     config:
-      heading: Simple Sidebar Panel
+      heading: Simple Sidebar Panel -- Updated
       body:
         - id: "@pixiebrix/document"
           rootMode: document
