@@ -46,6 +46,9 @@ type StateValues = {
   Public: UnknownObject | string;
 };
 
+/**
+ * Data panel tab displaying mod variables, and private/public state.
+ */
 const ModVariablesTab: React.VFC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,

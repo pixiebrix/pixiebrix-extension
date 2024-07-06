@@ -39,7 +39,7 @@ const ModComponentFormStateTab: React.FC = () => {
   );
 
   return (
-    <DataTab eventKey={DataPanelTabKey.State}>
+    <DataTab eventKey={DataPanelTabKey.ModComponentFormState}>
       <div className="text-info">
         <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
         developers
@@ -47,8 +47,8 @@ const ModComponentFormStateTab: React.FC = () => {
       <DataTabJsonTree
         data={{ activeElement: activeModComponentFormState, annotations }}
         searchable
-        tabKey={DataPanelTabKey.State}
-        label="Element State"
+        tabKey={DataPanelTabKey.ModComponentFormState}
+        label="Editor State"
       />
     </DataTab>
   );

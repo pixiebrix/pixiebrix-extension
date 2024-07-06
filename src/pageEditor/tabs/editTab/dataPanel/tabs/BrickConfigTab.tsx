@@ -22,7 +22,11 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
-const ConfigurationTab: React.FC<{ config: unknown }> = ({ config }) => (
+/**
+ * Developer-only data panel tab for viewing the underlying brick configuration JSON. Used to debug brick configuration
+ * UI issues.
+ */
+const BrickConfigTab: React.FC<{ config: unknown }> = ({ config }) => (
   <DataTab eventKey={DataPanelTabKey.BrickConfig}>
     <div className="text-info">
       <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
@@ -36,4 +40,4 @@ const ConfigurationTab: React.FC<{ config: unknown }> = ({ config }) => (
   </DataTab>
 );
 
-export default ConfigurationTab;
+export default BrickConfigTab;

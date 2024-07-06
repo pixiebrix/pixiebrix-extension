@@ -27,10 +27,10 @@ import ModVariablesTab from "./tabs/ModVariablesTab";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
-import ConfigurationTab from "./tabs/ConfigurationTab";
+import BrickConfigTab from "./tabs/BrickConfigTab";
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 
-const FoundationDataPanel: React.FC = () => {
+const StarterBrickDataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
@@ -41,14 +41,14 @@ const FoundationDataPanel: React.FC = () => {
     modComponent: { brickPipeline },
     starterBrick,
   } = activeModComponentFormState;
-  const firstBlockInstanceId = brickPipeline[0]?.instanceId;
+  const firstBrickInstanceId = brickPipeline[0]?.instanceId;
 
-  const { record: firstBlockTraceRecord } = useSelector(
-    makeSelectBrickTrace(firstBlockInstanceId),
+  const { record: firstBrickTraceRecord } = useSelector(
+    makeSelectBrickTrace(firstBrickInstanceId),
   );
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
-    firstBlockTraceRecord ? DataPanelTabKey.Output : DataPanelTabKey.Preview,
+    firstBrickTraceRecord ? DataPanelTabKey.Output : DataPanelTabKey.Preview,
   );
 
   return (
@@ -60,11 +60,13 @@ const FoundationDataPanel: React.FC = () => {
         {showDeveloperTabs && (
           <>
             <Nav.Item className={dataPanelStyles.tabNav}>
-              <Nav.Link eventKey={DataPanelTabKey.State}>State</Nav.Link>
+              <Nav.Link eventKey={DataPanelTabKey.ModComponentFormState}>
+                Editor State
+              </Nav.Link>
             </Nav.Item>
             <Nav.Item className={dataPanelStyles.tabNav}>
               <Nav.Link eventKey={DataPanelTabKey.BrickConfig}>
-                Raw Foundation
+                Brick Config
               </Nav.Link>
             </Nav.Item>
           </>
@@ -80,7 +82,7 @@ const FoundationDataPanel: React.FC = () => {
         </Nav.Item>
         <Nav.Item className={dataPanelStyles.tabNav}>
           <Nav.Link eventKey={DataPanelTabKey.ModVariables}>
-            Page State
+            Mod Variables
           </Nav.Link>
         </Nav.Item>
       </Nav>
@@ -97,7 +99,7 @@ const FoundationDataPanel: React.FC = () => {
         {showDeveloperTabs && (
           <>
             <ModComponentFormStateTab />
-            <ConfigurationTab config={starterBrick} />
+            <BrickConfigTab config={starterBrick} />
           </>
         )}
         <Tab.Pane
@@ -115,9 +117,9 @@ const FoundationDataPanel: React.FC = () => {
           mountOnEnter
           unmountOnExit
         >
-          {firstBlockTraceRecord ? (
+          {firstBrickTraceRecord ? (
             <DataTabJsonTree
-              data={firstBlockTraceRecord.templateContext}
+              data={firstBrickTraceRecord.templateContext}
               copyable
               searchable
               tabKey={DataPanelTabKey.Output}
@@ -146,4 +148,4 @@ const FoundationDataPanel: React.FC = () => {
   );
 };
 
-export default FoundationDataPanel;
+export default StarterBrickDataPanel;

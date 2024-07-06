@@ -21,7 +21,7 @@ import { render } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
+import StarterBrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel";
 import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
 
 describe("FoundationDataPanel", () => {
@@ -29,7 +29,7 @@ describe("FoundationDataPanel", () => {
     const { formState, records } = formStateWithTraceDataFactory();
     const modComponentId = formState.uuid;
     const { instanceId } = formState.modComponent.brickPipeline[0];
-    const { asFragment } = render(<FoundationDataPanel />, {
+    const { asFragment } = render(<StarterBrickDataPanel />, {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
