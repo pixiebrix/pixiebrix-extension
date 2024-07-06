@@ -48,7 +48,7 @@ const ModComponentFormStateTab: React.FC = () => {
         data={{ activeElement: activeModComponentFormState, annotations }}
         searchable
         tabKey={DataPanelTabKey.ModComponentFormState}
-        label="Editor State"
+        label="Mod Component Form State"
       />
     </DataTab>
   );

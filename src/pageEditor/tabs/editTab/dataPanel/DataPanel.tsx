@@ -218,12 +218,12 @@ const DataPanel: React.FC = () => {
             <>
               <Nav.Item className={dataPanelStyles.tabNav}>
                 <Nav.Link eventKey={DataPanelTabKey.ModComponentFormState}>
-                  Editor State
+                  Mod Component State
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item className={dataPanelStyles.tabNav}>
                 <Nav.Link eventKey={DataPanelTabKey.BrickConfig}>
-                  Brick Config
+                  Brick Config State
                 </Nav.Link>
               </Nav.Item>
             </>
