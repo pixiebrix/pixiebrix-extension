@@ -17,7 +17,7 @@
 
 import { type EditablePackageMetadata } from "@/types/contract";
 
-export type EnrichedPackage = EditablePackageMetadata & {
+export type EnrichedPackageMetadata = EditablePackageMetadata & {
   scope?: string;
   collection?: string;
   timestamp: number | null;

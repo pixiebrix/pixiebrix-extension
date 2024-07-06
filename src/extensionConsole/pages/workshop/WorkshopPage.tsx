@@ -28,7 +28,10 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
 import { push } from "connected-react-router";
 import EditablePackagesCard from "./EditablePackagesCard";
-import { type EnrichedPackage, type NavigateProps } from "./workshopTypes";
+import {
+  type EnrichedPackageMetadata,
+  type NavigateProps,
+} from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
 import { mapKindToKindUiValue } from "@/extensionConsole/pages/workshop/workshopUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
@@ -46,9 +49,9 @@ function selectFilters(state: { workshop: WorkshopState }) {
   return state.workshop.filters;
 }
 
-export function useEnrichPackages(
+export function useEnrichPackageMetadata(
   editablePackages: Nullishable<EditablePackageMetadata[]>,
-): EnrichedPackage[] {
+): EnrichedPackageMetadata[] {
   const recent = useSelector(selectRecent);
 
   return useMemo(() => {
@@ -74,7 +77,7 @@ export function useEnrichPackages(
   }, [recent, editablePackages]);
 }
 
-export function useSearchOptions(packages: EnrichedPackage[]) {
+export function useSearchOptions(packages: EnrichedPackageMetadata[]) {
   const scopeOptions = useMemo(
     () =>
       sortBy(uniq((packages ?? []).map((x) => x.scope))).map((value) => ({
@@ -132,13 +135,13 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
     kinds = [],
   } = useSelector(selectFilters);
 
-  const enrichPackages = useEnrichPackages(editablePackages);
+  const enrichPackages = useEnrichPackageMetadata(editablePackages);
   const { scopeOptions, kindOptions, collectionOptions } =
     useSearchOptions(enrichPackages);
 
   const filtered = !isEmpty(scopes) || !isEmpty(collections) || !isEmpty(kinds);
 
-  const fuse: Fuse<EnrichedPackage> = useMemo(
+  const fuse: Fuse<EnrichedPackageMetadata> = useMemo(
     () =>
       new Fuse(enrichPackages, {
         keys: ["verbose_name", "name"],

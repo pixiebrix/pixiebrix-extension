@@ -30,7 +30,10 @@ import styles from "./EditablePackagesCard.module.scss";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Column } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { type EnrichedPackage, type NavigateProps } from "./workshopTypes";
+import {
+  type EnrichedPackageMetadata,
+  type NavigateProps,
+} from "./workshopTypes";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import AsyncCard from "@/components/asyncCard/AsyncCard";
 import {
@@ -39,7 +42,7 @@ import {
 } from "@/extensionConsole/pages/workshop/workshopUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-type TableColumn = Column<EnrichedPackage>;
+type TableColumn = Column<EnrichedPackageMetadata>;
 function inferIcon(
   kind: KindFilterValue,
   verboseName: Nullishable<string>,
@@ -93,7 +96,7 @@ function inferIcon(
   }
 }
 
-const KindIcon: React.FunctionComponent<{ brick: EnrichedPackage }> = ({
+const KindIcon: React.FunctionComponent<{ brick: EnrichedPackageMetadata }> = ({
   brick: { kind, verbose_name },
 }) => (
   <FontAwesomeIcon
@@ -139,7 +142,7 @@ const COLUMNS: TableColumn[] = [
 
 const EditablePackagesCard: React.FunctionComponent<
   NavigateProps & {
-    packages: EnrichedPackage[];
+    packages: EnrichedPackageMetadata[];
     maxRows?: number;
     isFetching: boolean;
     error: unknown;
@@ -150,7 +153,7 @@ const EditablePackagesCard: React.FunctionComponent<
       <PaginatedTable
         columns={COLUMNS}
         data={packages}
-        rowProps={(editablePackage: EnrichedPackage) => ({
+        rowProps={(editablePackage: EnrichedPackageMetadata) => ({
           onClick() {
             navigate(`/workshop/bricks/${editablePackage.id}`);
           },

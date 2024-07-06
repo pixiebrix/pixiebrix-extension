@@ -16,7 +16,7 @@
  */
 
 import WorkshopPage, {
-  useEnrichPackages,
+  useEnrichPackageMetadata,
   useSearchOptions,
 } from "@/extensionConsole/pages/workshop/WorkshopPage";
 import { render, renderHook } from "@/extensionConsole/testHelpers";
@@ -37,7 +37,7 @@ describe("useSearchOptions", () => {
     ];
 
     const { result } = renderHook(() => {
-      const bricks = useEnrichPackages(packages);
+      const bricks = useEnrichPackageMetadata(packages);
       return useSearchOptions(bricks);
     });
     expect(result.current).toEqual({
