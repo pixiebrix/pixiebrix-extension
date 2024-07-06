@@ -158,7 +158,7 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
                 <div className="flex-grow-1">
                   <PageTitle
                     icon={faHammer}
-                    title="Edit Brick"
+                    title="Edit Package"
                     documentationUrl="https://docs.pixiebrix.com/developing-mods/advanced-workshop"
                   />
                 </div>
@@ -177,7 +177,7 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
                       disabled={!isValid || isSubmitting || isRemoving}
                       type="submit"
                     >
-                      {values.public ? "Publish Brick" : "Update Brick"}
+                      {values.public ? "Publish Package" : "Update Package"}
                     </Button>
                     <Button
                       disabled={isSubmitting || isRemoving}

@@ -546,7 +546,7 @@ exports[`renders @pixiebrix/table loaded 1`] = `
         <div
           class="text-muted"
         >
-          Definition not available for built-in bricks
+          Definition not available for built-in packages
         </div>
       </div>
     </div>

@@ -21,6 +21,6 @@ import { BasePageObject } from "../../basePageObject";
 export class CreateWorkshopModPage extends BasePageObject {
   editor = new WorkshopModEditor(this.getByLabel("Editor"));
   createBrickButton = this.getByRole("button", {
-    name: "Create Brick",
+    name: "Create Package",
   });
 }
