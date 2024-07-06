@@ -148,10 +148,10 @@ describe("eventKeyForEntry", () => {
     expect(eventKeyForEntry(value)).toBeNull();
   });
 
-  it("uses modId for activateRecipe", () => {
+  it("uses modId for activateMods", () => {
     const modId = validateRegistryId("@test/test-recipe");
     const entry = sidebarEntryFactory("activateMods", {
-      modComponentRef: modComponentRefFactory({ blueprintId: modId }),
+      mods: [{ modId, initialOptions: {} }],
     });
     // Main part is an object hash of the mod ids
     expect(eventKeyForEntry(entry)).toStartWith("activate-");

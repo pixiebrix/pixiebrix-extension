@@ -73,27 +73,27 @@ const panelEntryFactory = define<PanelEntry>({
   heading: (n: number) => `Panel Test ${n}`,
   payload: null,
 });
-export function sidebarEntryFactory<T = PanelEntry>(
+export function sidebarEntryFactory(
   type: "panel",
-  override?: FactoryConfig<T>,
+  override?: FactoryConfig<PanelEntry>,
 ): PanelEntry;
-export function sidebarEntryFactory<T = TemporaryPanelEntry>(
+export function sidebarEntryFactory(
   type: "temporaryPanel",
-  override?: FactoryConfig<T>,
+  override?: FactoryConfig<TemporaryPanelEntry>,
 ): TemporaryPanelEntry;
-export function sidebarEntryFactory<T = FormPanelEntry>(
+export function sidebarEntryFactory(
   type: "form",
-  override?: FactoryConfig<T>,
+  override?: FactoryConfig<FormPanelEntry>,
 ): FormPanelEntry;
-export function sidebarEntryFactory<T = ModActivationPanelEntry>(
+export function sidebarEntryFactory(
   type: "activateMods",
-  override?: FactoryConfig<T>,
+  override?: FactoryConfig<ModActivationPanelEntry>,
 ): ModActivationPanelEntry;
-export function sidebarEntryFactory<T = StaticPanelEntry>(
+export function sidebarEntryFactory(
   type: "staticPanel",
-  override?: FactoryConfig<T>,
+  override?: FactoryConfig<StaticPanelEntry>,
 ): StaticPanelEntry;
-export function sidebarEntryFactory<T = SidebarEntry>(
+export function sidebarEntryFactory<T extends SidebarEntry = SidebarEntry>(
   type: EntryType,
   override?: FactoryConfig<T>,
 ): SidebarEntry {
