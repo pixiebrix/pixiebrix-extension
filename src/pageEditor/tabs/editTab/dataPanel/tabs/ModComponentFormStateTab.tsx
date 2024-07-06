@@ -26,6 +26,10 @@ import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
+/**
+ * Developer-only data panel tab for viewing the underlying mod component form state JSON. Used to debug mod component
+ * form state updates (e.g., automatic useEffect state transitions).
+ */
 const ModComponentFormStateTab: React.FC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,

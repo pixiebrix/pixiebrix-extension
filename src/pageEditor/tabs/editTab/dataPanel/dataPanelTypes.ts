@@ -26,5 +26,5 @@ export enum DataPanelTabKey {
 
   // Developer-only tabs
   ModComponentFormState = "modComponentFormState",
-  BrickConfig = "brickConfig",
+  BrickConfigFormState = "brickConfig",
 }

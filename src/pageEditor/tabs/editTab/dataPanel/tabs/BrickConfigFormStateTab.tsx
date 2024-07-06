@@ -24,20 +24,22 @@ import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree
 
 /**
  * Developer-only data panel tab for viewing the underlying brick configuration JSON. Used to debug brick configuration
- * UI issues.
+ * UI/functionality problems.
+ *
+ * @see ModComponentFormStateTab
  */
-const BrickConfigTab: React.FC<{ config: unknown }> = ({ config }) => (
-  <DataTab eventKey={DataPanelTabKey.BrickConfig}>
+const BrickConfigFormStateTab: React.FC<{ config: unknown }> = ({ config }) => (
+  <DataTab eventKey={DataPanelTabKey.BrickConfigFormState}>
     <div className="text-info">
       <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
       developers
     </div>
     <DataTabJsonTree
       data={config ?? {}}
-      tabKey={DataPanelTabKey.BrickConfig}
-      label="Configuration"
+      tabKey={DataPanelTabKey.BrickConfigFormState}
+      label="Brick Config Form State"
     />
   </DataTab>
 );
 
-export default BrickConfigTab;
+export default BrickConfigFormStateTab;

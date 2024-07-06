@@ -27,7 +27,7 @@ import ModVariablesTab from "./tabs/ModVariablesTab";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
-import BrickConfigTab from "./tabs/BrickConfigTab";
+import BrickConfigFormStateTab from "./tabs/BrickConfigFormStateTab";
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 
 const StarterBrickDataPanel: React.FC = () => {
@@ -65,7 +65,7 @@ const StarterBrickDataPanel: React.FC = () => {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item className={dataPanelStyles.tabNav}>
-              <Nav.Link eventKey={DataPanelTabKey.BrickConfig}>
+              <Nav.Link eventKey={DataPanelTabKey.BrickConfigFormState}>
                 Brick Config State
               </Nav.Link>
             </Nav.Item>
@@ -99,7 +99,7 @@ const StarterBrickDataPanel: React.FC = () => {
         {showDeveloperTabs && (
           <>
             <ModComponentFormStateTab />
-            <BrickConfigTab config={starterBrick} />
+            <BrickConfigFormStateTab config={starterBrick} />
           </>
         )}
         <Tab.Pane

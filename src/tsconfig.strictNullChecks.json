@@ -1172,7 +1172,7 @@
     "./pageEditor/tabs/editTab/dataPanel/DataTabJsonTree.tsx",
     "./pageEditor/tabs/editTab/dataPanel/ErrorDisplay.tsx",
     "./pageEditor/tabs/editTab/dataPanel/dataPanelTypes.ts",
-    "./pageEditor/tabs/editTab/dataPanel/tabs/BrickConfigTab.tsx",
+    "./pageEditor/tabs/editTab/dataPanel/tabs/BrickConfigFormStateTab.tsx",
     "./pageEditor/tabs/editTab/dataPanel/tabs/ModVariablesTab.tsx",
     "./pageEditor/tabs/editTab/dataPanel/tabs/ModComponentFormStateTab.tsx",
     "./pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey.ts",

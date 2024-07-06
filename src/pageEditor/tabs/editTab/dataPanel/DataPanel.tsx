@@ -52,7 +52,7 @@ import { DocumentRenderer } from "@/bricks/renderers/document";
 import DocumentOutline from "@/pageEditor/documentBuilder/outline/DocumentOutline";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
-import BrickConfigTab from "./tabs/BrickConfigTab";
+import BrickConfigFormStateTab from "./tabs/BrickConfigFormStateTab";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
@@ -222,7 +222,7 @@ const DataPanel: React.FC = () => {
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item className={dataPanelStyles.tabNav}>
-                <Nav.Link eventKey={DataPanelTabKey.BrickConfig}>
+                <Nav.Link eventKey={DataPanelTabKey.BrickConfigFormState}>
                   Brick Config State
                 </Nav.Link>
               </Nav.Item>
@@ -265,7 +265,7 @@ const DataPanel: React.FC = () => {
           {showDeveloperTabs && (
             <>
               <ModComponentFormStateTab />
-              <BrickConfigTab config={brickConfig} />
+              <BrickConfigFormStateTab config={brickConfig} />
             </>
           )}
           <DataTab eventKey={DataPanelTabKey.Rendered} isTraceEmpty={!record}>
