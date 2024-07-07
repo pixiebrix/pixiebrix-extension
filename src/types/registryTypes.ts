@@ -58,12 +58,15 @@ export type SemVerString = string & {
 };
 
 /**
- * Base interface for a registry package instance: e.g., `Brick`, `StarterBrick`, `Integration`.
+ * Registry item metadata and the interface for a registry package instances, i.e., `Brick`, `StarterBrick`,
+ * and `Integration`.
  *
  * Currently called `Metadata` because the common fields are all metadata fields about the package.
  *
  * NOTE: mod definitions exist in the registry, but are not instantiated as a package instance object.
  */
+// TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8769: introduce `PackageInstance` or similar type name
+//  to differentiate usage as definition shape from usage as base class for package instances.
 export interface Metadata {
   /**
    * Registry id in the external package registry.
