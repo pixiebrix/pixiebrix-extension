@@ -35,20 +35,20 @@ import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextM
 import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
-import { type PackageInstance } from "@/types/registryTypes";
+import { type Metadata, type PackageInstance } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-function getDefaultBrickIcon<T extends PackageInstance>(
-  brick: T,
-  blockType: Nullishable<BrickType>,
+function getDefaultBrickIcon<Instance extends PackageInstance>(
+  brick: Instance,
+  brickType: Nullishable<BrickType>,
 ): IconProp {
   if ("schema" in brick) {
     return faCloud;
   }
 
-  switch (blockType) {
+  switch (brickType) {
     case "reader": {
       return faBookReader;
     }
@@ -89,7 +89,7 @@ function getDefaultBrickIcon<T extends PackageInstance>(
   return faCube;
 }
 
-type BrickIconProps<T extends PackageInstance> = {
+type BrickIconProps<T extends Metadata> = {
   brick: T;
   size?: "1x" | "2x";
 
@@ -108,10 +108,15 @@ type BrickIconProps<T extends PackageInstance> = {
 };
 
 /**
+ * A package icon. Provide a PackageInstance instead of a Metadata to support type inference.
+ *
  * WARNING: avoid rendering a lot of brick icons (20+) icons on a page at once. Each one waits for the marketplace
  * listing and searches all the listings.
+ *
+ * @see Metadata
+ * @see PackageInstance
  */
-const BrickIcon = <T extends PackageInstance>({
+const BrickIcon = <T extends Metadata>({
   brick,
   size,
   faIconClass,
