@@ -60,7 +60,7 @@ export type SemVerString = string & {
 /**
  * Registry item metadata definition shape.
  *
- * Use PackageInstance instead if expecting a package instance, e.g., Brick, StarterBrick, Mod.
+ * Use PackageInstance instead if expecting a package instance, e.g., `Brick`, `StarterBrick`, `Integration`.
  *
  * @see Definition.metadata
  * @see PackageInstance
