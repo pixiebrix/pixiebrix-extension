@@ -102,12 +102,16 @@ export async function mapAppUserToTelemetryUser(
 
 /**
  * Returns the event data for a ModComponentRef.
- * @param modComponentRef
  * @see selectEventData
  */
 export function mapModComponentRefToEventData(
   modComponentRef: ModComponentRef,
 ): MessageContext {
   // Fields are currently named the same. In the future, the fields might temporarily diverge.
-  return { ...modComponentRef };
+  return {
+    extensionId: modComponentRef.extensionId,
+    extensionPointId: modComponentRef.extensionPointId,
+    // MessageContext expects undefined instead of null/undefined
+    blueprintId: modComponentRef.blueprintId ?? undefined,
+  };
 }
