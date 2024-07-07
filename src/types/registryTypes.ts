@@ -58,22 +58,33 @@ export type SemVerString = string & {
 };
 
 /**
- * Metadata about a Brick, StarterBrick, Integration, or Mod.
+ * Base interface for a registry package instance: e.g., `Brick`, `StarterBrick`, `Integration`.
+ *
+ * Currently called `Metadata` because the common fields are all metadata fields about the package.
+ *
+ * NOTE: mod definitions exist in the registry, but are not instantiated as a package instance object.
  */
 export interface Metadata {
   /**
-   * Registry id in the external registry
+   * Registry id in the external package registry.
    */
   readonly id: RegistryId;
 
   /**
-   * Human-readable name
+   * Human-readable name.
    */
   readonly name: string;
 
+  /**
+   * An optional human-readable description.
+   */
   readonly description?: string;
 
-  // Currently optional because it defaults to the browser extension version for bricks defined in JS
+  /**
+   * The semantic version of the package.
+   *
+   * Currently optional because it defaults to the browser extension version for bricks defined in JS.
+   */
   readonly version?: SemVerString;
 
   /**
