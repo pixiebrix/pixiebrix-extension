@@ -64,6 +64,7 @@ import useOnMountOnly from "@/hooks/useOnMountOnly";
 import UnavailableOverlay from "@/sidebar/UnavailableOverlay";
 import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
 import ConnectingOverlay from "@/sidebar/ConnectingOverlay";
+import { mapModComponentRefToEventData } from "@/telemetry/telemetryHelpers";
 
 const ActivateModPanel = lazy(
   async () =>
@@ -315,9 +316,8 @@ const Tabs: React.FC = () => {
               <ErrorBoundary
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
+                    ...mapModComponentRefToEventData(panel.modComponentRef),
                     panelType: panel.type,
-                    extensionId: panel.modComponentRef.extensionId,
-                    blueprintId: panel.modComponentRef.blueprintId,
                   });
                 }}
               >
@@ -350,9 +350,8 @@ const Tabs: React.FC = () => {
               <ErrorBoundary
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
+                    ...mapModComponentRefToEventData(form.modComponentRef),
                     panelType: form.type,
-                    extensionId: form.modComponentRef.extensionId,
-                    blueprintId: form.modComponentRef.blueprintId,
                   });
                 }}
               >

@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cleanDatadogVersionName } from "@/telemetry/telemetryHelpers";
+import {
+  cleanDatadogVersionName,
+  mapModComponentRefToEventData,
+} from "@/telemetry/telemetryHelpers";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 // Disable automatic __mocks__ resolution #6799
 jest.mock("@/telemetry/telemetryHelpers", () =>
@@ -33,5 +38,23 @@ describe("cleanDatadogVersionName", () => {
     expect(cleanDatadogVersionName("1.8.8-alpha+293128")).toBe(
       "1.8.8-alpha_293128",
     );
+  });
+});
+
+describe("mapModComponentRefToEventData", () => {
+  it("maps fields", () => {
+    const value = modComponentRefFactory();
+    expect(mapModComponentRefToEventData(value)).toStrictEqual({
+      extensionId: value.extensionId,
+      blueprintId: value.blueprintId,
+      extensionPointId: value.extensionPointId,
+    });
+  });
+
+  it("round trips mod component reference", () => {
+    const value = modComponentRefFactory();
+    expect(
+      mapMessageContextToModComponentRef(mapModComponentRefToEventData(value)),
+    ).toStrictEqual(value);
   });
 });

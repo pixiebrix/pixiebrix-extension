@@ -20,6 +20,8 @@ import { uuidv4 } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
 import { once } from "lodash";
 import { StorageItem } from "webext-storage";
+import type { ModComponentRef } from "@/types/modComponentTypes";
+import type { MessageContext } from "@/types/loggerTypes";
 
 /**
  * The Person model for application error telemetry.
@@ -96,4 +98,16 @@ export async function mapAppUserToTelemetryUser(
     email,
     organizationId: telemetryOrganizationId ?? organizationId,
   };
+}
+
+/**
+ * Returns the event data for a ModComponentRef.
+ * @param modComponentRef
+ * @see selectEventData
+ */
+export function mapModComponentRefToEventData(
+  modComponentRef: ModComponentRef,
+): MessageContext {
+  // Fields are currently named the same. In the future, the fields might temporarily diverge.
+  return { ...modComponentRef };
 }
