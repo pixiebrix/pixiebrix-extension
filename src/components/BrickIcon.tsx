@@ -35,12 +35,12 @@ import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextM
 import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
-import { type Metadata } from "@/types/registryTypes";
+import { type PackageInstance } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-function getDefaultBrickIcon<T extends Metadata>(
+function getDefaultBrickIcon<T extends PackageInstance>(
   brick: T,
   blockType: Nullishable<BrickType>,
 ): IconProp {
@@ -89,7 +89,7 @@ function getDefaultBrickIcon<T extends Metadata>(
   return faCube;
 }
 
-type BrickIconProps<T extends Metadata> = {
+type BrickIconProps<T extends PackageInstance> = {
   brick: T;
   size?: "1x" | "2x";
 
@@ -111,7 +111,7 @@ type BrickIconProps<T extends Metadata> = {
  * WARNING: avoid rendering a lot of brick icons (20+) icons on a page at once. Each one waits for the marketplace
  * listing and searches all the listings.
  */
-const BrickIcon = <T extends Metadata>({
+const BrickIcon = <T extends PackageInstance>({
   brick,
   size,
   faIconClass,

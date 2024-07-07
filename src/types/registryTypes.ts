@@ -58,16 +58,11 @@ export type SemVerString = string & {
 };
 
 /**
- * Registry item metadata and the interface for a registry package instances, i.e., `Brick`, `StarterBrick`,
- * and `Integration`.
+ * Registry item metadata definition shape.
  *
- * Currently called `Metadata` because the common fields are all metadata fields about the package.
- *
- * NOTE: mod definitions exist in the registry, but are not instantiated as a package instance object.
+ * @see Definition.metadata
  */
-// TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8769: introduce `PackageInstance` or similar type name
-//  to differentiate usage as definition shape from usage as base class for package instances.
-export interface Metadata {
+export type Metadata = {
   /**
    * Registry id in the external package registry.
    */
@@ -96,6 +91,20 @@ export interface Metadata {
    */
   // FIXME: this type is wrong. In practice, the value should be a semantic version range, e.g., >=1.4.0
   readonly extensionVersion?: SemVerString;
+};
+
+/**
+ * Interface for a registry package instances, i.e., `Brick`, `StarterBrick`, and `Integration`.
+ *
+ * NOTE: mod definitions exist in the registry, but are not instantiated as a package instance object.
+ *
+ * Introduced in 2.0.5 to disambiguate usage with definition `Metadata`.
+ *
+ * @since 2.0.5
+ * @see Metadata
+ */
+export interface PackageInstance extends Metadata {
+  // Type currently matches Metadata, given that instances used to extend directly from Metadata
 }
 
 /**
@@ -116,9 +125,9 @@ export type Sharing = {
 /**
  * A definition in the PixieBrix registry
  */
-export interface Definition<K extends DefinitionKind = DefinitionKind> {
+export interface Definition<Kind extends DefinitionKind = DefinitionKind> {
   apiVersion: ApiVersion;
-  kind: K;
+  kind: Kind;
   metadata: Metadata;
 }
 
@@ -136,8 +145,11 @@ export type InnerDefinitionRef = string & {
   _innerDefinitionRefBrand: never;
 };
 
-export interface RegistryItem<T extends RegistryId = RegistryId> {
-  id: T;
+/**
+ * A registry item with an id.
+ */
+export interface RegistryItem<Id extends RegistryId = RegistryId> {
+  id: Id;
 }
 
 /**

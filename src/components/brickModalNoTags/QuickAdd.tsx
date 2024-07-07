@@ -21,14 +21,14 @@ import React from "react";
 import { Card } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import cx from "classnames";
-import { type Metadata } from "@/types/registryTypes";
+import { type PackageInstance } from "@/types/registryTypes";
 
-type OwnProps<T extends Metadata> = {
+type OwnProps<T extends PackageInstance> = {
   onSelect: (block: T) => void;
   recommendations: T[];
 };
 
-const QuickAdd = <T extends Metadata>({
+const QuickAdd = <T extends PackageInstance>({
   recommendations,
   onSelect,
 }: OwnProps<T>) => (

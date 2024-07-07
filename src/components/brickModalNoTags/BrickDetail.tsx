@@ -5,17 +5,17 @@ import BrickIcon from "@/components/BrickIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
-import { type Metadata } from "@/types/registryTypes";
+import { type PackageInstance } from "@/types/registryTypes";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
-type BrickDetailProps<T extends Metadata> = {
+type BrickDetailProps<T extends PackageInstance> = {
   brick: T;
   listing?: MarketplaceListing;
   onSelect: () => void;
   selectCaption: React.ReactNode;
 };
 
-const BrickDetail = <T extends Metadata>({
+const BrickDetail = <T extends PackageInstance>({
   brick,
   selectCaption = "Select",
   listing,

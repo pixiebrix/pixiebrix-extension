@@ -36,20 +36,20 @@ import { isOfficial } from "@/bricks/util";
 import { find as findPackage } from "@/registry/packageRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
 import { useGetOrganizationsQuery } from "@/data/service/api";
-import { type Metadata } from "@/types/registryTypes";
+import { type PackageInstance } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 
-type OwnProps<T extends Metadata> = {
-  packageInstances: T[];
-  initialSelected?: T;
+type OwnProps<Instance extends PackageInstance> = {
+  packageInstances: Instance[];
+  initialSelected?: Instance;
 };
 
 const PackageReference = ({
   packageInstances,
   initialSelected,
-}: OwnProps<Metadata>) => {
+}: OwnProps<PackageInstance>) => {
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState<Metadata>(initialSelected);
+  const [selected, setSelected] = useState<PackageInstance>(initialSelected);
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const sortedPackages = useMemo(
@@ -83,7 +83,7 @@ const PackageReference = ({
       return null;
     }, [selected]);
 
-  const fuse: Fuse<Metadata> = useMemo(
+  const fuse: Fuse<PackageInstance> = useMemo(
     () =>
       new Fuse(sortedPackages, {
         // Prefer name, then id

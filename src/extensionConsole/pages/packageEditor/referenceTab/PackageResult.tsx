@@ -30,15 +30,15 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find as findPackage } from "@/registry/packageRegistry";
 import { type Organization } from "@/types/contract";
-import { type Metadata, type Sharing } from "@/types/registryTypes";
+import { type PackageInstance, type Sharing } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 
-type SharingTagProps<T extends Metadata> = {
+type SharingTagProps<T extends PackageInstance> = {
   packageInstance: T;
   organizations: Organization[];
 };
 
-const SharingTag = <T extends Metadata>({
+const SharingTag = <T extends PackageInstance>({
   packageInstance,
   organizations,
 }: SharingTagProps<T>) => {
@@ -92,14 +92,14 @@ const SharingTag = <T extends Metadata>({
   );
 };
 
-type OwnProps<T extends Metadata> = {
+type OwnProps<T extends PackageInstance> = {
   packageInstance: T;
   active?: boolean;
   onSelect: () => void;
   organizations: Organization[];
 };
 
-const PackageResult = <T extends Metadata>({
+const PackageResult = <T extends PackageInstance>({
   packageInstance,
   onSelect,
   active,
