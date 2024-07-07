@@ -97,7 +97,7 @@ export type Metadata = {
 };
 
 /**
- * Interface for a registry package instances, i.e., `Brick`, `StarterBrick`, and `Integration`.
+ * Interface for registry package instances, i.e., `Brick`, `StarterBrick`, and `Integration`.
  *
  * NOTE: mod definitions exist in the registry, but are not instantiated as a package instance object.
  *
