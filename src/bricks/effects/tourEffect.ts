@@ -166,7 +166,10 @@ export class TourEffect extends EffectABC {
       );
     }
 
-    assertNotNullish(modComponentId, "extensionId is required to run a tour");
+    assertNotNullish(
+      modComponentId,
+      "modComponentId is required to run a tour",
+    );
 
     const tour = introJs()
       .setOptions({

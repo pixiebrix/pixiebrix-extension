@@ -205,7 +205,7 @@ export class GetPageState extends TransformerABC {
     }: BrickArgs<{ namespace?: StateNamespace }>,
     { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
-    const { modId: modId, modComponentId: modComponentId } = logger.context;
+    const { modId, modComponentId } = logger.context;
 
     return platform.state.getState({
       namespace,

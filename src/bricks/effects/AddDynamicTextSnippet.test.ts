@@ -81,8 +81,8 @@ describe("AddDynamicTextSnippet", () => {
           componentId: extensionId,
           context: {
             ...logger.context,
-            blockId: brick.id,
-            blockVersion: expect.toBeString(),
+            brickId: brick.id,
+            brickVersion: expect.toBeString(),
             label: brick.name,
           },
         },
@@ -127,8 +127,8 @@ describe("AddDynamicTextSnippet", () => {
           componentId: extensionId,
           context: {
             ...logger.context,
-            blockId: brick.id,
-            blockVersion: expect.toBeString(),
+            brickId: brick.id,
+            brickVersion: expect.toBeString(),
             label: brick.name,
           },
         },

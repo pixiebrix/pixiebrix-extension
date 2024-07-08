@@ -73,7 +73,6 @@ export function isRendererErrorPayload(
  */
 export type PanelContext = MessageContext & {
   modComponentId: UUID;
-  modId: RegistryId | null;
 };
 
 /**

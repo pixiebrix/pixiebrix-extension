@@ -338,7 +338,9 @@ const Tabs: React.FC = () => {
                   isRootPanel
                   payload={panel.payload}
                   onAction={permanentSidebarPanelAction}
-                  context={panel.modComponentRef}
+                  context={mapModComponentRefToMessageContext(
+                    panel.modComponentRef,
+                  )}
                 />
               </ErrorBoundary>
             </Tab.Pane>

@@ -34,11 +34,12 @@ export const brickOptionsFactory = define<BrickOptions>({
   },
   platform: (_i: number) => contentScriptPlatform,
   logger(_i: number) {
-    const { blueprintId, ...rest } = modComponentRefFactory();
+    const { blueprintId, extensionId, ...rest } = modComponentRefFactory();
     // MessageContext expects undefined instead of null for blueprintId
     return new ConsoleLogger({
       ...rest,
-      blueprintId: blueprintId ?? undefined,
+      modComponentId: extensionId,
+      modId: blueprintId ?? undefined,
     });
   },
   root: (_i: number) => document,

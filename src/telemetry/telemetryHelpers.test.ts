@@ -45,9 +45,9 @@ describe("mapModComponentRefToEventData", () => {
   it("maps fields", () => {
     const value = modComponentRefFactory();
     expect(mapModComponentRefToMessageContext(value)).toStrictEqual({
-      extensionId: value.extensionId,
-      blueprintId: value.blueprintId,
-      extensionPointId: value.extensionPointId,
+      modComponentId: value.extensionId,
+      modId: value.blueprintId,
+      starterBrickId: value.extensionPointId,
     });
   });
 
@@ -56,9 +56,9 @@ describe("mapModComponentRefToEventData", () => {
       blueprintId: null,
     });
     expect(mapModComponentRefToMessageContext(value)).toStrictEqual({
-      extensionId: value.extensionId,
-      blueprintId: undefined,
-      extensionPointId: value.extensionPointId,
+      modComponentId: value.extensionId,
+      modId: undefined,
+      starterBrickId: value.extensionPointId,
     });
   });
 

@@ -90,18 +90,18 @@ describe("logging", () => {
     await expect(count()).resolves.toBe(0);
   });
 
-  test("clearLog by blueprint id", async () => {
-    const blueprintId = registryIdFactory();
+  test("clearLog by mod id", async () => {
+    const modId = registryIdFactory();
 
     await appendEntry(
       logEntryFactory({
-        context: messageContextFactory({ modId: blueprintId }),
+        context: messageContextFactory({ modId }),
       }),
     );
 
     await appendEntry(logEntryFactory());
 
-    await clearLog({ modId: blueprintId });
+    await clearLog({ modId });
 
     await expect(count()).resolves.toBe(1);
   });
@@ -119,20 +119,20 @@ describe("logging", () => {
     // Increase timeout so test isn't flakey on CI due to slow append operation
   }, 20_000);
 
-  test("getLogEntries by blueprintId", async () => {
-    const blueprintId = registryIdFactory();
+  test("getLogEntries by modId", async () => {
+    const modId = registryIdFactory();
 
     await appendEntry(
       logEntryFactory({
-        context: messageContextFactory({ modId: blueprintId }),
+        context: messageContextFactory({ modId }),
       }),
     );
 
     await appendEntry(logEntryFactory());
 
-    await expect(getLogEntries({ modId: blueprintId })).resolves.toStrictEqual([
+    await expect(getLogEntries({ modId })).resolves.toStrictEqual([
       expect.objectContaining({
-        context: expect.objectContaining({ blueprintId }),
+        context: expect.objectContaining({ modId }),
       }),
     ]);
   });

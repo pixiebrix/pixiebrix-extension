@@ -285,7 +285,7 @@ export class CustomFormRenderer extends RendererABC {
     { logger, runPipeline, platform }: BrickOptions,
   ): Promise<ComponentRef> {
     if (logger.context.modComponentId == null) {
-      throw new Error("extensionId is required");
+      throw new Error("modComponentId is required");
     }
 
     // Redundant with the JSON Schema input validation for `required`. But keeping here for clarity
