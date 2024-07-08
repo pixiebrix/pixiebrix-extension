@@ -22,21 +22,24 @@ import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectActiveModComponentNodeInfo,
-  selectParentBlockInfo,
-} from "@/pageEditor/slices/editorSelectors";
+  selectParentNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SerializableResponse } from "@/types/messengerTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
 import { runRendererBrick } from "@/contentScript/messenger/api";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
-import { selectActiveModComponentTraceForBrick } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraceForBrick } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { type UUID } from "@/types/stringTypes";
 import { type BrickArgsContext } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { validateRegistryId } from "@/types/helpers";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type Location = "modal" | "panel";
 
@@ -95,49 +98,52 @@ const previewSlice = createSlice({
 });
 
 /**
- * Get a handler to run a "preview" of a document renderer block.
- * @param blockInstanceId the instance id (node id) of the block to run
+ * Get a handler to run a "preview" of a document renderer brick.
+ * @param brickInstanceId the node id of the brick to run
  */
 export default function useDocumentPreviewRunBlock(
-  blockInstanceId: UUID,
+  brickInstanceId: UUID,
 ): BlockPreviewRunBlock {
   const [state, dispatch] = useReducer(previewSlice.reducer, initialState);
 
+  const formState = useSelector(selectActiveModComponentFormState);
+
   const {
+    type,
     uuid: modComponentId,
-    modMetadata: mod,
+    modMetadata,
     apiVersion,
     integrationDependencies,
     starterBrick,
-  } = useSelector(selectActiveModComponentFormState);
+  } = formState;
 
-  const { blockConfig } = useSelector(
-    selectActiveModComponentNodeInfo(blockInstanceId),
+  const { blockConfig: brickConfig } = useSelector(
+    selectActiveModComponentNodeInfo(brickInstanceId),
   );
 
   const {
-    data: blockInfo,
-    isLoading: isBlockLoading,
-    error: blockError,
-  } = usePreviewInfo(blockConfig.id);
+    data: previewInfo,
+    isLoading: isPreviewInfoLoading,
+    error: previewInfoError,
+  } = usePreviewInfo(brickConfig.id);
 
   useEffect(() => {
-    if (blockError) {
+    if (previewInfoError) {
       dispatch(
         previewSlice.actions.setError({
           error: {
             name: "BlockRegistryError",
             message: `Error loading brick from registry\n${getErrorMessage(
-              blockError,
+              previewInfoError,
             )}`,
           },
         }),
       );
     }
-  }, [blockError]);
+  }, [previewInfoError]);
 
   const traceRecord = useSelector(
-    selectActiveModComponentTraceForBrick(blockInstanceId),
+    selectActiveModComponentTraceForBrick(brickInstanceId),
   );
   const { data: serviceContext, isLoading: isLoadingServiceContext } =
     useAsyncState(
@@ -150,16 +156,16 @@ export default function useDocumentPreviewRunBlock(
   } as BrickArgsContext;
 
   // This defaults to "inherit" as described in the doc, see BrickConfig.rootMode
-  const blockRootMode = blockConfig.rootMode ?? "inherit";
+  const blockRootMode = brickConfig.rootMode ?? "inherit";
   const shouldUseStarterBrickRoot =
-    blockInfo?.isRootAware &&
+    previewInfo?.isRootAware &&
     blockRootMode === "inherit" &&
     isTriggerStarterBrick(starterBrick);
 
-  const parentBlockInfo = useSelector(selectParentBlockInfo(blockInstanceId));
+  const parentNodeInfo = useSelector(selectParentNodeInfo(brickInstanceId));
 
   // Assume the parent is a temp display brick for now
-  const titleField = parentBlockInfo?.blockConfig?.config?.title ?? "";
+  const titleField = parentNodeInfo?.blockConfig?.config?.title ?? "";
   const titleValue = isExpression(titleField)
     ? titleField.__value__
     : titleField;
@@ -167,11 +173,17 @@ export default function useDocumentPreviewRunBlock(
 
   const debouncedRun = useDebouncedCallback(
     async () => {
-      if (isLoadingServiceContext || isBlockLoading) {
+      if (isLoadingServiceContext || isPreviewInfoLoading) {
         return;
       }
 
       dispatch(previewSlice.actions.startPreview());
+
+      const adapter = ADAPTERS.get(type);
+      const starterBrickId = validateRegistryId(
+        adapter.selectModComponent(formState).extensionPointId,
+      );
+      assertNotNullish(starterBrickId, "Expected starter brick id");
 
       // If the block is configured to inherit the root element, and the
       // starter brick is a trigger, try to get the root element from the
@@ -187,18 +199,21 @@ export default function useDocumentPreviewRunBlock(
 
       // `panel` was the default before we added the location field
       const location: Location =
-        (parentBlockInfo?.blockConfig.config.location as Location) ?? "panel";
+        (parentNodeInfo?.blockConfig.config.location as Location) ?? "panel";
 
       try {
         await runRendererBrick(inspectedTab, {
-          modComponentId,
-          modId: mod?.id,
           runId: traceRecord.runId,
           title,
+          modComponentRef: {
+            extensionId: modComponentId,
+            blueprintId: modMetadata?.id,
+            extensionPointId: starterBrickId,
+          },
           args: {
             apiVersion,
             blockConfig: {
-              ...removeEmptyValues(blockConfig),
+              ...removeEmptyValues(brickConfig),
               if: undefined,
             },
             context,

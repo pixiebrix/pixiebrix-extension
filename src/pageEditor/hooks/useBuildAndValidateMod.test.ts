@@ -41,7 +41,7 @@ import { type ModComponentState } from "@/store/extensionsTypes";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { array } from "cooky-cutter";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { normalizeModDefinition } from "@/utils/modUtils";
 import { DefinitionKinds } from "@/types/registryTypes";
 
@@ -95,7 +95,7 @@ describe("useBuildAndValidateMod", () => {
         totalModComponentCount,
       )();
 
-      // Install the mod
+      // Activate the mod
       const state = modComponentsSlice.reducer(
         { extensions: [] },
         modComponentsActions.activateMod({
@@ -116,7 +116,7 @@ describe("useBuildAndValidateMod", () => {
           // Mock this lookup for the adapter call that follows
           jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
-          // Mod was installed, so get the mod component from state
+          // Mod was activated, so get the mod component from state
           const modComponent = state.extensions[i];
 
           // Load the adapter for this mod component
@@ -174,7 +174,7 @@ describe("useBuildAndValidateMod", () => {
 
   it("built mod has the wrong number of mod components", async () => {
     const modMetadata = modMetadataFactory();
-    const installedModDefinition = modDefinitionFactory({
+    const activatedModDefinition = modDefinitionFactory({
       metadata: modMetadata,
       extensionPoints: array(modComponentDefinitionFactory, 1),
     });
@@ -189,7 +189,7 @@ describe("useBuildAndValidateMod", () => {
         setupRedux(dispatch) {
           dispatch(
             modComponentsActions.activateMod({
-              modDefinition: installedModDefinition,
+              modDefinition: activatedModDefinition,
               screen: "pageEditor",
               isReactivate: false,
             }),
@@ -204,7 +204,7 @@ describe("useBuildAndValidateMod", () => {
     await hookAct(async () => {
       await expect(
         result.current.buildAndValidateMod({
-          sourceMod: installedModDefinition,
+          sourceMod: activatedModDefinition,
           cleanModComponents: state.extensions.slice(1),
           dirtyModComponentFormStates: [dirtyFormState1],
         }),

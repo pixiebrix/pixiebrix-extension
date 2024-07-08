@@ -25,11 +25,11 @@ import {
 } from "@/testUtils/factories/brickFactories";
 import type { AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { AnnotationType } from "@/types/annotationTypes";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import analysisSlice from "@/analysis/analysisSlice";
 import { toExpression } from "@/utils/expressionUtils";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
-import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/store/editor/editorSelectors";
 
 describe("ConnectedFieldTemplate", () => {
   it("shows formik error only when touched", async () => {
@@ -115,7 +115,7 @@ describe("ConnectedFieldTemplate", () => {
         {
           initialValues: formState,
           setupRedux(dispatch) {
-            dispatch(actions.selectInstalled(formState));
+            dispatch(actions.selectActivatedModComponentFormState(formState));
             dispatch(
               analysisSlice.actions.finishAnalysis({
                 extensionId: formState.uuid,
@@ -179,7 +179,7 @@ describe("ConnectedFieldTemplate", () => {
             },
           },
           setupRedux(dispatch) {
-            dispatch(actions.selectInstalled(formState));
+            dispatch(actions.selectActivatedModComponentFormState(formState));
             dispatch(
               analysisSlice.actions.finishAnalysis({
                 extensionId: formState.uuid,
@@ -239,7 +239,7 @@ describe("ConnectedFieldTemplate", () => {
         {
           initialValues: formState,
           setupRedux(dispatch) {
-            dispatch(actions.selectInstalled(formState));
+            dispatch(actions.selectActivatedModComponentFormState(formState));
             dispatch(
               analysisSlice.actions.finishAnalysis({
                 extensionId: formState.uuid,
@@ -339,7 +339,7 @@ describe("ConnectedFieldTemplate", () => {
         {
           initialValues: formState,
           setupRedux(dispatch) {
-            dispatch(actions.selectInstalled(formState));
+            dispatch(actions.selectActivatedModComponentFormState(formState));
             dispatch(
               analysisSlice.actions.finishAnalysis({
                 extensionId: formState.uuid,

@@ -162,7 +162,7 @@ function setupMocksAndRender(
   appApiMock.onGet().reply(200, []);
 
   const entry = sidebarEntryFactory("activateMods", {
-    modIds: [modDefinition.metadata.id],
+    mods: [{ modId: modDefinition.metadata.id, initialOptions: {} }],
     heading: "Activate Mod",
   });
 

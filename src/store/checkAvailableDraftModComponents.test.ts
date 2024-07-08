@@ -16,11 +16,11 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
-import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { actions, editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import {
   checkAvailable as backgroundCheckAvailable,
@@ -92,7 +92,9 @@ describe("checkAvailableDraftModComponents", () => {
     store.dispatch(
       actions.addModComponentFormState(unavailableDraftModComponent),
     );
-    store.dispatch(actions.selectInstalled(availableDraftModComponent));
+    store.dispatch(
+      actions.selectActivatedModComponentFormState(availableDraftModComponent),
+    );
 
     jest
       .mocked(checkAvailable)

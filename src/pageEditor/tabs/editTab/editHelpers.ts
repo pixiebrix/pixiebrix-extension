@@ -22,7 +22,7 @@ import {
   type BrickPipeline,
   type BrickPosition,
 } from "@/bricks/types";
-import { type PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
+import { type PipelineMap } from "@/pageEditor/store/editor/uiStateTypes";
 import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/bricks/PipelineVisitor";

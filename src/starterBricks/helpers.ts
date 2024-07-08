@@ -18,11 +18,7 @@
 import { castArray } from "lodash";
 import initialize from "@/vendors/jQueryInitialize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
-import {
-  type ModComponentBase,
-  type HydratedModComponent,
-} from "@/types/modComponentTypes";
-import { type MessageContext } from "@/types/loggerTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { $safeFind } from "@/utils/domUtils";
 import { onAbort } from "abort-utils";
 
@@ -180,24 +176,6 @@ export function acquireElement(
 
   element.setAttribute(EXTENSION_POINT_DATA_ATTR, extensionPointId);
   return true;
-}
-
-/**
- * Returns the MessageContext associated with `modComponent`.
- */
-export function selectModComponentContext(
-  modComponent: HydratedModComponent,
-): MessageContext {
-  return {
-    // The step label will be re-assigned later in reducePipeline
-    label: modComponent.label ?? undefined,
-    modComponentLabel: modComponent.label ?? undefined,
-    modComponentId: modComponent.id,
-    starterBrickId: modComponent.extensionPointId,
-    deploymentId: modComponent._deployment?.id,
-    modId: modComponent._recipe?.id,
-    modVersion: modComponent._recipe?.version,
-  };
 }
 
 /**

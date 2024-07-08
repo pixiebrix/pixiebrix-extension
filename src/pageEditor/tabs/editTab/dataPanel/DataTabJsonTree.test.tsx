@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import userEvent from "@testing-library/user-event";
@@ -42,7 +42,9 @@ const data = {
 const renderJsonTree = () =>
   render(<DataTabJsonTree data={data} tabKey={DataPanelTabKey.Context} />, {
     setupRedux(dispatch) {
-      dispatch(actions.selectInstalled(formStateFactory()));
+      dispatch(
+        actions.selectActivatedModComponentFormState(formStateFactory()),
+      );
     },
   });
 

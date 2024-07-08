@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
+import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 import {
   createFormikTemplate,
   fireTextInput,

@@ -31,9 +31,6 @@ import cx from "classnames";
 import Effect from "@/components/Effect";
 import permissionsDialogImage from "@img/example-permissions-dialog.png";
 import { type AnyObjectSchema } from "yup";
-import { useSelector } from "react-redux";
-import { selectModComponentsForMod } from "@/store/extensionsSelectors";
-import { isEmpty } from "lodash";
 import { produce } from "immer";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isUUID } from "@/types/helpers";
@@ -91,11 +88,6 @@ const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
       })
     : mod;
 
-  const modComponents = useSelector(
-    selectModComponentsForMod(normalizedMod?.metadata?.id),
-  );
-  const isReinstall = !isEmpty(modComponents);
-
   const renderBody: RenderBody = ({ values }) => (
     <div className={cx("scrollable-area", styles.formBody)}>
       <Effect values={values} onChange={onChange} delayMillis={200} />
@@ -119,10 +111,7 @@ const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
             bring everything back in line.
           */}
           <Col className={styles.optionsBody}>
-            <optionsWizardStep.Component
-              mod={normalizedMod}
-              reinstall={isReinstall}
-            />
+            <optionsWizardStep.Component mod={normalizedMod} />
           </Col>
         </WizardValuesModIntegrationsContextAdapter>
       )}

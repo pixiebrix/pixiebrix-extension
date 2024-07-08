@@ -27,11 +27,11 @@ import { type JsonObject } from "type-fest";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Location } from "@/types/starterBrickTypes";
-import { assumeNotNullish_UNSAFE } from "@/utils/nullishUtils";
 import type {
   RefreshTrigger,
   TemporaryPanelEntryMetadata,
 } from "@/platform/panels/panelTypes";
+import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 class DisplayTemporaryInfo extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/display");
@@ -101,9 +101,7 @@ class DisplayTemporaryInfo extends TransformerABC {
       isRootAware: boolean;
     }>,
     {
-      logger: {
-        context: { modComponentId: extensionId, modId: blueprintId },
-      },
+      logger: { context },
       root = document,
       platform,
       runRendererPipeline,
@@ -113,18 +111,14 @@ class DisplayTemporaryInfo extends TransformerABC {
     expectContext("contentScript");
 
     const target = isRootAware ? root : document;
-    assumeNotNullish_UNSAFE(extensionId);
-    // XXX: blueprintId can actually be nullish if not running on the context of a mod. But assume it's non-nullish
-    //  for passing to the panel for now. The panel can gracefully handle nullish blueprintId.
-    assumeNotNullish_UNSAFE(blueprintId);
 
     // Counter for tracking branch execution
     let counter = 0;
 
     const panelEntryMetadata: TemporaryPanelEntryMetadata = {
       heading: title,
-      extensionId,
-      blueprintId,
+      // Throws if there's no mod component or starter brick in the context
+      modComponentRef: mapMessageContextToModComponentRef(context),
     };
 
     const getPayload = async () => {

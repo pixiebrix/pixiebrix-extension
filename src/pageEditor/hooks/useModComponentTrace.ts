@@ -21,9 +21,9 @@ import {
 } from "@/telemetry/trace";
 import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
-import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
-import { selectActiveModComponentId } from "@/pageEditor/slices/editorSelectors";
-import { selectActiveModComponentTraces } from "@/pageEditor/slices/runtimeSelectors";
+import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
+import { selectActiveModComponentId } from "@/pageEditor/store/editor/editorSelectors";
+import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { isEqual } from "lodash";
 import { useRef } from "react";
 import reportError from "@/telemetry/reportError";

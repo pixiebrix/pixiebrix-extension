@@ -28,7 +28,6 @@ import {
   acquireElement,
   awaitElementOnce,
   onNodeRemoved,
-  selectModComponentContext,
 } from "@/starterBricks/helpers";
 import {
   StarterBrickABC,
@@ -93,6 +92,7 @@ import {
   type ButtonTargetMode,
 } from "@/starterBricks/button/buttonStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { mapModComponentToMessageContext } from "@/utils/modUtils";
 
 const DATA_ATTR = "data-pb-uuid";
 
@@ -474,7 +474,7 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
     }
 
     const modComponentLogger = this.logger.childLogger(
-      selectModComponentContext(modComponent),
+      mapModComponentToMessageContext(modComponent),
     );
 
     console.debug(

@@ -18,7 +18,7 @@
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useReinstall from "./useReinstall";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { uninstallMod } from "@/store/uninstallUtils";
+import { deactivateMod } from "@/store/deactivateUtils";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
@@ -62,7 +62,7 @@ test("uninstalls mod components", async () => {
 
   await act(async () => reinstall(modDefinition));
 
-  expect(uninstallMod).toHaveBeenCalledWith(
+  expect(deactivateMod).toHaveBeenCalledWith(
     modDefinition.metadata.id,
     [expectedExtension],
     expect.any(Function),

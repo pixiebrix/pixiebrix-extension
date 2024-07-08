@@ -26,7 +26,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { useDispatch } from "react-redux";
 import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { type JsonObject } from "type-fest";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";

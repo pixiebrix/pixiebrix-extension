@@ -22,7 +22,10 @@ import {
 import { uuidv4, normalizeSemVerString } from "@/types/helpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { omit } from "lodash";
-import { syncDeployments } from "@/background/deploymentUpdater";
+import {
+  startupDeploymentUpdateLoaded,
+  syncDeployments,
+} from "@/background/deploymentUpdater";
 import reportEvent from "@/telemetry/reportEvent";
 import { isLinked, readAuthData } from "@/auth/authStorage";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
@@ -35,7 +38,7 @@ import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import {
   editorSlice,
   initialState as initialEditorState,
-} from "@/pageEditor/slices/editorSlice";
+} from "@/pageEditor/store/editor/editorSlice";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ButtonFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { parsePackage } from "@/registry/packageRegistry";
@@ -61,6 +64,10 @@ import { type RegistryPackage } from "@/types/contract";
 import { resetMeApiMocks } from "@/testUtils/userMock";
 import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import {
+  queueReloadModEveryTab,
+  reloadModsEveryTab,
+} from "@/contentScript/messenger/api";
 
 TEST_setContext("background");
 
@@ -105,6 +112,8 @@ const refreshRegistriesMock = jest.mocked(refreshRegistries);
 const isUpdateAvailableMock = jest.mocked(isUpdateAvailable);
 const getSettingsStateMock = jest.mocked(getSettingsState);
 const saveSettingsStateMock = jest.mocked(saveSettingsState);
+const reloadModsEveryTabMock = jest.mocked(reloadModsEveryTab);
+const queueReloadModEveryTabMock = jest.mocked(queueReloadModEveryTab);
 
 async function clearEditorReduxState() {
   await browser.storage.local.remove("persist:editor");
@@ -136,6 +145,7 @@ beforeEach(async () => {
   } as any);
 
   await resetManagedStorage();
+  await startupDeploymentUpdateLoaded.unset();
   refreshRegistriesMock.mockReset();
 });
 
@@ -250,6 +260,59 @@ describe("syncDeployments", () => {
 
     expect(activatedModComponents).toHaveLength(1);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(1);
+  });
+
+  test("reload mods on existing tabs immediately on startup", async () => {
+    await startupDeploymentUpdateLoaded.set(false);
+    isLinkedMock.mockResolvedValue(true);
+
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
+
+    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+
+    appApiMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
+
+    await syncDeployments();
+
+    await expect(startupDeploymentUpdateLoaded.get()).resolves.toBe(true);
+    expect(reloadModsEveryTabMock).toHaveBeenCalledOnce();
+    expect(queueReloadModEveryTabMock).not.toHaveBeenCalled();
+  });
+
+  test("queue mods on existing tabs after first update after startup", async () => {
+    await startupDeploymentUpdateLoaded.set(true);
+    isLinkedMock.mockResolvedValue(true);
+
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
+
+    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+
+    appApiMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
+
+    await syncDeployments();
+
+    // Session value remains set to true
+    await expect(startupDeploymentUpdateLoaded.get()).resolves.toBe(true);
+    expect(reloadModsEveryTabMock).not.toHaveBeenCalled();
+    expect(queueReloadModEveryTabMock).toHaveBeenCalledOnce();
   });
 
   test("can activate clipboardWrite automatically by default", async () => {

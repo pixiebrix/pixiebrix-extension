@@ -30,7 +30,7 @@ import { defaultBrickConfig } from "@/bricks/util";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import { render } from "@/pageEditor/testHelpers";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import userEvent from "@testing-library/user-event";
 import {
   baseModComponentStateFactory,

@@ -50,8 +50,8 @@ import useAllBricks from "@/bricks/hooks/useAllBricks";
 import useBrickSearch from "@/pageEditor/modals/addBrickModal/useBrickSearch";
 import BrickGridItemRenderer from "@/pageEditor/modals/addBrickModal/BrickGridItemRenderer";
 import groupListingsByTag from "@/pageEditor/modals/addBrickModal/groupListingsByTag";
-import { actions } from "@/pageEditor/slices/editorSlice";
-import { selectEditorModalVisibilities } from "@/pageEditor/slices/editorSelectors";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { selectEditorModalVisibilities } from "@/pageEditor/store/editor/editorSelectors";
 import {
   BRICK_RESULT_COLUMN_COUNT,
   TAG_ALL,

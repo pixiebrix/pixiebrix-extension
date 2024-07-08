@@ -27,8 +27,11 @@ import {
   selectModComponentsForMod,
 } from "@/store/extensionsSelectors";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
-import { queueReloadFrameMods } from "@/contentScript/messenger/api";
-import { forEachTab, getExtensionVersion } from "@/utils/extensionUtils";
+import {
+  queueReloadModEveryTab,
+  reloadModsEveryTab,
+} from "@/contentScript/messenger/api";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -53,8 +56,8 @@ import { selectUpdatePromptState } from "@/store/settings/settingsSelectors";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { locator } from "@/background/locator";
 import { getEditorState, saveEditorState } from "@/store/editorStorage";
-import { type EditorState } from "@/pageEditor/pageEditorTypes";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import { removeModComponentForEveryTab } from "@/background/removeModComponentForEveryTab";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBricks from "@/contrib/registerContribBricks";
@@ -77,6 +80,7 @@ import type { components } from "@/types/swagger";
 import { transformMeResponse } from "@/data/model/Me";
 import { getMe } from "@/data/service/backgroundApi";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { SessionValue } from "@/mv3/SessionStorage";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
@@ -87,13 +91,43 @@ const { reducer: editorReducer, actions: editorActions } = editorSlice;
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const locateAllForService = locator.locateAllForService.bind(locator);
 
+/**
+ * Heartbeat frequency for reporting/checking deployments from the server.
+ */
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
-async function saveModComponentStateAndReactivateTabs(
+/**
+ * Session variable indicating whether the deployments have been fetched from the server yet on extension startup.
+ *
+ * See https://github.com/pixiebrix/pixiebrix-extension/issues/8753 for customer context
+ *
+ * @since 2.0.5
+ */
+// Exported for testing
+export const startupDeploymentUpdateLoaded = new SessionValue<boolean | null>(
+  "startupDeploymentUpdateLoaded",
+  import.meta.url,
+);
+
+type ReloadOptions = {
+  /**
+   * When to reload mods on existing tabs/frames
+   * @since 2.0.5
+   */
+  reloadMode: "queue" | "immediate";
+};
+
+async function saveModComponentStateAndReloadTabs(
   state: ModComponentState,
+  { reloadMode }: ReloadOptions,
 ): Promise<void> {
   await saveModComponentState(state);
-  await forEachTab(queueReloadFrameMods);
+
+  if (reloadMode === "immediate") {
+    reloadModsEveryTab();
+  } else {
+    queueReloadModEveryTab();
+  }
 }
 
 function deactivateModComponentFromStates(
@@ -139,7 +173,10 @@ async function deactivateModComponentsAndSaveState(
     { catch: "ignore" },
   );
 
-  await saveModComponentStateAndReactivateTabs(optionsState);
+  await saveModComponentStateAndReloadTabs(optionsState, {
+    // Always queue deactivation to not interfere with running mods
+    reloadMode: "queue",
+  });
   await saveEditorState(editorState);
 }
 
@@ -302,9 +339,11 @@ async function activateDeployment({
 /**
  * Activate a list of deployments
  * @param activatableDeployments deployments that PixieBrix already has permission to run
+ * @param options options for reloading mods on existing tabs
  */
 async function activateDeployments(
   activatableDeployments: ActivatableDeployment[],
+  options: ReloadOptions,
 ): Promise<void> {
   let [optionsState, editorState] = await Promise.all([
     getModComponentState(),
@@ -322,7 +361,7 @@ async function activateDeployments(
     editorState = result.editor;
   }
 
-  await saveModComponentStateAndReactivateTabs(optionsState);
+  await saveModComponentStateAndReloadTabs(optionsState, options);
   await saveEditorState(editorState);
 }
 
@@ -524,6 +563,11 @@ export async function syncDeployments(): Promise<void> {
     },
   );
 
+  const isInitialDeploymentUpdate =
+    !(await startupDeploymentUpdateLoaded.get());
+  // Only set if POST /api/deployments/ is successful
+  await startupDeploymentUpdateLoaded.set(true);
+
   if (shouldReportDeployments) {
     reportEvent(Events.DEPLOYMENT_LIST, {
       deployments: deployments.map((deployment) => deployment.id),
@@ -605,6 +649,7 @@ export async function syncDeployments(): Promise<void> {
     activatableDeployments:
       await fetchDeploymentModDefinitions(updatedDeployments),
     meApiResponse,
+    options: { reloadMode: isInitialDeploymentUpdate ? "immediate" : "queue" },
   });
 }
 
@@ -617,9 +662,11 @@ export async function syncDeployments(): Promise<void> {
 async function activateDeploymentsInBackground({
   activatableDeployments,
   meApiResponse,
+  options,
 }: {
   activatableDeployments: ActivatableDeployment[];
   meApiResponse: components["schemas"]["Me"];
+  options: ReloadOptions;
 }): Promise<void> {
   // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-activate.
   // Behind a feature flag in case it causes problems for enterprise customers.
@@ -670,7 +717,7 @@ async function activateDeploymentsInBackground({
 
   if (deploymentsToAutoActivate.length > 0) {
     try {
-      await activateDeployments(deploymentsToAutoActivate);
+      await activateDeployments(deploymentsToAutoActivate, options);
     } catch (error) {
       reportError(error);
       autoActivationError = true;

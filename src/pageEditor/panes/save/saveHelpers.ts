@@ -47,7 +47,7 @@ import {
   type SerializedModComponent,
 } from "@/types/modComponentTypes";
 import { type SafeString } from "@/types/stringTypes";
-import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { freshIdentifier } from "@/utils/variableUtils";
 import {
   type IntegrationDependency,
@@ -98,7 +98,7 @@ function findModComponentIndex(
 ): number {
   if (modDefinition.metadata.version !== modComponent._recipe?.version) {
     console.warn(
-      "Mod component was installed using a different version of the mod",
+      "Mod component was activated using a different version of the mod",
       {
         modDefinitionVersion: modDefinition.metadata.version,
         modComponentModVersion: modComponent._recipe?.version,

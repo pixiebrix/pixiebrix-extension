@@ -21,7 +21,7 @@ import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { collectModOptions } from "@/store/extensionsUtils";
-import { uninstallMod } from "@/store/uninstallUtils";
+import { deactivateMod } from "@/store/deactivateUtils";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 
 type Reinstall = (modDefinition: ModDefinition) => Promise<void>;
@@ -49,7 +49,7 @@ function useReinstall(): Reinstall {
           activatedModComponents,
         );
 
-      await uninstallMod(modId, activatedModComponents, dispatch);
+      await deactivateMod(modId, activatedModComponents, dispatch);
 
       dispatch(
         extensionActions.activateMod({

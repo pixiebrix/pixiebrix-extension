@@ -25,7 +25,10 @@ import {
 } from "@/utils/modUtils";
 import { useCallback } from "react";
 import useUserAction from "@/hooks/useUserAction";
-import { uninstallModComponents, uninstallMod } from "@/store/uninstallUtils";
+import {
+  deactivateModComponents,
+  deactivateMod,
+} from "@/store/deactivateUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type ModComponentState } from "@/store/extensionsTypes";
@@ -44,32 +47,32 @@ function useDeactivateAction(modViewItem: ModViewItem): (() => void) | null {
 
   // Without memoization, the selector reference changes on every render, which causes useModPermissions
   // to recompute, spamming the background worker with service locator requests
-  const memoizedExtensionsSelector = useCallback(
+  const memoizedModComponentsSelector = useCallback(
     (state: { options: ModComponentState }) =>
       selectComponentsFromMod(state, mod),
     [mod],
   );
 
-  const modComponentsFromMod = useSelector(memoizedExtensionsSelector);
+  const modComponentsFromMod = useSelector(memoizedModComponentsSelector);
 
   const deactivate = useUserAction(
     async () => {
       if (isModDefinition(mod)) {
         const modId = mod.metadata.id;
-        await uninstallMod(modId, modComponentsFromMod, dispatch);
+        await deactivateMod(modId, modComponentsFromMod, dispatch);
 
         reportEvent(Events.MOD_REMOVE, {
-          modId,
+          blueprintId: modId,
         });
       } else {
-        await uninstallModComponents(
+        await deactivateModComponents(
           modComponentsFromMod.map(({ id }) => id),
           dispatch,
         );
 
         for (const modComponent of modComponentsFromMod) {
           reportEvent(Events.MOD_COMPONENT_REMOVE, {
-            modComponentId: modComponent.id,
+            extensionId: modComponent.id,
           });
         }
       }

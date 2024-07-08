@@ -32,6 +32,8 @@ import { type AsyncDispatch } from "@/sidebar/store";
 import UnavailableOverlay from "@/sidebar/UnavailableOverlay";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+
 // Need to memoize this to make sure it doesn't rerender unless its entry actually changes
 // This was part of the fix for issue: https://github.com/pixiebrix/pixiebrix-extension/issues/5646
 export const TemporaryPanelTabPane: React.FC<{
@@ -50,12 +52,7 @@ export const TemporaryPanelTabPane: React.FC<{
     },
     [dispatch, panel.nonce],
   );
-  const {
-    type,
-    extensionId: modComponentId,
-    blueprintId: modId,
-    payload,
-  } = panel;
+  const { type, modComponentRef, payload } = panel;
 
   return (
     <Tab.Pane
@@ -65,9 +62,8 @@ export const TemporaryPanelTabPane: React.FC<{
       <ErrorBoundary
         onError={() => {
           reportEvent(Events.VIEW_ERROR, {
+            ...mapModComponentRefToMessageContext(modComponentRef),
             panelType: type,
-            modComponentId,
-            modId,
           });
         }}
       >
@@ -79,10 +75,7 @@ export const TemporaryPanelTabPane: React.FC<{
         <PanelBody
           isRootPanel={false}
           payload={payload}
-          context={{
-            modComponentId,
-            modId,
-          }}
+          context={modComponentRef}
           onAction={onAction}
         />
       </ErrorBoundary>

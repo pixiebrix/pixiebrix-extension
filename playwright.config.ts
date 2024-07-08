@@ -7,7 +7,8 @@ import { CI } from "./end-to-end-tests/env";
 export default defineConfig<{ chromiumChannel: string }>({
   testDir: "./end-to-end-tests",
   outputDir: "./end-to-end-tests/.output",
-  /* Run tests in files in parallel */
+  snapshotPathTemplate:
+    "{testDir}/{testFilePath}-snapshots/{testName}/{arg}{ext}",
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: Boolean(CI),
@@ -37,6 +38,12 @@ export default defineConfig<{ chromiumChannel: string }>({
 
     /* Collect trace when retrying the failed test in CI, and always on failure when running locally. See https://playwright.dev/docs/trace-viewer */
     trace: CI ? "on-first-retry" : "retain-on-failure",
+
+    /* Set the default timeout for actions such as `click` */
+    actionTimeout: 5000,
+
+    /* Set the default timeout for page navigations */
+    navigationTimeout: 10_000,
   },
   /* Configure projects for major browsers */
   projects: [

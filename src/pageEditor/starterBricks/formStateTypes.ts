@@ -59,7 +59,7 @@ import {
   type BaseModComponentState,
   type BaseFormState,
   type SingleLayerReaderConfig,
-} from "@/pageEditor/baseFormStateTypes";
+} from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type NormalizedAvailability } from "@/types/availabilityTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 

@@ -22,7 +22,7 @@ import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
 import { useSelector } from "react-redux";
-import { selectActiveBuilderPreviewElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 import ElementEditor from "@/pageEditor/documentBuilder/edit/ElementEditor";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";

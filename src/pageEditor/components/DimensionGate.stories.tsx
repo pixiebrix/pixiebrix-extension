@@ -18,7 +18,7 @@
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import { GatePanel } from "@/pageEditor/components/DimensionGate";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 

@@ -30,15 +30,15 @@ import useDocumentPreviewRunBlock from "@/pageEditor/tabs/effect/useDocumentPrev
 import { useSelector } from "react-redux";
 import {
   selectActiveNodeId,
-  selectParentBlockInfo,
-} from "@/pageEditor/slices/editorSelectors";
+  selectParentNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { selectActiveModComponentTraceForBrick } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraceForBrick } from "@/pageEditor/store/runtime/runtimeSelectors";
 import ClickableElement from "@/components/ClickableElement";
 
 type DocumentPreviewProps = {
@@ -78,9 +78,9 @@ const DocumentPreview = ({
   };
 
   const activeNodeId = useSelector(selectActiveNodeId);
-  const parentBlockInfo = useSelector(selectParentBlockInfo(activeNodeId));
+  const parentNodeInfo = useSelector(selectParentNodeInfo(activeNodeId));
   const showPreviewButton =
-    parentBlockInfo?.blockId === DisplayTemporaryInfo.BRICK_ID;
+    parentNodeInfo?.blockId === DisplayTemporaryInfo.BRICK_ID;
 
   const {
     error: previewError,

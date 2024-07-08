@@ -29,11 +29,11 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
           <a
             aria-selected="false"
             class="nav-link"
-            data-rb-event-key="pageState"
+            data-rb-event-key="modVariables"
             href="#"
             role="tab"
           >
-            Page State
+            Mod Variables
           </a>
         </div>
         <div

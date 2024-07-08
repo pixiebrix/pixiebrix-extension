@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison -- It seems to be the correct option for now */
 import React from "react";
-import { type BlockInfo } from "@/pageEditor/uiState/uiStateTypes";
+import { type NodeInfo } from "@/pageEditor/store/editor/uiStateTypes";
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import styles from "./SourceLabel.module.scss";
 import { type TypedBrickMap } from "@/bricks/registry";
@@ -8,15 +8,15 @@ import { type TypedBrickMap } from "@/bricks/registry";
 type SourceLabelProps = {
   source: string;
   extensionPointLabel: string;
-  blocksInfo: BlockInfo[];
-  allBlocks: TypedBrickMap;
+  nodes: NodeInfo[];
+  allBricks: TypedBrickMap;
 };
 
 const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
   source,
   extensionPointLabel,
-  blocksInfo,
-  allBlocks,
+  nodes,
+  allBricks,
 }) => {
   const [kind] = source.split(":");
   let label: string;
@@ -42,14 +42,14 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
     }
 
     default: {
-      const blockConfig = blocksInfo.find((block) => block.path === source)
+      const brickConfig = nodes.find((node) => node.path === source)
         ?.blockConfig;
-      if (blockConfig == null) {
+      if (brickConfig == null) {
         label = source;
       } else {
         label =
-          blockConfig.label ??
-          allBlocks.get(blockConfig.id)?.block?.name ??
+          brickConfig.label ??
+          allBricks.get(brickConfig.id)?.block?.name ??
           source;
       }
     }

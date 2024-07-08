@@ -24,8 +24,8 @@ import { BasePageObject } from "../../basePageObject";
 export class WorkshopPage extends BasePageObject {
   private readonly extensionConsoleUrl: string;
 
-  createNewBrickButton = this.getByRole("button", {
-    name: "Create New Brick",
+  createNewPackageButton = this.getByRole("button", {
+    name: "Create New Package",
   });
 
   constructor(page: Page, extensionId: string) {
@@ -50,16 +50,16 @@ export class WorkshopPage extends BasePageObject {
   }
 
   async createNewModFromDefinition(modDefinitionName: string) {
-    await this.createNewBrickButton.click();
+    await this.createNewPackageButton.click();
     const createPage = new CreateWorkshopModPage(this.page);
     await createPage.editor.waitForLoad();
-    const modId =
+    const modMedata =
       await createPage.editor.replaceWithModDefinition(modDefinitionName);
     await createPage.createBrickButton.click();
     await expect(this.getByRole("status").getByText("Created ")).toBeVisible({
       timeout: 8000,
     });
-    return modId;
+    return modMedata;
   }
 
   async deletePackagedModByModId(modId: string) {

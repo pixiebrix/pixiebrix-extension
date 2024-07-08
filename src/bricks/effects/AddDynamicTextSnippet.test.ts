@@ -27,7 +27,7 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
-import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
+import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 

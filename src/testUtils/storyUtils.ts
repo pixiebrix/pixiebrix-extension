@@ -18,8 +18,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/data/service/api";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
-import sessionSlice from "@/pageEditor/slices/sessionSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 
 export function settingsStore() {
   return configureStore({

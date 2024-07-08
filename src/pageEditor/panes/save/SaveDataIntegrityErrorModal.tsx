@@ -18,12 +18,12 @@
 import React, { useCallback } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectEditorModalVisibilities } from "@/pageEditor/slices/editorSelectors";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { selectEditorModalVisibilities } from "@/pageEditor/store/editor/editorSelectors";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
-import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import JSZip from "jszip";
 import download from "downloadjs";
 

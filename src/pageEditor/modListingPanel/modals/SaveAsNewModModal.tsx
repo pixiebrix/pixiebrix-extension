@@ -17,12 +17,12 @@
 
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { Button, Modal } from "react-bootstrap";
 import {
   selectActiveModId,
   selectEditorModalVisibilities,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 
 const SaveAsNewModModal: React.FC = () => {

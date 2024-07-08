@@ -17,7 +17,7 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import {
   type ConfirmationModalProps,
   useModals,
@@ -26,10 +26,10 @@ import React, { useCallback } from "react";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { actions as modComponentsActions } from "@/store/extensionsSlice";
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
-import { removeModComponentsFromAllTabs } from "@/store/uninstallUtils";
+import { removeModComponentsFromAllTabs } from "@/store/deactivateUtils";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 
 type Config = {

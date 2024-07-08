@@ -16,9 +16,9 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
+import { actions, editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import modComponentsSlice from "@/store/extensionsSlice";
 import { validateRegistryId } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
@@ -29,7 +29,7 @@ import {
   checkAvailable as backgroundCheckAvailable,
   normalizeAvailability,
 } from "@/bricks/available";
-import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 import { produce } from "immer";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
@@ -92,7 +92,9 @@ describe("checkActiveModComponentAvailability", () => {
     store.dispatch(
       actions.addModComponentFormState(unavailableDraftModComponent),
     );
-    store.dispatch(actions.selectInstalled(availableDraftModComponent));
+    store.dispatch(
+      actions.selectActivatedModComponentFormState(availableDraftModComponent),
+    );
 
     jest
       .mocked(checkAvailable)

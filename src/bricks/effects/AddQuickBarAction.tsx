@@ -31,6 +31,7 @@ import type { PlatformCapability } from "@/platform/capabilities";
 import { uniq } from "lodash";
 import type { CustomAction } from "@/platform/platformTypes/quickBarProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 type ActionConfig = {
   /**
@@ -116,7 +117,7 @@ class AddQuickBarAction extends EffectABC {
         description: "The action to perform when the Quick Bar Action is run",
       },
       priority: {
-        // By default in KBar, each action has a base priority value of 1. So we're just keeping the default
+        // By default, in KBar, each action has a base priority value of 1. So we're just keeping the default
         // https://kbar.vercel.app/docs/concepts/priority
         description:
           "The priority of the action. Higher priority actions appear first. (HIGH = 1, MEDIUM = 0, LOW = -1)",
@@ -156,8 +157,7 @@ class AddQuickBarAction extends EffectABC {
       // XXX: old actions will still appear in the quick bar unless the extension point clears out the old actions
       id: `${logger.context.modComponentId}-${title}`,
       // Additional metadata, for enabling clearing out old actions
-      extensionPointId: logger.context.starterBrickId,
-      extensionId: logger.context.modComponentId,
+      modComponentRef: mapMessageContextToModComponentRef(logger.context),
       // Can only provide a parent if the parent exists
       parent: quickBar.knownGeneratorRootIds.has(parentId)
         ? parentId

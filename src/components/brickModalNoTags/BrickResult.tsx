@@ -19,13 +19,13 @@ import React from "react";
 import { Button, ListGroup } from "react-bootstrap";
 import cx from "classnames";
 // TODO: Refactor to properly share styles across components (e.g. full component inheritance);
-//   the "brickEditor/referenceTab/BlockResult" component probably doesn't expect to also affect a global component
-import styles from "@/extensionConsole/pages/brickEditor/referenceTab/BrickResult.module.scss";
+//   the "packageEditor/referenceTab/PackageResult" component probably doesn't expect to also affect a global component
+import styles from "@/extensionConsole/pages/packageEditor/referenceTab/PackageResult.module.scss";
 import BrickIcon from "@/components/BrickIcon";
 import { OfficialBadge } from "@/components/OfficialBadge";
-import { type Metadata } from "@/types/registryTypes";
+import { type PackageInstance } from "@/types/registryTypes";
 
-type BrickResultProps<T extends Metadata> = {
+type BrickResultProps<T extends PackageInstance> = {
   brick: T;
   onSelect: () => void;
   onShowDetail: () => void;
@@ -33,7 +33,7 @@ type BrickResultProps<T extends Metadata> = {
   selectCaption: React.ReactNode;
 };
 
-const BrickResult = <T extends Metadata>({
+const BrickResult = <T extends PackageInstance>({
   brick,
   onSelect,
   onShowDetail,

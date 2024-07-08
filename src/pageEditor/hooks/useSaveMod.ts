@@ -21,13 +21,13 @@ import {
   selectDirtyModMetadata,
   selectDirtyModOptionsDefinitions,
   selectGetDeletedComponentIdsForMod,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import {
   useGetEditablePackagesQuery,
   useUpdateModDefinitionMutation,
 } from "@/data/service/api";
 import notify from "@/utils/notify";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import modComponentsSlice from "@/store/extensionsSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
@@ -44,7 +44,7 @@ import type {
   ModDefinition,
   UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import type { ModComponentBase } from "@/types/modComponentTypes";

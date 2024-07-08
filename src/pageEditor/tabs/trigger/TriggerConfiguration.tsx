@@ -31,7 +31,7 @@ import { type DebounceOptions } from "@/starterBricks/types";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { type Trigger } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { useSelector } from "react-redux";
-import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/slices/editorSelectors";
+import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/store/editor/editorSelectors";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { joinName } from "@/utils/formUtils";
 

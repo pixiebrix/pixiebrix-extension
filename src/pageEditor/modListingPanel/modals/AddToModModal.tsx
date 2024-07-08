@@ -19,12 +19,12 @@ import React, { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { useDispatch, useSelector } from "react-redux";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   selectActiveModComponentFormState,
   selectEditorModalVisibilities,
-  selectInstalledModMetadatas,
-} from "@/pageEditor/slices/editorSelectors";
+  selectActivatedModMetadatas,
+} from "@/pageEditor/store/editor/editorSelectors";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import notify from "@/utils/notify";
 import Form, {
@@ -62,7 +62,7 @@ const AddToModModal: React.FC = () => {
   const { isAddToModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
-  const activatedModMetadatas = useSelector(selectInstalledModMetadatas);
+  const activatedModMetadatas = useSelector(selectActivatedModMetadatas);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );

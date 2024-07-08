@@ -26,7 +26,7 @@ import { useSelector } from "react-redux";
 import {
   selectActiveModComponentAnalysisAnnotationsForPath,
   selectActiveModComponentFormState,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
