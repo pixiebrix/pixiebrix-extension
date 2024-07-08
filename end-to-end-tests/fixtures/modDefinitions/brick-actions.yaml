@@ -1,0 +1,81 @@
+kind: recipe
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - "*"
+metadata:
+  id: "{{ modId }}"
+  name: Mod Actions Test
+  version: 1.0.0
+  description: Created with the PixieBrix Page Editor
+apiVersion: v3
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: menuItem
+      reader:
+        - "@pixiebrix/document-metadata"
+        - "@pixiebrix/document-context"
+        - element: "@pixiebrix/html/element"
+      isAvailable:
+        matchPatterns:
+          - https://github.com/*
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      containerSelector: span:has(> span:contains('Review in codespace'))
+      targetMode: document
+      attachMode: once
+      position: append
+      template: <span class="Button-label">{{{ caption }}}</span>
+extensionPoints:
+  - label: Button
+    config:
+      caption: Action
+      action:
+        - id: "@pixiebrix/form-modal"
+          rootMode: document
+          config:
+            schema:
+              title: Example Form
+              type: object
+              properties:
+                example:
+                  title: Example Field
+                  type: string
+                  description: An example form field
+            uiSchema:
+              ui:order:
+                - "*"
+            cancelable: true
+            submitCaption: Submit
+            location: modal
+          outputKey: form
+          root: null
+          label: Custom modal 123
+        - id: "@pixiebrix/state/assign"
+          rootMode: document
+          config:
+            value: !nunjucks ""
+          root: null
+          label: Assign Mod Var Brick 123
+        - id: "@pixiebrix/browser/alert"
+          rootMode: document
+          config:
+            type: info
+            duration: 2500
+            message: !nunjucks ""
+          root: null
+          label: Alert Brick 123
+      dynamicCaption: false
+      onSuccess: true
+      synchronous: false
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint
+    services: {}

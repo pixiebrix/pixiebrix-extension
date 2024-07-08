@@ -65,6 +65,12 @@ export class WorkshopModEditor extends BasePageObject {
     );
     const uuid = uuidv4();
     const modId = `@extension-e2e-test-unaffiliated/${modDefinitionName}-${uuid}`;
+    if (!modDefinition.includes("{{ modId }}")) {
+      throw new Error(
+        `The mod definition ${modDefinitionName} does not contain the placeholder {{ modId }}`,
+      );
+    }
+
     const replacedDefinition = modDefinition.replace("{{ modId }}", modId);
 
     await this.textArea.fill(replacedDefinition);
