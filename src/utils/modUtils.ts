@@ -34,6 +34,7 @@ import {
   type ModComponentBase,
   type HydratedModComponent,
   type SerializedModComponent,
+  type ModComponentRef,
 } from "@/types/modComponentTypes";
 import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -54,6 +55,48 @@ import {
 import { produce } from "immer";
 import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
 import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBrickUtils";
+import { type MessageContext } from "@/types/loggerTypes";
+
+/**
+ * Returns the ModComponentRef for a given mod component.
+ * @see mapMessageContextToModComponentRef
+ */
+export function getModComponentRef(
+  modComponent: HydratedModComponent,
+): ModComponentRef {
+  return {
+    extensionId: modComponent.id,
+    blueprintId: modComponent._recipe?.id,
+    extensionPointId: modComponent.extensionPointId,
+  };
+}
+
+/**
+ * Returns the ModComponentRef for a given Logger MessageContext. Only call from running bricks with an associated
+ * mod component and starter brick in the context.
+ *
+ * @see getModComponentRef
+ * @see selectModComponentContext
+ * @throws TypeError if the extensionId or extensionPointId is missing
+ */
+export function mapMessageContextToModComponentRef(
+  context: MessageContext,
+): ModComponentRef {
+  assertNotNullish(
+    context.extensionId,
+    "extensionId is required for ModComponentRef",
+  );
+  assertNotNullish(
+    context.extensionPointId,
+    "extensionPointId is required for ModComponentRef",
+  );
+
+  return {
+    extensionId: context.extensionId,
+    blueprintId: context.blueprintId,
+    extensionPointId: context.extensionPointId,
+  };
+}
 
 /**
  * Returns true if the mod is an UnavailableMod, i.e., a mod the user no longer has access to.

@@ -63,6 +63,7 @@ import {
   type QuickBarProviderDefinition,
 } from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { getModComponentRef } from "@/utils/modUtils";
 
 export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<QuickBarProviderConfig> {
   static isQuickBarProviderStarterBrick(
@@ -242,7 +243,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
 
       quickBarRegistry.addAction({
         id: rootActionId,
-        extensionPointId: this.id,
+        modComponentRef: getModComponentRef(modComponent),
         name: title,
         icon,
       });
@@ -254,7 +255,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       abortSignal,
     }) => {
       // Remove the old results during re-generation because they're no longer relevant
-      quickBarRegistry.removeModComponentActions(modComponent.id);
+      quickBarRegistry.removeModComponentLeafActions(modComponent.id);
 
       if (
         rootActionId &&
