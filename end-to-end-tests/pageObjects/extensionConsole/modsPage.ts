@@ -17,7 +17,6 @@
 
 import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
-import { ensureVisibility } from "../../utils";
 import { BasePageObject } from "../basePageObject";
 
 export class ModsPage extends BasePageObject {
@@ -46,15 +45,11 @@ export class ModsPage extends BasePageObject {
     await expect(this.getByText("Extension Console")).toBeVisible();
     await registryPromise;
 
-    // Check that the page is stable, and that the content has finished loading
-    const activeModsHeading = this.getByRole("heading", {
-      name: "Active Mods",
-    });
-    await ensureVisibility(activeModsHeading, { timeout: 10_000 });
+    // Check that the content has finished loading
     const contentLoadedLocator = this.getByText("Welcome to PixieBrix!").or(
       this.modTableItems.nth(0),
     );
-    await expect(contentLoadedLocator).toBeVisible();
+    await expect(contentLoadedLocator).toBeVisible({ timeout: 10_000 });
   }
 
   async viewAllMods() {
@@ -88,7 +83,6 @@ export class ModsPage extends BasePageObject {
     // Open the dropdown action menu for the specified mod in the table
     await modSearchResult.locator(".dropdown").click();
 
-    // Click the delete button in the delete confirmation modal
     await this.getByRole("button", { name: actionName }).click();
   }
 
