@@ -5,3 +5,6 @@ coverage
 # ignore libraries
 node_modules
 public/mockServiceWorker.js
+
+# ignore snapshots
+**/*-snapshots/**

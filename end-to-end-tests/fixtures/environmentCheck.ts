@@ -28,7 +28,6 @@ export const test = base.extend<{
       assertRequiredEnvVariables();
 
       for (const key of additionalRequiredEnvVariables) {
-        // eslint-disable-next-line security/detect-object-injection -- internally controlled
         if (process.env[key] === undefined) {
           throw new Error(
             `This test requires additional environment variable ${key} to be configured. Configure it in your .env.development file and re-build the extension.`,
