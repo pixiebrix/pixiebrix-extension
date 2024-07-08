@@ -68,6 +68,6 @@ export class WorkshopModEditor extends BasePageObject {
     const replacedDefinition = modDefinition.replace("{{ modId }}", modId);
 
     await this.textArea.fill(replacedDefinition);
-    return modId;
+    return { id: modId, definition: replacedDefinition };
   }
 }

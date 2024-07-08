@@ -286,8 +286,8 @@ class ContentScriptPlatform extends PlatformBase {
   override get panels(): PlatformProtocol["panels"] {
     return {
       isContainerVisible: async () => sidebarController.isSidePanelOpen(),
-      unregisterExtensionPoint: sidebarController.removeExtensionPoint,
-      removeComponents: sidebarController.removeExtensions,
+      unregisterExtensionPoint: sidebarController.removeStarterBrick,
+      removeComponents: sidebarController.removeModComponents,
       reservePanels: sidebarController.reservePanels,
       updateHeading: sidebarController.updateHeading,
       upsertPanel: sidebarController.upsertPanel,

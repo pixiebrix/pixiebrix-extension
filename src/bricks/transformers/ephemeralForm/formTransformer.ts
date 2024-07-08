@@ -23,6 +23,7 @@ import { type BrickConfig } from "@/bricks/types";
 import { type FormDefinition } from "@/platform/forms/formTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 export const TEMPORARY_FORM_SCHEMA: Schema = {
   type: "object",
@@ -135,15 +136,13 @@ export class FormTransformer extends TransformerABC {
       controller.abort();
     });
 
-    if (logger.context.extensionId == null) {
-      throw new Error(`${this.name} must be run in a mod context`);
-    }
-
     try {
-      return await platform.form(formDefinition, controller, {
-        componentId: logger.context.extensionId,
-        modId: logger.context.blueprintId,
-      });
+      // `mapMessageContextToModComponentRef` throws if there's no mod component or starter brick in the context
+      return await platform.form(
+        formDefinition,
+        controller,
+        mapMessageContextToModComponentRef(logger.context),
+      );
     } finally {
       controller.abort();
     }

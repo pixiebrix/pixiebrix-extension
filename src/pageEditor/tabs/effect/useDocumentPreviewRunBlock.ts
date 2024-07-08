@@ -37,6 +37,9 @@ import { isExpression } from "@/utils/expressionUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { validateRegistryId } from "@/types/helpers";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type Location = "modal" | "panel";
 
@@ -103,13 +106,16 @@ export default function useDocumentPreviewRunBlock(
 ): BlockPreviewRunBlock {
   const [state, dispatch] = useReducer(previewSlice.reducer, initialState);
 
+  const formState = useSelector(selectActiveModComponentFormState);
+
   const {
+    type,
     uuid: modComponentId,
-    modMetadata: mod,
+    modMetadata,
     apiVersion,
     integrationDependencies,
     starterBrick,
-  } = useSelector(selectActiveModComponentFormState);
+  } = formState;
 
   const { blockConfig: brickConfig } = useSelector(
     selectActiveModComponentNodeInfo(brickInstanceId),
@@ -173,6 +179,12 @@ export default function useDocumentPreviewRunBlock(
 
       dispatch(previewSlice.actions.startPreview());
 
+      const adapter = ADAPTERS.get(type);
+      const starterBrickId = validateRegistryId(
+        adapter.selectModComponent(formState).extensionPointId,
+      );
+      assertNotNullish(starterBrickId, "Expected starter brick id");
+
       // If the block is configured to inherit the root element, and the
       // starter brick is a trigger, try to get the root element from the
       // starter brick.
@@ -191,10 +203,13 @@ export default function useDocumentPreviewRunBlock(
 
       try {
         await runRendererBrick(inspectedTab, {
-          modComponentId,
-          modId: mod?.id,
           runId: traceRecord.runId,
           title,
+          modComponentRef: {
+            extensionId: modComponentId,
+            blueprintId: modMetadata?.id,
+            extensionPointId: starterBrickId,
+          },
           args: {
             apiVersion,
             blockConfig: {
