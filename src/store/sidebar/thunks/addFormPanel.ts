@@ -41,13 +41,14 @@ const addFormPanel = createAsyncThunk<
     return;
   }
 
-  const [thisExtensionForms, otherForms] = partition(
+  const [thisModComponentForms, otherForms] = partition(
     forms,
-    ({ extensionId }) => extensionId === form.extensionId,
+    ({ modComponentRef }) =>
+      modComponentRef.extensionId === form.modComponentRef.extensionId,
   );
 
   // The UUID must be fetched synchronously to ensure the `form` Proxy element doesn't expire
-  await cancelPreexistingForms(thisExtensionForms.map((form) => form.nonce));
+  await cancelPreexistingForms(thisModComponentForms.map((form) => form.nonce));
 
   return {
     forms: [

@@ -36,7 +36,6 @@ import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { selectModComponentContext } from "@/starterBricks/helpers";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
@@ -64,7 +63,10 @@ import {
   type QuickBarTargetMode,
 } from "@/starterBricks/quickBar/quickBarTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { getModComponentRef } from "@/utils/modUtils";
+import {
+  getModComponentRef,
+  mapModComponentToMessageContext,
+} from "@/utils/modUtils";
 
 export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarConfig> {
   static isQuickBarStarterBrick(
@@ -208,7 +210,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     ); // Defaults to a box
 
     const modComponentLogger = this.logger.childLogger(
-      selectModComponentContext(modComponent),
+      mapModComponentToMessageContext(modComponent),
     );
 
     quickBarRegistry.addAction({

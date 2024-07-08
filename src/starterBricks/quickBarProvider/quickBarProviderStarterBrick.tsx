@@ -24,7 +24,6 @@ import {
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
-import { selectModComponentContext } from "@/starterBricks/helpers";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -63,7 +62,10 @@ import {
   type QuickBarProviderDefinition,
 } from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { getModComponentRef } from "@/utils/modUtils";
+import {
+  getModComponentRef,
+  mapModComponentToMessageContext,
+} from "@/utils/modUtils";
 
 export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<QuickBarProviderConfig> {
   static isQuickBarProviderStarterBrick(
@@ -226,7 +228,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     const { generator, rootAction } = modComponent.config;
 
     const modComponentLogger = this.logger.childLogger(
-      selectModComponentContext(modComponent),
+      mapModComponentToMessageContext(modComponent),
     );
 
     let rootActionId: string | null = null;

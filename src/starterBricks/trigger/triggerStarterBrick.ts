@@ -32,10 +32,7 @@ import { castArray, cloneDeep, compact, debounce, noop } from "lodash";
 import { checkAvailable } from "@/bricks/available";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import {
-  awaitElementOnce,
-  selectModComponentContext,
-} from "@/starterBricks/helpers";
+import { awaitElementOnce } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
@@ -86,6 +83,7 @@ import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
+import { mapModComponentToMessageContext } from "@/utils/modUtils";
 
 type TriggerTarget = Document | HTMLElement;
 
@@ -398,7 +396,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     root: SelectorRoot,
   ) {
     const componentLogger = this.logger.childLogger(
-      selectModComponentContext(modComponent),
+      mapModComponentToMessageContext(modComponent),
     );
 
     const { action: actionConfig } = modComponent.config;
@@ -517,7 +515,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     await Promise.all(
       modComponentsToRun.map(async (modComponent) => {
         const componentLogger = this.logger.childLogger(
-          selectModComponentContext(modComponent),
+          mapModComponentToMessageContext(modComponent),
         );
         try {
           this.markRun(modComponent.id, root);
