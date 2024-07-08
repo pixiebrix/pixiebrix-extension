@@ -45,6 +45,16 @@ test("#8104: Do not automatically close the sidebar when saving in the Page Edit
     "Tab Title",
     updatedTabTitle,
   );
+
+  // Formik syncs form state with redux every 100ms. The "Render Panel" button
+  // sends the form state to the sidebar, but the save functionality uses the
+  // redux state for the mod component. This 100ms delay is fine in practice
+  // for real users, but playwright is able to click render and then click save
+  // within this 100ms timeout, which causes a race condition and makes this
+  // test flaky. So, we need a delay here to wait for the sync.
+  // eslint-disable-next-line playwright/no-wait-for-timeout -- see above
+  await page.waitForTimeout(200);
+
   await pageEditorPage.getRenderPanelButton().click();
   await expect(
     sidebar.getByRole("tab", { name: updatedTabTitle }),
