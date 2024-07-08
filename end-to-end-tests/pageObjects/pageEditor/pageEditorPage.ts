@@ -153,7 +153,10 @@ export class PageEditorPage extends BasePageObject {
     const modId = `${modName.split(" ").join("-").toLowerCase()}-${modUuid}`;
     await this.getByTestId("registryId-id-id").fill(modId);
 
-    await this.getByLabel("Name", { exact: true }).fill(modName);
+    await this.getByRole("dialog")
+      .getByLabel("Name", { exact: true })
+      .fill(modName);
+
     await this.getByRole("button", { name: "Create" }).click();
 
     this.savedPackageModIds.push(modId);

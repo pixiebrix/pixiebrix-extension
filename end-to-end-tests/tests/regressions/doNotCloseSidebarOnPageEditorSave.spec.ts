@@ -20,7 +20,7 @@ import { test, expect } from "../../fixtures/testBase";
 import { type Page, test as base } from "@playwright/test";
 import { getSidebarPage } from "../../utils";
 
-test("#8104: Do not automatically close the sidebar when saving in the Page Editor", async ({
+test("#8104: Do not automatically close the sidebar when saving in the Page Editor or adding to a mod", async ({
   page,
   newPageEditorPage,
   extensionId,
@@ -28,7 +28,7 @@ test("#8104: Do not automatically close the sidebar when saving in the Page Edit
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  const { modComponentName } =
+  const { modComponentName, modUuid } =
     await pageEditorPage.modListingPanel.addStarterBrick("Sidebar Panel");
   await pageEditorPage.brickConfigurationPanel.fillField(
     "name",
@@ -46,14 +46,24 @@ test("#8104: Do not automatically close the sidebar when saving in the Page Edit
     updatedTabTitle,
   );
 
+  async function expectToSeeUpdatedTabTitle() {
+    await expect(
+      sidebar.getByRole("tab", { name: updatedTabTitle }),
+    ).toBeVisible();
+  }
+
   await pageEditorPage.getRenderPanelButton().click();
-  await expect(
-    sidebar.getByRole("tab", { name: updatedTabTitle }),
-  ).toBeVisible();
+  await expectToSeeUpdatedTabTitle();
 
   await pageEditorPage.saveStandaloneMod(modComponentName);
 
-  await expect(
-    sidebar.getByRole("tab", { name: updatedTabTitle }),
-  ).toBeVisible();
+  await expectToSeeUpdatedTabTitle();
+
+  await pageEditorPage.createModFromModComponent({
+    modNameRoot: "8104 Test",
+    modComponentName,
+    modUuid,
+  });
+
+  await expectToSeeUpdatedTabTitle();
 });
