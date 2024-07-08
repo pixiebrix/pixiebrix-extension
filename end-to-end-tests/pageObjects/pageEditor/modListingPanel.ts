@@ -47,6 +47,7 @@ export class ModListItem extends BasePageObject {
 
 export class ModListingPanel extends BasePageObject {
   addButton = this.getByRole("button", { name: "Add", exact: true });
+  quickFilterInput = this.getByPlaceholder("Quick filter");
 
   /**
    * Adds a starter brick in the Page Editor. Generates a unique mod name to prevent
@@ -71,6 +72,20 @@ export class ModListingPanel extends BasePageObject {
     return new ModListItem(
       this.locator(".list-group-item", { hasText: modName }).first(),
       modName,
+    );
+  }
+
+  getModStarterBrick(modName: string, starterBrickName: string) {
+    const modStarterBricks = this.locator(
+      `.collapse:below(:text("${modName}"))`,
+    );
+    return new ModListItem(
+      modStarterBricks
+        .locator(".list-group-item", {
+          hasText: starterBrickName,
+        })
+        .first(),
+      starterBrickName,
     );
   }
 }
