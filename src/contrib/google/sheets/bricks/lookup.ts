@@ -32,7 +32,7 @@ import {
 } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup",
@@ -46,7 +46,7 @@ export const LOOKUP_SCHEMA: Schema = {
       title: "Google Account",
       oneOf: [
         {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${GOOGLE_OAUTH2_PKCE_INTEGRATION_ID}`,
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${GOOGLE_OAUTH2_PKCE_INTEGRATION_ID}`,
         },
       ],
     },

@@ -70,7 +70,7 @@ import {
   emptyModOptionsDefinitionFactory,
   normalizeModDefinition,
 } from "@/utils/modUtils";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
@@ -625,7 +625,7 @@ describe("buildNewMod", () => {
     expect(newMod.extensionPoints[0].id).toBe(modComponent.extensionPointId);
   });
 
-  test("Dirty mod component with services", async () => {
+  test("Dirty mod component with integrations", async () => {
     const integrationId = validateRegistryId("@pixiebrix/api");
     const outputKey = validateOutputKey("pixiebrix");
 
@@ -869,7 +869,7 @@ describe("buildNewMod", () => {
   );
 });
 
-describe("findMaxServicesDependencyApiVersion", () => {
+describe("findMaxIntegrationDependencyApiVersion", () => {
   it("returns v1 for v1 dependencies", () => {
     const dependencies: Array<Pick<IntegrationDependency, "apiVersion">> = [
       {
@@ -923,7 +923,7 @@ describe("findMaxServicesDependencyApiVersion", () => {
 });
 
 describe("selectModComponentIntegrations", () => {
-  it("works for v1 services", () => {
+  it("works for v1 integrations", () => {
     const modComponent: Pick<ModComponentBase, "integrationDependencies"> = {
       integrationDependencies: [
         integrationDependencyFactory(),
@@ -941,7 +941,7 @@ describe("selectModComponentIntegrations", () => {
     });
   });
 
-  it("works for v2 services", () => {
+  it("works for v2 integrations", () => {
     const modComponent: Pick<ModComponentBase, "integrationDependencies"> = {
       integrationDependencies: [
         integrationDependencyFactory({
@@ -961,13 +961,13 @@ describe("selectModComponentIntegrations", () => {
     expect(selectModComponentIntegrations(modComponent)).toStrictEqual({
       properties: {
         [modComponent.integrationDependencies[0].outputKey]: {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${modComponent.integrationDependencies[0].integrationId}`,
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${modComponent.integrationDependencies[0].integrationId}`,
         },
         [modComponent.integrationDependencies[1].outputKey]: {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${modComponent.integrationDependencies[1].integrationId}`,
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${modComponent.integrationDependencies[1].integrationId}`,
         },
         [modComponent.integrationDependencies[2].outputKey]: {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${modComponent.integrationDependencies[2].integrationId}`,
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${modComponent.integrationDependencies[2].integrationId}`,
         },
       },
       required: [modComponent.integrationDependencies[1].outputKey],
