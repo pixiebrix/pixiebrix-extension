@@ -35,7 +35,7 @@ import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDat
 import DocumentPreview from "@/pageEditor/documentBuilder/preview/DocumentPreview";
 import useFlags from "@/hooks/useFlags";
 import ErrorDisplay from "./ErrorDisplay";
-import PageStateTab from "./tabs/PageStateTab";
+import ModVariablesTab from "./tabs/ModVariablesTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import {
@@ -51,10 +51,8 @@ import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransfo
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import DocumentOutline from "@/pageEditor/documentBuilder/outline/DocumentOutline";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
-import StateTab from "./tabs/StateTab";
-import ConfigurationTab from "./tabs/ConfigurationTab";
-import useAsyncState from "@/hooks/useAsyncState";
-import { fallbackValue } from "@/utils/asyncStateUtils";
+import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
+import BrickConfigFormStateTab from "./tabs/BrickConfigFormStateTab";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
@@ -136,11 +134,6 @@ const DataPanel: React.FC = () => {
     [record?.templateContext],
   );
 
-  const { data: showPageState } = fallbackValue(
-    useAsyncState(async () => brick?.block.isPageStateAware() ?? true, [brick]),
-    true,
-  );
-
   const documentBodyFieldName = joinPathParts(brickPath, "config.body");
   const brickCommentsFieldName = joinPathParts(brickPath, "comments");
 
@@ -216,21 +209,21 @@ const DataPanel: React.FC = () => {
           <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey={DataPanelTabKey.Context}>Context</Nav.Link>
           </Nav.Item>
-          {showPageState && (
-            <Nav.Item className={dataPanelStyles.tabNav}>
-              <Nav.Link eventKey={DataPanelTabKey.PageState}>
-                Page State
-              </Nav.Link>
-            </Nav.Item>
-          )}
+          <Nav.Item className={dataPanelStyles.tabNav}>
+            <Nav.Link eventKey={DataPanelTabKey.ModVariables}>
+              Mod Variables
+            </Nav.Link>
+          </Nav.Item>
           {showDeveloperTabs && (
             <>
               <Nav.Item className={dataPanelStyles.tabNav}>
-                <Nav.Link eventKey={DataPanelTabKey.State}>State</Nav.Link>
+                <Nav.Link eventKey={DataPanelTabKey.ModComponentFormState}>
+                  Mod Component State
+                </Nav.Link>
               </Nav.Item>
               <Nav.Item className={dataPanelStyles.tabNav}>
-                <Nav.Link eventKey={DataPanelTabKey.BrickConfig}>
-                  Raw Brick
+                <Nav.Link eventKey={DataPanelTabKey.BrickConfigFormState}>
+                  Brick Config State
                 </Nav.Link>
               </Nav.Item>
             </>
@@ -268,11 +261,11 @@ const DataPanel: React.FC = () => {
               label="Context"
             />
           </DataTab>
-          {showPageState && <PageStateTab />}
+          <ModVariablesTab />
           {showDeveloperTabs && (
             <>
-              <StateTab />
-              <ConfigurationTab config={brickConfig} />
+              <ModComponentFormStateTab />
+              <BrickConfigFormStateTab config={brickConfig} />
             </>
           )}
           <DataTab eventKey={DataPanelTabKey.Rendered} isTraceEmpty={!record}>

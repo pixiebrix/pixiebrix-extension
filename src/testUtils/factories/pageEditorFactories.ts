@@ -69,7 +69,7 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   apiVersion: "v3" as ApiVersion,
   uuid: uuidSequence,
   installed: true,
-  optionsArgs: {} as OptionsArgs,
+  optionsArgs: () => ({}) as OptionsArgs,
   integrationDependencies(): IntegrationDependency[] {
     return [];
   },

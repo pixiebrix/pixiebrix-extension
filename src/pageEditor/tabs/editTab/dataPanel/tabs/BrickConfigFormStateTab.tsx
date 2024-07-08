@@ -15,43 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import { useSelector } from "react-redux";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
-import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
-const StateTab: React.FC = () => {
-  const activeModComponentFormState = useSelector(
-    selectActiveModComponentFormState,
-  );
-  assertNotNullish(
-    activeModComponentFormState,
-    "No active mod component form state found",
-  );
-  const annotations = useSelector(
-    selectModComponentAnnotations(activeModComponentFormState.uuid),
-  );
+/**
+ * Developer-only data panel tab for viewing the underlying brick configuration JSON. Used to debug brick configuration
+ * UI/functionality problems.
+ *
+ * @see ModComponentFormStateTab
+ */
+const BrickConfigFormStateTab: React.FC<{ config: unknown }> = ({ config }) => (
+  <DataTab eventKey={DataPanelTabKey.BrickConfigFormState}>
+    <div className="text-info">
+      <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
+      developers
+    </div>
+    <DataTabJsonTree
+      data={config ?? {}}
+      tabKey={DataPanelTabKey.BrickConfigFormState}
+      label="Brick Config Form State"
+    />
+  </DataTab>
+);
 
-  return (
-    <DataTab eventKey={DataPanelTabKey.State}>
-      <div className="text-info">
-        <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
-        developers
-      </div>
-      <DataTabJsonTree
-        data={{ activeElement: activeModComponentFormState, annotations }}
-        searchable
-        tabKey={DataPanelTabKey.State}
-        label="Element State"
-      />
-    </DataTab>
-  );
-};
-
-export default StateTab;
+export default BrickConfigFormStateTab;

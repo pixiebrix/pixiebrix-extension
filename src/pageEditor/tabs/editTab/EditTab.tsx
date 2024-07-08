@@ -23,7 +23,7 @@ import styles from "./EditTab.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useModComponentTrace from "@/pageEditor/hooks/useModComponentTrace";
-import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
+import StarterBrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel";
 import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import {
@@ -159,7 +159,7 @@ const EditTab: React.FC<{
             <div className={styles.dataPanelWrapper}>
               <div className={styles.dataPanel}>
                 {activeNodeId === FOUNDATION_NODE_ID ? (
-                  <FoundationDataPanel />
+                  <StarterBrickDataPanel />
                 ) : (
                   <DataPanel key={activeNodeId} />
                 )}

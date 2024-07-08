@@ -23,14 +23,14 @@ import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import StarterBrickPreview from "@/pageEditor/tabs/effect/StarterBrickPreview";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useFlags from "@/hooks/useFlags";
-import PageStateTab from "./tabs/PageStateTab";
+import ModVariablesTab from "./tabs/ModVariablesTab";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
-import StateTab from "./tabs/StateTab";
-import ConfigurationTab from "./tabs/ConfigurationTab";
+import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
+import BrickConfigFormStateTab from "./tabs/BrickConfigFormStateTab";
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 
-const FoundationDataPanel: React.FC = () => {
+const StarterBrickDataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
@@ -41,14 +41,14 @@ const FoundationDataPanel: React.FC = () => {
     modComponent: { brickPipeline },
     starterBrick,
   } = activeModComponentFormState;
-  const firstBlockInstanceId = brickPipeline[0]?.instanceId;
+  const firstBrickInstanceId = brickPipeline[0]?.instanceId;
 
-  const { record: firstBlockTraceRecord } = useSelector(
-    makeSelectBrickTrace(firstBlockInstanceId),
+  const { record: firstBrickTraceRecord } = useSelector(
+    makeSelectBrickTrace(firstBrickInstanceId),
   );
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
-    firstBlockTraceRecord ? DataPanelTabKey.Output : DataPanelTabKey.Preview,
+    firstBrickTraceRecord ? DataPanelTabKey.Output : DataPanelTabKey.Preview,
   );
 
   return (
@@ -60,11 +60,13 @@ const FoundationDataPanel: React.FC = () => {
         {showDeveloperTabs && (
           <>
             <Nav.Item className={dataPanelStyles.tabNav}>
-              <Nav.Link eventKey={DataPanelTabKey.State}>State</Nav.Link>
+              <Nav.Link eventKey={DataPanelTabKey.ModComponentFormState}>
+                Mod Component State
+              </Nav.Link>
             </Nav.Item>
             <Nav.Item className={dataPanelStyles.tabNav}>
-              <Nav.Link eventKey={DataPanelTabKey.BrickConfig}>
-                Raw Foundation
+              <Nav.Link eventKey={DataPanelTabKey.BrickConfigFormState}>
+                Brick Config State
               </Nav.Link>
             </Nav.Item>
           </>
@@ -79,7 +81,9 @@ const FoundationDataPanel: React.FC = () => {
           <Nav.Link eventKey={DataPanelTabKey.Preview}>Preview</Nav.Link>
         </Nav.Item>
         <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey={DataPanelTabKey.PageState}>Page State</Nav.Link>
+          <Nav.Link eventKey={DataPanelTabKey.ModVariables}>
+            Mod Variables
+          </Nav.Link>
         </Nav.Item>
       </Nav>
       <Tab.Content>
@@ -94,8 +98,8 @@ const FoundationDataPanel: React.FC = () => {
         </Tab.Pane>
         {showDeveloperTabs && (
           <>
-            <StateTab />
-            <ConfigurationTab config={starterBrick} />
+            <ModComponentFormStateTab />
+            <BrickConfigFormStateTab config={starterBrick} />
           </>
         )}
         <Tab.Pane
@@ -113,9 +117,9 @@ const FoundationDataPanel: React.FC = () => {
           mountOnEnter
           unmountOnExit
         >
-          {firstBlockTraceRecord ? (
+          {firstBrickTraceRecord ? (
             <DataTabJsonTree
-              data={firstBlockTraceRecord.templateContext}
+              data={firstBrickTraceRecord.templateContext}
               copyable
               searchable
               tabKey={DataPanelTabKey.Output}
@@ -138,10 +142,10 @@ const FoundationDataPanel: React.FC = () => {
             modComponentFormState={activeModComponentFormState}
           />
         </Tab.Pane>
-        <PageStateTab />
+        <ModVariablesTab />
       </Tab.Content>
     </Tab.Container>
   );
 };
 
-export default FoundationDataPanel;
+export default StarterBrickDataPanel;
