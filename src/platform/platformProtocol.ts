@@ -90,7 +90,7 @@ export interface PlatformProtocol {
   form: (
     definition: FormDefinition,
     controller: AbortController,
-    componentRef: ModComponentRef,
+    modComponentRef: ModComponentRef,
   ) => Promise<unknown>;
 
   /**
