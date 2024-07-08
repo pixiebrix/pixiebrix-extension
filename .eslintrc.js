@@ -156,6 +156,7 @@ module.exports = {
             allowConditional: true,
           },
         ],
+        "playwright/no-page-pause": "error",
         "playwright/no-wait-for-timeout": "error",
         "playwright/no-useless-not": "error",
         "playwright/expect-expect": [
