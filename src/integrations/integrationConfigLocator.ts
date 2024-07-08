@@ -189,8 +189,8 @@ class IntegrationConfigLocator {
   }
 
   /**
-   * Return the corresponding integration configuration, including secrets. Returns `null` if a remote configuration
-   * requiring a proxy, or not found.
+   * Return the corresponding integration configuration, including secrets. Returns `undefined` if a remote
+   * configuration requiring the proxy, or not found.
    *
    * Prior to 1.7.34, only could return locally-defined configurations. Now also returns remote pushdown configurations.
    *
