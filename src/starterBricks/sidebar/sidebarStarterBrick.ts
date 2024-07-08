@@ -30,10 +30,7 @@ import { checkAvailable } from "@/bricks/available";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
 import { HeadlessModeError } from "@/bricks/errors";
-import {
-  selectModComponentContext,
-  shouldModComponentRunForStateChange,
-} from "@/starterBricks/helpers";
+import { shouldModComponentRunForStateChange } from "@/starterBricks/helpers";
 import { cloneDeep, debounce, remove } from "lodash";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
@@ -60,6 +57,7 @@ import {
   type Trigger,
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { mapModComponentToMessageContext } from "@/utils/modUtils";
 
 export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConfig> {
   abstract get trigger(): Trigger;
@@ -167,7 +165,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     const runId = uuidv4();
 
     const componentLogger = this.logger.childLogger(
-      selectModComponentContext(modComponent),
+      mapModComponentToMessageContext(modComponent),
     );
 
     const integrationsContext = await makeIntegrationsContextFromDependencies(

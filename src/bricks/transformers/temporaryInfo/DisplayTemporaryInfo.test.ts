@@ -61,6 +61,8 @@ import { showModal } from "@/contentScript/modalDom";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+
 jest.mock("@/contentScript/modalDom");
 jest.mock("@/contentScript/sidebarController");
 jest.mock("@/platform/panels/panelController");
@@ -72,7 +74,9 @@ const renderer = new DocumentRenderer();
 function reduceOptionsFactory() {
   return {
     ...testOptions("v3"),
-    logger: new ConsoleLogger(modComponentRefFactory()),
+    logger: new ConsoleLogger(
+      mapModComponentRefToMessageContext(modComponentRefFactory()),
+    ),
   };
 }
 
@@ -111,7 +115,9 @@ describe("DisplayTemporaryInfo", () => {
 
     await reducePipeline(pipeline, simpleInput({}), {
       ...testOptions("v3"),
-      logger: new ConsoleLogger(modComponentRef),
+      logger: new ConsoleLogger(
+        mapModComponentRefToMessageContext(modComponentRef),
+      ),
     });
 
     // Show function will be called with a "loading" payload
@@ -186,7 +192,9 @@ describe("DisplayTemporaryInfo", () => {
 
     const options = {
       ...testOptions("v3"),
-      logger: new ConsoleLogger(modComponentRef),
+      logger: new ConsoleLogger(
+        mapModComponentRefToMessageContext(modComponentRef),
+      ),
     };
 
     await reducePipeline(pipeline, simpleInput({}), options);
@@ -224,7 +232,9 @@ describe("DisplayTemporaryInfo", () => {
 
     const options = {
       ...testOptions("v3"),
-      logger: new ConsoleLogger(modComponentRef),
+      logger: new ConsoleLogger(
+        mapModComponentRefToMessageContext(modComponentRef),
+      ),
     };
 
     await expect(

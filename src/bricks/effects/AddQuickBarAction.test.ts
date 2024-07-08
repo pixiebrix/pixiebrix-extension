@@ -22,6 +22,8 @@ import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { platformMock } from "@/testUtils/platformMock";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+
 const brick = new AddQuickBarAction();
 
 const platform = platformMock;
@@ -48,7 +50,9 @@ describe("AddQuickBarAction", () => {
       unsafeAssumeValidArg({ title: "test" }),
       brickOptionsFactory({
         platform,
-        logger: new ConsoleLogger(modComponentRef),
+        logger: new ConsoleLogger(
+          mapModComponentRefToMessageContext(modComponentRef),
+        ),
         abortSignal: abortController.signal,
       }),
     );
