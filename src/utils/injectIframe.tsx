@@ -18,7 +18,7 @@
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
 import shadowWrap from "@/utils/shadowWrap";
-import { waitForBody } from "@/utils/domUtils";
+import { waitForDocumentRoot } from "@/utils/domUtils";
 
 const TIMEOUT_MS = 3000;
 
@@ -47,8 +47,8 @@ async function _injectIframe(
   Object.assign(iframe.style, style);
 
   // The body might not be available yet
-  await waitForBody();
-  document.body.append(shadowWrap(iframe));
+  await waitForDocumentRoot();
+  document.documentElement.append(shadowWrap(iframe));
 
   await iframeLoad;
 
