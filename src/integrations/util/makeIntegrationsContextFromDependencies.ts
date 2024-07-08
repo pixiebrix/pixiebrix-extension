@@ -23,7 +23,7 @@ import {
   type IntegrationsContext,
   type IntegrationsContextValue,
 } from "@/types/runtimeTypes";
-import locateSanitizedIntegrationConfigWithRetry from "@/integrations/util/locateSanitizedIntegrationConfigWithRetry";
+import findSanitizedIntegrationConfigWithRetry from "@/integrations/util/findSanitizedIntegrationConfigWithRetry";
 import { pickBy } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -41,7 +41,7 @@ async function dependencyContextValue({
 }): Promise<IntegrationsContextValue> {
   // Should be safe to call locateWithRetry in parallel b/c the locator.refresh() method debounces/coalesces
   // the promise
-  const integrationConfig = await locateSanitizedIntegrationConfigWithRetry(
+  const integrationConfig = await findSanitizedIntegrationConfigWithRetry(
     integrationId,
     configId,
   );

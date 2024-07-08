@@ -19,7 +19,7 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import tokenIntegrationDefinition from "@contrib/integrations/automation-anywhere.yaml";
 import oauthIntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
-import { locator as serviceLocator } from "@/background/locator";
+import { integrationConfigLocator as serviceLocator } from "@/background/integrationConfigLocator";
 import { getPartnerPrincipals } from "@/background/auth/partnerIntegrations/getPartnerPrincipals";
 import {
   integrationConfigFactory,

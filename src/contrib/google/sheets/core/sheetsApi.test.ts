@@ -24,7 +24,7 @@ import axios from "axios";
 import { performConfiguredRequest as realProxyService } from "@/background/requests";
 import { performConfiguredRequestInBackground as apiProxyService } from "@/background/messenger/api";
 import { integrationConfigFactory } from "@/testUtils/factories/integrationFactories";
-import { locator } from "@/background/locator";
+import { integrationConfigLocator } from "@/background/integrationConfigLocator";
 import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
 import {
@@ -106,17 +106,18 @@ describe("error handling", () => {
     launchOAuth2FlowMock.mockReset();
     deleteCachedAuthDataSpy.mockReset();
 
-    await locator.refresh();
+    await integrationConfigLocator.refresh();
   });
 
   it("Returns permissions error for 404 message with google integration", async () => {
     // Google Request
     axiosMock.onGet().reply(404);
 
-    const config = await locator.locate(
-      googleIntegration.id,
-      integrationConfig.id,
-    );
+    const config =
+      await integrationConfigLocator.findSanitizedIntegrationConfig(
+        googleIntegration.id,
+        integrationConfig.id,
+      );
 
     await setCachedAuthData(integrationConfig.id, {
       access_token: "NOTAREALTOKEN",
@@ -134,10 +135,11 @@ describe("error handling", () => {
     // Google Request
     axiosMock.onGet().reply(400);
 
-    const config = await locator.locate(
-      googleIntegration.id,
-      integrationConfig.id,
-    );
+    const config =
+      await integrationConfigLocator.findSanitizedIntegrationConfig(
+        googleIntegration.id,
+        integrationConfig.id,
+      );
 
     await setCachedAuthData(integrationConfig.id, {
       access_token: "NOTAREALTOKEN",
@@ -168,10 +170,11 @@ describe("error handling", () => {
       // Google Request
       axiosMock.onGet().reply(status);
 
-      const config = await locator.locate(
-        googleIntegration.id,
-        integrationConfig.id,
-      );
+      const config =
+        await integrationConfigLocator.findSanitizedIntegrationConfig(
+          googleIntegration.id,
+          integrationConfig.id,
+        );
 
       const authData: AuthData = {
         _oauthBrand: null,
@@ -215,10 +218,11 @@ describe("error handling", () => {
       axiosMock.onGet().reply(status);
       axiosMock.onPost().reply(401);
 
-      const config = await locator.locate(
-        googleIntegration.id,
-        integrationConfig.id,
-      );
+      const config =
+        await integrationConfigLocator.findSanitizedIntegrationConfig(
+          googleIntegration.id,
+          integrationConfig.id,
+        );
 
       await setCachedAuthData(integrationConfig.id, {
         access_token: "NOTAREALTOKEN",
@@ -253,10 +257,11 @@ describe("error handling", () => {
         refresh_token: "NOTAREALREFRESHTOKEN2",
       });
 
-      const config = await locator.locate(
-        googleIntegration.id,
-        integrationConfig.id,
-      );
+      const config =
+        await integrationConfigLocator.findSanitizedIntegrationConfig(
+          googleIntegration.id,
+          integrationConfig.id,
+        );
 
       await setCachedAuthData(integrationConfig.id, {
         access_token: "NOTAREALTOKEN",

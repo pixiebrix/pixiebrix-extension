@@ -17,7 +17,7 @@
 
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { isEmpty, sortBy } from "lodash";
-import servicesRegistry from "@/integrations/registry";
+import integrationRegistry from "@/integrations/registry";
 import { validateRegistryId } from "@/types/helpers";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
@@ -83,12 +83,12 @@ type Option = {
 let wasInitialized = false;
 
 /**
- * Singleton class that produces `ServiceLocator` methods via `getLocator`.
+ * Singleton class for finding local and remote integration configurations.
  *
- * NOTE: this class handles service credentials, not the service definitions. For service definitions, see the
- * `services.registry` file.
+ * NOTE: this class handles integration configurations, not the integration definitions. For integration definitions,
+ * see the `integrations.registry` file.
  */
-class LazyLocatorFactory {
+class IntegrationConfigLocator {
   private remote: RemoteIntegrationConfig[] = [];
 
   private local: IntegrationConfig[] = [];
@@ -100,11 +100,13 @@ class LazyLocatorFactory {
   constructor() {
     forbidContext(
       "contentScript",
-      "LazyLocatorFactory cannot run in the contentScript",
+      "LazyIntegrationConfigLocatorFactory cannot run in the contentScript",
     );
 
     if (wasInitialized) {
-      throw new Error("LazyLocatorFactory is a singleton class");
+      throw new Error(
+        "LazyIntegrationConfigLocatorFactory is a singleton class",
+      );
     }
 
     wasInitialized = true;
@@ -117,7 +119,7 @@ class LazyLocatorFactory {
   async refreshRemote(): Promise<void> {
     try {
       // As of https://github.com/pixiebrix/pixiebrix-app/issues/562, the API gracefully handles unauthenticated calls
-      // to this endpoint. However, there's no need to pull the built-in services because the user can't call them
+      // to this endpoint. However, there's no need to pull the built-in integrations because the user can't call them
       // without being authenticated
       const client = await getLinkedApiClient();
       const { data } = await client.get<RemoteIntegrationConfig[]>(
@@ -125,7 +127,9 @@ class LazyLocatorFactory {
         "/api/services/shared/",
       );
       this.remote = data;
-      console.debug(`Fetched ${this.remote.length} remote service auth(s)`);
+      console.debug(
+        `Fetched ${this.remote.length} remote integration configuration(s)`,
+      );
     } catch (error) {
       if (error instanceof ExtensionNotLinkedError) {
         this.remote = [];
@@ -151,7 +155,7 @@ class LazyLocatorFactory {
     await Promise.all([this.refreshLocal(), this.refreshRemote()]);
     this.initializeOptions();
     this.updateTimestamp = timestamp;
-    console.debug("Refreshed service configuration locator", {
+    console.debug("Refreshed integration configuration locator", {
       updateTimestamp: this.updateTimestamp,
     });
   });
@@ -185,11 +189,13 @@ class LazyLocatorFactory {
   }
 
   /**
-   * Return the corresponding integration configuration, including secrets. Returns `null` if not available.
+   * Return the corresponding integration configuration, including secrets. Returns `null` if a remote configuration
+   * requiring a proxy, or not found.
    *
    * Prior to 1.7.34, only could return locally-defined configurations. Now also returns remote pushdown configurations.
    *
    * @param configId UUID of the integration configuration
+   * @see findSanitizedIntegrationConfig
    */
   async findIntegrationConfig(
     configId: UUID,
@@ -214,25 +220,25 @@ class LazyLocatorFactory {
     return [...this.local, ...remote].find((x) => x.id === configId);
   }
 
-  async locateAllForService(
-    serviceId: RegistryId,
+  async findAllSanitizedConfigsForIntegration(
+    integrationId: RegistryId,
   ): Promise<SanitizedIntegrationConfig[]> {
     if (!this.initialized) {
       await this.refresh();
     }
 
-    if (serviceId === PIXIEBRIX_INTEGRATION_ID) {
+    if (integrationId === PIXIEBRIX_INTEGRATION_ID) {
       // HACK: for now use the separate storage for the extension key
       return [pixiebrixConfigurationFactory()];
     }
 
-    let service: IntegrationABC;
+    let integration: IntegrationABC;
 
     // Handle case where locateAllForService is called before service definitions are loaded. (For example, because it's
     // being called from the background page in installer.ts).
     // In the future, we may want to expose an option on the method to control this behavior.
     try {
-      service = await servicesRegistry.lookup(serviceId);
+      integration = await integrationRegistry.lookup(integrationId);
     } catch (error) {
       if (error instanceof DoesNotExistError) {
         return [];
@@ -242,27 +248,33 @@ class LazyLocatorFactory {
     }
 
     return this.options
-      .filter((x) => x.serviceId === serviceId)
+      .filter((x) => x.serviceId === integrationId)
       .map((match) => ({
         _sanitizedIntegrationConfigBrand: null,
         id: match.id,
         label: match.label,
-        serviceId,
+        serviceId: integrationId,
         proxy: match.proxy,
-        config: sanitizeIntegrationConfig(service, match.config),
+        config: sanitizeIntegrationConfig(integration, match.config),
       }));
   }
 
-  async locate(
-    serviceId: RegistryId,
-    authId: UUID,
+  /**
+   * Return the sanitized integration configuration, with secrets removed.
+   * @param integrationId the integration definition (for determining which properties are secrets)
+   * @param integrationConfigId the configuration id
+   * @throws MissingConfigurationError if configuration not found for the given integration id
+   */
+  async findSanitizedIntegrationConfig(
+    integrationId: RegistryId,
+    integrationConfigId: UUID,
   ): Promise<SanitizedIntegrationConfig> {
     expectContext(
       "background",
-      "The service locator must run in the background worker",
+      "The integration configuration locator must run in the background worker",
     );
 
-    if (serviceId === PIXIEBRIX_INTEGRATION_ID) {
+    if (integrationId === PIXIEBRIX_INTEGRATION_ID) {
       // Since 1.8.13 the locator should not be used to instantiate the pixiebrix integration config
       throw new Error(
         "Use `pixiebrixConfigurationFactory` to instantiate the pixiebrix integration config",
@@ -273,47 +285,49 @@ class LazyLocatorFactory {
       await this.refresh();
     }
 
-    const service = await servicesRegistry.lookup(serviceId);
+    const integration = await integrationRegistry.lookup(integrationId);
 
     const match = this.options.find(
-      (x) => x.serviceId === serviceId && x.id === authId,
+      (x) => x.serviceId === integrationId && x.id === integrationConfigId,
     );
 
     if (!match) {
       throw new MissingConfigurationError(
-        `Configuration ${authId} not found for ${serviceId}`,
-        serviceId,
-        authId,
+        `Configuration ${integrationConfigId} not found for ${integrationId}`,
+        integrationId,
+        integrationConfigId,
       );
     }
 
     // Proxied configurations have their secrets removed, so can be empty on the client-side.
-    // Some OAuth2 PKCE services, e.g. google/oauth2-pkce, don't require any configurations, so can be empty.
+    // Some OAuth2 PKCE integrations, e.g. google/oauth2-pkce, don't require any configurations, so can be empty.
     if (
       isEmpty(match.config) &&
-      !isEmpty(service.schema.properties) &&
+      !isEmpty(integration.schema.properties) &&
       !match.proxy &&
-      service.hasAuth
+      integration.hasAuth
     ) {
-      console.warn(`Config ${authId} for service ${serviceId} is empty`);
+      console.warn(
+        `Config ${integrationConfigId} for integration ${integrationId} is empty`,
+      );
     }
 
-    console.debug(`Locate auth for ${serviceId}`, {
+    console.debug(`Locate integration configuration for ${integrationId}`, {
       currentTimestamp: Date.now(),
       updateTimestamp: this.updateTimestamp,
-      id: authId,
+      id: integrationConfigId,
       proxy: match.proxy,
     });
 
     return {
       _sanitizedIntegrationConfigBrand: null,
-      id: authId,
+      id: integrationConfigId,
       label: match.label,
-      serviceId,
+      serviceId: integrationId,
       proxy: match.proxy,
-      config: sanitizeIntegrationConfig(service, match.config),
+      config: sanitizeIntegrationConfig(integration, match.config),
     };
   }
 }
 
-export default LazyLocatorFactory;
+export default IntegrationConfigLocator;

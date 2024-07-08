@@ -25,7 +25,7 @@ import Loader from "@/components/Loader";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import PartnerSetupCard from "@/extensionConsole/pages/onboarding/partner/PartnerSetupCard";
 import { useLocation } from "react-router";
-import { clearServiceCache } from "@/background/messenger/api";
+import { clearIntegrationRegistry } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -71,7 +71,7 @@ const SetupPage: React.FunctionComponent = () => {
     try {
       await syncRemotePackages();
       // Must happen after the call to fetch service definitions
-      await clearServiceCache();
+      await clearIntegrationRegistry();
     } catch (error) {
       reportError(error);
       // If an error was thrown, check if the control room integration definitions are available to determine if we should

@@ -26,7 +26,7 @@ import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import useReinstall from "@/extensionConsole/pages/mods/utils/useReinstall";
 import notify from "@/utils/notify";
 import { Events } from "@/telemetry/events";
-import { clearServiceCache } from "@/background/messenger/api";
+import { clearIntegrationRegistry } from "@/background/messenger/api";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import {
   useCreatePackageMutation,
@@ -143,7 +143,7 @@ function useSubmitPackage({ create = false }: SubmitOptions): SubmitCallbacks {
             if (kind === DefinitionKinds.INTEGRATION) {
               // Clear the background page's service cache after refreshing so
               // it's forced to read the updated service definition.
-              await clearServiceCache();
+              await clearIntegrationRegistry();
             }
 
             reloadModsEveryTab();

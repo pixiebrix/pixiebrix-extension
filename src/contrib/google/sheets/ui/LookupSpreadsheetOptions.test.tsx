@@ -23,7 +23,10 @@ import { act, screen } from "@testing-library/react";
 import { validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
 import { render } from "@/pageEditor/testHelpers";
-import { services, hasCachedAuthData } from "@/background/messenger/api";
+import {
+  integrationConfigLocator,
+  hasCachedAuthData,
+} from "@/background/messenger/api";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,
@@ -46,7 +49,9 @@ import {
   getSpreadsheet,
 } from "@/contrib/google/sheets/core/sheetsApi";
 
-const servicesLocateMock = jest.mocked(services.locate);
+const findSanitizedIntegrationConfigMock = jest.mocked(
+  integrationConfigLocator.findSanitizedIntegrationConfig,
+);
 
 // XXX: sheetsApi should likely be mocked at the network level, not the module level
 jest.mock("@/contrib/google/sheets/core/sheetsApi");
@@ -176,7 +181,7 @@ async function expectTabsAndHeadersToBeLoaded() {
 
 beforeAll(() => {
   registerDefaultWidgets();
-  servicesLocateMock.mockImplementation(
+  findSanitizedIntegrationConfigMock.mockImplementation(
     async (serviceId) => servicesLookup[serviceId],
   );
   useAuthOptionsMock.mockReturnValue(
