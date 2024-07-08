@@ -31,10 +31,10 @@ import {
 import { createSelector } from "@reduxjs/toolkit";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import {
-  type ModComponentBase,
   type HydratedModComponent,
-  type SerializedModComponent,
+  type ModComponentBase,
   type ModComponentRef,
+  type SerializedModComponent,
 } from "@/types/modComponentTypes";
 import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -58,9 +58,60 @@ import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBric
 import { type MessageContext } from "@/types/loggerTypes";
 
 /**
+ * Returns the ModComponentRef for a given mod component.
+ * @see mapMessageContextToModComponentRef
+ */
+export function getModComponentRef(
+  modComponent: HydratedModComponent,
+): ModComponentRef {
+  return {
+    extensionId: modComponent.id,
+    blueprintId: modComponent._recipe?.id,
+    extensionPointId: modComponent.extensionPointId,
+  };
+}
+
+/**
+ * Returns the MessageContext associated with `modComponent`.
+ * @see mapMessageContextToModComponentRef
+ */
+export function mapModComponentToMessageContext(
+  modComponent: HydratedModComponent,
+): MessageContext {
+  return {
+    // The step label will be re-assigned later in reducePipeline
+    label: modComponent.label ?? undefined,
+    extensionLabel: modComponent.label ?? undefined,
+    extensionId: modComponent.id,
+    extensionPointId: modComponent.extensionPointId,
+    deploymentId: modComponent._deployment?.id,
+    blueprintId: modComponent._recipe?.id,
+    blueprintVersion: modComponent._recipe?.version,
+  };
+}
+
+/**
+ * Returns the message context for a ModComponentRef. For use with passing to reportEvent
+ * @see selectEventData
+ */
+export function mapModComponentRefToMessageContext(
+  modComponentRef: ModComponentRef,
+): MessageContext {
+  // Fields are currently named the same. In the future, the fields might temporarily diverge.
+  return {
+    extensionId: modComponentRef.extensionId,
+    extensionPointId: modComponentRef.extensionPointId,
+    // MessageContext expects undefined instead of null/undefined
+    blueprintId: modComponentRef.blueprintId ?? undefined,
+  };
+}
+
+/**
  * Returns the ModComponentRef for a given Logger MessageContext. Only call from running bricks with an associated
  * mod component and starter brick in the context.
  *
+ * @see getModComponentRef
+ * @see mapModComponentToMessageContext
  * @throws TypeError if the extensionId or extensionPointId is missing
  */
 export function mapMessageContextToModComponentRef(

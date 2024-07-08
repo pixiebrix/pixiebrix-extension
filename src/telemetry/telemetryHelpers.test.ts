@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  cleanDatadogVersionName,
-  mapModComponentRefToEventData,
-} from "@/telemetry/telemetryHelpers";
+import { cleanDatadogVersionName } from "@/telemetry/telemetryHelpers";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
-import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
+import {
+  mapMessageContextToModComponentRef,
+  mapModComponentRefToMessageContext,
+} from "@/utils/modUtils";
 
 // Disable automatic __mocks__ resolution #6799
 jest.mock("@/telemetry/telemetryHelpers", () =>
@@ -44,7 +44,7 @@ describe("cleanDatadogVersionName", () => {
 describe("mapModComponentRefToEventData", () => {
   it("maps fields", () => {
     const value = modComponentRefFactory();
-    expect(mapModComponentRefToEventData(value)).toStrictEqual({
+    expect(mapModComponentRefToMessageContext(value)).toStrictEqual({
       extensionId: value.extensionId,
       blueprintId: value.blueprintId,
       extensionPointId: value.extensionPointId,
@@ -55,7 +55,7 @@ describe("mapModComponentRefToEventData", () => {
     const value = modComponentRefFactory({
       blueprintId: null,
     });
-    expect(mapModComponentRefToEventData(value)).toStrictEqual({
+    expect(mapModComponentRefToMessageContext(value)).toStrictEqual({
       extensionId: value.extensionId,
       blueprintId: undefined,
       extensionPointId: value.extensionPointId,
@@ -65,7 +65,9 @@ describe("mapModComponentRefToEventData", () => {
   it("round trips mod component reference", () => {
     const value = modComponentRefFactory();
     expect(
-      mapMessageContextToModComponentRef(mapModComponentRefToEventData(value)),
+      mapMessageContextToModComponentRef(
+        mapModComponentRefToMessageContext(value),
+      ),
     ).toStrictEqual(value);
   });
 });
