@@ -46,7 +46,9 @@ async function _injectIframe(
   iframe.src = url;
   Object.assign(iframe.style, style);
 
-  // The body might not be available yet
+  // Append to document root (as opposed to e.g. body) to have the best chance of avoiding host page interference with
+  // the injected iframe (e.g. by removing it from the DOM)
+  // See https://github.com/pixiebrix/pixiebrix-extension/pull/8777
   await waitForDocumentRoot();
   document.documentElement.append(shadowWrap(iframe));
 
