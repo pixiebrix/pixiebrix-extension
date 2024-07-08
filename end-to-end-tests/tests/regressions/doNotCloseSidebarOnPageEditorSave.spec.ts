@@ -45,6 +45,7 @@ test("#8104: Do not automatically close the sidebar when saving in the Page Edit
     "Tab Title",
     updatedTabTitle,
   );
+
   await pageEditorPage.getRenderPanelButton().click();
   await expect(
     sidebar.getByRole("tab", { name: updatedTabTitle }),
