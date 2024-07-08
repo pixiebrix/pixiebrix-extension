@@ -52,7 +52,7 @@ import useActivateMod, {
 import brickRegistry from "@/bricks/registry";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 jest.mock("@/sidebar/sidebarSelectors");
@@ -269,7 +269,7 @@ describe("ActivateModPanel", () => {
           services: {
             properties: {
               service1: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
+                $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
               },
             },
             required: [],
@@ -313,7 +313,7 @@ describe("ActivateModPanel", () => {
           services: {
             properties: {
               service1: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
+                $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
               },
             },
             required: ["service1"],
@@ -358,7 +358,7 @@ describe("ActivateModPanel", () => {
           services: {
             properties: {
               service1: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
+                $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
               },
             },
             required: [],
@@ -402,7 +402,7 @@ describe("ActivateModPanel", () => {
           services: {
             properties: {
               service1: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
+                $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
               },
             },
             required: ["service1"],
@@ -445,10 +445,10 @@ describe("ActivateModPanel", () => {
           services: {
             properties: {
               service1: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition1.metadata.id}`,
+                $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationDefinition1.metadata.id}`,
               },
               service2: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition2.metadata.id}`,
+                $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationDefinition2.metadata.id}`,
               },
             },
             required: ["service1"],

@@ -20,7 +20,7 @@ import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefiniti
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 describe("getModDefinitionIntegrationIds", () => {
   it("works with record services formats", () => {
@@ -56,10 +56,10 @@ describe("getModDefinitionIntegrationIds", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId1}`,
           },
           service2: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId2}`,
           },
         },
         required: ["service1", "service2"],
@@ -69,7 +69,7 @@ describe("getModDefinitionIntegrationIds", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId1}`,
           },
         },
         required: ["service1"],
@@ -89,10 +89,10 @@ describe("getModDefinitionIntegrationIds", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId1}`,
           },
           service2: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId2}`,
           },
         },
         required: ["service1", "service2"],
@@ -102,7 +102,7 @@ describe("getModDefinitionIntegrationIds", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId1}`,
           },
         },
         required: ["service1"],
