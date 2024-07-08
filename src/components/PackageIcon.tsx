@@ -124,6 +124,8 @@ type PackageIconProps<T extends Metadata | PackageInstance> = {
  * @see Metadata
  * @see PackageInstance
  */
+// As of 2.0.5, the Metadata and PackageInstance types are currently equivalent. But include both in the union to make
+// the type signature more explicit.
 const PackageIcon = <T extends Metadata | PackageInstance>({
   packageOrMetadata,
   size,
