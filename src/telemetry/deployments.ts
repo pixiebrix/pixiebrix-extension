@@ -4,7 +4,8 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { isRegistryId } from "@/types/helpers";
 
 /**
- * Select data to report to the team admins for the deployment
+ * Select data to report to the team admins for the deployment.
+ * @see mapModComponentRefToEventData
  */
 export function selectEventData(
   modComponent: Nullishable<ModComponentBase>,

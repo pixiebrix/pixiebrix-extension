@@ -19,9 +19,11 @@ import { type Config, define, extend } from "cooky-cutter";
 import {
   type ActivatedModComponent,
   type ModComponentBase,
+  type ModComponentRef,
   type ModMetadata,
 } from "@/types/modComponentTypes";
 import {
+  registryIdFactory,
   timestampFactory,
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
@@ -32,6 +34,12 @@ import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactorie
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type StandaloneModDefinition } from "@/types/contract";
 import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
+
+export const modComponentRefFactory = define<ModComponentRef>({
+  extensionId: uuidSequence,
+  blueprintId: registryIdFactory,
+  extensionPointId: registryIdFactory,
+});
 
 export const modMetadataFactory = extend<Metadata, ModMetadata>(
   metadataFactory,
