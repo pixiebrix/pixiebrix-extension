@@ -169,7 +169,7 @@ export const Events = {
 
 export type Event = (typeof Events)[keyof typeof Events];
 
-export const reservedKeys = [
+const RESERVED_KEYS = [
   "blockId",
   "blockVersion",
   "blueprintId",
@@ -185,5 +185,5 @@ export const reservedKeys = [
 ] as const;
 
 export type ReservedKeys = {
-  [K in (typeof reservedKeys)[number]]?: unknown;
+  [K in (typeof RESERVED_KEYS)[number]]?: unknown;
 };
