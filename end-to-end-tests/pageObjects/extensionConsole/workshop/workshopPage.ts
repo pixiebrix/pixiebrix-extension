@@ -53,13 +53,13 @@ export class WorkshopPage extends BasePageObject {
     await this.createNewBrickButton.click();
     const createPage = new CreateWorkshopModPage(this.page);
     await createPage.editor.waitForLoad();
-    const modId =
+    const modMedata =
       await createPage.editor.replaceWithModDefinition(modDefinitionName);
     await createPage.createBrickButton.click();
     await expect(this.getByRole("status").getByText("Created ")).toBeVisible({
       timeout: 8000,
     });
-    return modId;
+    return modMedata;
   }
 
   async deletePackagedModByModId(modId: string) {

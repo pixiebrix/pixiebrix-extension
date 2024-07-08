@@ -129,6 +129,7 @@ export class PageEditorPage extends BasePageObject {
     this.savedStandaloneModNames.push(modName);
   }
 
+  @ModifiesModState
   async createModFromModComponent({
     modNameRoot,
     modComponentName,

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`FoundationDataPanel it renders with form state and trace data 1`] = `
+exports[`StarterBrickDataPanel it renders with form state and trace data 1`] = `
 <DocumentFragment>
   <form
     action="#"
@@ -67,11 +67,11 @@ exports[`FoundationDataPanel it renders with form state and trace data 1`] = `
         <a
           aria-selected="false"
           class="nav-link"
-          data-rb-event-key="pageState"
+          data-rb-event-key="modVariables"
           href="#"
           role="tab"
         >
-          Page State
+          Mod Variables
         </a>
       </div>
     </div>

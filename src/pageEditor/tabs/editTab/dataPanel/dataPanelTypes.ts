@@ -17,12 +17,14 @@
 
 export enum DataPanelTabKey {
   Context = "context",
-  PageState = "pageState",
-  State = "state",
-  BrickConfig = "blockConfig",
+  ModVariables = "modVariables",
   Rendered = "rendered",
   Output = "output",
   Preview = "preview",
   Outline = "outline",
   Comments = "comments",
+
+  // Developer-only tabs
+  ModComponentFormState = "modComponentFormState",
+  BrickConfigFormState = "brickConfig",
 }
