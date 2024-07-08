@@ -185,7 +185,7 @@
     "@playwright/test": "^1.44.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
     "@shopify/jest-dom-mocks": "^5.1.0",
-    "@sindresorhus/tsconfig": "^5.0.0",
+    "@sindresorhus/tsconfig": "^6.0.0",
     "@sinonjs/fake-timers": "^11.2.2",
     "@storybook/addon-actions": "^7.6.17",
     "@storybook/addon-essentials": "^7.6.17",
