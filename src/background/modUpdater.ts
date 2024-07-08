@@ -27,8 +27,7 @@ import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { selectModComponentsForMod } from "@/store/extensionsSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
 import { groupBy, isEmpty, uniq } from "lodash";
-import { forEachTab } from "@/utils/extensionUtils";
-import { queueReloadFrameMods } from "@/contentScript/messenger/api";
+import { queueReloadModEveryTab } from "@/contentScript/messenger/api";
 import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import type { EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
@@ -205,8 +204,8 @@ export function deactivateMod(
 
     // Remove the menu item UI from all mods. We must explicitly remove context menu items because otherwise the user
     // will see duplicate menu items because the old/new mod components have different UUIDs.
-    // `updateMods` calls `queueReactivateTab`. Therefore, if the user clicks on a tab where the new version of the mod
-    // component is not loaded yet, they'll get a notification to reload the page.
+    // `updateMods` calls `queueReloadModEveryTab`. Therefore, if the user clicks on a tab where the new version of the
+    // mod component is not loaded yet, they'll get a notification to reload the page.
     void uninstallContextMenu({ extensionId: activatedModComponent.id });
   }
 
@@ -292,7 +291,7 @@ async function updateMods(modUpdates: BackwardsCompatibleUpdate[]) {
     saveEditorState(newEditorState),
   ]);
 
-  await forEachTab(queueReloadFrameMods);
+  queueReloadModEveryTab();
 }
 
 export async function updateModsIfForceUpdatesAvailable() {
