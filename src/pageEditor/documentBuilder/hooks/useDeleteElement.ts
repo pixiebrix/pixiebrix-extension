@@ -44,7 +44,7 @@ function useDeleteElement(documentBodyName: string) {
         elementsCollection.splice(Number(elementIndex), 1);
       });
 
-      // If the element used a service, remove the service link as well
+      // If the element used an integration, remove the integration link as well
       nextState = produceExcludeUnusedDependencies(nextState);
 
       await setFormState(nextState);
