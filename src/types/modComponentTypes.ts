@@ -271,6 +271,8 @@ export type HydratedModComponent<Config extends UnknownObject = UnknownObject> =
     /**
      * Brand for nominal typing.
      */
+    // XXX: defining our own brand vs. using type-fest's tagged type because we need to be able to apply the brand
+    // in cooky-cutter factory definitions
     _hydratedModComponentBrand: never;
   };
 
