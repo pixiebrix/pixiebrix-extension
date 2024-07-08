@@ -16,6 +16,11 @@
  */
 
 import { cleanDatadogVersionName } from "@/telemetry/telemetryHelpers";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import {
+  mapMessageContextToModComponentRef,
+  mapModComponentRefToMessageContext,
+} from "@/utils/modUtils";
 
 // Disable automatic __mocks__ resolution #6799
 jest.mock("@/telemetry/telemetryHelpers", () =>
@@ -33,5 +38,36 @@ describe("cleanDatadogVersionName", () => {
     expect(cleanDatadogVersionName("1.8.8-alpha+293128")).toBe(
       "1.8.8-alpha_293128",
     );
+  });
+});
+
+describe("mapModComponentRefToEventData", () => {
+  it("maps fields", () => {
+    const value = modComponentRefFactory();
+    expect(mapModComponentRefToMessageContext(value)).toStrictEqual({
+      extensionId: value.extensionId,
+      blueprintId: value.blueprintId,
+      extensionPointId: value.extensionPointId,
+    });
+  });
+
+  it("replaces null with undefined", () => {
+    const value = modComponentRefFactory({
+      blueprintId: null,
+    });
+    expect(mapModComponentRefToMessageContext(value)).toStrictEqual({
+      extensionId: value.extensionId,
+      blueprintId: undefined,
+      extensionPointId: value.extensionPointId,
+    });
+  });
+
+  it("round trips mod component reference", () => {
+    const value = modComponentRefFactory();
+    expect(
+      mapMessageContextToModComponentRef(
+        mapModComponentRefToMessageContext(value),
+      ),
+    ).toStrictEqual(value);
   });
 });

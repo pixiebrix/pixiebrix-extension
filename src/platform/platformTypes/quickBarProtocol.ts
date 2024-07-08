@@ -16,22 +16,16 @@
  */
 
 import type { Action } from "kbar";
-import type { RegistryId } from "@/types/registryTypes";
-import type { UUID } from "@/types/stringTypes";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * `kbar` action with additional metadata about the source of the action.
  */
 export type CustomAction = Action & {
   /**
-   * The extension point that added this action.
+   * The mod component that registered the action, if any.
    */
-  extensionPointId?: RegistryId;
-  /**
-   * The ModComponentBase that added the action.
-   * @see ModComponentBase
-   */
-  extensionId?: UUID;
+  modComponentRef?: ModComponentRef;
 };
 
 /**

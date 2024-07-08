@@ -23,14 +23,14 @@ export class EditWorkshopModPage extends BasePageObject {
   editor = new WorkshopModEditor(this.getByLabel("Editor"));
 
   async updateBrick() {
-    await this.getByRole("button", { name: "Update Brick" }).click();
+    await this.getByRole("button", { name: "Update Package" }).click();
     await expect(
       this.page.getByRole("status").filter({ hasText: "Updated " }),
     ).toBeVisible();
   }
 
   async deleteBrick() {
-    await this.getByRole("button", { name: "Delete Brick" }).click();
+    await this.getByRole("button", { name: "Delete Package" }).click();
     await this.getByRole("button", { name: "Permanently Delete" }).click();
     await expect(
       this.page.getByRole("status").filter({ hasText: "Deleted " }),

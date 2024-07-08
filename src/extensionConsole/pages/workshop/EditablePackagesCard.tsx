@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import {
   faBars,
   faBolt,
@@ -26,11 +26,14 @@ import {
   faStoreAlt,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import styles from "./CustomBricksCard.module.scss";
+import styles from "./EditablePackagesCard.module.scss";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Column } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
+import {
+  type EnrichedPackageMetadata,
+  type NavigateProps,
+} from "./workshopTypes";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import AsyncCard from "@/components/asyncCard/AsyncCard";
 import {
@@ -39,7 +42,7 @@ import {
 } from "@/extensionConsole/pages/workshop/workshopUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-type TableColumn = Column<EnrichedBrick>;
+type TableColumn = Column<EnrichedPackageMetadata>;
 function inferIcon(
   kind: KindFilterValue,
   verboseName: Nullishable<string>,
@@ -93,7 +96,7 @@ function inferIcon(
   }
 }
 
-const KindIcon: React.FunctionComponent<{ brick: EnrichedBrick }> = ({
+const KindIcon: React.FunctionComponent<{ brick: EnrichedPackageMetadata }> = ({
   brick: { kind, verbose_name },
 }) => (
   <FontAwesomeIcon
@@ -102,9 +105,9 @@ const KindIcon: React.FunctionComponent<{ brick: EnrichedBrick }> = ({
   />
 );
 
-const columnFactory = (): TableColumn[] => [
+const COLUMNS: TableColumn[] = [
   {
-    Header: "Name",
+    Header: "Package Name",
     accessor: "name",
     width: 250,
     Cell: ({ row, value }) => (
@@ -135,34 +138,31 @@ const columnFactory = (): TableColumn[] => [
     Header: "Version",
     accessor: "version",
   },
-];
+] as const;
 
-const CustomBricksCard: React.FunctionComponent<
+const EditablePackagesCard: React.FunctionComponent<
   NavigateProps & {
-    bricks: EnrichedBrick[];
+    packages: EnrichedPackageMetadata[];
     maxRows?: number;
     isFetching: boolean;
     error: unknown;
   }
-> = ({ navigate, bricks, isFetching, error }) => {
-  const columns = useMemo(() => columnFactory(), []);
-  return (
-    <AsyncCard header="Custom Bricks" isLoading={isFetching} error={error}>
-      {() => (
-        <PaginatedTable
-          columns={columns}
-          data={bricks}
-          rowProps={(brick: EnrichedBrick) => ({
-            onClick() {
-              navigate(`/workshop/bricks/${brick.id}`);
-            },
-            className: `${styles.customRow}`,
-          })}
-          showSearchFilter={false}
-        />
-      )}
-    </AsyncCard>
-  );
-};
+> = ({ navigate, packages, isFetching, error }) => (
+  <AsyncCard header="Packages" isLoading={isFetching} error={error}>
+    {() => (
+      <PaginatedTable
+        columns={COLUMNS}
+        data={packages}
+        rowProps={(editablePackage: EnrichedPackageMetadata) => ({
+          onClick() {
+            navigate(`/workshop/bricks/${editablePackage.id}`);
+          },
+          className: `${styles.customRow}`,
+        })}
+        showSearchFilter={false}
+      />
+    )}
+  </AsyncCard>
+);
 
-export default CustomBricksCard;
+export default EditablePackagesCard;

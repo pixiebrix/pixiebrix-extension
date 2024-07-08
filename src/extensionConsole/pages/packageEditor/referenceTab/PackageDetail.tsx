@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./BrickDetail.module.scss";
+import styles from "./PackageDetail.module.scss";
 
 import React, { Suspense } from "react";
 import { Button } from "react-bootstrap";
@@ -33,7 +33,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import BrickIcon from "@/components/BrickIcon";
 import { writeToClipboard } from "@/utils/clipboardUtils";
-import { type Metadata } from "@/types/registryTypes";
+import { type PackageInstance } from "@/types/registryTypes";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
 function makeArgumentYaml(schema: Schema): string {
@@ -69,28 +69,28 @@ function makeArgumentYaml(schema: Schema): string {
   return result;
 }
 
-type BrickDetailProps<T extends Metadata> = {
-  brick: T;
-  brickConfig: string;
-  isBrickConfigLoading: boolean;
+type OwnProps<T extends PackageInstance> = {
+  packageInstance: T;
+  packageConfig: string;
+  isPackageConfigLoading: boolean;
 };
 
-const BrickDetail = <T extends Metadata>({
-  brick,
-  brickConfig,
-  isBrickConfigLoading,
-}: BrickDetailProps<T>) => {
+const PackageDetail = <T extends PackageInstance>({
+  packageInstance,
+  packageConfig,
+  isPackageConfigLoading,
+}: OwnProps<T>) => {
   const schema =
-    "schema" in brick
-      ? brick.schema
-      : "inputSchema" in brick
-        ? brick.inputSchema
+    "schema" in packageInstance
+      ? packageInstance.schema
+      : "inputSchema" in packageInstance
+        ? packageInstance.inputSchema
         : {};
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: fix brick typing
-  const outputSchema = (brick as any).outputSchema as Schema;
+  const outputSchema = (packageInstance as any).outputSchema as Schema;
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
-  const listing = listings[brick.id];
+  const listing = listings[packageInstance.id];
 
   const copyHandler = useUserAction(
     async () => {
@@ -108,11 +108,11 @@ const BrickDetail = <T extends Metadata>({
       <div className="d-flex justify-content-between">
         <div>
           <h3 className="text-left">
-            {brick.name}&nbsp;
-            <BrickIcon key={brick.id} brick={brick} />
+            {packageInstance.name}&nbsp;
+            <BrickIcon key={packageInstance.id} brick={packageInstance} />
           </h3>
           <p>
-            <code className="p-0">{brick.id}</code>
+            <code className="p-0">{packageInstance.id}</code>
           </p>
         </div>
         {listing && (
@@ -130,7 +130,7 @@ const BrickDetail = <T extends Metadata>({
       </div>
 
       <DetailSection title="Description">
-        {brick.description ?? (
+        {packageInstance.description ?? (
           <span className="text-muted">No description provided</span>
         )}
       </DetailSection>
@@ -157,16 +157,16 @@ const BrickDetail = <T extends Metadata>({
       </DetailSection>
 
       <DetailSection title="Definition">
-        {isBrickConfigLoading ? (
+        {isPackageConfigLoading ? (
           <div className="text-muted">Loading...</div>
-        ) : isEmpty(brickConfig) ? (
+        ) : isEmpty(packageConfig) ? (
           <div className="text-muted">
-            Definition not available for built-in bricks
+            Definition not available for built-in packages
           </div>
         ) : (
           <Suspense fallback={<div className="text-muted">Loading...</div>}>
             <AceEditor
-              value={brickConfig}
+              value={packageConfig}
               mode="yaml"
               theme="chrome"
               width="100%"
@@ -182,4 +182,4 @@ const BrickDetail = <T extends Metadata>({
   );
 };
 
-export default BrickDetail;
+export default PackageDetail;

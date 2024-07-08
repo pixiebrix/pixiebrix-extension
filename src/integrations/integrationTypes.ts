@@ -20,7 +20,11 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type Except, type JsonObject, type JsonValue } from "type-fest";
-import { type Metadata, type RegistryId } from "@/types/registryTypes";
+import {
+  type Metadata,
+  type PackageInstance,
+  type RegistryId,
+} from "@/types/registryTypes";
 
 /**
  * The integration dependency format for saving mod components.
@@ -301,7 +305,7 @@ export interface Integration<
   TSanitized = TConfig & { _sanitizedConfigBrand: null },
   TSecret = TConfig & { _integrationConfigBrand: null },
   TAuthData extends AuthData = AuthData,
-> extends Metadata {
+> extends PackageInstance {
   schema: Schema;
 
   /**

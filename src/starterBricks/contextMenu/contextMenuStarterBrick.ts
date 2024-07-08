@@ -36,7 +36,6 @@ import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { selectModComponentContext } from "@/starterBricks/helpers";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
@@ -72,6 +71,7 @@ import {
   type ContextMenuDefinition,
 } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { mapModComponentToMessageContext } from "@/utils/modUtils";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
@@ -331,7 +331,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     } = modComponent.config;
 
     const modComponentLogger = this.logger.childLogger(
-      selectModComponentContext(modComponent),
+      mapModComponentToMessageContext(modComponent),
     );
 
     const handler = async (

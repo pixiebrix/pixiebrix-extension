@@ -312,10 +312,12 @@ function PaginatedTable<
               {Math.min(rowNumber + pageSize - 1, rows.length)} of {rows.length}
             </div>
             <div className="flex-grow-1 px-3">
-              <SearchFilter
-                style={{ maxWidth: 300 }}
-                setGlobalFilter={setGlobalFilter}
-              />
+              {showSearchFilter && (
+                <SearchFilter
+                  style={{ maxWidth: 300 }}
+                  setGlobalFilter={setGlobalFilter}
+                />
+              )}
             </div>
 
             <Pagination className="m-0">

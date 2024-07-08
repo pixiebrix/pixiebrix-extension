@@ -16,35 +16,32 @@
  */
 
 import React from "react";
-import BrickDetail from "./BrickDetail";
+import PackageDetail from "./PackageDetail";
 import { TableRenderer } from "@/bricks/renderers/table";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/extensionConsole/testHelpers";
 import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
-import { type Metadata } from "@/types/registryTypes";
 
 mockAllApiEndpoints();
 
-test.each([
-  ["empty", {}],
-  ["@pixiebrix/table", new TableRenderer()],
-])(
-  "renders %s brick in loading state",
-  async (brickName: string, brick: Metadata) => {
-    const { asFragment } = render(
-      <BrickDetail brick={brick} brickConfig={null} isBrickConfigLoading />,
-    );
-    await waitForEffect();
-    expect(asFragment()).toMatchSnapshot();
-  },
-);
+test("renders @pixiebrix/table brick in loading state", async () => {
+  const { asFragment } = render(
+    <PackageDetail
+      packageInstance={new TableRenderer()}
+      packageConfig={null}
+      isPackageConfigLoading
+    />,
+  );
+  await waitForEffect();
+  expect(asFragment()).toMatchSnapshot();
+});
 
 test("renders @pixiebrix/table loaded", async () => {
   const { asFragment } = render(
-    <BrickDetail
-      brick={new TableRenderer()}
-      brickConfig={null}
-      isBrickConfigLoading={false}
+    <PackageDetail
+      packageInstance={new TableRenderer()}
+      packageConfig={null}
+      isPackageConfigLoading={false}
     />,
   );
   await waitForEffect();

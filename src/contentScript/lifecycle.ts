@@ -318,7 +318,7 @@ export function removeDraftModComponents(
 
       _runningStarterBricks.delete(starterBrick);
       _draftModComponentStarterBrickMap.delete(modComponentId);
-      sidebar.removeExtensions([modComponentId]);
+      sidebar.removeModComponents([modComponentId]);
     } else {
       console.debug(
         `No draft mod component exists for uuid: ${modComponentId}`,
@@ -333,7 +333,7 @@ export function removeDraftModComponents(
       try {
         starterBrick.uninstall({ global: true });
         _runningStarterBricks.delete(starterBrick);
-        sidebar.removeExtensionPoint(starterBrick.id);
+        sidebar.removeStarterBrick(starterBrick.id);
       } catch (error) {
         reportError(error);
       }

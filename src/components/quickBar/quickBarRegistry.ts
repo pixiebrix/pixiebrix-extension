@@ -81,7 +81,7 @@ class QuickBarRegistry implements QuickBarProtocol {
    * Get the current actions registered with the Quick Bar.
    */
   get currentActions(): CustomAction[] {
-    // Return a copy, since this.actions is mutated in-place
+    // Return a copy, because this.actions is mutated in-place
     return [...this.actions];
   }
 
@@ -109,7 +109,7 @@ class QuickBarRegistry implements QuickBarProtocol {
       // nest the items because the parent item will be overwritten with no children.
       this.actions.push(action);
     } else {
-      // Put at the front of the list so they appear before the other actions with the same Priority
+      // Put at the front of the list, so the action appears before the other actions with the same Priority
       this.actions.unshift(action);
     }
 
@@ -117,19 +117,28 @@ class QuickBarRegistry implements QuickBarProtocol {
   }
 
   /**
-   * Remove all actions added by a given extension point.
+   * Remove all actions added by a given starter brick.
    */
   removeStarterBrickActions(starterBrickId: RegistryId): void {
-    remove(this.actions, (x) => x.extensionPointId === starterBrickId);
+    remove(
+      this.actions,
+      (x) => x.modComponentRef?.extensionPointId === starterBrickId,
+    );
     this.notifyListeners();
   }
 
   /**
-   * Remove all actions added by a given mod component.
-   * @param modComponentId the ModComponentBase UUID
+   * Remove all actions added by a given mod component. Excludes generator root actions.
+   * @param modComponentId the mod component UUID
    */
-  removeModComponentActions(modComponentId: UUID): void {
-    remove(this.actions, (x) => x.extensionId === modComponentId);
+  removeModComponentLeafActions(modComponentId: UUID): void {
+    remove(
+      this.actions,
+      (x) =>
+        x.modComponentRef?.extensionId === modComponentId &&
+        // Exclude the root action
+        !this.knownGeneratorRootIds.has(x.id),
+    );
     this.notifyListeners();
   }
 

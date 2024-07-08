@@ -15,29 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateSchema } from "@/extensionConsole/pages/brickEditor/validate";
-import trelloBlueprint from "@contrib/recipes/trello-slack.yaml";
+import { validateSchema } from "@/extensionConsole/pages/packageEditor/validate";
+import trelloModDefinition from "@contrib/recipes/trello-slack.yaml";
 import amazonBrick from "@contrib/bricks/amazon-search.yaml";
-import v3Blueprint from "@contrib/recipes/v3-example.txt";
+import v3ModDefinition from "@contrib/recipes/v3-example.txt";
 import { objToYaml } from "@/utils/objToYaml";
-import v3OptionalServices from "@contrib/recipes/v3-optional-services-example.txt";
+import v3OptionalIntegrations from "@contrib/recipes/v3-optional-services-example.txt";
 
 describe("validateSchema", () => {
   test("validates a v1 blueprint", async () => {
-    await expect(validateSchema(objToYaml(trelloBlueprint))).resolves.toEqual(
-      {},
-    );
+    await expect(
+      validateSchema(objToYaml(trelloModDefinition)),
+    ).resolves.toEqual({});
   });
 
-  test("validates a v3 blueprint", async () => {
-    await expect(validateSchema(v3Blueprint)).resolves.toEqual({});
+  test("validates a v3 mod definition", async () => {
+    await expect(validateSchema(v3ModDefinition)).resolves.toEqual({});
   });
 
   test("validates a brick", async () => {
     await expect(validateSchema(objToYaml(amazonBrick))).resolves.toEqual({});
   });
 
-  test("validates an optional services schema", async () => {
-    await expect(validateSchema(v3OptionalServices)).resolves.toEqual({});
+  test("validates an optional integration configuration schema", async () => {
+    await expect(validateSchema(v3OptionalIntegrations)).resolves.toEqual({});
   });
 });

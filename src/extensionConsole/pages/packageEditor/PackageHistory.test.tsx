@@ -16,8 +16,7 @@
  */
 
 import React from "react";
-import BrickHistory from "@/extensionConsole/pages/brickEditor/BrickHistory";
-
+import PackageHistory from "@/extensionConsole/pages/packageEditor/PackageHistory";
 import { act, screen, waitFor } from "@testing-library/react";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
@@ -35,11 +34,11 @@ const findDiffEditor = (container: HTMLElement) =>
   // eslint-disable-next-line testing-library/no-node-access -- ace editor is not loaded/rendered in a normal way
   container.querySelector("#DIFF_EDITOR_DIV");
 
-describe("BrickHistory", () => {
-  const testBrickId = uuidSequence(1);
+describe("PackageHistory", () => {
+  const testPackageId = uuidSequence(1);
 
-  const renderBrickHistory = async () => {
-    const utils = render(<BrickHistory brickId={testBrickId} />);
+  const renderPackageHistory = async () => {
+    const utils = render(<PackageHistory packageId={testPackageId} />);
     // Wait for the currentVersion effect to resolve
     await waitForEffect();
     return utils;
@@ -48,7 +47,7 @@ describe("BrickHistory", () => {
   it("renders select components for choosing versions and displays the diff", async () => {
     const testVersions: PackageVersionDeprecated[] = [
       {
-        id: testBrickId,
+        id: testPackageId,
         version: "1.0.1",
         config: {},
         raw_config: "some big yaml file",
@@ -56,7 +55,7 @@ describe("BrickHistory", () => {
         updated_at: "2024-01-26T23:58:12.270168Z" as Timestamp,
       },
       {
-        id: testBrickId,
+        id: testPackageId,
         version: "1.0.0",
         config: {},
         raw_config: "some big yaml file2",
@@ -66,7 +65,7 @@ describe("BrickHistory", () => {
     ];
 
     const testPackage: Package = {
-      id: testBrickId,
+      id: testPackageId,
       name: "@pixies/ai/chatgpt-sidebar",
       kind: DefinitionKinds.MOD,
       version: "1.0.1",
@@ -81,7 +80,7 @@ describe("BrickHistory", () => {
       .reply(200, testVersions);
     axiosMock.onGet(/api\/bricks\/[\w-]*\/$/).reply(200, testPackage);
 
-    const { container } = await renderBrickHistory();
+    const { container } = await renderPackageHistory();
 
     // The diff editor should not be rendered yet.
     expect(findDiffEditor(container)).not.toBeInTheDocument();

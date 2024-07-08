@@ -21,7 +21,7 @@ import {
   showSidebarInTopFrame,
   sidebarWasLoaded,
   updateSidebar,
-  removeExtensions as removeSidebars,
+  removeModComponents as removeSidebars,
   getReservedPanelEntries,
 } from "@/contentScript/sidebarController";
 import { handleMenuAction } from "@/contentScript/contextMenus";
