@@ -48,6 +48,4 @@ test("brick actions panel shows when starter brick is selected", async ({
   );
   await testStarterBrick.activate();
   await expect(pageEditorPage.brickActionsPanel.root).toBeVisible();
-
-  await page.pause();
 });
