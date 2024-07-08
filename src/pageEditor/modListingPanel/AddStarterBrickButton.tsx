@@ -80,14 +80,14 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
       sortedStarterBricks
         // eslint-disable-next-line security/detect-object-injection -- array index
         .filter((_, index) => results[index])
-        .map((config) => (
+        .map((modComponentFormStateAdapter) => (
           <DropdownEntry
-            key={config.elementType}
-            caption={config.label}
-            icon={config.icon}
-            beta={Boolean(config.flag)}
+            key={modComponentFormStateAdapter.elementType}
+            caption={modComponentFormStateAdapter.label}
+            icon={modComponentFormStateAdapter.icon}
+            beta={Boolean(modComponentFormStateAdapter.flag)}
             onClick={() => {
-              addNewModComponent(config);
+              addNewModComponent(modComponentFormStateAdapter);
             }}
           />
         ))

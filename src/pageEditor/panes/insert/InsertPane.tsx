@@ -28,11 +28,11 @@ import useAutoInsert from "@/pageEditor/panes/insert/useAutoInsert";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { cancelSelect } from "@/contentScript/messenger/api";
 
-const InsertPane: React.FC<{ inserting: StarterBrickType }> = ({
-  inserting,
+const InsertPane: React.FC<{ insertingStarterBrickType: StarterBrickType }> = ({
+  insertingStarterBrickType,
 }) => {
   // Auto-insert if the StarterBrickType supports it
-  useAutoInsert(inserting);
+  useAutoInsert(insertingStarterBrickType);
 
   const dispatch = useDispatch();
 
@@ -42,9 +42,9 @@ const InsertPane: React.FC<{ inserting: StarterBrickType }> = ({
   }, [dispatch]);
 
   // Cancel insert with escape key
-  useEscapeHandler(cancelInsert, inserting != null);
+  useEscapeHandler(cancelInsert, insertingStarterBrickType != null);
 
-  switch (inserting) {
+  switch (insertingStarterBrickType) {
     case StarterBrickTypes.BUTTON: {
       return <InsertButtonPane cancel={cancelInsert} />;
     }

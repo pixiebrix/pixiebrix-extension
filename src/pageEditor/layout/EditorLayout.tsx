@@ -20,7 +20,7 @@ import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
 import { useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import Modals from "../modals/Modals";
-import { selectIsInsertingNewStarterBrick } from "@/pageEditor/store/editor/editorSelectors";
+import { selectInsertingStarterBrickType } from "@/pageEditor/store/editor/editorSelectors";
 import EditorContent from "@/pageEditor/layout/EditorContent";
 import styles from "./EditorLayout.module.scss";
 import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
@@ -33,7 +33,9 @@ import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelec
 import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
 
 const EditorLayout: React.FunctionComponent = () => {
-  const isInserting = useSelector(selectIsInsertingNewStarterBrick);
+  const insertingStarterBrickType = useSelector(
+    selectInsertingStarterBrickType,
+  );
   const { restrict } = useFlags();
   const isRestricted = restrict("page-editor");
   const isStaleSession = useSelector(selectIsStaleSession);
@@ -56,8 +58,8 @@ const EditorLayout: React.FunctionComponent = () => {
           <RestrictedPane />
         ) : isStaleSession ? (
           <StaleSessionPane />
-        ) : isInserting ? (
-          <InsertPane inserting={isInserting} />
+        ) : insertingStarterBrickType ? (
+          <InsertPane insertingStarterBrickType={insertingStarterBrickType} />
         ) : (
           <>
             <ModListingPanel />

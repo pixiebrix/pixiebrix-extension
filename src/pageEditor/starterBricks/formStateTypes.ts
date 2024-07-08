@@ -124,7 +124,7 @@ type SidebarStarterBrickState = BaseStarterBrickState & {
 
 export interface SidebarFormState
   extends BaseFormState<SidebarModComponentState, SidebarStarterBrickState> {
-  type: "actionPanel";
+  type: typeof StarterBrickTypes.SIDEBAR_PANEL;
 }
 
 // TriggerFormState
@@ -164,7 +164,7 @@ export function isTriggerStarterBrick(
 
 export interface TriggerFormState
   extends BaseFormState<BaseModComponentState, TriggerStarterBrickState> {
-  type: "trigger";
+  type: typeof StarterBrickTypes.TRIGGER;
 }
 
 // ContextMenuFormState
@@ -187,7 +187,7 @@ export interface ContextMenuFormState
     ContextMenuModComponentState,
     ContextMenuStarterBrickState
   > {
-  type: "contextMenu";
+  type: typeof StarterBrickTypes.CONTEXT_MENU;
 }
 
 // QuickBarFormState
@@ -230,7 +230,7 @@ export function isQuickBarStarterBrick(
 
 export interface QuickBarFormState
   extends BaseFormState<QuickBarModComponentState, QuickBarStarterBrickState> {
-  type: "quickBar";
+  type: typeof StarterBrickTypes.QUICK_BAR_ACTION;
 }
 
 export interface QuickBarProviderFormState
@@ -238,7 +238,7 @@ export interface QuickBarProviderFormState
     QuickBarProviderModComponentState,
     QuickBarProviderStarterBrickState
   > {
-  type: "quickBarProvider";
+  type: typeof StarterBrickTypes.DYNAMIC_QUICK_BAR;
 }
 
 /**

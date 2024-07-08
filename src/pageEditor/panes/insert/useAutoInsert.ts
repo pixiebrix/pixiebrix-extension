@@ -34,11 +34,11 @@ function useAutoInsert(type: StarterBrickType): void {
     try {
       const url = await getCurrentInspectedURL();
 
-      const config = ADAPTERS.get(type);
+      const modComponentFormStateAdapter = ADAPTERS.get(type);
 
       const metadata = internalStarterBrickMetaFactory();
 
-      const formState = config.fromNativeElement(
+      const formState = modComponentFormStateAdapter.fromNativeElement(
         url,
         metadata,
         // eslint-disable-next-line unicorn/no-useless-undefined -- typescript expects the argument
@@ -54,22 +54,25 @@ function useAutoInsert(type: StarterBrickType): void {
 
       updateDraftModComponent(
         allFramesInInspectedTab,
-        config.asDraftModComponent(formState),
+        modComponentFormStateAdapter.asDraftModComponent(formState),
       );
 
       // TODO: report if created new, or using existing foundation
       reportEvent(Events.PAGE_EDITOR_START, {
-        type: config.elementType,
+        type: modComponentFormStateAdapter.elementType,
       });
 
-      if (config.elementType === StarterBrickTypes.SIDEBAR_PANEL) {
+      if (
+        modComponentFormStateAdapter.elementType ===
+        StarterBrickTypes.SIDEBAR_PANEL
+      ) {
         // For convenience, open the side panel if it's not already open so that the user doesn't
         // have to manually toggle it
         void openSidePanel(inspectedTab.tabId);
       }
 
       reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
-        type: config.elementType,
+        type: modComponentFormStateAdapter.elementType,
       });
     } catch (error) {
       notify.error({

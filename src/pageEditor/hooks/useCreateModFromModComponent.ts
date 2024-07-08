@@ -32,6 +32,9 @@ import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/store/editor/editor
 import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
+import { updateDraftModComponent } from "@/contentScript/messenger/api";
+import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 
 type UseCreateModFromModReturn = {
   createModFromComponent: (
@@ -64,12 +67,9 @@ function useCreateModFromModComponent(
           return;
         }
 
-        const newModComponentFormState = produce(
-          activeModComponent,
-          (draft) => {
-            draft.uuid = uuidv4();
-          },
-        );
+        let newModComponentFormState = produce(activeModComponent, (draft) => {
+          draft.uuid = uuidv4();
+        });
 
         try {
           const newModDefinition = await buildAndValidateMod({
@@ -83,17 +83,30 @@ function useCreateModFromModComponent(
             public: false,
           }).unwrap();
 
-          const newModComponent = produce(newModComponentFormState, (draft) => {
-            draft.modMetadata = mapModDefinitionUpsertResponseToModMetadata(
-              newModDefinition,
-              upsertResponse,
-            );
-          });
+          newModComponentFormState = produce(
+            newModComponentFormState,
+            (draft) => {
+              draft.modMetadata = mapModDefinitionUpsertResponseToModMetadata(
+                newModDefinition,
+                upsertResponse,
+              );
+            },
+          );
 
-          dispatch(editorActions.addModComponentFormState(newModComponent));
+          updateDraftModComponent(
+            allFramesInInspectedTab,
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- something weird is happening with the type here
+            ADAPTERS.get(newModComponentFormState.type)!.asDraftModComponent(
+              newModComponentFormState,
+            ),
+          );
+
+          dispatch(
+            editorActions.addModComponentFormState(newModComponentFormState),
+          );
 
           await upsertModComponentFormState({
-            modComponentFormState: newModComponent,
+            modComponentFormState: newModComponentFormState,
             options: {
               // Don't push to cloud since we're saving it with the mod
               pushToCloud: false,
