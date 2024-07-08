@@ -29,9 +29,9 @@ const brick = new RunMetadataTransformer();
 
 describe("RunMetadataTransformer", () => {
   it("returns standalone mod metadata", async () => {
-    const extensionId = autoUUIDSequence();
+    const modComponentId = autoUUIDSequence();
     const logger = new ConsoleLogger({
-      modComponentId: extensionId,
+      modComponentId,
     });
 
     const result = await brick.run(
@@ -42,7 +42,7 @@ describe("RunMetadataTransformer", () => {
     );
 
     expect(result).toEqual({
-      modComponentId: extensionId,
+      modComponentId,
       deploymentId: null,
       mod: null,
       runId: null,
@@ -50,11 +50,11 @@ describe("RunMetadataTransformer", () => {
   });
 
   it("returns packaged mod metadata", async () => {
-    const extensionId = autoUUIDSequence();
-    const registryId = registryIdFactory();
+    const modComponentId = autoUUIDSequence();
+    const modId = registryIdFactory();
     const logger = new ConsoleLogger({
-      modComponentId: extensionId,
-      modId: registryId,
+      modComponentId,
+      modId,
       modVersion: "1.0.0" as SemVerString,
     });
 
@@ -66,10 +66,10 @@ describe("RunMetadataTransformer", () => {
     );
 
     expect(result).toEqual({
-      modComponentId: extensionId,
+      modComponentId,
       deploymentId: null,
       mod: {
-        id: registryId,
+        id: modId,
         version: "1.0.0",
       },
       runId: null,
@@ -77,14 +77,14 @@ describe("RunMetadataTransformer", () => {
   });
 
   it("returns deployed mod metadata", async () => {
-    const extensionId = autoUUIDSequence();
+    const modComponentId = autoUUIDSequence();
     const deploymentId = autoUUIDSequence();
-    const registryId = registryIdFactory();
+    const modId = registryIdFactory();
     const runId = autoUUIDSequence();
 
     const logger = new ConsoleLogger({
-      modComponentId: extensionId,
-      modId: registryId,
+      modComponentId,
+      modId,
       modVersion: "1.0.0" as SemVerString,
       deploymentId,
     });
@@ -95,17 +95,17 @@ describe("RunMetadataTransformer", () => {
         logger,
         meta: {
           runId,
-          extensionId,
+          extensionId: modComponentId,
           branches: [],
         },
       }),
     );
 
     expect(result).toEqual({
-      modComponentId: extensionId,
+      modComponentId,
       deploymentId,
       mod: {
-        id: registryId,
+        id: modId,
         version: "1.0.0",
       },
       runId,
