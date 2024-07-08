@@ -21,7 +21,7 @@ import React, { useMemo } from "react";
 import { ListGroup } from "react-bootstrap";
 import cx from "classnames";
 import { OfficialBadge } from "@/components/OfficialBadge";
-import BrickIcon from "@/components/BrickIcon";
+import PackageIcon from "@/components/PackageIcon";
 import {
   faEyeSlash,
   faGlobe,
@@ -111,7 +111,7 @@ const PackageResult = <T extends PackageInstance>({
   >
     <div className="d-flex">
       <div className="mr-2 text-muted">
-        <BrickIcon brick={packageInstance} />
+        <PackageIcon packageOrMetadata={packageInstance} />
       </div>
       <div className={cx("flex-grow-1", styles.titleColumn)}>
         <div className="d-flex justify-content-between">

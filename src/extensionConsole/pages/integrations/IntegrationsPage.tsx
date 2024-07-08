@@ -31,7 +31,7 @@ import { services } from "@/background/messenger/api";
 import ZapierIntegrationModal from "@/extensionConsole/pages/integrations/ZapierIntegrationModal";
 import notify from "@/utils/notify";
 import { useLocation } from "react-router";
-import BrickModal from "@/components/brickModalNoTags/BrickModal";
+import PackageSearchModal from "@/components/packageSearchModal/PackageSearchModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isUUID, uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
@@ -421,9 +421,9 @@ const IntegrationsPage: React.VFC = () => {
       isPending={localState.isLoadingIntegrations}
       documentationUrl="https://docs.pixiebrix.com/integrations/configuring-integrations"
       toolbar={
-        <BrickModal
+        <PackageSearchModal
           onSelect={onSelectIntegrationForNewConfig}
-          bricks={localState.integrations}
+          packageInstances={localState.integrations}
           modalClassName={styles.ModalOverride}
           selectCaption={
             <span>
