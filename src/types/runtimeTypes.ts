@@ -18,7 +18,7 @@
 import { type ComponentType } from "react";
 import { type SafeHTML, type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type Primitive } from "type-fest";
+import { type Primitive, type Tagged } from "type-fest";
 import { type Logger } from "@/types/loggerTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { type PanelPayload } from "./sidebarTypes";
@@ -54,9 +54,7 @@ export function isDocument(root: SelectorRoot): root is Document {
  * A reference to an element on the page.
  * @see getReferenceForElement
  */
-export type ElementReference = UUID & {
-  _elementReferenceBrand: never;
-};
+export type ElementReference = Tagged<UUID, "ElementReference">;
 
 /**
  * A reference to a React component produced by a Renderer brick.
@@ -75,17 +73,15 @@ export type RendererOutput = SafeHTML | ComponentRef;
 /**
  * A valid identifier for a brick output key or a service key. (Does not include the preceding "@".)
  */
-export type OutputKey = string & {
-  _outputKeyBrand: never;
-};
+export type OutputKey = Tagged<string, "OutputKey">;
 
 /**
  * A variable with a "@"-prefix that refers to an integration
  */
-export type IntegrationDependencyVarRef = string & {
-  // Preserve legacy branding field name for backwards compatibility
-  _serviceVarRefBrand: never;
-};
+export type IntegrationDependencyVarRef = Tagged<
+  string,
+  "IntegrationDependencyVarRef"
+>;
 
 /**
  * A text template engine.
@@ -226,12 +222,13 @@ export type OptionsArgs = Record<string, Primitive>;
  * @see RenderedArgs
  * @see BrickConfig.outputKey
  */
-export type BrickArgsContext = UnknownObject & {
-  // Nominal typing
-  _blockArgsContextBrand: never;
-  "@input": UnknownObject;
-  "@options"?: OptionsArgs;
-};
+export type BrickArgsContext = Tagged<
+  UnknownObject & {
+    "@input": UnknownObject;
+    "@options"?: OptionsArgs;
+  },
+  "BrickArgsContext"
+>;
 
 /**
  * Returns an object as a BrickArgsContext, or throw a TypeError if it's not a valid context.
@@ -257,19 +254,16 @@ export function validateBrickArgsContext(obj: UnknownObject): BrickArgsContext {
 export type BrickArgs<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
   T extends Record<string, any> = Record<string, any>,
-> = T & {
-  _blockArgBrand: never;
-};
+> = Tagged<T, "BrickArgs">;
 
 /**
  * The non-validated arguments to pass into the `run` method of a Brick.
  * @see BrickArgs
  */
-export type RenderedArgs = UnknownObject & {
-  _renderedArgBrand: never;
-};
+export type RenderedArgs = Tagged<UnknownObject, "RenderedArgs">;
 
 export type IntegrationsContextValue = {
+  // NOTE: this is not a nominal type brand. The `__service` key is actually used in the runtime.
   __service: SanitizedIntegrationConfig;
   [prop: string]: string | SanitizedIntegrationConfig | null;
 };
