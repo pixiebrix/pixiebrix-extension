@@ -85,9 +85,9 @@ function useSanitizedIntegrationConfigFormikAdapter(
     }
 
     const { integrationId, configId } = integrationDependency;
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- unconfigured dependencies are filtered out
     return integrationConfigLocator.findSanitizedIntegrationConfig(
       integrationId,
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- unconfigured dependencies are filtered out
       configId!,
     );
   }, [integrationDependency]);
