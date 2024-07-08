@@ -53,22 +53,36 @@ export type DefinitionKind = ValueOf<typeof DefinitionKinds>;
 export type SemVerString = Tagged<string, "SemVer">;
 
 /**
- * Metadata about a Brick, StarterBrick, Integration, or Mod.
+ * Registry item metadata and the interface for a registry package instances, i.e., `Brick`, `StarterBrick`,
+ * and `Integration`.
+ *
+ * Currently called `Metadata` because the common fields are all metadata fields about the package.
+ *
+ * NOTE: mod definitions exist in the registry, but are not instantiated as a package instance object.
  */
+// TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8769: introduce `PackageInstance` or similar type name
+//  to differentiate usage as definition shape from usage as base class for package instances.
 export interface Metadata {
   /**
-   * Registry id in the external registry
+   * Registry id in the external package registry.
    */
   readonly id: RegistryId;
 
   /**
-   * Human-readable name
+   * Human-readable name.
    */
   readonly name: string;
 
+  /**
+   * An optional human-readable description.
+   */
   readonly description?: string;
 
-  // Currently optional because it defaults to the browser extension version for bricks defined in JS
+  /**
+   * The semantic version of the package.
+   *
+   * Currently optional because it defaults to the browser extension version for bricks defined in JS.
+   */
   readonly version?: SemVerString;
 
   /**

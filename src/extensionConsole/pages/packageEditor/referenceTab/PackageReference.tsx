@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./BrickReference.module.scss";
+import styles from "./PackageReference.module.scss";
 
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -30,54 +30,54 @@ import {
 import Fuse from "fuse.js";
 import { sortBy } from "lodash";
 import Loader from "@/components/Loader";
-import BrickDetail from "./BrickDetail";
-import BrickResult from "./BrickResult";
+import PackageDetail from "./PackageDetail";
+import PackageResult from "./PackageResult";
 import { isOfficial } from "@/bricks/util";
-import { find } from "@/registry/packageRegistry";
+import { find as findPackage } from "@/registry/packageRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
 import { useGetOrganizationsQuery } from "@/data/service/api";
 import { type Metadata } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 
-type BrickReferenceProps<T extends Metadata> = {
-  bricks: T[];
+type OwnProps<T extends Metadata> = {
+  packageInstances: T[];
   initialSelected?: T;
 };
 
-const BrickReference = ({
-  bricks,
+const PackageReference = ({
+  packageInstances,
   initialSelected,
-}: BrickReferenceProps<Metadata>) => {
+}: OwnProps<Metadata>) => {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Metadata>(initialSelected);
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
-  const sortedBricks = useMemo(
+  const sortedPackages = useMemo(
     () =>
       sortBy(
-        bricks ?? [],
+        packageInstances ?? [],
         (x) => (isOfficial(x.id) ? 0 : 1),
         (x) => x.name,
       ),
-    [bricks],
+    [packageInstances],
   );
 
   useEffect(() => {
-    if (sortedBricks.length > 0 && selected == null) {
-      setSelected(sortedBricks[0]);
+    if (sortedPackages.length > 0 && selected == null) {
+      setSelected(sortedPackages[0]);
     }
-  }, [sortedBricks, selected, setSelected]);
+  }, [sortedPackages, selected, setSelected]);
 
-  const { data: brickConfig, isLoading: isBrickConfigLoading } =
+  const { data: packageConfig, isLoading: isPackageConfigLoading } =
     useAsyncState(async () => {
       if (!selected?.id) {
         return null;
       }
 
-      const brickPackage = await find(selected.id);
-      if (brickPackage?.config) {
-        delete brickPackage.config.sharing;
-        return brickToYaml(brickPackage.config);
+      const packageVersion = await findPackage(selected.id);
+      if (packageVersion?.config) {
+        delete packageVersion.config.sharing;
+        return brickToYaml(packageVersion.config);
       }
 
       return null;
@@ -85,17 +85,17 @@ const BrickReference = ({
 
   const fuse: Fuse<Metadata> = useMemo(
     () =>
-      new Fuse(sortedBricks, {
+      new Fuse(sortedPackages, {
         // Prefer name, then id
         keys: ["name", "id"],
       }),
-    [sortedBricks],
+    [sortedPackages],
   );
 
   const results = useMemo(() => {
     let matches =
       query.trim() === ""
-        ? sortedBricks
+        ? sortedPackages
         : fuse.search(query).map((x) => x.item);
 
     // If a brick is selected, have it show up at the top of the list
@@ -104,7 +104,7 @@ const BrickReference = ({
     }
 
     return matches.slice(0, 10);
-  }, [selected, initialSelected, query, fuse, sortedBricks]);
+  }, [selected, initialSelected, query, fuse, sortedPackages]);
 
   return (
     <Container className="h-100" fluid>
@@ -125,9 +125,9 @@ const BrickReference = ({
           </InputGroup>
           <ListGroup className={styles.blockResults}>
             {results.map((result) => (
-              <BrickResult
+              <PackageResult
                 key={result.id}
-                brick={result}
+                packageInstance={result}
                 active={selected?.id === result.id}
                 onSelect={() => {
                   setSelected(result);
@@ -139,10 +139,10 @@ const BrickReference = ({
         </Col>
         <Col md={8} className={styles.detailColumn}>
           {selected ? (
-            <BrickDetail
-              brick={selected}
-              brickConfig={brickConfig}
-              isBrickConfigLoading={isBrickConfigLoading}
+            <PackageDetail
+              packageInstance={selected}
+              packageConfig={packageConfig}
+              isPackageConfigLoading={isPackageConfigLoading}
             />
           ) : (
             <div>
@@ -155,4 +155,4 @@ const BrickReference = ({
   );
 };
 
-export default BrickReference;
+export default PackageReference;

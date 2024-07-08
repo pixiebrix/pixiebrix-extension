@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./BrickHistory.module.scss";
+import styles from "./PackageHistory.module.scss";
 
 import React, { Suspense, useEffect, useMemo, useState } from "react";
 import Select, {
@@ -64,19 +64,21 @@ const CustomSingleOption: React.FunctionComponent<
   </Option>
 );
 
-const BrickHistory: React.FunctionComponent<{
-  brickId: UUID;
-}> = ({ brickId }) => {
-  const { data: brick } = useGetPackageQuery({ id: brickId });
+const PackageHistory: React.FunctionComponent<{
+  packageId: UUID;
+}> = ({ packageId }) => {
+  const { data: editablePackage } = useGetPackageQuery({ id: packageId });
   const { data: packageVersions } = useListPackageVersionsQuery({
-    id: brickId,
+    id: packageId,
   });
 
   const versionOptions = useMemo<PackageVersionOption[]>(
     () =>
       (packageVersions ?? []).map((packageVersion) => {
         const label = `${packageVersion.version}${
-          packageVersion.version === brick?.version ? " (current)" : ""
+          packageVersion.version === editablePackage?.version
+            ? " (current)"
+            : ""
         }`;
         const baseOption: PackageVersionOption = {
           value: packageVersion.version ?? "",
@@ -96,7 +98,7 @@ const BrickHistory: React.FunctionComponent<{
           updated_at: formatted_date,
         };
       }),
-    [packageVersions, brick],
+    [packageVersions, editablePackage],
   );
 
   const currentVersion = useMemo(
@@ -132,7 +134,7 @@ const BrickHistory: React.FunctionComponent<{
     <div>
       <div className="p-3">
         <p>
-          Compare past versions of this brick by selecting the versions below.
+          Compare past versions of this package by selecting the versions below.
         </p>
         <div className="d-flex justify-content-start">
           <Select
@@ -180,4 +182,4 @@ const BrickHistory: React.FunctionComponent<{
   );
 };
 
-export default BrickHistory;
+export default PackageHistory;

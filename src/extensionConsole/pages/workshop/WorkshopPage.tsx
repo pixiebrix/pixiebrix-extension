@@ -27,8 +27,11 @@ import workshopSlice, { type WorkshopState } from "@/store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
 import { push } from "connected-react-router";
-import CustomBricksCard from "./CustomBricksCard";
-import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
+import EditablePackagesCard from "./EditablePackagesCard";
+import {
+  type EnrichedPackageMetadata,
+  type NavigateProps,
+} from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
 import { mapKindToKindUiValue } from "@/extensionConsole/pages/workshop/workshopUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
@@ -46,62 +49,62 @@ function selectFilters(state: { workshop: WorkshopState }) {
   return state.workshop.filters;
 }
 
-export function useEnrichBricks(
-  bricks: Nullishable<EditablePackageMetadata[]>,
-): EnrichedBrick[] {
+export function useEnrichPackageMetadata(
+  editablePackages: Nullishable<EditablePackageMetadata[]>,
+): EnrichedPackageMetadata[] {
   const recent = useSelector(selectRecent);
 
   return useMemo(() => {
-    console.debug("Recent bricks", { recent });
+    console.debug("Recent packages", { recent });
 
     return orderBy(
-      (bricks ?? []).map((brick) => {
-        const match = PACKAGE_REGEX.exec(brick.name);
+      (editablePackages ?? []).map((editablePackage) => {
+        const match = PACKAGE_REGEX.exec(editablePackage.name);
 
         const { scope, collection } = match?.groups ?? {};
 
         return {
-          ...brick,
+          ...editablePackage,
           scope,
           collection,
-          timestamp: recent.get(brick.id) ?? null,
+          timestamp: recent.get(editablePackage.id) ?? null,
         };
       }),
       // Show recently accessed first
       [(x) => x.timestamp ?? -1, (x) => x.verbose_name],
       ["desc", "asc"],
     );
-  }, [recent, bricks]);
+  }, [recent, editablePackages]);
 }
 
-export function useSearchOptions(bricks: EnrichedBrick[]) {
+export function useSearchOptions(packages: EnrichedPackageMetadata[]) {
   const scopeOptions = useMemo(
     () =>
-      sortBy(uniq((bricks ?? []).map((x) => x.scope))).map((value) => ({
+      sortBy(uniq((packages ?? []).map((x) => x.scope))).map((value) => ({
         value,
         label: value ?? "[No Scope]",
       })),
-    [bricks],
+    [packages],
   );
 
   const collectionOptions = useMemo(
     () =>
-      sortBy(uniq((bricks ?? []).map((x) => x.collection))).map((value) => ({
+      sortBy(uniq((packages ?? []).map((x) => x.collection))).map((value) => ({
         value,
         label: value ?? "[No Collection]",
       })),
-    [bricks],
+    [packages],
   );
 
   const kindOptions = useMemo(
     () =>
-      sortBy(uniq((bricks ?? []).map((x) => mapKindToKindUiValue(x.kind)))).map(
-        (value) => ({
-          value,
-          label: value,
-        }),
-      ),
-    [bricks],
+      sortBy(
+        uniq((packages ?? []).map((x) => mapKindToKindUiValue(x.kind))),
+      ).map((value) => ({
+        value,
+        label: value,
+      })),
+    [packages],
   );
 
   return {
@@ -111,14 +114,14 @@ export function useSearchOptions(bricks: EnrichedBrick[]) {
   };
 }
 
-const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
+const EditablePackagesSection: React.FunctionComponent<NavigateProps> = ({
   navigate,
 }) => {
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
 
   const {
-    data: remoteBricks,
+    data: editablePackages,
     isLoading,
     error,
   } = useGetEditablePackagesQuery(undefined, {
@@ -132,23 +135,25 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
     kinds = [],
   } = useSelector(selectFilters);
 
-  const bricks = useEnrichBricks(remoteBricks);
+  const enrichedPackages = useEnrichPackageMetadata(editablePackages);
   const { scopeOptions, kindOptions, collectionOptions } =
-    useSearchOptions(bricks);
+    useSearchOptions(enrichedPackages);
 
   const filtered = !isEmpty(scopes) || !isEmpty(collections) || !isEmpty(kinds);
 
-  const fuse: Fuse<EnrichedBrick> = useMemo(
+  const fuse: Fuse<EnrichedPackageMetadata> = useMemo(
     () =>
-      new Fuse(bricks, {
+      new Fuse(enrichedPackages, {
         keys: ["verbose_name", "name"],
       }),
-    [bricks],
+    [enrichedPackages],
   );
 
-  const sortedBricks = useMemo(() => {
+  const sortedPackages = useMemo(() => {
     const results =
-      query.trim() === "" ? bricks : fuse.search(query).map((x) => x.item);
+      query.trim() === ""
+        ? enrichedPackages
+        : fuse.search(query).map((x) => x.item);
 
     return results.filter(
       (x) =>
@@ -157,7 +162,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
           (x.collection && collections.includes(x.collection))) &&
         (kinds.length === 0 || kinds.includes(mapKindToKindUiValue(x.kind))),
     );
-  }, [fuse, query, scopes, collections, kinds, bricks]);
+  }, [fuse, query, scopes, collections, kinds, enrichedPackages]);
 
   return (
     <div className="max-950">
@@ -233,9 +238,9 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
         </div>
       </div>
       <div className="mt-4">
-        <CustomBricksCard
+        <EditablePackagesCard
           navigate={navigate}
-          bricks={sortedBricks}
+          packages={sortedPackages}
           isFetching={isLoading}
           error={error}
         />
@@ -254,23 +259,23 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => (
       icon={faHammer}
       description={
         <p>
-          Text-based editor for advanced users to create and edit bricks. Mods
-          created in the Page Editor can also be edited here.
+          Text-based editor for advanced users to create and edit registry
+          packages. Mods created with the Page Editor can also be edited here
         </p>
       }
       documentationUrl="https://docs.pixiebrix.com/developing-mods/advanced-workshop"
       toolbar={
         <Button
-          variant="info"
+          variant="primary"
           onClick={() => {
             navigate("/workshop/create/");
           }}
         >
-          <FontAwesomeIcon icon={faPlus} /> Create New Brick
+          <FontAwesomeIcon icon={faPlus} /> Create New Package
         </Button>
       }
     >
-      <CustomBricksSection navigate={navigate} />
+      <EditablePackagesSection navigate={navigate} />
     </Page>
   </RequireScope>
 );

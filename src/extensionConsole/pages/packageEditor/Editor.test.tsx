@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useOpenEditorTab } from "@/extensionConsole/pages/brickEditor/Editor";
+import { useOpenEditorTab } from "@/extensionConsole/pages/packageEditor/Editor";
 import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import { validateRegistryId } from "@/types/helpers";

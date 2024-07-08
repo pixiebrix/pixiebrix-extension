@@ -74,7 +74,7 @@ const workshopSlice = createSlice({
         kinds: [],
       };
     },
-    touchBrick(state, { payload: { id } }) {
+    touchPackage(state, { payload: { id } }) {
       if (id) {
         state.recent = state.recent.filter((x) => x.id !== id);
         state.recent.push({

@@ -26,13 +26,13 @@ import { useParams } from "react-router";
 import Editor from "./Editor";
 import { truncate } from "lodash";
 import Loader from "@/components/Loader";
-import useSubmitBrick from "./useSubmitBrick";
+import useSubmitPackage from "./useSubmitPackage";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import { HotKeys } from "react-hotkeys";
 import workshopSlice from "@/store/workshopSlice";
-import useLogContext from "@/extensionConsole/pages/brickEditor/useLogContext";
+import useLogContext from "@/extensionConsole/pages/packageEditor/useLogContext";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { type Package } from "@/types/contract";
@@ -41,46 +41,46 @@ import useIsMounted from "@/hooks/useIsMounted";
 import { type UUID } from "@/types/stringTypes";
 import { type Definition, DefinitionKinds } from "@/types/registryTypes";
 
-const { touchBrick } = workshopSlice.actions;
+const { touchPackage } = workshopSlice.actions;
 
-type ParsedBrickInfo = {
-  isBlueprint: boolean;
-  isInstalled: boolean;
+type ParsedPackageInfo = {
+  isMod: boolean;
+  isActivated: boolean;
   config: Definition;
 };
 
-function useParseBrick(config: string | null): ParsedBrickInfo {
-  const extensions = useSelector(selectActivatedModComponents);
+function useParsePackage(config: string | null): ParsedPackageInfo {
+  const activatedModComponents = useSelector(selectActivatedModComponents);
 
   return useMemo(() => {
     if (config == null) {
-      return { isBlueprint: false, isInstalled: false, config: undefined };
+      return { isMod: false, isActivated: false, config: undefined };
     }
 
     const configJSON = loadBrickYaml(config) as Definition;
     const isBlueprint = configJSON.kind === DefinitionKinds.MOD;
     if (isBlueprint) {
       return {
-        isBlueprint: true,
-        isInstalled: extensions.some(
+        isMod: true,
+        isActivated: activatedModComponents.some(
           (x) => x._recipe?.id === configJSON.metadata?.id,
         ),
         config: configJSON,
       };
     }
 
-    return { isBlueprint: false, isInstalled: false, config: configJSON };
-  }, [config, extensions]);
+    return { isMod: false, isActivated: false, config: configJSON };
+  }, [config, activatedModComponents]);
 }
 
 const LoadingBody: React.FC = () => (
   <>
     <div className="d-flex">
       <div className="flex-grow-1">
-        <PageTitle icon={faHammer} title="Edit Brick" />
+        <PageTitle icon={faHammer} title="Edit Package" />
       </div>
       <div className="flex-grow-1 text-right">
-        <Button disabled>Update Brick</Button>
+        <Button disabled>Update Package</Button>
       </div>
     </div>
     <div>
@@ -94,47 +94,47 @@ const keyMap = {
 };
 
 /**
- * Hook to mark the brick as touched in the Redux state (For showing recently edited bricks).
+ * Hook to mark the package as touched in the Redux state (For showing recently edited packages).
  */
-function useTouchBrick(id: UUID): void {
+function useTouchPackage(packageId: UUID): void {
   const dispatch = useDispatch();
   useEffect(() => {
-    console.debug("Marking brick as touched: %s", id);
-    dispatch(touchBrick({ id }));
-  }, [dispatch, id]);
+    console.debug("Marking package as touched: %s", packageId);
+    dispatch(touchPackage({ id: packageId }));
+  }, [dispatch, packageId]);
 }
 
 const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
   const {
-    isBlueprint,
-    isInstalled,
+    isMod,
+    isActivated,
     config: rawConfig,
-  } = useParseBrick(data.config);
+  } = useParsePackage(data.config);
 
   const name = rawConfig.metadata?.name;
 
-  const { submit, validate, remove } = useSubmitBrick({
+  const { submit, validate, remove } = useSubmitPackage({
     create: false,
   });
 
   const isMounted = useIsMounted();
 
-  const [isRemoving, setIsRemovingBrick] = useState(false);
+  const [isRemoving, setIsRemovingPackage] = useState(false);
   const onRemove = async () => {
-    setIsRemovingBrick(true);
+    setIsRemovingPackage(true);
     await remove({ id, name });
 
     // If the brick has been removed, the app will navigate away from this page,
     // so we need to check if the component is still mounted
     if (isMounted()) {
-      setIsRemovingBrick(false);
+      setIsRemovingPackage(false);
     }
   };
 
   useLogContext(data.config);
 
   useSetDocumentTitle(
-    name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick",
+    name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Package",
   );
 
   return (
@@ -142,7 +142,7 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
       <Formik
         onSubmit={submit}
         validate={validate}
-        initialValues={{ ...data, reactivate: isBlueprint && isInstalled }}
+        initialValues={{ ...data, reactivate: isMod && isActivated }}
       >
         {({ values, isValid, handleSubmit, isSubmitting }) => (
           <HotKeys
@@ -158,13 +158,13 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
                 <div className="flex-grow-1">
                   <PageTitle
                     icon={faHammer}
-                    title="Edit Brick"
+                    title="Edit Package"
                     documentationUrl="https://docs.pixiebrix.com/developing-mods/advanced-workshop"
                   />
                 </div>
                 <div className="flex-grow-1 EditPage__toolbar">
                   <div className="d-flex justify-content-end">
-                    {isBlueprint && isInstalled && (
+                    {isMod && isActivated && (
                       <div className="mr-4 my-auto">
                         <BooleanWidget
                           name="reactivate"
@@ -177,14 +177,14 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
                       disabled={!isValid || isSubmitting || isRemoving}
                       type="submit"
                     >
-                      {values.public ? "Publish Brick" : "Update Brick"}
+                      {values.public ? "Publish Package" : "Update Package"}
                     </Button>
                     <Button
                       disabled={isSubmitting || isRemoving}
                       variant="danger"
                       onClick={onRemove}
                     >
-                      Delete Brick
+                      Delete Package
                     </Button>
                   </div>
                 </div>
@@ -205,7 +205,7 @@ const EditPage: React.FC = () => {
   const { data, isFetching, error } = useGetPackageQuery({ id });
 
   // Can mark the brick as recently opened even if it errors on load
-  useTouchBrick(id);
+  useTouchPackage(id);
 
   if (error) {
     throw error;
