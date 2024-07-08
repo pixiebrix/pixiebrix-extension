@@ -17,15 +17,12 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { type ValueOf } from "type-fest";
+import { type Tagged, type ValueOf } from "type-fest";
 
 /**
  * A brick registry id conforming to `@scope/collection/name`
  */
-export type RegistryId = string & {
-  // Nominal subtyping
-  _registryIdBrand: never;
-};
+export type RegistryId = Tagged<string, "RegistryId">;
 
 /**
  * Scope for inner definitions
@@ -53,9 +50,7 @@ export type DefinitionKind = ValueOf<typeof DefinitionKinds>;
 /**
  * Simple semantic version number, major.minor.patch
  */
-export type SemVerString = string & {
-  _semVerBrand: never;
-};
+export type SemVerString = Tagged<string, "SemVer">;
 
 /**
  * Registry item metadata and the interface for a registry package instances, i.e., `Brick`, `StarterBrick`,
@@ -131,10 +126,7 @@ export type InnerDefinitions = Record<string, UnknownObject>;
  * A reference to an entry in the mod's `definitions` map. _Not a valid RegistryId_.
  * @see InnerDefinitions
  */
-export type InnerDefinitionRef = string & {
-  // Nominal subtyping
-  _innerDefinitionRefBrand: never;
-};
+export type InnerDefinitionRef = Tagged<string, "InnerDefinitionRef">;
 
 export interface RegistryItem<T extends RegistryId = RegistryId> {
   id: T;

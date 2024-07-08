@@ -1,0 +1,13 @@
+[
+  {
+    "kind": "E",
+    "path": [
+      "extensionPoints",
+      0,
+      "config",
+      "heading"
+    ],
+    "lhs": "Simple Sidebar Panel",
+    "rhs": "Simple Sidebar Panel -- Updated"
+  }
+]

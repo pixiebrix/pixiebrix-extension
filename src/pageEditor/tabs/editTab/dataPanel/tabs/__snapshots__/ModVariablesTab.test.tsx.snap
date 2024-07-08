@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PageStateTab it renders with mod's mod component 1`] = `
+exports[`ModVariablesTab it renders with mod's mod component 1`] = `
 <DocumentFragment>
   <div
     aria-hidden="false"
@@ -37,7 +37,7 @@ exports[`PageStateTab it renders with mod's mod component 1`] = `
         class="ml-2"
       >
         <a
-          href="https://docs.pixiebrix.com/developing-mods/developer-concepts/data-context/using-page-state-advanced"
+          href="https://docs.pixiebrix.com/developing-mods/developer-concepts/data-context/using-mod-variables"
           rel="noreferrer"
           target="_blank"
         >
@@ -57,7 +57,7 @@ exports[`PageStateTab it renders with mod's mod component 1`] = `
                 fill="currentColor"
               />
             </svg>
-             Learn more about Page State
+             Learn more about Mod Variables
           </small>
         </a>
       </div>
@@ -90,7 +90,7 @@ exports[`PageStateTab it renders with mod's mod component 1`] = `
                 style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  Private:
+                  Public:
                 </span>
               </label>
               <span
@@ -226,7 +226,7 @@ exports[`PageStateTab it renders with mod's mod component 1`] = `
                 style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  Public:
+                  Private:
                 </span>
               </label>
               <span
@@ -286,7 +286,7 @@ exports[`PageStateTab it renders with mod's mod component 1`] = `
 </DocumentFragment>
 `;
 
-exports[`PageStateTab it renders with standalone mod component 1`] = `
+exports[`ModVariablesTab it renders with standalone mod component 1`] = `
 <DocumentFragment>
   <div
     aria-hidden="false"
@@ -323,7 +323,7 @@ exports[`PageStateTab it renders with standalone mod component 1`] = `
         class="ml-2"
       >
         <a
-          href="https://docs.pixiebrix.com/developing-mods/developer-concepts/data-context/using-page-state-advanced"
+          href="https://docs.pixiebrix.com/developing-mods/developer-concepts/data-context/using-mod-variables"
           rel="noreferrer"
           target="_blank"
         >
@@ -343,7 +343,7 @@ exports[`PageStateTab it renders with standalone mod component 1`] = `
                 fill="currentColor"
               />
             </svg>
-             Learn more about Page State
+             Learn more about Mod Variables
           </small>
         </a>
       </div>
@@ -376,7 +376,7 @@ exports[`PageStateTab it renders with standalone mod component 1`] = `
                 style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  Private:
+                  Public:
                 </span>
               </label>
               <span
@@ -441,7 +441,7 @@ exports[`PageStateTab it renders with standalone mod component 1`] = `
               <span
                 style="color: rgb(0, 113, 36);"
               >
-                "Starter Brick is not in a mod"
+                "Starter Brick is not in a mod package"
               </span>
             </li>
             <li
@@ -460,7 +460,7 @@ exports[`PageStateTab it renders with standalone mod component 1`] = `
                 style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  Public:
+                  Private:
                 </span>
               </label>
               <span
