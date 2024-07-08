@@ -33,7 +33,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import BrickIcon from "@/components/BrickIcon";
 import { writeToClipboard } from "@/utils/clipboardUtils";
-import { type Metadata } from "@/types/registryTypes";
+import { type PackageInstance } from "@/types/registryTypes";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
 function makeArgumentYaml(schema: Schema): string {
@@ -69,13 +69,13 @@ function makeArgumentYaml(schema: Schema): string {
   return result;
 }
 
-type OwnProps<T extends Metadata> = {
+type OwnProps<T extends PackageInstance> = {
   packageInstance: T;
   packageConfig: string;
   isPackageConfigLoading: boolean;
 };
 
-const PackageDetail = <T extends Metadata>({
+const PackageDetail = <T extends PackageInstance>({
   packageInstance,
   packageConfig,
   isPackageConfigLoading,

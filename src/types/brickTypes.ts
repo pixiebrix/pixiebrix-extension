@@ -20,7 +20,7 @@ import { type Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import { type RegistryId, type Metadata } from "@/types/registryTypes";
+import { type RegistryId, type PackageInstance } from "@/types/registryTypes";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
@@ -31,7 +31,7 @@ import { type Nullishable } from "@/utils/nullishUtils";
  * An instance of a re-usable brick.
  * @see BrickDefinition
  */
-export interface Brick extends Metadata {
+export interface Brick extends PackageInstance {
   /** A JSON schema of the inputs for the brick */
   inputSchema: Schema;
 

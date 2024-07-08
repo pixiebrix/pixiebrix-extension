@@ -45,19 +45,19 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
-import { type Metadata, type RegistryId } from "@/types/registryTypes";
+import { type PackageInstance, type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
 import { freeze } from "@/utils/objectUtils";
 
-type BrickOption<T extends Metadata = Brick> = {
+type BrickOption<T extends PackageInstance = Brick> = {
   data: T;
   value: RegistryId;
   label: string;
 };
 
-function makeBlockOption<T extends Metadata>(brick: T): BrickOption<T> {
+function makeBlockOption<T extends PackageInstance>(brick: T): BrickOption<T> {
   return {
     value: brick.id,
     label: brick.name,
@@ -65,7 +65,7 @@ function makeBlockOption<T extends Metadata>(brick: T): BrickOption<T> {
   };
 }
 
-function useSearch<T extends Metadata>(
+function useSearch<T extends PackageInstance>(
   bricks: T[],
   query: string,
 ): Array<BrickOption<T>> {
@@ -98,7 +98,7 @@ function useSearch<T extends Metadata>(
   );
 }
 
-type ModalProps<T extends Metadata = Brick> = {
+type ModalProps<T extends PackageInstance = Brick> = {
   bricks: T[];
   onSelect: (brick: T) => void;
   selectCaption?: React.ReactNode;
@@ -112,7 +112,7 @@ type ButtonProps = {
   renderButton?: (onClick: () => void) => React.ReactNode;
 };
 
-type ItemType<T extends Metadata> = {
+type ItemType<T extends PackageInstance> = {
   searchResults: Array<BrickOption<T>>;
   setDetailBrick: (brick: T) => void;
   selectCaption: React.ReactNode;
@@ -123,7 +123,7 @@ type ItemType<T extends Metadata> = {
 
 // The item renderer must be its own separate component to react-window from re-mounting the results
 // https://github.com/bvaughn/react-window/issues/420#issuecomment-585813335
-const ItemRenderer = <T extends Metadata>({
+const ItemRenderer = <T extends PackageInstance>({
   index,
   style,
   data: {
@@ -160,7 +160,7 @@ const ItemRenderer = <T extends Metadata>({
 
 // Need to provide a key because we reorder elements on search
 // See https://react-window.vercel.app/#/api/FixedSizeList
-function itemKey<T extends Metadata>(
+function itemKey<T extends PackageInstance>(
   index: number,
   { searchResults }: ItemType<T>,
 ): RegistryId {
@@ -181,7 +181,7 @@ const defaultAddCaption = (
 
 const DEFAULT_RECOMMENDATIONS = freeze<RegistryId[]>([]);
 
-function ActualModal<T extends Metadata>({
+function ActualModal<T extends PackageInstance>({
   bricks,
   close,
   onSelect,
@@ -296,7 +296,7 @@ function ActualModal<T extends Metadata>({
   );
 }
 
-function BrickModal<T extends Metadata>({
+function BrickModal<T extends PackageInstance>({
   caption = "Select a Brick",
   renderButton,
   ...modalProps
