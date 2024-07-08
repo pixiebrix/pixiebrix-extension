@@ -52,7 +52,7 @@ function getTabState(
     .nodeUIStates[FOUNDATION_NODE_ID].dataPanel[tabKey];
 }
 
-const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
+const GOOGLE_SHEET_INTEGRATION_ID = validateRegistryId("google/sheet");
 
 const standardBrick = brickConfigFactory({
   id: teapotBrick.id,
@@ -60,7 +60,7 @@ const standardBrick = brickConfigFactory({
   config: defaultBrickConfig(teapotBrick.inputSchema),
 });
 
-const brickWithService = brickConfigFactory({
+const brickWithIntegration = brickConfigFactory({
   id: echoBrick.id,
   outputKey: "echoOutput" as OutputKey,
   config: {
@@ -132,13 +132,13 @@ describe("Add/Remove Bricks", () => {
       label: "Test Mod Component",
       integrationDependencies: [
         integrationDependencyFactory({
-          integrationId: GOOGLE_SHEET_SERVICE_ID,
+          integrationId: GOOGLE_SHEET_INTEGRATION_ID,
           outputKey: "google" as OutputKey,
           configId: uuidSequence,
         }),
       ],
     },
-    [brickWithService, standardBrick],
+    [brickWithIntegration, standardBrick],
   );
 
   beforeEach(() => {
@@ -182,7 +182,7 @@ describe("Add/Remove Bricks", () => {
     // Remove the brick with integration dependency
     editor = editorSlice.reducer(
       editor,
-      actions.removeNode(brickWithService.instanceId),
+      actions.removeNode(brickWithIntegration.instanceId),
     );
 
     // Ensure Integration Dependency was removed
@@ -195,19 +195,19 @@ describe("Add/Remove Bricks", () => {
   });
 
   test("Remove Brick without Integration Dependency", async () => {
-    // Get initial bricks and services
+    // Get initial bricks and integrations
     const initialBricks =
       editor.modComponentFormStates[0].modComponent.brickPipeline;
     const initialIntegrationDependencies =
       editor.modComponentFormStates[0].integrationDependencies;
 
-    // Remove the brick with service
+    // Remove the brick with integration
     editor = editorSlice.reducer(
       editor,
       actions.removeNode(standardBrick.instanceId),
     );
 
-    // Ensure Service was NOT removed
+    // Ensure integration was NOT removed
     expect(
       editor.modComponentFormStates[0].modComponent.brickPipeline,
     ).toBeArrayOfSize(initialBricks.length - 1);

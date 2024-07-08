@@ -139,14 +139,14 @@ export default function useDocumentPreviewRunBlock(
   const traceRecord = useSelector(
     selectActiveModComponentTraceForBrick(brickInstanceId),
   );
-  const { data: serviceContext, isLoading: isLoadingServiceContext } =
+  const { data: integrationContext, isLoading: isLoadingIntegrationContext } =
     useAsyncState(
       makeIntegrationsContextFromDependencies(integrationDependencies),
       [integrationDependencies],
     );
   const context = {
     ...traceRecord?.templateContext,
-    ...serviceContext,
+    ...integrationContext,
   } as BrickArgsContext;
 
   // This defaults to "inherit" as described in the doc, see BrickConfig.rootMode
@@ -167,7 +167,7 @@ export default function useDocumentPreviewRunBlock(
 
   const debouncedRun = useDebouncedCallback(
     async () => {
-      if (isLoadingServiceContext || isPreviewInfoLoading) {
+      if (isLoadingIntegrationContext || isPreviewInfoLoading) {
         return;
       }
 

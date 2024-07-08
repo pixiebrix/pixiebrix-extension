@@ -155,8 +155,8 @@ describe("DocumentOptions", () => {
       // Integration dependencies included in the form state
       const integrationDependencies: IntegrationDependency[] = [
         integrationDependencyFactory({
-          integrationId: validateRegistryId("@test/service"),
-          outputKey: validateOutputKey("serviceOutput"),
+          integrationId: validateRegistryId("@test/integration"),
+          outputKey: validateOutputKey("integrationOuput"),
           configId: uuidSequence,
         }),
       ];
@@ -173,7 +173,7 @@ describe("DocumentOptions", () => {
                   id: validateRegistryId("@test/action"),
                   instanceId: uuidSequence(2),
                   config: {
-                    input: toExpression("var", "@serviceOutput"),
+                    input: toExpression("var", "@integrationOuput"),
                   },
                 },
               ]),
