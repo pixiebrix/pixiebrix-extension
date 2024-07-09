@@ -4,6 +4,13 @@
     "strictNullChecks": true
   },
   "files": [
+    "./components/fields/schemaFields/CssClassField.tsx",
+    "./components/fields/schemaFields/widgets/ObjectWidget.tsx",
+    "./components/fields/schemaFields/widgets/FixedInnerObjectWidget.tsx",
+    "./components/fields/schemaFields/widgets/ArrayWidget.tsx",
+    "./components/fields/schemaFields/widgets/varPopup/VarPopup.tsx",
+    "./components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget.tsx",
+    "./components/fields/schemaFields/getToggleOptions.tsx",
     "./components/fields/schemaFields/widgets/varPopup/useKeyboardNavigation.ts",
     "./components/fields/schemaFields/widgets/varPopup/menuFilters.ts",
     "./components/fields/schemaFields/widgets/varPopup/getMenuOptions.ts",
