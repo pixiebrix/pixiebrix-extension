@@ -19,7 +19,7 @@
 
 import {
   findLocalDeploymentConfiguredIntegrationDependencies,
-  type Locate,
+  type FindAllSanitizedConfigsForIntegration,
 } from "@/utils/deploymentUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
@@ -43,7 +43,7 @@ export async function checkDeploymentPermissions({
   optionalPermissions,
 }: {
   activatableDeployment: ActivatableDeployment;
-  locate: Locate;
+  locate: FindAllSanitizedConfigsForIntegration;
   optionalPermissions: Manifest.OptionalPermission[];
 }): Promise<PermissionsStatus> {
   const localAuths = await findLocalDeploymentConfiguredIntegrationDependencies(

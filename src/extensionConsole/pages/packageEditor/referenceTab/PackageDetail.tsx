@@ -31,7 +31,7 @@ import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
 import { type Schema } from "@/types/schemaTypes";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
-import BrickIcon from "@/components/BrickIcon";
+import PackageIcon from "@/components/PackageIcon";
 import { writeToClipboard } from "@/utils/clipboardUtils";
 import { type PackageInstance } from "@/types/registryTypes";
 import { MARKETPLACE_URL } from "@/urlConstants";
@@ -109,7 +109,10 @@ const PackageDetail = <T extends PackageInstance>({
         <div>
           <h3 className="text-left">
             {packageInstance.name}&nbsp;
-            <BrickIcon key={packageInstance.id} brick={packageInstance} />
+            <PackageIcon
+              key={packageInstance.id}
+              packageOrMetadata={packageInstance}
+            />
           </h3>
           <p>
             <code className="p-0">{packageInstance.id}</code>

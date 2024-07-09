@@ -21,43 +21,47 @@ import cx from "classnames";
 // TODO: Refactor to properly share styles across components (e.g. full component inheritance);
 //   the "packageEditor/referenceTab/PackageResult" component probably doesn't expect to also affect a global component
 import styles from "@/extensionConsole/pages/packageEditor/referenceTab/PackageResult.module.scss";
-import BrickIcon from "@/components/BrickIcon";
+import PackageIcon from "@/components/PackageIcon";
 import { OfficialBadge } from "@/components/OfficialBadge";
 import { type PackageInstance } from "@/types/registryTypes";
 
-type BrickResultProps<T extends PackageInstance> = {
-  brick: T;
+type PackageResultProps<Instance extends PackageInstance> = {
+  packageInstance: Instance;
   onSelect: () => void;
   onShowDetail: () => void;
   active?: boolean;
   selectCaption: React.ReactNode;
 };
 
-const BrickResult = <T extends PackageInstance>({
-  brick,
+const PackageResult = <Instance extends PackageInstance>({
+  packageInstance,
   onSelect,
   onShowDetail,
   selectCaption,
   active,
-}: BrickResultProps<T>) => (
+}: PackageResultProps<Instance>) => (
   <ListGroup.Item
     onClick={onShowDetail}
     className={cx(styles.root, { [styles.active ?? ""]: active, active })}
   >
     <div className="d-flex">
       <div className="mr-2 text-muted">
-        <BrickIcon brick={brick} />
+        <PackageIcon packageOrMetadata={packageInstance} />
       </div>
       <div className={cx("flex-grow-1", styles.titleColumn)}>
-        <div className={styles.ellipsis}>{brick.name}</div>
-        <code className={cx("small", styles.id)}>{brick.id}</code>
+        <div className={styles.ellipsis}>{packageInstance.name}</div>
+        <code className={cx("small", styles.id)}>{packageInstance.id}</code>
         <p className={cx("small mb-0", styles.ellipsis)}>
           {/* Use a span if no description to ensure a consistent height for react-window */}
-          {brick.description ? `${brick.description}` : <span>&nbsp;</span>}
+          {packageInstance.description ? (
+            `${packageInstance.description}`
+          ) : (
+            <span>&nbsp;</span>
+          )}
         </p>
       </div>
       <div className={cx("flex-grow-0", styles.officialBadge)}>
-        <OfficialBadge id={brick.id} />
+        <OfficialBadge id={packageInstance.id} />
       </div>
       <div
         className={cx(
@@ -69,7 +73,7 @@ const BrickResult = <T extends PackageInstance>({
           variant="primary"
           className="mb-1 text-nowrap"
           onClick={onSelect}
-          data-testid={`${brick.name} button`}
+          data-testid={`${packageInstance.name} button`}
         >
           {selectCaption}
         </Button>
@@ -78,4 +82,4 @@ const BrickResult = <T extends PackageInstance>({
   </ListGroup.Item>
 );
 
-export default BrickResult;
+export default PackageResult;

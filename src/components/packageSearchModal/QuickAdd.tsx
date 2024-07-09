@@ -19,38 +19,40 @@ import styles from "./QuickAdd.module.scss";
 
 import React from "react";
 import { Card } from "react-bootstrap";
-import BrickIcon from "@/components/BrickIcon";
+import PackageIcon from "@/components/PackageIcon";
 import cx from "classnames";
 import { type PackageInstance } from "@/types/registryTypes";
 
-type OwnProps<T extends PackageInstance> = {
-  onSelect: (block: T) => void;
-  recommendations: T[];
+type OwnProps<Instance extends PackageInstance> = {
+  onSelect: (packageInstance: Instance) => void;
+  recommendations: Instance[];
 };
 
-const QuickAdd = <T extends PackageInstance>({
+const QuickAdd = <Instance extends PackageInstance>({
   recommendations,
   onSelect,
-}: OwnProps<T>) => (
+}: OwnProps<Instance>) => (
   <div>
-    <h4>Recommended Bricks</h4>
+    <h4>Recommended Packages</h4>
     <div className={styles.root}>
-      {(recommendations ?? []).map((brick) => (
+      {(recommendations ?? []).map((packageInstance) => (
         <Card
           className={styles.card}
-          key={brick.id}
+          key={packageInstance.id}
           onClick={() => {
-            onSelect(brick);
+            onSelect(packageInstance);
           }}
         >
           <Card.Body className={cx("text-center", "pt-2", styles.cardImage)}>
             <div>
-              <BrickIcon brick={brick} />
+              <PackageIcon packageOrMetadata={packageInstance} />
             </div>
           </Card.Body>
           <Card.Body>
-            <Card.Title>{brick.name}</Card.Title>
-            <Card.Text className="small pt-2">{brick.description}</Card.Text>
+            <Card.Title>{packageInstance.name}</Card.Title>
+            <Card.Text className="small pt-2">
+              {packageInstance.description}
+            </Card.Text>
           </Card.Body>
         </Card>
       ))}

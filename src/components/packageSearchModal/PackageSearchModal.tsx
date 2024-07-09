@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./BrickModal.module.scss";
+import styles from "./PackageSearchModal.module.scss";
 
 import React, {
   type CSSProperties,
@@ -37,9 +37,9 @@ import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import Fuse from "fuse.js";
 import { FixedSizeList as LazyList } from "react-window";
 import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
-import BrickResult from "./BrickResult";
-import BrickDetail from "./BrickDetail";
-import QuickAdd from "@/components/brickModalNoTags/QuickAdd";
+import PackageResult from "./PackageResult";
+import PackageDetail from "./PackageDetail";
+import QuickAdd from "./QuickAdd";
 import { type Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -51,56 +51,58 @@ import { isNullOrBlank } from "@/utils/stringUtils";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
 import { freeze } from "@/utils/objectUtils";
 
-type BrickOption<T extends PackageInstance = Brick> = {
-  data: T;
+type PackageOption<Instance extends PackageInstance = Brick> = {
+  data: Instance;
   value: RegistryId;
   label: string;
 };
 
-function makeBlockOption<T extends PackageInstance>(brick: T): BrickOption<T> {
+function mapToPackageOption<Instance extends PackageInstance>(
+  packageInstance: Instance,
+): PackageOption<Instance> {
   return {
-    value: brick.id,
-    label: brick.name,
-    data: brick,
+    value: packageInstance.id,
+    label: packageInstance.name,
+    data: packageInstance,
   };
 }
 
-function useSearch<T extends PackageInstance>(
-  bricks: T[],
+function useSearch<Instance extends PackageInstance>(
+  packageInstances: Instance[],
   query: string,
-): Array<BrickOption<T>> {
+): Array<PackageOption<Instance>> {
   const [debouncedQuery] = useDebounce(query, 100, {
     trailing: true,
     leading: false,
   });
 
-  const { fuse, brickOptions } = useMemo(() => {
-    const brickOptions = sortBy(
+  const { fuse, packageOptions } = useMemo(() => {
+    const packageOptions = sortBy(
       // We should never show @internal bricks to users. However, they'll sometimes find their way in from the registry
-      (bricks ?? [])
+      (packageInstances ?? [])
         .filter((x) => !x.id.startsWith("@internal/"))
-        .map((x) => makeBlockOption(x)),
+        .map((x) => mapToPackageOption(x)),
       (x) => x.label,
     );
-    const fuse = new Fuse<BrickOption<T>>(brickOptions, {
+    const fuse = new Fuse<PackageOption<Instance>>(packageOptions, {
       keys: ["label", "data.id", "data.description"],
     });
 
-    return { brickOptions, fuse };
-  }, [bricks]);
+    return { packageOptions, fuse };
+  }, [packageInstances]);
 
   return useMemo(
     () =>
       isNullOrBlank(debouncedQuery)
-        ? brickOptions
+        ? packageOptions
         : fuse.search(debouncedQuery).map((x) => x.item),
-    [debouncedQuery, fuse, brickOptions],
+    [debouncedQuery, fuse, packageOptions],
   );
 }
 
-type ModalProps<T extends PackageInstance = Brick> = {
-  bricks: T[];
-  onSelect: (brick: T) => void;
+type ModalProps<Instance extends PackageInstance = Brick> = {
+  packageInstances: Instance[];
+  onSelect: (packageInstance: Instance) => void;
   selectCaption?: React.ReactNode;
   recommendations?: RegistryId[];
   close: () => void;
@@ -112,47 +114,47 @@ type ButtonProps = {
   renderButton?: (onClick: () => void) => React.ReactNode;
 };
 
-type ItemType<T extends PackageInstance> = {
-  searchResults: Array<BrickOption<T>>;
-  setDetailBrick: (brick: T) => void;
+type ItemType<Instance extends PackageInstance> = {
+  searchResults: Array<PackageOption<Instance>>;
+  setDetailPackage: (packageInstance: Instance) => void;
   selectCaption: React.ReactNode;
-  onSelect: (brick: T) => void;
+  onSelect: (brick: Instance) => void;
   close: () => void;
-  activeBrick: T | null;
+  activePackage: Instance | null;
 };
 
 // The item renderer must be its own separate component to react-window from re-mounting the results
 // https://github.com/bvaughn/react-window/issues/420#issuecomment-585813335
-const ItemRenderer = <T extends PackageInstance>({
+const ItemRenderer = <Instance extends PackageInstance>({
   index,
   style,
   data: {
     searchResults,
-    setDetailBrick,
+    setDetailPackage,
     selectCaption,
     onSelect,
     close,
-    activeBrick,
+    activePackage,
   },
 }: {
   index: number;
   style: CSSProperties;
-  data: ItemType<T>;
+  data: ItemType<Instance>;
 }) => {
-  const { data: brick } = searchResults.at(index);
+  const { data: packageInstance } = searchResults.at(index);
   return (
     <div style={style}>
-      <BrickResult
-        brick={brick}
+      <PackageResult
+        packageInstance={packageInstance}
         onShowDetail={() => {
-          setDetailBrick(brick);
+          setDetailPackage(packageInstance);
         }}
         onSelect={() => {
-          onSelect(brick);
+          onSelect(packageInstance);
           close();
         }}
         selectCaption={selectCaption}
-        active={activeBrick?.id === brick.id}
+        active={activePackage?.id === packageInstance.id}
       />
     </div>
   );
@@ -160,16 +162,16 @@ const ItemRenderer = <T extends PackageInstance>({
 
 // Need to provide a key because we reorder elements on search
 // See https://react-window.vercel.app/#/api/FixedSizeList
-function itemKey<T extends PackageInstance>(
+function itemKey<Instance extends PackageInstance>(
   index: number,
-  { searchResults }: ItemType<T>,
+  { searchResults }: ItemType<Instance>,
 ): RegistryId {
   // Find the item at the specified index.
   // In this case "data" is an Array that was passed to List as "itemData".
   const item = searchResults.at(index);
 
   // Return a value that uniquely identifies this item.
-  // Typically this will be a UID of some sort.
+  // Typically, this will be a UID of some sort.
   return item.value;
 }
 
@@ -181,16 +183,16 @@ const defaultAddCaption = (
 
 const DEFAULT_RECOMMENDATIONS = freeze<RegistryId[]>([]);
 
-function ActualModal<T extends PackageInstance>({
-  bricks,
+function ActualModal<Instance extends PackageInstance>({
+  packageInstances,
   close,
   onSelect,
   selectCaption = defaultAddCaption,
   recommendations = DEFAULT_RECOMMENDATIONS,
   modalClassName,
-}: ModalProps<T>): React.ReactElement<T> {
+}: ModalProps<Instance>): React.ReactElement<Instance> {
   const [query, setQuery] = useState("");
-  const [detailBrick, setDetailBrick] = useState<T>(null);
+  const [detailPackage, setDetailPackage] = useState<Instance>(null);
   const searchInput = useRef(null);
   // The react-window library requires exact height
   const brickResultSizePx = 87;
@@ -200,24 +202,24 @@ function ActualModal<T extends PackageInstance>({
 
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
-  const searchResults = useSearch(bricks ?? [], query);
+  const searchResults = useSearch(packageInstances ?? [], query);
 
-  const recommendedBricks = useMemo(() => {
+  const recommendedPackages = useMemo(() => {
     if (recommendations.length === 0) {
       return;
     }
 
     // Retain the same order that the recommendations were passed in
-    const brickMap = new Map((bricks ?? []).map((brick) => [brick.id, brick]));
+    const packageMap = new Map((packageInstances ?? []).map((x) => [x.id, x]));
     return compact(
-      recommendations.map((registryId) => brickMap.get(registryId)),
+      recommendations.map((registryId) => packageMap.get(registryId)),
     );
-  }, [recommendations, bricks]);
+  }, [recommendations, packageInstances]);
 
   useOnMountOnly(() => {
     // If there's no recommendations, default to the first brick so the right side isn't blank
     if (recommendations.length === 0 && searchResults.length > 0) {
-      setDetailBrick(searchResults[0].data);
+      setDetailPackage(searchResults[0].data);
     }
   });
 
@@ -258,12 +260,12 @@ function ActualModal<T extends PackageInstance>({
                   itemData={
                     {
                       searchResults,
-                      setDetailBrick,
-                      activeBrick: detailBrick,
+                      setDetailPackage,
+                      activePackage: detailPackage,
                       selectCaption,
                       onSelect,
                       close,
-                    } as ItemType<T>
+                    } as ItemType<Instance>
                   }
                 >
                   {ItemRenderer}
@@ -272,23 +274,23 @@ function ActualModal<T extends PackageInstance>({
             </AutoSizer>
           </div>
         </div>
-        {detailBrick ? (
-          <BrickDetail
-            brick={detailBrick}
-            listing={listings[detailBrick.id]}
+        {detailPackage ? (
+          <PackageDetail
+            packageInstance={detailPackage}
+            listing={listings[detailPackage.id]}
             selectCaption={selectCaption}
             onSelect={() => {
-              onSelect(detailBrick);
+              onSelect(detailPackage);
               close();
             }}
           />
         ) : (
           <QuickAdd
-            onSelect={(brick) => {
-              onSelect(brick);
+            onSelect={(packageInstance) => {
+              onSelect(packageInstance);
               close();
             }}
-            recommendations={recommendedBricks}
+            recommendations={recommendedPackages}
           />
         )}
       </Modal.Body>
@@ -296,11 +298,19 @@ function ActualModal<T extends PackageInstance>({
   );
 }
 
-function BrickModal<T extends PackageInstance>({
-  caption = "Select a Brick",
+/**
+ * A package search modal, without support for filtering by Marketplace tags.
+ *
+ * For the Page Editor brick modal, see `AddBrickModal`.
+ *
+ * @see AddBrickModal
+ */
+function PackageSearchModal<Instance extends PackageInstance>({
+  caption,
   renderButton,
   ...modalProps
-}: Except<ModalProps<T>, "close"> & ButtonProps): React.ReactElement<T> {
+}: Except<ModalProps<Instance>, "close"> &
+  ButtonProps): React.ReactElement<Instance> {
   const [show, setShow] = useState(false);
 
   const close = useCallback(() => {
@@ -329,4 +339,4 @@ function BrickModal<T extends PackageInstance>({
   );
 }
 
-export default BrickModal;
+export default PackageSearchModal;

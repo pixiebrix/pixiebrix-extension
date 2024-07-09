@@ -51,7 +51,7 @@ import {
   actions,
   actions as editorActions,
 } from "@/pageEditor/store/editor/editorSlice";
-import BrickIcon from "@/components/BrickIcon";
+import PackageIcon from "@/components/PackageIcon";
 import {
   decideBlockStatus,
   decideFoundationStatus,
@@ -417,7 +417,7 @@ const usePipelineNodes = (): {
         : [];
 
       contentProps = {
-        icon: <BrickIcon brick={block} size="2x" inheritColor />,
+        icon: <PackageIcon packageOrMetadata={block} size="2x" inheritColor />,
         runStatus: decideBlockStatus({
           traceRecord,
           blockAnnotations,

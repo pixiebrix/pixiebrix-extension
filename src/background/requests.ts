@@ -19,7 +19,7 @@ import axios, { type AxiosResponse, type Method } from "axios";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import serviceRegistry from "@/integrations/registry";
 import { getExtensionToken } from "@/auth/authStorage";
-import { locator } from "@/background/locator";
+import { integrationConfigLocator } from "@/background/integrationConfigLocator";
 import { isEmpty } from "lodash";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { expectContext } from "@/utils/expectContext";
@@ -176,7 +176,9 @@ async function authenticate(
     );
   }
 
-  const localConfig = await locator.findIntegrationConfig(config.id);
+  const localConfig = await integrationConfigLocator.findIntegrationConfig(
+    config.id,
+  );
 
   if (!localConfig) {
     // Is an application error because PixieBrix should not have reached here in the first place.

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
@@ -61,7 +61,7 @@ async function activateDeployment({
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies(
         activatableDeployment,
-        services.locateAllForId,
+        integrationConfigLocator.findAllSanitizedConfigsForIntegration,
       ),
       // Assume validation on the backend for options
       optionsArgs: deployment.options_config,

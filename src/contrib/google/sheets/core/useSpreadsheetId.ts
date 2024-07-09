@@ -18,7 +18,7 @@
 import { useField } from "formik";
 import { isIntegrationDependencyValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isEmpty } from "lodash";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
 import { getSheetIdIntegrationOutputKey } from "@/contrib/google/sheets/core/getSheetIdIntegrationOutputKey";
@@ -93,11 +93,12 @@ async function findSpreadsheetIdFromFieldValue(
     );
   }
 
-  const sanitizedIntegrationConfig = await services.locate(
-    integrationId,
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- just checked above
-    configId!,
-  );
+  const sanitizedIntegrationConfig =
+    await integrationConfigLocator.findSanitizedIntegrationConfig(
+      integrationId,
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- just checked above
+      configId!,
+    );
   const configSpreadsheetId = sanitizedIntegrationConfig.config?.spreadsheetId;
 
   if (!configSpreadsheetId) {

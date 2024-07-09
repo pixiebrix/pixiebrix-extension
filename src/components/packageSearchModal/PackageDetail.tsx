@@ -1,34 +1,35 @@
 import React from "react";
 import { type MarketplaceListing } from "@/types/contract";
 import { Button } from "react-bootstrap";
-import BrickIcon from "@/components/BrickIcon";
+import PackageIcon from "@/components/PackageIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import { type PackageInstance } from "@/types/registryTypes";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
-type BrickDetailProps<T extends PackageInstance> = {
-  brick: T;
+type PackageDetailProps<Instance extends PackageInstance> = {
+  packageInstance: Instance;
   listing?: MarketplaceListing;
   onSelect: () => void;
   selectCaption: React.ReactNode;
 };
 
-const BrickDetail = <T extends PackageInstance>({
-  brick,
+const PackageDetail = <Instance extends PackageInstance>({
+  packageInstance,
   selectCaption = "Select",
   listing,
   onSelect,
-}: BrickDetailProps<T>) => (
+}: PackageDetailProps<Instance>) => (
   <div>
     <div className="d-flex justify-content-between mb-3">
       <div>
         <h4>
-          {brick.name} <BrickIcon brick={brick} />
+          {packageInstance.name}{" "}
+          <PackageIcon packageOrMetadata={packageInstance} />
         </h4>
-        <code>{brick.id}</code>
-        <p>{brick.description}</p>
+        <code>{packageInstance.id}</code>
+        <p>{packageInstance.description}</p>
         {listing && (
           <a
             href={`${MARKETPLACE_URL}${listing.id}/`}
@@ -43,7 +44,7 @@ const BrickDetail = <T extends PackageInstance>({
       </div>
       <div>
         <Button
-          data-testid={`${brick.name} detail button`}
+          data-testid={`${packageInstance.name} detail button`}
           variant="primary mr-1 text-nowrap"
           size="lg"
           onClick={onSelect}
@@ -53,25 +54,25 @@ const BrickDetail = <T extends PackageInstance>({
       </div>
     </div>
 
-    {"inputSchema" in brick && (
+    {"inputSchema" in packageInstance && (
       <div className="small mb-3">
         <h6 className="my-3">Input Schema</h6>
-        <SchemaTree schema={brick.inputSchema} />
+        <SchemaTree schema={packageInstance.inputSchema} />
       </div>
     )}
-    {"outputSchema" in brick && (
+    {"outputSchema" in packageInstance && (
       <div className="small mb-3">
         <h6 className="my-3">Output Schema</h6>
-        <SchemaTree schema={brick.outputSchema} />
+        <SchemaTree schema={packageInstance.outputSchema} />
       </div>
     )}
-    {"schema" in brick && (
+    {"schema" in packageInstance && (
       <div className="small mb-3">
         <h6 className="my-3">Schema</h6>
-        <SchemaTree schema={brick.schema} />
+        <SchemaTree schema={packageInstance.schema} />
       </div>
     )}
   </div>
 );
 
-export default BrickDetail;
+export default PackageDetail;

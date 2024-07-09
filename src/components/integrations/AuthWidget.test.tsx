@@ -31,8 +31,8 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import selectEvent from "react-select-event";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
-import { services, registry } from "@/background/messenger/api";
-import { refreshServices } from "@/background/locator";
+import { integrationConfigLocator, registry } from "@/background/messenger/api";
+import { refreshIntegrationConfigs } from "@/background/integrationConfigLocator";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { produce } from "immer";
 import { userEvent } from "@/pageEditor/testHelpers";
@@ -63,7 +63,9 @@ beforeAll(async () => {
   appApiMock.onGet("/api/services/shared/").reply(200, [remoteConfig]);
   appApiMock.onGet("/api/registry/bricks/").reply(200, [integrationDefinition]);
   // Wire up directly to the background implementations for integration testing
-  jest.mocked(services.refresh).mockImplementation(refreshServices);
+  jest
+    .mocked(integrationConfigLocator.refresh)
+    .mockImplementation(refreshIntegrationConfigs);
   jest.mocked(registry.syncRemote).mockImplementation(syncPackages);
   jest.mocked(registry.find).mockImplementation(find);
   jest.mocked(registry.clear).mockImplementation(clear);

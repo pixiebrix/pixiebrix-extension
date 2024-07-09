@@ -20,7 +20,7 @@ import axios, { type AxiosError } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { performConfiguredRequest } from "./requests";
 import * as token from "@/auth/authStorage";
-import Locator from "@/integrations/locator";
+import Locator from "@/integrations/integrationConfigLocator";
 import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
 import { ContextError } from "@/errors/genericErrors";
@@ -67,7 +67,7 @@ jest.mock("@/background/auth/getToken", () => ({
   getToken: jest.fn().mockResolvedValue({ token: "iamatoken" }),
 }));
 jest.mock("@/auth/authStorage");
-jest.mock("@/integrations/locator");
+jest.mock("@/integrations/integrationConfigLocator");
 
 enrichAxiosErrors();
 
@@ -184,7 +184,7 @@ describe("unauthenticated direct requests", () => {
 describe("authenticated direct requests", () => {
   beforeEach(() => {
     jest
-      .spyOn(Locator.prototype, "locate")
+      .spyOn(Locator.prototype, "findSanitizedIntegrationConfig")
       .mockResolvedValue(directIntegrationConfig);
     jest
       .spyOn(Locator.prototype, "findIntegrationConfig")
@@ -370,7 +370,7 @@ describe("Retry token request", () => {
   beforeEach(() => {
     mockGetToken.mockClear();
     jest
-      .spyOn(Locator.prototype, "locate")
+      .spyOn(Locator.prototype, "findSanitizedIntegrationConfig")
       .mockResolvedValue(directTokenIntegrationConfig);
     jest
       .spyOn(Locator.prototype, "findIntegrationConfig")

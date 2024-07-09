@@ -27,11 +27,11 @@ import IntegrationConfigEditorModal from "@/components/integrations/IntegrationC
 import PrivateIntegrationsCard from "./PrivateIntegrationsCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import { faCloud, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import ZapierIntegrationModal from "@/extensionConsole/pages/integrations/ZapierIntegrationModal";
 import notify from "@/utils/notify";
 import { useLocation } from "react-router";
-import BrickModal from "@/components/brickModalNoTags/BrickModal";
+import PackageSearchModal from "@/components/packageSearchModal/PackageSearchModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isUUID, uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
@@ -317,7 +317,7 @@ const IntegrationsPage: React.VFC = () => {
   const syncIntegrations = useCallback(async () => {
     await flushReduxPersistence();
     try {
-      await services.refresh();
+      await integrationConfigLocator.refresh();
     } catch (error) {
       notify.error({
         message:
@@ -421,9 +421,9 @@ const IntegrationsPage: React.VFC = () => {
       isPending={localState.isLoadingIntegrations}
       documentationUrl="https://docs.pixiebrix.com/integrations/configuring-integrations"
       toolbar={
-        <BrickModal
+        <PackageSearchModal
           onSelect={onSelectIntegrationForNewConfig}
-          bricks={localState.integrations}
+          packageInstances={localState.integrations}
           modalClassName={styles.ModalOverride}
           selectCaption={
             <span>

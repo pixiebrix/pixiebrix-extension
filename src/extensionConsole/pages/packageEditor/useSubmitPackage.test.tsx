@@ -42,7 +42,7 @@ import { uuidv4 } from "@/types/helpers";
 import { ModalContext } from "@/components/ConfirmationModal";
 
 jest.mock("@/utils/notify");
-jest.mock("@/extensionConsole/pages/mods/utils/useReinstall");
+jest.mock("@/extensionConsole/pages/mods/utils/useReactivateMod");
 
 const errorMock = jest.mocked(notify.error);
 

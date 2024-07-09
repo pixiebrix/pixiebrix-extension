@@ -21,7 +21,7 @@ import integrationsSlice from "@/integrations/store/integrationsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { uuidv4 } from "@/types/helpers";
 import notify from "@/utils/notify";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import Form, {
   type RenderBody,
   type RenderSubmit,
@@ -99,7 +99,7 @@ const ControlRoomTokenForm: React.FunctionComponent<{
     await flushReduxPersistence();
 
     try {
-      await services.refresh();
+      await integrationConfigLocator.refresh();
 
       // Redirect to blueprints screen. The SetupPage will always show a login screen for the "/start" URL
       history.push("/");

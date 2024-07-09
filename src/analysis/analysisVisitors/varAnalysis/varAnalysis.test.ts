@@ -39,7 +39,7 @@ import {
   type ListElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   formStateFactory,
@@ -58,11 +58,13 @@ import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import pixiebrixIntegrationDependencyFactory from "@/integrations/util/pixiebrixIntegrationDependencyFactory";
 
-jest.mocked(services.locate).mockResolvedValue(
-  sanitizedIntegrationConfigFactory({
-    serviceId: validateRegistryId("@test/service"),
-  }),
-);
+jest
+  .mocked(integrationConfigLocator.findSanitizedIntegrationConfig)
+  .mockResolvedValue(
+    sanitizedIntegrationConfigFactory({
+      serviceId: validateRegistryId("@test/service"),
+    }),
+  );
 
 // XXX: should be using actual bricks instead of a single outputSchema across all tests in order to test
 // different outputSchema scenarios

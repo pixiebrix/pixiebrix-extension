@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ExtensionLogsModal.module.scss";
+import styles from "./ModLogsModal.module.scss";
 
 import React, { useEffect } from "react";
 import { Modal } from "react-bootstrap";
@@ -26,7 +26,7 @@ import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSl
 import ModalLayout from "@/components/ModalLayout";
 import { selectShowLogsContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 
-const ExtensionLogsModal: React.FunctionComponent = () => {
+const ModLogsModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();
 
   const closeModal = () => {
@@ -59,4 +59,4 @@ const ExtensionLogsModal: React.FunctionComponent = () => {
   );
 };
 
-export default ExtensionLogsModal;
+export default ModLogsModal;

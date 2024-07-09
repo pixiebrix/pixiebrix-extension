@@ -23,10 +23,10 @@ import { useDispatch } from "react-redux";
 import { type EditorValues } from "./Editor";
 import { type BrickValidationResult, validateSchema } from "./validate";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
-import useReinstall from "@/extensionConsole/pages/mods/utils/useReinstall";
+import useReactivateMod from "@/extensionConsole/pages/mods/utils/useReactivateMod";
 import notify from "@/utils/notify";
 import { Events } from "@/telemetry/events";
-import { clearServiceCache } from "@/background/messenger/api";
+import { clearIntegrationRegistry } from "@/background/messenger/api";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import {
   useCreatePackageMutation,
@@ -58,7 +58,7 @@ type SubmitCallbacks = {
 function useSubmitPackage({ create = false }: SubmitOptions): SubmitCallbacks {
   const [, refresh] = useRefreshRegistries({ refreshOnMount: false });
   const modals = useModals();
-  const reinstall = useReinstall();
+  const reinstall = useReactivateMod();
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -143,7 +143,7 @@ function useSubmitPackage({ create = false }: SubmitOptions): SubmitCallbacks {
             if (kind === DefinitionKinds.INTEGRATION) {
               // Clear the background page's service cache after refreshing so
               // it's forced to read the updated service definition.
-              await clearServiceCache();
+              await clearIntegrationRegistry();
             }
 
             reloadModsEveryTab();

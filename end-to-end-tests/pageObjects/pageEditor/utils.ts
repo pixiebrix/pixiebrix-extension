@@ -27,9 +27,9 @@ export function ModifiesModState<T>(
 ) {
   return async function (this: BasePageObject, ...args: any[]): Promise<T> {
     const result = await value.apply(this, args);
-    // See EditorPane.tsx:REDUX_SYNC_WAIT_MILLIS
+    // See EditorPane.tsx: REDUX_SYNC_WAIT_MILLIS+CHANGE_DETECT_DELAY_MILLIS --> 500 + 100 = 600ms
     // eslint-disable-next-line playwright/no-wait-for-timeout -- Wait for Redux to update
-    await this.page.waitForTimeout(500);
+    await this.page.waitForTimeout(600);
     return result;
   };
 }

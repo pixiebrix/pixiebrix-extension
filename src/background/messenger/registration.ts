@@ -37,8 +37,8 @@ import {
 import { setToolbarBadge } from "@/background/toolbarBadge";
 import { rememberFocus } from "@/utils/focusTracker";
 import writeToClipboardInFocusedContext from "@/background/clipboard";
-import * as registry from "@/registry/packageRegistry";
-import serviceRegistry from "@/integrations/registry";
+import * as packageRegistry from "@/registry/packageRegistry";
+import integrationRegistry from "@/integrations/registry";
 import { getUserData } from "@/auth/authStorage";
 import {
   clearModComponentDebugLogs,
@@ -48,7 +48,10 @@ import {
   recordLog,
 } from "@/telemetry/logging";
 import { fetchFeatureFlags } from "@/auth/featureFlagStorage";
-import { locator, refreshServices } from "@/background/locator";
+import {
+  integrationConfigLocator,
+  refreshIntegrationConfigs,
+} from "@/background/integrationConfigLocator";
 import { closeTab, focusTab, openTab } from "@/background/tabs";
 import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow";
 import { performConfiguredRequest } from "@/background/requests";
@@ -95,14 +98,13 @@ declare global {
     SET_TOOLBAR_BADGE: typeof setToolbarBadge;
     DOCUMENT_RECEIVED_FOCUS: typeof rememberFocus;
     WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT: typeof writeToClipboardInFocusedContext;
-    REGISTRY_SYNC: typeof registry.syncPackages;
-    REGISTRY_CLEAR: typeof registry.clear;
-    REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
-    REGISTRY_FIND: typeof registry.find;
+    REGISTRY_SYNC: typeof packageRegistry.syncPackages;
+    REGISTRY_CLEAR: typeof packageRegistry.clear;
+    REGISTRY_GET_BY_KINDS: typeof packageRegistry.getByKinds;
+    REGISTRY_FIND: typeof packageRegistry.find;
     QUERY_TABS: typeof browser.tabs.query;
     FETCH_FEATURE_FLAGS: typeof fetchFeatureFlags;
 
-    CLEAR_SERVICE_CACHE: typeof serviceRegistry.clear;
     GET_USER_DATA: typeof getUserData;
     RECORD_LOG: typeof recordLog;
     RECORD_ERROR: typeof recordError;
@@ -110,10 +112,11 @@ declare global {
     CLEAR_LOG: typeof clearLog;
     CLEAR_EXTENSION_DEBUG_LOGS: typeof clearModComponentDebugLogs;
 
-    LOCATE_SERVICES_FOR_ID: typeof locator.locateAllForService;
-    LOCATE_SERVICE: typeof locator.locate;
-    REFRESH_SERVICES: typeof refreshServices;
-    LOCATOR_REFRESH_LOCAL: typeof locator.refreshLocal;
+    INTEGRATION_REGISTRY_CLEAR: typeof integrationRegistry.clear;
+    LOCATOR_FIND_ALL_SANITIZED_CONFIGS_FOR_INTEGRATION: typeof integrationConfigLocator.findAllSanitizedConfigsForIntegration;
+    LOCATOR_FIND_SANITIZED_INTEGRATION_CONFIG: typeof integrationConfigLocator.findSanitizedIntegrationConfig;
+    LOCATOR_REFRESH: typeof refreshIntegrationConfigs;
+    LOCATOR_REFRESH_LOCAL: typeof integrationConfigLocator.refreshLocal;
 
     OPEN_TAB: typeof openTab;
     CLOSE_TAB: typeof closeTab;
@@ -168,14 +171,13 @@ export default function registerMessenger(): void {
     SET_TOOLBAR_BADGE: setToolbarBadge,
     DOCUMENT_RECEIVED_FOCUS: rememberFocus,
     WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT: writeToClipboardInFocusedContext,
-    REGISTRY_SYNC: registry.syncPackages,
-    REGISTRY_CLEAR: registry.clear,
-    REGISTRY_GET_BY_KINDS: registry.getByKinds,
-    REGISTRY_FIND: registry.find,
+    REGISTRY_SYNC: packageRegistry.syncPackages,
+    REGISTRY_CLEAR: packageRegistry.clear,
+    REGISTRY_GET_BY_KINDS: packageRegistry.getByKinds,
+    REGISTRY_FIND: packageRegistry.find,
     QUERY_TABS: browser.tabs.query,
     FETCH_FEATURE_FLAGS: fetchFeatureFlags,
 
-    CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
     GET_USER_DATA: getUserData,
     RECORD_LOG: recordLog,
     RECORD_ERROR: recordError,
@@ -183,10 +185,20 @@ export default function registerMessenger(): void {
     CLEAR_LOG: clearLog,
     CLEAR_EXTENSION_DEBUG_LOGS: clearModComponentDebugLogs,
 
-    LOCATE_SERVICES_FOR_ID: locator.locateAllForService.bind(locator),
-    LOCATE_SERVICE: locator.locate.bind(locator),
-    LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),
-    REFRESH_SERVICES: refreshServices,
+    INTEGRATION_REGISTRY_CLEAR:
+      integrationRegistry.clear.bind(integrationRegistry),
+    LOCATOR_FIND_ALL_SANITIZED_CONFIGS_FOR_INTEGRATION:
+      integrationConfigLocator.findAllSanitizedConfigsForIntegration.bind(
+        integrationConfigLocator,
+      ),
+    LOCATOR_FIND_SANITIZED_INTEGRATION_CONFIG:
+      integrationConfigLocator.findSanitizedIntegrationConfig.bind(
+        integrationConfigLocator,
+      ),
+    LOCATOR_REFRESH_LOCAL: integrationConfigLocator.refreshLocal.bind(
+      integrationConfigLocator,
+    ),
+    LOCATOR_REFRESH: refreshIntegrationConfigs,
 
     OPEN_TAB: openTab,
     CLOSE_TAB: closeTab,

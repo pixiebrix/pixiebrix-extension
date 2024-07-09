@@ -20,7 +20,7 @@ import serviceRegistry from "@/integrations/registry";
 import { expectContext } from "@/utils/expectContext";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
-import locateSanitizedIntegrationConfigWithRetry from "@/integrations/util/locateSanitizedIntegrationConfigWithRetry";
+import findSanitizedIntegrationConfigWithRetry from "@/integrations/util/findSanitizedIntegrationConfigWithRetry";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
@@ -45,7 +45,7 @@ export async function collectIntegrationOriginPermissions({
     "configId is required for non-pixiebrix integrations",
   );
 
-  const localConfig = await locateSanitizedIntegrationConfigWithRetry(
+  const localConfig = await findSanitizedIntegrationConfigWithRetry(
     integrationId,
     configId,
   );

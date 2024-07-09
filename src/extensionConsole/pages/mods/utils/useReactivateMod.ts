@@ -24,9 +24,9 @@ import { collectModOptions } from "@/store/extensionsUtils";
 import { deactivateMod } from "@/store/deactivateUtils";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 
-type Reinstall = (modDefinition: ModDefinition) => Promise<void>;
+type ReactivateMod = (modDefinition: ModDefinition) => Promise<void>;
 
-function useReinstall(): Reinstall {
+function useReactivateMod(): ReactivateMod {
   const dispatch = useDispatch();
   const allComponents = useSelector(selectActivatedModComponents);
 
@@ -38,7 +38,7 @@ function useReinstall(): Reinstall {
       );
 
       if (activatedModComponents.length === 0) {
-        throw new Error(`No bricks to re-activate for ${modId}`);
+        throw new Error(`No mod components to re-activate for ${modId}`);
       }
 
       const currentOptions = collectModOptions(activatedModComponents);
@@ -65,4 +65,4 @@ function useReinstall(): Reinstall {
   );
 }
 
-export default useReinstall;
+export default useReactivateMod;

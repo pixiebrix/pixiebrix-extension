@@ -54,7 +54,6 @@ import {
 } from "@/utils/deploymentUtils";
 import { selectUpdatePromptState } from "@/store/settings/settingsSelectors";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { locator } from "@/background/locator";
 import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
@@ -73,7 +72,7 @@ import { allSettled } from "@/utils/promiseUtils";
 import type { Manifest } from "webextension-polyfill";
 import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
 import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import type { components } from "@/types/swagger";
@@ -89,7 +88,10 @@ const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
-const locateAllForService = locator.locateAllForService.bind(locator);
+const findAllSanitizedIntegrationConfigs =
+  integrationConfigLocator.findAllSanitizedConfigsForIntegration.bind(
+    integrationConfigLocator,
+  );
 
 /**
  * Heartbeat frequency for reporting/checking deployments from the server.
@@ -319,7 +321,7 @@ async function activateDeployment({
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies(
         activatableDeployment,
-        services.locateAllForId,
+        integrationConfigLocator.findAllSanitizedConfigsForIntegration,
       ),
       // Assume backend properly validates the options
       optionsArgs: deployment.options_config as OptionsArgs,
@@ -397,7 +399,7 @@ async function canAutoActivate({
   const personalConfigs =
     await findLocalDeploymentConfiguredIntegrationDependencies(
       activatableDeployment,
-      locateAllForService,
+      findAllSanitizedIntegrationConfigs,
     );
   return personalConfigs.every(({ configs }) => configs.length === 1);
 }
@@ -682,7 +684,7 @@ async function activateDeploymentsInBackground({
       activatableDeployment,
       ...(await checkDeploymentPermissions({
         activatableDeployment,
-        locate: locateAllForService,
+        locate: findAllSanitizedIntegrationConfigs,
         optionalPermissions,
       })),
     })),
