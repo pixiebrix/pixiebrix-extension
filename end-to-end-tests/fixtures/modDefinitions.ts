@@ -18,8 +18,8 @@
 import { expect } from "@playwright/test";
 import { test as pageContextFixture } from "./pageContext";
 import { WorkshopPage } from "../pageObjects/extensionConsole/workshop/workshopPage";
-import diff from "deep-diff";
-import { loadBrickYaml } from "@/runtime/brickYaml";
+import { createPatch } from "diff";
+import { dumpBrickYaml, loadBrickYaml } from "@/runtime/brickYaml";
 
 // The mod definitions are a map of mod names to their test metadata
 type ModDefinitions = Record<
@@ -141,13 +141,26 @@ export const test = pageContextFixture.extend<{
           currentModDefinitionYaml,
         );
         const parsedLastModDefinitionYaml = loadBrickYaml(lastModDefinition);
-        const yamlDiff =
-          diff(parsedLastModDefinitionYaml, parsedCurrentModDefinitionYaml) ||
-          [];
-
-        expect(JSON.stringify(yamlDiff, undefined, 2) + "\n").toMatchSnapshot(
-          snapshotName + ".json",
+        const yamlDiff = createPatch(
+          snapshotName,
+          normalizeUUIDs(
+            dumpBrickYaml(parsedLastModDefinitionYaml, {
+              indent: 2,
+              sortKeys: true,
+            }),
+          ),
+          normalizeUUIDs(
+            dumpBrickYaml(parsedCurrentModDefinitionYaml, {
+              indent: 2,
+              sortKeys: true,
+            }),
+          ),
+          undefined,
+          undefined,
+          { context: 40 },
         );
+
+        expect(yamlDiff).toMatchSnapshot(snapshotName + ".diff");
 
         // Update the mod definition to the last known state
         modDefinitionsMap[modDefinitionName] = {
