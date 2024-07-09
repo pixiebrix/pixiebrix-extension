@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import BrickIcon from "@/components/BrickIcon";
+import PackageIcon from "@/components/PackageIcon";
 import styles from "./BrickGridItem.module.scss";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -49,7 +49,7 @@ const BrickGridItem: React.VFC<BrickItemProps> = ({
       })}
     >
       <div className={styles.nameRow}>
-        <BrickIcon brick={brick} faIconClass={styles.icon} />
+        <PackageIcon packageOrMetadata={brick} faIconClass={styles.icon} />
         <span className={styles.name}>{brick.name}</span>
         {brick.isPopular && (
           <Icon
