@@ -41,6 +41,7 @@ testItRenders({
     } as any,
     onVarSelect: noop,
     likelyVariable: null,
+    activeKeyPath: null,
   },
 });
 
@@ -69,6 +70,7 @@ describe("VariablesTree", () => {
         vars={inputMap}
         onVarSelect={noop}
         likelyVariable="@input.foo."
+        activeKeyPath={null}
       />,
     );
 
