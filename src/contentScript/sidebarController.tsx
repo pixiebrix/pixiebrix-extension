@@ -419,15 +419,12 @@ export function reservePanels(refs: ModComponentRef[]): void {
   }
 
   const current = new Set(panels.map((x) => x.modComponentRef.modComponentId));
-  for (const { modComponentId, starterBrickId, modId } of refs) {
+  for (const modComponentRef of refs) {
+    const { modComponentId, starterBrickId, modId } = modComponentRef;
     if (!current.has(modComponentId)) {
       const entry: PanelEntry = {
         type: "panel",
-        modComponentRef: {
-          modComponentId: modComponentId,
-          starterBrickId: starterBrickId,
-          modId: modId,
-        },
+        modComponentRef,
         heading: "",
         payload: null,
       };
@@ -497,7 +494,7 @@ export function upsertPanel(
       modId,
       {
         entry,
-        starterBrickId: starterBrickId,
+        starterBrickId,
         heading,
         payload,
       },
