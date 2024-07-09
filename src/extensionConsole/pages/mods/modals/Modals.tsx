@@ -17,13 +17,13 @@
 
 import React from "react";
 import ConvertToModModal from "./convertToModModal/ConvertToModModal";
-import ExtensionLogsModal from "./extensionLogsModal/ExtensionLogsModal";
+import ModLogsModal from "./modLogsModal/ModLogsModal";
 import PublishModModals from "./shareModals/PublishModModals";
 import ShareModModal from "./shareModals/ShareModModal";
 
 const Modals: React.FunctionComponent = () => (
   <>
-    <ExtensionLogsModal />
+    <ModLogsModal />
     <ConvertToModModal />
     <ShareModModal />
     <PublishModModals />
