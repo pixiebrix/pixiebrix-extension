@@ -43,11 +43,11 @@ const runBrickMock = jest.mocked(runBrick);
 const optionsFactory = define<RemoteBrickOptions>({
   ctxt: () => ({}),
   messageContext: (i: number) => ({
-    extensionId: uuidSequence(i),
+    modComponentId: uuidSequence(i),
   }),
   meta: derive<RemoteBrickOptions, RemoteBrickOptions["meta"]>(
     (options) => ({
-      extensionId: options.messageContext!.extensionId,
+      extensionId: options.messageContext!.modComponentId,
       runId: null,
       branches: [],
     }),

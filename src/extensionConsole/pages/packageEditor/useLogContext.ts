@@ -55,23 +55,23 @@ function useLogContext(config: string | null) {
     let messageContext: MessageContext | null;
     switch (json.kind) {
       case DefinitionKinds.INTEGRATION: {
-        messageContext = { serviceId: id };
+        messageContext = { integrationId: id };
         break;
       }
 
       case DefinitionKinds.STARTER_BRICK: {
-        messageContext = { extensionPointId: id };
+        messageContext = { starterBrickId: id };
         break;
       }
 
       case DefinitionKinds.BRICK:
       case DefinitionKinds.READER: {
-        messageContext = { blockId: id };
+        messageContext = { brickId: id };
         break;
       }
 
       case DefinitionKinds.MOD: {
-        messageContext = { blueprintId: id };
+        messageContext = { modId: id };
         break;
       }
 

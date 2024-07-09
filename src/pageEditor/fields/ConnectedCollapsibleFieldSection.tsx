@@ -11,7 +11,7 @@ const ConnectedCollapsibleFieldSection = ({
 }: {
   children: React.ReactNode;
   title: string;
-  bodyRef?: React.MutableRefObject<HTMLDivElement>;
+  bodyRef?: React.MutableRefObject<HTMLDivElement | null>;
   initialExpanded?: boolean;
 }) => {
   const dispatch = useDispatch();

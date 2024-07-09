@@ -24,6 +24,7 @@ import {
 import { castArray, intersection, isEmpty, uniq } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Return the names of top-level required properties that are missing or blank in an object.
@@ -68,7 +69,9 @@ export function propertiesToSchema(
  * Return the names of top-level properties in a JSON Schema or object.
  * @see propertiesToSchema
  */
-export function inputProperties(inputSchema: Schema): SchemaProperties {
+export function inputProperties(
+  inputSchema: Nullishable<Schema>,
+): SchemaProperties {
   // NOTE: returning the argument is UNSAFE and is not consistent with the parameter type `Schema`.
   // In the past, PixieBrix definitions have supported shorthand of providing the properties directly.
 

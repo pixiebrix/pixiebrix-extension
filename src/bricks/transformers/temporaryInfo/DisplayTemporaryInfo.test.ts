@@ -352,10 +352,12 @@ describe("DisplayTemporaryInfo", () => {
     const options = {
       ...testOptions("v3"),
       logger: new ConsoleLogger(
-        modComponentRefFactory({
-          extensionId,
-          blueprintId: null,
-        }),
+        mapModComponentRefToMessageContext(
+          modComponentRefFactory({
+            extensionId,
+            blueprintId: null,
+          }),
+        ),
       ),
     };
 

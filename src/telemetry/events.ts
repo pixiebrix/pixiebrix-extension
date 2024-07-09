@@ -166,5 +166,3 @@ export const Events = {
 
   SHORTCUT_SNIPPET_RUN: "TextCommandRun",
 } as const;
-
-export type Event = (typeof Events)[keyof typeof Events];

@@ -114,7 +114,7 @@ class AddDynamicTextSnippet extends EffectABC {
       return;
     }
 
-    if (logger.context.extensionId == null) {
+    if (logger.context.modComponentId == null) {
       throw new Error("Must be run in the context of a mod");
     }
 
@@ -122,7 +122,7 @@ class AddDynamicTextSnippet extends EffectABC {
     let counter = 0;
 
     platform.snippetShortcutMenu.register({
-      componentId: logger.context.extensionId,
+      componentId: logger.context.modComponentId,
       context: logger.context,
       // Trim leading command key in shortcut to be resilient to user input
       shortcut: normalizeShortcut(shortcut),

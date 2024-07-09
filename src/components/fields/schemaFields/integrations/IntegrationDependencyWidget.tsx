@@ -177,12 +177,20 @@ function clearIntegrationSelection(
 
 const NO_AUTH_OPTIONS = freeze<AuthOption[]>([]);
 
+type SelectedEventPayload = {
+  integration_id?: RegistryId;
+  is_user_action?: boolean;
+  auth_label?: string;
+  auth_sharing_type?: string;
+  auth_is_local?: boolean;
+};
+
 // The only reason these inputs are optional is for tests, need to investigate better mocking instead
 // @see BotOptions.test.ts
 const makeSelectedEventPayload = (
   authOption?: AuthOption,
   isUserAction?: boolean,
-) => {
+): SelectedEventPayload => {
   if (!authOption) {
     return {};
   }

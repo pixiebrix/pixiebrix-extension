@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import { joinName } from "@/utils/formUtils";
 import RequireIntegrationConfig from "@/integrations/components/RequireIntegrationConfig";
@@ -120,7 +120,7 @@ const ApiTaskOptionsContent: React.FC<{
   );
 };
 
-const ApiTaskOptions: React.FC<BlockOptionProps> = ({ name, configKey }) => {
+const ApiTaskOptions: React.FC<BrickOptionProps> = ({ name, configKey }) => {
   const configName = partial(joinName, name, configKey);
   return (
     <RequireIntegrationConfig

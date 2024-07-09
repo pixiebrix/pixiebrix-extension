@@ -95,7 +95,7 @@ class RunBrickByIdTransformer extends TransformerABC {
     const { logger, ...otherOptions } = options;
 
     return brick.run(rawArguments as BrickArgs, {
-      logger: logger.childLogger({ blockId: brick.id }),
+      logger: logger.childLogger({ brickId: brick.id }),
       ...otherOptions,
     });
   }

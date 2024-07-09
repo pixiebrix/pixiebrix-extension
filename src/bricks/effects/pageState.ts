@@ -150,15 +150,15 @@ export class SetPageState extends TransformerABC {
     }>,
     { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
-    const { blueprintId, extensionId } = logger.context;
+    const { modId, modComponentId } = logger.context;
 
     return platform.state.setState({
       namespace,
       data,
       mergeStrategy,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7891
-      modComponentId: extensionId!,
-      modId: blueprintId,
+      modComponentId: modComponentId!,
+      modId,
     });
   }
 }
@@ -205,7 +205,7 @@ export class GetPageState extends TransformerABC {
     }: BrickArgs<{ namespace?: StateNamespace }>,
     { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
-    const { blueprintId: modId, extensionId: modComponentId } = logger.context;
+    const { modId, modComponentId } = logger.context;
 
     return platform.state.getState({
       namespace,

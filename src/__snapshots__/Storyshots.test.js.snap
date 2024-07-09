@@ -2976,7 +2976,7 @@ exports[`Storyshots Editor/LogTable No Entries 1`] = `
               Label
             </th>
             <th>
-              Block/Service
+              Brick/Integration
             </th>
             <th>
               Message/Error
@@ -3038,7 +3038,7 @@ exports[`Storyshots Editor/LogTable No Entries For Level 1`] = `
               Label
             </th>
             <th>
-              Block/Service
+              Brick/Integration
             </th>
             <th>
               Message/Error
@@ -3100,7 +3100,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               Label
             </th>
             <th>
-              Block/Service
+              Brick/Integration
             </th>
             <th>
               Message/Error

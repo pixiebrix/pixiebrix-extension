@@ -16,7 +16,7 @@
  */
 
 import type { MessageContext } from "@/types/loggerTypes";
-import { type TelemetryUser } from "@/telemetry/telemetryHelpers";
+import { type TelemetryUser } from "@/telemetry/telemetryTypes";
 import { type SemVerString } from "@/types/registryTypes";
 import { type SerializedError } from "@/types/messengerTypes";
 import { deserializeError } from "serialize-error";

@@ -53,7 +53,7 @@ describe("AddTextSnippets", () => {
           title: "Test",
           preview: "test text",
           handler: expect.toBeFunction(),
-          componentId: options.logger.context.extensionId,
+          componentId: options.logger.context.modComponentId,
           context: options.logger.context,
         },
       ]);

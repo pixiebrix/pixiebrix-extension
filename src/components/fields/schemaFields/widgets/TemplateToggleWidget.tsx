@@ -36,11 +36,16 @@ import {
 import VarPopup from "./varPopup/VarPopup";
 
 import { isTemplateExpression } from "@/utils/expressionUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export function getOptionForInputMode(
   options: InputModeOption[],
-  inputMode: FieldInputMode,
+  inputMode: FieldInputMode | undefined,
 ): InputModeOption | null {
+  if (inputMode == null) {
+    return null;
+  }
+
   return options.find((option) => option.value === inputMode) ?? null;
 }
 
@@ -62,7 +67,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   const { inputMode, onOmitField } = useToggleFormField(
     schemaFieldProps.name,
     schemaFieldProps.schema,
-    schemaFieldProps.isRequired,
+    schemaFieldProps.isRequired ?? false,
   );
 
   const defaultInputRef = useRef<HTMLElement>();
@@ -97,13 +102,17 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
         return;
       }
 
-      const { interpretValue } = getOptionForInputMode(
-        inputModeOptions,
-        newInputMode,
+      const option = getOptionForInputMode(inputModeOptions, newInputMode);
+
+      assertNotNullish(
+        option,
+        `Option not found for input mode: ${newInputMode}`,
       );
 
-      // Already handled "omit" and returned above
-      await setValue(interpretValue(value));
+      const { interpretValue } = option;
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion --  Already handled "omit" and returned above
+      await setValue(interpretValue!(value));
       setFocusInput(true);
     },
     [inputMode, inputModeOptions, setValue, value, onOmitField],
@@ -151,7 +160,10 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
         return;
       }
 
-      await setValue(selectedOption.interpretValue(newValue));
+      assertNotNullish(selectedOption, `Option not found for ${inputMode}`);
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Already handled "omit" by limiting to var or string
+      await setValue(selectedOption.interpretValue!(newValue));
     },
     [inputMode, selectedOption, setValue],
   );
