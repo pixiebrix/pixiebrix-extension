@@ -23,6 +23,7 @@ import VarMap, {
   ALLOW_ANY_CHILD,
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { render, screen } from "@testing-library/react";
+import { type UnknownRecord } from "type-fest";
 
 testItRenders({
   testName: "Renders the tree",
@@ -67,7 +68,7 @@ describe("VariablesTree", () => {
 
     render(
       <VariablesTree
-        vars={inputMap}
+        vars={inputMap as UnknownRecord}
         onVarSelect={noop}
         likelyVariable="@input.foo."
         activeKeyPath={null}

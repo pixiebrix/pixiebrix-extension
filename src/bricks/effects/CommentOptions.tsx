@@ -16,7 +16,7 @@ import { type Expression } from "@/types/runtimeTypes";
  * Shows as a textarea with no toggle/exclude.
  */
 const CommentOptions: React.FunctionComponent<BrickOptionProps> = (props) => {
-  const { name, configKey } = props;
+  const { name, configKey = null } = props;
 
   const context = useContext(FieldRuntimeContext);
 

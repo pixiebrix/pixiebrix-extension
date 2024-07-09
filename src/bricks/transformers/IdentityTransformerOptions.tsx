@@ -14,7 +14,7 @@ const ANY_SCHEMA: Schema = {
  */
 const IdentityTransformerOptions: React.FunctionComponent<BrickOptionProps> = ({
   name,
-  configKey,
+  configKey = null,
 }) => (
   <SchemaField
     label="Value"
