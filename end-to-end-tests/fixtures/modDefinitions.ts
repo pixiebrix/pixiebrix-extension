@@ -143,14 +143,18 @@ export const test = pageContextFixture.extend<{
         const parsedLastModDefinitionYaml = loadBrickYaml(lastModDefinition);
         const yamlDiff = createPatch(
           snapshotName,
-          dumpBrickYaml(parsedLastModDefinitionYaml, {
-            indent: 2,
-            sortKeys: true,
-          }),
-          dumpBrickYaml(parsedCurrentModDefinitionYaml, {
-            indent: 2,
-            sortKeys: true,
-          }),
+          normalizeUUIDs(
+            dumpBrickYaml(parsedLastModDefinitionYaml, {
+              indent: 2,
+              sortKeys: true,
+            }),
+          ),
+          normalizeUUIDs(
+            dumpBrickYaml(parsedCurrentModDefinitionYaml, {
+              indent: 2,
+              sortKeys: true,
+            }),
+          ),
           undefined,
           undefined,
           { context: 40 },
