@@ -34,6 +34,21 @@ export type LoadedFrame = HTMLIFrameElement & {
   contentWindow: Window;
 };
 
+/**
+ * Returns a promise that will poll indefinitely until the given element is removed from the DOM. The promise resolves
+ * when the element is removed. Meant to be used with base condition of some kind.
+ * @param element The iframe to poll for removal
+ */
+const elementRemoved = async (element: HTMLElement) =>
+  new Promise((resolve) => {
+    const poll = setInterval(() => {
+      if (!document.documentElement.contains(element)) {
+        clearInterval(poll);
+        resolve("removed");
+      }
+    }, 100);
+  });
+
 /** Injects an iframe into the host page via ShadowDom */
 async function _injectIframe(
   url: string,
@@ -52,7 +67,14 @@ async function _injectIframe(
   await waitForDocumentRoot();
   document.documentElement.append(shadowWrap(iframe));
 
-  await iframeLoad;
+  const result = await Promise.race([iframeLoad, elementRemoved(iframe)]);
+
+  if (result === "removed") {
+    console.warn(
+      "The host page removed the sandbox iframe before it could be loaded. Retrying...",
+    );
+    return _injectIframe(url, style);
+  }
 
   return iframe as LoadedFrame;
 }
