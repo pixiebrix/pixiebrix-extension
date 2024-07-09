@@ -166,26 +166,3 @@ export const Events = {
 
   SHORTCUT_SNIPPET_RUN: "TextCommandRun",
 } as const;
-
-export type Event = (typeof Events)[keyof typeof Events];
-
-const RESERVED_KEYS = [
-  "blockId",
-  "blockVersion",
-  "blueprintId",
-  "blueprintVersion",
-  "extensionId",
-  "extensionLabel",
-  "extensionPointId",
-  "extensions",
-  "recipeId",
-  "recipeToActivate",
-  "serviceId",
-  "serviceVersion",
-] as const;
-
-type ReservedKeys = {
-  [K in (typeof RESERVED_KEYS)[number]]?: never;
-};
-
-export type ReportEventData = UnknownObject & ReservedKeys;
