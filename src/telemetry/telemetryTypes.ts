@@ -47,8 +47,8 @@ const RESERVED_KEYS = [
   "serviceVersion",
 ] as const;
 
-type ReservedKeys = {
+type BanReservedKeys = {
   [K in (typeof RESERVED_KEYS)[number]]?: never;
 };
 
-export type ReportEventData = UnknownObject & ReservedKeys;
+export type ReportEventData = UnknownObject & BanReservedKeys;
