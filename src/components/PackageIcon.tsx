@@ -40,11 +40,12 @@ import useAsyncState from "@/hooks/useAsyncState";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-function getDefaultBrickIcon<Instance extends PackageInstance>(
-  brick: Instance,
+function getDefaultPackageIcon(
+  packageInstance: PackageInstance,
   brickType: Nullishable<BrickType>,
 ): IconProp {
-  if ("schema" in brick) {
+  // Is an integration definition. See Integration/IntegrationABC
+  if ("schema" in packageInstance) {
     return faCloud;
   }
 
@@ -70,27 +71,35 @@ function getDefaultBrickIcon<Instance extends PackageInstance>(
     }
   }
 
-  if (brick instanceof TriggerStarterBrickABC) {
+  if (packageInstance instanceof TriggerStarterBrickABC) {
     return faBolt;
   }
 
-  if (brick instanceof ButtonStarterBrickABC) {
+  if (packageInstance instanceof ButtonStarterBrickABC) {
     return faMousePointer;
   }
 
-  if (brick instanceof ContextMenuStarterBrickABC) {
+  if (packageInstance instanceof ContextMenuStarterBrickABC) {
     return faBars;
   }
 
-  if (brick instanceof SidebarStarterBrickABC) {
+  if (packageInstance instanceof SidebarStarterBrickABC) {
     return faColumns;
   }
 
   return faCube;
 }
 
-type BrickIconProps<T extends Metadata> = {
-  brick: T;
+type PackageIconProps = {
+  /**
+   * A PackageInstance or Metadata object. Provide a PackageInstance instead of a Metadata to support brick type
+   * inference.
+   *
+   * @see PackageInstance
+   * @see Metadata
+   */
+  packageOrMetadata: Metadata | PackageInstance;
+
   size?: "1x" | "2x";
 
   /**
@@ -108,29 +117,34 @@ type BrickIconProps<T extends Metadata> = {
 };
 
 /**
- * A package icon. Provide a PackageInstance instead of a Metadata to support type inference.
+ * A package icon. Provide a PackageInstance instead of a Metadata to support brick type inference.
  *
- * WARNING: avoid rendering a lot of brick icons (20+) icons on a page at once. Each one waits for the marketplace
+ * WARNING: avoid rendering a lot of icons (20+) icons on a page at once. Each one waits for the marketplace
  * listing and searches all the listings.
  *
  * @see Metadata
  * @see PackageInstance
  */
-const BrickIcon = <T extends Metadata>({
-  brick,
+// As of 2.0.5, the Metadata and PackageInstance types are currently equivalent. But include both in the union to make
+// the type signature more explicit.
+const PackageIcon: React.FunctionComponent<PackageIconProps> = ({
+  packageOrMetadata,
   size,
   faIconClass,
   inheritColor = false,
-}: BrickIconProps<T>) => {
-  const { data: type } = useAsyncState(async () => getType(brick), [brick]);
+}: PackageIconProps) => {
+  const { data: type } = useAsyncState(
+    async () => getType(packageOrMetadata),
+    [packageOrMetadata],
+  );
   const defaultIcon = useMemo(
-    () => getDefaultBrickIcon(brick, type),
-    [brick, type],
+    () => getDefaultPackageIcon(packageOrMetadata, type),
+    [packageOrMetadata, type],
   );
 
   return (
     <MarketplaceListingIcon
-      packageId={brick.id}
+      packageId={packageOrMetadata.id}
       defaultIcon={defaultIcon}
       size={size}
       faIconClass={faIconClass}
@@ -139,4 +153,4 @@ const BrickIcon = <T extends Metadata>({
   );
 };
 
-export default BrickIcon;
+export default PackageIcon;
