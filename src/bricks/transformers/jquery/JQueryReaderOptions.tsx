@@ -16,7 +16,7 @@
  */
 
 import React, { type ChangeEvent, useCallback, useMemo, useState } from "react";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact, isEmpty, partial, truncate } from "lodash";
 import { useField } from "formik";
 import {
@@ -479,7 +479,7 @@ const SelectorsOptions: React.FC<{
 };
 
 const JQueryReaderOptions: React.FC<
-  BlockOptionProps & { selectorsProp?: string }
+  BrickOptionProps & { selectorsProp?: string }
 > = ({ name, configKey }) => {
   const basePath = joinName(name, configKey);
   const configName = partial(joinName, basePath);

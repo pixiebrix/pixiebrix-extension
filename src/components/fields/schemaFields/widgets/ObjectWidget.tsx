@@ -121,7 +121,7 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
     // As of v3, we allow object props of any type, not just string
     const defaultSchema: Schema = {};
     const rawSchema = defined
-      ? parentSchema.properties[property]
+      ? parentSchema.properties?.[property] ?? defaultSchema
       : parentSchema.additionalProperties ?? defaultSchema;
 
     return typeof rawSchema === "boolean" ? defaultSchema : rawSchema;

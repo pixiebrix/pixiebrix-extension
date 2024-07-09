@@ -16,7 +16,7 @@
  */
 
 import React, { useState } from "react";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -110,7 +110,7 @@ const HeaderField: React.FunctionComponent<{
   );
 };
 
-const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
+const LookupSpreadsheetOptions: React.FunctionComponent<BrickOptionProps> = ({
   name,
   configKey,
 }) => {

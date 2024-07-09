@@ -23,7 +23,7 @@ import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils"
 import { joinName } from "@/utils/formUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 
-export type BlockOptionProps = {
+export type BrickOptionProps = {
   /**
    * The root field name for the block configuration.
    */
@@ -56,9 +56,9 @@ function genericOptionsFactory(
     NoOptionsComponent = NoOptions,
   }: {
     preserveSchemaOrder?: boolean;
-    NoOptionsComponent?: React.FunctionComponent<BlockOptionProps>;
+    NoOptionsComponent?: React.FunctionComponent<BrickOptionProps>;
   } = {},
-): React.FunctionComponent<BlockOptionProps> {
+): React.FunctionComponent<BrickOptionProps> {
   const optionSchema = inputProperties(schema);
   if (isEmpty(optionSchema)) {
     return NoOptionsComponent;
@@ -68,13 +68,13 @@ function genericOptionsFactory(
     preserveSchemaOrder,
   });
 
-  const OptionsFields = ({ name, configKey }: BlockOptionProps) => (
+  const OptionsFields = ({ name, configKey }: BrickOptionProps) => (
     <>
       {sortedFieldsConfig.map(
         ({ prop, fieldSchema, propUiSchema, isRequired }) => (
           <SchemaField
             key={prop}
-            name={joinName(name, configKey, prop)}
+            name={joinName(name, configKey ?? null, prop)}
             schema={fieldSchema}
             isRequired={isRequired}
             uiSchema={propUiSchema}
