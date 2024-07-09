@@ -45,20 +45,20 @@ describe("mapModComponentRefToEventData", () => {
   it("maps fields", () => {
     const value = modComponentRefFactory();
     expect(mapModComponentRefToMessageContext(value)).toStrictEqual({
-      modComponentId: value.extensionId,
-      modId: value.blueprintId,
-      starterBrickId: value.extensionPointId,
+      modComponentId: value.modComponentId,
+      modId: value.modId,
+      starterBrickId: value.starterBrickId,
     });
   });
 
   it("replaces null with undefined", () => {
     const value = modComponentRefFactory({
-      blueprintId: null,
+      modId: null,
     });
     expect(mapModComponentRefToMessageContext(value)).toStrictEqual({
-      modComponentId: value.extensionId,
+      modComponentId: value.modComponentId,
       modId: undefined,
-      starterBrickId: value.extensionPointId,
+      starterBrickId: value.starterBrickId,
     });
   });
 

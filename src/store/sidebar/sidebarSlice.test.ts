@@ -103,7 +103,7 @@ describe("sidebarSlice.addTemporaryPanel", () => {
     const otherExistingPanel = sidebarEntryFactory("temporaryPanel");
     const newPanel = sidebarEntryFactory("temporaryPanel", {
       modComponentRef: modComponentRefFactory({
-        extensionId: existingPanel.modComponentRef.extensionId,
+        modComponentId: existingPanel.modComponentRef.modComponentId,
       }),
     });
 
@@ -198,7 +198,7 @@ describe("removeTemporaryPanel", () => {
     const otherExistingPanel = sidebarEntryFactory("form");
     const newPanel = sidebarEntryFactory("temporaryPanel", {
       modComponentRef: modComponentRefFactory({
-        extensionId: originalPanel.modComponentRef.extensionId,
+        modComponentId: originalPanel.modComponentRef.modComponentId,
       }),
     });
 
@@ -533,18 +533,18 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
     const modId = validateRegistryId("test/123");
     const originalPanel = sidebarEntryFactory("panel", {
       modComponentRef: modComponentRefFactory({
-        blueprintId: modId,
+        modId: modId,
       }),
     });
     const otherExistingPanel = sidebarEntryFactory("form", {
       modComponentRef: modComponentRefFactory({
-        blueprintId: modId,
+        modId: modId,
       }),
     });
     const newPanel = sidebarEntryFactory("temporaryPanel", {
       modComponentRef: modComponentRefFactory({
-        extensionId: originalPanel.modComponentRef.extensionId,
-        blueprintId: modId,
+        modComponentId: originalPanel.modComponentRef.modComponentId,
+        modId: modId,
       }),
     });
 
@@ -572,12 +572,12 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
     const firstPanel = sidebarEntryFactory("panel");
     const matchingPanel = sidebarEntryFactory("panel", {
       modComponentRef: modComponentRefFactory({
-        blueprintId: modId,
+        modId: modId,
       }),
     });
     const newPanel = sidebarEntryFactory("temporaryPanel", {
       modComponentRef: modComponentRefFactory({
-        blueprintId: modId,
+        modId: modId,
       }),
     });
 
@@ -601,24 +601,24 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
 
     const originalPanel = sidebarEntryFactory("panel", {
       modComponentRef: modComponentRefFactory({
-        extensionId,
+        modComponentId: extensionId,
       }),
     });
     const firstFormPanel = sidebarEntryFactory("form", {
       modComponentRef: modComponentRefFactory({
-        extensionId,
+        modComponentId: extensionId,
       }),
     });
     const nullModId = sidebarEntryFactory("form", {
       modComponentRef: modComponentRefFactory({
-        extensionId,
-        blueprintId: null,
+        modComponentId: extensionId,
+        modId: null,
       }),
     });
     const newPanel = sidebarEntryFactory("temporaryPanel", {
       modComponentRef: modComponentRefFactory({
-        extensionId,
-        blueprintId: null,
+        modComponentId: extensionId,
+        modId: null,
       }),
     });
 
