@@ -16,8 +16,12 @@
  */
 
 import { backgroundTarget as bg, getNotifier } from "webext-messenger";
-import { type Event } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
+import {
+  type TelemetryEvent,
+  type ReportEventData,
+} from "@/telemetry/telemetryTypes";
+import { mapEventDataToDeprecatedTerminology } from "@/telemetry/telemetryHelpers";
 
 expectContext(
   "extension",
@@ -31,11 +35,11 @@ const _record = getNotifier("RECORD_EVENT", bg);
  * Report an event to the PixieBrix telemetry service, if the user doesn't have DNT set.
  * @see selectEventData
  */
-export default function reportEvent(
-  event: Event,
-  data: UnknownObject = {},
+export default function reportEvent<TData extends UnknownObject>(
+  event: TelemetryEvent,
+  data: ReportEventData = {},
 ): void {
   // eslint-disable-next-line prefer-rest-params -- Needs `arguments` to avoid printing the default
   console.debug(...arguments);
-  _record({ event, data });
+  _record({ event, data: mapEventDataToDeprecatedTerminology(data) });
 }

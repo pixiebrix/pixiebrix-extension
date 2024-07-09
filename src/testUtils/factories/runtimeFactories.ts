@@ -20,6 +20,7 @@ import { define, derive } from "cooky-cutter";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 /**
  * Factory for BrickOptions to pass to Brick.run method.
@@ -34,12 +35,11 @@ export const brickOptionsFactory = define<BrickOptions>({
   },
   platform: (_i: number) => contentScriptPlatform,
   logger(_i: number) {
-    const { blueprintId, ...rest } = modComponentRefFactory();
+    const modComponentRef = modComponentRefFactory();
     // MessageContext expects undefined instead of null for blueprintId
-    return new ConsoleLogger({
-      ...rest,
-      blueprintId: blueprintId ?? undefined,
-    });
+    return new ConsoleLogger(
+      mapModComponentRefToMessageContext(modComponentRef),
+    );
   },
   root: (_i: number) => document,
   runPipeline: (_i: number) =>
@@ -51,7 +51,7 @@ export const brickOptionsFactory = define<BrickOptions>({
   meta: derive<BrickOptions, RunMetadata>(
     (options) => ({
       runId: null,
-      extensionId: options.logger?.context.extensionId,
+      extensionId: options.logger?.context.modComponentId,
       branches: [],
     }),
     "logger",

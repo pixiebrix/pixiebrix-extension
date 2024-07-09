@@ -123,7 +123,7 @@ const ReloadToolbar: React.FunctionComponent<{
     // Report before the run to report even if the run errors
     reportEvent(Events.PAGE_EDITOR_MANUAL_RUN, {
       sessionId,
-      extensionId: modComponentFormState.uuid,
+      modComponentId: modComponentFormState.uuid,
     });
 
     await run();

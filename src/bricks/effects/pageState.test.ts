@@ -34,8 +34,8 @@ describe("@pixiebrix/state/get", () => {
   test("default to blueprint state", async () => {
     const brick = new GetPageState();
     const logger = new ConsoleLogger({
-      extensionId: uuidv4(),
-      blueprintId: validateRegistryId("test/123"),
+      modComponentId: uuidv4(),
+      modId: validateRegistryId("test/123"),
     });
     await brick.transform(
       unsafeAssumeValidArg({}),
@@ -53,8 +53,8 @@ describe("@pixiebrix/state/set", () => {
   test("shallow merge", async () => {
     const brick = new SetPageState();
     const logger = new ConsoleLogger({
-      extensionId: uuidv4(),
-      blueprintId: validateRegistryId("test/123"),
+      modComponentId: uuidv4(),
+      modId: validateRegistryId("test/123"),
     });
 
     let result = await brick.transform(
@@ -78,8 +78,8 @@ describe("@pixiebrix/state/set", () => {
 
     const brick = new SetPageState();
     const logger = new ConsoleLogger({
-      extensionId: uuidv4(),
-      blueprintId: validateRegistryId("test/123"),
+      modComponentId: uuidv4(),
+      modId: validateRegistryId("test/123"),
     });
 
     const original = {
@@ -164,8 +164,8 @@ describe("set and get", () => {
     const setState = new SetPageState();
     const getState = new GetPageState();
     const logger = new ConsoleLogger({
-      extensionId: uuidv4(),
-      blueprintId: validateRegistryId("test/123"),
+      modComponentId: uuidv4(),
+      modId: validateRegistryId("test/123"),
     });
 
     await setState.transform(
@@ -196,7 +196,7 @@ describe("set and get", () => {
     const setState = new SetPageState();
     const getState = new GetPageState();
     const logger = new ConsoleLogger({
-      extensionId: uuidv4(),
+      modComponentId: uuidv4(),
     });
 
     await setState.transform(

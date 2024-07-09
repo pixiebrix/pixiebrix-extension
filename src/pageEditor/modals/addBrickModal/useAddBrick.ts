@@ -158,7 +158,7 @@ function useAddBrick(): AddBrick {
       reportEvent(Events.BRICK_ADD, {
         brickId: brick.id,
         sessionId,
-        extensionId: activeModComponent.uuid,
+        modComponentId: activeModComponent.uuid,
         source: "PageEditor-BrickSearchModal",
       });
     },

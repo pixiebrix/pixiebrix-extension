@@ -69,7 +69,7 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
       );
 
       void clearLog({
-        blueprintId: modId,
+        modId,
       });
 
       dispatch(actions.removeModData(modId));

@@ -62,7 +62,7 @@ function useDeactivateAction(modViewItem: ModViewItem): (() => void) | null {
         await deactivateMod(modId, modComponentsFromMod, dispatch);
 
         reportEvent(Events.MOD_REMOVE, {
-          blueprintId: modId,
+          modId,
         });
       } else {
         await deactivateModComponents(
@@ -72,7 +72,7 @@ function useDeactivateAction(modViewItem: ModViewItem): (() => void) | null {
 
         for (const modComponent of modComponentsFromMod) {
           reportEvent(Events.MOD_COMPONENT_REMOVE, {
-            extensionId: modComponent.id,
+            modComponentId: modComponent.id,
           });
         }
       }

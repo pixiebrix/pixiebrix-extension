@@ -226,7 +226,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     this.description = metadata.description;
     this.instanceNonce = uuidv4();
     this.logger = this.platform.logger.childLogger({
-      extensionPointId: this.id,
+      starterBrickId: this.id,
     });
   }
 

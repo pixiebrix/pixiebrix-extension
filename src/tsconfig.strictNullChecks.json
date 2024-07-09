@@ -1431,6 +1431,7 @@
     "./telemetry/reportUncaughtErrors.ts",
     "./telemetry/telemetryHelpers.test.ts",
     "./telemetry/telemetryHelpers.ts",
+    "./telemetry/telemetryTypes.ts",
     "./telemetry/trace.ts",
     "./telemetry/traceHelpers.test.ts",
     "./telemetry/traceHelpers.ts",

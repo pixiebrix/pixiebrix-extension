@@ -87,7 +87,7 @@ const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
         <td>{dateFormat.format(new Date(Number(entry.timestamp)))}</td>
         <td className={styles.level}>{entry.level.toUpperCase()}</td>
         <td>{entry.context?.label}</td>
-        <td>{entry.context?.blockId ?? entry.context?.serviceId ?? ""}</td>
+        <td>{entry.context?.brickId ?? entry.context?.integrationId ?? ""}</td>
         <td>{entry.message}</td>
       </tr>
       {expanded && expandable && (

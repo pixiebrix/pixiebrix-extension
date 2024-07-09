@@ -97,7 +97,7 @@ export function useRemoveModComponentFromStorage(): (
 
       reportEvent(Events.PAGE_EDITOR_REMOVE, {
         sessionId,
-        extensionId: modComponentId,
+        modComponentId,
       });
 
       try {

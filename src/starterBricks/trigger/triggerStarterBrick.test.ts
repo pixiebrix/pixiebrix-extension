@@ -581,7 +581,7 @@ describe("triggerStarterBrick", () => {
 
     // Does not report successful event only once
     expect(reportEventMock).toHaveBeenCalledExactlyOnceWith("TriggerRun", {
-      extensionId: modComponent.id,
+      modComponentId: modComponent.id,
     });
 
     // Reports an error once

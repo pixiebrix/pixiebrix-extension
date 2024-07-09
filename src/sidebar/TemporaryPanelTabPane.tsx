@@ -75,7 +75,7 @@ export const TemporaryPanelTabPane: React.FC<{
         <PanelBody
           isRootPanel={false}
           payload={payload}
-          context={modComponentRef}
+          context={mapModComponentRefToMessageContext(modComponentRef)}
           onAction={onAction}
         />
       </ErrorBoundary>

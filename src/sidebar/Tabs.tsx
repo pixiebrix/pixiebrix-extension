@@ -338,7 +338,9 @@ const Tabs: React.FC = () => {
                   isRootPanel
                   payload={panel.payload}
                   onAction={permanentSidebarPanelAction}
-                  context={panel.modComponentRef}
+                  context={mapModComponentRefToMessageContext(
+                    panel.modComponentRef,
+                  )}
                 />
               </ErrorBoundary>
             </Tab.Pane>
@@ -390,7 +392,7 @@ const Tabs: React.FC = () => {
                     reportEvent(Events.VIEW_ERROR, {
                       panelType: "activate",
                       // For backward compatability, provide a single modId to the recipeToActivate property
-                      recipeToActivate: modActivationPanel.mods[0].modId,
+                      modToActivate: modActivationPanel.mods[0].modId,
                       modCount: modActivationPanel.mods.length,
                       modIds: modActivationPanel.mods.map((x) => x.modId),
                     });

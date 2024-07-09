@@ -180,7 +180,7 @@ export class WithAsyncModVariable extends TransformerABC {
     { logger, runPipeline }: BrickOptions,
   ) {
     const requestId = uuidv4();
-    const { blueprintId, extensionId } = logger.context;
+    const { modId: blueprintId, modComponentId: extensionId } = logger.context;
 
     if (isNullOrBlank(stateKey)) {
       throw new PropError(

@@ -79,7 +79,7 @@ export class ShowSidebar extends EffectABC {
       sidebarController.updateSidebar({
         force: forcePanel,
         panelHeading,
-        blueprintId: logger.context.blueprintId,
+        blueprintId: logger.context.modId,
       }),
     );
   }

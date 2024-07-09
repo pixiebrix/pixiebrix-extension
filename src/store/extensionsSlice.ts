@@ -174,8 +174,8 @@ const extensionsSlice = createSlice({
       }
 
       reportEvent(Events.MOD_ACTIVATE, {
-        blueprintId: modDefinition.metadata.id,
-        blueprintVersion: modDefinition.metadata.version,
+        modId: modDefinition.metadata.id,
+        modVersion: modDefinition.metadata.version,
         deploymentId: deployment?.id,
         screen,
         reinstall: isReactivate,

@@ -72,8 +72,7 @@ export function isRendererErrorPayload(
  * Context for panel, with fields required for functionality marked as required.
  */
 export type PanelContext = MessageContext & {
-  extensionId: UUID;
-  blueprintId: RegistryId | null;
+  modComponentId: UUID;
 };
 
 /**
