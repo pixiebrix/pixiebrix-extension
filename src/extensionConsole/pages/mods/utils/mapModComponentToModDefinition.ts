@@ -47,8 +47,8 @@ function inferOptionsSchema(
   };
 }
 
-export function makeBlueprint(
-  extension: SerializedModComponent,
+function mapModComponentToModDefinition(
+  modComponent: SerializedModComponent,
   metadata: Metadata,
 ): UnsavedModDefinition {
   const {
@@ -62,13 +62,13 @@ export function makeBlueprint(
     integrationDependencies,
     optionsArgs,
     config,
-  } = extension;
+  } = modComponent;
 
   if (isInnerDefinitionRegistryId(extensionPointId)) {
     throw new Error("Expected UnresolvedExtension");
   }
 
-  const extensionPoint: ModComponentDefinition = {
+  const modComponentDefinition: ModComponentDefinition = {
     id: extensionPointId,
     label,
     templateEngine,
@@ -76,7 +76,7 @@ export function makeBlueprint(
     config,
   };
   if (integrationDependencies) {
-    extensionPoint.services = Object.fromEntries(
+    modComponentDefinition.services = Object.fromEntries(
       integrationDependencies
         .filter(({ outputKey }) => !isNullOrBlank(outputKey))
         .map(({ outputKey, integrationId }) => [outputKey, integrationId]),
@@ -88,7 +88,7 @@ export function makeBlueprint(
     kind: DefinitionKinds.MOD,
     metadata,
     definitions,
-    extensionPoints: [extensionPoint],
+    extensionPoints: [modComponentDefinition],
   };
 
   const options = inferOptionsSchema(optionsArgs);
@@ -98,3 +98,5 @@ export function makeBlueprint(
 
   return modDefinition;
 }
+
+export default mapModComponentToModDefinition;

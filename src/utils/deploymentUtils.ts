@@ -179,7 +179,7 @@ export function selectInstalledDeployments(
  * Integration config lookup method. Extracted as parameter to support background messenger calls and calls directly
  * from the background page.
  */
-export type Locate = (
+export type FindAllSanitizedConfigsForIntegration = (
   integrationId: RegistryId,
 ) => Promise<SanitizedIntegrationConfig[]>;
 
@@ -194,7 +194,7 @@ const isPersonal = (x: SanitizedIntegrationConfig) => !x.proxy;
  */
 export async function findLocalDeploymentConfiguredIntegrationDependencies(
   { deployment, modDefinition }: ActivatableDeployment,
-  locate: Locate,
+  locate: FindAllSanitizedConfigsForIntegration,
 ): Promise<
   Array<
     Except<IntegrationDependency, "configId"> & {
@@ -231,7 +231,7 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
  */
 export async function mergeDeploymentIntegrationDependencies(
   { deployment, modDefinition }: ActivatableDeployment,
-  locate: Locate,
+  locate: FindAllSanitizedConfigsForIntegration,
 ): Promise<IntegrationDependency[]> {
   // Note/to-do: There is some logic overlap here with findLocalDeploymentConfiguredIntegrationDependencies() above,
   // but it's tricky to extract right now

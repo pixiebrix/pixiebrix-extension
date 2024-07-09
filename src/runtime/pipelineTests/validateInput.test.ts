@@ -45,10 +45,12 @@ import type {
   SanitizedIntegrationConfig,
 } from "@/integrations/integrationTypes";
 import { toExpression } from "@/utils/expressionUtils";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 
-const locateMock = jest.mocked(services.locate);
+const locateMock = jest.mocked(
+  integrationConfigLocator.findSanitizedIntegrationConfig,
+);
 
 beforeEach(() => {
   integrationRegistry.clear();

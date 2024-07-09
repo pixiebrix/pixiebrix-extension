@@ -25,7 +25,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "@reduxjs/toolkit";
 import useFlags, { type Restrict } from "@/hooks/useFlags";
@@ -151,7 +151,8 @@ function useDeployments(): DeploymentsState {
             activatableDeployments.map(async (activatableDeployment) =>
               checkDeploymentPermissions({
                 activatableDeployment,
-                locate: services.locateAllForId,
+                locate:
+                  integrationConfigLocator.findAllSanitizedConfigsForIntegration,
                 // In the UI context, always prompt the user to accept permissions to ensure they get the full
                 // functionality of the mod
                 optionalPermissions: [],

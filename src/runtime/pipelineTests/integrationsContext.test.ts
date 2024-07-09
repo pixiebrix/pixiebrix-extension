@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,
@@ -25,7 +25,7 @@ import {
   testOptions,
 } from "./pipelineTestHelpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion, type TemplateEngine } from "@/types/runtimeTypes";
 import {
@@ -48,11 +48,13 @@ import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import pixiebrixIntegrationDependencyFactory from "@/integrations/util/pixiebrixIntegrationDependencyFactory";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick, identityBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick, identityBrick]);
 });
 
-const locateMock = jest.mocked(services.locate);
+const findSanitizedIntegrationConfigMock = jest.mocked(
+  integrationConfigLocator.findSanitizedIntegrationConfig,
+);
 
 describe.each([["v1"], ["v2"], ["v3"]])(
   "apiVersion: %s",
@@ -117,17 +119,19 @@ describe.each([["v1"], ["v2"], ["v3"]])(
           qux: "QUX_VALUE",
         },
       });
-      locateMock.mockImplementation(async (integrationId, configId) => {
-        if (configId === authId1) {
-          return config1;
-        }
+      findSanitizedIntegrationConfigMock.mockImplementation(
+        async (integrationId, configId) => {
+          if (configId === authId1) {
+            return config1;
+          }
 
-        if (configId === authId2) {
-          return config2;
-        }
+          if (configId === authId2) {
+            return config2;
+          }
 
-        throw new Error(`Unexpected configId: ${configId}`);
-      });
+          throw new Error(`Unexpected configId: ${configId}`);
+        },
+      );
 
       const dependencies: IntegrationDependency[] = [dependency1, dependency2];
       const serviceContext =
@@ -193,7 +197,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const authId = uuidv4();
     const serviceId = validateRegistryId("test/api");
 
-    locateMock.mockResolvedValue(
+    findSanitizedIntegrationConfigMock.mockResolvedValue(
       sanitizedIntegrationConfigFactory({
         id: authId,
         serviceId,
@@ -263,7 +267,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const authId = uuidv4();
     const serviceId = validateRegistryId("test/api");
 
-    locateMock.mockResolvedValue(
+    findSanitizedIntegrationConfigMock.mockResolvedValue(
       sanitizedIntegrationConfigFactory({
         id: authId,
         serviceId,
@@ -312,7 +316,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       const authId = uuidv4();
       const serviceId = validateRegistryId("test/api");
 
-      locateMock.mockResolvedValue(
+      findSanitizedIntegrationConfigMock.mockResolvedValue(
         sanitizedIntegrationConfigFactory({
           id: authId,
           serviceId,

@@ -16,7 +16,7 @@
  */
 
 import type { UUID } from "@/types/stringTypes";
-import { locator } from "@/background/locator";
+import { integrationConfigLocator } from "@/background/integrationConfigLocator";
 import { BusinessError } from "@/errors/businessErrors";
 import integrationRegistry from "@/integrations/registry";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
@@ -33,7 +33,7 @@ import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 // Currently in its own file because launchOAuth2Flow has strict null checks enabled and this file references the
 // integration registry and configuration locator
 async function launchInteractiveOAuth2Flow(configId: UUID): Promise<void> {
-  const config = await locator.findIntegrationConfig(configId);
+  const config = await integrationConfigLocator.findIntegrationConfig(configId);
 
   if (!config) {
     throw new BusinessError(`Integration config not found: ${configId}`);

@@ -17,7 +17,7 @@
 
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import useAsyncState from "@/hooks/useAsyncState";
-import { services as serviceLocator } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { type StandaloneModDefinition } from "@/types/contract";
 import { type AsyncState } from "@/types/sliceTypes";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
@@ -42,8 +42,8 @@ function useCloudExtensionPermissions(
 ): AsyncPermissionsState {
   const permissionsState = useAsyncState(
     async () => {
-      // Refresh services because the user may have created a team integration since the last refresh.
-      await serviceLocator.refresh();
+      // Refresh integration configurations because the user may have created a team integration since the last refresh.
+      await integrationConfigLocator.refresh();
       return checkCloudExtensionPermissions(extension, services);
     },
     [extension, services],

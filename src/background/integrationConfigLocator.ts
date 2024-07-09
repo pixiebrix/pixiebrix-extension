@@ -15,41 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import LazyLocatorFactory from "@/integrations/locator";
+import IntegrationConfigLocator from "@/integrations/integrationConfigLocator";
 import { expectContext } from "@/utils/expectContext";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
-export const locator = new LazyLocatorFactory();
+/**
+ * Singleton IntegrationConfigLocator instance.
+ */
+export const integrationConfigLocator = new IntegrationConfigLocator();
 
 export default async function initLocator() {
-  // Service locator cannot run in contentScript due to CSP and wanting to isolate local secrets.
+  // IntegrationConfigLocator cannot run in contentScript due to CSP and wanting to isolate local secrets.
   // Force use of background page to ensure there's a singleton locator instance across all frames/pages.
   expectContext(
     "background",
-    "The service locator must run in the background worker",
+    "The integration configuration locator must run in the background worker",
   );
 
-  console.debug("Eagerly initializing service locator");
-  await locator.refresh();
+  console.debug("Eagerly initializing integration configuration locator");
+  await integrationConfigLocator.refresh();
 }
 
-async function _refreshServices({
+async function _refreshIntegrationConfigs({
   local = true,
   remote = true,
 } = {}): Promise<void> {
-  // Service locator cannot run in contentScript due to CSP and wanting to isolate local secrets.
+  // Integration configuration locator cannot run in contentScript due to CSP and wanting to isolate local secrets.
   // Force use of background page to ensure there's a singleton locator instance across all frames/pages.
   expectContext(
     "background",
-    "The service locator must run in the background worker",
+    "The integration configuration locator must run in the background worker",
   );
 
   if (remote && local) {
-    await locator.refresh();
+    await integrationConfigLocator.refresh();
   } else if (remote) {
-    await locator.refreshRemote();
+    await integrationConfigLocator.refreshRemote();
   } else if (local) {
-    await locator.refreshLocal();
+    await integrationConfigLocator.refreshLocal();
   } else {
     // Prevent buggy call sites from silently causing issues
     throw new Error("Either local or remote must be set to true");
@@ -62,6 +65,9 @@ async function _refreshServices({
  */
 // Memoize while running, because multiple elements on the page might be trying to refresh services. But can't
 // memoize completely, as that would prevent future refreshes
-export const refreshServices = memoizeUntilSettled(_refreshServices, {
-  cacheKey: JSON.stringify,
-});
+export const refreshIntegrationConfigs = memoizeUntilSettled(
+  _refreshIntegrationConfigs,
+  {
+    cacheKey: JSON.stringify,
+  },
+);

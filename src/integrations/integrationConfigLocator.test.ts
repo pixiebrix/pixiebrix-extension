@@ -17,13 +17,13 @@
 
 import { appApiMock } from "@/testUtils/appApiMock";
 import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
-import LazyLocatorFactory from "@/integrations/locator";
+import IntegrationConfigLocator from "@/integrations/integrationConfigLocator";
 import controlRoomTokenService from "@contrib/integrations/automation-anywhere.yaml";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
 import serviceRegistry from "@/integrations/registry";
 
 const integration = fromJS(controlRoomTokenService as any);
-const locator = new LazyLocatorFactory();
+const locator = new IntegrationConfigLocator();
 
 jest.mock("@/background/messenger/api", () => {
   const actual = jest.requireActual("@/background/messenger/api");
@@ -61,7 +61,10 @@ describe("locator", () => {
 
     await locator.refreshRemote();
 
-    const option = await locator.locate(config.service.name, config.id);
+    const option = await locator.findSanitizedIntegrationConfig(
+      config.service.name,
+      config.id,
+    );
     expect(option.proxy).toBe(true);
 
     await expect(
@@ -89,7 +92,7 @@ describe("locator", () => {
 
     await locator.refreshRemote();
 
-    const option = await locator.locate(
+    const option = await locator.findSanitizedIntegrationConfig(
       config.service.config.metadata.id,
       config.id,
     );
