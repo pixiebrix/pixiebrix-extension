@@ -16,7 +16,7 @@
  */
 
 import { backgroundTarget as bg, getNotifier } from "webext-messenger";
-import { type Event, type ReservedKeys } from "@/telemetry/events";
+import { type Event, type ReportEventData } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 
 expectContext(
@@ -82,7 +82,7 @@ function transformEventData(data: UnknownObject): UnknownObject {
  */
 export default function reportEvent<TData extends UnknownObject>(
   event: Event,
-  data: TData extends ReservedKeys ? never : TData = {} as never,
+  data: ReportEventData = {},
 ): void {
   // eslint-disable-next-line prefer-rest-params -- Needs `arguments` to avoid printing the default
   console.debug(...arguments);

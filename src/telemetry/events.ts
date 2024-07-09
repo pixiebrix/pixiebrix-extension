@@ -184,6 +184,8 @@ const RESERVED_KEYS = [
   "serviceVersion",
 ] as const;
 
-export type ReservedKeys = {
-  [K in (typeof RESERVED_KEYS)[number]]?: unknown;
+type ReservedKeys = {
+  [K in (typeof RESERVED_KEYS)[number]]?: never;
 };
+
+export type ReportEventData = UnknownObject & ReservedKeys;
