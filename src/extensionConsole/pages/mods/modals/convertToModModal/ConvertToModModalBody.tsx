@@ -37,7 +37,7 @@ import {
   useGetAllStandaloneModDefinitionsQuery,
 } from "@/data/service/api";
 import { type FormikHelpers } from "formik";
-import { makeBlueprint } from "@/extensionConsole/pages/mods/utils/exportBlueprint";
+import mapModComponentToModDefinition from "@/extensionConsole/pages/mods/utils/mapModComponentToModDefinition";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -156,12 +156,15 @@ const ConvertToModModalBody: React.FunctionComponent = () => {
     helpers: FormikHelpers<ConvertModFormState>,
   ) => {
     try {
-      const unsavedModDefinition = makeBlueprint(modComponent, {
-        id: formValues.blueprintId,
-        name: formValues.name,
-        description: formValues.description,
-        version: formValues.version,
-      });
+      const unsavedModDefinition = mapModComponentToModDefinition(
+        modComponent,
+        {
+          id: formValues.blueprintId,
+          name: formValues.name,
+          description: formValues.description,
+          version: formValues.version,
+        },
+      );
 
       const response = await createMod({
         modDefinition: unsavedModDefinition,

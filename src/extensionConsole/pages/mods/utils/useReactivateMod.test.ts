@@ -16,7 +16,7 @@
  */
 
 import { renderHook } from "@/extensionConsole/testHelpers";
-import useReinstall from "./useReinstall";
+import useReactivateMod from "./useReactivateMod";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { deactivateMod } from "@/store/deactivateUtils";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
@@ -27,7 +27,7 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-test("uninstalls mod components", async () => {
+test("deactivates mod components", async () => {
   const modDefinition = defaultModDefinitionFactory();
   const standaloneModDefinition = standaloneModDefinitionFactory({
     _recipe: {
@@ -41,7 +41,7 @@ test("uninstalls mod components", async () => {
     result: { current: reinstall },
     act,
     getReduxStore,
-  } = renderHook(() => useReinstall(), {
+  } = renderHook(() => useReactivateMod(), {
     setupRedux(dispatch) {
       dispatch(
         extensionActions.activateStandaloneModDefinition(
@@ -82,7 +82,7 @@ test("dispatches activate mod action", async () => {
   const {
     result: { current: reinstall },
     act,
-  } = renderHook(() => useReinstall(), {
+  } = renderHook(() => useReactivateMod(), {
     setupRedux(dispatch) {
       dispatch(
         extensionActions.activateStandaloneModDefinition(

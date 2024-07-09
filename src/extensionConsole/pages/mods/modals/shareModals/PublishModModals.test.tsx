@@ -30,12 +30,12 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 
-let blueprint: ModDefinition;
+let modDefinition: ModDefinition;
 let auth: AuthState;
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useOptionalModDefinition: jest.fn().mockImplementation(() => ({
-    data: blueprint,
+    data: modDefinition,
     isFetching: false,
   })),
 }));
@@ -50,7 +50,7 @@ const MarketplaceListingsWrapper: React.FC = ({ children }) => {
 
 beforeEach(() => {
   auth = authStateFactory();
-  blueprint = defaultModDefinitionFactory({
+  modDefinition = defaultModDefinitionFactory({
     metadata: metadataFactory({
       id: validateRegistryId(`${auth.scope}/test`),
     }),
@@ -75,7 +75,7 @@ test("renders publish modal", async () => {
 
         dispatch(
           modModalsSlice.actions.setPublishContext({
-            blueprintId: blueprint.metadata.id,
+            blueprintId: modDefinition.metadata.id,
           }),
         );
       },
@@ -88,7 +88,7 @@ test("renders publish modal", async () => {
 });
 
 test("renders edit publish modal", async () => {
-  blueprint.sharing.public = true;
+  modDefinition.sharing.public = true;
 
   render(
     <MarketplaceListingsWrapper>
@@ -100,7 +100,7 @@ test("renders edit publish modal", async () => {
 
         dispatch(
           modModalsSlice.actions.setPublishContext({
-            blueprintId: blueprint.metadata.id,
+            blueprintId: modDefinition.metadata.id,
           }),
         );
       },
@@ -113,7 +113,7 @@ test("renders edit publish modal", async () => {
 });
 
 test("renders cancel publish modal", async () => {
-  blueprint.sharing.public = true;
+  modDefinition.sharing.public = true;
 
   render(
     <MarketplaceListingsWrapper>
@@ -125,7 +125,7 @@ test("renders cancel publish modal", async () => {
 
         dispatch(
           modModalsSlice.actions.setPublishContext({
-            blueprintId: blueprint.metadata.id,
+            blueprintId: modDefinition.metadata.id,
             cancelingPublish: true,
           }),
         );

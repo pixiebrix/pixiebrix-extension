@@ -23,7 +23,7 @@ import { useDispatch } from "react-redux";
 import { type EditorValues } from "./Editor";
 import { type BrickValidationResult, validateSchema } from "./validate";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
-import useReinstall from "@/extensionConsole/pages/mods/utils/useReinstall";
+import useReactivateMod from "@/extensionConsole/pages/mods/utils/useReactivateMod";
 import notify from "@/utils/notify";
 import { Events } from "@/telemetry/events";
 import { clearServiceCache } from "@/background/messenger/api";
@@ -58,7 +58,7 @@ type SubmitCallbacks = {
 function useSubmitPackage({ create = false }: SubmitOptions): SubmitCallbacks {
   const [, refresh] = useRefreshRegistries({ refreshOnMount: false });
   const modals = useModals();
-  const reinstall = useReinstall();
+  const reinstall = useReactivateMod();
   const history = useHistory();
   const dispatch = useDispatch();
 

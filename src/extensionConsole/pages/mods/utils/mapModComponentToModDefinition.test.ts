@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeBlueprint } from "@/extensionConsole/pages/mods/utils/exportBlueprint";
+import mapModComponentToModDefinition from "@/extensionConsole/pages/mods/utils/mapModComponentToModDefinition";
 import { validateRegistryId } from "@/types/helpers";
 import { type SerializedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { DefinitionKinds } from "@/types/registryTypes";
 
-describe("makeBlueprint", () => {
+describe("mapModComponentToModDefinition", () => {
   it("smoke test", () => {
-    const result = makeBlueprint(
+    const result = mapModComponentToModDefinition(
       modComponentFactory() as SerializedModComponent,
       {
         id: validateRegistryId("test/blueprint"),
@@ -45,7 +45,7 @@ describe("makeBlueprint", () => {
       },
     }) as SerializedModComponent;
 
-    const result = makeBlueprint(modComponent, {
+    const result = mapModComponentToModDefinition(modComponent, {
       id: validateRegistryId("test/blueprint"),
       name: "test",
     });
