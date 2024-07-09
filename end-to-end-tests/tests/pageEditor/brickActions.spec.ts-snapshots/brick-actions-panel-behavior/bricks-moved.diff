@@ -1,8 +1,13 @@
-Index: brick-added
+Index: bricks-moved
 ===================================================================
---- brick-added
-+++ brick-added
-@@ -6,77 +6,84 @@
+--- bricks-moved
++++ bricks-moved
+@@ -1,91 +1,91 @@
+ apiVersion: v3
+ definitions:
+   extensionPoint:
+     definition:
+       attachMode: once
        containerSelector: span:has(> span:contains('Review in codespace'))
        isAvailable:
          allFrames: true
@@ -23,6 +28,21 @@ Index: brick-added
    - config:
        action:
          - config:
++            duration: 2500
++            message: !nunjucks ''
++            type: info
++          id: '@pixiebrix/browser/alert'
++          label: Alert Brick 123
++          root: null
++          rootMode: document
++        - config:
++            value: !nunjucks ''
++            variableName: !nunjucks ''
++          id: '@pixiebrix/state/assign'
++          label: Assign Mod Var Brick 123
++          root: null
++          rootMode: document
++        - config:
              cancelable: true
              location: modal
              schema:
@@ -43,19 +63,6 @@ Index: brick-added
            root: null
            rootMode: document
          - config:
-+            data: []
-+            key: !nunjucks ''
-+          id: '@pixies/util/set-mod-variable'
-+          outputKey: output
-+          root: null
-+          rootMode: document
-+        - config:
-             value: !nunjucks ''
-           id: '@pixiebrix/state/assign'
-           label: Assign Mod Var Brick 123
-           root: null
-           rootMode: document
-         - config:
              duration: 2500
              message: !nunjucks ''
              type: info
@@ -63,6 +70,21 @@ Index: brick-added
            label: Alert Brick 123
            root: null
            rootMode: document
+-        - config:
+-            value: !nunjucks ''
+-            variableName: !nunjucks ''
+-          id: '@pixiebrix/state/assign'
+-          label: Assign Mod Var Brick 123
+-          root: null
+-          rootMode: document
+-        - config:
+-            duration: 2500
+-            message: !nunjucks ''
+-            type: info
+-          id: '@pixiebrix/browser/alert'
+-          label: Alert Brick 123
+-          root: null
+-          rootMode: document
        caption: Action
        dynamicCaption: false
        onSuccess: true

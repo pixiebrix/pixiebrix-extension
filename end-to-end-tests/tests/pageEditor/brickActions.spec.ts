@@ -19,6 +19,7 @@ import { expect, test } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
+import { type PageEditorPage } from "end-to-end-tests/pageObjects/pageEditor/pageEditorPage";
 
 const testModDefinitionName = "brick-actions";
 test.use({ modDefinitionNames: [testModDefinitionName] });
@@ -31,56 +32,62 @@ test("brick actions panel behavior", async ({
 }) => {
   const { id: modId } = modDefinitionsMap[testModDefinitionName];
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
-  await modActivationPage.goto();
-  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+  let pageEditorPage: PageEditorPage;
 
-  await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
-
-  const modListItem =
-    pageEditorPage.modListingPanel.getModListItemByName("Mod Actions Test");
-  await modListItem.activate();
-
-  await expect(pageEditorPage.brickActionsPanel.root).toBeHidden();
-
-  const testStarterBrick = pageEditorPage.modListingPanel.getModStarterBrick(
-    "Mod Actions Test",
-    "Button",
-  );
-  await testStarterBrick.activate();
-  await expect(pageEditorPage.brickActionsPanel.root).toBeVisible();
-
-  await pageEditorPage.brickActionsPanel.addBrick("Set Mod Variable", {
-    index: 1,
+  await test.step("Activate mod, and initialize page editor", async () => {
+    await modActivationPage.goto();
+    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+    await page.goto("/");
+    pageEditorPage = await newPageEditorPage(page.url());
   });
-  await pageEditorPage.saveActiveMod();
-  await verifyModDefinitionSnapshot({ modId, snapshotName: "brick-added" });
 
-  // await page2
-  //   .getByTestId("editor-node-layout")
-  //   .locator("div")
-  //   .filter({ hasText: "Custom modal 123@form" })
-  //   .nth(1)
-  //   .click();
-  // await page2.getByTestId("icon-button-removeNode").click();
-  // await page2.getByLabel("Button - Save").click();
-  // await page2.getByRole("button", { name: "Save" }).click();
-  // await page2
-  //   .getByTestId("editor-node-layout")
-  //   .locator("div")
-  //   .filter({ hasText: "Alert Brick" })
-  //   .nth(1)
-  //   .click();
-  // await page2.getByTestId("icon-button-copyNode").click();
-  // await page2
-  //   .getByTestId("icon-button-d666ebbc-a5a4-41d0-a8b1-5316509c448e-paste-brick")
-  //   .click();
-  // await page2.getByTestId("icon-button-copyNode").click();
-  // await page2.getByTestId("icon-button-foundation-paste-brick").click();
-  // await page2.getByLabel("Button - Save").click();
-  // await page2.getByRole("button", { name: "Save" }).click();
-  // await page2.getByRole("button", { name: "Move brick higher" }).nth(3).click();
-  // await page2.getByRole("button", { name: "Move brick lower" }).first().click();
-  // await page2.getByLabel("Button - Save").click();
-  // await page2.getByRole("button", { name: "Save" }).click();
+  const { brickActionsPanel } = pageEditorPage;
+  await test.step("Activate a mod and verify brick actions panel is hidden", async () => {
+    const modListItem =
+      pageEditorPage.modListingPanel.getModListItemByName("Mod Actions Test");
+    await modListItem.activate();
+    await expect(brickActionsPanel.root).toBeHidden();
+  });
+
+  await test.step("Activate starter brick and verify brick actions panel is visible", async () => {
+    const testStarterBrick = pageEditorPage.modListingPanel.getModStarterBrick(
+      "Mod Actions Test",
+      "Button",
+    );
+    await testStarterBrick.activate();
+    await expect(brickActionsPanel.root).toBeVisible();
+  });
+
+  await test.step("Add a new brick, then save the mod", async () => {
+    await brickActionsPanel.addBrick("Set Mod Variable", { index: 1 });
+    await pageEditorPage.saveActiveMod();
+    await verifyModDefinitionSnapshot({ modId, snapshotName: "brick-added" });
+  });
+
+  await test.step("Remove a brick, then save the mod", async () => {
+    await brickActionsPanel.getBrickByName("Set Mod Variable").select();
+    await brickActionsPanel.removeBrickButton.click();
+    await pageEditorPage.saveActiveMod();
+    await verifyModDefinitionSnapshot({ modId, snapshotName: "brick-removed" });
+  });
+
+  await test.step("Copy and paste a brick, then save the mod", async () => {
+    await brickActionsPanel.getBrickByName("Alert Brick").select();
+    await expect(brickActionsPanel.getPasteBrickButton(0)).toBeHidden();
+    await brickActionsPanel.copyActiveBrick();
+    await brickActionsPanel.pasteBrick(1);
+    await expect(brickActionsPanel.getPasteBrickButton(0)).toBeHidden();
+    await pageEditorPage.saveActiveMod();
+    await verifyModDefinitionSnapshot({
+      modId,
+      snapshotName: "brick-copy-pasted",
+    });
+  });
+
+  await test.step("Move bricks, then save the mod", async () => {
+    await brickActionsPanel.getBrickByName("Custom Modal").moveDown();
+    await brickActionsPanel.getBrickByName("Assign Mod Var Brick").moveUp();
+    await pageEditorPage.saveActiveMod();
+    await verifyModDefinitionSnapshot({ modId, snapshotName: "bricks-moved" });
+  });
 });

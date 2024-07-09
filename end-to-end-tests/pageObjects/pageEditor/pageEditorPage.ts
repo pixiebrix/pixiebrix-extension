@@ -48,7 +48,6 @@ export class PageEditorPage extends BasePageObject {
   );
 
   dataPanel = new DataPanel(this.getByTestId("dataPanel"));
-
   templateGalleryButton = this.getByRole("button", {
     name: "Launch Template Gallery",
   });

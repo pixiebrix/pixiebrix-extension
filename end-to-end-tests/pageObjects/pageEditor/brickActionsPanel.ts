@@ -19,8 +19,17 @@ import { BasePageObject } from "../basePageObject";
 import { ModifiesModState } from "./utils";
 
 export class Brick extends BasePageObject {
-  moveUp() {
-    return this.getByTestId("brick-name");
+  moveBrickUpButton = this.getByRole("button", { name: "Move brick higher" });
+  moveBrickDownButton = this.getByRole("button", { name: "Move brick lower" });
+
+  @ModifiesModState
+  async moveUp() {
+    return this.moveBrickUpButton.click();
+  }
+
+  @ModifiesModState
+  async moveDown() {
+    return this.moveBrickDownButton.click();
   }
 
   async select() {
@@ -29,13 +38,20 @@ export class Brick extends BasePageObject {
 }
 
 export class BrickActionsPanel extends BasePageObject {
+  removeBrickButton = this.getByTestId("icon-button-removeNode");
+  copyBrickButton = this.getByTestId("icon-button-copyNode");
+
   getAddBrickButton(n: number) {
     return this.getByTestId(/icon-button-.*-add-brick/).nth(n);
   }
 
+  getPasteBrickButton(n: number) {
+    return this.getByTestId(/icon-button-.*-paste-brick/).nth(n);
+  }
+
   getBrickByName(brickName: string) {
     return new Brick(
-      this.getByTestId("editor-node-layout").filter({
+      this.getByTestId("editor-node").filter({
         hasText: brickName,
       }),
     );
@@ -43,10 +59,24 @@ export class BrickActionsPanel extends BasePageObject {
 
   getActiveBrick() {
     return new Brick(
-      this.getByTestId("editor-node-layout").filter({
+      this.getByTestId("editor-node").filter({
         has: this.locator(".active"),
       }),
     );
+  }
+
+  @ModifiesModState
+  async removeActiveBrick() {
+    return this.removeBrickButton.click();
+  }
+
+  async copyActiveBrick() {
+    return this.copyBrickButton.click();
+  }
+
+  @ModifiesModState
+  async pasteBrick(index = 0) {
+    return this.getPasteBrickButton(index).click();
   }
 
   @ModifiesModState

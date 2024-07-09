@@ -1,8 +1,8 @@
-Index: brick-added
+Index: brick-removed
 ===================================================================
---- brick-added
-+++ brick-added
-@@ -6,77 +6,84 @@
+--- brick-removed
++++ brick-removed
+@@ -6,84 +6,77 @@
        containerSelector: span:has(> span:contains('Review in codespace'))
        isAvailable:
          allFrames: true
@@ -43,13 +43,13 @@ Index: brick-added
            root: null
            rootMode: document
          - config:
-+            data: []
-+            key: !nunjucks ''
-+          id: '@pixies/util/set-mod-variable'
-+          outputKey: output
-+          root: null
-+          rootMode: document
-+        - config:
+-            data: []
+-            key: !nunjucks ''
+-          id: '@pixies/util/set-mod-variable'
+-          outputKey: output
+-          root: null
+-          rootMode: document
+-        - config:
              value: !nunjucks ''
            id: '@pixiebrix/state/assign'
            label: Assign Mod Var Brick 123

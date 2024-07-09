@@ -1,8 +1,8 @@
-Index: brick-added
+Index: brick-copy-pasted
 ===================================================================
---- brick-added
-+++ brick-added
-@@ -6,77 +6,84 @@
+--- brick-copy-pasted
++++ brick-copy-pasted
+@@ -6,77 +6,86 @@
        containerSelector: span:has(> span:contains('Review in codespace'))
        isAvailable:
          allFrames: true
@@ -43,14 +43,16 @@ Index: brick-added
            root: null
            rootMode: document
          - config:
-+            data: []
-+            key: !nunjucks ''
-+          id: '@pixies/util/set-mod-variable'
-+          outputKey: output
++            duration: 2500
++            message: !nunjucks ''
++            type: info
++          id: '@pixiebrix/browser/alert'
++          label: Alert Brick 123
 +          root: null
 +          rootMode: document
 +        - config:
              value: !nunjucks ''
++            variableName: !nunjucks ''
            id: '@pixiebrix/state/assign'
            label: Assign Mod Var Brick 123
            root: null
