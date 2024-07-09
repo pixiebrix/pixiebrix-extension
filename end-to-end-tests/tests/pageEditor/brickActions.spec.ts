@@ -42,19 +42,19 @@ test("brick actions panel behavior", async ({
   });
 
   const { brickActionsPanel } = pageEditorPage;
-  await test.step("Activate a mod and verify brick actions panel is hidden", async () => {
+  await test.step("Select the mod in the page editor and verify brick actions panel is hidden", async () => {
     const modListItem =
       pageEditorPage.modListingPanel.getModListItemByName("Mod Actions Test");
-    await modListItem.activate();
+    await modListItem.select();
     await expect(brickActionsPanel.root).toBeHidden();
   });
 
-  await test.step("Activate starter brick and verify brick actions panel is visible", async () => {
+  await test.step("Select the starter brick and verify brick actions panel is visible", async () => {
     const testStarterBrick = pageEditorPage.modListingPanel.getModStarterBrick(
       "Mod Actions Test",
       "Button",
     );
-    await testStarterBrick.activate();
+    await testStarterBrick.select();
     await expect(brickActionsPanel.root).toBeVisible();
   });
 

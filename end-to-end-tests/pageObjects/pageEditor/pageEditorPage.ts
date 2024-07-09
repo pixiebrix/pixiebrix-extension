@@ -124,7 +124,7 @@ export class PageEditorPage extends BasePageObject {
 
   async saveStandaloneMod(modName: string) {
     const modListItem = this.modListingPanel.getModListItemByName(modName);
-    await modListItem.activate();
+    await modListItem.select();
     await modListItem.saveButton.click();
     await expect(this.getByText("Saved Mod")).toBeVisible();
     this.savedStandaloneModNames.push(modName);

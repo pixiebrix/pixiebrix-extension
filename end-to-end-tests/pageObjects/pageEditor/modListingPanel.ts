@@ -32,7 +32,7 @@ export class ModListItem extends BasePageObject {
     return this.getByLabel(" - Ellipsis");
   }
 
-  async activate() {
+  async select() {
     return this.click();
   }
 }
