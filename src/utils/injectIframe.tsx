@@ -18,7 +18,7 @@
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
 import shadowWrap from "@/utils/shadowWrap";
-import { waitForBody } from "@/utils/domUtils";
+import { waitForDocumentRoot } from "@/utils/domUtils";
 
 const TIMEOUT_MS = 3000;
 
@@ -46,9 +46,11 @@ async function _injectIframe(
   iframe.src = url;
   Object.assign(iframe.style, style);
 
-  // The body might not be available yet
-  await waitForBody();
-  document.body.append(shadowWrap(iframe));
+  // Append to document root (as opposed to e.g. body) to have the best chance of avoiding host page interference with
+  // the injected iframe (e.g. by removing it from the DOM)
+  // See https://github.com/pixiebrix/pixiebrix-extension/pull/8777
+  await waitForDocumentRoot();
+  document.documentElement.append(shadowWrap(iframe));
 
   await iframeLoad;
 
