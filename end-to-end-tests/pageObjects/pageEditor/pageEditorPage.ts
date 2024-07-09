@@ -65,7 +65,7 @@ export class PageEditorPage extends BasePageObject {
   async goto() {
     await this.page.goto(this.pageEditorUrl);
     // Set the viewport size to the expected in horizontal layout size of the devconsole when docked on the bottom.
-    await this.page.setViewportSize({ width: 1280, height: 300 });
+    await this.page.setViewportSize({ width: 1280, height: 600 });
     await this.getByTestId(`tab-${this.urlToConnectTo}`).click();
     const heading = this.getByRole("heading", {
       name: "Welcome to the Page Editor!",
@@ -101,14 +101,16 @@ export class PageEditorPage extends BasePageObject {
   }
 
   /**
-   * Save a selected packaged mod. Prefer saveStandaloneMod for standalone mods.
+   * Save the current active mod. Prefer saveStandaloneMod for standalone mods.
    */
-  async saveSelectedPackagedMod() {
-    // TODO: this method is currently meant for packaged mods that aren't meant to be
+  async saveActiveMod() {
+    // TODO: this method is currently meant for mods that aren't meant to be
     //  cleaned up after the test. Future work is adding affordance to clean up saved packaged
     //  mods, with an option to avoid cleanup for certain mods.
-    await this.locator("[data-icon=save]").click();
-    await this.getByRole("button", { name: "Save" }).click();
+    await this.modListingPanel.activeModListItem.saveButton.click();
+    await expect(
+      this.page.getByRole("status").filter({ hasText: "Saved mod" }),
+    ).toBeVisible();
   }
 
   getRenderPanelButton() {

@@ -28,7 +28,6 @@ import {
 } from "@/data/service/api";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import { useModals } from "@/components/ConfirmationModal";
 import modComponentsSlice from "@/store/extensionsSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
@@ -98,7 +97,6 @@ function useSaveMod(): ModSaver {
   );
   const allDirtyModOptions = useSelector(selectDirtyModOptionsDefinitions);
   const allDirtyModMetadatas = useSelector(selectDirtyModMetadata);
-  const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
@@ -119,17 +117,6 @@ function useSaveMod(): ModSaver {
 
     if (!isModEditable(editablePackages, modDefinition)) {
       dispatch(editorActions.showSaveAsNewModModal());
-      return false;
-    }
-
-    const confirm = await showConfirmation({
-      title: "Save Mod?",
-      message: "All changes to the mod will be saved",
-      submitCaption: "Save",
-      submitVariant: "primary",
-    });
-
-    if (!confirm) {
       return false;
     }
 

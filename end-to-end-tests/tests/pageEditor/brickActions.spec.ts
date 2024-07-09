@@ -22,11 +22,12 @@ import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 
 const testModDefinitionName = "brick-actions";
 test.use({ modDefinitionNames: [testModDefinitionName] });
-test("brick actions panel shows when starter brick is selected", async ({
+test("brick actions panel behavior", async ({
   page,
   extensionId,
   modDefinitionsMap,
   newPageEditorPage,
+  verifyModDefinitionSnapshot,
 }) => {
   const { id: modId } = modDefinitionsMap[testModDefinitionName];
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -36,9 +37,9 @@ test("brick actions panel shows when starter brick is selected", async ({
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  await pageEditorPage.modListingPanel
-    .getModListItemByName("Mod Actions Test")
-    .activate();
+  const modListItem =
+    pageEditorPage.modListingPanel.getModListItemByName("Mod Actions Test");
+  await modListItem.activate();
 
   await expect(pageEditorPage.brickActionsPanel.root).toBeHidden();
 
@@ -48,4 +49,38 @@ test("brick actions panel shows when starter brick is selected", async ({
   );
   await testStarterBrick.activate();
   await expect(pageEditorPage.brickActionsPanel.root).toBeVisible();
+
+  await pageEditorPage.brickActionsPanel.addBrick("Set Mod Variable", {
+    index: 1,
+  });
+  await pageEditorPage.saveActiveMod();
+  await verifyModDefinitionSnapshot({ modId, snapshotName: "brick-added" });
+
+  // await page2
+  //   .getByTestId("editor-node-layout")
+  //   .locator("div")
+  //   .filter({ hasText: "Custom modal 123@form" })
+  //   .nth(1)
+  //   .click();
+  // await page2.getByTestId("icon-button-removeNode").click();
+  // await page2.getByLabel("Button - Save").click();
+  // await page2.getByRole("button", { name: "Save" }).click();
+  // await page2
+  //   .getByTestId("editor-node-layout")
+  //   .locator("div")
+  //   .filter({ hasText: "Alert Brick" })
+  //   .nth(1)
+  //   .click();
+  // await page2.getByTestId("icon-button-copyNode").click();
+  // await page2
+  //   .getByTestId("icon-button-d666ebbc-a5a4-41d0-a8b1-5316509c448e-paste-brick")
+  //   .click();
+  // await page2.getByTestId("icon-button-copyNode").click();
+  // await page2.getByTestId("icon-button-foundation-paste-brick").click();
+  // await page2.getByLabel("Button - Save").click();
+  // await page2.getByRole("button", { name: "Save" }).click();
+  // await page2.getByRole("button", { name: "Move brick higher" }).nth(3).click();
+  // await page2.getByRole("button", { name: "Move brick lower" }).first().click();
+  // await page2.getByLabel("Button - Save").click();
+  // await page2.getByRole("button", { name: "Save" }).click();
 });

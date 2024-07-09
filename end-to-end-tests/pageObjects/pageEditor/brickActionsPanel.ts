@@ -18,9 +18,35 @@
 import { BasePageObject } from "../basePageObject";
 import { ModifiesModState } from "./utils";
 
+export class Brick extends BasePageObject {
+  moveUp() {
+    return this.getByTestId("brick-name");
+  }
+
+  async select() {
+    return this.click();
+  }
+}
+
 export class BrickActionsPanel extends BasePageObject {
   getAddBrickButton(n: number) {
     return this.getByTestId(/icon-button-.*-add-brick/).nth(n);
+  }
+
+  getBrickByName(brickName: string) {
+    return new Brick(
+      this.getByTestId("editor-node-layout").filter({
+        hasText: brickName,
+      }),
+    );
+  }
+
+  getActiveBrick() {
+    return new Brick(
+      this.getByTestId("editor-node-layout").filter({
+        has: this.locator(".active"),
+      }),
+    );
   }
 
   @ModifiesModState
