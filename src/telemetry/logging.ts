@@ -51,7 +51,7 @@ import {
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
-const DB_VERSION_NUMBER = 3;
+const DB_VERSION_NUMBER = 4;
 /**
  * Maximum number of most recent logs to keep in the database. A low-enough number that performance should not be
  * impacted due to the number of entries.
