@@ -40,10 +40,11 @@ import useAsyncState from "@/hooks/useAsyncState";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-function getDefaultPackageIcon<Instance extends PackageInstance>(
-  packageInstance: Instance,
+function getDefaultPackageIcon(
+  packageInstance: PackageInstance,
   brickType: Nullishable<BrickType>,
 ): IconProp {
+  // Is an integration definition. See Integration/IntegrationABC
   if ("schema" in packageInstance) {
     return faCloud;
   }
@@ -89,7 +90,7 @@ function getDefaultPackageIcon<Instance extends PackageInstance>(
   return faCube;
 }
 
-type PackageIconProps<T extends Metadata | PackageInstance> = {
+type PackageIconProps = {
   /**
    * A PackageInstance or Metadata object. Provide a PackageInstance instead of a Metadata to support brick type
    * inference.
@@ -97,7 +98,7 @@ type PackageIconProps<T extends Metadata | PackageInstance> = {
    * @see PackageInstance
    * @see Metadata
    */
-  packageOrMetadata: T;
+  packageOrMetadata: Metadata | PackageInstance;
 
   size?: "1x" | "2x";
 
@@ -126,12 +127,12 @@ type PackageIconProps<T extends Metadata | PackageInstance> = {
  */
 // As of 2.0.5, the Metadata and PackageInstance types are currently equivalent. But include both in the union to make
 // the type signature more explicit.
-const PackageIcon = <T extends Metadata | PackageInstance>({
+const PackageIcon: React.FunctionComponent<PackageIconProps> = ({
   packageOrMetadata,
   size,
   faIconClass,
   inheritColor = false,
-}: PackageIconProps<T>) => {
+}: PackageIconProps) => {
   const { data: type } = useAsyncState(
     async () => getType(packageOrMetadata),
     [packageOrMetadata],
