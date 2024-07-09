@@ -23,7 +23,7 @@ import {
   setAvailableVersion,
 } from "@/background/installer";
 import * as auth from "@/auth/authStorage";
-import { locator } from "@/background/locator";
+import { integrationConfigLocator } from "@/background/integrationConfigLocator";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
@@ -45,9 +45,9 @@ jest.mock("@/auth/authStorage", () => ({
 
 jest.mock("@/background/telemetry");
 
-jest.mock("@/background/locator", () => ({
-  locator: {
-    locateAllForService: jest.fn().mockResolvedValue([]),
+jest.mock("@/background/integrationConfigLocator", () => ({
+  integrationConfigLocator: {
+    findAllSanitizedConfigsForIntegration: jest.fn().mockResolvedValue([]),
   },
 }));
 
@@ -57,7 +57,9 @@ const queryTabsMock = jest.mocked(browser.tabs.query);
 const isLinkedMock = jest.mocked(auth.isLinked);
 const getExtensionTokenMock = jest.mocked(auth.getExtensionToken);
 const getUserData = jest.mocked(auth.getUserData);
-const locateAllForServiceMock = jest.mocked(locator.locateAllForService);
+const findAllSanitizedConfigsForIntegrationMock = jest.mocked(
+  integrationConfigLocator.findAllSanitizedConfigsForIntegration,
+);
 const browserManagedStorageMock = jest.mocked(browser.storage.managed.get);
 
 beforeEach(async () => {
@@ -159,7 +161,7 @@ describe("checkPartnerAuth", () => {
     queryTabsMock.mockResolvedValue([]);
     isLinkedMock.mockResolvedValue(true);
     getExtensionTokenMock.mockResolvedValue("abc123");
-    locateAllForServiceMock.mockResolvedValue([
+    findAllSanitizedConfigsForIntegrationMock.mockResolvedValue([
       // Include a cloud configuration to clarify that local integration is still required
       { id: uuidv4(), serviceId: "automation-anywhere", proxy: true } as any,
     ]);
@@ -203,7 +205,7 @@ describe("checkPartnerAuth", () => {
     queryTabsMock.mockResolvedValue([]);
     isLinkedMock.mockResolvedValue(true);
     getExtensionTokenMock.mockResolvedValue("abc123");
-    locateAllForServiceMock.mockResolvedValue([
+    findAllSanitizedConfigsForIntegrationMock.mockResolvedValue([
       { id: uuidv4(), serviceId: "automation-anywhere" } as any,
     ]);
     getUserData.mockResolvedValue({

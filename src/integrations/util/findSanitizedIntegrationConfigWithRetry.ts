@@ -18,17 +18,20 @@
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { MissingConfigurationError } from "@/errors/businessErrors";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
-async function _locateWithRetry(
+async function _findWithRetry(
   integrationId: RegistryId,
-  authId: UUID,
+  integrationConfigId: UUID,
 ): Promise<SanitizedIntegrationConfig> {
   try {
-    return await services.locate(integrationId, authId);
+    return await integrationConfigLocator.findSanitizedIntegrationConfig(
+      integrationId,
+      integrationConfigId,
+    );
   } catch (error) {
     if (isSpecificError(error, MissingConfigurationError)) {
       // Retry
@@ -38,9 +41,12 @@ async function _locateWithRetry(
   }
 
   // Ensure the locator has the latest configurations (remote and local)
-  await services.refresh();
+  await integrationConfigLocator.refresh();
 
-  return services.locate(integrationId, authId);
+  return integrationConfigLocator.findSanitizedIntegrationConfig(
+    integrationId,
+    integrationConfigId,
+  );
 }
 
 /**
@@ -52,11 +58,11 @@ async function _locateWithRetry(
 // trying to locate the same integration. Might also consider full
 // memoization/caching, but would have to be careful about invalidating the
 // cache on integration configuration changes
-const locateSanitizedIntegrationConfigWithRetry = memoizeUntilSettled(
-  _locateWithRetry,
+const findSanitizedIntegrationConfigWithRetry = memoizeUntilSettled(
+  _findWithRetry,
   {
     cacheKey: JSON.stringify,
   },
 );
 
-export default locateSanitizedIntegrationConfigWithRetry;
+export default findSanitizedIntegrationConfigWithRetry;

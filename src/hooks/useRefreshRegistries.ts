@@ -20,16 +20,16 @@ import { stubTrue, throttle } from "lodash";
 import { useCallback, useState } from "react";
 import notify from "@/utils/notify";
 import {
-  clearServiceCache,
-  services as serviceAuthRegistry,
+  clearIntegrationRegistry,
+  integrationConfigLocator,
 } from "@/background/messenger/api";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 
-const syncServiceAuths = async () => {
-  await serviceAuthRegistry.refresh();
-  // Ensure the background page is using the latest service definitions for fulfilling requests. This must come after
-  // the call to serviceRegistry, because that populates the local IDB definitions.
-  await clearServiceCache();
+const syncIntegrations = async () => {
+  await integrationConfigLocator.refresh();
+  // Ensure the background page is using the latest integration definitions for fulfilling requests. This must come
+  // after the call to serviceRegistry, because that populates the local IDB definitions.
+  await clearIntegrationRegistry();
 };
 
 /**
@@ -40,7 +40,7 @@ const syncServiceAuths = async () => {
 export async function refreshRegistries(): Promise<void> {
   // Sync remote packages in order to be able to remove packages that have been deleted/the user no longer has access to
   console.debug("Refreshing bricks from the server");
-  await Promise.all([syncRemotePackages(), syncServiceAuths()]);
+  await Promise.all([syncRemotePackages(), syncIntegrations()]);
 }
 
 const throttledRefreshRegistries = throttle(

@@ -17,9 +17,8 @@
 
 import { renderHook } from "@/sidebar/testHelpers";
 import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
-
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,
@@ -32,11 +31,13 @@ import { toExpression } from "@/utils/expressionUtils";
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 
-const servicesLocateMock = jest.mocked(services.locate);
+const findSanitizedIntegrationConfigMock = jest.mocked(
+  integrationConfigLocator.findSanitizedIntegrationConfig,
+);
 
 describe("useSpreadsheetId", () => {
   beforeAll(() => {
-    servicesLocateMock.mockResolvedValue(
+    findSanitizedIntegrationConfigMock.mockResolvedValue(
       sanitizedIntegrationConfigFactory({
         serviceId: GOOGLE_SHEET_SERVICE_ID,
         // @ts-expect-error -- The type here is a record with a _brand field, so casting doesn't work

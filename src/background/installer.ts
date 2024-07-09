@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { locator as serviceLocator } from "@/background/locator";
+import { integrationConfigLocator as serviceLocator } from "@/background/integrationConfigLocator";
 import { type Runtime } from "webextension-polyfill";
 import { initTelemetry, recordEvent } from "@/background/telemetry";
 import { getUUID } from "@/telemetry/telemetryHelpers";
@@ -195,9 +195,10 @@ export async function requirePartnerAuth(): Promise<void> {
     console.debug("requirePartnerAuth", userData);
 
     if (userData.partner?.partnerTheme === "automation-anywhere") {
-      const configs = await serviceLocator.locateAllForService(
-        CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-      );
+      const configs =
+        await serviceLocator.findAllSanitizedConfigsForIntegration(
+          CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+        );
 
       if (!configs.some((x) => !x.proxy)) {
         const extensionConsoleUrl = getExtensionConsoleUrl();

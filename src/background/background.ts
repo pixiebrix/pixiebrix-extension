@@ -28,7 +28,7 @@ import "@/background/axiosFetch";
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/background/messenger/registration";
 import registerExternalMessenger from "@/background/messenger/external/registration";
-import initLocator from "@/background/locator";
+import initLocator from "@/background/integrationConfigLocator";
 import initContextMenus from "@/background/contextMenus/initContextMenus";
 import initBrowserAction from "@/background/browserAction";
 import initInstaller from "@/background/installer";

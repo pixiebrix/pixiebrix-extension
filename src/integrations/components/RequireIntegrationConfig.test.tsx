@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { useAuthOptions } from "@/hooks/auth";
 import {
   integrationDependencyFactory,
@@ -39,7 +39,9 @@ import { makeVariableExpression } from "@/utils/variableUtils";
 jest.mock("@/hooks/auth");
 jest.mock("@/integrations/util/checkIntegrationAuth.ts");
 
-const serviceLocateMock = jest.mocked(services.locate);
+const findSanitizedIntegrationConfigMock = jest.mocked(
+  integrationConfigLocator.findSanitizedIntegrationConfig,
+);
 const useAuthOptionMock = jest.mocked(useAuthOptions);
 const checkIntegrationAuthMock = jest.mocked(checkIntegrationAuth);
 
@@ -71,21 +73,23 @@ const authOptions = [localConfig1, localConfig2].map(
 );
 useAuthOptionMock.mockReturnValue(valueToAsyncState(authOptions));
 
-serviceLocateMock.mockImplementation(async (integrationId, configId) => {
-  if (configId === localConfig1.id) {
-    return localConfig1;
-  }
+findSanitizedIntegrationConfigMock.mockImplementation(
+  async (integrationId, configId) => {
+    if (configId === localConfig1.id) {
+      return localConfig1;
+    }
 
-  if (configId === localConfig2.id) {
-    return localConfig2;
-  }
+    if (configId === localConfig2.id) {
+      return localConfig2;
+    }
 
-  if (configId === remoteConfig.id) {
-    return remoteConfig;
-  }
+    if (configId === remoteConfig.id) {
+      return remoteConfig;
+    }
 
-  throw new Error("Invalid config id");
-});
+    throw new Error("Invalid config id");
+  },
+);
 
 const integrationDependency1 = integrationDependencyFactory({
   integrationId,
