@@ -46,6 +46,7 @@ import { getSelectedLineVirtualElement } from "@/components/fields/schemaFields/
 import { inspectedTab } from "@/pageEditor/context/connection";
 import useEventListener from "@/hooks/useEventListener";
 import { StateNamespaces } from "@/platform/state/stateController";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 const emptyVarMap = new VarMap();
 
@@ -80,9 +81,9 @@ function usePositionVarPopup({
   inputElementRef,
   variablePosition,
 }: {
-  knownVars: VarMap;
+  knownVars: Nullishable<VarMap>;
   inputElementRef: VarMenuProps["inputElementRef"];
-  variablePosition: number;
+  variablePosition: number | null;
 }) {
   const dispatch = useDispatch();
   const rootElementRef = useRef<HTMLDivElement>(null);
@@ -98,10 +99,13 @@ function usePositionVarPopup({
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (entry.contentBoxSize) {
-          setResize(entry.contentBoxSize[0].blockSize);
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- contentBoxSize is defined
+          setResize(entry.contentBoxSize[0]!.blockSize);
         }
       }
     });
+
+    assertNotNullish(element, "Element not found");
 
     resizeObserver.observe(element);
 
@@ -175,7 +179,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
       getPageState(inspectedTab, {
         namespace: StateNamespaces.MOD,
         modComponentId: null,
-        modId: activeModComponentFormState.modMetadata?.id,
+        modId: activeModComponentFormState?.modMetadata?.id,
       }),
     [],
   );
@@ -196,7 +200,8 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   }, [dispatch]);
 
   const starterBrickLabel = activeModComponentFormState?.type
-    ? ADAPTERS.get(activeModComponentFormState.type).label
+    ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
+      ADAPTERS.get(activeModComponentFormState.type)!.label
     : "";
 
   const { allOptions, filteredOptions } = useMemo(() => {
@@ -215,7 +220,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
 
   const blocksInfo = Object.values(pipelineMap);
 
-  const { activeKeyPath } = useKeyboardNavigation({
+  const { activeKeyPath = null } = useKeyboardNavigation({
     inputElementRef,
     isVisible: Boolean(rootElementRef.current),
     likelyVariable,

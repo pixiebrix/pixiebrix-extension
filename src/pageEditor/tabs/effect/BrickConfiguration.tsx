@@ -56,13 +56,12 @@ const BrickConfiguration: React.FunctionComponent<{
 
   const context = useFormikContext<ModComponentFormState>();
   const [config] = useField<BrickConfig>(name);
-  const [_rootField, _rootFieldMeta, rootFieldHelpers] = useField<BrickConfig>(
-    configName("root"),
-  );
+  const [_rootField, _rootFieldMeta, rootFieldHelpers] =
+    useField<BrickConfig | null>(configName("root"));
   const brickErrors = getIn(context.errors, name);
   const isComment = brickId === CommentEffect.BRICK_ID;
 
-  const [{ block: brick, error }, BrickOptions] = useBrickOptions(brickId);
+  const [{ brick, error }, BrickOptions] = useBrickOptions(brickId);
 
   // Conditionally show Advanced Options "Condition" and "Target" depending on the value of brickType.
   // If brickType is undefined, don't show the options.
@@ -73,16 +72,17 @@ const BrickConfiguration: React.FunctionComponent<{
   );
 
   const { data: isRootAware } = useAsyncState(async () => {
-    const inputSchema = inputProperties(brick.inputSchema);
+    const inputSchema = inputProperties(brick?.inputSchema);
+
     // Handle DOM bricks that were upgraded to be root-aware
     if ("isRootAware" in inputSchema) {
       return Boolean(config.value.config.isRootAware);
     }
 
-    return brick.isRootAware();
+    return brick?.isRootAware() ?? false;
   }, [brick, config.value.config.isRootAware]);
 
-  const advancedOptionsRef = useRef<HTMLDivElement>();
+  const advancedOptionsRef = useRef<HTMLDivElement>(null);
 
   useAsyncEffect(
     async () => {

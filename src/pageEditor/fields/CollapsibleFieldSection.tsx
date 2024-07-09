@@ -35,7 +35,7 @@ const CollapsibleFieldSection: React.FC<{
   title: React.ReactNode;
   toggleExpanded: () => void;
   expanded?: boolean;
-  bodyRef?: React.MutableRefObject<HTMLDivElement>;
+  bodyRef?: React.MutableRefObject<HTMLDivElement | null>;
 }> = ({ title, toggleExpanded, expanded, children, bodyRef }) => {
   const headerRef = useRef<HTMLButtonElement | null>(null);
 

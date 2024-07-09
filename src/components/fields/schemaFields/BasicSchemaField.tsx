@@ -66,14 +66,16 @@ function useSetInitialValueForField({
   }, []);
 
   useAsyncEffect(async () => {
+    const [inputModeOption] = inputModeOptions;
     // Initialize any undefined required fields to prevent inferring an "omit" input
     if (
       value === undefined &&
       isRequired &&
-      !isEmpty(inputModeOptions) &&
-      renderRef.current
+      inputModeOption &&
+      renderRef.current &&
+      inputModeOption.interpretValue
     ) {
-      await setValue(inputModeOptions[0].interpretValue(value));
+      await setValue(inputModeOption.interpretValue(value));
     }
     // We include setValue in the dependencies because sometimes the formik
     // helpers reference (setValue) changes, so we need to account for that in the dependencies
@@ -91,7 +93,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
     name,
     schema,
     validationSchema,
-    isRequired,
+    isRequired = false,
     description,
     isObjectProperty = false,
     isArrayItem = false,

@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
@@ -50,7 +50,7 @@ function schemaWithKnownVariableNames(varMap: VarMap | null): Schema {
   };
 }
 
-const AssignModVariableOptions: React.FC<BlockOptionProps> = ({
+const AssignModVariableOptions: React.FC<BrickOptionProps> = ({
   name,
   configKey,
 }) => {

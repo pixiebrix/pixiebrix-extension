@@ -197,7 +197,7 @@ export function replaceLikelyVariable(
  * Select the full variable name based on the selected path and user's expression so far.
  */
 export function getFullVariableName(
-  likelyVariable: string,
+  likelyVariable: string | null,
   selectedPath: string[],
 ): string {
   // `toPath` will create a separate element for the ? symbol. So we need to merge them back. Eventually we need to

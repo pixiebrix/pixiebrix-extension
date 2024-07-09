@@ -19,7 +19,7 @@ import React, { useMemo } from "react";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES as REMOTE_UIPATH_PROPERTIES } from "@/contrib/uipath/process";
 import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 import RequireIntegrationConfig from "@/integrations/components/RequireIntegrationConfig";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -40,7 +40,7 @@ import {
 import type { Option } from "@/components/form/widgets/SelectWidget";
 import { inspectedTab } from "@/pageEditor/context/connection";
 
-const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
+const LocalProcessOptions: React.FunctionComponent<BrickOptionProps> = ({
   name,
   configKey,
 }) => {

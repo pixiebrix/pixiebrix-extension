@@ -40,7 +40,7 @@ const getItemString: GetItemString = (type, data, itemType, itemString) => {
     return null;
   }
 
-  return defaultItemString(type, data, itemType, itemString, null);
+  return defaultItemString(type, data, itemType, itemString, []);
 };
 
 const NodeLabel: React.FunctionComponent<{
@@ -58,7 +58,7 @@ const NodeLabel: React.FunctionComponent<{
    */
   onSelect: (path: string[]) => void;
 }> = ({ isActive, path, onSelect }) => {
-  const buttonRef = useRef<HTMLElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const select = () => {
     // JSONTree tracks key path in reverse order
@@ -77,14 +77,7 @@ const NodeLabel: React.FunctionComponent<{
 
   return (
     // Use native button to avoid extra bootstrap variant styling
-    <button
-      type="button"
-      className="btn"
-      onClick={onClick}
-      ref={(element) => {
-        buttonRef.current = element;
-      }}
-    >
+    <button type="button" className="btn" onClick={onClick} ref={buttonRef}>
       {path[0]}
     </button>
   );
@@ -93,8 +86,8 @@ const NodeLabel: React.FunctionComponent<{
 const VariablesTree: React.FunctionComponent<{
   vars: UnknownRecord;
   onVarSelect: (selectedPath: string[]) => void;
-  likelyVariable: string;
-  activeKeyPath?: KeyPath;
+  likelyVariable: string | null;
+  activeKeyPath: KeyPath | null;
 }> = ({ vars, onVarSelect, likelyVariable, activeKeyPath }) => (
   <JSONTree
     key={likelyVariable}

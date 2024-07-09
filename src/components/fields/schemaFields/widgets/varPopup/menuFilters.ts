@@ -25,6 +25,7 @@ import {
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { type KeyPath, type ShouldExpandNodeInitially } from "react-json-tree";
 import { getIn } from "formik";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Array of [source, varMap] tuples
@@ -71,13 +72,16 @@ export function excludeIntegrationVariables(options: MenuOptions): MenuOptions {
  */
 export function filterOptionsByVariable(
   options: MenuOptions,
-  likelyVariable: string,
+  likelyVariable: string | null,
 ): MenuOptions {
   if (isTextOrNullVar(likelyVariable)) {
     return options;
   }
 
   const [base, ...rest] = toVarPath(likelyVariable);
+
+  assertNotNullish(base, `Expected base to be non-null: ${likelyVariable}`);
+
   return options.filter(([source, vars]) => {
     if (rest.length === 0) {
       return Object.keys(vars).some((x) => x.startsWith(base));
@@ -97,6 +101,8 @@ function filterVarMapByPath(
   }
 
   const [head, ...rest] = path;
+
+  assertNotNullish(head, "Expected head to be non-null");
 
   const entries: UnknownRecord = {
     // eslint-disable-next-line security/detect-object-injection -- Symbol
@@ -127,7 +133,7 @@ function filterVarMapByPath(
  */
 export function filterVarMapByVariable(
   varMap: UnknownRecord,
-  likelyVariable: string,
+  likelyVariable: string | null,
 ): UnknownRecord {
   if (isTextOrNullVar(likelyVariable)) {
     return varMap;
@@ -143,7 +149,7 @@ export function filterVarMapByVariable(
  */
 export function expandCurrentVariableLevel(
   varMap: UnknownRecord,
-  likelyVariable: string,
+  likelyVariable: string | null,
 ): ShouldExpandNodeInitially {
   if (isTextOrNullVar(likelyVariable)) {
     return () => false;
@@ -240,7 +246,7 @@ export function sortVarMapKeys(value: unknown): unknown {
  */
 export function defaultMenuOption(
   options: MenuOptions,
-  likelyVariable: string,
+  likelyVariable: string | null,
 ): KeyPath | null {
   const reversedOptions = reverse([...options]);
 
@@ -254,12 +260,18 @@ export function defaultMenuOption(
     // Must always have at least one option (e.g., the `@input`)
     // Prefer the last option, because that's the latest output
 
-    const vars = reversedOptions[0][1];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+    const vars = reversedOptions[0]![1];
     const first = Object.keys(vars)[0];
+
+    assertNotNullish(first, "Expected first to be non-null");
+
     return [first];
   }
 
   const [head, ...rest] = parts;
+
+  assertNotNullish(head, "Expected head to be non-null");
 
   // Reverse options to find the last source that matches. (To account for shadowing)
   const sourceMatch = reversedOptions.find(([source, vars]) =>
@@ -271,7 +283,15 @@ export function defaultMenuOption(
     const partialMatch = reversedOptions.find(([, vars]) =>
       Object.keys(vars).some((x) => x.startsWith(head)),
     );
-    return partialMatch ? [Object.keys(partialMatch[1])[0]] : null;
+
+    if (partialMatch) {
+      const key = Object.keys(partialMatch[1])[0];
+      assertNotNullish(key, "Expected key to exist");
+
+      return [key];
+    }
+
+    return null;
   }
 
   const [, vars] = sourceMatch;
@@ -284,13 +304,17 @@ export function defaultMenuOption(
   ] as UnknownRecord;
 
   for (const part of rest) {
+    assertNotNullish(part, "Expected part to be non-null");
+
     if (!Object.hasOwn(currentVars, part)) {
+      const match = Object.keys(
+        sortVarMapKeys(currentVars) as UnknownRecord,
+      ).find((x) => x.startsWith(part));
+
+      assertNotNullish(match, "Expected match to exist");
+
       // No exact match, return first partial match as default.
-      result.unshift(
-        Object.keys(sortVarMapKeys(currentVars)).find((x) =>
-          x.startsWith(part),
-        ),
-      );
+      result.unshift(match);
       break;
     }
 
@@ -318,10 +342,10 @@ export function moveMenuOption({
   offset,
 }: {
   options: MenuOptions;
-  likelyVariable: string;
-  keyPath: KeyPath;
+  likelyVariable: string | null;
+  keyPath: KeyPath | null;
   offset: number;
-}): KeyPath {
+}): KeyPath | null {
   if (keyPath == null) {
     return keyPath;
   }
@@ -331,6 +355,8 @@ export function moveMenuOption({
   const reversedOptions = [...options].reverse();
 
   const [head, ...rest] = keyPathParts;
+
+  assertNotNullish(head, "Expected head to be non-null");
 
   // Reverse options to find the last source that matches. (To account for shadowing)
   const sourceMatch = reversedOptions.find(([source, vars]) =>
@@ -352,23 +378,30 @@ export function moveMenuOption({
   // User is switching between top-level variables
   if (rest.length === 0) {
     const sourceIndex = options.findIndex(([x]) => x === source);
-    const [, nextSourceVars] = options.at(
-      (sourceIndex + offset) % options.length,
-    );
-    return [Object.keys(nextSourceVars)[0]];
+    const option = options.at((sourceIndex + offset) % options.length);
+
+    assertNotNullish(option, "Expected option to exist");
+    const [, nextSourceVars] = option;
+
+    const key = Object.keys(nextSourceVars)[0];
+    assertNotNullish(key, "Expected key to exist");
+
+    return [key];
   }
 
   const lastProperty = rest.pop();
 
   const lastVars = getIn(varMap, rest.map(String)) as UnknownRecord;
 
-  const sortedVarNames = Object.keys(sortVarMapKeys(lastVars));
+  const sortedVarNames = Object.keys(sortVarMapKeys(lastVars) as UnknownRecord);
 
   const varIndex = sortedVarNames.indexOf(String(lastProperty));
 
-  return reverse([
-    head,
-    ...rest,
-    sortedVarNames.at((varIndex + offset) % sortedVarNames.length),
-  ]);
+  return compact(
+    reverse([
+      head,
+      ...rest,
+      sortedVarNames.at((varIndex + offset) % sortedVarNames.length),
+    ]),
+  );
 }

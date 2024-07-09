@@ -17,6 +17,7 @@
 
 import { type BrickType } from "@/runtime/runtimeTypes";
 import { type PackageInstance } from "@/types/registryTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { isObject } from "@/utils/objectUtils";
 
 function canInferType(
@@ -29,8 +30,12 @@ function canInferType(
  * Returns the type of the brick, or `null` if the type cannot be determined.
  */
 export default async function getType(
-  packageInstance: PackageInstance,
+  packageInstance: Nullishable<PackageInstance>,
 ): Promise<BrickType | null> {
+  if (packageInstance == null) {
+    return null;
+  }
+
   if (canInferType(packageInstance)) {
     // HACK: including Integration and StarterBrick here is a hack to fix some call-sites. This method can only return
     // brick types.
