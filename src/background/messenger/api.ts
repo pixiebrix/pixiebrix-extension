@@ -70,7 +70,7 @@ export const recordLog = getNotifier("RECORD_LOG", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
 export const clearLog = getMethod("CLEAR_LOG", bg);
 export const clearExtensionDebugLogs = getMethod(
-  "CLEAR_EXTENSION_DEBUG_LOGS",
+  "CLEAR_MOD_COMPONENT_DEBUG_LOGS",
   bg,
 );
 

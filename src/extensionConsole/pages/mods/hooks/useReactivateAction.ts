@@ -38,7 +38,7 @@ const useReactivateAction = (modViewItem: ModViewItem): (() => void) | null => {
     if (hasModDefinition) {
       const modId = isModDefinition(mod) ? mod.metadata.id : mod._recipe?.id;
 
-      assertNotNullish(modId, "blueprintId is required to reactivate mod");
+      assertNotNullish(modId, "modId is required to reactivate mod");
 
       reportEvent(Events.START_MOD_ACTIVATE, {
         modId,

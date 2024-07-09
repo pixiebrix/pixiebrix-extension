@@ -110,7 +110,7 @@ declare global {
     RECORD_ERROR: typeof recordError;
     CLEAR_LOGS: typeof clearLogs;
     CLEAR_LOG: typeof clearLog;
-    CLEAR_EXTENSION_DEBUG_LOGS: typeof clearModComponentDebugLogs;
+    CLEAR_MOD_COMPONENT_DEBUG_LOGS: typeof clearModComponentDebugLogs;
 
     INTEGRATION_REGISTRY_CLEAR: typeof integrationRegistry.clear;
     LOCATOR_FIND_ALL_SANITIZED_CONFIGS_FOR_INTEGRATION: typeof integrationConfigLocator.findAllSanitizedConfigsForIntegration;
@@ -183,7 +183,7 @@ export default function registerMessenger(): void {
     RECORD_ERROR: recordError,
     CLEAR_LOGS: clearLogs,
     CLEAR_LOG: clearLog,
-    CLEAR_EXTENSION_DEBUG_LOGS: clearModComponentDebugLogs,
+    CLEAR_MOD_COMPONENT_DEBUG_LOGS: clearModComponentDebugLogs,
 
     INTEGRATION_REGISTRY_CLEAR:
       integrationRegistry.clear.bind(integrationRegistry),

@@ -94,6 +94,8 @@ export function mapModComponentToMessageContext(
 /**
  * Returns the message context for a ModComponentRef. For use with passing to reportEvent
  * @see selectEventData
+ *
+ * TODO: Once we update the shape of ModComponentRef, we need to audit unnecessary usage of this function
  */
 export function mapModComponentRefToMessageContext(
   modComponentRef: ModComponentRef,
