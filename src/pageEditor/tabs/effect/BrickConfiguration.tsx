@@ -47,6 +47,20 @@ import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { BrickTypes } from "@/runtime/runtimeTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { useDispatch } from "react-redux";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+
+function useResetBrickPipeline(name: string) {
+  const context = useFormikContext<ModComponentFormState>();
+  const [config] = useField<BrickConfig | undefined>(name);
+  const dispatch = useDispatch();
+
+  if (!config.value) {
+    dispatch(editorActions.resetActivatedModComponentFormState(context.values));
+  }
+
+  return { context, config };
+}
 
 const BrickConfiguration: React.FunctionComponent<{
   name: string;
@@ -54,8 +68,8 @@ const BrickConfiguration: React.FunctionComponent<{
 }> = ({ name, brickId }) => {
   const configName = partial(joinName, name);
 
-  const context = useFormikContext<ModComponentFormState>();
-  const [config] = useField<BrickConfig>(name);
+  const { context, config } = useResetBrickPipeline(name);
+
   const [_rootField, _rootFieldMeta, rootFieldHelpers] =
     useField<BrickConfig | null>(configName("root"));
   const brickErrors = getIn(context.errors, name);
