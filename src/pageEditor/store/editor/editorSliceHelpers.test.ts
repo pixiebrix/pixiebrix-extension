@@ -25,12 +25,10 @@ import {
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   ensureBrickPipelineUIState,
-  ensureBrickConfigurationUIState,
   removeModComponentFormState,
   removeModData,
   setActiveModId,
   setActiveNodeId,
-  syncBrickConfigurationUIStates,
 } from "@/pageEditor/store/editor/editorSliceHelpers";
 import { produce } from "immer";
 import {
@@ -50,6 +48,10 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  ensureBrickConfigurationUIState,
+  syncBrickConfigurationUIStates,
+} from "@/pageEditor/store/editor/syncBrickConfigurationUiState";
 
 describe("ensureBrickPipelineUIState", () => {
   test("does not affect existing ui state", () => {

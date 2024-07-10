@@ -57,7 +57,6 @@ import {
   removeModData,
   setActiveModId,
   setActiveNodeId,
-  syncBrickConfigurationUIStates,
 } from "@/pageEditor/store/editor/editorSliceHelpers";
 import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
@@ -87,6 +86,7 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { syncBrickConfigurationUIStates } from "@/pageEditor/store/editor/syncBrickConfigurationUiState";
 
 export const initialState: EditorState = {
   selectionSeq: 0,

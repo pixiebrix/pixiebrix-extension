@@ -37,8 +37,8 @@ import {
   type EditorStateV5,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { syncBrickConfigurationUIStates } from "@/pageEditor/store/editor/editorSliceHelpers";
 import produce, { type Draft } from "immer";
+import { syncBrickConfigurationUIStates } from "@/pageEditor/store/editor/syncBrickConfigurationUiState";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed

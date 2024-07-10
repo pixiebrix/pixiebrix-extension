@@ -22,17 +22,13 @@ import {
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import {
-  FOUNDATION_NODE_ID,
-  makeInitialBrickPipelineUIState,
-  makeInitialBrickConfigurationUIState,
-} from "@/pageEditor/store/editor/uiState";
+import { makeInitialBrickPipelineUIState } from "@/pageEditor/store/editor/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
-import { type BrickPipelineUIState } from "@/pageEditor/store/editor/uiStateTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { clearModComponentTraces } from "@/telemetry/trace";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { ensureBrickConfigurationUIState } from "@/pageEditor/store/editor/syncBrickConfigurationUiState";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
@@ -54,52 +50,6 @@ export function ensureBrickPipelineUIState(
 
     state.brickPipelineUIStateById[modComponentId].pipelineMap =
       getPipelineMap(pipeline);
-  }
-}
-
-export function ensureBrickConfigurationUIState(
-  state: Draft<BrickPipelineUIState>,
-  nodeId: UUID,
-) {
-  state.nodeUIStates[nodeId] ??= makeInitialBrickConfigurationUIState(nodeId);
-}
-
-export function syncBrickConfigurationUIStates(
-  state: Draft<EditorState>,
-  modComponentFormState: ModComponentFormState,
-) {
-  const brickPipelineUIState =
-    state.brickPipelineUIStateById[modComponentFormState.uuid];
-
-  assertNotNullish(
-    brickPipelineUIState,
-    `Brick Pipeline UI State not found for ${modComponentFormState.uuid}`,
-  );
-
-  const pipelineMap = getPipelineMap(
-    modComponentFormState.modComponent.brickPipeline,
-  );
-
-  brickPipelineUIState.pipelineMap = pipelineMap;
-
-  // Pipeline brick instance IDs may have changed
-  if (pipelineMap[brickPipelineUIState.activeNodeId] == null) {
-    brickPipelineUIState.activeNodeId = FOUNDATION_NODE_ID;
-  }
-
-  // Remove BrickConfigurationUIStates for invalid node IDs
-  for (const nodeId of Object.keys(
-    brickPipelineUIState.nodeUIStates,
-  ) as UUID[]) {
-    // Don't remove the foundation BrickConfigurationUIState
-    if (nodeId !== FOUNDATION_NODE_ID && pipelineMap[nodeId] == null) {
-      delete brickPipelineUIState.nodeUIStates[nodeId];
-    }
-  }
-
-  // Add missing BrickConfigurationUIStates
-  for (const nodeId of Object.keys(pipelineMap) as UUID[]) {
-    ensureBrickConfigurationUIState(brickPipelineUIState, nodeId);
   }
 }
 
