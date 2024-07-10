@@ -54,7 +54,7 @@ export type NodeInfo = {
 };
 
 /**
- * The map of pipeline blocks. The key is the instanceId of the block.
+ * The map of pipeline bricks. The key is the instanceId of the brick.
  */
 export type PipelineMap = Record<UUID, NodeInfo>;
 

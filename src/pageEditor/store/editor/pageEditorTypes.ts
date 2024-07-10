@@ -352,8 +352,18 @@ export type EditorStateV4 = Except<
   deletedModComponentFormStatesByModId: Record<string, BaseFormStateV3[]>;
 };
 
+/**
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ *
+ * EditorStateV5 is the same as EditorStateV4. An additional migration needed to be run
+ * on the form state that was not run in the previous migration.
+ *
+ * See https://github.com/pixiebrix/pixiebrix-extension/issues/8781 for more details.
+ */
+export type EditorStateV5 = EditorStateV4;
+
 export type EditorState = Except<
-  EditorStateV4,
+  EditorStateV5,
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: ModComponentFormState[];
