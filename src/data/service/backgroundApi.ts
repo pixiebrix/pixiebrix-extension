@@ -19,6 +19,10 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getApiClient } from "@/data/service/apiClient";
 import type { components } from "@/types/swagger";
 import { expectContext } from "@/utils/expectContext";
+import {
+  ME_API_VERSION,
+  getRequestHeadersByAPIVersion,
+} from "@/data/service/apiVersioning";
 
 // Safe to memoize in-memory because the background page/worker is reloaded when the authenticated user changes.
 // When the user changes, the background page/worker is reloaded, the memoizeUntilSettled cache is cleared so the
@@ -29,7 +33,9 @@ export const getMe = memoizeUntilSettled(
     const client = await getApiClient();
     // Safe to call with non-authenticated client
     // NOTE: currently includes flags, in the future we may want to separate flags into a separate endpoint
-    const { data } = await client.get<components["schemas"]["Me"]>("/api/me/");
+    const { data } = await client.get<components["schemas"]["Me"]>("/api/me/", {
+      headers: getRequestHeadersByAPIVersion(ME_API_VERSION),
+    });
     return data;
   },
 );

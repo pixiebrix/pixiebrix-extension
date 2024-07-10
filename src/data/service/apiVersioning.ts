@@ -30,3 +30,5 @@ export function getRequestHeadersByAPIVersion(apiVersion: ApiVersion) {
 
   throw new Error("Unknown API version");
 }
+
+export const ME_API_VERSION = "1.1";
