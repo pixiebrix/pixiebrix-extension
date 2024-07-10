@@ -37,8 +37,14 @@ import {
   type EditorState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { syncBrickConfigurationUIStates } from "@/pageEditor/store/editor/editorSliceHelpers";
 import produce, { type Draft } from "immer";
+import {
+  FOUNDATION_NODE_ID,
+  makeInitialBrickConfigurationUIState,
+} from "@/pageEditor/store/editor/uiState";
+import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { type UUID } from "@/types/stringTypes";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
@@ -167,14 +173,53 @@ export function migrateEditorStateV3({
 /**
  * Recalculate the pipeline map for each mod component form state.
  * Required because of the change from `extension.blockPipeline` to `modComponent.brickPipeline`.
+ *
  * See https://github.com/pixiebrix/pixiebrix-extension/issues/8781
+ *
+ * Code copied from `syncBrickConfigurationUIStates` to prevent unwanted webext messenger code
+ * from being included in the bundle.
  */
 function migrateEditorStateV4(
   state: EditorStateV4 & PersistedState,
 ): EditorStateV5 & PersistedState {
   return produce(state, (draft: Draft<EditorState>) => {
     for (const modComponentFormState of draft.modComponentFormStates) {
-      syncBrickConfigurationUIStates(draft, modComponentFormState);
+      const brickPipelineUIState =
+        draft.brickPipelineUIStateById[modComponentFormState.uuid];
+
+      assertNotNullish(
+        brickPipelineUIState,
+        `Brick Pipeline UI State not found for ${modComponentFormState.uuid}`,
+      );
+
+      const pipelineMap = getPipelineMap(
+        modComponentFormState.modComponent.brickPipeline,
+      );
+
+      brickPipelineUIState.pipelineMap = pipelineMap;
+
+      // Pipeline brick instance IDs may have changed
+      if (pipelineMap[brickPipelineUIState.activeNodeId] == null) {
+        brickPipelineUIState.activeNodeId = FOUNDATION_NODE_ID;
+      }
+      /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
+
+      // Remove BrickConfigurationUIStates for invalid node IDs
+      for (const nodeId of Object.keys(
+        brickPipelineUIState.nodeUIStates,
+      ) as UUID[]) {
+        // Don't remove the foundation BrickConfigurationUIState
+        if (nodeId !== FOUNDATION_NODE_ID && pipelineMap[nodeId] == null) {
+          delete brickPipelineUIState.nodeUIStates[nodeId];
+        }
+      }
+
+      // Add missing BrickConfigurationUIStates
+      for (const nodeId of Object.keys(pipelineMap) as UUID[]) {
+        brickPipelineUIState.nodeUIStates[nodeId] ??=
+          makeInitialBrickConfigurationUIState(nodeId);
+      }
+      /* eslint-enable security/detect-object-injection */
     }
   });
 }
