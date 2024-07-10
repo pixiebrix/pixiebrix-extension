@@ -58,8 +58,8 @@ test("shows error notification when updating a public mod without incrementing t
   const pageEditorPage = await newPageEditorPage(page.url());
   const modListItem =
     pageEditorPage.modListingPanel.getModListItemByName(modName);
-  await modListItem.activate();
+  await modListItem.select();
   await pageEditorPage.modEditorPane.name.fill("8203 Repro Updated");
-  await pageEditorPage.saveSelectedPackagedMod();
+  await pageEditorPage.modListingPanel.activeModListItem.saveButton.click();
   await expect(pageEditorPage.getIncrementVersionErrorToast()).toBeVisible();
 });
