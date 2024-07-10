@@ -35,12 +35,11 @@ const loadSandbox = pMemoize(async () =>
 
 const getSandbox = memoizeUntilSettled(async () => {
   let sandbox = await loadSandbox();
-  const shadowRoot = document.documentElement.querySelector(
+  const isSandboxWrapperInDom = document.querySelector(
     `#${SANDBOX_SHADOW_ROOT_ID}`,
-  )?.shadowRoot;
-  const isSandboxInDom = shadowRoot?.contains(sandbox);
+  );
 
-  if (isSandboxInDom) {
+  if (isSandboxWrapperInDom) {
     await postMessage({
       recipient: sandbox.contentWindow,
       payload: "ping",
