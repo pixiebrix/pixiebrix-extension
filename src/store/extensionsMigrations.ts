@@ -28,7 +28,7 @@ import {
   isModComponentStateV3,
 } from "@/store/extensionsTypes";
 import { omit } from "lodash";
-import { migrateIntegrationDependenciesV1toV2 } from "@/store/editorMigrations";
+import { migrateIntegrationDependenciesV1toV2 } from "@/pageEditor/store/editor/editorMigrations";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to 0-indexed

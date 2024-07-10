@@ -34,7 +34,10 @@ import {
   getSettingsState,
   saveSettingsState,
 } from "@/store/settings/settingsStorage";
-import { getEditorState, saveEditorState } from "@/store/editorStorage";
+import {
+  getEditorState,
+  saveEditorState,
+} from "@/pageEditor/store/editor/editorStorage";
 import {
   editorSlice,
   initialState as initialEditorState,

@@ -37,7 +37,7 @@ import {
   starterBrickDefinitionFactory,
   modDefinitionWithVersionedStarterBrickFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
-import { getEditorState } from "@/store/editorStorage";
+import { getEditorState } from "@/pageEditor/store/editor/editorStorage";
 import extensionsSlice from "@/store/extensionsSlice";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import type { ModDefinition } from "@/types/modDefinitionTypes";

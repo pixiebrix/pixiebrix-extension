@@ -20,16 +20,14 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { produce } from "immer";
 import {
-  removeModComponentFormState,
-  removeModData,
-} from "@/pageEditor/store/editor/editorSliceHelpers";
-import {
   readReduxStorage,
   setReduxStorage,
   validateReduxStorageKey,
 } from "@/utils/storageUtils";
-import { migrations } from "@/store/editorMigrations";
+import { migrations } from "@/pageEditor/store/editor/editorMigrations";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
+import { removeModComponentFormState } from "@/pageEditor/store/editor/editorSliceHelpers/removeModComponentFormState";
+import { removeModData } from "@/pageEditor/store/editor/editorSliceHelpers/removeModData";
 
 const STORAGE_KEY = validateReduxStorageKey("persist:editor");
 

@@ -54,7 +54,10 @@ import {
 } from "@/utils/deploymentUtils";
 import { selectUpdatePromptState } from "@/store/settings/settingsSelectors";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { getEditorState, saveEditorState } from "@/store/editorStorage";
+import {
+  getEditorState,
+  saveEditorState,
+} from "@/pageEditor/store/editor/editorStorage";
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import { removeModComponentForEveryTab } from "@/background/removeModComponentForEveryTab";

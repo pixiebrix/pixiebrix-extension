@@ -23,15 +23,7 @@ import {
   makeInitialBrickConfigurationUIState,
 } from "@/pageEditor/store/editor/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
-import {
-  ensureBrickPipelineUIState,
-  ensureBrickConfigurationUIState,
-  removeModComponentFormState,
-  removeModData,
-  setActiveModId,
-  setActiveNodeId,
-  syncBrickConfigurationUIStates,
-} from "@/pageEditor/store/editor/editorSliceHelpers";
+
 import { produce } from "immer";
 import {
   type BrickPipelineUIState,
@@ -50,6 +42,13 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { ensureBrickConfigurationUIState } from "@/pageEditor/store/editor/editorSliceHelpers/ensureBrickConfigurationUiState";
+import { ensureBrickPipelineUIState } from "@/pageEditor/store/editor/editorSliceHelpers/ensureBrickPipelineUiState";
+import { removeModComponentFormState } from "@/pageEditor/store/editor/editorSliceHelpers/removeModComponentFormState";
+import { removeModData } from "@/pageEditor/store/editor/editorSliceHelpers/removeModData";
+import { setActiveModId } from "@/pageEditor/store/editor/editorSliceHelpers/setActiveModId";
+import { setActiveNodeId } from "@/pageEditor/store/editor/editorSliceHelpers/setActiveNodeId";
+import { syncBrickConfigurationUIStates } from "@/pageEditor/store/editor/editorSliceHelpers/syncBrickConfigurationUiStates";
 
 describe("ensureBrickPipelineUIState", () => {
   test("does not affect existing ui state", () => {

@@ -25,7 +25,7 @@ import {
   removeDraftModComponents,
   removeDraftModComponentsForMod,
   saveEditorState,
-} from "@/store/editorStorage";
+} from "@/pageEditor/store/editor/editorStorage";
 import { validateRegistryId } from "@/types/helpers";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -33,7 +33,7 @@ import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories"
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { readReduxStorage, setReduxStorage } from "@/utils/storageUtils";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
-import { migrations } from "@/store/editorMigrations";
+import { migrations } from "@/pageEditor/store/editor/editorMigrations";
 
 jest.mock("@/utils/storageUtils", () => {
   const actual = jest.requireActual("@/utils/storageUtils");
