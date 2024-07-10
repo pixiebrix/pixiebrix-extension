@@ -169,7 +169,7 @@ export function migrateEditorStateV3({
  * Required because of the change from `extension.blockPipeline` to `modComponent.brickPipeline`.
  * See https://github.com/pixiebrix/pixiebrix-extension/issues/8781
  */
-export function migrateEditorStateV4(
+function migrateEditorStateV4(
   state: EditorStateV4 & PersistedState,
 ): EditorStateV5 & PersistedState {
   return produce(state, (draft: Draft<EditorState>) => {
