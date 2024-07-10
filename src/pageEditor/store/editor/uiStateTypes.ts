@@ -33,7 +33,7 @@ export type NodeInfo = {
   blockConfig: BrickConfig;
 
   /**
-   * Index of the block in its pipeline
+   * Index of the brick in its pipeline
    */
   index: number;
 
@@ -43,7 +43,7 @@ export type NodeInfo = {
   pipelinePath: string;
 
   /**
-   * The block's pipeline
+   * The brick's pipeline
    */
   pipeline: BrickPipeline;
 
@@ -54,7 +54,7 @@ export type NodeInfo = {
 };
 
 /**
- * The map of pipeline blocks. The key is the instanceId of the block.
+ * The map of pipeline bricks. The key is the instanceId of the brick.
  */
 export type PipelineMap = Record<UUID, NodeInfo>;
 
@@ -77,7 +77,7 @@ export type DataPanelTabUIState = {
 
 export type BrickConfigurationUIState = {
   /**
-   * Identifier for the node in the editor, either the foundation or a block uuid
+   * Identifier for the node in the editor, either the foundation or a brick uuid
    */
   nodeId: UUID;
 
