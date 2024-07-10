@@ -67,8 +67,10 @@ async function _injectIframe(
   // the injected iframe (e.g. by removing it from the DOM)
   // See https://github.com/pixiebrix/pixiebrix-extension/pull/8777
   await waitForDocumentRoot();
-  document.documentElement.append(shadowElement);
-  shadowElement.id = shadowRootId;
+  document.body.append(shadowElement);
+  if (shadowRootId) {
+    shadowElement.id = shadowRootId;
+  }
 
   const result = await Promise.race([
     iframeLoad,

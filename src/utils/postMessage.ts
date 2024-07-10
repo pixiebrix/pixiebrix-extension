@@ -37,9 +37,9 @@ import { assertNotNullish } from "./nullishUtils";
 import { type JsonValue } from "type-fest";
 import { type AbortSignalAsOptions } from "./promiseUtils";
 
-const TIMEOUT_MS = 3000;
+const TIMEOUT_MS = 1000;
 
-type Payload = JsonValue | void;
+export type Payload = JsonValue | void;
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const log = process.env.SANDBOX_LOGGING ? console.debug : () => {};
