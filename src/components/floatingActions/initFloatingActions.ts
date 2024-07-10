@@ -17,10 +17,11 @@
 
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getSettingsState } from "@/store/settings/settingsStorage";
-import { getUserData } from "@/background/messenger/api";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { isLinked as getIsLinked } from "@/auth/authStorage";
+import { transformMeResponse } from "@/data/model/Me";
+import { getMe } from "@/data/service/backgroundApi";
 
 /**
  * Add the floating action button to the page if the user is not an enterprise/partner user.
@@ -33,18 +34,19 @@ export default async function initFloatingActions(): Promise<void> {
     return;
   }
 
-  const [settings, { telemetryOrganizationId }, isLinked] = await Promise.all([
+  const [settings, isLinked] = await Promise.all([
     getSettingsState(),
-    getUserData(),
     getIsLinked(),
   ]);
 
-  // `telemetryOrganizationId` indicates user is part of an enterprise organization
-  // See https://github.com/pixiebrix/pixiebrix-app/blob/39fac4874402a541f62e80ab74aaefd446cc3743/api/models/user.py#L68-L68
+  const meApiResponse = await getMe();
+  const meData = transformMeResponse(meApiResponse);
+
   // Just get the theme from the store instead of using getActive theme to avoid extra Chrome storage reads
   // In practice, the Chrome policy should not change between useGetTheme and a call to initFloatingActions on a page
   const isEnterpriseOrPartnerUser =
-    Boolean(telemetryOrganizationId) || settings.theme !== DEFAULT_THEME;
+    meData?.primaryOrganization.isEnterprise ||
+    settings.theme !== DEFAULT_THEME;
 
   const hasFeatureFlag = await flagOn("floating-quickbar-button-freemium");
 
