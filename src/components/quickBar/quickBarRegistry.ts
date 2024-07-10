@@ -122,7 +122,7 @@ class QuickBarRegistry implements QuickBarProtocol {
   removeStarterBrickActions(starterBrickId: RegistryId): void {
     remove(
       this.actions,
-      (x) => x.modComponentRef?.extensionPointId === starterBrickId,
+      (x) => x.modComponentRef?.starterBrickId === starterBrickId,
     );
     this.notifyListeners();
   }
@@ -135,7 +135,7 @@ class QuickBarRegistry implements QuickBarProtocol {
     remove(
       this.actions,
       (x) =>
-        x.modComponentRef?.extensionId === modComponentId &&
+        x.modComponentRef?.modComponentId === modComponentId &&
         // Exclude the root action
         !this.knownGeneratorRootIds.has(x.id),
     );

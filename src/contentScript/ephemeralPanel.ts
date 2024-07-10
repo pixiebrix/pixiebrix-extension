@@ -114,7 +114,7 @@ export async function ephemeralPanel({
     registerEmptyTemporaryPanel({
       nonce,
       location,
-      extensionId: panelEntryMetadata.modComponentRef.extensionId,
+      extensionId: panelEntryMetadata.modComponentRef.modComponentId,
     });
 
     await showSidebar();
@@ -125,7 +125,7 @@ export async function ephemeralPanel({
       nonce,
       payload: {
         key: uuidv4(),
-        extensionId: panelEntryMetadata.modComponentRef.extensionId,
+        extensionId: panelEntryMetadata.modComponentRef.modComponentId,
         loadingMessage: "Loading",
       },
     });
@@ -141,14 +141,14 @@ export async function ephemeralPanel({
     // Popover/modal location
     // Clear existing to remove stale modals/popovers
     await cancelTemporaryPanelsForExtension(
-      panelEntryMetadata.modComponentRef.extensionId,
+      panelEntryMetadata.modComponentRef.modComponentId,
     );
 
     // Register empty panel for "loading" state
     registerEmptyTemporaryPanel({
       nonce,
       location,
-      extensionId: panelEntryMetadata.modComponentRef.extensionId,
+      extensionId: panelEntryMetadata.modComponentRef.modComponentId,
     });
 
     // Create a source URL for content that will be loaded in the panel iframe
@@ -235,7 +235,7 @@ export async function ephemeralPanel({
       nonce,
       location,
       entry,
-      extensionId: entry.modComponentRef.extensionId,
+      extensionId: entry.modComponentRef.modComponentId,
       onRegister: onReady,
     });
     return panelAction ?? {};

@@ -62,7 +62,7 @@ export const TemporaryPanelTabPane: React.FC<{
       <ErrorBoundary
         onError={() => {
           reportEvent(Events.VIEW_ERROR, {
-            ...mapModComponentRefToMessageContext(modComponentRef),
+            ...modComponentRef,
             panelType: type,
           });
         }}
