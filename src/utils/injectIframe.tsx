@@ -49,11 +49,12 @@ const elementRemoved = async (element: HTMLElement) =>
     }, 100);
   });
 
-/** Injects an iframe into the host page via ShadowDom */
+/** Injects an iframe into the host page via ShadowDom and waits for the iframe to finish loading. */
 async function _injectIframe(
   url: string,
   /** The style is required because you never want an un-styled iframe */
   style: Partial<CSSStyleDeclaration>,
+  shadowRootId?: string,
 ): Promise<LoadedFrame> {
   const iframe = document.createElement("iframe");
   const { promise: iframeLoad, resolve } = pDefer();
@@ -67,6 +68,7 @@ async function _injectIframe(
   // See https://github.com/pixiebrix/pixiebrix-extension/pull/8777
   await waitForDocumentRoot();
   document.documentElement.append(shadowElement);
+  shadowElement.id = shadowRootId;
 
   const result = await Promise.race([
     iframeLoad,
@@ -77,14 +79,14 @@ async function _injectIframe(
     console.warn(
       `The host page removed the iframe for ${url} before it could be loaded. Retrying...`,
     );
-    return _injectIframe(url, style);
+    return _injectIframe(url, style, shadowRootId);
   }
 
   return iframe as LoadedFrame;
 }
 
-const injectIframe: typeof _injectIframe = async (url, style) =>
-  pTimeout(_injectIframe(url, style), {
+const injectIframe: typeof _injectIframe = async (url, style, shadowRootId) =>
+  pTimeout(_injectIframe(url, style, shadowRootId), {
     milliseconds: TIMEOUT_MS,
     message: `The iframe did not load within ${
       TIMEOUT_MS / 1000

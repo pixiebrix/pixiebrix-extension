@@ -37,7 +37,7 @@ import { assertNotNullish } from "./nullishUtils";
 import { type JsonValue } from "type-fest";
 import { type AbortSignalAsOptions } from "./promiseUtils";
 
-const TIMEOUT_MS = 5000;
+const TIMEOUT_MS = 3000;
 
 type Payload = JsonValue | void;
 
@@ -86,7 +86,7 @@ export default async function postMessage<TReturn extends Payload = Payload>({
       type,
       payload,
     };
-    console.log("*** HERE");
+
     // The origin must be "*". See note in @file
     recipient.postMessage(packet, "*", [privateChannel.port2]);
   });

@@ -19,15 +19,40 @@
 
 import injectIframe, { hiddenIframeStyle } from "@/utils/injectIframe";
 import postMessage from "@/utils/postMessage";
-import pMemoize from "p-memoize";
+import pMemoize, { pMemoizeClear } from "p-memoize";
 import { type JsonObject } from "type-fest";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
-const loadSandbox = pMemoize(async () => {
-  const iframe = await injectIframe(
+const SANDBOX_SHADOW_ROOT_ID = "pixiebrix-sandbox";
+
+const loadSandbox = pMemoize(async () =>
+  injectIframe(
     chrome.runtime.getURL("sandbox.html"),
     hiddenIframeStyle,
-  );
-  return iframe.contentWindow;
+    SANDBOX_SHADOW_ROOT_ID,
+  ),
+);
+
+const getSandbox = memoizeUntilSettled(async () => {
+  let sandbox = await loadSandbox();
+  const shadowRoot = document.documentElement.querySelector(
+    `#${SANDBOX_SHADOW_ROOT_ID}`,
+  )?.shadowRoot;
+  const isSandboxInDom = shadowRoot?.contains(sandbox);
+
+  if (isSandboxInDom) {
+    await postMessage({
+      recipient: sandbox.contentWindow,
+      payload: "ping",
+      type: "SANDBOX_PING",
+    });
+  } else {
+    console.warn("Sandbox iframe was removed from the DOM. Reinjecting...");
+    pMemoizeClear(loadSandbox);
+    sandbox = await loadSandbox();
+  }
+
+  return sandbox.contentWindow;
 });
 
 export type TemplateRenderPayload = {
@@ -42,7 +67,7 @@ export async function renderNunjucksTemplate(
   payload: TemplateRenderPayload,
 ): Promise<string> {
   return postMessage({
-    recipient: await loadSandbox(),
+    recipient: await getSandbox(),
     payload,
     type: "RENDER_NUNJUCKS",
   });
@@ -52,7 +77,7 @@ export async function validateNunjucksTemplate(
   payload: TemplateValidatePayload,
 ): Promise<void> {
   return postMessage({
-    recipient: await loadSandbox(),
+    recipient: await getSandbox(),
     payload,
     type: "VALIDATE_NUNJUCKS",
   });
@@ -62,7 +87,7 @@ export async function renderHandlebarsTemplate(
   payload: TemplateRenderPayload,
 ): Promise<string> {
   return postMessage({
-    recipient: await loadSandbox(),
+    recipient: await getSandbox(),
     payload,
     type: "RENDER_HANDLEBARS",
   });
@@ -75,7 +100,7 @@ export type JavaScriptPayload = {
 
 export async function runUserJs(payload: JavaScriptPayload) {
   return postMessage({
-    recipient: await loadSandbox(),
+    recipient: await getSandbox(),
     payload,
     type: "RUN_USER_JS",
   });
