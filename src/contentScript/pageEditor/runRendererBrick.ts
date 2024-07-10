@@ -104,7 +104,7 @@ export async function runRendererBrick({
         await waitForTemporaryPanel({
           nonce,
           location,
-          extensionId: modComponentRef.modComponentId,
+          modComponentId: modComponentRef.modComponentId,
           entry: {
             modComponentRef,
             nonce,

@@ -134,7 +134,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   public override uninstall(): void {
     const modComponents = this.modComponents.splice(0);
     this.clearModComponentInterfaceAndEvents(modComponents.map((x) => x.id));
-    this.platform.panels.unregisterExtensionPoint(this.id);
+    this.platform.panels.unregisterStarterBrick(this.id);
     console.debug(
       "SidebarStarterBrick:uninstall: stop listening for sidebarShowEvents",
     );
@@ -151,8 +151,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     // Don't call this.clearModComponentInterfaceAndEvents to keep the panel.
     // Instead, mutate this.modComponents to exclude id
     remove(this.modComponents, (x) => x.id === modComponentId);
-    this.platform.panels.unregisterExtensionPoint(this.id, {
-      preserveExtensionIds: [modComponentId],
+    this.platform.panels.unregisterStarterBrick(this.id, {
+      preserveModComponentIds: [modComponentId],
     });
     this.platform.panels.showEvent.remove(this.runModComponents);
   }
@@ -345,7 +345,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       );
 
       // Keep sidebar entries up-to-date regardless of trigger policy
-      this.platform.panels.unregisterExtensionPoint(this.id);
+      this.platform.panels.unregisterStarterBrick(this.id);
       return;
     }
 
@@ -426,7 +426,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         passive: true,
       });
     } else {
-      this.platform.panels.unregisterExtensionPoint(this.id);
+      this.platform.panels.unregisterStarterBrick(this.id);
     }
 
     return available;

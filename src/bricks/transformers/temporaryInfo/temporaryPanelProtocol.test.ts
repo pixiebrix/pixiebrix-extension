@@ -42,7 +42,7 @@ describe("temporaryPanelProtocol", () => {
       nonce,
       location: "panel",
       entry: definition,
-      extensionId: uuidv4(),
+      modComponentId: uuidv4(),
     });
 
     await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(definition);
@@ -60,7 +60,7 @@ describe("temporaryPanelProtocol", () => {
       nonce,
       location: "panel",
       entry: definition,
-      extensionId: uuidv4(),
+      modComponentId: uuidv4(),
     });
 
     await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(definition);
@@ -80,7 +80,7 @@ describe("temporaryPanelProtocol", () => {
       nonce,
       location: "panel",
       entry: definition,
-      extensionId: uuidv4(),
+      modComponentId: uuidv4(),
     });
 
     await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(definition);

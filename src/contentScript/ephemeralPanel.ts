@@ -114,7 +114,7 @@ export async function ephemeralPanel({
     registerEmptyTemporaryPanel({
       nonce,
       location,
-      extensionId: panelEntryMetadata.modComponentRef.modComponentId,
+      modComponentId: panelEntryMetadata.modComponentRef.modComponentId,
     });
 
     await showSidebar();
@@ -148,7 +148,7 @@ export async function ephemeralPanel({
     registerEmptyTemporaryPanel({
       nonce,
       location,
-      extensionId: panelEntryMetadata.modComponentRef.modComponentId,
+      modComponentId: panelEntryMetadata.modComponentRef.modComponentId,
     });
 
     // Create a source URL for content that will be loaded in the panel iframe
@@ -235,7 +235,7 @@ export async function ephemeralPanel({
       nonce,
       location,
       entry,
-      extensionId: entry.modComponentRef.modComponentId,
+      modComponentId: entry.modComponentRef.modComponentId,
       onRegister: onReady,
     });
     return panelAction ?? {};

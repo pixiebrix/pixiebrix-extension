@@ -27,14 +27,14 @@ import { type Menus } from "webextension-polyfill";
  */
 
 async function _ensureContextMenu({
-  extensionId,
+  modComponentId,
   contexts,
   title,
   documentUrlPatterns,
 }: SelectionMenuOptions): Promise<void> {
   expectContext("background");
 
-  if (!extensionId) {
+  if (!modComponentId) {
     throw new Error("extensionId is required");
   }
 
@@ -47,7 +47,7 @@ async function _ensureContextMenu({
     documentUrlPatterns,
   } satisfies Menus.UpdateUpdatePropertiesType;
 
-  const expectedMenuId = makeMenuId(extensionId);
+  const expectedMenuId = makeMenuId(modComponentId);
   try {
     // Try updating it first. It will fail if missing, so we attempt to create it instead
     await browser.contextMenus.update(expectedMenuId, updateProperties);
@@ -64,5 +64,5 @@ async function _ensureContextMenu({
 }
 
 export const ensureContextMenu = memoizeUntilSettled(_ensureContextMenu, {
-  cacheKey: ([{ extensionId }]) => extensionId,
+  cacheKey: ([{ modComponentId }]) => modComponentId,
 });

@@ -250,7 +250,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     );
 
     await getPlatform().contextMenus.register({
-      extensionId: modComponent.id,
+      modComponentId: modComponent.id,
       contexts: this.contexts ?? ["all"],
       title,
       documentUrlPatterns: patterns,
