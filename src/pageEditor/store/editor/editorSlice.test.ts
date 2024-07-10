@@ -42,7 +42,7 @@ import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
-import { migrations } from "@/pageEditor/store/editor/editorMigrations";
+import { migrations } from "@/store/editorMigrations";
 
 function getTabState(
   state: EditorState,

@@ -43,7 +43,7 @@ import {
   migrateEditorStateV1,
   migrateEditorStateV2,
   migrateEditorStateV3,
-} from "@/pageEditor/store/editor/editorMigrations";
+} from "@/store/editorMigrations";
 
 const initialStateV1: EditorStateV1 & PersistedState = {
   selectionSeq: 0,

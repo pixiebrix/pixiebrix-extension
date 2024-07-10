@@ -48,7 +48,17 @@ import {
   type ModComponentFormState,
 } from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
-
+import {
+  setActiveModComponentId,
+  editModMetadata,
+  editModOptionsDefinitions,
+  ensureBrickPipelineUIState,
+  removeModComponentFormState,
+  removeModData,
+  setActiveModId,
+  setActiveNodeId,
+  syncBrickConfigurationUIStates,
+} from "@/pageEditor/store/editor/editorSliceHelpers";
 import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
@@ -70,22 +80,13 @@ import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { createMigrate } from "redux-persist";
-import { migrations } from "@/pageEditor/store/editor/editorMigrations";
+import { migrations } from "@/store/editorMigrations";
 import { type BaseStarterBrickState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
   getCurrentInspectedURL,
   inspectedTab,
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { editModMetadata } from "@/pageEditor/store/editor/editorSliceHelpers/editModMetadata";
-import { editModOptionsDefinitions } from "@/pageEditor/store/editor/editorSliceHelpers/editModOptionsDefinitions";
-import { ensureBrickPipelineUIState } from "@/pageEditor/store/editor/editorSliceHelpers/ensureBrickPipelineUiState";
-import { removeModComponentFormState } from "@/pageEditor/store/editor/editorSliceHelpers/removeModComponentFormState";
-import { removeModData } from "@/pageEditor/store/editor/editorSliceHelpers/removeModData";
-import { setActiveModComponentId } from "@/pageEditor/store/editor/editorSliceHelpers/setActiveModComponentId";
-import { setActiveModId } from "@/pageEditor/store/editor/editorSliceHelpers/setActiveModId";
-import { setActiveNodeId } from "@/pageEditor/store/editor/editorSliceHelpers/setActiveNodeId";
-import { syncBrickConfigurationUIStates } from "@/pageEditor/store/editor/editorSliceHelpers/syncBrickConfigurationUiStates";
 
 export const initialState: EditorState = {
   selectionSeq: 0,

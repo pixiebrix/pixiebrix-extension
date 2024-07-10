@@ -19,7 +19,7 @@ import { type Dispatch } from "react";
 import {
   removeDraftModComponents,
   removeDraftModComponentsForMod,
-} from "@/pageEditor/store/editor/editorStorage";
+} from "@/store/editorStorage";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { removeModComponentForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";

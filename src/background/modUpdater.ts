@@ -28,10 +28,7 @@ import { selectModComponentsForMod } from "@/store/extensionsSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
 import { groupBy, isEmpty, uniq } from "lodash";
 import { queueReloadModEveryTab } from "@/contentScript/messenger/api";
-import {
-  getEditorState,
-  saveEditorState,
-} from "@/pageEditor/store/editor/editorStorage";
+import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import type { EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import type {
