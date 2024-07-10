@@ -17,6 +17,7 @@
 
 import { backgroundTarget as bg, getNotifier } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
+import reportError from "@/telemetry/reportError";
 import {
   type TelemetryEvent,
   type ReportEventData,
@@ -41,5 +42,9 @@ export default function reportEvent<TData extends UnknownObject>(
 ): void {
   // eslint-disable-next-line prefer-rest-params -- Needs `arguments` to avoid printing the default
   console.debug(...arguments);
-  _record({ event, data: mapEventDataToDeprecatedTerminology(data) });
+  try {
+    _record({ event, data: mapEventDataToDeprecatedTerminology(data) });
+  } catch (error) {
+    reportError(error);
+  }
 }
