@@ -50,6 +50,11 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { useDispatch } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
+/**
+ * Handles possible NPE from `config.value` being undefined.
+ * This originally happened during the extension -> modComponent form state migration.
+ * See https://github.com/pixiebrix/pixiebrix-extension/issues/8781
+ */
 function useResetBrickPipeline(name: string) {
   const context = useFormikContext<ModComponentFormState>();
   const [config] = useField<BrickConfig | undefined>(name);
@@ -90,11 +95,11 @@ const BrickConfiguration: React.FunctionComponent<{
 
     // Handle DOM bricks that were upgraded to be root-aware
     if ("isRootAware" in inputSchema) {
-      return Boolean(config.value.config.isRootAware);
+      return Boolean(config.value?.config.isRootAware);
     }
 
     return brick?.isRootAware() ?? false;
-  }, [brick, config.value.config.isRootAware]);
+  }, [brick, config.value?.config.isRootAware]);
 
   const advancedOptionsRef = useRef<HTMLDivElement>(null);
 
@@ -102,11 +107,11 @@ const BrickConfiguration: React.FunctionComponent<{
     async () => {
       // Effect to clear out unused `root` field. Technically, `root` could contain a selector when used with `document`
       // or `inherit` mode, but we don't want to support that in the Page Editor because it's legacy behavior.
-      if (config.value.rootMode !== "element") {
+      if (config.value?.rootMode !== "element") {
         await rootFieldHelpers.setValue(null);
       }
     }, // Dependencies - rootFieldHelpers changes reference every render
-    [config.value.rootMode],
+    [config.value?.rootMode],
   );
 
   const rootElementSchema: SchemaFieldProps = useMemo(
@@ -212,7 +217,7 @@ const BrickConfiguration: React.FunctionComponent<{
           />
         )}
 
-        {config.value.rootMode === "element" && (
+        {config.value?.rootMode === "element" && (
           <SchemaField {...rootElementSchema} omitIfEmpty />
         )}
 
