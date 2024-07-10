@@ -16,7 +16,7 @@
  */
 
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   ContextBrick,
   contextBrick,
@@ -40,11 +40,10 @@ import {
   updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
 import {
-  cancelTemporaryPanelsForExtension,
+  cancelTemporaryPanelsForModComponent,
   updatePanelDefinition,
   waitForTemporaryPanel,
 } from "@/platform/panels/panelController";
-import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import pDefer from "p-defer";
@@ -62,6 +61,7 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/contentScript/modalDom");
 jest.mock("@/contentScript/sidebarController");
@@ -84,8 +84,8 @@ describe("DisplayTemporaryInfo", () => {
   beforeEach(() => {
     jest.mocked(isLoadedInIframe).mockReturnValue(false);
 
-    blockRegistry.clear();
-    blockRegistry.register([
+    brickRegistry.clear();
+    brickRegistry.register([
       echoBrick,
       teapotBrick,
       contextBrick,
@@ -204,7 +204,7 @@ describe("DisplayTemporaryInfo", () => {
 
     expect(waitForTemporaryPanel).toHaveBeenCalledWith({
       nonce: expect.toBeString(),
-      extensionId: modComponentRef.extensionId,
+      modComponentId: modComponentRef.modComponentId,
       location: "modal",
       entry: expect.objectContaining({
         modComponentRef,
@@ -283,7 +283,7 @@ describe("DisplayTemporaryInfo", () => {
 
     expect(showModal).not.toHaveBeenCalled();
     expect(showTemporarySidebarPanel).not.toHaveBeenCalled();
-    expect(cancelTemporaryPanelsForExtension).toHaveBeenCalled();
+    expect(cancelTemporaryPanelsForModComponent).toHaveBeenCalled();
 
     expect(
       document.body.querySelector(".pixiebrix-tooltips-container"),
@@ -347,15 +347,15 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const extensionId = uuidv4();
+    const modComponentId = autoUUIDSequence();
 
     const options = {
       ...testOptions("v3"),
       logger: new ConsoleLogger(
         mapModComponentRefToMessageContext(
           modComponentRefFactory({
-            extensionId,
-            blueprintId: null,
+            modComponentId,
+            modId: null,
           }),
         ),
       ),
@@ -374,7 +374,7 @@ describe("DisplayTemporaryInfo", () => {
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: extensionId,
+      modComponentId,
       modId: null,
     });
 

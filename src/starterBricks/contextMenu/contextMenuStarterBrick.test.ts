@@ -125,7 +125,7 @@ describe("contextMenuStarterBrick", () => {
     expect(ensureContextMenuMock).toHaveBeenCalledOnce();
     expect(ensureContextMenuMock).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
-        extensionId: modComponent.id,
+        modComponentId: modComponent.id,
       }),
     );
   });

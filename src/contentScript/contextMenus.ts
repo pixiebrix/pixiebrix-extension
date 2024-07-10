@@ -26,26 +26,29 @@ type MenuHandler = (args: Menus.OnClickData) => Promise<void>;
 const handlers = new Map<UUID, MenuHandler>();
 
 /**
- * Register a context menu handler for the given extension. Overwrites any existing handler.
+ * Register a context menu handler for the given mod component. Overwrites any existing handler.
  */
-export function registerHandler(extensionId: UUID, handler: MenuHandler): void {
-  handlers.set(extensionId, handler);
+export function registerHandler(
+  modComponentId: UUID,
+  handler: MenuHandler,
+): void {
+  handlers.set(modComponentId, handler);
 }
 
 /**
  * Handle a context menu action. Called from the background page.
- * @param extensionId the extension id
+ * @param modComponentId the mod component id
  * @param args the args from the Chrome context menu action event
  * @see dispatchMenu
  */
 export async function handleMenuAction({
-  extensionId,
+  modComponentId,
   args,
 }: {
-  extensionId: UUID;
+  modComponentId: UUID;
   args: Menus.OnClickData;
 }): Promise<void> {
-  const handler = handlers.get(extensionId);
+  const handler = handlers.get(modComponentId);
   if (handler) {
     await handler(args);
     return;
@@ -64,8 +67,8 @@ export async function handleMenuAction({
   }
 
   // 3. An actual error occurred
-  console.error("No context menu found for extension: %s", extensionId, {
-    extensionId,
+  console.error("No context menu found for mod component: %s", modComponentId, {
+    modComponentId,
     handlers: [...handlers.keys()],
   });
 

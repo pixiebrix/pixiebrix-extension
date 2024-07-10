@@ -206,9 +206,9 @@ export default function useDocumentPreviewRunBlock(
           runId: traceRecord.runId,
           title,
           modComponentRef: {
-            extensionId: modComponentId,
-            blueprintId: modMetadata?.id,
-            extensionPointId: starterBrickId,
+            modComponentId,
+            modId: modMetadata?.id,
+            starterBrickId,
           },
           args: {
             apiVersion,
