@@ -71,6 +71,8 @@ export class BasePageObject {
   readonly getByTestId: Locator["getByTestId"];
   readonly getByText: Locator["getByText"];
   readonly getByTitle: Locator["getByTitle"];
+  readonly filter: Locator["filter"];
+  readonly click: Locator["click"];
 
   constructor(rootLocatorOrPage: Locator | Page) {
     if ("page" in rootLocatorOrPage) {
@@ -89,5 +91,7 @@ export class BasePageObject {
     this.getByTestId = this.root.getByTestId.bind(this.root);
     this.getByText = this.root.getByText.bind(this.root);
     this.getByTitle = this.root.getByTitle.bind(this.root);
+    this.filter = this.root.filter.bind(this.root);
+    this.click = this.root.click.bind(this.root);
   }
 }

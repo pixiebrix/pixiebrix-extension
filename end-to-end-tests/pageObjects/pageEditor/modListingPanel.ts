@@ -17,7 +17,6 @@
 
 import { BasePageObject } from "../basePageObject";
 import { uuidv4 } from "@/types/helpers";
-import { type Locator } from "@playwright/test";
 
 export type StarterBrickUIName =
   | "Context Menu"
@@ -30,24 +29,20 @@ export type StarterBrickUIName =
 export class ModListItem extends BasePageObject {
   saveButton = this.locator("[data-icon=save]");
   get menuButton() {
-    return this.getByLabel(`${this.modComponentName} - Ellipsis`);
+    return this.getByLabel(" - Ellipsis");
   }
 
-  constructor(
-    root: Locator,
-    readonly modComponentName: string,
-  ) {
-    super(root);
-  }
-
-  async activate() {
-    return this.root.click();
+  async select() {
+    return this.click();
   }
 }
 
 export class ModListingPanel extends BasePageObject {
   addButton = this.getByRole("button", { name: "Add", exact: true });
   quickFilterInput = this.getByPlaceholder("Quick filter");
+  get activeModListItem() {
+    return new ModListItem(this.locator(".list-group-item.active"));
+  }
 
   /**
    * Adds a starter brick in the Page Editor. Generates a unique mod name to prevent
@@ -71,7 +66,6 @@ export class ModListingPanel extends BasePageObject {
   getModListItemByName(modName: string) {
     return new ModListItem(
       this.locator(".list-group-item", { hasText: modName }).first(),
-      modName,
     );
   }
 
@@ -85,7 +79,6 @@ export class ModListingPanel extends BasePageObject {
           hasText: starterBrickName,
         })
         .first(),
-      starterBrickName,
     );
   }
 }
