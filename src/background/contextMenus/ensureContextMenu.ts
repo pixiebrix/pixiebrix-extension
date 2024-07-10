@@ -21,11 +21,11 @@ import { expectContext } from "@/utils/expectContext";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import chromeP from "webext-polyfill-kinda";
 import { type Menus } from "webextension-polyfill";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Register a context menu item on all tabs.
  */
-
 async function _ensureContextMenu({
   modComponentId,
   contexts,
@@ -34,9 +34,9 @@ async function _ensureContextMenu({
 }: SelectionMenuOptions): Promise<void> {
   expectContext("background");
 
-  if (!modComponentId) {
-    throw new Error("extensionId is required");
-  }
+  // `modComponentId` required in the SelectionMenuOptions type, but double-check dynamically to avoid
+  // confusing behavior if not provided.
+  assertNotNullish(modComponentId, "modComponentId is required");
 
   const updateProperties = {
     type: "normal",
