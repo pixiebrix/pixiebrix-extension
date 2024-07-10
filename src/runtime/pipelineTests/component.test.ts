@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/bricks/types";
 import {
@@ -34,11 +34,11 @@ import { DefinitionKinds } from "@/types/registryTypes";
 TEST_setContext("contentScript");
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick]);
 });
 
-const componentBlock = fromJS(blockRegistry, {
+const componentBlock = fromJS(brickRegistry, {
   apiVersion: "v1",
   kind: DefinitionKinds.BRICK,
   metadata: {
@@ -63,7 +63,7 @@ const componentBlock = fromJS(blockRegistry, {
 
 describe("component block v1", () => {
   test("v2 pipeline calling v1 block", async () => {
-    blockRegistry.register([componentBlock]);
+    brickRegistry.register([componentBlock]);
 
     const pipeline = [
       {
@@ -91,7 +91,7 @@ describe("component block v1", () => {
   });
 
   test("v3 pipeline calling v1 block", async () => {
-    blockRegistry.register([componentBlock]);
+    brickRegistry.register([componentBlock]);
 
     const pipeline = [
       {

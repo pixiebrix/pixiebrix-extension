@@ -27,7 +27,7 @@ import {
   type EditorState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   teapotBrick,
@@ -142,8 +142,8 @@ describe("Add/Remove Bricks", () => {
   );
 
   beforeEach(() => {
-    blockRegistry.clear();
-    blockRegistry.register([echoBrick, teapotBrick]);
+    brickRegistry.clear();
+    brickRegistry.register([echoBrick, teapotBrick]);
 
     editor = editorSlice.reducer(
       initialState,

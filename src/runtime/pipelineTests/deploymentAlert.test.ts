@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,
@@ -33,8 +33,8 @@ import { ContextError } from "@/errors/genericErrors";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick, throwBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick, throwBrick]);
   jest.mocked(sendDeploymentAlert).mockReset();
 });
 

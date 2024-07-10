@@ -32,7 +32,7 @@ import { appApiMock, onApiGet, onApiPost } from "@/testUtils/appApiMock";
 import { TEST_overrideFeatureFlags } from "@/auth/featureFlagStorage";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
 import controlRoomOAuth2Service from "@contrib/integrations/automation-anywhere-oauth2.yaml";
-import serviceRegistry from "@/integrations/registry";
+import integrationRegistry from "@/integrations/registry";
 import { integrationConfigLocator } from "@/background/integrationConfigLocator";
 import { type UUID } from "@/types/stringTypes";
 import { setCachedAuthData } from "@/background/auth/authStorage";
@@ -71,8 +71,8 @@ beforeEach(async () => {
       }),
   });
 
-  serviceRegistry.clear();
-  serviceRegistry.register([oauth2Integration]);
+  integrationRegistry.clear();
+  integrationRegistry.register([oauth2Integration]);
 
   const config = remoteIntegrationConfigurationFactory({
     service: {

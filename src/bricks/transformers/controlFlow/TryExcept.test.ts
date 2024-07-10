@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   simpleInput,
   teapotBrick,
@@ -30,8 +30,8 @@ import { toExpression } from "@/utils/expressionUtils";
 const tryExceptBlock = new TryExcept();
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([teapotBrick, throwBrick, tryExceptBlock]);
+  brickRegistry.clear();
+  brickRegistry.register([teapotBrick, throwBrick, tryExceptBlock]);
 });
 
 describe("TryExcept", () => {

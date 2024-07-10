@@ -16,7 +16,7 @@
  */
 
 import { type ApiVersion } from "@/types/runtimeTypes";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { InputValidationError } from "@/bricks/errors";
 import { type BrickPipeline } from "@/bricks/types";
@@ -29,8 +29,8 @@ import {
 import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick]);
 });
 
 describe("apiVersion: v1", () => {

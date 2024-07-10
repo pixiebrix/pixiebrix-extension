@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickConfig } from "@/bricks/types";
 import {
@@ -30,8 +30,8 @@ import { toExpression } from "@/utils/expressionUtils";
 import { type TemplateEngine } from "@/types/runtimeTypes";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick]);
 });
 
 describe.each([["mustache"], ["handlebars"], ["nunjucks"]])(

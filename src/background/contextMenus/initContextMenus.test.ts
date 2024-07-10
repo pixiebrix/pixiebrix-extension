@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import extensionPointRegistry from "@/starterBricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 import { fromJS } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import * as backgroundApi from "@/background/messenger/api";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
@@ -75,7 +75,7 @@ describe("contextMenus", () => {
 
     updateMenuMock.mockRejectedValue(new Error("My Error"));
 
-    extensionPointRegistry.register([fromJS(getPlatform(), extensionPoint)]);
+    starterBrickRegistry.register([fromJS(getPlatform(), extensionPoint)]);
 
     const menuModComponent = modComponentFactory({
       extensionPointId: extensionPoint.metadata.id,

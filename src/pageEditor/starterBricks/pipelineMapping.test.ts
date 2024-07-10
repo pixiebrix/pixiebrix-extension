@@ -27,8 +27,7 @@ import {
   normalizePipelineForEditor,
   omitEditorMetadata,
 } from "./pipelineMapping";
-import blockRegistry from "@/bricks/registry";
-
+import brickRegistry from "@/bricks/registry";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { isPipelineExpression, toExpression } from "@/utils/expressionUtils";
 import { type PipelineExpression } from "@/types/runtimeTypes";
@@ -38,7 +37,7 @@ describe("normalizePipeline", () => {
   let teapotBlockConfig: BrickConfig;
 
   beforeAll(() => {
-    blockRegistry.register([
+    brickRegistry.register([
       echoBrick,
       teapotBrick,
       new ForEach(),

@@ -21,7 +21,7 @@ import { fromJS as nativeFromJS } from "@/bricks/transformers/brickFactory";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 import { isUserDefinedBrick } from "@/types/brickTypes";
 import { MappingTransformer } from "./mapping";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   ContextBrick,
   contextBrick,
@@ -43,15 +43,15 @@ import { DefinitionKinds } from "@/types/registryTypes";
 
 TEST_setContext("contentScript");
 
-const fromJS = partial(nativeFromJS, blockRegistry);
+const fromJS = partial(nativeFromJS, brickRegistry);
 
 beforeAll(() => {
   registerBuiltinBricks();
 });
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([contextBrick, optionsBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([contextBrick, optionsBrick]);
   ContextBrick.clearContexts();
   OptionsBrick.clearOptions();
 });
@@ -155,7 +155,7 @@ test("inner pipelines receive correct context", async () => {
   };
 
   const block = fromJS(json);
-  blockRegistry.register([block, new Run()]);
+  brickRegistry.register([block, new Run()]);
 
   const pipeline = {
     id: block.id,
@@ -360,7 +360,7 @@ describe("tracing", () => {
     };
 
     const block = fromJS(json);
-    blockRegistry.register([block, new Run()]);
+    brickRegistry.register([block, new Run()]);
 
     const pipeline = {
       id: block.id,

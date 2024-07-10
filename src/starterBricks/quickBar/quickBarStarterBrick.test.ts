@@ -25,7 +25,7 @@ import {
   RootReader,
   tick,
 } from "@/starterBricks/starterBrickTestUtils";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { fromJS } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { type Menus } from "webextension-polyfill";
 import userEvent from "@testing-library/user-event";
@@ -96,8 +96,8 @@ const rootReader = new RootReader();
 beforeEach(() => {
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
-  blockRegistry.clear();
-  blockRegistry.register([rootReader]);
+  brickRegistry.clear();
+  brickRegistry.register([rootReader]);
   rootReader.readCount = 0;
   rootReader.ref = null;
 });

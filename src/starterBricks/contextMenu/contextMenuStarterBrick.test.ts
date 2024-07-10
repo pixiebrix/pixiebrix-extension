@@ -21,7 +21,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { RootReader } from "@/starterBricks/starterBrickTestUtils";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { fromJS } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -79,8 +79,8 @@ const modComponentFactory = define<HydratedModComponent<ContextMenuConfig>>({
 beforeEach(() => {
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
-  blockRegistry.clear();
-  blockRegistry.register([rootReader]);
+  brickRegistry.clear();
+  brickRegistry.register([rootReader]);
   rootReader.readCount = 0;
   rootReader.ref = null;
   jest.resetAllMocks();

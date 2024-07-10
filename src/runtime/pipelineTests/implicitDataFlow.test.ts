@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/bricks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -32,8 +32,8 @@ import { type ApiVersion, type OutputKey } from "@/types/runtimeTypes";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([
+  brickRegistry.clear();
+  brickRegistry.register([
     echoBrick,
     contextBrick,
     teapotBrick,

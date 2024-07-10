@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   simpleInput,
@@ -28,8 +28,8 @@ import { toExpression } from "@/utils/expressionUtils";
 const mapValueBrick = new MapValues();
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, mapValueBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, mapValueBrick]);
 });
 
 describe("MapValues", () => {

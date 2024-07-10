@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   identityBrick,
@@ -27,8 +27,8 @@ import { toExpression } from "@/utils/expressionUtils";
 import { validateRegistryId } from "@/types/helpers";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([pipelineBrick, identityBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([pipelineBrick, identityBrick]);
 });
 
 describe("apiVersion: v3", () => {
