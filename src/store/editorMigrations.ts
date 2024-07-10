@@ -164,6 +164,11 @@ export function migrateEditorStateV3({
   };
 }
 
+/**
+ * Recalculate the pipeline map for each mod component form state.
+ * Required because of the change from `extension.blockPipeline` to `modComponent.brickPipeline`.
+ * See https://github.com/pixiebrix/pixiebrix-extension/issues/8781
+ */
 export function migrateEditorStateV4(
   state: EditorStateV4 & PersistedState,
 ): EditorStateV5 & PersistedState {
