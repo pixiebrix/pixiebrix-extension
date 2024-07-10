@@ -32,8 +32,8 @@ import { appApiMock, onApiGet, onApiPost } from "@/testUtils/appApiMock";
 import { TEST_overrideFeatureFlags } from "@/auth/featureFlagStorage";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
 import controlRoomOAuth2Service from "@contrib/integrations/automation-anywhere-oauth2.yaml";
-import serviceRegistry from "@/integrations/registry";
-import { locator } from "@/background/locator";
+import integrationRegistry from "@/integrations/registry";
+import { integrationConfigLocator } from "@/background/integrationConfigLocator";
 import { type UUID } from "@/types/stringTypes";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
@@ -71,8 +71,8 @@ beforeEach(async () => {
       }),
   });
 
-  serviceRegistry.clear();
-  serviceRegistry.register([oauth2Integration]);
+  integrationRegistry.clear();
+  integrationRegistry.register([oauth2Integration]);
 
   const config = remoteIntegrationConfigurationFactory({
     service: {
@@ -92,7 +92,7 @@ beforeEach(async () => {
   configId = config.id;
   appApiMock.reset();
   appApiMock.onGet("/api/services/shared/").reply(200, [config]);
-  await locator.refresh();
+  await integrationConfigLocator.refresh();
 
   await setCachedAuthData(configId, {
     access_token: "testtoken1234",

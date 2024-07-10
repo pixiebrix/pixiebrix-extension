@@ -17,18 +17,23 @@
 
 import { WorkshopModEditor } from "./modEditor";
 import { BasePageObject } from "end-to-end-tests/pageObjects/basePageObject";
+import { expect } from "@playwright/test";
 
 export class EditWorkshopModPage extends BasePageObject {
   editor = new WorkshopModEditor(this.getByLabel("Editor"));
 
   async updateBrick() {
-    await this.getByRole("button", { name: "Update Brick" }).click();
+    await this.getByRole("button", { name: "Update Package" }).click();
+    await expect(
+      this.page.getByRole("status").filter({ hasText: "Updated " }),
+    ).toBeVisible();
   }
 
   async deleteBrick() {
-    await this.getByRole("button", { name: "Delete Brick" }).click();
+    await this.getByRole("button", { name: "Delete Package" }).click();
     await this.getByRole("button", { name: "Permanently Delete" }).click();
-    // eslint-disable-next-line playwright/no-networkidle -- for some reason, can't assert on the "Brick deleted" notice
-    await this.page.waitForLoadState("networkidle");
+    await expect(
+      this.page.getByRole("status").filter({ hasText: "Deleted " }),
+    ).toBeVisible();
   }
 }

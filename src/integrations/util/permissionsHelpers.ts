@@ -16,11 +16,11 @@
  */
 
 import { type Permissions } from "webextension-polyfill";
-import serviceRegistry from "@/integrations/registry";
+import integrationRegistry from "@/integrations/registry";
 import { expectContext } from "@/utils/expectContext";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
-import locateSanitizedIntegrationConfigWithRetry from "@/integrations/util/locateSanitizedIntegrationConfigWithRetry";
+import findSanitizedIntegrationConfigWithRetry from "@/integrations/util/findSanitizedIntegrationConfigWithRetry";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
@@ -45,7 +45,7 @@ export async function collectIntegrationOriginPermissions({
     "configId is required for non-pixiebrix integrations",
   );
 
-  const localConfig = await locateSanitizedIntegrationConfigWithRetry(
+  const localConfig = await findSanitizedIntegrationConfigWithRetry(
     integrationId,
     configId,
   );
@@ -56,7 +56,7 @@ export async function collectIntegrationOriginPermissions({
     return { origins: [] };
   }
 
-  const integration = await serviceRegistry.lookup(integrationId);
+  const integration = await integrationRegistry.lookup(integrationId);
   const origins = integration.getOrigins(localConfig.config);
   return { origins };
 }

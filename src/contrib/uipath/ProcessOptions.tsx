@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback } from "react";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
 import { useField } from "formik";
@@ -57,7 +57,7 @@ async function fetchRobots(
   return (robots ?? []).map((x) => ({ value: x.Id, label: String(x.Name) }));
 }
 
-const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
+const ProcessOptions: React.FunctionComponent<BrickOptionProps> = ({
   name,
   configKey,
 }) => {

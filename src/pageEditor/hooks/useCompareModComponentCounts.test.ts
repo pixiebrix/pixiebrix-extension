@@ -20,7 +20,7 @@ import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModCompon
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions as modComponentsActions } from "@/store/extensionsSlice";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,

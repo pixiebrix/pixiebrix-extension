@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import { screen } from "@testing-library/react";

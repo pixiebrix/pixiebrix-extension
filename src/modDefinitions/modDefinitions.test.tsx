@@ -19,7 +19,7 @@ import React, { useEffect } from "react";
 import { useAllModDefinitions } from "./modDefinitionHooks";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { act, render } from "@/pageEditor/testHelpers";
-import { validateSchema } from "@/extensionConsole/pages/brickEditor/validate";
+import { validateSchema } from "@/extensionConsole/pages/packageEditor/validate";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { registry as messengerRegistry } from "@/background/messenger/api";
 import * as localRegistry from "@/registry/packageRegistry";

@@ -24,7 +24,7 @@ import {
 import { type MessageContext } from "@/types/loggerTypes";
 
 export const messageContextFactory = define<MessageContext>({
-  extensionId: uuidSequence,
+  modComponentId: uuidSequence,
 });
 
 export const logEntryFactory = define<LogEntry>({

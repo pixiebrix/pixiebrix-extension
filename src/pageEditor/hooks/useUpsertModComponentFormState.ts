@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
@@ -31,7 +31,7 @@ import {
   useSaveStandaloneModDefinitionMutation,
 } from "@/data/service/api";
 import modComponentsSlice from "@/store/extensionsSlice";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";

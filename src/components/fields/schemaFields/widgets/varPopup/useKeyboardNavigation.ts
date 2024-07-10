@@ -42,9 +42,9 @@ function useKeyboardNavigation({
 }: {
   inputElementRef: MutableRefObject<HTMLElement>;
   isVisible: boolean;
-  likelyVariable: string;
+  likelyVariable: string | null;
   menuOptions: MenuOptions;
-  onSelect: (keyPath: string[]) => void;
+  onSelect: (keyPath: string[] | null) => void;
 }) {
   // User's current selection in the variable menu
   const [activeKeyPath, setActiveKeyPath] = useState<KeyPath | null>();
@@ -52,7 +52,7 @@ function useKeyboardNavigation({
 
   const move = useCallback(
     (offset: number) => {
-      setActiveKeyPath((activeKeyPath) =>
+      setActiveKeyPath((activeKeyPath = null) =>
         moveMenuOption({
           options: menuOptions,
           likelyVariable,
@@ -84,7 +84,7 @@ function useKeyboardNavigation({
 
         if (event.key === "Tab" || event.key === "Enter") {
           event.preventDefault();
-          onSelect(activeKeyPath.map(String).reverse());
+          onSelect(activeKeyPath?.map(String).reverse() ?? null);
         }
       };
 
@@ -112,8 +112,8 @@ function useResetActiveKeyPath({
   setActiveKeyPath,
 }: {
   menuOptions: MenuOptions;
-  likelyVariable: string;
-  setActiveKeyPath: React.Dispatch<React.SetStateAction<KeyPath>>;
+  likelyVariable: string | null;
+  setActiveKeyPath: React.Dispatch<React.SetStateAction<KeyPath | null>>;
 }) {
   const prevMenuOptions = usePreviousValue(menuOptions);
   const prevLikelyVariable = usePreviousValue(likelyVariable);

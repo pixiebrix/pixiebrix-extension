@@ -16,7 +16,7 @@
  */
 
 import useAsyncState from "@/hooks/useAsyncState";
-import { services as serviceLocator } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
@@ -47,8 +47,8 @@ function useModPermissions(
 
   const permissionsState = useAsyncState(
     async () => {
-      // Refresh services because the user may have created a team integration since the last refresh.
-      await serviceLocator.refresh();
+      // Refresh integration configurations because the user may have created a team integration since the last refresh.
+      await integrationConfigLocator.refresh();
       return checkModDefinitionPermissions(
         modDefinition,
         configuredDependencies,

@@ -24,7 +24,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import {
   contextMenuFormStateFactory,
   formStateFactory,

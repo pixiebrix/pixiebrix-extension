@@ -183,8 +183,8 @@ describe("checkAllValueHeadersExist", () => {
 });
 
 const logger = new ConsoleLogger({
-  extensionId: uuidv4(),
-  extensionPointId: validateRegistryId("test/test"),
+  modComponentId: uuidv4(),
+  starterBrickId: validateRegistryId("test/test"),
 });
 
 const GOOGLE_PKCE_SERVICE_ID = validateRegistryId("google/oauth2-pkce");

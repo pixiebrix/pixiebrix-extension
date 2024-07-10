@@ -19,7 +19,7 @@ import type React from "react";
 import { useCallback } from "react";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact, get } from "lodash";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,15 +27,15 @@ import {
   selectActiveModComponentFormState,
   selectAddBlockLocation,
   selectPipelineMap,
-} from "@/pageEditor/slices/editorSelectors";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
 import { type BrickConfig } from "@/bricks/types";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import { type Analysis } from "@/analysis/analysisTypes";
 import { produce } from "immer";
-import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { joinPathParts } from "@/utils/formUtils";
@@ -158,7 +158,7 @@ function useAddBrick(): AddBrick {
       reportEvent(Events.BRICK_ADD, {
         brickId: brick.id,
         sessionId,
-        extensionId: activeModComponent.uuid,
+        modComponentId: activeModComponent.uuid,
         source: "PageEditor-BrickSearchModal",
       });
     },

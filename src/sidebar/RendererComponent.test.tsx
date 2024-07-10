@@ -63,7 +63,7 @@ describe("RendererComponent", () => {
     const props = {
       body: [config],
       options: brickOptionsFactory({
-        logger: new ConsoleLogger({ extensionId }),
+        logger: new ConsoleLogger({ modComponentId: extensionId }),
         meta: {
           runId,
           extensionId,

@@ -27,7 +27,7 @@ import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import modRegistry from "@/modDefinitions/registry";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
@@ -39,7 +39,7 @@ import {
   type ListElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   formStateFactory,
@@ -55,14 +55,16 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { toExpression } from "@/utils/expressionUtils";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
-import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import pixiebrixIntegrationDependencyFactory from "@/integrations/util/pixiebrixIntegrationDependencyFactory";
 
-jest.mocked(services.locate).mockResolvedValue(
-  sanitizedIntegrationConfigFactory({
-    serviceId: validateRegistryId("@test/service"),
-  }),
-);
+jest
+  .mocked(integrationConfigLocator.findSanitizedIntegrationConfig)
+  .mockResolvedValue(
+    sanitizedIntegrationConfigFactory({
+      serviceId: validateRegistryId("@test/service"),
+    }),
+  );
 
 // XXX: should be using actual bricks instead of a single outputSchema across all tests in order to test
 // different outputSchema scenarios
@@ -441,7 +443,7 @@ describe("Collecting available vars", () => {
         }),
         brickConfigFactory(),
       ]);
-      jest.mocked(blockRegistry.allTyped).mockResolvedValue(
+      jest.mocked(brickRegistry.allTyped).mockResolvedValue(
         new Map([
           [
             formState.modComponent.brickPipeline[0].id,
@@ -781,7 +783,7 @@ describe("Collecting available vars", () => {
         },
       };
 
-      jest.mocked(blockRegistry.allTyped).mockResolvedValue(
+      jest.mocked(brickRegistry.allTyped).mockResolvedValue(
         new Map([
           [
             IdentityTransformer.BRICK_ID,
@@ -1127,7 +1129,7 @@ describe("Collecting available vars", () => {
         brickConfigFactory(),
       ]);
 
-      jest.mocked(blockRegistry.allTyped).mockResolvedValue(
+      jest.mocked(brickRegistry.allTyped).mockResolvedValue(
         new Map([
           [
             CustomFormRenderer.BRICK_ID,

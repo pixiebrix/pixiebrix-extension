@@ -20,15 +20,10 @@ import {
   eventKeyForEntry,
 } from "@/store/sidebar/eventKeyUtils";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import {
-  type SidebarState,
-  type SidebarEntries,
-  type PanelEntry,
-  type TemporaryPanelEntry,
-} from "@/types/sidebarTypes";
-
+import { type SidebarEntries, type SidebarState } from "@/types/sidebarTypes";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 describe("defaultEventKey", () => {
   it("returns null no content", () => {
@@ -48,9 +43,9 @@ describe("defaultEventKey", () => {
 
   it("prefers latest form", () => {
     const args = {
-      forms: [{ nonce: uuidv4() }, { nonce: uuidv4() }],
-      temporaryPanels: [{ nonce: uuidv4() }],
-      panels: [{ extensionId: uuidv4() }],
+      forms: [sidebarEntryFactory("form"), sidebarEntryFactory("form")],
+      temporaryPanels: [sidebarEntryFactory("temporaryPanel")],
+      panels: [sidebarEntryFactory("panel")],
     } as SidebarEntries;
 
     expect(defaultEventKey(args, {})).toBe(eventKeyForEntry(args.forms[1]));
@@ -61,10 +56,10 @@ describe("defaultEventKey", () => {
     const args: SidebarEntries = {
       forms: [],
       temporaryPanels: [
-        { nonce: uuidv4() },
-        { nonce: uuidv4() },
-      ] as TemporaryPanelEntry[],
-      panels: [{ extensionId: uuidv4() }] as PanelEntry[],
+        sidebarEntryFactory("temporaryPanel"),
+        sidebarEntryFactory("temporaryPanel"),
+      ],
+      panels: [sidebarEntryFactory("panel")],
       staticPanels: [],
       modActivationPanel: null,
     } as SidebarEntries;
@@ -80,10 +75,7 @@ describe("defaultEventKey", () => {
       const entries = {
         forms: [],
         temporaryPanels: [],
-        panels: [
-          { extensionId: uuidv4() },
-          { extensionId: uuidv4() },
-        ] as PanelEntry[],
+        panels: [sidebarEntryFactory("panel"), sidebarEntryFactory("panel")],
         staticPanels: [],
         modActivationPanel: null,
       } as SidebarEntries;
@@ -156,10 +148,12 @@ describe("eventKeyForEntry", () => {
     expect(eventKeyForEntry(value)).toBeNull();
   });
 
-  it("uses recipeId for activateRecipe", () => {
-    const recipeId = validateRegistryId("@test/test-recipe");
-    const entry = sidebarEntryFactory("activateMods", { recipeId });
-    // Main part is a an object hash of the mod ids
+  it("uses modId for activateMods", () => {
+    const modId = validateRegistryId("@test/test-recipe");
+    const entry = sidebarEntryFactory("activateMods", {
+      mods: [{ modId, initialOptions: {} }],
+    });
+    // Main part is an object hash of the mod ids
     expect(eventKeyForEntry(entry)).toStartWith("activate-");
   });
 
@@ -167,8 +161,10 @@ describe("eventKeyForEntry", () => {
     const extensionId = uuidv4();
     const extensionPointId = validateRegistryId("@test/test-starter-brick");
     const entry = sidebarEntryFactory("panel", {
-      extensionId,
-      extensionPointId,
+      modComponentRef: modComponentRefFactory({
+        modComponentId: extensionId,
+        starterBrickId: extensionPointId,
+      }),
     });
     expect(eventKeyForEntry(entry)).toBe(`panel-${extensionId}`);
   });
@@ -177,12 +173,17 @@ describe("eventKeyForEntry", () => {
     const extensionId = uuidv4();
     const nonce = uuidv4();
 
-    const formEntry = sidebarEntryFactory("form", { extensionId, nonce });
+    const formEntry = sidebarEntryFactory("form", {
+      nonce,
+      modComponentRef: modComponentRefFactory({
+        modComponentId: extensionId,
+      }),
+    });
     expect(eventKeyForEntry(formEntry)).toBe(`form-${nonce}`);
 
     const temporaryPanelEntry = sidebarEntryFactory("temporaryPanel", {
-      extensionId,
       nonce,
+      modComponentRef: modComponentRefFactory({ modComponentId: extensionId }),
     });
     expect(eventKeyForEntry(temporaryPanelEntry)).toBe(
       `temporaryPanel-${nonce}`,

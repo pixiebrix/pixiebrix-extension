@@ -110,14 +110,14 @@ class RunMetadataTransformer extends TransformerABC {
 
     return {
       mod:
-        context.blueprintId == null
+        context.modId == null
           ? null
           : {
-              id: context.blueprintId,
-              version: context.blueprintVersion,
+              id: context.modId,
+              version: context.modVersion,
             },
       deploymentId: context.deploymentId ?? null,
-      modComponentId: context.extensionId ?? null,
+      modComponentId: context.modComponentId ?? null,
       runId: meta.runId,
     };
   }

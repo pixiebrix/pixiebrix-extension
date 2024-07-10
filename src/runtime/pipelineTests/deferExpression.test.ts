@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { deferBrick, simpleInput, testOptions } from "./pipelineTestHelpers";
 import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([deferBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([deferBrick]);
 });
 
 describe("apiVersion: v3", () => {

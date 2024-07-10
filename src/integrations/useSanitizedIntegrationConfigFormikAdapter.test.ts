@@ -66,21 +66,21 @@ const integrationDependency2 = integrationDependencyFactory({
 });
 
 jest
-  .mocked(backgroundApi.services.locate)
-  .mockImplementation(async (serviceId, authId) => {
-    if (serviceId === integrationId2) {
+  .mocked(backgroundApi.integrationConfigLocator.findSanitizedIntegrationConfig)
+  .mockImplementation(async (integrationId, configId) => {
+    if (integrationId === integrationId2) {
       return integrationConfig2;
     }
 
-    if (authId === integrationConfig1.id) {
+    if (configId === integrationConfig1.id) {
       return integrationConfig1;
     }
 
-    if (authId === integrationConfig1a.id) {
+    if (configId === integrationConfig1a.id) {
       return integrationConfig1a;
     }
 
-    throw new Error(`Unknown authId: ${authId}`);
+    throw new Error(`Unknown authId: ${configId}`);
   });
 
 jest.mock("@/integrations/registry", () => {

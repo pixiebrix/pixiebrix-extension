@@ -354,41 +354,47 @@ export async function hideTemporarySidebarPanel(nonce: UUID): Promise<void> {
 }
 
 /**
- * Remove all panels associated with given extensionIds.
- * @param extensionIds the extension UUIDs to remove
+ * Remove all panels associated with given modComponentIds.
+ * @param modComponentIds the mod component UUIDs to remove
  */
-export function removeExtensions(extensionIds: UUID[]): void {
+export function removeModComponents(modComponentIds: UUID[]): void {
   expectContext("contentScript");
 
-  console.debug("sidebarController:removeExtensions", { extensionIds });
+  console.debug("sidebarController:removeExtensions", { modComponentIds });
 
   // Avoid unnecessary messaging. More importantly, renderPanelsIfVisible should not be called from iframes. Iframes
-  // might call removeExtensions as part of cleanup
-  if (extensionIds.length === 0) {
+  // might call removeModComponents as part of cleanup
+  if (modComponentIds.length === 0) {
     return;
   }
 
   // `panels` is const, so replace the contents
   const current = panels.splice(0);
-  panels.push(...current.filter((x) => !extensionIds.includes(x.extensionId)));
+  panels.push(
+    ...current.filter(
+      (x) => !modComponentIds.includes(x.modComponentRef.modComponentId),
+    ),
+  );
   void renderPanelsIfVisible();
 }
 
 /**
  * Remove all panels associated with the given extensionPointId.
- * @param extensionPointId the extension point id (internal or external)
- * @param preserveExtensionIds array of extension ids to keep in the panel. Used to avoid flickering if updating
+ * @param starterBrickId the extension point id (internal or external)
+ * @param preserveModComponentIds array of extension ids to keep in the panel. Used to avoid flickering if updating
  * the extensionPoint for a sidebar extension from the Page Editor
  */
-export function removeExtensionPoint(
-  extensionPointId: RegistryId,
-  { preserveExtensionIds = [] }: { preserveExtensionIds?: UUID[] } = {},
+export function removeStarterBrick(
+  starterBrickId: RegistryId,
+  { preserveModComponentIds = [] }: { preserveModComponentIds?: UUID[] } = {},
 ): void {
   expectContext("contentScript");
 
-  console.debug("sidebarController:removeExtensionPoint %s", extensionPointId, {
-    preserveExtensionIds,
-    panels: panels.filter((x) => x.extensionPointId === extensionPointId),
+  console.debug("sidebarController:removeStarterBrick %s", starterBrickId, {
+    preserveModComponentIds,
+    panels: panels.filter(
+      (x) => x.modComponentRef.starterBrickId === starterBrickId,
+    ),
   });
 
   // `panels` is const, so replace the contents
@@ -396,8 +402,8 @@ export function removeExtensionPoint(
   panels.push(
     ...current.filter(
       (x) =>
-        x.extensionPointId !== extensionPointId ||
-        preserveExtensionIds.includes(x.extensionId),
+        x.modComponentRef.starterBrickId !== starterBrickId ||
+        preserveModComponentIds.includes(x.modComponentRef.modComponentId),
     ),
   );
 
@@ -407,28 +413,27 @@ export function removeExtensionPoint(
 /**
  * Create placeholder panels showing loading indicators
  */
-export function reservePanels(refs: ModComponentRef[]): void {
-  if (refs.length === 0) {
+export function reservePanels(modComponentRefs: ModComponentRef[]): void {
+  if (modComponentRefs.length === 0) {
     return;
   }
 
-  const current = new Set(panels.map((x) => x.extensionId));
-  for (const { extensionId, extensionPointId, blueprintId } of refs) {
-    if (!current.has(extensionId)) {
+  const current = new Set(panels.map((x) => x.modComponentRef.modComponentId));
+  for (const modComponentRef of modComponentRefs) {
+    const { modComponentId, starterBrickId, modId } = modComponentRef;
+    if (!current.has(modComponentId)) {
       const entry: PanelEntry = {
         type: "panel",
-        extensionId,
-        extensionPointId,
-        blueprintId,
+        modComponentRef,
         heading: "",
         payload: null,
       };
 
       console.debug(
         "sidebarController:reservePanels: reserve panel %s for %s",
-        extensionId,
-        extensionPointId,
-        blueprintId,
+        modComponentId,
+        starterBrickId,
+        modId,
         { ...entry },
       );
 
@@ -439,60 +444,64 @@ export function reservePanels(refs: ModComponentRef[]): void {
   void renderPanelsIfVisible();
 }
 
-export function updateHeading(extensionId: UUID, heading: string): void {
-  const entry = panels.find((x) => x.extensionId === extensionId);
+export function updateHeading(modComponentId: UUID, heading: string): void {
+  const entry = panels.find(
+    (x) => x.modComponentRef.modComponentId === modComponentId,
+  );
 
   if (entry) {
     entry.heading = heading;
     console.debug(
       "updateHeading: update heading for panel %s for %s",
-      extensionId,
-      entry.extensionPointId,
+      modComponentId,
+      entry.modComponentRef.starterBrickId,
       { ...entry },
     );
     void renderPanelsIfVisible();
   } else {
     console.warn(
       "updateHeading: No panel exists for extension %s",
-      extensionId,
+      modComponentId,
     );
   }
 }
 
 export function upsertPanel(
-  { extensionId, extensionPointId, blueprintId }: ModComponentRef,
+  modComponentRef: ModComponentRef,
   heading: string,
   payload: PanelPayload,
 ): void {
-  const entry = panels.find((panel) => panel.extensionId === extensionId);
+  const { modComponentId, starterBrickId, modId } = modComponentRef;
+
+  const entry = panels.find(
+    (panel) => panel.modComponentRef.modComponentId === modComponentId,
+  );
   if (entry) {
     entry.payload = payload;
     entry.heading = heading;
     console.debug(
       "sidebarController:upsertPanel: update existing panel %s for %s",
-      extensionId,
-      extensionPointId,
-      blueprintId,
+      modComponentId,
+      starterBrickId,
+      modId,
       { ...entry },
     );
   } else {
     console.debug(
       "sidebarController:upsertPanel: add new panel %s for %s",
-      extensionId,
-      extensionPointId,
-      blueprintId,
+      modComponentId,
+      starterBrickId,
+      modId,
       {
         entry,
-        extensionPointId,
+        starterBrickId,
         heading,
         payload,
       },
     );
     panels.push({
       type: "panel",
-      extensionId,
-      extensionPointId,
-      blueprintId,
+      modComponentRef,
       heading,
       payload,
     });

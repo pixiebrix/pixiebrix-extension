@@ -23,12 +23,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortBy } from "lodash";
 import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
 import { useSelector } from "react-redux";
-import { selectTabHasPermissions } from "@/pageEditor/tabState/tabStateSelectors";
+import { selectTabHasPermissions } from "@/pageEditor/store/tabState/tabStateSelectors";
 import useAsyncState from "@/hooks/useAsyncState";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { flagOn } from "@/auth/featureFlagStorage";
 

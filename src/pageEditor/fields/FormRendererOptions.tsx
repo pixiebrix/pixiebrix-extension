@@ -22,8 +22,8 @@ import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
-import { selectActiveBuilderPreviewElement } from "@/pageEditor/slices/editorSelectors";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { useField, useFormikContext } from "formik";
 import { partial } from "lodash";
 import {
@@ -55,7 +55,7 @@ const databaseIdSchema: Schema = {
   $ref: databaseSchema.$id,
 };
 
-function usePruneUnusedServiceDependencies() {
+function usePruneUnusedIntegrationDependencies() {
   const { values: formState, setValues: setFormState } =
     useFormikContext<ModComponentFormState>();
 
@@ -86,7 +86,7 @@ const DEFAULT_STORAGE_TYPE = "state";
 const FormDataBindingOptions: React.FC<{
   makeName: (...names: string[]) => string;
 }> = ({ makeName }) => {
-  const pruneDependencies = usePruneUnusedServiceDependencies();
+  const pruneDependencies = usePruneUnusedIntegrationDependencies();
 
   const [{ value: storage }, , { setValue: setStorageValue }] =
     useField<Storage>(makeName("storage"));
@@ -94,7 +94,7 @@ const FormDataBindingOptions: React.FC<{
   const storageType = storage?.type;
 
   // Sets the storage type and clears out any other values the user might have configured
-  // If the next type is "database", the AppServiceField will initialize the "service" variable
+  // If the next type is "database", the "service" variable will be initialized
   const changeStorageType = async (nextStorageType: string) => {
     if (nextStorageType === "state") {
       await setStorageValue({
@@ -106,7 +106,7 @@ const FormDataBindingOptions: React.FC<{
     }
   };
 
-  // If the storage type changes from "database" to something else, ensure the service record at root is cleared
+  // If the storage type changes from "database" to something else, ensure the "service" record at root is cleared
   const [previousStorageType, setPreviousStorageType] = useState(storageType);
   useAsyncEffect(async () => {
     if (

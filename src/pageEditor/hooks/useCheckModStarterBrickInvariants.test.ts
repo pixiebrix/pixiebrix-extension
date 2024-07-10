@@ -32,7 +32,7 @@ import { take } from "lodash";
 import { renderHook } from "@/pageEditor/testHelpers";
 import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 import { actions as modComponentsActions } from "@/store/extensionsSlice";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,

@@ -38,7 +38,7 @@ import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuC
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
+import { type SingleLayerReaderConfig } from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
   type ContextMenuDefinition,
   type ContextMenuConfig,

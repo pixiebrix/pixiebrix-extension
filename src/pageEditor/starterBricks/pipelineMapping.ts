@@ -28,7 +28,7 @@ import PipelineVisitor, {
   type VisitResolvedBlockExtra,
 } from "@/bricks/PipelineVisitor";
 import pipelineSchema from "@schemas/pipeline.json";
-import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
+import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import { isPipelineExpression, toExpression } from "@/utils/expressionUtils";
 
 class NormalizePipelineVisitor extends PipelineVisitor {
@@ -81,7 +81,7 @@ class NormalizePipelineVisitor extends PipelineVisitor {
 export async function normalizePipelineForEditor(
   pipeline: BrickPipeline,
 ): Promise<BrickPipeline> {
-  const blockMap = await blockRegistry.allTyped();
+  const blockMap = await brickRegistry.allTyped();
   return produce(pipeline, (pipeline: Draft<BrickPipeline>) => {
     new NormalizePipelineVisitor(blockMap).visitPipeline(
       ROOT_POSITION,

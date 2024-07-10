@@ -23,7 +23,7 @@ import userEvent from "@testing-library/user-event";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { render, screen } from "@/pageEditor/testHelpers";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -155,8 +155,8 @@ describe("DocumentOptions", () => {
       // Integration dependencies included in the form state
       const integrationDependencies: IntegrationDependency[] = [
         integrationDependencyFactory({
-          integrationId: validateRegistryId("@test/service"),
-          outputKey: validateOutputKey("serviceOutput"),
+          integrationId: validateRegistryId("@test/integration"),
+          outputKey: validateOutputKey("integrationOuput"),
           configId: uuidSequence,
         }),
       ];
@@ -173,7 +173,7 @@ describe("DocumentOptions", () => {
                   id: validateRegistryId("@test/action"),
                   instanceId: uuidSequence(2),
                   config: {
-                    input: toExpression("var", "@serviceOutput"),
+                    input: toExpression("var", "@integrationOuput"),
                   },
                 },
               ]),

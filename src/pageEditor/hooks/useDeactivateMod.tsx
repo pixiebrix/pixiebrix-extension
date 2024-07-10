@@ -23,10 +23,10 @@ import {
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
-import { selectModComponentFormStates } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
 import { uniq } from "lodash";
 import { useModals } from "@/components/ConfirmationModal";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { getModComponentId, getModId } from "@/pageEditor/utils";
 import { clearLog } from "@/background/messenger/api";
 
@@ -69,7 +69,7 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
       );
 
       void clearLog({
-        blueprintId: modId,
+        modId,
       });
 
       dispatch(actions.removeModData(modId));

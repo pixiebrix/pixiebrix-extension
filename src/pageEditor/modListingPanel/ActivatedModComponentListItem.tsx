@@ -23,7 +23,7 @@ import {
   modComponentToFormState,
   selectType,
 } from "@/pageEditor/starterBricks/adapter";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import reportError from "@/telemetry/reportError";
 import { ListGroup } from "react-bootstrap";
 import {
@@ -37,13 +37,13 @@ import {
 } from "@/contentScript/messenger/api";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import cx from "classnames";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import {
   selectActiveModComponentFormState,
   selectActiveModId,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { appApi } from "@/data/service/api";
@@ -87,7 +87,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
       try {
         reportEvent(Events.PAGE_EDITOR_OPEN, {
           sessionId,
-          extensionId: modComponent.id,
+          modComponentId: modComponent.id,
         });
 
         const modComponentFormState =

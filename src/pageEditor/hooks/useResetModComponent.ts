@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { useModals } from "@/components/ConfirmationModal";
@@ -23,7 +23,7 @@ import { useCallback } from "react";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import reportError from "@/telemetry/reportError";
 import { initModOptionsIfNeeded } from "@/pageEditor/starterBricks/base";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type UUID } from "@/types/stringTypes";
@@ -58,7 +58,7 @@ function useResetModComponent(): (useResetConfig: Config) => Promise<void> {
 
       reportEvent(Events.PAGE_EDITOR_RESET, {
         sessionId,
-        extensionId: modComponentId,
+        modComponentId,
       });
 
       try {

@@ -36,8 +36,8 @@ import {
   integrationDependencyFactory,
 } from "@/testUtils/factories/integrationFactories";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
-import { registry, services } from "@/background/messenger/api";
-import { refreshServices } from "@/background/locator";
+import { registry, integrationConfigLocator } from "@/background/messenger/api";
+import { refreshIntegrationConfigs } from "@/background/integrationConfigLocator";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { produce } from "immer";
@@ -117,7 +117,9 @@ beforeAll(async () => {
     .onGet("/api/registry/bricks/")
     .reply(200, [integrationDefinition1, integrationDefinition2]);
   // Wire up directly to the background implementations for integration testing
-  jest.mocked(services.refresh).mockImplementation(refreshServices);
+  jest
+    .mocked(integrationConfigLocator.refresh)
+    .mockImplementation(refreshIntegrationConfigs);
   jest.mocked(registry.syncRemote).mockImplementation(syncPackages);
   jest.mocked(registry.find).mockImplementation(find);
   jest.mocked(registry.clear).mockImplementation(clear);

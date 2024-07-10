@@ -26,31 +26,32 @@ import {
 } from "@/types/modComponentTypes";
 import { expectContext } from "@/utils/expectContext";
 import { allSettled } from "@/utils/promiseUtils";
-import extensionPointRegistry from "@/starterBricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 
 /**
  * Add context menu items to the Chrome context menu on all tabs, in anticipation that on Page Load, the content
  * script will register a handler for the item.
- * @param extensions the ModComponent to preload.
+ * @param modComponents the ModComponent to preload.
  */
 export async function preloadContextMenus(
-  extensions: ModComponentBase[],
+  modComponents: ModComponentBase[],
 ): Promise<void> {
   expectContext("background");
-  const promises = extensions.map(async (definition) => {
-    const resolved = await hydrateModComponentInnerDefinitions(definition);
+  const promises = modComponents.map(async (definition) => {
+    const hydratedModComponent =
+      await hydrateModComponentInnerDefinitions(definition);
 
-    const extensionPoint = await extensionPointRegistry.lookup(
-      resolved.extensionPointId,
+    const starterBrick = await starterBrickRegistry.lookup(
+      hydratedModComponent.extensionPointId,
     );
-    if (extensionPoint instanceof ContextMenuStarterBrickABC) {
-      await extensionPoint.registerMenuItem(
+    if (starterBrick instanceof ContextMenuStarterBrickABC) {
+      await starterBrick.registerMenuItem(
         definition as unknown as HydratedModComponent<ContextMenuConfig>,
         () => {
           throw new ContextError(
             "Context menu was preloaded, but no handler was registered",
             {
-              context: selectEventData(resolved),
+              context: selectEventData(hydratedModComponent),
             },
           );
         },

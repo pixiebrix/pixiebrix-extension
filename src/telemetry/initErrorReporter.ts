@@ -25,8 +25,8 @@ import type { LogsEvent } from "@datadog/browser-logs/src/logsEvent.types";
 import {
   cleanDatadogVersionName,
   mapAppUserToTelemetryUser,
-  type TelemetryUser,
 } from "@/telemetry/telemetryHelpers";
+import { type TelemetryUser } from "@/telemetry/telemetryTypes";
 
 // eslint-disable-next-line prefer-destructuring -- process.env
 const ENVIRONMENT = process.env.ENVIRONMENT;

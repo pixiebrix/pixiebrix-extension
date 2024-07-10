@@ -4,7 +4,8 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { isRegistryId } from "@/types/helpers";
 
 /**
- * Select data to report to the team admins for the deployment
+ * Select data to report to the team admins for the deployment.
+ * @see mapModComponentRefToEventData
  */
 export function selectEventData(
   modComponent: Nullishable<ModComponentBase>,
@@ -18,26 +19,26 @@ export function selectEventData(
   if (modComponent._deployment) {
     return {
       label: modComponent.label,
-      extensionId: modComponent.id,
+      modComponentId: modComponent.id,
       deploymentId: modComponent._deployment?.id,
-      extensionPointId: isRegistryId(modComponent.extensionPointId)
+      starterBrickId: isRegistryId(modComponent.extensionPointId)
         ? modComponent.extensionPointId
         : undefined,
-      blueprintId: modComponent._recipe?.id,
-      blueprintVersion: modComponent._recipe?.version,
+      modId: modComponent._recipe?.id,
+      modVersion: modComponent._recipe?.version,
     };
   }
 
   if (modComponent._recipe) {
     return {
       label: modComponent.label,
-      extensionId: modComponent.id,
-      blueprintId: modComponent._recipe?.id,
-      blueprintVersion: modComponent._recipe?.version,
+      modComponentId: modComponent.id,
+      modId: modComponent._recipe?.id,
+      modVersion: modComponent._recipe?.version,
     };
   }
 
   return {
-    extensionId: modComponent.id,
+    modComponentId: modComponent.id,
   };
 }

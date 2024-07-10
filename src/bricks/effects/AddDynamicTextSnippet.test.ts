@@ -17,7 +17,7 @@
 
 import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   simpleInput,
   testOptions,
@@ -27,7 +27,7 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
-import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
+import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
@@ -35,8 +35,8 @@ const brick = new AddDynamicTextSnippet();
 const identity = new IdentityTransformer();
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([brick, identity]);
+  brickRegistry.clear();
+  brickRegistry.register([brick, identity]);
 });
 
 afterEach(() => {
@@ -49,8 +49,8 @@ describe("AddDynamicTextSnippet", () => {
     async (shortcut) => {
       const extensionId = uuidv4();
       const logger = new ConsoleLogger({
-        extensionId,
-        blueprintId: registryIdFactory(),
+        modComponentId: extensionId,
+        modId: registryIdFactory(),
       });
 
       const pipeline = {
@@ -81,8 +81,8 @@ describe("AddDynamicTextSnippet", () => {
           componentId: extensionId,
           context: {
             ...logger.context,
-            blockId: brick.id,
-            blockVersion: expect.toBeString(),
+            brickId: brick.id,
+            brickVersion: expect.toBeString(),
             label: brick.name,
           },
         },
@@ -98,7 +98,7 @@ describe("AddDynamicTextSnippet", () => {
     "passes preview directly: %s",
     async (preview) => {
       const extensionId = uuidv4();
-      const logger = new ConsoleLogger({ extensionId });
+      const logger = new ConsoleLogger({ modComponentId: extensionId });
 
       const pipeline = {
         id: brick.id,
@@ -127,8 +127,8 @@ describe("AddDynamicTextSnippet", () => {
           componentId: extensionId,
           context: {
             ...logger.context,
-            blockId: brick.id,
-            blockVersion: expect.toBeString(),
+            brickId: brick.id,
+            brickVersion: expect.toBeString(),
             label: brick.name,
           },
         },

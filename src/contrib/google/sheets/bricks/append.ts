@@ -32,7 +32,7 @@ import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 type CellValue = string | number | null;
 
@@ -54,7 +54,7 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
       title: "Google Account",
       oneOf: [
         {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${GOOGLE_OAUTH2_PKCE_INTEGRATION_ID}`,
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${GOOGLE_OAUTH2_PKCE_INTEGRATION_ID}`,
         },
       ],
     },

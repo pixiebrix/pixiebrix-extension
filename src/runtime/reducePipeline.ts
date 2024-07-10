@@ -570,7 +570,7 @@ async function runBrick(
     if (selectTraceEnabled(trace)) {
       getPlatform().debugger.traces.exit({
         ...trace,
-        extensionId: logger.context.extensionId,
+        extensionId: logger.context.modComponentId,
         blockId: brick.id,
         isFinal: true,
         isRenderer: true,
@@ -615,7 +615,7 @@ async function applyReduceDefaults({
   const logger = providedLogger ?? new ConsoleLogger();
 
   return {
-    extensionId: extensionId ?? logger.context.extensionId,
+    extensionId: extensionId ?? logger.context.modComponentId,
     validateInput: true,
     headless: false,
     // Default to the `apiVersion: v1, v2` data passing behavior and renderer behavior
@@ -662,7 +662,7 @@ export async function brickReducer(
       runId,
       // Be defensive if the call site doesn't provide an extensionId
       // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3751
-      extensionId: extensionId ?? logger.context.extensionId,
+      extensionId: extensionId ?? logger.context.modComponentId,
       blockInstanceId: brickConfig.instanceId,
       branches,
     },
@@ -833,7 +833,7 @@ function throwBrickError(
     getPlatform().debugger.traces.exit({
       runId,
       branches,
-      extensionId: logger.context.extensionId,
+      extensionId: logger.context.modComponentId,
       blockId: brickConfig.id,
       blockInstanceId: brickConfig.instanceId,
       error: serializeError(error),
@@ -888,8 +888,8 @@ async function getBrickLogger(
   }
 
   return pipelineLogger.childLogger({
-    blockId: brickConfig.id,
-    blockVersion: version,
+    brickId: brickConfig.id,
+    brickVersion: version,
     // Use the most customized name for the step
     label:
       brickConfig.label ??
@@ -909,7 +909,7 @@ export async function reduceModComponentPipeline(
 
   if (platform.capabilities.includes("debugger")) {
     try {
-      const { extensionId } = pipelineLogger.context;
+      const { modComponentId: extensionId } = pipelineLogger.context;
 
       if (extensionId) {
         // `await` promise to avoid race condition where the calls here delete entries from this call to reducePipeline
@@ -962,7 +962,7 @@ export async function reducePipeline(
       isLastBlock: index === pipelineArray.length - 1,
       previousOutput: output,
       context: extendModVariableContext(localVariableContext, {
-        modId: pipelineLogger.context.blueprintId,
+        modId: pipelineLogger.context.modId,
         options,
         // Mod variable is updated when each block is run
         update: true,
@@ -1035,7 +1035,7 @@ async function reducePipelineExpression(
       previousOutput: legacyOutput,
       // Assume @input and @options are present
       context: extendModVariableContext(context as BrickArgsContext, {
-        modId: pipelineLogger.context.blueprintId,
+        modId: pipelineLogger.context.modId,
         options,
         // Update mod variable when each block is run
         update: true,

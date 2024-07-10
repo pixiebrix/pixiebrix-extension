@@ -18,7 +18,7 @@
 import styles from "./ModListingPanel.module.scss";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { Button, Collapse as BootstrapCollapse } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,7 +27,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
-import { selectIsEditorSidebarExpanded } from "@/pageEditor/slices/editorSelectors";
+import { selectIsEditorSidebarExpanded } from "@/pageEditor/store/editor/editorSelectors";
 import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";

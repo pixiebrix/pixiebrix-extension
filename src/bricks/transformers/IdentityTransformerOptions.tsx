@@ -1,5 +1,5 @@
 import React from "react";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { type Schema } from "@/types/schemaTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils/formUtils";
@@ -12,9 +12,9 @@ const ANY_SCHEMA: Schema = {
 /**
  * Page Editor fields for the @pixiebrix/identity brick.
  */
-const IdentityTransformerOptions: React.FunctionComponent<BlockOptionProps> = ({
+const IdentityTransformerOptions: React.FunctionComponent<BrickOptionProps> = ({
   name,
-  configKey,
+  configKey = null,
 }) => (
   <SchemaField
     label="Value"

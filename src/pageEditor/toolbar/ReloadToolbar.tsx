@@ -25,7 +25,7 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useSelector } from "react-redux";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -123,7 +123,7 @@ const ReloadToolbar: React.FunctionComponent<{
     // Report before the run to report even if the run errors
     reportEvent(Events.PAGE_EDITOR_MANUAL_RUN, {
       sessionId,
-      extensionId: modComponentFormState.uuid,
+      modComponentId: modComponentFormState.uuid,
     });
 
     await run();

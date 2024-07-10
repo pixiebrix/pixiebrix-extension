@@ -149,12 +149,14 @@ module.exports = {
         "unicorn/prefer-dom-node-dataset": "off",
         "unicorn/prefer-module": "off", // `import.meta.dirname` throws "cannot use 'import meta' outside a module"
         "no-await-in-loop": "off",
+        "security/detect-object-injection": "off",
         "playwright/no-skipped-test": [
           "error",
           {
             allowConditional: true,
           },
         ],
+        "playwright/no-page-pause": "error",
         "playwright/no-wait-for-timeout": "error",
         "playwright/no-useless-not": "error",
         "playwright/expect-expect": [

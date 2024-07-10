@@ -70,7 +70,7 @@ export const recordLog = getNotifier("RECORD_LOG", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
 export const clearLog = getMethod("CLEAR_LOG", bg);
 export const clearExtensionDebugLogs = getMethod(
-  "CLEAR_EXTENSION_DEBUG_LOGS",
+  "CLEAR_MOD_COMPONENT_DEBUG_LOGS",
   bg,
 );
 
@@ -79,10 +79,16 @@ export const fetchFeatureFlagsInBackground = getMethod(
   bg,
 );
 
-export const services = {
-  locateAllForId: getMethod("LOCATE_SERVICES_FOR_ID", bg),
-  locate: getMethod("LOCATE_SERVICE", bg),
-  refresh: getMethod("REFRESH_SERVICES", bg),
+export const integrationConfigLocator = {
+  findAllSanitizedConfigsForIntegration: getMethod(
+    "LOCATOR_FIND_ALL_SANITIZED_CONFIGS_FOR_INTEGRATION",
+    bg,
+  ),
+  findSanitizedIntegrationConfig: getMethod(
+    "LOCATOR_FIND_SANITIZED_INTEGRATION_CONFIG",
+    bg,
+  ),
+  refresh: getMethod("LOCATOR_REFRESH", bg),
   refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
 };
 
@@ -147,7 +153,10 @@ export const removeModComponentForEveryTab = getNotifier(
   "REMOVE_MOD_COMPONENT_EVERY_TAB",
   bg,
 );
-export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
+export const clearIntegrationRegistry = getMethod(
+  "INTEGRATION_REGISTRY_CLEAR",
+  bg,
+);
 export const getUserData = getMethod("GET_USER_DATA", bg);
 export const installStarterBlueprints = getMethod(
   "INSTALL_STARTER_BLUEPRINTS",

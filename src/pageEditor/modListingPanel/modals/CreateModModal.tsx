@@ -28,8 +28,8 @@ import {
   selectActiveModId,
   selectDirtyMetadataForModId,
   selectEditorModalVisibilities,
-} from "@/pageEditor/slices/editorSelectors";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { Button, Modal } from "react-bootstrap";
 import { selectScope } from "@/auth/authSelectors";
 import { generateScopeBrickId } from "@/pageEditor/panes/save/saveHelpers";
@@ -55,7 +55,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import {
   ModalKey,
   type ModMetadataFormState,
-} from "@/pageEditor/pageEditorTypes";
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";

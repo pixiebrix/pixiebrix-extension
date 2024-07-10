@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useField } from "formik";
 import { joinName } from "@/utils/formUtils";
@@ -15,8 +15,8 @@ import { type Expression } from "@/types/runtimeTypes";
  *
  * Shows as a textarea with no toggle/exclude.
  */
-const CommentOptions: React.FunctionComponent<BlockOptionProps> = (props) => {
-  const { name, configKey } = props;
+const CommentOptions: React.FunctionComponent<BrickOptionProps> = (props) => {
+  const { name, configKey = null } = props;
 
   const context = useContext(FieldRuntimeContext);
 

@@ -28,8 +28,8 @@ import { getAllowedChildTypes } from "@/pageEditor/documentBuilder/allowedElemen
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
 import { SCROLL_TO_HEADER_NODE_EVENT } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "@/pageEditor/slices/editorSlice";
-import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { selectActiveNodeId } from "@/pageEditor/store/editor/editorSelectors";
 
 export const SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT =
   "scroll-to-document-preview-element";

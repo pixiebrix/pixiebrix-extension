@@ -63,7 +63,7 @@ const DEBUG_MESSAGE: LogEntry = {
   message: "Sample debug message",
   level: "debug",
   context: {
-    blockId,
+    brickId: blockId,
   },
 };
 
@@ -74,7 +74,7 @@ const ERROR_MESSAGE: LogEntry = {
   level: "error",
   context: {
     // Just the context that will show up in the table
-    blockId,
+    brickId: blockId,
   },
   error: serializeError(new Error("Simple error")),
 };
@@ -86,7 +86,7 @@ const NESTED_ERROR_MESSAGE: LogEntry = {
   level: "error",
   context: {
     // Just the context that will show up in the table
-    blockId,
+    brickId: blockId,
   },
   error: serializeError(
     new Error("Simple error", {
@@ -125,13 +125,13 @@ const CONTEXT_ERROR_MESSAGE: LogEntry = {
   level: "error",
   context: {
     // Just the context that will show up in the table
-    blockId,
+    brickId: blockId,
   },
   error: serializeError(
     new ContextError("Invalid inputs for brick", {
       cause: validationError,
       context: {
-        blockId,
+        brickId: blockId,
       },
     }),
   ),

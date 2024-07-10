@@ -67,7 +67,7 @@ jest.mock("@/auth/authStorage", () => ({
   addListener: jest.fn(),
 }));
 
-jest.mock("@/utils/extensionUtils");
+jest.mock("@/contentScript/messenger/api");
 jest.mock("./refreshRegistries");
 
 const isLinkedMock = jest.mocked(isLinked);

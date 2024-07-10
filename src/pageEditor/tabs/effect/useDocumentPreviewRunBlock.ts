@@ -23,20 +23,23 @@ import {
   selectActiveModComponentFormState,
   selectActiveModComponentNodeInfo,
   selectParentNodeInfo,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SerializableResponse } from "@/types/messengerTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
 import { runRendererBrick } from "@/contentScript/messenger/api";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
-import { selectActiveModComponentTraceForBrick } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraceForBrick } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { type UUID } from "@/types/stringTypes";
 import { type BrickArgsContext } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { validateRegistryId } from "@/types/helpers";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type Location = "modal" | "panel";
 
@@ -103,13 +106,16 @@ export default function useDocumentPreviewRunBlock(
 ): BlockPreviewRunBlock {
   const [state, dispatch] = useReducer(previewSlice.reducer, initialState);
 
+  const formState = useSelector(selectActiveModComponentFormState);
+
   const {
+    type,
     uuid: modComponentId,
-    modMetadata: mod,
+    modMetadata,
     apiVersion,
     integrationDependencies,
     starterBrick,
-  } = useSelector(selectActiveModComponentFormState);
+  } = formState;
 
   const { blockConfig: brickConfig } = useSelector(
     selectActiveModComponentNodeInfo(brickInstanceId),
@@ -139,14 +145,14 @@ export default function useDocumentPreviewRunBlock(
   const traceRecord = useSelector(
     selectActiveModComponentTraceForBrick(brickInstanceId),
   );
-  const { data: serviceContext, isLoading: isLoadingServiceContext } =
+  const { data: integrationContext, isLoading: isLoadingIntegrationContext } =
     useAsyncState(
       makeIntegrationsContextFromDependencies(integrationDependencies),
       [integrationDependencies],
     );
   const context = {
     ...traceRecord?.templateContext,
-    ...serviceContext,
+    ...integrationContext,
   } as BrickArgsContext;
 
   // This defaults to "inherit" as described in the doc, see BrickConfig.rootMode
@@ -167,11 +173,17 @@ export default function useDocumentPreviewRunBlock(
 
   const debouncedRun = useDebouncedCallback(
     async () => {
-      if (isLoadingServiceContext || isPreviewInfoLoading) {
+      if (isLoadingIntegrationContext || isPreviewInfoLoading) {
         return;
       }
 
       dispatch(previewSlice.actions.startPreview());
+
+      const adapter = ADAPTERS.get(type);
+      const starterBrickId = validateRegistryId(
+        adapter.selectModComponent(formState).extensionPointId,
+      );
+      assertNotNullish(starterBrickId, "Expected starter brick id");
 
       // If the block is configured to inherit the root element, and the
       // starter brick is a trigger, try to get the root element from the
@@ -191,10 +203,13 @@ export default function useDocumentPreviewRunBlock(
 
       try {
         await runRendererBrick(inspectedTab, {
-          modComponentId,
-          modId: mod?.id,
           runId: traceRecord.runId,
           title,
+          modComponentRef: {
+            modComponentId,
+            modId: modMetadata?.id,
+            starterBrickId,
+          },
           args: {
             apiVersion,
             blockConfig: {

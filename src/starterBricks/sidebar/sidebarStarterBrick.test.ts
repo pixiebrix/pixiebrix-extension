@@ -112,7 +112,9 @@ describe("sidebarExtension", () => {
       forms: [],
       panels: [
         expect.objectContaining({
-          extensionPointId: starterBrick.id,
+          modComponentRef: expect.objectContaining({
+            starterBrickId: starterBrick.id,
+          }),
         }),
       ],
       temporaryPanels: [],

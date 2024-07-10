@@ -47,7 +47,7 @@ import {
   type SerializedModComponent,
 } from "@/types/modComponentTypes";
 import { type SafeString } from "@/types/stringTypes";
-import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { freshIdentifier } from "@/utils/variableUtils";
 import {
   type IntegrationDependency,
@@ -55,7 +55,7 @@ import {
 } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { normalizeModOptionsDefinition } from "@/utils/modUtils";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 import {
   isStarterBrickDefinitionLike,
   type StarterBrickDefinitionLike,
@@ -173,7 +173,7 @@ export function selectModComponentIntegrations({
       isOptional,
     } of _integrationDependencies) {
       properties[outputKey] = {
-        $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationId}`,
+        $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationId}`,
       };
       if (!isOptional) {
         required.push(outputKey);

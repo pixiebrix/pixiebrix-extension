@@ -16,7 +16,7 @@
  */
 
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   ContextBrick,
   contextBrick,
@@ -27,7 +27,7 @@ import {
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
+import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BusinessError } from "@/errors/businessErrors";
 import {
@@ -40,15 +40,13 @@ import {
   updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
 import {
-  cancelTemporaryPanelsForExtension,
+  cancelTemporaryPanelsForModComponent,
   updatePanelDefinition,
   waitForTemporaryPanel,
 } from "@/platform/panels/panelController";
-import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import pDefer from "p-defer";
-import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type RendererErrorPayload } from "@/types/rendererTypes";
 import {
   MergeStrategies,
@@ -60,22 +58,34 @@ import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";
 import { showModal } from "@/contentScript/modalDom";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/contentScript/modalDom");
 jest.mock("@/contentScript/sidebarController");
 jest.mock("@/platform/panels/panelController");
-
 jest.mock("@/utils/iframeUtils");
 
 const displayTemporaryInfoBlock = new DisplayTemporaryInfo();
 const renderer = new DocumentRenderer();
 
+function reduceOptionsFactory() {
+  return {
+    ...testOptions("v3"),
+    logger: new ConsoleLogger(
+      mapModComponentRefToMessageContext(modComponentRefFactory()),
+    ),
+  };
+}
+
 describe("DisplayTemporaryInfo", () => {
   beforeEach(() => {
     jest.mocked(isLoadedInIframe).mockReturnValue(false);
 
-    blockRegistry.clear();
-    blockRegistry.register([
+    brickRegistry.clear();
+    brickRegistry.register([
       echoBrick,
       teapotBrick,
       contextBrick,
@@ -92,8 +102,7 @@ describe("DisplayTemporaryInfo", () => {
   });
 
   test("it returns run payload for sidebar panel", async () => {
-    const extensionId = uuidv4();
-    const blueprintId = registryIdFactory();
+    const modComponentRef = modComponentRefFactory();
 
     const config = getExampleBrickConfig(renderer.id);
     const pipeline = {
@@ -106,13 +115,14 @@ describe("DisplayTemporaryInfo", () => {
 
     await reducePipeline(pipeline, simpleInput({}), {
       ...testOptions("v3"),
-      logger: new ConsoleLogger({ extensionId, blueprintId }),
+      logger: new ConsoleLogger(
+        mapModComponentRefToMessageContext(modComponentRef),
+      ),
     });
 
     // Show function will be called with a "loading" payload
     expect(showTemporarySidebarPanel).toHaveBeenCalledExactlyOnceWith({
-      blueprintId,
-      extensionId,
+      modComponentRef,
       nonce: expect.toBeString(),
       heading: expect.toBeString(),
       payload: expect.objectContaining({
@@ -122,8 +132,7 @@ describe("DisplayTemporaryInfo", () => {
 
     // Panel will be updated when the real payload is ready
     expect(updatePanelDefinition).toHaveBeenCalledExactlyOnceWith({
-      blueprintId,
-      extensionId,
+      modComponentRef,
       nonce: expect.toBeString(),
       heading: expect.toBeString(),
       payload: expect.objectContaining({
@@ -160,7 +169,7 @@ describe("DisplayTemporaryInfo", () => {
         payload = entry.payload;
       });
 
-    await reducePipeline(pipeline, simpleInput({}), testOptions("v3"));
+    await reducePipeline(pipeline, simpleInput({}), reduceOptionsFactory());
 
     expect(isRendererErrorPayload(payload)).toBe(true);
     const error = payload as RendererErrorPayload;
@@ -179,13 +188,13 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const extensionId = uuidv4();
+    const modComponentRef = modComponentRefFactory();
 
     const options = {
       ...testOptions("v3"),
-      logger: new ConsoleLogger({
-        extensionId,
-      }),
+      logger: new ConsoleLogger(
+        mapModComponentRefToMessageContext(modComponentRef),
+      ),
     };
 
     await reducePipeline(pipeline, simpleInput({}), options);
@@ -195,10 +204,10 @@ describe("DisplayTemporaryInfo", () => {
 
     expect(waitForTemporaryPanel).toHaveBeenCalledWith({
       nonce: expect.toBeString(),
-      extensionId,
+      modComponentId: modComponentRef.modComponentId,
       location: "modal",
       entry: expect.objectContaining({
-        extensionId,
+        modComponentRef,
         heading: "Test Temp Panel",
         nonce: expect.toBeString(),
         payload: expect.toBeObject(),
@@ -207,6 +216,7 @@ describe("DisplayTemporaryInfo", () => {
   });
 
   test("it errors from frame", async () => {
+    const modComponentRef = modComponentRefFactory();
     jest.mocked(isLoadedInIframe).mockReturnValue(true);
 
     const config = getExampleBrickConfig(renderer.id);
@@ -220,13 +230,11 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const extensionId = uuidv4();
-
     const options = {
       ...testOptions("v3"),
-      logger: new ConsoleLogger({
-        extensionId,
-      }),
+      logger: new ConsoleLogger(
+        mapModComponentRefToMessageContext(modComponentRef),
+      ),
     };
 
     await expect(
@@ -246,17 +254,8 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const extensionId = uuidv4();
-
-    const options = {
-      ...testOptions("v3"),
-      logger: new ConsoleLogger({
-        extensionId,
-      }),
-    };
-
     await expect(
-      reducePipeline(pipeline, simpleInput({}), options),
+      reducePipeline(pipeline, simpleInput({}), reduceOptionsFactory()),
     ).rejects.toThrow("Target must be an element for popover");
   });
 
@@ -274,21 +273,17 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const extensionId = uuidv4();
     const root = document.querySelector<HTMLElement>("#target");
 
-    const options = {
-      ...testOptions("v3"),
-      logger: new ConsoleLogger({
-        extensionId,
-      }),
-    };
-
-    await reducePipeline(pipeline, { ...simpleInput({}), root }, options);
+    await reducePipeline(
+      pipeline,
+      { ...simpleInput({}), root },
+      reduceOptionsFactory(),
+    );
 
     expect(showModal).not.toHaveBeenCalled();
     expect(showTemporarySidebarPanel).not.toHaveBeenCalled();
-    expect(cancelTemporaryPanelsForExtension).toHaveBeenCalled();
+    expect(cancelTemporaryPanelsForModComponent).toHaveBeenCalled();
 
     expect(
       document.body.querySelector(".pixiebrix-tooltips-container"),
@@ -314,16 +309,7 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const extensionId = uuidv4();
-
-    const options = {
-      ...testOptions("v3"),
-      logger: new ConsoleLogger({
-        extensionId,
-      }),
-    };
-
-    void reducePipeline(pipeline, simpleInput({}), options);
+    void reducePipeline(pipeline, simpleInput({}), reduceOptionsFactory());
 
     await tick();
 
@@ -338,7 +324,7 @@ describe("DisplayTemporaryInfo", () => {
     deferredPromise.resolve();
   });
 
-  test("body receives updated mod variable on re-render", async () => {
+  test("body receives updated public mod variable on re-render", async () => {
     document.body.innerHTML = '<div><div id="target"></div></div>';
 
     const deferredPromise = pDefer<any>();
@@ -361,13 +347,18 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const extensionId = uuidv4();
+    const modComponentId = autoUUIDSequence();
 
     const options = {
       ...testOptions("v3"),
-      logger: new ConsoleLogger({
-        extensionId,
-      }),
+      logger: new ConsoleLogger(
+        mapModComponentRefToMessageContext(
+          modComponentRefFactory({
+            modComponentId,
+            modId: null,
+          }),
+        ),
+      ),
     };
 
     void reducePipeline(pipeline, simpleInput({}), options);
@@ -383,7 +374,7 @@ describe("DisplayTemporaryInfo", () => {
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: extensionId,
+      modComponentId,
       modId: null,
     });
 

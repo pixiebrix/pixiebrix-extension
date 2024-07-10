@@ -51,7 +51,7 @@ import {
   pipelineFactory,
 } from "@/testUtils/factories/brickFactories";
 import { type DerivedFunction } from "cooky-cutter/dist/derive";
-import { type BaseModComponentState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseModComponentState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const baseModComponentStateFactory = define<BaseModComponentState>({
@@ -69,7 +69,7 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   apiVersion: "v3" as ApiVersion,
   uuid: uuidSequence,
   installed: true,
-  optionsArgs: {} as OptionsArgs,
+  optionsArgs: () => ({}) as OptionsArgs,
   integrationDependencies(): IntegrationDependency[] {
     return [];
   },

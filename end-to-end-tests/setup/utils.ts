@@ -16,7 +16,6 @@
  */
 
 import { type BrowserContext, type Page, expect } from "@playwright/test";
-import { ensureVisibility } from "../utils";
 
 export const openExtensionConsoleFromAdmin = async (
   adminPage: Page,
@@ -29,31 +28,25 @@ export const openExtensionConsoleFromAdmin = async (
   // initialized to be able to receive messages via the external messenger api, which happens when the Extension
   // reloads after linking. Thus, we wrap the following with an `expect.toPass` retry.
   await expect(async () => {
-    // Ensure the extension console loads with authenticated user
-    const extensionConsolePagePromise = context.waitForEvent("page", {
-      timeout: 2000,
-    });
     await adminPage
       .locator("button")
       .filter({ hasText: "Open Extension Console" })
       .click();
 
-    extensionConsolePage = await extensionConsolePagePromise;
+    extensionConsolePage = context
+      .pages()
+      .find((page) => page.url().endsWith("/options.html#/"));
+
+    if (!extensionConsolePage) {
+      throw new Error("Extension console page not found");
+    }
 
     await expect(extensionConsolePage.locator("#container")).toContainText(
       "Extension Console",
     );
-  }).toPass({ timeout: 10_000 });
+    await expect(extensionConsolePage.getByText(userName)).toBeVisible();
+  }).toPass({ timeout: 15_000 });
 
-  if (!extensionConsolePage) {
-    throw new Error("Extension console page not found");
-  }
-
-  await ensureVisibility(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above
-    extensionConsolePage!.getByText(userName),
-    // The first time the extension console is opened after logging in, it sometimes takes a while to load the extension console
-    { timeout: 16_000 },
-  );
-  return extensionConsolePage;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- needed for strict null check
+  return extensionConsolePage as Page;
 };

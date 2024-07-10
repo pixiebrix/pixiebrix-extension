@@ -16,7 +16,7 @@
  */
 
 import type React from "react";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { type RegistryId } from "@/types/registryTypes";
 
 /**
@@ -25,7 +25,7 @@ import { type RegistryId } from "@/types/registryTypes";
  */
 const optionsRegistry = new Map<
   RegistryId,
-  React.FunctionComponent<BlockOptionProps>
+  React.FunctionComponent<BrickOptionProps>
 >();
 
 export default optionsRegistry;

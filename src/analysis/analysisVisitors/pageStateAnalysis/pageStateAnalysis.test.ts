@@ -21,7 +21,7 @@ import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pag
 import { AnnotationType } from "@/types/annotationTypes";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
-import { type BaseFormState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { StateNamespaces } from "@/platform/state/stateController";
 
 describe("PageStateAnalysis", () => {

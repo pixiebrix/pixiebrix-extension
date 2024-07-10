@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import { useField } from "formik";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
@@ -24,7 +24,7 @@ import { ALERT_PERSISTENT_OPTION, AlertEffect } from "@/bricks/effects/alert";
 import { type Schema } from "@/types/schemaTypes";
 import { joinName } from "@/utils/formUtils";
 
-const AlertOptions: React.FC<BlockOptionProps> = ({ name, configKey }) => {
+const AlertOptions: React.FC<BrickOptionProps> = ({ name, configKey }) => {
   const basePath = joinName(name, configKey);
   const configName = partial(joinName, basePath);
 

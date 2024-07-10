@@ -440,605 +440,6 @@ exports[`Storyshots Components/Banner With Button 1`] = `
 </div>
 `;
 
-exports[`Storyshots Components/BrickDetail Amazon Search 1`] = `
-<div
-  className="root"
->
-  <div
-    className="d-flex justify-content-between"
-  >
-    <div>
-      <h3
-        className="text-left"
-      >
-        Amazon search in new tab
-         
-        <svg
-          aria-hidden="true"
-          className="svg-inline--fa fa-cube fa-w-16 fa-fw fa-1x "
-          color="#241C32"
-          data-icon="cube"
-          data-prefix="fas"
-          focusable="false"
-          role="img"
-          style={{}}
-          viewBox="0 0 512 512"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
-            fill="currentColor"
-            style={{}}
-          />
-        </svg>
-      </h3>
-      <p>
-        <code
-          className="p-0"
-        >
-          amazon/search
-        </code>
-      </p>
-    </div>
-  </div>
-  <div
-    className="my-4"
-  >
-    <div
-      className="font-weight-bold"
-    >
-      Description
-    </div>
-    <div
-      className="py-2"
-    >
-      Runs a Amazon search in a new tab
-    </div>
-  </div>
-  <div
-    className="my-4"
-  >
-    <div
-      className="font-weight-bold"
-    >
-      Input Schema
-    </div>
-    <div
-      className="py-2"
-    >
-      <div>
-        <button
-          className="p-0 mb-3 btn btn-link"
-          disabled={false}
-          onClick={[Function]}
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            className="svg-inline--fa fa-clipboard fa-w-12 "
-            data-icon="clipboard"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            style={{}}
-            viewBox="0 0 384 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M384 112v352c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h80c0-35.29 28.71-64 64-64s64 28.71 64 64h80c26.51 0 48 21.49 48 48zM192 40c-13.255 0-24 10.745-24 24s10.745 24 24 24 24-10.745 24-24-10.745-24-24-24m96 114v-20a6 6 0 0 0-6-6H102a6 6 0 0 0-6 6v20a6 6 0 0 0 6 6h180a6 6 0 0 0 6-6z"
-              fill="currentColor"
-              style={{}}
-            />
-          </svg>
-           Copy Argument YAML
-        </button>
-        <table
-          className="table table-sm"
-          role="table"
-        >
-          <thead>
-            <tr
-              role="row"
-            >
-              <th
-                colSpan={1}
-                role="columnheader"
-              >
-                Name
-              </th>
-              <th
-                colSpan={1}
-                role="columnheader"
-              >
-                Required
-              </th>
-              <th
-                colSpan={1}
-                role="columnheader"
-              >
-                Type
-              </th>
-              <th
-                colSpan={1}
-                role="columnheader"
-              >
-                Description
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              role="row"
-            >
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span
-                  className="codeCell"
-                  onClick={[Function]}
-                  style={
-                    {
-                      "cursor": "pointer",
-                      "paddingLeft": "0rem",
-                    }
-                  }
-                  title="Toggle Row Expanded"
-                >
-                  department
-                </span>
-              </td>
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span />
-              </td>
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span
-                  className="codeCell"
-                >
-                  string enum
-                </span>
-              </td>
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span
-                  dangerouslySetInnerHTML={
-                    {
-                      "__html": "The department to search",
-                    }
-                  }
-                />
-              </td>
-            </tr>
-            <tr
-              role="row"
-            >
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span
-                  className="codeCell"
-                  onClick={[Function]}
-                  style={
-                    {
-                      "cursor": "pointer",
-                      "paddingLeft": "0rem",
-                    }
-                  }
-                  title="Toggle Row Expanded"
-                >
-                  query
-                </span>
-              </td>
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span>
-                  <svg
-                    aria-hidden="true"
-                    className="svg-inline--fa fa-check fa-w-16 text-success"
-                    data-icon="check"
-                    data-prefix="fas"
-                    focusable="false"
-                    role="img"
-                    style={{}}
-                    viewBox="0 0 512 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
-                      fill="currentColor"
-                      style={{}}
-                    />
-                  </svg>
-                </span>
-              </td>
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span
-                  className="codeCell"
-                >
-                  string
-                </span>
-              </td>
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span
-                  dangerouslySetInnerHTML={
-                    {
-                      "__html": "The search query",
-                    }
-                  }
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-  <div
-    className="my-4"
-  >
-    <div
-      className="font-weight-bold"
-    >
-      Output Schema
-    </div>
-    <div
-      className="py-2"
-    >
-      <div
-        className="text-muted"
-      >
-        No output schema provided
-      </div>
-    </div>
-  </div>
-  <div
-    className="my-4"
-  >
-    <div
-      className="font-weight-bold"
-    >
-      Definition
-    </div>
-    <div
-      className="py-2"
-    >
-      <div
-        id="ace-editor"
-        style={
-          {
-            "height": "500px",
-            "width": "100%",
-          }
-        }
-      />
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Storyshots Components/BrickDetail Built In 1`] = `
-<div
-  className="root"
->
-  <div
-    className="d-flex justify-content-between"
-  >
-    <div>
-      <h3
-        className="text-left"
-      >
-        A customizable table
-         
-        <svg
-          aria-hidden="true"
-          className="svg-inline--fa fa-cube fa-w-16 fa-fw fa-1x "
-          color="#241C32"
-          data-icon="cube"
-          data-prefix="fas"
-          focusable="false"
-          role="img"
-          style={{}}
-          viewBox="0 0 512 512"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
-            fill="currentColor"
-            style={{}}
-          />
-        </svg>
-      </h3>
-      <p>
-        <code
-          className="p-0"
-        >
-          @pixiebrix/table
-        </code>
-      </p>
-    </div>
-  </div>
-  <div
-    className="my-4"
-  >
-    <div
-      className="font-weight-bold"
-    >
-      Description
-    </div>
-    <div
-      className="py-2"
-    >
-      A customizable table that displays a list of values
-    </div>
-  </div>
-  <div
-    className="my-4"
-  >
-    <div
-      className="font-weight-bold"
-    >
-      Input Schema
-    </div>
-    <div
-      className="py-2"
-    >
-      <div>
-        <button
-          className="p-0 mb-3 btn btn-link"
-          disabled={false}
-          onClick={[Function]}
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            className="svg-inline--fa fa-clipboard fa-w-12 "
-            data-icon="clipboard"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            style={{}}
-            viewBox="0 0 384 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M384 112v352c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h80c0-35.29 28.71-64 64-64s64 28.71 64 64h80c26.51 0 48 21.49 48 48zM192 40c-13.255 0-24 10.745-24 24s10.745 24 24 24 24-10.745 24-24-10.745-24-24-24m96 114v-20a6 6 0 0 0-6-6H102a6 6 0 0 0-6 6v20a6 6 0 0 0 6 6h180a6 6 0 0 0 6-6z"
-              fill="currentColor"
-              style={{}}
-            />
-          </svg>
-           Copy Argument YAML
-        </button>
-        <table
-          className="table table-sm"
-          role="table"
-        >
-          <thead>
-            <tr
-              role="row"
-            >
-              <th
-                colSpan={1}
-                role="columnheader"
-              >
-                Name
-              </th>
-              <th
-                colSpan={1}
-                role="columnheader"
-              >
-                Required
-              </th>
-              <th
-                colSpan={1}
-                role="columnheader"
-              >
-                Type
-              </th>
-              <th
-                colSpan={1}
-                role="columnheader"
-              >
-                Description
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              role="row"
-            >
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span
-                  className="codeCell"
-                  onClick={[Function]}
-                  style={
-                    {
-                      "cursor": "pointer",
-                      "paddingLeft": "0rem",
-                    }
-                  }
-                  title="Toggle Row Expanded"
-                >
-                  <svg
-                    aria-hidden="true"
-                    className="svg-inline--fa fa-caret-right fa-w-6 mr-1"
-                    data-icon="caret-right"
-                    data-prefix="fas"
-                    focusable="false"
-                    role="img"
-                    style={{}}
-                    viewBox="0 0 192 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                      fill="currentColor"
-                      style={{}}
-                    />
-                  </svg>
-                  columns
-                </span>
-              </td>
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span>
-                  <svg
-                    aria-hidden="true"
-                    className="svg-inline--fa fa-check fa-w-16 text-success"
-                    data-icon="check"
-                    data-prefix="fas"
-                    focusable="false"
-                    role="img"
-                    style={{}}
-                    viewBox="0 0 512 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
-                      fill="currentColor"
-                      style={{}}
-                    />
-                  </svg>
-                </span>
-              </td>
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span
-                  className="codeCell"
-                >
-                  array of objects
-                </span>
-              </td>
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span
-                  dangerouslySetInnerHTML={
-                    {
-                      "__html": "Column labels and values to show",
-                    }
-                  }
-                />
-              </td>
-            </tr>
-            <tr
-              role="row"
-            >
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span
-                  className="codeCell"
-                  onClick={[Function]}
-                  style={
-                    {
-                      "cursor": "pointer",
-                      "paddingLeft": "0rem",
-                    }
-                  }
-                  title="Toggle Row Expanded"
-                >
-                  data
-                </span>
-              </td>
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span />
-              </td>
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span
-                  className="codeCell"
-                >
-                  [array, string]
-                </span>
-              </td>
-              <td
-                className="SchemaTree__table_cell"
-                role="cell"
-              >
-                <span
-                  dangerouslySetInnerHTML={
-                    {
-                      "__html": "The values to show in the table",
-                    }
-                  }
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-  <div
-    className="my-4"
-  >
-    <div
-      className="font-weight-bold"
-    >
-      Output Schema
-    </div>
-    <div
-      className="py-2"
-    >
-      <div
-        className="text-muted"
-      >
-        No output schema provided
-      </div>
-    </div>
-  </div>
-  <div
-    className="my-4"
-  >
-    <div
-      className="font-weight-bold"
-    >
-      Definition
-    </div>
-    <div
-      className="py-2"
-    >
-      <div
-        className="text-muted"
-      >
-        Definition not available for built-in bricks
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
 exports[`Storyshots Components/EllipsisMenu Multiple Menu 1`] = `
 <div
   className="card"
@@ -1849,6 +1250,605 @@ exports[`Storyshots Components/OnboardingChecklistCard Default 1`] = `
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Components/PackageDetail Amazon Search 1`] = `
+<div
+  className="root"
+>
+  <div
+    className="d-flex justify-content-between"
+  >
+    <div>
+      <h3
+        className="text-left"
+      >
+        Amazon search in new tab
+         
+        <svg
+          aria-hidden="true"
+          className="svg-inline--fa fa-cube fa-w-16 fa-fw fa-1x "
+          color="#241C32"
+          data-icon="cube"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          style={{}}
+          viewBox="0 0 512 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+            fill="currentColor"
+            style={{}}
+          />
+        </svg>
+      </h3>
+      <p>
+        <code
+          className="p-0"
+        >
+          amazon/search
+        </code>
+      </p>
+    </div>
+  </div>
+  <div
+    className="my-4"
+  >
+    <div
+      className="font-weight-bold"
+    >
+      Description
+    </div>
+    <div
+      className="py-2"
+    >
+      Runs a Amazon search in a new tab
+    </div>
+  </div>
+  <div
+    className="my-4"
+  >
+    <div
+      className="font-weight-bold"
+    >
+      Input Schema
+    </div>
+    <div
+      className="py-2"
+    >
+      <div>
+        <button
+          className="p-0 mb-3 btn btn-link"
+          disabled={false}
+          onClick={[Function]}
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-clipboard fa-w-12 "
+            data-icon="clipboard"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 384 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M384 112v352c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h80c0-35.29 28.71-64 64-64s64 28.71 64 64h80c26.51 0 48 21.49 48 48zM192 40c-13.255 0-24 10.745-24 24s10.745 24 24 24 24-10.745 24-24-10.745-24-24-24m96 114v-20a6 6 0 0 0-6-6H102a6 6 0 0 0-6 6v20a6 6 0 0 0 6 6h180a6 6 0 0 0 6-6z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+           Copy Argument YAML
+        </button>
+        <table
+          className="table table-sm"
+          role="table"
+        >
+          <thead>
+            <tr
+              role="row"
+            >
+              <th
+                colSpan={1}
+                role="columnheader"
+              >
+                Name
+              </th>
+              <th
+                colSpan={1}
+                role="columnheader"
+              >
+                Required
+              </th>
+              <th
+                colSpan={1}
+                role="columnheader"
+              >
+                Type
+              </th>
+              <th
+                colSpan={1}
+                role="columnheader"
+              >
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              role="row"
+            >
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span
+                  className="codeCell"
+                  onClick={[Function]}
+                  style={
+                    {
+                      "cursor": "pointer",
+                      "paddingLeft": "0rem",
+                    }
+                  }
+                  title="Toggle Row Expanded"
+                >
+                  department
+                </span>
+              </td>
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span />
+              </td>
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span
+                  className="codeCell"
+                >
+                  string enum
+                </span>
+              </td>
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "The department to search",
+                    }
+                  }
+                />
+              </td>
+            </tr>
+            <tr
+              role="row"
+            >
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span
+                  className="codeCell"
+                  onClick={[Function]}
+                  style={
+                    {
+                      "cursor": "pointer",
+                      "paddingLeft": "0rem",
+                    }
+                  }
+                  title="Toggle Row Expanded"
+                >
+                  query
+                </span>
+              </td>
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span>
+                  <svg
+                    aria-hidden="true"
+                    className="svg-inline--fa fa-check fa-w-16 text-success"
+                    data-icon="check"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    style={{}}
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                      fill="currentColor"
+                      style={{}}
+                    />
+                  </svg>
+                </span>
+              </td>
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span
+                  className="codeCell"
+                >
+                  string
+                </span>
+              </td>
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "The search query",
+                    }
+                  }
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div
+    className="my-4"
+  >
+    <div
+      className="font-weight-bold"
+    >
+      Output Schema
+    </div>
+    <div
+      className="py-2"
+    >
+      <div
+        className="text-muted"
+      >
+        No output schema provided
+      </div>
+    </div>
+  </div>
+  <div
+    className="my-4"
+  >
+    <div
+      className="font-weight-bold"
+    >
+      Definition
+    </div>
+    <div
+      className="py-2"
+    >
+      <div
+        id="ace-editor"
+        style={
+          {
+            "height": "500px",
+            "width": "100%",
+          }
+        }
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Components/PackageDetail Built In 1`] = `
+<div
+  className="root"
+>
+  <div
+    className="d-flex justify-content-between"
+  >
+    <div>
+      <h3
+        className="text-left"
+      >
+        A customizable table
+         
+        <svg
+          aria-hidden="true"
+          className="svg-inline--fa fa-cube fa-w-16 fa-fw fa-1x "
+          color="#241C32"
+          data-icon="cube"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          style={{}}
+          viewBox="0 0 512 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+            fill="currentColor"
+            style={{}}
+          />
+        </svg>
+      </h3>
+      <p>
+        <code
+          className="p-0"
+        >
+          @pixiebrix/table
+        </code>
+      </p>
+    </div>
+  </div>
+  <div
+    className="my-4"
+  >
+    <div
+      className="font-weight-bold"
+    >
+      Description
+    </div>
+    <div
+      className="py-2"
+    >
+      A customizable table that displays a list of values
+    </div>
+  </div>
+  <div
+    className="my-4"
+  >
+    <div
+      className="font-weight-bold"
+    >
+      Input Schema
+    </div>
+    <div
+      className="py-2"
+    >
+      <div>
+        <button
+          className="p-0 mb-3 btn btn-link"
+          disabled={false}
+          onClick={[Function]}
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-clipboard fa-w-12 "
+            data-icon="clipboard"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 384 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M384 112v352c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h80c0-35.29 28.71-64 64-64s64 28.71 64 64h80c26.51 0 48 21.49 48 48zM192 40c-13.255 0-24 10.745-24 24s10.745 24 24 24 24-10.745 24-24-10.745-24-24-24m96 114v-20a6 6 0 0 0-6-6H102a6 6 0 0 0-6 6v20a6 6 0 0 0 6 6h180a6 6 0 0 0 6-6z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+           Copy Argument YAML
+        </button>
+        <table
+          className="table table-sm"
+          role="table"
+        >
+          <thead>
+            <tr
+              role="row"
+            >
+              <th
+                colSpan={1}
+                role="columnheader"
+              >
+                Name
+              </th>
+              <th
+                colSpan={1}
+                role="columnheader"
+              >
+                Required
+              </th>
+              <th
+                colSpan={1}
+                role="columnheader"
+              >
+                Type
+              </th>
+              <th
+                colSpan={1}
+                role="columnheader"
+              >
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              role="row"
+            >
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span
+                  className="codeCell"
+                  onClick={[Function]}
+                  style={
+                    {
+                      "cursor": "pointer",
+                      "paddingLeft": "0rem",
+                    }
+                  }
+                  title="Toggle Row Expanded"
+                >
+                  <svg
+                    aria-hidden="true"
+                    className="svg-inline--fa fa-caret-right fa-w-6 mr-1"
+                    data-icon="caret-right"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    style={{}}
+                    viewBox="0 0 192 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                      fill="currentColor"
+                      style={{}}
+                    />
+                  </svg>
+                  columns
+                </span>
+              </td>
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span>
+                  <svg
+                    aria-hidden="true"
+                    className="svg-inline--fa fa-check fa-w-16 text-success"
+                    data-icon="check"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    style={{}}
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                      fill="currentColor"
+                      style={{}}
+                    />
+                  </svg>
+                </span>
+              </td>
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span
+                  className="codeCell"
+                >
+                  array of objects
+                </span>
+              </td>
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "Column labels and values to show",
+                    }
+                  }
+                />
+              </td>
+            </tr>
+            <tr
+              role="row"
+            >
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span
+                  className="codeCell"
+                  onClick={[Function]}
+                  style={
+                    {
+                      "cursor": "pointer",
+                      "paddingLeft": "0rem",
+                    }
+                  }
+                  title="Toggle Row Expanded"
+                >
+                  data
+                </span>
+              </td>
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span />
+              </td>
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span
+                  className="codeCell"
+                >
+                  [array, string]
+                </span>
+              </td>
+              <td
+                className="SchemaTree__table_cell"
+                role="cell"
+              >
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "The values to show in the table",
+                    }
+                  }
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div
+    className="my-4"
+  >
+    <div
+      className="font-weight-bold"
+    >
+      Output Schema
+    </div>
+    <div
+      className="py-2"
+    >
+      <div
+        className="text-muted"
+      >
+        No output schema provided
+      </div>
+    </div>
+  </div>
+  <div
+    className="my-4"
+  >
+    <div
+      className="font-weight-bold"
+    >
+      Definition
+    </div>
+    <div
+      className="py-2"
+    >
+      <div
+        className="text-muted"
+      >
+        Definition not available for built-in packages
       </div>
     </div>
   </div>
@@ -2976,7 +2976,7 @@ exports[`Storyshots Editor/LogTable No Entries 1`] = `
               Label
             </th>
             <th>
-              Block/Service
+              Brick/Integration
             </th>
             <th>
               Message/Error
@@ -3038,7 +3038,7 @@ exports[`Storyshots Editor/LogTable No Entries For Level 1`] = `
               Label
             </th>
             <th>
-              Block/Service
+              Brick/Integration
             </th>
             <th>
               Message/Error
@@ -3100,7 +3100,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               Label
             </th>
             <th>
-              Block/Service
+              Brick/Integration
             </th>
             <th>
               Message/Error

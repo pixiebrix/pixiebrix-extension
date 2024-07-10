@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { refreshServices } from "./locator";
+import { refreshIntegrationConfigs } from "./integrationConfigLocator";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { expectContext } from "@/utils/expectContext";
 
@@ -30,6 +30,6 @@ export async function refreshRegistries(): Promise<void> {
   await Promise.all([
     // Call the @/baseRegistry copy of fetchNewPackages so it invalidates in-memory registries
     syncRemotePackages(),
-    refreshServices(),
+    refreshIntegrationConfigs(),
   ]);
 }

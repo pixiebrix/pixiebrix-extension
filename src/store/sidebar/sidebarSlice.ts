@@ -72,21 +72,21 @@ function findNextActiveKey(
   if (extensionId) {
     // Prefer form to panel -- however, it would be unusual to target an ephemeral form when reshowing the sidebar
     const extensionForm = state.forms.find(
-      (x) => x.extensionId === extensionId,
+      (x) => x.modComponentRef.modComponentId === extensionId,
     );
     if (extensionForm) {
       return eventKeyForEntry(extensionForm);
     }
 
     const extensionTemporaryPanel = state.temporaryPanels.find(
-      (x) => x.extensionId === extensionId,
+      (x) => x.modComponentRef.modComponentId === extensionId,
     );
     if (extensionTemporaryPanel) {
       return eventKeyForEntry(extensionTemporaryPanel);
     }
 
     const extensionPanel = state.panels.find(
-      (x) => x.extensionId === extensionId,
+      (x) => x.modComponentRef.modComponentId === extensionId,
     );
     if (extensionPanel) {
       return eventKeyForEntry(extensionPanel);
@@ -96,7 +96,9 @@ function findNextActiveKey(
   // Try matching on panel heading
   if (panelHeading) {
     const extensionPanel = state.panels
-      .filter((x) => blueprintId == null || x.blueprintId === blueprintId)
+      .filter(
+        (x) => blueprintId == null || x.modComponentRef.modId === blueprintId,
+      )
       .find((x) => x.heading === panelHeading);
     if (extensionPanel) {
       return eventKeyForEntry(extensionPanel);
@@ -106,7 +108,7 @@ function findNextActiveKey(
   // Try matching on blueprint
   if (blueprintId) {
     const blueprintPanel = state.panels.find(
-      (x) => x.blueprintId === blueprintId,
+      (x) => x.modComponentRef.modId === blueprintId,
     );
     if (blueprintPanel) {
       return eventKeyForEntry(blueprintPanel);
@@ -121,29 +123,34 @@ function findNextActiveKey(
   return null;
 }
 
-export function fixActiveTabOnRemove(
+/**
+ * Updates activeKey in place based on a removed entry. Mutates the state object.
+ */
+export function fixActiveTabOnRemoveInPlace(
   state: SidebarState,
   removedEntry: Nullishable<SidebarEntry>,
-) {
+): void {
   // Only update the active panel if the panel needs to change
   if (removedEntry && state.activeKey === eventKeyForEntry(removedEntry)) {
     const panels = [...state.forms, ...state.panels, ...state.temporaryPanels];
 
     const matchingExtension = panels.find(
-      ({ extensionId }) =>
-        "extensionId" in removedEntry &&
-        extensionId === removedEntry.extensionId,
+      ({ modComponentRef: { modComponentId } }) =>
+        "modComponentRef" in removedEntry &&
+        modComponentId === removedEntry.modComponentRef.modComponentId,
     );
 
     if (matchingExtension) {
       state.activeKey = eventKeyForEntry(matchingExtension);
     } else {
+      // No mod component match, try finding another panel for the mod
+
       const matchingMod = panels.find(
-        ({ blueprintId }) =>
-          "blueprintId" in removedEntry &&
-          // Need to check for removedEntry.blueprintId to avoid switching between ModComponentBases that don't have blueprint ids
-          blueprintId === removedEntry.blueprintId &&
-          blueprintId,
+        ({ modComponentRef: { modId } }) =>
+          "modComponentRef" in removedEntry &&
+          modId === removedEntry.modComponentRef.modId &&
+          // Require modId to avoid switching between panels of standalone mod components
+          modId,
       );
 
       if (matchingMod) {
@@ -216,7 +223,7 @@ const sidebarSlice = createSlice({
 
       const entry = remove(state.forms, (form) => form.nonce === nonce)[0];
 
-      fixActiveTabOnRemove(state, entry);
+      fixActiveTabOnRemoveInPlace(state, entry);
     },
     invalidatePanels(state) {
       for (const panel of state.panels) {
@@ -297,14 +304,16 @@ const sidebarSlice = createSlice({
         (oldPanel) =>
           (oldPanel.isUnavailable || oldPanel.isConnecting) &&
           !action.payload.panels.some(
-            (newPanel) => newPanel.extensionId === oldPanel.extensionId,
+            (newPanel) =>
+              newPanel.modComponentRef.modComponentId ===
+              oldPanel.modComponentRef.modComponentId,
           ),
       );
 
       // For now, pick an arbitrary order that's stable. There's no guarantees on which order panels are registered
       state.panels = sortBy(
         [...oldPanels, ...castDraft(action.payload.panels)],
-        (panel) => panel.extensionId,
+        (panel) => panel.modComponentRef.modComponentId,
       );
 
       // Try fulfilling the pendingActivePanel request
@@ -340,7 +349,7 @@ const sidebarSlice = createSlice({
         closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = false;
       }
 
-      fixActiveTabOnRemove(state, entry);
+      fixActiveTabOnRemoveInPlace(state, entry);
     },
     closeTab(state, action: PayloadAction<string>) {
       state.closedTabs[action.payload] = true;
@@ -376,7 +385,7 @@ const sidebarSlice = createSlice({
           const { removedEntry, forms } = action.payload;
 
           state.forms = castDraft(forms);
-          fixActiveTabOnRemove(state, removedEntry);
+          fixActiveTabOnRemoveInPlace(state, removedEntry);
         }
       })
       .addCase(addTemporaryPanel.fulfilled, (state, action) => {
@@ -391,7 +400,7 @@ const sidebarSlice = createSlice({
           const { removedEntry, temporaryPanels } = action.payload;
 
           state.temporaryPanels = castDraft(temporaryPanels);
-          fixActiveTabOnRemove(state, removedEntry);
+          fixActiveTabOnRemoveInPlace(state, removedEntry);
         }
       })
       .addCase(resolveTemporaryPanel.fulfilled, (state, action) => {
@@ -399,7 +408,7 @@ const sidebarSlice = createSlice({
           const { resolvedEntry, temporaryPanels } = action.payload;
 
           state.temporaryPanels = castDraft(temporaryPanels);
-          fixActiveTabOnRemove(state, resolvedEntry);
+          fixActiveTabOnRemoveInPlace(state, resolvedEntry);
         }
       });
   },

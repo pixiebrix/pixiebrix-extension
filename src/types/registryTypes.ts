@@ -17,15 +17,12 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { type ValueOf } from "type-fest";
+import { type Tagged, type ValueOf } from "type-fest";
 
 /**
  * A brick registry id conforming to `@scope/collection/name`
  */
-export type RegistryId = string & {
-  // Nominal subtyping
-  _registryIdBrand: never;
-};
+export type RegistryId = Tagged<string, "RegistryId">;
 
 /**
  * Scope for inner definitions
@@ -53,27 +50,45 @@ export type DefinitionKind = ValueOf<typeof DefinitionKinds>;
 /**
  * Simple semantic version number, major.minor.patch
  */
-export type SemVerString = string & {
-  _semVerBrand: never;
-};
+export type SemVerString = Tagged<string, "SemVer">;
 
 /**
- * Metadata about a Brick, StarterBrick, Integration, or Mod.
+ * Registry item metadata definition shape.
+ *
+ * Use PackageInstance instead if expecting a package instance, e.g., `Brick`, `StarterBrick`, `Integration`.
+ *
+ * @see Definition.metadata
+ * @see PackageInstance
  */
-export interface Metadata {
+export type Metadata = {
   /**
-   * Registry id in the external registry
+   * Registry id in the external package registry.
    */
   readonly id: RegistryId;
 
   /**
-   * Human-readable name
+   * Human-readable name.
    */
   readonly name: string;
 
+  /**
+   * An optional human-readable description.
+   */
+  /**
+   * An optional human-readable description.
+   */
   readonly description?: string;
 
-  // Currently optional because it defaults to the browser extension version for bricks defined in JS
+  /**
+   * The semantic version of the package.
+   *
+   * Currently optional because it defaults to the browser extension version for bricks defined in JS.
+   */
+  /**
+   * The semantic version of the package.
+   *
+   * Currently optional because it defaults to the browser extension version for bricks defined in JS.
+   */
   readonly version?: SemVerString;
 
   /**
@@ -82,6 +97,20 @@ export interface Metadata {
    */
   // FIXME: this type is wrong. In practice, the value should be a semantic version range, e.g., >=1.4.0
   readonly extensionVersion?: SemVerString;
+};
+
+/**
+ * Interface for registry package instances, i.e., `Brick`, `StarterBrick`, and `Integration`.
+ *
+ * NOTE: mod definitions exist in the registry, but are not instantiated as a package instance object.
+ *
+ * Introduced in 2.0.5 to disambiguate usage with definition `Metadata`.
+ *
+ * @since 2.0.5
+ * @see Metadata
+ */
+export interface PackageInstance extends Metadata {
+  // Type currently matches Metadata, given that instances used to extend directly from Metadata
 }
 
 /**
@@ -102,9 +131,9 @@ export type Sharing = {
 /**
  * A definition in the PixieBrix registry
  */
-export interface Definition<K extends DefinitionKind = DefinitionKind> {
+export interface Definition<Kind extends DefinitionKind = DefinitionKind> {
   apiVersion: ApiVersion;
-  kind: K;
+  kind: Kind;
   metadata: Metadata;
 }
 
@@ -117,13 +146,13 @@ export type InnerDefinitions = Record<string, UnknownObject>;
  * A reference to an entry in the mod's `definitions` map. _Not a valid RegistryId_.
  * @see InnerDefinitions
  */
-export type InnerDefinitionRef = string & {
-  // Nominal subtyping
-  _innerDefinitionRefBrand: never;
-};
+export type InnerDefinitionRef = Tagged<string, "InnerDefinitionRef">;
 
-export interface RegistryItem<T extends RegistryId = RegistryId> {
-  id: T;
+/**
+ * A registry item with an id.
+ */
+export interface RegistryItem<Id extends RegistryId = RegistryId> {
+  id: Id;
 }
 
 /**

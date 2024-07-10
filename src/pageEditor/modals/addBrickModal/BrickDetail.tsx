@@ -2,7 +2,7 @@ import React from "react";
 import { type Brick } from "@/types/brickTypes";
 import { type MarketplaceListing } from "@/types/contract";
 import { Button } from "react-bootstrap";
-import BrickIcon from "@/components/BrickIcon";
+import PackageIcon from "@/components/PackageIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
@@ -19,7 +19,7 @@ const BrickDetail: React.FunctionComponent<{
     <div className="d-flex justify-content-between">
       <div>
         <h4>
-          {brick.name} <BrickIcon brick={brick} />
+          {brick.name} <PackageIcon packageOrMetadata={brick} />
         </h4>
         <code>{brick.id}</code>
         <p>{brick.description}</p>

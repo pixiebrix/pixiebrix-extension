@@ -18,8 +18,9 @@
 import { type BrickOptions, type RunMetadata } from "@/types/runtimeTypes";
 import { define, derive } from "cooky-cutter";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 /**
  * Factory for BrickOptions to pass to Brick.run method.
@@ -32,11 +33,14 @@ export const brickOptionsFactory = define<BrickOptions>({
   ctxt() {
     return {};
   },
-  platform: () => contentScriptPlatform,
-  logger: (i: number) =>
-    new ConsoleLogger({
-      extensionId: uuidSequence(i),
-    }),
+  platform: (_i: number) => contentScriptPlatform,
+  logger(_i: number) {
+    const modComponentRef = modComponentRefFactory();
+    // MessageContext expects undefined instead of null for blueprintId
+    return new ConsoleLogger(
+      mapModComponentRefToMessageContext(modComponentRef),
+    );
+  },
   root: (_i: number) => document,
   runPipeline: (_i: number) =>
     jest.fn().mockRejectedValue(new Error("runPipeline mock not implemented")),
@@ -47,7 +51,7 @@ export const brickOptionsFactory = define<BrickOptions>({
   meta: derive<BrickOptions, RunMetadata>(
     (options) => ({
       runId: null,
-      extensionId: options.logger?.context.extensionId,
+      extensionId: options.logger?.context.modComponentId,
       branches: [],
     }),
     "logger",

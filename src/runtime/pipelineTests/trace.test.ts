@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,
@@ -42,8 +42,8 @@ const addEntryMock = jest.mocked(traces.addEntry);
 const addExitMock = jest.mocked(traces.addExit);
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick, throwBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick, throwBrick]);
   addEntryMock.mockReset();
   addExitMock.mockReset();
 });
@@ -235,7 +235,9 @@ describe("Trace normal execution", () => {
       instanceId,
     };
 
-    const logger = new ConsoleLogger().childLogger({ extensionId });
+    const logger = new ConsoleLogger().childLogger({
+      modComponentId: extensionId,
+    });
 
     await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
       ...testOptions("v2"),
@@ -300,7 +302,9 @@ describe("Trace normal execution", () => {
       },
     ];
 
-    const logger = new ConsoleLogger().childLogger({ extensionId });
+    const logger = new ConsoleLogger().childLogger({
+      modComponentId: extensionId,
+    });
 
     await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
       ...testOptions("v2"),
@@ -353,7 +357,9 @@ describe("Trace normal execution", () => {
       },
     ];
 
-    const logger = new ConsoleLogger().childLogger({ extensionId });
+    const logger = new ConsoleLogger().childLogger({
+      modComponentId: extensionId,
+    });
 
     await expect(async () => {
       await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {

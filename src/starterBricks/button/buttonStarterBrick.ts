@@ -28,7 +28,6 @@ import {
   acquireElement,
   awaitElementOnce,
   onNodeRemoved,
-  selectModComponentContext,
 } from "@/starterBricks/helpers";
 import {
   StarterBrickABC,
@@ -93,6 +92,7 @@ import {
   type ButtonTargetMode,
 } from "@/starterBricks/button/buttonStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { mapModComponentToMessageContext } from "@/utils/modUtils";
 
 const DATA_ATTR = "data-pb-uuid";
 
@@ -474,7 +474,7 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
     }
 
     const modComponentLogger = this.logger.childLogger(
-      selectModComponentContext(modComponent),
+      mapModComponentToMessageContext(modComponent),
     );
 
     console.debug(
@@ -689,7 +689,7 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
     }
   }
 
-  async runModComponents({ extensionIds = null }: RunArgs): Promise<void> {
+  async runModComponents({ modComponentIds = null }: RunArgs): Promise<void> {
     if (this.containers.size === 0 || this.modComponents.length === 0) {
       return;
     }
@@ -722,7 +722,10 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
         // Run in order so that the order stays the same for where they get rendered. The service
         // context is the only thing that's async as part of the initial configuration right now
 
-        if (extensionIds != null && !extensionIds.includes(modComponent.id)) {
+        if (
+          modComponentIds != null &&
+          !modComponentIds.includes(modComponent.id)
+        ) {
           continue;
         }
 
@@ -759,8 +762,8 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
             reportError(error, {
               context: {
                 deploymentId: modComponent._deployment?.id,
-                extensionPointId: modComponent.extensionPointId,
-                extensionId: modComponent.id,
+                starterBrickId: modComponent.extensionPointId,
+                modComponentId: modComponent.id,
               },
             });
           }

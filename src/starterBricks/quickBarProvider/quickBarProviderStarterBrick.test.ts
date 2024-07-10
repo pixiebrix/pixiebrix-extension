@@ -25,7 +25,7 @@ import {
   RootReader,
   tick,
 } from "@/starterBricks/starterBrickTestUtils";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import {
@@ -67,7 +67,9 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<HydratedModComponent<QuickBarProviderConfig>>({
+const modComponentFactory = define<
+  HydratedModComponent<QuickBarProviderConfig>
+>({
   apiVersion: "v3",
   _hydratedModComponentBrand: undefined as never,
   id: uuidSequence,
@@ -76,9 +78,9 @@ const extensionFactory = define<HydratedModComponent<QuickBarProviderConfig>>({
   _recipe: undefined,
   label: "Test Extension",
   config: define<QuickBarProviderConfig>({
-    rootAction: {
+    rootAction: () => ({
       title: "Test Root Action",
-    },
+    }),
     generator: () => [] as BrickPipeline,
   }),
 });
@@ -97,8 +99,8 @@ const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
 
 describe("quickBarProviderExtension", () => {
   beforeEach(() => {
-    blockRegistry.clear();
-    blockRegistry.register([rootReader]);
+    brickRegistry.clear();
+    brickRegistry.register([rootReader]);
     rootReader.readCount = 0;
     rootReader.ref = null;
   });
@@ -109,7 +111,7 @@ describe("quickBarProviderExtension", () => {
     const starterBrick = fromJS(getPlatform(), starterBrickFactory());
 
     starterBrick.registerModComponent(
-      extensionFactory({
+      modComponentFactory({
         extensionPointId: starterBrick.id,
       }),
     );
@@ -117,6 +119,7 @@ describe("quickBarProviderExtension", () => {
     expect(quickBarRegistry.currentActions).toHaveLength(
       NUM_DEFAULT_QUICKBAR_ACTIONS,
     );
+
     await starterBrick.install();
     await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
@@ -166,7 +169,7 @@ describe("quickBarProviderExtension", () => {
     const starterBrick = fromJS(getPlatform(), starterBrickFactory());
 
     starterBrick.registerModComponent(
-      extensionFactory({
+      modComponentFactory({
         extensionPointId: starterBrick.id,
         config: {
           generator: [] as BrickPipeline,

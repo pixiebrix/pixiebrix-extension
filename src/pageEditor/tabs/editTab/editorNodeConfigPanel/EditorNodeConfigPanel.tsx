@@ -20,14 +20,14 @@ import cx from "classnames";
 import styles from "./EditorNodeConfigPanel.module.scss";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BrickConfiguration from "@/pageEditor/tabs/effect/BrickConfiguration";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 import { useSelector } from "react-redux";
-import { selectActiveNodeInfo } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveNodeInfo } from "@/pageEditor/store/editor/editorSelectors";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { MARKETPLACE_URL } from "@/urlConstants";
 import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview";
@@ -37,16 +37,16 @@ const EditorNodeConfigPanel: React.FC = () => {
   const {
     blockId: brickId,
     path: brickFieldName,
-    blockConfig,
+    blockConfig: brickConfig,
   } = useSelector(selectActiveNodeInfo) ?? {};
-  const { comments } = blockConfig ?? {};
+  const { comments } = brickConfig ?? {};
 
   const { data: brickInfo } = useAsyncState(async () => {
     if (brickId == null) {
       return null;
     }
 
-    const brick = await blockRegistry.lookup(brickId);
+    const brick = await brickRegistry.lookup(brickId);
     return {
       block: brick,
       type: await getType(brick),

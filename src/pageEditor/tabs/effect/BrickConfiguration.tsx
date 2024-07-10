@@ -43,10 +43,29 @@ import {
 import useAsyncEffect from "use-async-effect";
 import CommentEffect from "@/bricks/effects/comment";
 import useAsyncState from "@/hooks/useAsyncState";
-import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/store/editor/editorSelectors";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { BrickTypes } from "@/runtime/runtimeTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { useDispatch } from "react-redux";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+
+/**
+ * Handles possible NPE from `config.value` being undefined.
+ * This originally happened during the extension -> modComponent form state migration.
+ * See https://github.com/pixiebrix/pixiebrix-extension/issues/8781
+ */
+function useResetBrickPipeline(name: string) {
+  const context = useFormikContext<ModComponentFormState>();
+  const [config] = useField<BrickConfig | undefined>(name);
+  const dispatch = useDispatch();
+
+  if (!config.value) {
+    dispatch(editorActions.resetActivatedModComponentFormState(context.values));
+  }
+
+  return { context, config };
+}
 
 const BrickConfiguration: React.FunctionComponent<{
   name: string;
@@ -54,15 +73,14 @@ const BrickConfiguration: React.FunctionComponent<{
 }> = ({ name, brickId }) => {
   const configName = partial(joinName, name);
 
-  const context = useFormikContext<ModComponentFormState>();
-  const [config] = useField<BrickConfig>(name);
-  const [_rootField, _rootFieldMeta, rootFieldHelpers] = useField<BrickConfig>(
-    configName("root"),
-  );
+  const { context, config } = useResetBrickPipeline(name);
+
+  const [_rootField, _rootFieldMeta, rootFieldHelpers] =
+    useField<BrickConfig | null>(configName("root"));
   const brickErrors = getIn(context.errors, name);
   const isComment = brickId === CommentEffect.BRICK_ID;
 
-  const [{ block: brick, error }, BrickOptions] = useBrickOptions(brickId);
+  const [{ brick, error }, BrickOptions] = useBrickOptions(brickId);
 
   // Conditionally show Advanced Options "Condition" and "Target" depending on the value of brickType.
   // If brickType is undefined, don't show the options.
@@ -73,26 +91,27 @@ const BrickConfiguration: React.FunctionComponent<{
   );
 
   const { data: isRootAware } = useAsyncState(async () => {
-    const inputSchema = inputProperties(brick.inputSchema);
+    const inputSchema = inputProperties(brick?.inputSchema);
+
     // Handle DOM bricks that were upgraded to be root-aware
     if ("isRootAware" in inputSchema) {
-      return Boolean(config.value.config.isRootAware);
+      return Boolean(config.value?.config.isRootAware);
     }
 
-    return brick.isRootAware();
-  }, [brick, config.value.config.isRootAware]);
+    return brick?.isRootAware() ?? false;
+  }, [brick, config.value?.config.isRootAware]);
 
-  const advancedOptionsRef = useRef<HTMLDivElement>();
+  const advancedOptionsRef = useRef<HTMLDivElement>(null);
 
   useAsyncEffect(
     async () => {
       // Effect to clear out unused `root` field. Technically, `root` could contain a selector when used with `document`
       // or `inherit` mode, but we don't want to support that in the Page Editor because it's legacy behavior.
-      if (config.value.rootMode !== "element") {
+      if (config.value?.rootMode !== "element") {
         await rootFieldHelpers.setValue(null);
       }
     }, // Dependencies - rootFieldHelpers changes reference every render
-    [config.value.rootMode],
+    [config.value?.rootMode],
   );
 
   const rootElementSchema: SchemaFieldProps = useMemo(
@@ -198,7 +217,7 @@ const BrickConfiguration: React.FunctionComponent<{
           />
         )}
 
-        {config.value.rootMode === "element" && (
+        {config.value?.rootMode === "element" && (
           <SchemaField {...rootElementSchema} omitIfEmpty />
         )}
 

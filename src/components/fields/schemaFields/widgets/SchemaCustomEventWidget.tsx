@@ -16,7 +16,7 @@
  */
 
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
-import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/slices/editorSelectors";
+import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/store/editor/editorSelectors";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import React from "react";
 import { useSelector } from "react-redux";

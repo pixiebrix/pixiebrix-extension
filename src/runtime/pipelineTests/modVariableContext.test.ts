@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   contextBrick,
   echoBrick,
@@ -33,8 +33,8 @@ import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick]);
 });
 
 describe("modVariableContext", () => {

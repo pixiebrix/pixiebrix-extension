@@ -22,7 +22,7 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
 import { compact, flatten } from "lodash";
-import { locator as serviceLocator } from "@/background/locator";
+import { integrationConfigLocator as serviceLocator } from "@/background/integrationConfigLocator";
 import { canParseUrl } from "@/utils/urlUtils";
 
 /**
@@ -40,7 +40,7 @@ export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
     await Promise.all(
       partnerIds.map(async (id) => {
         try {
-          return await serviceLocator.locateAllForService(id);
+          return await serviceLocator.findAllSanitizedConfigsForIntegration(id);
         } catch {
           // `serviceLocator` throws if the user doesn't have the service definition. Handle case where the brick
           // definition for CONTROL_ROOM_OAUTH_SERVICE_ID hasn't been made available on the server yet

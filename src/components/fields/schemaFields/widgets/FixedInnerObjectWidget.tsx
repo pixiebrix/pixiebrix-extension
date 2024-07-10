@@ -31,7 +31,7 @@ const FixedInnerObjectWidget: React.FC<SchemaFieldProps> = (props) => {
   const Fields = useMemo(() => {
     let objectSchema = schema;
 
-    if (schema.oneOf) {
+    if (objectSchema.oneOf) {
       const matches = objectSchema.oneOf.filter(
         (x) => typeof x !== "boolean" && x.type === "object",
       );
@@ -52,7 +52,7 @@ const FixedInnerObjectWidget: React.FC<SchemaFieldProps> = (props) => {
       return WorkshopMessageWidget;
     }
 
-    return genericOptionsFactory(objectSchema, null, {
+    return genericOptionsFactory(objectSchema, undefined, {
       preserveSchemaOrder: true,
     });
   }, [schema]);

@@ -271,25 +271,29 @@ export type HydratedModComponent<Config extends UnknownObject = UnknownObject> =
     /**
      * Brand for nominal typing.
      */
+    // XXX: defining our own brand vs. using type-fest's tagged type because we need to be able to apply the brand
+    // in cooky-cutter factory definitions
     _hydratedModComponentBrand: never;
   };
 
 /**
- * A reference to an ModComponentBase.
+ * A reference to a ModComponentBase, including the associated mod and starter brick. Prefer using the mod component's
+ * UUID directly if information about the mod and/or starter brick are not required.
+ * @see ModComponentBase
  */
 export type ModComponentRef = {
   /**
    * UUID of the ModComponent.
    */
-  extensionId: UUID;
+  modComponentId: UUID;
 
   /**
-   * Registry id of the StarterBrick.
+   * Mod the ModComponent is from, or nullish for a standalone ModComponent.
    */
-  extensionPointId: RegistryId;
+  modId: Nullishable<RegistryId>;
 
   /**
-   * Mod the ModComponent is from.
+   * Registry id of the mod component's StarterBrick.
    */
-  blueprintId: Nullishable<RegistryId>;
+  starterBrickId: RegistryId;
 };

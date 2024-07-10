@@ -18,7 +18,7 @@
 import { render } from "@/pageEditor/testHelpers";
 import React from "react";
 import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { act, screen } from "@testing-library/react";
@@ -46,7 +46,9 @@ function newId(): UUID {
   return uuidSequence(idSequence++);
 }
 
-const servicesLocateMock = jest.mocked(services.locate);
+const findSanitizedIntegrationConfigMock = jest.mocked(
+  integrationConfigLocator.findSanitizedIntegrationConfig,
+);
 
 const TEST_SPREADSHEET_ID = newId();
 const OTHER_TEST_SPREADSHEET_ID = newId();
@@ -113,7 +115,7 @@ const renderWithValues = async (initialValues: FormikValues) => {
 
 beforeAll(() => {
   registerDefaultWidgets();
-  servicesLocateMock.mockImplementation(
+  findSanitizedIntegrationConfigMock.mockImplementation(
     async (serviceId) => servicesLookup[serviceId],
   );
   getAllSpreadsheetsMock.mockResolvedValue(fileListResponse);

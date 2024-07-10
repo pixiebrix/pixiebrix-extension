@@ -23,7 +23,7 @@ import { type UUID } from "@/types/stringTypes";
 import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { GOOGLE_OAUTH2_PKCE_INTEGRATION_ID } from "@/contrib/google/sheets/core/schemas";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { getGoogleUserEmail } from "@/contrib/google/sheets/core/sheetsApi";
 
 /**
@@ -37,10 +37,11 @@ export const autoConfigurations: Record<
   AutoConfigureIntegrationConfig
 > = {
   async [GOOGLE_OAUTH2_PKCE_INTEGRATION_ID](config: IntegrationConfig) {
-    const googleAccount = await services.locate(
-      config.integrationId,
-      config.id,
-    );
+    const googleAccount =
+      await integrationConfigLocator.findSanitizedIntegrationConfig(
+        config.integrationId,
+        config.id,
+      );
     try {
       const userEmail = await getGoogleUserEmail(googleAccount);
       return {

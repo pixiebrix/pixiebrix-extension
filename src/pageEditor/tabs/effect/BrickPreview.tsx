@@ -17,7 +17,7 @@
 
 import React, { useEffect, useReducer } from "react";
 import { type BrickConfig } from "@/bricks/types";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
 import Loader from "@/components/Loader";
@@ -44,7 +44,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { type BaseStarterBrickState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseStarterBrickState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -81,7 +81,7 @@ export function usePreviewInfo(
   blockId: RegistryId,
 ): FetchableAsyncState<PreviewInfo> {
   return useAsyncState(async () => {
-    const block = await blockRegistry.lookup(blockId);
+    const block = await brickRegistry.lookup(blockId);
     const type = await getType(block);
     return {
       block,

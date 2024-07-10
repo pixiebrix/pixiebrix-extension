@@ -73,7 +73,14 @@ const knownVars = {
 const Template: Story<typeof VariablesTree> = () => {
   const source = "root:Array Composite Reader";
   const vars = knownVars[source];
-  return <VariablesTree vars={vars} onVarSelect={noop} likelyVariable={null} />;
+  return (
+    <VariablesTree
+      vars={vars}
+      onVarSelect={noop}
+      likelyVariable={null}
+      activeKeyPath={null}
+    />
+  );
 };
 
 export const Default = Template.bind({});
