@@ -40,7 +40,7 @@ import {
   updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
 import {
-  cancelTemporaryPanelsForExtension,
+  cancelTemporaryPanelsForModComponent,
   updatePanelDefinition,
   waitForTemporaryPanel,
 } from "@/platform/panels/panelController";
@@ -283,7 +283,7 @@ describe("DisplayTemporaryInfo", () => {
 
     expect(showModal).not.toHaveBeenCalled();
     expect(showTemporarySidebarPanel).not.toHaveBeenCalled();
-    expect(cancelTemporaryPanelsForExtension).toHaveBeenCalled();
+    expect(cancelTemporaryPanelsForModComponent).toHaveBeenCalled();
 
     expect(
       document.body.querySelector(".pixiebrix-tooltips-container"),

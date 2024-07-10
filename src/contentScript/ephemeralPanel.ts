@@ -19,7 +19,7 @@ import type { Except, JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
 import {
   cancelTemporaryPanels,
-  cancelTemporaryPanelsForExtension,
+  cancelTemporaryPanelsForModComponent,
   registerEmptyTemporaryPanel,
   stopWaitingForTemporaryPanels,
   updatePanelDefinition,
@@ -140,7 +140,7 @@ export async function ephemeralPanel({
   } else {
     // Popover/modal location
     // Clear existing to remove stale modals/popovers
-    await cancelTemporaryPanelsForExtension(
+    await cancelTemporaryPanelsForModComponent(
       panelEntryMetadata.modComponentRef.modComponentId,
     );
 
