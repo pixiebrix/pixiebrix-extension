@@ -124,7 +124,7 @@ export async function setAnimationFrameInterval(
  * Wait for the document root element to be present.
  */
 export async function waitForDocumentRoot(): Promise<void> {
-  while (!document.body) {
+  while (!document.documentElement) {
     // eslint-disable-next-line no-await-in-loop -- Polling pattern
     await sleep(20);
   }
