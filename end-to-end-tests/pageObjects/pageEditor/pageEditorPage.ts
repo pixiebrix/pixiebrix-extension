@@ -122,9 +122,8 @@ export class PageEditorPage extends BasePageObject {
     );
   }
 
+  @ModifiesModState
   async saveStandaloneMod(modName: string, modUuid: UUID) {
-    // Wait for redux to persist the page editor mod changes before saving.
-    await this.waitForReduxUpdate();
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
     await modListItem.saveButton.click();

@@ -146,7 +146,6 @@ const CreateModModalBody: React.FC = () => {
   );
 
   // `selectActiveModId` returns the mod id if a mod is selected. Assumption: if the CreateModal
-  // `selectActiveModId` returns the mod id if a mod is selected. Assumption: if the CreateModal
   // is open, and a mod is active, then we're performing a "Save as New" on that mod.
   const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId =
