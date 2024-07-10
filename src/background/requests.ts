@@ -17,7 +17,7 @@
 
 import axios, { type AxiosResponse, type Method } from "axios";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
-import serviceRegistry from "@/integrations/registry";
+import integrationRegistry from "@/integrations/registry";
 import { getExtensionToken } from "@/auth/authStorage";
 import { integrationConfigLocator } from "@/background/integrationConfigLocator";
 import { isEmpty } from "lodash";
@@ -158,7 +158,7 @@ async function authenticate(
     );
   }
 
-  const integration = await serviceRegistry.lookup(config.serviceId);
+  const integration = await integrationRegistry.lookup(config.serviceId);
 
   // The PixieBrix API doesn't use integration configurations
   if (integration.id === PIXIEBRIX_INTEGRATION_ID) {
@@ -278,7 +278,7 @@ async function _performConfiguredRequest(
     const axiosError = selectAxiosError(error);
 
     if (axiosError && isAuthenticationAxiosError(axiosError)) {
-      const integration = await serviceRegistry.lookup(
+      const integration = await integrationRegistry.lookup(
         integrationConfig.serviceId,
       );
       if (integration.isOAuth2 || integration.isToken) {
@@ -343,14 +343,14 @@ async function getIntegrationMessageContext(
   // Try resolving the integration to get metadata to include with the error
   let resolvedIntegration: Integration | undefined;
   try {
-    resolvedIntegration = await serviceRegistry.lookup(config.serviceId);
+    resolvedIntegration = await integrationRegistry.lookup(config.serviceId);
   } catch {
     // NOP
   }
 
   return {
-    serviceId: config.serviceId,
-    serviceVersion: resolvedIntegration?.version,
+    integrationId: config.serviceId,
+    integrationVersion: resolvedIntegration?.version,
     authId: config.id,
   };
 }

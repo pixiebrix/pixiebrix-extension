@@ -134,7 +134,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   public override uninstall(): void {
     const modComponents = this.modComponents.splice(0);
     this.clearModComponentInterfaceAndEvents(modComponents.map((x) => x.id));
-    this.platform.panels.unregisterExtensionPoint(this.id);
+    this.platform.panels.unregisterStarterBrick(this.id);
     console.debug(
       "SidebarStarterBrick:uninstall: stop listening for sidebarShowEvents",
     );
@@ -151,8 +151,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     // Don't call this.clearModComponentInterfaceAndEvents to keep the panel.
     // Instead, mutate this.modComponents to exclude id
     remove(this.modComponents, (x) => x.id === modComponentId);
-    this.platform.panels.unregisterExtensionPoint(this.id, {
-      preserveExtensionIds: [modComponentId],
+    this.platform.panels.unregisterStarterBrick(this.id, {
+      preserveModComponentIds: [modComponentId],
     });
     this.platform.panels.showEvent.remove(this.runModComponents);
   }
@@ -204,10 +204,10 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       // noinspection ExceptionCaughtLocallyJS
       throw new NoRendererError();
     } catch (error) {
-      const ref = {
-        extensionId: modComponent.id,
-        extensionPointId: this.id,
-        blueprintId: modComponent._recipe?.id,
+      const modComponentRef = {
+        modComponentId: modComponent.id,
+        starterBrickId: this.id,
+        modId: modComponent._recipe?.id,
       };
 
       const meta = {
@@ -216,7 +216,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       };
 
       if (error instanceof HeadlessModeError) {
-        this.platform.panels.upsertPanel(ref, heading, {
+        this.platform.panels.upsertPanel(modComponentRef, heading, {
           blockId: error.blockId,
           key: uuidv4(),
           ctxt: error.ctxt,
@@ -225,7 +225,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         });
       } else {
         componentLogger.error(error);
-        this.platform.panels.upsertPanel(ref, heading, {
+        this.platform.panels.upsertPanel(modComponentRef, heading, {
           key: uuidv4(),
           error: serializeError(error),
           ...meta,
@@ -257,8 +257,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       this.logger
         .childLogger({
           deploymentId: modComponent._deployment?.id,
-          blueprintId: modComponent._recipe?.id,
-          extensionId: modComponent.id,
+          modId: modComponent._recipe?.id,
+          modComponentId: modComponent.id,
         })
         .error(error);
     }
@@ -345,7 +345,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       );
 
       // Keep sidebar entries up-to-date regardless of trigger policy
-      this.platform.panels.unregisterExtensionPoint(this.id);
+      this.platform.panels.unregisterStarterBrick(this.id);
       return;
     }
 
@@ -362,9 +362,9 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     // the sidebar won't be visible yet on initial page load.
     this.platform.panels.reservePanels(
       this.modComponents.map((modComponent) => ({
-        extensionId: modComponent.id,
-        extensionPointId: this.id,
-        blueprintId: modComponent._recipe?.id,
+        modComponentId: modComponent.id,
+        starterBrickId: this.id,
+        modId: modComponent._recipe?.id,
       })),
     );
 
@@ -411,9 +411,9 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       // `install`ed and `runComponents` called completed at least once.
       this.platform.panels.reservePanels(
         this.modComponents.map((components) => ({
-          extensionId: components.id,
-          extensionPointId: this.id,
-          blueprintId: components._recipe?.id,
+          modComponentId: components.id,
+          starterBrickId: this.id,
+          modId: components._recipe?.id,
         })),
       );
 
@@ -426,7 +426,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         passive: true,
       });
     } else {
-      this.platform.panels.unregisterExtensionPoint(this.id);
+      this.platform.panels.unregisterStarterBrick(this.id);
     }
 
     return available;

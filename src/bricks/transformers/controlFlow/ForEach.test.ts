@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   simpleInput,
@@ -28,8 +28,8 @@ import { toExpression } from "@/utils/expressionUtils";
 const forEachBlock = new ForEach();
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, forEachBlock]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, forEachBlock]);
 });
 
 describe("ForEach", () => {

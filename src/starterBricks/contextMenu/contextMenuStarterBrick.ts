@@ -250,7 +250,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     );
 
     await getPlatform().contextMenus.register({
-      extensionId: modComponent.id,
+      modComponentId: modComponent.id,
       contexts: this.contexts ?? ["all"],
       title,
       documentUrlPatterns: patterns,
@@ -272,8 +272,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         reportError(error, {
           context: {
             deploymentId: modComponent._deployment?.id,
-            extensionPointId: modComponent.extensionPointId,
-            extensionId: modComponent.id,
+            starterBrickId: modComponent.extensionPointId,
+            modComponentId: modComponent.id,
           },
         });
         throw error;

@@ -58,7 +58,7 @@ function useResetModComponent(): (useResetConfig: Config) => Promise<void> {
 
       reportEvent(Events.PAGE_EDITOR_RESET, {
         sessionId,
-        extensionId: modComponentId,
+        modComponentId,
       });
 
       try {

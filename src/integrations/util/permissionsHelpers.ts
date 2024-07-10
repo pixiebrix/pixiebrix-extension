@@ -16,7 +16,7 @@
  */
 
 import { type Permissions } from "webextension-polyfill";
-import serviceRegistry from "@/integrations/registry";
+import integrationRegistry from "@/integrations/registry";
 import { expectContext } from "@/utils/expectContext";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
@@ -56,7 +56,7 @@ export async function collectIntegrationOriginPermissions({
     return { origins: [] };
   }
 
-  const integration = await serviceRegistry.lookup(integrationId);
+  const integration = await integrationRegistry.lookup(integrationId);
   const origins = integration.getOrigins(localConfig.config);
   return { origins };
 }

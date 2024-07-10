@@ -34,12 +34,6 @@ const modId = validateRegistryId("@test/mod");
 
 jest.mock("@/utils/notify");
 jest.mock("@/contentScript/messenger/api");
-jest.mock("@/components/ConfirmationModal", () => ({
-  __esModule: true,
-  useModals: () => ({
-    showConfirmation: jest.fn().mockResolvedValue(true),
-  }),
-}));
 
 describe("useSaveMod", () => {
   it("saves with no dirty changes", async () => {

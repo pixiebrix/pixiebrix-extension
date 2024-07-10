@@ -87,7 +87,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
       try {
         reportEvent(Events.PAGE_EDITOR_OPEN, {
           sessionId,
-          extensionId: modComponent.id,
+          modComponentId: modComponent.id,
         });
 
         const modComponentFormState =

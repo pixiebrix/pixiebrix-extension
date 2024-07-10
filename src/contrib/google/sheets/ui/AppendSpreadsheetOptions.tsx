@@ -16,7 +16,7 @@
  */
 
 import React, { useState } from "react";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/bricks/append";
@@ -121,7 +121,7 @@ const RowValuesField: React.FunctionComponent<{
   );
 };
 
-const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
+const AppendSpreadsheetOptions: React.FunctionComponent<BrickOptionProps> = ({
   name,
   configKey,
 }) => {

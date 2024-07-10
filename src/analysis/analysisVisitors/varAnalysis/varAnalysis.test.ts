@@ -27,7 +27,7 @@ import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import modRegistry from "@/modDefinitions/registry";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
@@ -443,7 +443,7 @@ describe("Collecting available vars", () => {
         }),
         brickConfigFactory(),
       ]);
-      jest.mocked(blockRegistry.allTyped).mockResolvedValue(
+      jest.mocked(brickRegistry.allTyped).mockResolvedValue(
         new Map([
           [
             formState.modComponent.brickPipeline[0].id,
@@ -783,7 +783,7 @@ describe("Collecting available vars", () => {
         },
       };
 
-      jest.mocked(blockRegistry.allTyped).mockResolvedValue(
+      jest.mocked(brickRegistry.allTyped).mockResolvedValue(
         new Map([
           [
             IdentityTransformer.BRICK_ID,
@@ -1129,7 +1129,7 @@ describe("Collecting available vars", () => {
         brickConfigFactory(),
       ]);
 
-      jest.mocked(blockRegistry.allTyped).mockResolvedValue(
+      jest.mocked(brickRegistry.allTyped).mockResolvedValue(
         new Map([
           [
             CustomFormRenderer.BRICK_ID,

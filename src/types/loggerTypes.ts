@@ -28,24 +28,24 @@ export type MessageContext = {
    * A human-readable label, e.g., provided via a `label:` directive to help identify the step context when there's
    * multiple blocks with the same id being used.
    *
-   * @see MessageContext.extensionLabel
+   * @see MessageContext.modComponentLabel
    */
   readonly label?: string;
   readonly deploymentId?: UUID;
-  readonly blueprintId?: RegistryId;
-  readonly blueprintVersion?: SemVerString;
-  readonly extensionPointId?: RegistryId;
-  readonly blockId?: RegistryId;
-  readonly blockVersion?: SemVerString;
-  readonly extensionId?: UUID;
+  readonly modId?: RegistryId;
+  readonly modVersion?: SemVerString;
+  readonly starterBrickId?: RegistryId;
+  readonly brickId?: RegistryId;
+  readonly brickVersion?: SemVerString;
+  readonly modComponentId?: UUID;
   /**
    * The human-readable label for the extension. Used to identify the extension when reporting telemetry from a
    * blueprint. (Each extension install has a different UUID)
    * @since 1.6.2
    */
-  readonly extensionLabel?: string;
-  readonly serviceId?: RegistryId;
-  readonly serviceVersion?: SemVerString;
+  readonly modComponentLabel?: string;
+  readonly integrationId?: RegistryId;
+  readonly integrationVersion?: SemVerString;
   readonly authId?: UUID;
   readonly pageName?: ContextName | "unknown";
   readonly url?: string;

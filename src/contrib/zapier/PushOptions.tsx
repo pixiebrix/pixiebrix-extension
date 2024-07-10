@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Webhook } from "@/contrib/zapier/contract";
@@ -83,7 +83,7 @@ const ZapField: React.FunctionComponent<
 
 const ObjectField = defaultFieldFactory(ObjectWidget);
 
-const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
+const PushOptions: React.FunctionComponent<BrickOptionProps> = ({
   name,
   configKey,
 }) => {

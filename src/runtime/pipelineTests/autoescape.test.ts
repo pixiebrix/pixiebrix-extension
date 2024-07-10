@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { echoBrick, simpleInput, testOptions } from "./pipelineTestHelpers";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick]);
 });
 
 describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {

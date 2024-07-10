@@ -56,6 +56,7 @@ import { produce } from "immer";
 import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
 import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBrickUtils";
 import { type MessageContext } from "@/types/loggerTypes";
+import { type SetRequired } from "type-fest";
 
 /**
  * Returns the ModComponentRef for a given mod component.
@@ -65,9 +66,9 @@ export function getModComponentRef(
   modComponent: HydratedModComponent,
 ): ModComponentRef {
   return {
-    extensionId: modComponent.id,
-    blueprintId: modComponent._recipe?.id,
-    extensionPointId: modComponent.extensionPointId,
+    modComponentId: modComponent.id,
+    modId: modComponent._recipe?.id,
+    starterBrickId: modComponent.extensionPointId,
   };
 }
 
@@ -81,12 +82,12 @@ export function mapModComponentToMessageContext(
   return {
     // The step label will be re-assigned later in reducePipeline
     label: modComponent.label ?? undefined,
-    extensionLabel: modComponent.label ?? undefined,
-    extensionId: modComponent.id,
-    extensionPointId: modComponent.extensionPointId,
+    modComponentLabel: modComponent.label ?? undefined,
+    modComponentId: modComponent.id,
+    starterBrickId: modComponent.extensionPointId,
     deploymentId: modComponent._deployment?.id,
-    blueprintId: modComponent._recipe?.id,
-    blueprintVersion: modComponent._recipe?.version,
+    modId: modComponent._recipe?.id,
+    modVersion: modComponent._recipe?.version,
   };
 }
 
@@ -96,13 +97,13 @@ export function mapModComponentToMessageContext(
  */
 export function mapModComponentRefToMessageContext(
   modComponentRef: ModComponentRef,
-): MessageContext {
+): SetRequired<MessageContext, "modComponentId" | "starterBrickId"> {
   // Fields are currently named the same. In the future, the fields might temporarily diverge.
   return {
-    extensionId: modComponentRef.extensionId,
-    extensionPointId: modComponentRef.extensionPointId,
+    modComponentId: modComponentRef.modComponentId,
+    starterBrickId: modComponentRef.starterBrickId,
     // MessageContext expects undefined instead of null/undefined
-    blueprintId: modComponentRef.blueprintId ?? undefined,
+    modId: modComponentRef.modId ?? undefined,
   };
 }
 
@@ -112,24 +113,25 @@ export function mapModComponentRefToMessageContext(
  *
  * @see getModComponentRef
  * @see mapModComponentToMessageContext
- * @throws TypeError if the extensionId or extensionPointId is missing
+ * @throws TypeError if the modComponentId or starterBrickId is missing
  */
 export function mapMessageContextToModComponentRef(
   context: MessageContext,
 ): ModComponentRef {
   assertNotNullish(
-    context.extensionId,
-    "extensionId is required for ModComponentRef",
+    context.modComponentId,
+    "modComponentId is required for ModComponentRef",
   );
   assertNotNullish(
-    context.extensionPointId,
-    "extensionPointId is required for ModComponentRef",
+    context.starterBrickId,
+    "starterBrickId is required for ModComponentRef",
   );
 
+  // Can't use "pick" because it doesn't pick up assertNotNullish checks above
   return {
-    extensionId: context.extensionId,
-    blueprintId: context.blueprintId,
-    extensionPointId: context.extensionPointId,
+    modComponentId: context.modComponentId,
+    modId: context.modId,
+    starterBrickId: context.starterBrickId,
   };
 }
 

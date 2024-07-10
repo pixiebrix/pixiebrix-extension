@@ -20,7 +20,7 @@ import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/int
 import IntegrationConfigLocator from "@/integrations/integrationConfigLocator";
 import controlRoomTokenService from "@contrib/integrations/automation-anywhere.yaml";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
-import serviceRegistry from "@/integrations/registry";
+import integrationRegistry from "@/integrations/registry";
 
 const integration = fromJS(controlRoomTokenService as any);
 const locator = new IntegrationConfigLocator();
@@ -37,12 +37,12 @@ jest.mock("@/background/messenger/api", () => {
 
 beforeEach(() => {
   appApiMock.reset();
-  serviceRegistry.clear();
+  integrationRegistry.clear();
 });
 
 describe("locator", () => {
   it("sets proxy: true for remote configurations", async () => {
-    serviceRegistry.register([integration]);
+    integrationRegistry.register([integration]);
 
     const config = remoteIntegrationConfigurationFactory({
       service: {
@@ -73,7 +73,7 @@ describe("locator", () => {
   });
 
   it("sets proxy: false for remote pushdown configurations", async () => {
-    serviceRegistry.register([integration]);
+    integrationRegistry.register([integration]);
 
     const config = remoteIntegrationConfigurationFactory({
       service: {

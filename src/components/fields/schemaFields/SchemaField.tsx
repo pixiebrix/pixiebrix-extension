@@ -49,7 +49,7 @@ const SchemaField: SchemaFieldComponent = (props) => {
     return <HeadingStyleField {...props} />;
   }
 
-  if (hasCustomWidget(uiSchema)) {
+  if (uiSchema && hasCustomWidget(uiSchema)) {
     const widget = get(
       customWidgets,
       uiSchema["ui:widget"] as keyof CustomWidgetRegistry,

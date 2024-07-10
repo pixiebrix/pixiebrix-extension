@@ -29,7 +29,7 @@ function useTreeRow({
   onSelect,
   isActive,
 }: {
-  buttonRef: MutableRefObject<HTMLElement>;
+  buttonRef: MutableRefObject<HTMLElement | null>;
   onSelect: () => void;
   isActive: boolean;
 }) {

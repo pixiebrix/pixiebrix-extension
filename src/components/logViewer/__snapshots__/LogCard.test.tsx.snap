@@ -117,7 +117,7 @@ exports[`renders empty table 1`] = `
             Label
           </th>
           <th>
-            Block/Service
+            Brick/Integration
           </th>
           <th>
             Message/Error

@@ -25,7 +25,7 @@ import {
   RootReader,
   tick,
 } from "@/starterBricks/starterBrickTestUtils";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import {
@@ -99,8 +99,8 @@ const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
 
 describe("quickBarProviderExtension", () => {
   beforeEach(() => {
-    blockRegistry.clear();
-    blockRegistry.register([rootReader]);
+    brickRegistry.clear();
+    brickRegistry.register([rootReader]);
     rootReader.readCount = 0;
     rootReader.ref = null;
   });

@@ -33,7 +33,7 @@ import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
-import integrationsRegistry from "@/integrations/registry";
+import integrationRegistry from "@/integrations/registry";
 import reportError from "@/telemetry/reportError";
 import useReportError from "@/hooks/useReportError";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -77,10 +77,10 @@ const SetupPage: React.FunctionComponent = () => {
       // If an error was thrown, check if the control room integration definitions are available to determine if we should
       // show an error toast in the partner setup card case.
       try {
-        const controlRoomTokenIntegrationPromise = integrationsRegistry.lookup(
+        const controlRoomTokenIntegrationPromise = integrationRegistry.lookup(
           CONTROL_ROOM_TOKEN_INTEGRATION_ID,
         );
-        const controlRoomOauthIntegrationPromise = integrationsRegistry.lookup(
+        const controlRoomOauthIntegrationPromise = integrationRegistry.lookup(
           CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         );
         await Promise.all([

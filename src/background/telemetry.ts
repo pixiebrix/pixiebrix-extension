@@ -30,7 +30,7 @@ import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
 import { getUUID } from "@/telemetry/telemetryHelpers";
 import { getExtensionVersion, getTabsWithAccess } from "@/utils/extensionUtils";
-import { type Event } from "@/telemetry/events";
+import { type TelemetryEvent } from "@/telemetry/telemetryTypes";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -333,7 +333,7 @@ export async function recordEvent({
   event,
   data = {},
 }: {
-  event: Event;
+  event: TelemetryEvent;
   data: UnknownObject | undefined;
 }): Promise<void> {
   if (await allowsTrack()) {

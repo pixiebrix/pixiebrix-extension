@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   simpleInput,
@@ -80,8 +80,8 @@ const rootBlock = new RootAwareBlock();
 const rootReader = new RootAwareReader();
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([rootBlock, rootReader, echoBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([rootBlock, rootReader, echoBrick]);
   // https://stackoverflow.com/questions/42805128/does-jest-reset-the-jsdom-document-after-every-suite-or-test
   document.querySelectorAll("html")[0]!.innerHTML = "";
 });

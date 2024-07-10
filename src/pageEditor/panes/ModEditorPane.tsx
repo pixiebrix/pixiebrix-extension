@@ -45,7 +45,7 @@ const ModEditorPane: React.VFC = () => {
 
   useEffect(() => {
     const messageContext: MessageContext = {
-      blueprintId: activeModId,
+      modId: activeModId,
     };
     dispatch(logActions.setContext(messageContext));
   }, [dispatch, activeModId]);

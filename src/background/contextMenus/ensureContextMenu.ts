@@ -21,22 +21,22 @@ import { expectContext } from "@/utils/expectContext";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import chromeP from "webext-polyfill-kinda";
 import { type Menus } from "webextension-polyfill";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Register a context menu item on all tabs.
  */
-
 async function _ensureContextMenu({
-  extensionId,
+  modComponentId,
   contexts,
   title,
   documentUrlPatterns,
 }: SelectionMenuOptions): Promise<void> {
   expectContext("background");
 
-  if (!extensionId) {
-    throw new Error("extensionId is required");
-  }
+  // `modComponentId` required in the SelectionMenuOptions type, but double-check dynamically to avoid
+  // confusing behavior if not provided.
+  assertNotNullish(modComponentId, "modComponentId is required");
 
   const updateProperties = {
     type: "normal",
@@ -47,7 +47,7 @@ async function _ensureContextMenu({
     documentUrlPatterns,
   } satisfies Menus.UpdateUpdatePropertiesType;
 
-  const expectedMenuId = makeMenuId(extensionId);
+  const expectedMenuId = makeMenuId(modComponentId);
   try {
     // Try updating it first. It will fail if missing, so we attempt to create it instead
     await browser.contextMenus.update(expectedMenuId, updateProperties);
@@ -64,5 +64,5 @@ async function _ensureContextMenu({
 }
 
 export const ensureContextMenu = memoizeUntilSettled(_ensureContextMenu, {
-  cacheKey: ([{ extensionId }]) => extensionId,
+  cacheKey: ([{ modComponentId }]) => modComponentId,
 });

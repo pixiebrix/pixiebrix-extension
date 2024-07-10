@@ -29,7 +29,7 @@ function useActivateAction(modViewItem: ModViewItem): (() => void) | null {
   const activate = () => {
     if (isModDefinition(mod)) {
       reportEvent(Events.START_MOD_ACTIVATE, {
-        blueprintId: mod.metadata.id,
+        modId: mod.metadata.id,
         screen: "extensionConsole",
         reinstall: false,
       });
@@ -37,7 +37,7 @@ function useActivateAction(modViewItem: ModViewItem): (() => void) | null {
       dispatch(push(getActivateModHashRoute(mod.metadata.id)));
     } else {
       reportEvent(Events.START_MOD_ACTIVATE, {
-        blueprintId: null,
+        modId: null,
         screen: "extensionConsole",
         reinstall: false,
       });

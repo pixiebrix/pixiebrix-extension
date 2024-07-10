@@ -29,7 +29,7 @@ import { DocumentRenderer } from "@/bricks/renderers/document";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -78,8 +78,8 @@ const temporaryDisplayBlock = new DisplayTemporaryInfo();
 
 beforeAll(async () => {
   registerDefaultWidgets();
-  blockRegistry.clear();
-  blockRegistry.register([documentBlock, temporaryDisplayBlock]);
+  brickRegistry.clear();
+  brickRegistry.register([documentBlock, temporaryDisplayBlock]);
 });
 
 describe("Add new element", () => {

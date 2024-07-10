@@ -35,6 +35,7 @@ import { type PanelButton } from "@/types/sidebarTypes";
 import { ClosePanelAction } from "@/bricks/errors";
 import styles from "./EphemeralPanel.module.scss";
 import useReportError from "@/hooks/useReportError";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 type Mode = "modal" | "popover";
 
@@ -174,7 +175,9 @@ const EphemeralPanel: React.FC = () => {
             <PanelBody
               isRootPanel={false}
               payload={entry.payload}
-              context={entry.modComponentRef}
+              context={mapModComponentRefToMessageContext(
+                entry.modComponentRef,
+              )}
               onAction={(action) => {
                 resolveTemporaryPanel(target, panelNonce, action);
               }}
@@ -216,7 +219,7 @@ const EphemeralPanel: React.FC = () => {
           <PanelBody
             isRootPanel={false}
             payload={entry.payload}
-            context={entry.modComponentRef}
+            context={mapModComponentRefToMessageContext(entry.modComponentRef)}
             onAction={(action) => {
               resolveTemporaryPanel(target, panelNonce, action);
             }}

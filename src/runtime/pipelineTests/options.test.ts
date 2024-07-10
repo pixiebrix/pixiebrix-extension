@@ -16,7 +16,7 @@
  */
 
 import { type ApiVersion } from "@/types/runtimeTypes";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,
@@ -27,8 +27,8 @@ import {
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick]);
 });
 
 describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {

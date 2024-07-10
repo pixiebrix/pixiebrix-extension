@@ -151,11 +151,11 @@ class AddQuickBarAction extends EffectABC {
     let counter = 0;
 
     // Expected parent id from QuickBarProviderExtensionPoint
-    const parentId = `provider-${logger.context.extensionId}`;
+    const parentId = `provider-${logger.context.modComponentId}`;
 
     const action: CustomAction = {
       // XXX: old actions will still appear in the quick bar unless the extension point clears out the old actions
-      id: `${logger.context.extensionId}-${title}`,
+      id: `${logger.context.modComponentId}-${title}`,
       // Additional metadata, for enabling clearing out old actions
       modComponentRef: mapMessageContextToModComponentRef(logger.context),
       // Can only provide a parent if the parent exists

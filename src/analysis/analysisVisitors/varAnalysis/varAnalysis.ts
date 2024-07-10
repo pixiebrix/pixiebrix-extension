@@ -35,7 +35,7 @@ import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import parseTemplateVariables from "./parseTemplateVariables";
 import modRegistry from "@/modDefinitions/registry";
-import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
+import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import {
   isDocumentBuilderElementArray,
   type ListElement,
@@ -683,7 +683,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   async run(formState: ModComponentFormState): Promise<void> {
-    this.allBlocks = await blockRegistry.allTyped();
+    this.allBlocks = await brickRegistry.allTyped();
 
     // Order of the following calls will determine the order of the sources in the UI
     const contextVars = new VarMap();

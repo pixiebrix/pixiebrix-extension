@@ -23,7 +23,7 @@ import { Button, Modal } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
 import { truncate } from "lodash";
 import genericOptionsFactory, {
-  type BlockOptionProps,
+  type BrickOptionProps,
 } from "@/components/fields/schemaFields/genericOptionsFactory";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -113,7 +113,7 @@ const ModalContent: React.FC<ContentProps> = ({
     [onSave, onClose],
   );
 
-  const Editor = useMemo<React.FC<BlockOptionProps>>(() => {
+  const Editor = useMemo<React.FC<BrickOptionProps>>(() => {
     if (optionsRegistry.has(integration.id)) {
       return optionsRegistry.get(integration.id);
     }

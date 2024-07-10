@@ -96,7 +96,7 @@ class AssignModVariable extends EffectABC {
     }>,
     { logger }: BrickOptions,
   ): Promise<void> {
-    const { blueprintId: modId, extensionId: modComponentId } = logger.context;
+    const { modId, modComponentId } = logger.context;
 
     setState({
       namespace: StateNamespaces.MOD,
