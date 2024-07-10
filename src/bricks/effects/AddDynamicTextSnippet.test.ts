@@ -17,7 +17,7 @@
 
 import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   simpleInput,
   testOptions,
@@ -35,8 +35,8 @@ const brick = new AddDynamicTextSnippet();
 const identity = new IdentityTransformer();
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([brick, identity]);
+  brickRegistry.clear();
+  brickRegistry.register([brick, identity]);
 });
 
 afterEach(() => {

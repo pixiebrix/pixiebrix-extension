@@ -19,7 +19,7 @@ import { loadBrickYaml } from "@/runtime/brickYaml";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render, screen, within } from "@testing-library/react";
 import React from "react";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
@@ -41,8 +41,8 @@ const markdownBlock = new MarkdownRenderer();
 
 describe("When rendered in panel", () => {
   beforeEach(() => {
-    blockRegistry.clear();
-    blockRegistry.register([markdownBlock]);
+    brickRegistry.clear();
+    brickRegistry.register([markdownBlock]);
   });
 
   const renderDocument = (config: DocumentBuilderElement) => {

@@ -20,7 +20,7 @@ import cx from "classnames";
 import styles from "./EditorNodeConfigPanel.module.scss";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BrickConfiguration from "@/pageEditor/tabs/effect/BrickConfiguration";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
@@ -46,7 +46,7 @@ const EditorNodeConfigPanel: React.FC = () => {
       return null;
     }
 
-    const brick = await blockRegistry.lookup(brickId);
+    const brick = await brickRegistry.lookup(brickId);
     return {
       block: brick,
       type: await getType(brick),

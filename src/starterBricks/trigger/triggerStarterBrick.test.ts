@@ -26,7 +26,7 @@ import {
   RootReader,
   tick,
 } from "@/starterBricks/starterBrickTestUtils";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   fromJS,
   getDefaultAllowInactiveFramesForTrigger,
@@ -128,8 +128,8 @@ beforeEach(() => {
   reportEventMock.mockReset();
   showNotificationMock.mockReset();
   notifyContextInvalidatedMock.mockReset();
-  blockRegistry.clear();
-  blockRegistry.register([
+  brickRegistry.clear();
+  brickRegistry.register([
     rootReader,
     new InvalidContextReader(),
     throwBrick,

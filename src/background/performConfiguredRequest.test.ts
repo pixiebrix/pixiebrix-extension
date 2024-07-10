@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import serviceRegistry from "@/integrations/registry";
+import integrationRegistry from "@/integrations/registry";
 import axios, { type AxiosError } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { performConfiguredRequest } from "./requests";
@@ -83,7 +83,7 @@ const EXAMPLE_SERVICE_API = validateRegistryId("example/api");
 const EXAMPLE_SERVICE_PKCE_API = validateRegistryId("example/pkce");
 const EXAMPLE_SERVICE_TOKEN_API = validateRegistryId("example/token");
 
-serviceRegistry.register([
+integrationRegistry.register([
   {
     id: PIXIEBRIX_INTEGRATION_ID,
     authenticateRequest: (

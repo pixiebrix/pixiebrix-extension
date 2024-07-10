@@ -17,7 +17,7 @@
 
 import React, { useEffect, useReducer } from "react";
 import { type BrickConfig } from "@/bricks/types";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
 import Loader from "@/components/Loader";
@@ -81,7 +81,7 @@ export function usePreviewInfo(
   blockId: RegistryId,
 ): FetchableAsyncState<PreviewInfo> {
   return useAsyncState(async () => {
-    const block = await blockRegistry.lookup(blockId);
+    const block = await brickRegistry.lookup(blockId);
     const type = await getType(block);
     return {
       block,

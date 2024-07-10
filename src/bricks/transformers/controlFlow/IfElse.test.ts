@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   rootAwareBrick,
   simpleInput,
@@ -31,8 +31,8 @@ import { toExpression } from "@/utils/expressionUtils";
 const ifElseBlock = new IfElse();
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([
+  brickRegistry.clear();
+  brickRegistry.register([
     teapotBrick,
     throwBrick,
     rootAwareBrick,

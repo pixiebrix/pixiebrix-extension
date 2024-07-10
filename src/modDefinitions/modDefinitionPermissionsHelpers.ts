@@ -24,7 +24,7 @@ import { hydrateModInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { mergePermissions } from "@/permissions/permissionsUtils";
 import { isEmpty } from "lodash";
 import { type Permissions } from "webextension-polyfill";
-import extensionPointRegistry from "@/starterBricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { collectIntegrationOriginPermissions } from "@/integrations/util/permissionsHelpers";
 import { collectModComponentPermissions } from "@/permissions/modComponentPermissionsHelpers";
@@ -45,7 +45,7 @@ async function collectModComponentDefinitionPermissions(
       permissions = {},
       config,
     }: HydratedModComponentDefinition) => {
-      const extensionPoint = await extensionPointRegistry.lookup(id);
+      const extensionPoint = await starterBrickRegistry.lookup(id);
 
       let inner: Permissions.Permissions = {};
       try {
