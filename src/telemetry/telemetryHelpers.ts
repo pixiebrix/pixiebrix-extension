@@ -19,7 +19,7 @@ import type { UserData } from "@/auth/authTypes";
 import { type TelemetryUser } from "@/telemetry/telemetryTypes";
 import { uuidv4 } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
-import { once } from "lodash";
+import { cloneDeep, once } from "lodash";
 import { StorageItem } from "webext-storage";
 
 export const uuidStorage = new StorageItem<UUID>("USER_UUID");
@@ -90,50 +90,51 @@ export async function mapAppUserToTelemetryUser(
 export function mapEventDataToDeprecatedTerminology(
   data: UnknownObject,
 ): UnknownObject {
-  if (data.brickId) {
-    data.blockId = data.brickId;
+  const _data = cloneDeep(data);
+  if (_data.brickId) {
+    _data.blockId = _data.brickId;
   }
 
-  if (data.brickVersion) {
-    data.blockVersion = data.brickVersion;
+  if (_data.brickVersion) {
+    _data.blockVersion = _data.brickVersion;
   }
 
-  if (data.integrationId) {
-    data.serviceId = data.integrationId;
+  if (_data.integrationId) {
+    _data.serviceId = _data.integrationId;
   }
 
-  if (data.integrationVersion) {
-    data.serviceVersion = data.integrationVersion;
+  if (_data.integrationVersion) {
+    _data.serviceVersion = _data.integrationVersion;
   }
 
-  if (data.modId) {
-    data.blueprintId = data.modId;
-    data.recipeId = data.modId;
+  if (_data.modId) {
+    _data.blueprintId = _data.modId;
+    _data.recipeId = _data.modId;
   }
 
-  if (data.modComponentId) {
-    data.extensionId = data.modComponentId;
+  if (_data.modComponentId) {
+    _data.extensionId = _data.modComponentId;
   }
 
-  if (data.modComponentLabel) {
-    data.extensionLabel = data.modComponentLabel;
+  if (_data.modComponentLabel) {
+    _data.extensionLabel = _data.modComponentLabel;
   }
 
-  if (data.modComponents) {
-    data.extensions = data.modComponents;
+  if (_data.modComponents) {
+    _data.extensions = _data.modComponents;
   }
 
-  if (data.modToActivate) {
-    data.recipeToActivate = data.modToActivate;
+  if (_data.modToActivate) {
+    _data.recipeToActivate = _data.modToActivate;
   }
 
-  if (data.modVersion) {
-    data.blueprintVersion = data.modVersion;
+  if (_data.modVersion) {
+    _data.blueprintVersion = _data.modVersion;
   }
 
-  if (data.starterBrickId) {
-    data.extensionPointId = data.starterBrickId;
+  if (_data.starterBrickId) {
+    _data.extensionPointId = _data.starterBrickId;
   }
 
-  return data;
+  return _data;
 }
