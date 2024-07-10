@@ -19,7 +19,7 @@ import type { UUID } from "@/types/stringTypes";
 import type { Menus } from "webextension-polyfill";
 
 export type SelectionMenuOptions = {
-  modComponentId: UUID;
+  extensionId: UUID;
   title: string;
   contexts: Menus.ContextType[];
   documentUrlPatterns: string[];

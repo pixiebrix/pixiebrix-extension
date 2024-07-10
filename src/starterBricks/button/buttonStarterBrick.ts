@@ -689,7 +689,7 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
     }
   }
 
-  async runModComponents({ modComponentIds = null }: RunArgs): Promise<void> {
+  async runModComponents({ extensionIds = null }: RunArgs): Promise<void> {
     if (this.containers.size === 0 || this.modComponents.length === 0) {
       return;
     }
@@ -722,10 +722,7 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
         // Run in order so that the order stays the same for where they get rendered. The service
         // context is the only thing that's async as part of the initial configuration right now
 
-        if (
-          modComponentIds != null &&
-          !modComponentIds.includes(modComponent.id)
-        ) {
+        if (extensionIds != null && !extensionIds.includes(modComponent.id)) {
           continue;
         }
 

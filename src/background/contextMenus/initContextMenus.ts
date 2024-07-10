@@ -62,7 +62,7 @@ async function dispatchMenu(
 
   try {
     await handleMenuAction(target, {
-      modComponentId: info.menuItemId.slice(MENU_PREFIX.length) as UUID,
+      extensionId: info.menuItemId.slice(MENU_PREFIX.length) as UUID,
       args: info,
     });
   } catch (error) {

@@ -19,7 +19,7 @@ import type { Except, JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
 import {
   cancelTemporaryPanels,
-  cancelTemporaryPanelsForModComponent,
+  cancelTemporaryPanelsForExtension,
   registerEmptyTemporaryPanel,
   stopWaitingForTemporaryPanels,
   updatePanelDefinition,
@@ -114,7 +114,7 @@ export async function ephemeralPanel({
     registerEmptyTemporaryPanel({
       nonce,
       location,
-      modComponentId: panelEntryMetadata.modComponentRef.modComponentId,
+      extensionId: panelEntryMetadata.modComponentRef.modComponentId,
     });
 
     await showSidebar();
@@ -140,7 +140,7 @@ export async function ephemeralPanel({
   } else {
     // Popover/modal location
     // Clear existing to remove stale modals/popovers
-    await cancelTemporaryPanelsForModComponent(
+    await cancelTemporaryPanelsForExtension(
       panelEntryMetadata.modComponentRef.modComponentId,
     );
 
@@ -148,7 +148,7 @@ export async function ephemeralPanel({
     registerEmptyTemporaryPanel({
       nonce,
       location,
-      modComponentId: panelEntryMetadata.modComponentRef.modComponentId,
+      extensionId: panelEntryMetadata.modComponentRef.modComponentId,
     });
 
     // Create a source URL for content that will be loaded in the panel iframe
@@ -235,7 +235,7 @@ export async function ephemeralPanel({
       nonce,
       location,
       entry,
-      modComponentId: entry.modComponentRef.modComponentId,
+      extensionId: entry.modComponentRef.modComponentId,
       onRegister: onReady,
     });
     return panelAction ?? {};

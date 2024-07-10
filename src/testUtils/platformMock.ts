@@ -92,7 +92,7 @@ export const platformMock: PlatformProtocol = {
   get panels() {
     return {
       isContainerVisible: jest.fn(),
-      unregisterStarterBrick: jest.fn(),
+      unregisterExtensionPoint: jest.fn(),
       removeComponents: jest.fn(),
       reservePanels: jest.fn(),
       updateHeading: jest.fn(),

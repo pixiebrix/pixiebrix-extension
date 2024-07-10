@@ -36,13 +36,13 @@ export interface PanelProtocol {
 
   /**
    * Remove all panels associated with the given extensionPointId.
-   * @param modComponentId the extension point id (internal or external)
-   * @param options.preserveModComponentIds array of mod component ids to keep in the panel. Used to avoid flickering
-   * if updating the starter brick for a sidebar mod component from the Page Editor
+   * @param extensionPointId the extension point id (internal or external)
+   * @param options.preserveExtensionIds array of extension ids to keep in the panel. Used to avoid flickering if updating
+   * the extensionPoint for a sidebar extension from the Page Editor
    */
-  unregisterStarterBrick: (
-    modComponentId: RegistryId,
-    options?: { preserveModComponentIds?: UUID[] },
+  unregisterExtensionPoint: (
+    extensionPointId: RegistryId,
+    options?: { preserveExtensionIds?: UUID[] },
   ) => void;
 
   /**
@@ -54,7 +54,7 @@ export interface PanelProtocol {
   /**
    * Create placeholder panels showing loading indicators
    */
-  reservePanels: (modComponentRefs: ModComponentRef[]) => void;
+  reservePanels: (refs: ModComponentRef[]) => void;
 
   /**
    * Update the heading of a panel with the given mod component id
@@ -70,7 +70,7 @@ export interface PanelProtocol {
    * @param payload the new content for the panel
    */
   upsertPanel: (
-    modComponentRef: ModComponentRef,
+    ref: ModComponentRef,
     heading: string,
     payload: PanelPayload,
   ) => void;

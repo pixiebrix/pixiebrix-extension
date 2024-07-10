@@ -34,11 +34,11 @@ type RegisteredPanel = {
    */
   location: Location;
   /**
-   * The id of the mod component that owns the panel.
+   * The id of the extension that owns the panel.
    *
-   * Must match RegisteredPanel.entry.modComponentId if entry is defined.
+   * Should match RegisteredPanel.entry.extensionId if entry is defined.
    */
-  modComponentId: UUID;
+  extensionId: UUID;
   /**
    * The deferred promise that will be resolved when the panel is submitted/closed
    */
@@ -53,8 +53,8 @@ type PlaceholderPanel = SetOptional<RegisteredPanel, "entry">;
 
 const panels = new Map<UUID, RegisteredPanel | PlaceholderPanel>();
 
-// Mapping from modComponentId to active panel nonces
-const modComponentNonces = new Map<UUID, Set<UUID>>();
+// Mapping from extensionId to active panel nonces
+const extensionNonces = new Map<UUID, Set<UUID>>();
 
 /**
  * Return all temporary panel entries.
@@ -110,26 +110,26 @@ export function updatePanelDefinition(
     panel.entry.modComponentRef.modComponentId !==
       panelDefinition.modComponentRef.modComponentId
   ) {
-    throw new Error("modComponentId mismatch");
+    throw new Error("extensionId mismatch");
   }
 
   panel.entry = panelDefinition;
 }
 
 /**
- * Register an empty panel for a given nonce and modComponentId. Use to pre-allocate a "loading" state while the panel
+ * Register an empty panel for a given nonce and extensionId. Use to pre-allocate a "loading" state while the panel
  * content is being initialized.
  * @param nonce the panel nonce
- * @param modComponentId the id of the mod component that owns the panel
+ * @param extensionId the id of the extension that owns the panel
  * @param location the location of the panel
  */
 export function registerEmptyTemporaryPanel({
   nonce,
-  modComponentId,
+  extensionId,
   location,
 }: {
   nonce: UUID;
-  modComponentId: UUID;
+  extensionId: UUID;
   location: Location;
 }) {
   if (panels.has(nonce)) {
@@ -142,20 +142,20 @@ export function registerEmptyTemporaryPanel({
   const registration = pDefer<PanelAction | null>();
 
   panels.set(nonce, {
-    modComponentId,
+    extensionId,
     registration,
     location,
   });
 
-  const set = modComponentNonces.get(modComponentId) ?? new Set();
-  modComponentNonces.set(modComponentId, set);
+  const set = extensionNonces.get(extensionId) ?? new Set();
+  extensionNonces.set(extensionId, set);
   set.add(nonce);
 }
 
 /**
  * Register a temporary display panel and wait fot its deferred promise
  * @param nonce The instance nonce for the panel to register
- * @param modComponentId The mod component id that owns the panel
+ * @param extensionId The extension id that owns the panel
  * @param location The location of the panel
  * @param entry the panel definition
  * @param onRegister callback to run after the panel is registered
@@ -164,11 +164,11 @@ export async function waitForTemporaryPanel({
   nonce,
   location,
   entry,
-  modComponentId,
+  extensionId,
   onRegister,
 }: {
   nonce: UUID;
-  modComponentId: UUID;
+  extensionId: UUID;
   location: Location;
   entry: Except<TemporaryPanelEntry, "type">;
   onRegister?: () => void;
@@ -185,12 +185,12 @@ export async function waitForTemporaryPanel({
   panels.set(nonce, {
     entry,
     location,
-    modComponentId,
+    extensionId,
     registration,
   });
 
-  const set = modComponentNonces.get(modComponentId) ?? new Set();
-  modComponentNonces.set(modComponentId, set);
+  const set = extensionNonces.get(extensionId) ?? new Set();
+  extensionNonces.set(extensionId, set);
   set.add(nonce);
 
   onRegister?.();
@@ -199,12 +199,12 @@ export async function waitForTemporaryPanel({
 }
 
 /**
- * Private helper method to remove panel from panels and modComponentNonces.
+ * Private helper method to remove panel from panels and extensionNonces.
  */
 function removePanelEntry(panelNonce: UUID): void {
   const panel = panels.get(panelNonce);
   if (panel?.entry) {
-    modComponentNonces
+    extensionNonces
       .get(panel.entry.modComponentRef.modComponentId)
       ?.delete(panelNonce);
   }
@@ -261,13 +261,13 @@ export async function cancelTemporaryPanels(
 }
 
 /**
- * Cancel all temporary panels for a given mod component.
+ * Cancel all temporary panels for a given extension.
  * @see cancelTemporaryPanels
  */
-export async function cancelTemporaryPanelsForModComponent(
-  modComponentId: UUID,
+export async function cancelTemporaryPanelsForExtension(
+  extensionId: UUID,
 ): Promise<void> {
-  const nonces = modComponentNonces.get(modComponentId) ?? new Set();
+  const nonces = extensionNonces.get(extensionId) ?? new Set();
   await cancelTemporaryPanels(
     [...nonces],
     new CancelError("Panel automatically closed"),

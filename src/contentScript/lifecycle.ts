@@ -113,7 +113,7 @@ const WAIT_LOADED_INTERVAL_MS = 25;
  * Install and run a starter brick and specified mod components.
  * @param starterBrick the starter to install and run
  * @param reason the reason code for the run
- * @param modComponentIds the mod components to run on the starter brick, or undefined to run all mod components
+ * @param extensionIds the mod components to run on the starter brick, or undefined to run all mod components
  * @param abortSignal abort signal to cancel the installation/run
  * @see StarterBrick.runModComponents
  */
@@ -121,9 +121,9 @@ async function runStarterBrick(
   starterBrick: StarterBrick,
   {
     reason,
-    modComponentIds,
+    extensionIds,
     abortSignal,
-  }: { reason: RunReason; modComponentIds?: UUID[]; abortSignal: AbortSignal },
+  }: { reason: RunReason; extensionIds?: UUID[]; abortSignal: AbortSignal },
 ): Promise<void> {
   // Could potentially call _runningStarterBricks.delete here, but assume the starter brick is still available
   // until we know for sure that it's not
@@ -141,7 +141,7 @@ async function runStarterBrick(
     kind: starterBrick.kind,
     name: starterBrick.name,
     permissions: starterBrick.permissions,
-    modComponentIds,
+    modComponentIds: extensionIds,
     reason,
   };
 
@@ -186,7 +186,7 @@ async function runStarterBrick(
     details,
   );
 
-  await starterBrick.runModComponents({ reason, modComponentIds });
+  await starterBrick.runModComponents({ reason, extensionIds });
   _runningStarterBricks.add(starterBrick);
 
   console.debug(
@@ -307,7 +307,7 @@ export function removeDraftModComponents(
       console.debug(`lifecycle:clearDraftModComponent: ${modComponentId}`);
       const starterBrick =
         _draftModComponentStarterBrickMap.get(modComponentId);
-      assertNotNullish(starterBrick, "starterBrick must be defined");
+      assertNotNullish(starterBrick, "extensionPoint must be defined");
 
       if (starterBrick.kind === "actionPanel" && preserveSidebar) {
         const sidebar = starterBrick as SidebarStarterBrickABC;
@@ -380,7 +380,7 @@ export async function runDraftModComponent(
   await runStarterBrick(starterBrick, {
     // The Page Editor is the only caller for runDynamic
     reason: RunReason.PAGE_EDITOR,
-    modComponentIds: [modComponentId],
+    extensionIds: [modComponentId],
     abortSignal: navigationListeners.signal,
   });
 

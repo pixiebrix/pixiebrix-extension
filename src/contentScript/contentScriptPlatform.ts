@@ -230,7 +230,7 @@ class ContentScriptPlatform extends PlatformBase {
 
     return {
       async register({ handler, ...options }) {
-        registerHandler(options.modComponentId, handler);
+        registerHandler(options.extensionId, handler);
         await ensureContextMenu(options);
       },
       async unregister(componentId) {
@@ -286,7 +286,7 @@ class ContentScriptPlatform extends PlatformBase {
   override get panels(): PlatformProtocol["panels"] {
     return {
       isContainerVisible: async () => sidebarController.isSidePanelOpen(),
-      unregisterStarterBrick: sidebarController.removeStarterBrick,
+      unregisterExtensionPoint: sidebarController.removeStarterBrick,
       removeComponents: sidebarController.removeModComponents,
       reservePanels: sidebarController.reservePanels,
       updateHeading: sidebarController.updateHeading,
