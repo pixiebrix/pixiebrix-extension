@@ -34,31 +34,61 @@ export type LoadedFrame = HTMLIFrameElement & {
   contentWindow: Window;
 };
 
-/** Injects an iframe into the host page via ShadowDom */
+/**
+ * Returns a promise that will poll indefinitely until the given element is removed from the DOM. The promise resolves
+ * when the element is removed. Meant to be used with base condition of some kind.
+ * @param element The iframe to poll for removal
+ */
+const elementRemoved = async (element: HTMLElement) =>
+  new Promise((resolve) => {
+    const poll = setInterval(() => {
+      if (!document.documentElement.contains(element)) {
+        clearInterval(poll);
+        resolve("removed");
+      }
+    }, 100);
+  });
+
+/** Injects an iframe into the host page via ShadowDom and waits for the iframe to finish loading. */
 async function _injectIframe(
   url: string,
   /** The style is required because you never want an un-styled iframe */
   style: Partial<CSSStyleDeclaration>,
+  shadowRootId?: string,
 ): Promise<LoadedFrame> {
   const iframe = document.createElement("iframe");
   const { promise: iframeLoad, resolve } = pDefer();
   iframe.addEventListener("load", resolve);
   iframe.src = url;
   Object.assign(iframe.style, style);
+  const shadowElement = shadowWrap(iframe);
 
   // Append to document root (as opposed to e.g. body) to have the best chance of avoiding host page interference with
   // the injected iframe (e.g. by removing it from the DOM)
   // See https://github.com/pixiebrix/pixiebrix-extension/pull/8777
   await waitForDocumentRoot();
-  document.documentElement.append(shadowWrap(iframe));
+  document.documentElement.append(shadowElement);
+  if (shadowRootId) {
+    shadowElement.id = shadowRootId;
+  }
 
-  await iframeLoad;
+  const result = await Promise.race([
+    iframeLoad,
+    elementRemoved(shadowElement),
+  ]);
+
+  if (result === "removed") {
+    console.warn(
+      `The host page removed the iframe for ${url} before it could be loaded. Retrying...`,
+    );
+    return _injectIframe(url, style, shadowRootId);
+  }
 
   return iframe as LoadedFrame;
 }
 
-const injectIframe: typeof _injectIframe = async (url, style) =>
-  pTimeout(_injectIframe(url, style), {
+const injectIframe: typeof _injectIframe = async (url, style, shadowRootId) =>
+  pTimeout(_injectIframe(url, style, shadowRootId), {
     milliseconds: TIMEOUT_MS,
     message: `The iframe did not load within ${
       TIMEOUT_MS / 1000
