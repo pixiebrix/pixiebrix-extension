@@ -211,7 +211,7 @@ const Tabs: React.FC = () => {
         >
           {panels.map((panel) => (
             <TabWithDivider
-              key={panel.modComponentRef.modComponentId}
+              key={panel.modComponentRef.extensionId}
               active={isPanelActive(panel)}
               eventKey={eventKeyForEntry(panel)}
             >
@@ -226,7 +226,7 @@ const Tabs: React.FC = () => {
 
           {forms.map((form) => (
             <TabWithDivider
-              key={form.modComponentRef.modComponentId}
+              key={form.modComponentRef.extensionId}
               active={isPanelActive(form)}
               eventKey={eventKeyForEntry(form)}
             >
@@ -311,7 +311,7 @@ const Tabs: React.FC = () => {
               // un-submitted form state/scroll position
               unmountOnExit={false}
               className={cx("full-height flex-grow", styles.paneOverrides)}
-              key={panel.modComponentRef.modComponentId}
+              key={panel.modComponentRef.extensionId}
               eventKey={eventKeyForEntry(panel)}
             >
               <ErrorBoundary

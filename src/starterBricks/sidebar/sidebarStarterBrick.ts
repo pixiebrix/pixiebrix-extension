@@ -204,10 +204,10 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       // noinspection ExceptionCaughtLocallyJS
       throw new NoRendererError();
     } catch (error) {
-      const modComponentRef = {
-        modComponentId: modComponent.id,
-        starterBrickId: this.id,
-        modId: modComponent._recipe?.id,
+      const ref = {
+        extensionId: modComponent.id,
+        extensionPointId: this.id,
+        blueprintId: modComponent._recipe?.id,
       };
 
       const meta = {
@@ -216,7 +216,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       };
 
       if (error instanceof HeadlessModeError) {
-        this.platform.panels.upsertPanel(modComponentRef, heading, {
+        this.platform.panels.upsertPanel(ref, heading, {
           blockId: error.blockId,
           key: uuidv4(),
           ctxt: error.ctxt,
@@ -225,7 +225,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         });
       } else {
         componentLogger.error(error);
-        this.platform.panels.upsertPanel(modComponentRef, heading, {
+        this.platform.panels.upsertPanel(ref, heading, {
           key: uuidv4(),
           error: serializeError(error),
           ...meta,
@@ -362,9 +362,9 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     // the sidebar won't be visible yet on initial page load.
     this.platform.panels.reservePanels(
       this.modComponents.map((modComponent) => ({
-        modComponentId: modComponent.id,
-        starterBrickId: this.id,
-        modId: modComponent._recipe?.id,
+        extensionId: modComponent.id,
+        extensionPointId: this.id,
+        blueprintId: modComponent._recipe?.id,
       })),
     );
 
@@ -411,9 +411,9 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       // `install`ed and `runComponents` called completed at least once.
       this.platform.panels.reservePanels(
         this.modComponents.map((components) => ({
-          modComponentId: components.id,
-          starterBrickId: this.id,
-          modId: components._recipe?.id,
+          extensionId: components.id,
+          extensionPointId: this.id,
+          blueprintId: components._recipe?.id,
         })),
       );
 

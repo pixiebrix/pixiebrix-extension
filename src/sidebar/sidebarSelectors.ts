@@ -63,7 +63,7 @@ const selectSidebarEntries = ({ sidebar }: SidebarRootState) => [
 const extensionForEventKeySelector = createSelector(
   selectSidebarEntries,
   selectActivatedModComponents,
-  (_state: SidebarRootState, eventKey: string) => eventKey,
+  (state: SidebarRootState, eventKey: string) => eventKey,
   (entries, extensions, eventKey): ActivatedModComponent | undefined => {
     // Get sidebar entry by event key
     const sidebarEntry = entries.find(
@@ -76,7 +76,7 @@ const extensionForEventKeySelector = createSelector(
 
     return extensions.find(
       (modComponent) =>
-        modComponent.id === sidebarEntry.modComponentRef.modComponentId,
+        modComponent.id === sidebarEntry.modComponentRef.extensionId,
     );
   },
 );
@@ -102,7 +102,7 @@ export const selectExtensionFromEventKey =
 
     return extensions.find(
       (modComponent) =>
-        modComponent.id === sidebarEntry.modComponentRef.modComponentId,
+        modComponent.id === sidebarEntry.modComponentRef.extensionId,
     );
   };
 

@@ -204,7 +204,7 @@ describe("DisplayTemporaryInfo", () => {
 
     expect(waitForTemporaryPanel).toHaveBeenCalledWith({
       nonce: expect.toBeString(),
-      extensionId: modComponentRef.modComponentId,
+      extensionId: modComponentRef.extensionId,
       location: "modal",
       entry: expect.objectContaining({
         modComponentRef,
@@ -354,8 +354,8 @@ describe("DisplayTemporaryInfo", () => {
       logger: new ConsoleLogger(
         mapModComponentRefToMessageContext(
           modComponentRefFactory({
-            modComponentId: extensionId,
-            modId: null,
+            extensionId,
+            blueprintId: null,
           }),
         ),
       ),

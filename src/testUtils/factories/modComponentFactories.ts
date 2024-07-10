@@ -36,9 +36,9 @@ import { type StandaloneModDefinition } from "@/types/contract";
 import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 
 export const modComponentRefFactory = define<ModComponentRef>({
-  modComponentId: uuidSequence,
-  modId: registryIdFactory,
-  starterBrickId: registryIdFactory,
+  extensionId: uuidSequence,
+  blueprintId: registryIdFactory,
+  extensionPointId: registryIdFactory,
 });
 
 export const modMetadataFactory = extend<Metadata, ModMetadata>(

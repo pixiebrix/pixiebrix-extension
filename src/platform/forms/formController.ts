@@ -74,8 +74,8 @@ export async function registerForm({
 
   const preexistingForms = [...forms.entries()].filter(
     ([_, registeredForm]) =>
-      registeredForm.modComponentRef.modComponentId ===
-      modComponentRef.modComponentId,
+      registeredForm.modComponentRef.extensionId ===
+      modComponentRef.extensionId,
   );
 
   if (preexistingForms.length > 0) {

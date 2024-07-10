@@ -162,8 +162,8 @@ describe("eventKeyForEntry", () => {
     const extensionPointId = validateRegistryId("@test/test-starter-brick");
     const entry = sidebarEntryFactory("panel", {
       modComponentRef: modComponentRefFactory({
-        modComponentId: extensionId,
-        starterBrickId: extensionPointId,
+        extensionId,
+        extensionPointId,
       }),
     });
     expect(eventKeyForEntry(entry)).toBe(`panel-${extensionId}`);
@@ -176,14 +176,14 @@ describe("eventKeyForEntry", () => {
     const formEntry = sidebarEntryFactory("form", {
       nonce,
       modComponentRef: modComponentRefFactory({
-        modComponentId: extensionId,
+        extensionId,
       }),
     });
     expect(eventKeyForEntry(formEntry)).toBe(`form-${nonce}`);
 
     const temporaryPanelEntry = sidebarEntryFactory("temporaryPanel", {
       nonce,
-      modComponentRef: modComponentRefFactory({ modComponentId: extensionId }),
+      modComponentRef: modComponentRefFactory({ extensionId }),
     });
     expect(eventKeyForEntry(temporaryPanelEntry)).toBe(
       `temporaryPanel-${nonce}`,

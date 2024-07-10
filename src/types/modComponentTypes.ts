@@ -285,15 +285,15 @@ export type ModComponentRef = {
   /**
    * UUID of the ModComponent.
    */
-  modComponentId: UUID;
+  extensionId: UUID;
 
   /**
    * Mod the ModComponent is from, or nullish for a standalone ModComponent.
    */
-  modId: Nullishable<RegistryId>;
+  blueprintId: Nullishable<RegistryId>;
 
   /**
    * Registry id of the mod component's StarterBrick.
    */
-  starterBrickId: RegistryId;
+  extensionPointId: RegistryId;
 };
