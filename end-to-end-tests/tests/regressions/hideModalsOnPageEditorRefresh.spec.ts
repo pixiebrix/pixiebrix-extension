@@ -20,11 +20,9 @@ import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import type { PageEditorPage } from "../../pageObjects/pageEditor/pageEditorPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
-import { browser } from "@/globals";
 
 test("should hide add brick modal when Page Editor refreshes", async ({
   page,
-  browser,
   newPageEditorPage,
   extensionId,
 }) => {
@@ -41,11 +39,11 @@ test("should hide add brick modal when Page Editor refreshes", async ({
 
   await test.step("Select the mod's starter brick in the Page Editor", async () => {
     const modListItem =
-      pageEditorPage.modListingPanel.getModListItemByName("Mod Actions Test");
+      pageEditorPage.modListingPanel.getModListItemByName("GIPHY Search");
     await modListItem.select();
     const testStarterBrick = pageEditorPage.modListingPanel.getModStarterBrick(
-      "Mod Actions Test",
-      "Button",
+      "GIPHY Search",
+      "GIPHY Search",
     );
     await testStarterBrick.select();
   });
@@ -58,7 +56,7 @@ test("should hide add brick modal when Page Editor refreshes", async ({
 
   await test.step("Activate another mod to trigger a Page Editor refresh", async () => {
     const modId = "@pixies/highlight-keywords";
-    const newPage = await browser.newPage();
+    const newPage = await page.context().newPage();
     const modActivationPage = new ActivateModPage(newPage, extensionId, modId);
     await modActivationPage.goto();
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
@@ -66,10 +64,10 @@ test("should hide add brick modal when Page Editor refreshes", async ({
 
   await test.step("Verify the add brick modal is hidden after the Page Editor refreshes", async () => {
     await expect(pageEditorPage.getByText("Add Brick")).toBeHidden();
-    // await expect(
-    //   pageEditorPage.getByText(
-    //     "There were changes made in a different instance of the Page Editor. Reload this Page Editor to sync the changes.",
-    //   ),
-    // ).toBeVisible();
+    await expect(
+      pageEditorPage.getByText(
+        "There were changes made in a different instance of the Page Editor. Reload this Page Editor to sync the changes.",
+      ),
+    ).toBeVisible();
   });
 });
