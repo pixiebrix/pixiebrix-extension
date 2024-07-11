@@ -25,7 +25,6 @@ import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 
 const axiosMock = new MockAdapter(axios);
 const defaultOptions = {
-  pushToCloud: false,
   checkPermissions: false,
   notifySuccess: true,
   reactivateEveryTab: false,
@@ -72,42 +71,6 @@ describe("useUpsertModComponentFormState", () => {
         extensionPointId: modComponentFormState.starterBrick.metadata.id,
         updateTimestamp: expectedUpdateDate.toISOString(),
       }),
-    );
-  });
-
-  it("pushes mod component to the cloud with the same updateTimestamp that is saved to redux", async () => {
-    const modComponentFormState = formStateFactory();
-
-    const { result, getReduxStore, waitForEffect } = renderHook(() =>
-      useUpsertModComponentFormState(),
-    );
-    await waitForEffect();
-
-    const upsertModComponentFormState = result.current;
-    await upsertModComponentFormState({
-      modComponentFormState,
-      options: { ...defaultOptions, pushToCloud: true },
-    });
-
-    const modComponents = selectActivatedModComponents(
-      getReduxStore().getState() as { options: ModComponentState },
-    );
-
-    const expectedFields = {
-      id: modComponentFormState.uuid,
-      extensionPointId: modComponentFormState.starterBrick.metadata.id,
-      updateTimestamp: expectedUpdateDate.toISOString(),
-    };
-
-    expect(modComponents).toHaveLength(1);
-    expect(modComponents[0]).toEqual(expect.objectContaining(expectedFields));
-
-    expect(axiosMock.history.put).toHaveLength(1);
-    expect(axiosMock.history.put[0].url).toBe(
-      `/api/extensions/${modComponentFormState.uuid}/`,
-    );
-    expect(JSON.parse(axiosMock.history.put[0].data)).toEqual(
-      expect.objectContaining(expectedFields),
     );
   });
 });

@@ -486,7 +486,6 @@ export const {
   useGetStandaloneModDefinitionQuery,
   useGetAllStandaloneModDefinitionsQuery,
   useDeleteStandaloneModDefinitionMutation,
-  useSaveStandaloneModDefinitionMutation,
   useGetEditablePackagesQuery,
   useGetModDefinitionQuery,
   useCreateModDefinitionMutation,
