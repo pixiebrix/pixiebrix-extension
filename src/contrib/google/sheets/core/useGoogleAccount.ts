@@ -19,7 +19,7 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { integrationConfigLocator } from "@/background/messenger/api";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { validateRegistryId } from "@/types/helpers";
 import reportError from "@/telemetry/reportError";
@@ -29,13 +29,12 @@ import { isEmpty } from "lodash";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");
+const loginController = new ReusableAbortController();
 
 /**
  * Hook to get the Google account from mod integrations context
  */
 function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | null> {
-  const loginController = new ReusableAbortController();
-
   // Clean up the listener on unmount if it hasn't fired yet
   useOnMountOnly(() => loginController.abortAndReset.bind(loginController));
 
@@ -62,17 +61,19 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
     }
   }, [googleDependency]);
 
-  // Automatically refetch the google account on login
-  (function () {
-    oauth2Storage.onChanged((newValue) => {
-      const { id } = googleAccountAsyncState.data ?? {};
-      // eslint-disable-next-line security/detect-object-injection -- not user provided
-      if (id && !isEmpty(newValue[id])) {
-        googleAccountAsyncState.refetch();
-        loginController.abortAndReset();
-      }
-    }, loginController.signal);
-  })();
+  useEffect(() => {
+    // Automatically refetch the google account on login
+    (function () {
+      oauth2Storage.onChanged((newValue) => {
+        const { id } = googleAccountAsyncState.data ?? {};
+        // eslint-disable-next-line security/detect-object-injection -- not user provided
+        if (id && !isEmpty(newValue[id])) {
+          googleAccountAsyncState.refetch();
+          loginController.abortAndReset();
+        }
+      }, loginController.signal);
+    })();
+  }, [googleAccountAsyncState]);
 
   return googleAccountAsyncState;
 }
