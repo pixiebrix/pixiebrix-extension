@@ -61,8 +61,8 @@ export type RendererRunPayload = BaseRendererPayload & {
   args: unknown;
   /**
    * The context to pass to the renderer
-   * @see BlockProps.context
-   * @see BlockOptions
+   * @see BrickProps.context
+   * @see BrickOptions
    */
   ctxt: unknown;
 };
