@@ -28,13 +28,14 @@ import { oauth2Storage } from "@/auth/authConstants";
 import { isEmpty } from "lodash";
 
 const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");
-const loginController = new ReusableAbortController();
 
 function useGoogleAccountLoginListener({
   data: googleAccount,
   refetch,
 }: FetchableAsyncState<SanitizedIntegrationConfig | null>) {
   useEffect(() => {
+    const loginController = new ReusableAbortController();
+
     // Automatically refetch the google account on login
     oauth2Storage.onChanged((newValue) => {
       const { id } = googleAccount ?? {};
