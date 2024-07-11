@@ -17,18 +17,20 @@
 
 // See similar file in the App codebase
 
+// See REST_FRAMEWORK["DEFAULT_VERSION"] in the Django settings
+const DEFAULT_API_VERSION = "1.0";
+
 // See REST_FRAMEWORK["ALLOWED_VERSIONS"] in the Django settings
-const API_VERSIONS = ["1.0", "1.1", "2.0"] as const;
+const API_VERSIONS = [DEFAULT_API_VERSION, "1.1", "2.0"];
 export type ApiVersion = (typeof API_VERSIONS)[number];
 
-export function getRequestHeadersByAPIVersion(apiVersion: ApiVersion) {
-  // The default version doesn't require a header, but pass it anyway to be explicit
-  // and make troubleshooting easier.
-  if (API_VERSIONS.includes(apiVersion)) {
-    return { Accept: `application/json; version=${apiVersion}` };
-  }
+const API_VERSION_MAP = new Map<string, ApiVersion>([
+  // @since 1.8.10 -- excludes the package config
+  ["/api/deployments/", "1.1"],
+  // @since 2.0.6 -- includes organization.is_enterprise and excludes telemetry_organization
+  ["/api/me/", "1.1"],
+]);
 
-  throw new Error("Unknown API version");
+export function getURLApiVersion(url: string): string {
+  return API_VERSION_MAP.get(url) || DEFAULT_API_VERSION;
 }
-
-export const ME_API_VERSION = "1.1";

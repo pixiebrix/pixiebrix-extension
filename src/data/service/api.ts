@@ -38,10 +38,6 @@ import {
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import {
-  ME_API_VERSION,
-  getRequestHeadersByAPIVersion,
-} from "@/data/service/apiVersioning";
 import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 import {
   type ModDefinition,
@@ -80,7 +76,6 @@ export const appApi = createApi({
       query: () => ({
         url: "/api/me/",
         method: "get",
-        headers: getRequestHeadersByAPIVersion(ME_API_VERSION),
       }),
       providesTags: ["Me"],
       transformResponse: transformMeResponse,
@@ -89,7 +84,6 @@ export const appApi = createApi({
       query: () => ({
         url: "/api/me/",
         method: "get",
-        headers: getRequestHeadersByAPIVersion(ME_API_VERSION),
         // The /api/me/ endpoint returns an object with only feature flags if not authenticated
         requireLinked: false,
       }),
@@ -467,8 +461,6 @@ export const appApi = createApi({
         url: "/api/deployments/",
         method: "post",
         data,
-        // @since 1.8.10 -- API version 1.1 excludes the package config
-        headers: getRequestHeadersByAPIVersion("1.1"),
       }),
       providesTags: ["Deployments"],
     }),

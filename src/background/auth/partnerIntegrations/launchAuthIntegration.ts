@@ -30,10 +30,6 @@ import { getApiClient } from "@/data/service/apiClient";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
 import { removeOAuth2Token } from "@/background/messenger/api";
-import {
-  ME_API_VERSION,
-  getRequestHeadersByAPIVersion,
-} from "@/data/service/apiVersioning";
 
 /**
  * Launch the browser's web auth flow get a partner token for communicating with the PixieBrix server.
@@ -112,7 +108,6 @@ export async function launchAuthIntegration({
         headers: {
           Authorization: `Bearer ${token}`,
           "X-Control-Room": controlRoomUrl,
-          ...getRequestHeadersByAPIVersion(ME_API_VERSION),
         },
       });
     } catch (error) {

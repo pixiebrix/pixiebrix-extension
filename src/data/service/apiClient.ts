@@ -31,7 +31,7 @@ import {
 import { isUrlRelative } from "@/utils/urlUtils";
 import createAuthRefreshInterceptor from "axios-auth-refresh";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
-import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
+import { getURLApiVersion } from "@/data/service/apiVersioning";
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
 import { refreshPartnerAuthentication } from "@/background/messenger/api";
 
@@ -70,12 +70,22 @@ async function setupApiClient(): Promise<void> {
 
   apiClientInstance = axios.create({
     baseURL: await getBaseURL(),
-    headers: {
-      ...authHeaders,
-      // Version 2.0 is paginated. Explicitly pass version, so we can switch the default version on the server
-      // once clients are all passing an explicit version number
-      ...getRequestHeadersByAPIVersion("1.0"),
-    },
+    headers: authHeaders,
+  });
+
+  apiClientInstance.interceptors.request.use(async (config) => {
+    const apiVersion = getURLApiVersion(config.url);
+
+    // The default version (see DEFAULT_API_VERSION) doesn't require a header, but include it because:
+    // - The explicit version header makes troubleshooting easier
+    // - Allows us to change the default version without breaking clients, see https://github.com/pixiebrix/pixiebrix-app/issues/5060
+    return {
+      ...config,
+      headers: {
+        ...config.headers,
+        Accept: `application/json; version=${apiVersion}`,
+      },
+    };
   });
 
   // Create auth interceptor for partner auth refresh tokens
