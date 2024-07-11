@@ -46,7 +46,7 @@ import {
 } from "@/starterBricks/types";
 import {
   type StarterBrickType,
-  type StarterBrickTypes,
+  StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
 import { type Menus } from "webextension-polyfill";
@@ -124,7 +124,7 @@ type SidebarStarterBrickState = BaseStarterBrickState & {
 
 export interface SidebarFormState
   extends BaseFormState<SidebarModComponentState, SidebarStarterBrickState> {
-  type: "actionPanel";
+  type: typeof StarterBrickTypes.SIDEBAR_PANEL;
 }
 
 // TriggerFormState
@@ -159,12 +159,12 @@ type TriggerStarterBrickState = BaseStarterBrickState & {
 export function isTriggerStarterBrick(
   starterBrick: BaseStarterBrickState,
 ): starterBrick is TriggerStarterBrickState {
-  return starterBrick.definition.type === "trigger";
+  return starterBrick.definition.type === StarterBrickTypes.TRIGGER;
 }
 
 export interface TriggerFormState
   extends BaseFormState<BaseModComponentState, TriggerStarterBrickState> {
-  type: "trigger";
+  type: typeof StarterBrickTypes.TRIGGER;
 }
 
 // ContextMenuFormState
@@ -187,7 +187,7 @@ export interface ContextMenuFormState
     ContextMenuModComponentState,
     ContextMenuStarterBrickState
   > {
-  type: "contextMenu";
+  type: typeof StarterBrickTypes.CONTEXT_MENU;
 }
 
 // QuickBarFormState
@@ -223,14 +223,15 @@ type QuickBarProviderStarterBrickState = BaseStarterBrickState & {
 export function isQuickBarStarterBrick(
   starterBrick: BaseStarterBrickState,
 ): starterBrick is QuickBarStarterBrickState {
-  return ["quickBar", "quickBarProvider"].includes(
-    starterBrick.definition.type,
-  );
+  return [
+    typeof StarterBrickTypes.QUICK_BAR_ACTION,
+    typeof StarterBrickTypes.DYNAMIC_QUICK_BAR,
+  ].includes(starterBrick.definition.type);
 }
 
 export interface QuickBarFormState
   extends BaseFormState<QuickBarModComponentState, QuickBarStarterBrickState> {
-  type: "quickBar";
+  type: typeof StarterBrickTypes.QUICK_BAR_ACTION;
 }
 
 export interface QuickBarProviderFormState
@@ -238,7 +239,7 @@ export interface QuickBarProviderFormState
     QuickBarProviderModComponentState,
     QuickBarProviderStarterBrickState
   > {
-  type: "quickBarProvider";
+  type: typeof StarterBrickTypes.QUICK_BAR_ACTION;
 }
 
 /**
