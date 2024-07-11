@@ -15,7 +15,7 @@ exports[`BrowserBanner renders warning for jest environment 1`] = `
         <div
           class="align-self-center"
         >
-          PixieBrix officially supports Google Chrome. Some functionality may not be available on your browser.
+          PixieBrix officially supports Google Chrome and Microsoft Edge. Some functionality may not be available on your browser.
           <button
             class="info ml-3 btn btn-primary btn-sm"
             type="button"
