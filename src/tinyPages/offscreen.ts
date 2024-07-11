@@ -114,9 +114,9 @@ function isStopAudioCaptureMessage(
   );
 }
 
-export const sendErrorViaErrorReporter = async (
+export async function sendErrorViaErrorReporter(
   data: RecordErrorMessage["data"],
-) => {
+): Promise<void> {
   const { error, errorMessage, errorReporterInitInfo, messageContext } = data;
 
   // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
@@ -141,22 +141,20 @@ export const sendErrorViaErrorReporter = async (
     error: deserializeError(error),
     messageContext,
   });
-};
+}
 
 /**
- * Record the current state in the URL. This provides a very low-bandwidth way of communicating with the service worker
+ * Mark the current tab recording state in the offscreen document URL.
+ *
+ * Communicating via the URL provides a very low-bandwidth way of communicating with the service worker
  * (the service worker can check the URL of the document and see the current recording state). We can't store that
  * directly in the service worker as it may be terminated while recording is in progress. We could write it to storage
  * but that slightly increases the risk of things getting out of sync.
+ *
  * @param tabId the recording tab id or null
  */
 function markRecordingTab(tabId: number | null): void {
-  if (tabId == null) {
-    window.location.hash = "";
-    return;
-  }
-
-  window.location.hash = `recording-${tabId}`;
+  window.location.hash = tabId == null ? "" : `recording-${tabId}`;
 }
 
 async function startRecording({
@@ -264,7 +262,7 @@ async function stopRecording(): Promise<void> {
   recorder.stop();
   liveClient.finish();
 
-  // TODO: double-check this doesn't disrupt the dialer on the page
+  // TODO: double-check stopping the recorder doesn't disrupt the dialer on the page
   // Stop so the recording icon goes away
   for (const track of recorder.stream.getTracks()) {
     track.stop();
@@ -274,7 +272,9 @@ async function stopRecording(): Promise<void> {
   markRecordingTab(null);
 }
 
-async function handleMessages(message: unknown): Promise<void> {
+// Use optional chaining in case the chrome runtime is not available:
+// https://github.com/pixiebrix/pixiebrix-extension/issues/8397
+chrome.runtime?.onMessage?.addListener(async (message: unknown) => {
   if (isRecordErrorMessage(message)) {
     await sendErrorViaErrorReporter(message.data);
   } else if (isStartAudioCaptureMessage(message)) {
@@ -282,8 +282,4 @@ async function handleMessages(message: unknown): Promise<void> {
   } else if (isStopAudioCaptureMessage(message)) {
     await stopRecording();
   }
-}
-
-// Use optional chaining in case the chrome runtime is not available:
-// https://github.com/pixiebrix/pixiebrix-extension/issues/8397
-chrome.runtime?.onMessage?.addListener(handleMessages);
+});

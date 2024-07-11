@@ -25,10 +25,11 @@ import {
 } from "@/tinyPages/offscreen";
 import { emitAudioEvent } from "@/contentScript/messenger/api";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
-import ensureOffscreenDocument, {
+import {
+  ensureOffscreenDocument,
   getOffscreenDocument,
   getRecordingTab,
-} from "@/tinyPages/ensureOffscreenDocument";
+} from "@/tinyPages/offscreenDocumentController";
 
 /**
  * Whether audio is currently being recorded. Kept in sync across worker reloads via the offscreen document hash.
@@ -79,8 +80,9 @@ export async function startAudioCapture(
 
   const offscreenDocument = await getOffscreenDocument();
 
-  // Re-sync background worker state with event page state
   if (offscreenDocument) {
+    // Re-sync background worker state with event page state. (Because the background worker might have restarted.
+    // since the offscreen document was created.)
     audioCaptureTabId = await getRecordingTab();
   }
 
@@ -93,11 +95,6 @@ export async function startAudioCapture(
   if (audioCaptureTabId && audioCaptureTabId !== tabId) {
     // TODO: stop capture and recursively call startAudioCapture
     throw new Error("Switching recording tab is not implemented");
-  }
-
-  // If an offscreen document is not already open, create one.
-  if (!offscreenDocument) {
-    await ensureOffscreenDocument();
   }
 
   // Get a MediaStream for the active tab.
@@ -113,6 +110,9 @@ export async function startAudioCapture(
       );
     });
   }
+
+  // If an offscreen document is not already open, create one
+  await ensureOffscreenDocument();
 
   // Send the stream ID to the offscreen document to start recording.
   await chrome.runtime.sendMessage({

@@ -45,7 +45,7 @@ import { flagOn } from "@/auth/featureFlagStorage";
 import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
 import { readAuthData } from "@/auth/authStorage";
 import { type RecordErrorMessage } from "@/tinyPages/offscreen";
-import ensureOffscreenDocument from "@/tinyPages/ensureOffscreenDocument";
+import { ensureOffscreenDocument } from "@/tinyPages/offscreenDocumentController";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";

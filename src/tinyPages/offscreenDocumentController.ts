@@ -16,36 +16,46 @@
  */
 
 import type { SetRequired } from "type-fest";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
-// Only one offscreen document can be active at a time, so it's unlikely that you'll want to create an
-// additional html document for that purpose.
+// Only one offscreen document can be active at a time. We use offscreen documents for error telemetry, so we won't
+// be able to use different documents for different purposes.
 const OFFSCREEN_DOCUMENT_PATH = "offscreen.html";
 
-// Manually manage promise vs. using pMemoize to support re-adding the offscreen document has closed
+// Manually manage promise vs. using pMemoize to support re-adding if the offscreen document has closed
 let createOffscreenDocumentPromise: Promise<void> | null = null;
 
 /**
  * Helper function to get the offscreen document context if it exists. Does not create a new offscreen document.
- * @see ensureOffscreenDocument
+ * @see offscreenDocumentController
  */
 export async function getOffscreenDocument(): Promise<
   SetRequired<chrome.runtime.ExtensionContext, "documentUrl"> | undefined
 > {
   const existingContexts = await chrome.runtime.getContexts({
+    // Don't query for documentUrl given that the extension only has one offscreen document
     contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
-    documentUrls: [chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH)],
   });
 
-  // Only one OFFSCREEN_DOCUMENT context can exist at a time
-  // documentUrl must exist because we queried for it
-  return existingContexts[0] as SetRequired<
-    chrome.runtime.ExtensionContext,
-    "documentUrl"
-  >;
+  // Only one OFFSCREEN_DOCUMENT context can exist at a time.
+  const offscreenDocument = existingContexts[0];
+
+  if (offscreenDocument) {
+    assertNotNullish(
+      offscreenDocument.documentUrl,
+      "Expected offscreen document URL",
+    );
+    return offscreenDocument as SetRequired<
+      chrome.runtime.ExtensionContext,
+      "documentUrl"
+    >;
+  }
+
+  return undefined;
 }
 
 /**
- * Returns the tab id for which the offscreen document is recording audio, or null if not recording.
+ * Returns the tab id the offscreen document is capturing audio, or null if not capturing.
  */
 export async function getRecordingTab(): Promise<number | null> {
   const offscreenDocument = await getOffscreenDocument();
@@ -61,11 +71,9 @@ export async function getRecordingTab(): Promise<number | null> {
 }
 
 /**
- * Creates an offscreen document at a fixed url, if one does not already exist. Note that only one offscreen document
- * can be active at a time per extension, so it's unlikely that you'll want to introduce additional html documents for
- * that purpose.
+ * Creates the offscreen document for the extension, if it does not already exist.
  */
-async function ensureOffscreenDocument(): Promise<void> {
+export async function ensureOffscreenDocument(): Promise<void> {
   if (await getOffscreenDocument()) {
     return;
   }
@@ -89,5 +97,3 @@ async function ensureOffscreenDocument(): Promise<void> {
     await createOffscreenDocumentPromise;
   }
 }
-
-export default ensureOffscreenDocument;

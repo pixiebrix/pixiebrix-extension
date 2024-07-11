@@ -21,9 +21,9 @@ import { type BrickArgs } from "@/types/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 import type { SanitizedConfig } from "@/integrations/integrationTypes";
 import { tabCapture } from "@/background/messenger/api";
-import { minimalSchemaFactory } from "@/utils/schemaUtils";
+import { minimalSchemaFactory, propertiesToSchema } from "@/utils/schemaUtils";
 
-const DEEPGRAM_SERVICE_REF =
+const DEEPGRAM_INTEGRATION_REF =
   "https://app.pixiebrix.com/schemas/services/deepgram/api";
 
 export class StartCaptureAudioEffect extends EffectABC {
@@ -39,14 +39,12 @@ export class StartCaptureAudioEffect extends EffectABC {
     );
   }
 
-  inputSchema: Schema = {
-    type: "object",
-
-    properties: {
+  inputSchema: Schema = propertiesToSchema(
+    {
       // TODO: decide whether to make deepgram specific, or vary brick/options based on provider
       integrationConfig: {
         title: "Deepgram Integration",
-        $ref: DEEPGRAM_SERVICE_REF,
+        $ref: DEEPGRAM_INTEGRATION_REF,
       },
       captureMicrophone: {
         type: "boolean",
@@ -59,9 +57,8 @@ export class StartCaptureAudioEffect extends EffectABC {
         default: true,
       },
     },
-
-    required: ["integrationConfig"],
-  };
+    ["integrationConfig"],
+  );
 
   async effect({
     integrationConfig,
@@ -72,7 +69,7 @@ export class StartCaptureAudioEffect extends EffectABC {
     captureMicrophone: boolean;
     captureTab: boolean;
   }>): Promise<void> {
-    // TODO: show popover to get user to confirm capture
+    // TODO: show popover to get user to confirm capture?
     await tabCapture.startAudioCapture({
       integrationConfig,
       captureMicrophone,
