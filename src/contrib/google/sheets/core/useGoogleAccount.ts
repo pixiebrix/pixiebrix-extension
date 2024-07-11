@@ -30,7 +30,7 @@ import { isEmpty } from "lodash";
 const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");
 const loginController = new ReusableAbortController();
 
-function useGoogleAccountLoginListner({
+function useGoogleAccountLoginListener({
   data: googleAccount,
   refetch,
 }: FetchableAsyncState<SanitizedIntegrationConfig | null>) {
@@ -78,7 +78,7 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
     }
   }, [googleDependency]);
 
-  useGoogleAccountLoginListner(googleAccountAsyncState);
+  useGoogleAccountLoginListener(googleAccountAsyncState);
 
   return googleAccountAsyncState;
 }
