@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React from "react";
 import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
 import { useDispatch, useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
@@ -32,6 +32,7 @@ import Loader from "@/components/Loader";
 import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelectors";
 import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 const EditorLayout: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -42,11 +43,10 @@ const EditorLayout: React.FunctionComponent = () => {
 
   const url = useCurrentInspectedUrl();
 
-  useEffect(() => {
-    if (isStaleSession) {
-      dispatch(editorActions.hideModal());
-    }
-  }, [dispatch, isStaleSession]);
+  const prevIsStaleSession = usePreviousValue(isStaleSession);
+  if (!prevIsStaleSession && isStaleSession) {
+    dispatch(editorActions.hideModal());
+  }
 
   if (!url) {
     // Nearly immediate, likely never shown
