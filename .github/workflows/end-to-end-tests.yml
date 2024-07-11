@@ -10,7 +10,7 @@ on:
 
 jobs:
   run-tests:
-    name: run-tests
+    name: run-tests-${{ matrix.project }}-${{ matrix.shardIndex }}
     strategy:
       fail-fast: false
       matrix:
