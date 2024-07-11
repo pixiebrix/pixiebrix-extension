@@ -867,11 +867,6 @@ export const editorSlice = createSlice({
     hideModal(state) {
       state.visibleModalKey = null;
     },
-    hideModalIfShowing(state, action: PayloadAction<ModalKey>) {
-      if (state.visibleModalKey === action.payload) {
-        state.visibleModalKey = null;
-      }
-    },
     editModOptionsValues(state, action: PayloadAction<OptionsArgs>) {
       const modId = state.activeModId;
       if (modId == null) {
