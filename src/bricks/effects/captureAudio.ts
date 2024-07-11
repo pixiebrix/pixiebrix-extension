@@ -34,7 +34,7 @@ export class StartCaptureAudioEffect extends EffectABC {
   constructor() {
     super(
       StartCaptureAudioEffect.BRICK_ID,
-      "Capture Audio",
+      "[Experimental] Capture Audio",
       "Start capturing audio from the tab",
     );
   }
@@ -84,7 +84,7 @@ export class StopCaptureAudioEffect extends EffectABC {
   constructor() {
     super(
       StopCaptureAudioEffect.BRICK_ID,
-      "Stop Audio Capture",
+      "[Experimental] Stop Audio Capture",
       "Stop capturing audio from the tab",
     );
   }
