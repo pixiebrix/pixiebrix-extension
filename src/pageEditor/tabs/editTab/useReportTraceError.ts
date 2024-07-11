@@ -37,7 +37,7 @@ function useReportTraceError(): void {
   if (traceError && runId && runId !== prevRunId) {
     reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_ERROR, {
       sessionId,
-      modComponentId: traceError.extensionId,
+      modComponentId: traceError.modComponentId,
     });
   }
 }

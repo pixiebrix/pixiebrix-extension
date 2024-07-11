@@ -377,7 +377,7 @@ class UserDefinedBrick extends BrickABC {
     } catch (error) {
       if (isSpecificError(error, HeadlessModeError)) {
         const continuation = error;
-        const renderer = await this.registry.lookup(continuation.blockId);
+        const renderer = await this.registry.lookup(continuation.brickId);
         return renderer.run(continuation.args, {
           ...options,
           ctxt: continuation.ctxt,
