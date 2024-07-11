@@ -44,10 +44,8 @@ import { StorageItem } from "webext-storage";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
 import { readAuthData } from "@/auth/authStorage";
-import {
-  type RecordErrorMessage,
-  setupOffscreenDocument,
-} from "@/tinyPages/offscreen";
+import { type RecordErrorMessage } from "@/tinyPages/offscreen";
+import ensureOffscreenDocument from "@/tinyPages/ensureOffscreenDocument";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -399,15 +397,13 @@ export async function reportToApplicationErrorTelemetry(
   // we need to send the error from an offscreen document.
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/8268
   // and offscreen.ts
-  await setupOffscreenDocument();
+  await ensureOffscreenDocument();
 
-  const recordErrorMessage: RecordErrorMessage = {
+  await chrome.runtime.sendMessage({
     type: "record-error",
     target: "offscreen-doc",
     data: errorData,
-  };
-
-  await chrome.runtime.sendMessage(recordErrorMessage);
+  } satisfies RecordErrorMessage);
 }
 
 /** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */

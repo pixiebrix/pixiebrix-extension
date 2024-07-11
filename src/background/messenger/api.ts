@@ -168,3 +168,9 @@ export const refreshPartnerAuthentication = getMethod(
   bg,
 );
 export const removeOAuth2Token = getMethod("REMOVE_OAUTH2_TOKEN", bg);
+
+export const tabCapture = {
+  startAudioCapture: getMethod("AUDIO_CAPTURE_START", bg),
+  stopAudioCapture: getMethod("AUDIO_CAPTURE_STOP", bg),
+  forwardAudioCaptureEvent: getNotifier("AUDIO_CAPTURE_EVENT", bg),
+};

@@ -20,15 +20,26 @@ import { type TelemetryUser } from "@/telemetry/telemetryTypes";
 import { type SemVerString } from "@/types/registryTypes";
 import { type SerializedError } from "@/types/messengerTypes";
 import { deserializeError } from "serialize-error";
+import {
+  createClient,
+  type LiveClient,
+  LiveTranscriptionEvents,
+  SOCKET_STATES,
+} from "@deepgram/sdk";
+import { type Nullishable } from "@/utils/nullishUtils";
+import pDefer from "p-defer";
+import { type JsonObject } from "type-fest";
+import { tabCapture } from "@/background/messenger/api";
 
-// Note that only one offscreen document can be active at a time, so it's unlikely that you'll want to create an
-// additional html document for that purpose.
-const OFFSCREEN_DOCUMENT_PATH = "offscreen.html";
-let createOffscreenDocumentPromise: Promise<void> | null = null;
+// eslint-disable-next-line prefer-destructuring -- environment variable
+const DEEPGRAM_API_KEY = process.env.DEEPGRAM_API_KEY;
 
-// Use optional chaining in case the chrome runtime is not available:
-// https://github.com/pixiebrix/pixiebrix-extension/issues/8397
-chrome.runtime?.onMessage?.addListener(handleMessages);
+type MediaClient = {
+  liveClient: LiveClient;
+  recorder: MediaRecorder;
+};
+
+let mediaClient: MediaClient | null;
 
 export type RecordErrorMessage = {
   target: "offscreen-doc";
@@ -45,36 +56,20 @@ export type RecordErrorMessage = {
   };
 };
 
-// Creates an offscreen document at a fixed url, if one does not already exist. Note that only one offscreen document
-// can be active at a time per extension, so it's unlikely that you'll want to introduce additional html documents for
-// that purpose.
-export async function setupOffscreenDocument() {
-  const existingContexts = await chrome.runtime.getContexts({
-    contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
-    documentUrls: [chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH)],
-  });
+export type StartAudioCaptureMessage = {
+  type: "start-recording";
+  target: "offscreen";
+  data: {
+    tabId: number;
+    tabStreamId: Nullishable<string>;
+    captureMicrophone: boolean;
+  };
+};
 
-  if (existingContexts.length > 0) {
-    return;
-  }
-
-  if (createOffscreenDocumentPromise == null) {
-    createOffscreenDocumentPromise = chrome.offscreen.createDocument({
-      url: "offscreen.html",
-      // Our reason for creating an offscreen document does not fit nicely into options offered by the Chrome API, which
-      // is error telemetry as of 1.8.13 (we use this as a workaround for Datadog SDK service worker limitations).
-      // We chose BLOBS because it's the closest to interaction with error objects.
-      // See https://developer.chrome.com/docs/extensions/reference/api/offscreen#reasons
-      reasons: [chrome.offscreen.Reason.BLOBS],
-      justification:
-        "Error telemetry SDK usage that is incompatible with service workers",
-    });
-    await createOffscreenDocumentPromise;
-    createOffscreenDocumentPromise = null;
-  } else {
-    await createOffscreenDocumentPromise;
-  }
-}
+export type StopAudioCaptureMessage = {
+  type: "stop-recording";
+  target: "offscreen";
+};
 
 function isRecordErrorMessage(message: unknown): message is RecordErrorMessage {
   if (typeof message !== "object" || message == null) {
@@ -86,6 +81,36 @@ function isRecordErrorMessage(message: unknown): message is RecordErrorMessage {
     message.target === "offscreen-doc" &&
     "type" in message &&
     message.type === "record-error"
+  );
+}
+
+function isStartAudioCaptureMessage(
+  message: unknown,
+): message is StartAudioCaptureMessage {
+  if (typeof message !== "object" || message == null) {
+    return false;
+  }
+
+  return (
+    "target" in message &&
+    message.target === "offscreen" &&
+    "type" in message &&
+    message.type === "start-recording"
+  );
+}
+
+function isStopAudioCaptureMessage(
+  message: unknown,
+): message is StopAudioCaptureMessage {
+  if (typeof message !== "object" || message == null) {
+    return false;
+  }
+
+  return (
+    "target" in message &&
+    message.target === "offscreen" &&
+    "type" in message &&
+    message.type === "stop-recording"
   );
 }
 
@@ -118,10 +143,147 @@ export const sendErrorViaErrorReporter = async (
   });
 };
 
-async function handleMessages(message: unknown) {
-  if (!isRecordErrorMessage(message)) {
+/**
+ * Record the current state in the URL. This provides a very low-bandwidth way of communicating with the service worker
+ * (the service worker can check the URL of the document and see the current recording state). We can't store that
+ * directly in the service worker as it may be terminated while recording is in progress. We could write it to storage
+ * but that slightly increases the risk of things getting out of sync.
+ * @param tabId the recording tab id or null
+ */
+function markRecordingTab(tabId: number | null): void {
+  if (tabId == null) {
+    window.location.hash = "";
     return;
   }
 
-  await sendErrorViaErrorReporter(message.data);
+  window.location.hash = `recording-${tabId}`;
 }
+
+async function startRecording({
+  tabId,
+  tabStreamId,
+  // TODO: implement controlling whether microphone is captured
+  captureMicrophone,
+}: {
+  tabId: number;
+  tabStreamId: Nullishable<string>;
+  captureMicrophone: boolean;
+}): Promise<void> {
+  if (!DEEPGRAM_API_KEY) {
+    throw new Error("Deepgram API key not configured");
+  }
+
+  if (mediaClient) {
+    throw new Error("Connection already exists");
+  }
+
+  // NOTE: call to get microphone will fail if extension doesn't already have microphone permissions
+  // https://github.com/GoogleChrome/chrome-extensions-samples/issues/627#issuecomment-1737511452
+  // https://github.com/GoogleChrome/chrome-extensions-samples/issues/821
+  const micStream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: false,
+  });
+
+  const tabStream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      // @ts-expect-error -- incorrect types
+      mandatory: {
+        chromeMediaSource: "tab",
+        chromeMediaSourceId: tabStreamId,
+      },
+    },
+    video: false,
+  });
+
+  const client = createClient(DEEPGRAM_API_KEY);
+
+  // TODO: determine use of multichannel vs. diarization: https://developers.deepgram.com/docs/diarization
+  // https://developers.deepgram.com/reference/stt-streaming-feature-overview
+  const liveClient = client.listen.live({ model: "nova", multichannel: true });
+
+  const connectPromise = pDefer<void>();
+
+  liveClient.on(LiveTranscriptionEvents.Open, () => {
+    if (!liveClient) {
+      connectPromise.reject(new Error("Client closed before initialization"));
+      return;
+    }
+
+    liveClient.on(LiveTranscriptionEvents.Transcript, (data: UnknownObject) => {
+      // Known to be valid JSON because it came back from the Deepgram API
+      tabCapture.forwardAudioCaptureEvent(data as JsonObject);
+      console.debug(data);
+    });
+
+    // Call after setting up the event listeners, so we don't miss any events
+    connectPromise.resolve();
+  });
+
+  // Continue to play the captured audio to the user
+  const context = new AudioContext();
+  const micSource = context.createMediaStreamSource(micStream);
+  const tabSource = context.createMediaStreamSource(tabStream);
+  tabSource.connect(context.destination);
+
+  // Combine the mic and tab streams
+  const analysisDestination = context.createMediaStreamDestination();
+  micSource.connect(analysisDestination);
+  tabSource.connect(analysisDestination);
+
+  const recorder = new MediaRecorder(analysisDestination.stream);
+
+  recorder.addEventListener("dataavailable", (event) => {
+    if (
+      event.data.size > 0 &&
+      liveClient?.getReadyState() === SOCKET_STATES.open
+    ) {
+      liveClient.send(event.data);
+    }
+  });
+
+  // Set module variable before async connection to avoid repeat connections
+  mediaClient = { liveClient, recorder };
+
+  // Wait to start recording until we're connected to deepgram
+  await connectPromise.promise;
+
+  recorder.start(250);
+
+  markRecordingTab(tabId);
+}
+
+async function stopRecording(): Promise<void> {
+  if (!mediaClient) {
+    console.debug("Recording not in progress");
+    return;
+  }
+
+  const { recorder, liveClient } = mediaClient;
+
+  recorder.stop();
+  liveClient.finish();
+
+  // TODO: double-check this doesn't disrupt the dialer on the page
+  // Stop so the recording icon goes away
+  for (const track of recorder.stream.getTracks()) {
+    track.stop();
+  }
+
+  mediaClient = null;
+  markRecordingTab(null);
+}
+
+async function handleMessages(message: unknown): Promise<void> {
+  if (isRecordErrorMessage(message)) {
+    await sendErrorViaErrorReporter(message.data);
+  } else if (isStartAudioCaptureMessage(message)) {
+    await startRecording(message.data);
+  } else if (isStopAudioCaptureMessage(message)) {
+    await stopRecording();
+  }
+}
+
+// Use optional chaining in case the chrome runtime is not available:
+// https://github.com/pixiebrix/pixiebrix-extension/issues/8397
+chrome.runtime?.onMessage?.addListener(handleMessages);

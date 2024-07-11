@@ -27,7 +27,12 @@ import {
   clearModComponentTraces,
   clearTraces,
 } from "@/telemetry/trace";
-import { captureTab } from "@/background/capture";
+import {
+  captureTab,
+  forwardAudioCaptureEvent,
+  startAudioCapture,
+  stopAudioCapture,
+} from "@/background/capture";
 import {
   deleteCachedAuthData,
   getCachedAuthData,
@@ -91,7 +96,7 @@ declare global {
     ADD_TRACE_EXIT: typeof addTraceExit;
     CLEAR_TRACES: typeof clearModComponentTraces;
     CLEAR_ALL_TRACES: typeof clearTraces;
-    CAPTURE_TAB: typeof captureTab;
+
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
     GET_CACHED_AUTH: typeof getCachedAuthData;
     HAS_CACHED_AUTH: typeof hasCachedAuthData;
@@ -104,6 +109,11 @@ declare global {
     REGISTRY_FIND: typeof packageRegistry.find;
     QUERY_TABS: typeof browser.tabs.query;
     FETCH_FEATURE_FLAGS: typeof fetchFeatureFlags;
+
+    CAPTURE_TAB: typeof captureTab;
+    AUDIO_CAPTURE_START: typeof startAudioCapture;
+    AUDIO_CAPTURE_STOP: typeof stopAudioCapture;
+    AUDIO_CAPTURE_EVENT: typeof forwardAudioCaptureEvent;
 
     GET_USER_DATA: typeof getUserData;
     RECORD_LOG: typeof recordLog;
@@ -164,7 +174,7 @@ export default function registerMessenger(): void {
     ADD_TRACE_EXIT: addTraceExit,
     CLEAR_TRACES: clearModComponentTraces,
     CLEAR_ALL_TRACES: clearTraces,
-    CAPTURE_TAB: captureTab,
+
     DELETE_CACHED_AUTH: deleteCachedAuthData,
     GET_CACHED_AUTH: getCachedAuthData,
     HAS_CACHED_AUTH: hasCachedAuthData,
@@ -177,6 +187,11 @@ export default function registerMessenger(): void {
     REGISTRY_FIND: packageRegistry.find,
     QUERY_TABS: browser.tabs.query,
     FETCH_FEATURE_FLAGS: fetchFeatureFlags,
+
+    CAPTURE_TAB: captureTab,
+    AUDIO_CAPTURE_START: startAudioCapture,
+    AUDIO_CAPTURE_STOP: stopAudioCapture,
+    AUDIO_CAPTURE_EVENT: forwardAudioCaptureEvent,
 
     GET_USER_DATA: getUserData,
     RECORD_LOG: recordLog,

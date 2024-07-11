@@ -58,6 +58,10 @@ import InsertAtCursorEffect from "@/bricks/effects/InsertAtCursorEffect";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
 import ExportFileEffect from "@/bricks/effects/exportFileEffect";
+import {
+  StartCaptureAudioEffect,
+  StopCaptureAudioEffect,
+} from "@/bricks/effects/captureAudio";
 
 function getAllEffects(): Brick[] {
   return [
@@ -110,6 +114,9 @@ function getAllEffects(): Brick[] {
     new CommentEffect(),
     new SetToolbarBadge(),
     new InsertAtCursorEffect(),
+    // Audio Capture Controls
+    new StartCaptureAudioEffect(),
+    new StopCaptureAudioEffect(),
   ];
 }
 
