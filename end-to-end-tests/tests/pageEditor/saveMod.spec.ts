@@ -30,15 +30,16 @@ test("can save a standalone trigger mod", async ({
 }) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
-  const { modComponentName } =
+  const { modComponentName, modUuid } =
     await pageEditorPage.modListingPanel.addStarterBrick("Trigger");
   await pageEditorPage.brickConfigurationPanel.fillField(
     "name",
     modComponentName,
   );
-  await pageEditorPage.saveStandaloneMod(modComponentName);
+  await pageEditorPage.saveStandaloneMod(modComponentName, modUuid);
   const modsPage = new ModsPage(page, extensionId);
   await modsPage.goto();
+
   await expect(
     modsPage.locator(".list-group-item", { hasText: modComponentName }),
   ).toBeVisible();

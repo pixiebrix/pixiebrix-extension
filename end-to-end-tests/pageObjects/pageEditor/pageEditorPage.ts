@@ -27,6 +27,7 @@ import { BrickConfigurationPanel } from "./brickConfigurationPanel";
 import { DataPanel } from "./dataPanel";
 import { ModEditorPane } from "./modEditorPane";
 import { ModifiesModState } from "./utils";
+import { CreateModModal } from "./createModModal";
 
 /**
  * Page object for the Page Editor. Prefer the newPageEditorPage fixture in testBase.ts to directly creating an
@@ -34,7 +35,6 @@ import { ModifiesModState } from "./utils";
  */
 export class PageEditorPage extends BasePageObject {
   private readonly pageEditorUrl: string;
-  private readonly savedStandaloneModNames: string[] = [];
   private readonly savedPackageModIds: string[] = [];
 
   modListingPanel = new ModListingPanel(this.getByTestId("modListingPanel"));
@@ -122,12 +122,16 @@ export class PageEditorPage extends BasePageObject {
     );
   }
 
-  async saveStandaloneMod(modName: string) {
+  @ModifiesModState
+  async saveStandaloneMod(modName: string, modUuid: UUID) {
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
     await modListItem.saveButton.click();
-    await expect(this.getByText("Saved Mod")).toBeVisible();
-    this.savedStandaloneModNames.push(modName);
+    // Create mod modal is shown
+    const createModModal = new CreateModModal(this.getByRole("dialog"));
+    const modId = await createModModal.createMod(modName, modUuid);
+
+    this.savedPackageModIds.push(modId);
   }
 
   @ModifiesModState
@@ -151,11 +155,9 @@ export class PageEditorPage extends BasePageObject {
     await this.getByRole("option", { name: /Create new mod.../ }).click();
     await this.getByRole("button", { name: "Move" }).click();
 
-    const modId = `${modName.split(" ").join("-").toLowerCase()}-${modUuid}`;
-    await this.getByTestId("registryId-id-id").fill(modId);
-
-    await this.getByLabel("Name", { exact: true }).fill(modName);
-    await this.getByRole("button", { name: "Create" }).click();
+    // Create mod modal is shown
+    const createModModal = new CreateModModal(this.getByRole("dialog"));
+    const modId = await createModModal.createMod(modName, modUuid);
 
     this.savedPackageModIds.push(modId);
 
@@ -171,9 +173,6 @@ export class PageEditorPage extends BasePageObject {
   async cleanup() {
     const modsPage = new ModsPage(this.page, this.extensionId);
     await modsPage.goto();
-    for (const standaloneModName of this.savedStandaloneModNames) {
-      await modsPage.deleteModByName(standaloneModName);
-    }
 
     const workshopPage = new WorkshopPage(this.page, this.extensionId);
     await workshopPage.goto();

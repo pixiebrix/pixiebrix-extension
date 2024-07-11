@@ -7549,47 +7549,6 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
       />
     </div>
     <label
-      className="label labelWider form-label"
-      htmlFor="name"
-    >
-      Name
-    </label>
-    <div
-      className="formField"
-    >
-      <input
-        className="form-control"
-        id="name"
-        name="name"
-        onBlur={[Function]}
-        onChange={[Function]}
-        value=""
-      />
-      <small
-        className="text-muted form-text"
-      >
-        <span
-          dangerouslySetInnerHTML={
-            {
-              "__html": "Field with widerLabel",
-            }
-          }
-        />
-      </small>
-    </div>
-  </div>
-  <div
-    className="formGroup form-group"
-  >
-    <div
-      aria-expanded={null}
-      className="mb-2 w-100 collapse"
-    >
-      <div
-        className="annotationPlaceholder"
-      />
-    </div>
-    <label
       className="label labelFitContent form-label"
       htmlFor="name"
     >
@@ -8685,7 +8644,7 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard OAuth2 1`] = `
                       />
                     </div>
                     <label
-                      className="label labelWider form-label"
+                      className="label form-label"
                       htmlFor="controlRoomUrl"
                     >
                       Control Room URL
