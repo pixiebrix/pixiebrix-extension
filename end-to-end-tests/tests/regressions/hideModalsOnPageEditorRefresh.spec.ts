@@ -20,21 +20,19 @@ import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import type { PageEditorPage } from "../../pageObjects/pageEditor/pageEditorPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
-
-const testModDefinitionName = "brick-actions";
-test.use({ modDefinitionNames: [testModDefinitionName] });
+import { browser } from "@/globals";
 
 test("should hide add brick modal when Page Editor refreshes", async ({
   page,
+  browser,
   newPageEditorPage,
   extensionId,
-  modDefinitionsMap,
 }) => {
-  const { id: modId } = modDefinitionsMap[testModDefinitionName];
-  const modActivationPage = new ActivateModPage(page, extensionId, modId);
   let pageEditorPage: PageEditorPage;
 
   await test.step("Activate mod, and initialize page editor", async () => {
+    const modId = "@pixies/giphy/giphy-search";
+    const modActivationPage = new ActivateModPage(page, extensionId, modId);
     await modActivationPage.goto();
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
     await page.goto("/");
@@ -60,7 +58,8 @@ test("should hide add brick modal when Page Editor refreshes", async ({
 
   await test.step("Activate another mod to trigger a Page Editor refresh", async () => {
     const modId = "@pixies/highlight-keywords";
-    const modActivationPage = new ActivateModPage(page, extensionId, modId);
+    const newPage = await browser.newPage();
+    const modActivationPage = new ActivateModPage(newPage, extensionId, modId);
     await modActivationPage.goto();
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
   });
