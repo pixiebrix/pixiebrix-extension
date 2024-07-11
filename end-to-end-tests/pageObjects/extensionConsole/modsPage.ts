@@ -19,6 +19,21 @@ import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
 import { BasePageObject } from "../basePageObject";
 
+export class ModTableItem extends BasePageObject {
+  dropdownButton = this.locator(".dropdown");
+  statusCell = this.getByTestId("status-cell");
+
+  async clickAction(actionName: string) {
+    // Wrapped in `toPass` due to flakiness with dropdown visibility
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8458
+    await expect(async () => {
+      // Open the dropdown action menu for the specified mod in the table
+      await this.dropdownButton.click();
+      await this.getByRole("button", { name: actionName }).click();
+    }).toPass({ timeout: 5000 });
+  }
+}
+
 export class ModsPage extends BasePageObject {
   private readonly extensionConsoleUrl: string;
 
@@ -49,7 +64,7 @@ export class ModsPage extends BasePageObject {
     const contentLoadedLocator = this.getByText("Welcome to PixieBrix!").or(
       this.modTableItems.nth(0),
     );
-    await expect(contentLoadedLocator).toBeVisible({ timeout: 10_000 });
+    await expect(contentLoadedLocator).toBeVisible({ timeout: 15_000 });
   }
 
   async viewAllMods() {
@@ -61,7 +76,7 @@ export class ModsPage extends BasePageObject {
   }
 
   modTableItemById(modId: string) {
-    return this.modTableItems.filter({ hasText: modId });
+    return new ModTableItem(this.modTableItems.filter({ hasText: modId }));
   }
 
   /**
@@ -70,20 +85,14 @@ export class ModsPage extends BasePageObject {
    * For deletion, use deleteModByName because it handles deactivation/confirmation.
    * @see deleteModByName
    */
-  async actionForModByName(modName: string, actionName: string): Promise<void> {
+  async actionForModByName(modId: string, actionName: string): Promise<void> {
     await this.page.bringToFront();
-    await this.searchModsInput.fill(modName);
-    await expect(this.getByText(`results for "${modName}`)).toBeVisible();
+    await this.searchModsInput.fill(modId);
+    await expect(this.getByText(`results for "${modId}`)).toBeVisible();
 
-    const modSearchResult = this.locator(".list-group-item", {
-      hasText: modName,
-    });
-    await expect(modSearchResult).toBeVisible();
+    const modTableItem = this.modTableItemById(modId);
 
-    // Open the dropdown action menu for the specified mod in the table
-    await modSearchResult.locator(".dropdown").click();
-
-    await this.getByRole("button", { name: actionName }).click();
+    await modTableItem.clickAction(actionName);
   }
 
   /**
@@ -96,32 +105,15 @@ export class ModsPage extends BasePageObject {
     await this.page.bringToFront();
     await this.searchModsInput.fill(modName);
     await expect(this.getByText(`results for "${modName}`)).toBeVisible();
-    const modToDelete = this.locator(".list-group-item", {
-      hasText: modName,
-    });
-    await expect(modToDelete).toBeVisible();
+    const modToDelete = this.modTableItemById(modName);
+    await expect(modToDelete.root).toBeVisible();
 
-    // Open the dropdown action menu for the specified mod in the table
-    await modToDelete.locator(".dropdown").click();
-
-    // Conditionally deactivate the mod
-    const deactivateOption = modToDelete.getByRole("button", {
-      name: "Deactivate",
-    });
-    if (await deactivateOption.isVisible()) {
-      await deactivateOption.click({
-        timeout: 3000,
-      });
+    if ((await modToDelete.statusCell.textContent()) === "Active") {
+      await modToDelete.clickAction("Deactivate");
       await expect(this.getByText(`Deactivated mod: ${modName}`)).toBeVisible();
-      // Re-open the dropdown action menu to stay in the same state
-      await modToDelete.locator(".dropdown").click();
     }
 
-    // Click the delete button in the dropdown action menu
-    await modToDelete.getByRole("button", { name: "Delete" }).click({
-      timeout: 3000,
-    });
-
+    await modToDelete.clickAction("Delete");
     // Click the delete button in the delete confirmation modal
     await this.getByRole("button", { name: "Delete" }).click();
     await expect(

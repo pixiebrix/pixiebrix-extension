@@ -118,10 +118,9 @@ test("create, run, package, and update mod", async ({
     await modsPage.goto();
 
     await modsPage.viewActiveMods();
-    await expect(modsPage.modTableItemById(modId)).toContainText(
-      "version 1.0.1",
-    );
-    await modsPage.actionForModByName(modId, "Reactivate");
+    const modTableItem = modsPage.modTableItemById(modId);
+    await expect(modTableItem.getByText("version 1.0.1")).toBeVisible();
+    await modTableItem.clickAction("Reactivate");
 
     const modActivatePage = new ActivateModPage(newPage, extensionId, modId);
 
