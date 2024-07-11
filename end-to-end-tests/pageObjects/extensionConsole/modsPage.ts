@@ -28,7 +28,9 @@ export class ModTableItem extends BasePageObject {
     // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8458
     await expect(async () => {
       await this.dropdownButton.click();
-      await this.getByRole("button", { name: actionName }).click();
+      await this.getByRole("button", { name: actionName }).click({
+        timeout: 0, // Handle retrying in the `toPass` block
+      });
     }).toPass({ timeout: 5000 });
   }
 }
