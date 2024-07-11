@@ -29,7 +29,7 @@ test("should hide add brick modal when Page Editor refreshes", async ({
   let pageEditorPage: PageEditorPage;
 
   await test.step("Activate mod, and initialize page editor", async () => {
-    const modId = "@pixies/giphy/giphy-search";
+    const modId = "@e2e-testing/simple-sidebar-panel";
     const modActivationPage = new ActivateModPage(page, extensionId, modId);
     await modActivationPage.goto();
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
@@ -38,12 +38,13 @@ test("should hide add brick modal when Page Editor refreshes", async ({
   });
 
   await test.step("Select the mod's starter brick in the Page Editor", async () => {
-    const modListItem =
-      pageEditorPage.modListingPanel.getModListItemByName("GIPHY Search");
+    const modListItem = pageEditorPage.modListingPanel.getModListItemByName(
+      "Simple Sidebar Panel",
+    );
     await modListItem.select();
     const testStarterBrick = pageEditorPage.modListingPanel.getModStarterBrick(
-      "GIPHY Search",
-      "GIPHY Search",
+      "Simple Sidebar Panel",
+      "Simple Sidebar Panel",
     );
     await testStarterBrick.select();
   });
@@ -55,7 +56,7 @@ test("should hide add brick modal when Page Editor refreshes", async ({
   });
 
   await test.step("Activate another mod to trigger a Page Editor refresh", async () => {
-    const modId = "@pixies/highlight-keywords";
+    const modId = "@e2e-testing/show-alert";
     const newPage = await page.context().newPage();
     const modActivationPage = new ActivateModPage(newPage, extensionId, modId);
     await modActivationPage.goto();
