@@ -31,6 +31,7 @@ import {
 import { isUrlRelative } from "@/utils/urlUtils";
 import createAuthRefreshInterceptor from "axios-auth-refresh";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
+import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
 import { refreshPartnerAuthentication } from "@/background/messenger/api";
 
@@ -73,7 +74,7 @@ async function setupApiClient(): Promise<void> {
       ...authHeaders,
       // Version 2.0 is paginated. Explicitly pass version, so we can switch the default version on the server
       // once clients are all passing an explicit version number
-      Accept: "application/json; version=1.0",
+      ...getRequestHeadersByAPIVersion("1.0"),
     },
   });
 
