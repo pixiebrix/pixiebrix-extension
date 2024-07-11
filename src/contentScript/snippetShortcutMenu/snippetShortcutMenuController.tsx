@@ -58,7 +58,7 @@ let snippetShortcutMenu: Nullishable<HTMLElement>;
 const hideController = new ReusableAbortController();
 
 function markSnippetShortcutMenuReady() {
-  const html = globalThis.document?.documentElement;
+  const html = globalThis.document.documentElement;
   html.setAttribute(SNIPPET_SHORTCUT_MENU_READY_ATTRIBUTE, "true");
 }
 
