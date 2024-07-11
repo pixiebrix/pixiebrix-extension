@@ -240,7 +240,7 @@ interface TraceMetadata extends RunMetadata {
    *
    * @see BrickConfig.instanceId
    */
-  blockInstanceId: Nullishable<UUID>;
+  brickInstanceId: Nullishable<UUID>;
 }
 
 type RunBrickOptions = CommonOptions & {
@@ -337,14 +337,14 @@ async function executeBrickWithValidatedProps(
     }
 
     case "self": {
-      const { runId, extensionId, branches } = options.trace;
+      const { runId, modComponentId, branches } = options.trace;
 
       return brick.run(args, {
         platform: getPlatform(),
         ...commonOptions,
         ...options,
         meta: {
-          extensionId,
+          modComponentId,
           runId,
           branches,
         },
@@ -365,7 +365,7 @@ async function executeBrickWithValidatedProps(
             {
               ...options,
               runId,
-              extensionId,
+              modComponentId,
               branches: [...branches, branch],
             },
           );
@@ -388,7 +388,7 @@ async function executeBrickWithValidatedProps(
             throw new Error("Expected object context for v3+ runtime");
           }
 
-          const { runId, extensionId, branches } = options.trace;
+          const { runId, modComponentId, branches } = options.trace;
           let payload: PanelPayload;
           try {
             await reducePipelineExpression(
@@ -404,7 +404,7 @@ async function executeBrickWithValidatedProps(
                 // This (headless) is the important difference from the call in runPipeline() above
                 headless: true,
                 runId,
-                extensionId,
+                modComponentId,
                 branches: [...branches, branch],
               },
             );
@@ -415,17 +415,17 @@ async function executeBrickWithValidatedProps(
             if (error instanceof HeadlessModeError) {
               payload = {
                 key: runId,
-                blockId: error.blockId,
+                brickId: error.brickId,
                 args: error.args,
                 ctxt: error.ctxt,
-                extensionId,
+                modComponentId,
                 runId,
               };
             } else {
               payload = {
                 key: runId,
                 error: serializeError(error),
-                extensionId,
+                modComponentId,
                 runId,
               };
             }
@@ -526,7 +526,7 @@ function selectTraceRecordMeta(
 ): TraceRecordMeta {
   return {
     ...options.trace,
-    blockId: resolvedConfig.config.id,
+    brickId: resolvedConfig.config.id,
   };
 }
 
@@ -535,11 +535,11 @@ function selectTraceRecordMeta(
  */
 function selectTraceEnabled({
   runId,
-  blockInstanceId,
-}: Pick<TraceMetadata, "runId" | "blockInstanceId">): boolean {
+  brickInstanceId,
+}: Pick<TraceMetadata, "runId" | "brickInstanceId">): boolean {
   return (
     Boolean(runId) &&
-    Boolean(blockInstanceId) &&
+    Boolean(brickInstanceId) &&
     getPlatform().capabilities.includes("debugger")
   );
 }
@@ -570,8 +570,8 @@ async function runBrick(
     if (selectTraceEnabled(trace)) {
       getPlatform().debugger.traces.exit({
         ...trace,
-        extensionId: logger.context.modComponentId,
-        blockId: brick.id,
+        modComponentId: logger.context.modComponentId,
+        brickId: brick.id,
         isFinal: true,
         isRenderer: true,
         error: null,
@@ -607,7 +607,7 @@ async function runBrick(
 async function applyReduceDefaults({
   logValues,
   runId,
-  extensionId,
+  modComponentId,
   logger: providedLogger,
   ...overrides
 }: Partial<ReduceOptions>): Promise<ReduceOptions> {
@@ -615,7 +615,7 @@ async function applyReduceDefaults({
   const logger = providedLogger ?? new ConsoleLogger();
 
   return {
-    extensionId: extensionId ?? logger.context.modComponentId,
+    modComponentId: modComponentId ?? logger.context.modComponentId,
     validateInput: true,
     headless: false,
     // Default to the `apiVersion: v1, v2` data passing behavior and renderer behavior
@@ -645,8 +645,14 @@ export async function brickReducer(
   options: ReduceOptions,
 ): Promise<BrickOutput> {
   const { index, isLastBlock, previousOutput, context, root } = state;
-  const { runId, extensionId, explicitDataFlow, logValues, logger, branches } =
-    options;
+  const {
+    runId,
+    modComponentId,
+    explicitDataFlow,
+    logValues,
+    logger,
+    branches,
+  } = options;
 
   // Match the override behavior in v1, where the output from previous brick would override anything in the context
   const contextWithPreviousOutput =
@@ -662,8 +668,8 @@ export async function brickReducer(
       runId,
       // Be defensive if the call site doesn't provide an extensionId
       // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3751
-      extensionId: extensionId ?? logger.context.modComponentId,
-      blockInstanceId: brickConfig.instanceId,
+      modComponentId: modComponentId ?? logger.context.modComponentId,
+      brickInstanceId: brickConfig.instanceId,
       branches,
     },
   };
@@ -708,7 +714,7 @@ export async function brickReducer(
       renderError: renderError ? serializeError(renderError) : null,
       // `renderedArgs` will be null if there's an error rendering args
       renderedArgs,
-      blockConfig: brickConfig,
+      brickConfig,
     });
   }
 
@@ -829,13 +835,13 @@ function throwBrickError(
     throw error;
   }
 
-  if (selectTraceEnabled({ runId, blockInstanceId: brickConfig.instanceId })) {
+  if (selectTraceEnabled({ runId, brickInstanceId: brickConfig.instanceId })) {
     getPlatform().debugger.traces.exit({
       runId,
       branches,
-      extensionId: logger.context.modComponentId,
-      blockId: brickConfig.id,
-      blockInstanceId: brickConfig.instanceId,
+      modComponentId: logger.context.modComponentId,
+      brickId: brickConfig.id,
+      brickInstanceId: brickConfig.instanceId,
       error: serializeError(error),
       skippedRun: false,
       isRenderer: false,

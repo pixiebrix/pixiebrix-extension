@@ -90,7 +90,7 @@ export async function runBrickPreview({
     logger: new ConsoleLogger(),
     // Excluding runId will prevent the run from being stored in traces
     runId: null,
-    extensionId: null,
+    modComponentId: null,
   };
 
   // Exclude the outputKey so that `output` is the output of the brick. Alternatively we could have taken then

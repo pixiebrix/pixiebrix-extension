@@ -98,7 +98,7 @@ const DataPanel: React.FC = () => {
   const brickType = brick?.type;
 
   const traces = useSelector(selectActiveModComponentTraces);
-  const record = traces.find((trace) => trace.blockInstanceId === activeNodeId);
+  const record = traces.find((trace) => trace.brickInstanceId === activeNodeId);
 
   const isInputStale = useMemo(() => {
     // Don't show the warning if there are no traces. Also, this brick can't have a
@@ -110,8 +110,8 @@ const DataPanel: React.FC = () => {
     const currentInput = pipeline.slice(0, brickIndex);
     const tracedInput = currentInput.map(
       (brick) =>
-        traces.find((trace) => trace.blockInstanceId === brick.instanceId)
-          ?.blockConfig,
+        traces.find((trace) => trace.brickInstanceId === brick.instanceId)
+          ?.brickConfig,
     );
 
     return !isEqual(currentInput, tracedInput);
@@ -126,7 +126,7 @@ const DataPanel: React.FC = () => {
       return false;
     }
 
-    return !isEqual(record.blockConfig, brickConfig);
+    return !isEqual(record.brickConfig, brickConfig);
   }, [isInputStale, record, brickConfig]);
 
   const relevantContext = useMemo(
@@ -184,7 +184,7 @@ const DataPanel: React.FC = () => {
     }
 
     const trace = traces.find(
-      (trace) => trace.blockInstanceId === activeNodeId,
+      (trace) => trace.brickInstanceId === activeNodeId,
     );
 
     // No traces or no changes since the last render, we are good, no alert
@@ -192,7 +192,7 @@ const DataPanel: React.FC = () => {
       traces.length === 0 ||
       trace == null ||
       isEqual(
-        omit(trace.blockConfig, ["comments"]),
+        omit(trace.brickConfig, ["comments"]),
         omit(brickConfig, ["comments"]),
       )
     ) {

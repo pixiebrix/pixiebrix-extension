@@ -41,6 +41,6 @@ export type DocumentViewProps = {
   options: BrickOptions<BrickArgsContext>;
   meta: {
     runId: UUID;
-    extensionId: UUID;
+    modComponentId: UUID;
   };
 };

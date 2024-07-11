@@ -43,7 +43,7 @@ describe("PanelBody", () => {
       key: uuidv4(),
       error: serializeError(new Error("test error")),
       runId: uuidv4(),
-      extensionId: modComponentId,
+      modComponentId,
     };
 
     const { asFragment } = render(
@@ -63,7 +63,7 @@ describe("PanelBody", () => {
       key: uuidv4(),
       error: serializeError(new BusinessError("test error")),
       runId: uuidv4(),
-      extensionId: modComponentId,
+      modComponentId,
     };
 
     const { asFragment } = render(
@@ -83,7 +83,7 @@ describe("PanelBody", () => {
       key: uuidv4(),
       error: serializeError(new CancelError("test error")),
       runId: uuidv4(),
-      extensionId: modComponentId,
+      modComponentId,
     };
 
     const { asFragment } = render(
@@ -102,8 +102,8 @@ describe("PanelBody", () => {
     const payload: RendererRunPayload = {
       key: uuidv4(),
       runId: uuidv4(),
-      extensionId: modComponentId,
-      blockId: validateRegistryId("@pixiebrix/html"),
+      modComponentId,
+      brickId: validateRegistryId("@pixiebrix/html"),
       args: {
         html: "<h1>Test</h1>",
       },
@@ -129,8 +129,8 @@ describe("PanelBody", () => {
     const payload: RendererRunPayload = {
       key: uuidv4(),
       runId: uuidv4(),
-      extensionId: modComponentId,
-      blockId: validateRegistryId("@pixiebrix/html"),
+      modComponentId,
+      brickId: validateRegistryId("@pixiebrix/html"),
       args: {
         html: "<h1>Test</h1>",
       },
@@ -157,8 +157,8 @@ describe("PanelBody", () => {
     const payload: RendererRunPayload = {
       key: uuidv4(),
       runId: uuidv4(),
-      extensionId: modComponentId,
-      blockId: validateRegistryId("@pixiebrix/document"),
+      modComponentId,
+      brickId: validateRegistryId("@pixiebrix/document"),
       args: {
         body: [
           {

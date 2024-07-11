@@ -377,7 +377,7 @@ describe("tracing", () => {
     };
 
     const runId = uuidv4();
-    const extensionId = uuidv4();
+    const modComponentId = uuidv4();
     // Provide initial value to ensure it's preserved
     const initialBranches = [{ key: "body", counter: 1 }];
 
@@ -387,20 +387,20 @@ describe("tracing", () => {
       {
         ...testOptions("v3"),
         runId,
-        extensionId,
+        modComponentId,
         branches: initialBranches,
       },
     );
 
     expect(OptionsBrick.options[0].meta).toStrictEqual({
       runId,
-      extensionId,
+      modComponentId,
       branches: initialBranches,
     });
 
     expect(OptionsBrick.options[1].meta).toStrictEqual({
       runId,
-      extensionId,
+      modComponentId,
       branches: [
         ...initialBranches,
         // Branch is added by the @pixiebrix/run brick
