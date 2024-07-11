@@ -64,7 +64,9 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
 
   (function () {
     oauth2Storage.onChanged((newValue) => {
-      if (!isEmpty(newValue[googleAccountAsyncState.data.id])) {
+      const { id } = googleAccountAsyncState.data ?? {};
+      // eslint-disable-next-line security/detect-object-injection -- not user provided
+      if (id && !isEmpty(newValue[id])) {
         googleAccountAsyncState.refetch();
         loginController.abortAndReset();
       }
