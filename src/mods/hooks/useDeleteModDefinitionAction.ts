@@ -61,7 +61,7 @@ function useDeleteModDefinitionAction(
 
       const confirmed = await modals.showConfirmation({
         title: "Permanently Delete?",
-        message: `Permanently delete the mod ${modPackage.name}?`,
+        message: `Permanently delete the mod from the package registry: ${modPackage.name}`,
         submitCaption: "Delete",
         cancelCaption: "Back to Safety",
       });
