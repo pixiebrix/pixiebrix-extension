@@ -33,7 +33,7 @@ import { isObject } from "@/utils/objectUtils";
 export class HeadlessModeError extends Error {
   override name = "HeadlessModeError";
 
-  public readonly blockId: RegistryId;
+  public readonly brickId: RegistryId;
 
   public readonly args: BrickArgs;
 
@@ -42,13 +42,13 @@ export class HeadlessModeError extends Error {
   public readonly loggerContext: MessageContext;
 
   constructor(
-    blockId: RegistryId,
+    brickId: RegistryId,
     args: BrickArgs,
     ctxt: BrickArgsContext,
     loggerContext: MessageContext,
   ) {
-    super(`${blockId} is a renderer`);
-    this.blockId = blockId;
+    super(`${brickId} is a renderer`);
+    this.brickId = brickId;
     this.args = args;
     this.ctxt = ctxt;
     this.loggerContext = loggerContext;

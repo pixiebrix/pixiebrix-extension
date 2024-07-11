@@ -43,7 +43,7 @@ export function getLatestBrickCall(
   return getLatestCall(
     records.filter(
       // Use first block in pipeline to determine the latest run
-      (trace) => trace.blockInstanceId === blockInstanceId,
+      (trace) => trace.brickInstanceId === blockInstanceId,
     ),
   );
 }

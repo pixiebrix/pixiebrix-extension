@@ -54,7 +54,7 @@ export async function runRendererPipeline({
     if (error instanceof HeadlessModeError) {
       return {
         key: nonce,
-        blockId: error.blockId,
+        brickId: error.brickId,
         args: error.args,
         ctxt: error.ctxt,
         ...meta,
