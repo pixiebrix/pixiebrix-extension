@@ -26,18 +26,35 @@ import reportError from "@/telemetry/reportError";
 import { ReusableAbortController } from "abort-utils";
 import { oauth2Storage } from "@/auth/authConstants";
 import { isEmpty } from "lodash";
-import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");
 const loginController = new ReusableAbortController();
+
+function useGoogleAccountLoginListner({
+  data: googleAccount,
+  refetch,
+}: FetchableAsyncState<SanitizedIntegrationConfig | null>) {
+  useEffect(() => {
+    // Automatically refetch the google account on login
+    oauth2Storage.onChanged((newValue) => {
+      const { id } = googleAccount ?? {};
+      // eslint-disable-next-line security/detect-object-injection -- not user provided
+      if (id && !isEmpty(newValue[id])) {
+        refetch();
+        loginController.abortAndReset();
+      }
+    }, loginController.signal);
+
+    return () => {
+      loginController.abortAndReset();
+    };
+  }, [googleAccount, refetch]);
+}
 
 /**
  * Hook to get the Google account from mod integrations context
  */
 function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | null> {
-  // Clean up the listener on unmount if it hasn't fired yet
-  useOnMountOnly(() => loginController.abortAndReset.bind(loginController));
-
   const { integrationDependencies } = useContext(ModIntegrationsContext);
 
   // Dependency may not exist, do not destructure here
@@ -61,17 +78,7 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
     }
   }, [googleDependency]);
 
-  useEffect(() => {
-    // Automatically refetch the google account on login
-    oauth2Storage.onChanged((newValue) => {
-      const { id } = googleAccountAsyncState.data ?? {};
-      // eslint-disable-next-line security/detect-object-injection -- not user provided
-      if (id && !isEmpty(newValue[id])) {
-        googleAccountAsyncState.refetch();
-        loginController.abortAndReset();
-      }
-    }, loginController.signal);
-  }, [googleAccountAsyncState]);
+  useGoogleAccountLoginListner(googleAccountAsyncState);
 
   return googleAccountAsyncState;
 }
