@@ -381,7 +381,7 @@ describe("Trace normal execution", () => {
     expect(traces.addExit).toHaveBeenCalledWith(
       expect.objectContaining({
         runId: meta.runId,
-        blockInstanceId: meta.brickInstanceId,
+        brickInstanceId: meta.brickInstanceId,
         error: expect.objectContaining({
           name: "BusinessError",
           message: "hello",

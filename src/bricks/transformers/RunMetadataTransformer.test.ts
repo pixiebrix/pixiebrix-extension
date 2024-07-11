@@ -95,7 +95,7 @@ describe("RunMetadataTransformer", () => {
         logger,
         meta: {
           runId,
-          modComponentId: modComponentId,
+          modComponentId,
           branches: [],
         },
       }),

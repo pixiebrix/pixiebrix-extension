@@ -40,9 +40,9 @@ const DocumentView: React.FC<DocumentViewProps> = ({
     throw new Error("meta.runId is required for DocumentView");
   }
 
-  if (!meta?.extensionId) {
+  if (!meta?.modComponentId) {
     // The sidebar panel should dynamically pass the prop through
-    throw new Error("meta.extensionId is required for DocumentView");
+    throw new Error("meta.modComponentId is required for DocumentView");
   }
 
   const { stylesheets } = useStylesheetsContextWithDocumentDefault({

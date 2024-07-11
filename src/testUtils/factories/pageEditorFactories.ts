@@ -265,7 +265,7 @@ export const formStateWithTraceDataFactory = define<{
 
     let outputKey = "" as OutputKey;
     let output: JsonObject = foundationOutputFactory();
-    return modComponent.brickPipeline.map((block, index) => {
+    return modComponent.brickPipeline.map((brickConfig, index) => {
       const context = output;
       outputKey = `output${index}` as OutputKey;
       output = {
@@ -278,11 +278,11 @@ export const formStateWithTraceDataFactory = define<{
       };
 
       return traceRecordFactory({
-        modComponentId: modComponentId,
-        brickInstanceId: block.instanceId,
-        brickId: block.id,
+        modComponentId,
+        brickInstanceId: brickConfig.instanceId,
+        brickId: brickConfig.id,
         templateContext: context,
-        brickConfig: block,
+        brickConfig,
         outputKey,
         output,
       });

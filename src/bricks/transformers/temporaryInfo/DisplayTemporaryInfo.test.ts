@@ -136,7 +136,7 @@ describe("DisplayTemporaryInfo", () => {
       nonce: expect.toBeString(),
       heading: expect.toBeString(),
       payload: expect.objectContaining({
-        blockId: renderer.id,
+        brickId: renderer.id,
         args: expect.anything(),
         ctxt: expect.anything(),
       }),
