@@ -387,7 +387,7 @@ describe("tracing", () => {
       {
         ...testOptions("v3"),
         runId,
-        extensionId,
+        modComponentId: extensionId,
         branches: initialBranches,
       },
     );

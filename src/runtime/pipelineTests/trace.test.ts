@@ -243,21 +243,21 @@ describe("Trace normal execution", () => {
       ...testOptions("v2"),
       runId,
       logger,
-      extensionId,
+      modComponentId: extensionId,
     });
 
     const meta: TraceRecordMeta = {
-      extensionId,
+      modComponentId: extensionId,
       runId,
       branches: [],
-      blockInstanceId: instanceId,
-      blockId: echoBrick.id,
+      brickInstanceId: instanceId,
+      brickId: echoBrick.id,
     };
 
     const expectedEntry: TraceEntryData = {
       ...meta,
       timestamp: timestamp.toISOString(),
-      blockConfig,
+      brickConfig: blockConfig,
       templateContext: { "@input": { inputArg: "hello" }, "@options": {} },
       renderedArgs: { message: "hello" } as unknown as RenderedArgs,
       renderError: null,
@@ -308,17 +308,17 @@ describe("Trace normal execution", () => {
 
     await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
       ...testOptions("v2"),
-      extensionId,
+      modComponentId: extensionId,
       runId,
       logger,
     });
 
     const meta: TraceRecordMeta = {
-      extensionId,
+      modComponentId: extensionId,
       runId,
       branches: [],
-      blockInstanceId: instanceId,
-      blockId: echoBrick.id,
+      brickInstanceId: instanceId,
+      brickId: echoBrick.id,
     };
 
     const expectedExit: TraceExitData = {
@@ -370,18 +370,18 @@ describe("Trace normal execution", () => {
     }).rejects.toThrow();
 
     const meta: TraceRecordMeta = {
-      extensionId,
+      modComponentId: extensionId,
       runId,
       branches: [],
-      blockInstanceId: instanceId,
-      blockId: throwBrick.id,
+      brickInstanceId: instanceId,
+      brickId: throwBrick.id,
     };
 
     expect(traces.addExit).toHaveBeenCalledTimes(1);
     expect(traces.addExit).toHaveBeenCalledWith(
       expect.objectContaining({
         runId: meta.runId,
-        blockInstanceId: meta.blockInstanceId,
+        blockInstanceId: meta.brickInstanceId,
         error: expect.objectContaining({
           name: "BusinessError",
           message: "hello",

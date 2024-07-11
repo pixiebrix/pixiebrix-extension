@@ -278,11 +278,11 @@ export const formStateWithTraceDataFactory = define<{
       };
 
       return traceRecordFactory({
-        extensionId: modComponentId,
-        blockInstanceId: block.instanceId,
-        blockId: block.id,
+        modComponentId: modComponentId,
+        brickInstanceId: block.instanceId,
+        brickId: block.id,
         templateContext: context,
-        blockConfig: block,
+        brickConfig: block,
         outputKey,
         output,
       });

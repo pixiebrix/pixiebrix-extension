@@ -43,7 +43,7 @@ describe("RendererComponent", () => {
 
   test("provide onAction to document renderer", async () => {
     const runId = uuidv4();
-    const extensionId = uuidv4();
+    const modComponentId = uuidv4();
     const onAction = jest.fn();
 
     runHeadlessPipelineMock.mockRejectedValue(
@@ -63,10 +63,10 @@ describe("RendererComponent", () => {
     const props = {
       body: [config],
       options: brickOptionsFactory({
-        logger: new ConsoleLogger({ modComponentId: extensionId }),
+        logger: new ConsoleLogger({ modComponentId }),
         meta: {
           runId,
-          extensionId,
+          modComponentId,
           branches: [],
         },
       }),
@@ -74,9 +74,9 @@ describe("RendererComponent", () => {
 
     render(
       <RendererComponent
-        blockId={validateRegistryId("@pixiebrix/document")}
+        brickId={validateRegistryId("@pixiebrix/document")}
         body={{ Component: DocumentView as any, props }}
-        meta={{ runId, extensionId }}
+        meta={{ runId, modComponentId }}
         onAction={onAction}
       />,
     );

@@ -46,7 +46,7 @@ export const initialValue: DocumentState = {
     platform: uninitializedPlatform,
     meta: {
       runId: null,
-      extensionId: UNSET_UUID,
+      modComponentId: UNSET_UUID,
       branches: [],
     },
     ctxt: BLANK_CONTEXT,
