@@ -62,6 +62,7 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
     }
   }, [googleDependency]);
 
+  // Automatically refetch the google account on login
   (function () {
     oauth2Storage.onChanged((newValue) => {
       const { id } = googleAccountAsyncState.data ?? {};
