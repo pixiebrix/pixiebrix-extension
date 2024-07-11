@@ -10,13 +10,13 @@ on:
 
 jobs:
   run-tests:
+    name: run-tests
     strategy:
       fail-fast: false
       matrix:
         project: [chrome, edge]
         shardIndex: [1, 2, 3]
         shardTotal: [3]
-    name: run-tests-${{ matrix.project }}-${{ matrix.shardIndex }}
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
