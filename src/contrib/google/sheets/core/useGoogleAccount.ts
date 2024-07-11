@@ -63,16 +63,14 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
 
   useEffect(() => {
     // Automatically refetch the google account on login
-    (function () {
-      oauth2Storage.onChanged((newValue) => {
-        const { id } = googleAccountAsyncState.data ?? {};
-        // eslint-disable-next-line security/detect-object-injection -- not user provided
-        if (id && !isEmpty(newValue[id])) {
-          googleAccountAsyncState.refetch();
-          loginController.abortAndReset();
-        }
-      }, loginController.signal);
-    })();
+    oauth2Storage.onChanged((newValue) => {
+      const { id } = googleAccountAsyncState.data ?? {};
+      // eslint-disable-next-line security/detect-object-injection -- not user provided
+      if (id && !isEmpty(newValue[id])) {
+        googleAccountAsyncState.refetch();
+        loginController.abortAndReset();
+      }
+    }, loginController.signal);
   }, [googleAccountAsyncState]);
 
   return googleAccountAsyncState;
