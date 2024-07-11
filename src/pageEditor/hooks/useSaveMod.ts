@@ -162,7 +162,6 @@ function useSaveMod(): ModSaver {
         upsertModComponentFormState({
           modComponentFormState,
           options: {
-            pushToCloud: false,
             // Permissions were already checked earlier in the save function here
             checkPermissions: false,
             // Notified and reactivated once in safeSave below

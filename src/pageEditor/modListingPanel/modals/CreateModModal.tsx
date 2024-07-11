@@ -146,7 +146,6 @@ const CreateModModalBody: React.FC = () => {
   );
 
   // `selectActiveModId` returns the mod id if a mod is selected. Assumption: if the CreateModal
-  // `selectActiveModId` returns the mod id if a mod is selected. Assumption: if the CreateModal
   // is open, and a mod is active, then we're performing a "Save as New" on that mod.
   const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId =
@@ -201,28 +200,24 @@ const CreateModModalBody: React.FC = () => {
         name="id"
         label="Mod ID"
         description={FieldDescriptions.MOD_ID}
-        widerLabel
         showUntouchedErrors
         as={RegistryIdWidget}
       />
       <ConnectedFieldTemplate
         name="name"
         label="Name"
-        widerLabel
         description={FieldDescriptions.MOD_NAME}
         showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="version"
         label="Version"
-        widerLabel
         description={FieldDescriptions.MOD_VERSION}
         showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="description"
         label="Description"
-        widerLabel
         description={FieldDescriptions.MOD_DESCRIPTION}
         showUntouchedErrors
       />
@@ -239,7 +234,7 @@ const CreateModModalBody: React.FC = () => {
         type="submit"
         disabled={!isValid || isSubmitting}
       >
-        Create
+        Save
       </Button>
     </Modal.Footer>
   );
@@ -273,7 +268,7 @@ const CreateModModal: React.FunctionComponent = () => {
   }, [dispatch]);
 
   return (
-    <ModalLayout title="Create new mod" show={show} onHide={hideModal}>
+    <ModalLayout title="Save new mod" show={show} onHide={hideModal}>
       <CreateModModalBody />
     </ModalLayout>
   );

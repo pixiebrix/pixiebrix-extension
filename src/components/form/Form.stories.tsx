@@ -175,12 +175,6 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
       />
 
       <ConnectedFieldTemplate
-        widerLabel
-        name="name"
-        label="Name"
-        description="Field with widerLabel"
-      />
-      <ConnectedFieldTemplate
         fitLabelWidth
         name="name"
         label="Name"
