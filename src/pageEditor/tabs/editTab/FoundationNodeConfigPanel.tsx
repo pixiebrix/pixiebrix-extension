@@ -37,6 +37,7 @@ import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
   const { isConfigured } = useQuickbarShortcut();
@@ -86,7 +87,7 @@ const FoundationNodeConfigPanel: React.FC = () => {
 
   return (
     <>
-      {starterBrick.definition.type === "quickBar" && (
+      {starterBrick.definition.type === StarterBrickTypes.QUICK_BAR_ACTION && (
         <UnconfiguredQuickBarAlert />
       )}
       <ConnectedFieldTemplate name="label" label="Name" />

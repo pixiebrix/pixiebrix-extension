@@ -43,7 +43,11 @@ import {
   quickbarQueryReaderShim,
 } from "@/starterBricks/quickBarProvider/quickBarQueryReader";
 import { type Reader } from "@/types/bricks/readerTypes";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrick,
+  StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
@@ -73,7 +77,10 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   ): starterBrick is QuickBarProviderStarterBrickABC {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any
     -- Need to access a type specific property (QuickBarProviderStarterBrickABC._definition) on a base-typed entity (StarterBrick) */
-    return (starterBrick as any)?._definition?.type === "quickBarProvider";
+    return (
+      (starterBrick as any)?._definition?.type ===
+      StarterBrickTypes.DYNAMIC_QUICK_BAR
+    );
   }
 
   abstract getBaseReader(): Promise<Reader>;
@@ -116,8 +123,8 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     return collectAllBricks(modComponent.config.generator);
   }
 
-  public get kind(): "quickBarProvider" {
-    return "quickBarProvider";
+  public get kind(): StarterBrickType {
+    return StarterBrickTypes.DYNAMIC_QUICK_BAR;
   }
 
   override uninstall(): void {
@@ -381,7 +388,7 @@ export function fromJS(
   config: StarterBrickDefinitionLike<QuickBarProviderDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
-  if (type !== "quickBarProvider") {
+  if (type !== StarterBrickTypes.DYNAMIC_QUICK_BAR) {
     throw new Error(`Expected type=quickBarProvider, got ${type}`);
   }
 

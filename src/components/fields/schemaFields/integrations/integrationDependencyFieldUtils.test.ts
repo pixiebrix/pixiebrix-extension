@@ -30,6 +30,7 @@ import { integrationDependencyFactory } from "@/testUtils/factories/integrationF
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { normalizeAvailability } from "@/bricks/available";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
@@ -209,7 +210,7 @@ describe("selectVariables", () => {
       ],
       permissions: emptyPermissionsFactory(),
       optionsArgs: {},
-      type: "actionPanel",
+      type: StarterBrickTypes.SIDEBAR_PANEL,
       modMetadata: null,
       modComponent: {
         brickPipeline: [
@@ -270,7 +271,7 @@ describe("selectVariables", () => {
           name: "Temporary starter brick",
         },
         definition: {
-          type: "actionPanel",
+          type: StarterBrickTypes.SIDEBAR_PANEL,
           reader: [validateRegistryId("@pixiebrix/document-metadata")],
           isAvailable: normalizeAvailability({
             matchPatterns: ["https://pbx.vercel.app/*"],

@@ -43,7 +43,11 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
 import { guessSelectedElement } from "@/utils/selectionController";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrick,
+  StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
@@ -74,7 +78,10 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
   ): starterBrick is QuickBarStarterBrickABC {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any
     -- Need to access a type specific property (QuickBarStarterBrick._definition) on a base-typed entity (StarterBrick) */
-    return (starterBrick as any)?._definition?.type === "quickBar";
+    return (
+      (starterBrick as any)?._definition?.type ===
+      StarterBrickTypes.QUICK_BAR_ACTION
+    );
   }
 
   abstract get targetMode(): QuickBarTargetMode;
@@ -114,8 +121,8 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     return collectAllBricks(modComponent.config.action);
   }
 
-  public get kind(): "quickBar" {
-    return "quickBar";
+  public get kind(): StarterBrickType {
+    return StarterBrickTypes.QUICK_BAR_ACTION;
   }
 
   override uninstall(): void {
@@ -364,7 +371,7 @@ export function fromJS(
   config: StarterBrickDefinitionLike<QuickBarDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
-  if (type !== "quickBar") {
+  if (type !== StarterBrickTypes.QUICK_BAR_ACTION) {
     throw new Error(`Expected type=quickBar, got ${type}`);
   }
 

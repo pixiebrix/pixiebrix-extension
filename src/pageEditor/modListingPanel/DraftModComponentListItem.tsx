@@ -162,7 +162,7 @@ const DraftModComponentListItem: React.FunctionComponent<
 
         dispatch(actions.setActiveModComponentId(modComponentFormState.uuid));
 
-        if (modComponentFormState.type === "actionPanel") {
+        if (modComponentFormState.type === StarterBrickTypes.SIDEBAR_PANEL) {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between mod components within the same mod.
           await openSidePanel(inspectedTab.tabId);

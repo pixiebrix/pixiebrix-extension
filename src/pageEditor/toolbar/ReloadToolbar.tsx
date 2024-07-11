@@ -47,7 +47,7 @@ function isAutomaticTrigger(
 ): boolean {
   const automatic = ["load", "appear", "initialize", "interval"];
   return (
-    modComponentFormState?.type === "trigger" &&
+    modComponentFormState?.type === StarterBrickTypes.TRIGGER &&
     automatic.includes(
       modComponentFormState?.starterBrick.definition.trigger ?? "",
     )

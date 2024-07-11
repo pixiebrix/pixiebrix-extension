@@ -239,7 +239,7 @@ export interface QuickBarProviderFormState
     QuickBarProviderModComponentState,
     QuickBarProviderStarterBrickState
   > {
-  type: typeof StarterBrickTypes.QUICK_BAR_ACTION;
+  type: typeof StarterBrickTypes.DYNAMIC_QUICK_BAR;
 }
 
 /**

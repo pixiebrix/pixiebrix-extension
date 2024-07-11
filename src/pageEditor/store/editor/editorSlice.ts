@@ -114,7 +114,7 @@ export const initialState: EditorState = {
   isDimensionsWarningDismissed: false,
 
   // Not persisted
-  inserting: null,
+  insertingStarterBrickType: null,
   isVariablePopoverVisible: false,
 };
 
@@ -313,8 +313,16 @@ export const editorSlice = createSlice({
     resetEditor() {
       return initialState;
     },
-    toggleInsert(state, action: PayloadAction<StarterBrickType | null>) {
-      state.inserting = action.payload;
+    setInsertingStarterBrickType(
+      state,
+      action: PayloadAction<StarterBrickType>,
+    ) {
+      state.insertingStarterBrickType = action.payload;
+      state.beta = false;
+      state.error = null;
+    },
+    clearInsertingStarterBrickType(state) {
+      state.insertingStarterBrickType = null;
       state.beta = false;
       state.error = null;
     },
@@ -327,7 +335,7 @@ export const editorSlice = createSlice({
     ) {
       const modComponentFormState =
         action.payload as Draft<ModComponentFormState>;
-      state.inserting = null;
+      state.insertingStarterBrickType = null;
       state.modComponentFormStates.push(modComponentFormState);
       state.dirty[modComponentFormState.uuid] = true;
 

@@ -44,7 +44,11 @@ import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrick,
+  StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import { ReusableAbortController } from "abort-utils";
@@ -115,8 +119,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   // Historical context: in the browser API, the toolbar icon is bound to an action. This is a panel that's shown
   // when the user toggles the toolbar icon. Hence: actionPanel.
   // See https://developer.chrome.com/docs/extensions/reference/browserAction/
-  public get kind(): "actionPanel" {
-    return "actionPanel";
+  public get kind(): StarterBrickType {
+    return StarterBrickTypes.SIDEBAR_PANEL;
   }
 
   readonly capabilities: PlatformCapability[] = ["panel"];
@@ -484,7 +488,7 @@ export function fromJS(
   config: StarterBrickDefinitionLike,
 ): StarterBrick {
   const { type } = config.definition;
-  if (type !== "actionPanel") {
+  if (type !== StarterBrickTypes.SIDEBAR_PANEL) {
     throw new Error(`Expected type=actionPanel, got ${type}`);
   }
 

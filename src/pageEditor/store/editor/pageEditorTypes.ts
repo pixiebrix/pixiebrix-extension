@@ -352,8 +352,15 @@ export type EditorStateV4 = Except<
   deletedModComponentFormStatesByModId: Record<string, BaseFormStateV3[]>;
 };
 
+/**
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ */
+export type EditorStateV5 = Except<EditorStateV4, "inserting"> & {
+  insertingStarterBrickType: StarterBrickType | null;
+};
+
 export type EditorState = Except<
-  EditorStateV4,
+  EditorStateV5,
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: ModComponentFormState[];

@@ -20,6 +20,7 @@ import {
   type EditorStateV1,
   type EditorStateV2,
   type EditorStateV4,
+  EditorStateV5,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { mapValues, omit } from "lodash";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -43,6 +44,7 @@ import {
   migrateEditorStateV1,
   migrateEditorStateV2,
   migrateEditorStateV3,
+  migrateEditorStateV4,
 } from "@/store/editorMigrations";
 
 const initialStateV1: EditorStateV1 & PersistedState = {
@@ -150,6 +152,41 @@ const initialStateV4: EditorStateV4 & PersistedState = {
   isDataPanelExpanded: true,
   isDimensionsWarningDismissed: false,
   inserting: null,
+  isVariablePopoverVisible: false,
+  // Function under test does not handle updating the persistence, this is handled by redux-persist
+  _persist: {
+    version: 1,
+    rehydrated: false,
+  },
+};
+
+const initialStateV5: EditorStateV5 & PersistedState = {
+  selectionSeq: 0,
+  activeModComponentId: null,
+  activeModId: null,
+  expandedModId: null,
+  error: null,
+  beta: false,
+  modComponentFormStates: [],
+  knownEditableBrickIds: [],
+  dirty: {},
+  isBetaUI: false,
+  copiedBrick: undefined,
+  brickPipelineUIStateById: {},
+  dirtyModOptionsById: {},
+  dirtyModMetadataById: {},
+  visibleModalKey: null,
+  addBrickLocation: undefined,
+  keepLocalCopyOnCreateMod: false,
+  deletedModComponentFormStatesByModId: {},
+  availableActivatedModComponentIds: [],
+  isPendingAvailableActivatedModComponents: false,
+  availableDraftModComponentIds: [],
+  isPendingDraftModComponents: false,
+  isModListExpanded: true,
+  isDataPanelExpanded: true,
+  isDimensionsWarningDismissed: false,
+  insertingStarterBrickType: null,
   isVariablePopoverVisible: false,
   // Function under test does not handle updating the persistence, this is handled by redux-persist
   _persist: {
@@ -351,6 +388,14 @@ describe("editor state migrations", () => {
       };
       const unmigrated = unmigrateEditorStateV3(expectedState);
       expect(migrateEditorStateV3(unmigrated)).toStrictEqual(expectedState);
+    });
+  });
+
+  describe("migrateEditorStateV4", () => {
+    it("migrates empty state", () => {
+      expect(migrateEditorStateV4(initialStateV4)).toStrictEqual(
+        initialStateV5,
+      );
     });
   });
 });

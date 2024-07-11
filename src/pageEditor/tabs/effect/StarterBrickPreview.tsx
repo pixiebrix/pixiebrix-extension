@@ -33,6 +33,7 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 type PreviewState = {
   isRunning: boolean;
@@ -131,7 +132,7 @@ const StarterBrickPreview: React.FunctionComponent<{
   }
 
   const reloadTrigger =
-    modComponentFormState.type === "trigger" &&
+    modComponentFormState.type === StarterBrickTypes.TRIGGER &&
     modComponentFormState.starterBrick.definition.trigger !== "load" ? (
       <div className="text-info">
         <AsyncButton
@@ -147,7 +148,7 @@ const StarterBrickPreview: React.FunctionComponent<{
     ) : null;
 
   const reloadContextMenu =
-    modComponentFormState.type === "contextMenu" ? (
+    modComponentFormState.type === StarterBrickTypes.CONTEXT_MENU ? (
       <div className="text-info">
         <AsyncButton
           variant="info"

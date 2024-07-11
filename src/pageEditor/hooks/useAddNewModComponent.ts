@@ -54,7 +54,11 @@ function useAddNewModComponent(): AddNewModComponent {
         return;
       }
 
-      dispatch(actions.toggleInsert(modComponentFormStateAdapter.elementType));
+      dispatch(
+        actions.setInsertingStarterBrickType(
+          modComponentFormStateAdapter.elementType,
+        ),
+      );
 
       if (!modComponentFormStateAdapter.selectNativeElement) {
         // If the foundation is not for a native element, stop after toggling insertion mode
@@ -101,7 +105,7 @@ function useAddNewModComponent(): AddNewModComponent {
           error,
         });
       } finally {
-        dispatch(actions.toggleInsert(null));
+        dispatch(actions.clearInsertingStarterBrickType());
       }
     },
     [dispatch, flagOff, suggestElements],

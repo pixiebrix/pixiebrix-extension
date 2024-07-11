@@ -20,7 +20,7 @@ import {
 } from "@/pageEditor/context/connection";
 import { updateDraftModComponent } from "@/contentScript/messenger/api";
 
-const { addModComponentFormState, toggleInsert } = actions;
+const { addModComponentFormState, clearInsertingStarterBrickType } = actions;
 
 function useAutoInsert(type: StarterBrickType): void {
   const dispatch = useDispatch();
@@ -76,7 +76,7 @@ function useAutoInsert(type: StarterBrickType): void {
         message: "Error adding mod",
         error,
       });
-      dispatch(toggleInsert(null));
+      dispatch(clearInsertingStarterBrickType());
     }
   }, [type, dispatch]);
 }

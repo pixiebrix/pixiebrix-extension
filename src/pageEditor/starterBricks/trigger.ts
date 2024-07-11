@@ -46,6 +46,7 @@ import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 function fromNativeElement(
   url: string,
@@ -53,13 +54,13 @@ function fromNativeElement(
   _element: null,
 ): TriggerFormState {
   return {
-    type: "trigger",
+    type: StarterBrickTypes.TRIGGER,
     label: `My ${getDomain(url)} trigger`,
     ...makeInitialBaseState(),
     starterBrick: {
       metadata,
       definition: {
-        type: "trigger",
+        type: StarterBrickTypes.TRIGGER,
         trigger: "load",
         rootSelector: undefined,
         attachMode: undefined,
@@ -74,7 +75,7 @@ function fromNativeElement(
         background: true,
         debounce: undefined,
         customEvent: undefined,
-        reader: getImplicitReader("trigger"),
+        reader: getImplicitReader(StarterBrickTypes.TRIGGER),
         isAvailable: getDefaultAvailabilityForUrl(url),
       },
     },
@@ -107,7 +108,7 @@ function selectStarterBrickDefinition(
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
     definition: {
-      type: "trigger",
+      type: StarterBrickTypes.TRIGGER,
       reader,
       isAvailable: cleanIsAvailable(isAvailable),
       trigger,
@@ -145,7 +146,7 @@ function asDraftModComponent(
   triggerFormState: TriggerFormState,
 ): DraftModComponent {
   return {
-    type: "trigger",
+    type: StarterBrickTypes.TRIGGER,
     extension: selectModComponent(triggerFormState, {
       includeInstanceIds: true,
     }),
@@ -159,8 +160,8 @@ async function fromModComponent(
   const starterBrick = await lookupStarterBrick<
     TriggerDefinition,
     TriggerConfig,
-    "trigger"
-  >(config, "trigger");
+    typeof StarterBrickTypes.TRIGGER
+  >(config, StarterBrickTypes.TRIGGER);
 
   const {
     rootSelector,
@@ -210,7 +211,7 @@ async function fromModComponent(
 
 const config: ModComponentFormStateAdapter<undefined, TriggerFormState> = {
   displayOrder: 4,
-  elementType: "trigger",
+  elementType: StarterBrickTypes.TRIGGER,
   label: "Trigger",
   baseClass: TriggerStarterBrickABC,
   EditorNode: TriggerConfiguration,
