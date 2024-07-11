@@ -299,21 +299,21 @@ export const produceSchemaOnUiTypeChange = (
 
 /**
  * Normalizes the schema property of the RJSF schema.
- * @param rjsfSchemaDraft The mutable draft of the RJSF schema
+ * @param draft The mutable draft of the RJSF schema
  */
-export const normalizeSchema = (rjsfSchemaDraft: Draft<RJSFSchema>) => {
-  if (isEmpty(rjsfSchemaDraft.schema)) {
-    rjsfSchemaDraft.schema = minimalSchemaFactory();
+export const normalizeSchema = (draft: Draft<RJSFSchema>) => {
+  if (isEmpty(draft.schema)) {
+    draft.schema = minimalSchemaFactory();
   }
 
   if (
-    rjsfSchemaDraft.schema.required !== undefined &&
-    !Array.isArray(rjsfSchemaDraft.schema.required)
+    draft.schema.required !== undefined &&
+    !Array.isArray(draft.schema.required)
   ) {
-    rjsfSchemaDraft.schema.required = [];
+    draft.schema.required = [];
   }
 
-  rjsfSchemaDraft.schema.properties ??= {};
+  draft.schema.properties ??= {};
 };
 
 export const getNormalizedUiOrder = (
