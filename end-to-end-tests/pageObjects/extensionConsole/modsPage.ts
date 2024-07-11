@@ -29,7 +29,7 @@ export class ModTableItem extends BasePageObject {
     await expect(async () => {
       await this.dropdownButton.click();
       await this.getByRole("button", { name: actionName }).click({
-        timeout: 0, // handle retrying in the `toPass` block
+        timeout: 0, // Handle retrying in the `toPass` block
       });
     }).toPass({ timeout: 5000 });
   }
