@@ -32,13 +32,8 @@ test("activate a deployed mod in the extension console", async ({
   );
 
   await test.step("Deactivate the deployed mod", async () => {
-    await deployedMod.locator(".dropdown").click();
-    await deployedMod
-      .getByRole("button", {
-        name: "Deactivate",
-      })
-      .click();
-    await expect(deployedMod).toBeHidden();
+    await deployedMod.clickAction("Deactivate");
+    await expect(deployedMod.root).toBeHidden();
   });
 
   await test.step("Reactivate the deployed mod via deployment modal", async () => {
@@ -54,12 +49,10 @@ test("activate a deployed mod in the extension console", async ({
       .getByRole("button", { name: "Activate" })
       .click();
 
-    await expect(deployedMod).toBeVisible();
-    await expect(deployedMod).toContainText("version 1.0.0");
+    await expect(deployedMod.getByText("version 1.0.0")).toBeVisible();
 
     // Expect the same mod to be shown on the affiliated team tab
     await page.getByTestId("affiliated-test-team-mod-tab").click();
-    await expect(deployedMod).toBeVisible();
-    await expect(deployedMod).toContainText("version 1.0.0");
+    await expect(deployedMod.getByText("version 1.0.0")).toBeVisible();
   });
 });
