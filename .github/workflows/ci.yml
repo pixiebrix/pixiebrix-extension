@@ -20,6 +20,10 @@ env:
   # Staging URL, also directly used by webpack
   SERVICE_URL: https://app-stg.pixiebrix.com/
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
