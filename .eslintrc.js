@@ -52,6 +52,13 @@ module.exports = {
         capIsNewExceptionPattern: "(TEST_|INTERNAL_|HACK_|UNSAFE_)",
       },
     ],
+    "no-param-reassign": [
+      "warn",
+      {
+        props: true,
+        ignorePropertyModificationsFor: ["draft", "state"],
+      },
+    ],
     "eslint-comments/require-description": [
       "error",
       { ignore: ["eslint-enable"] },

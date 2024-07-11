@@ -387,7 +387,7 @@ describe("When rendered in panel", () => {
   test("renders block", async () => {
     const markdown = "Pipeline text for card test.";
     jest.mocked(contentScriptAPI.runRendererPipeline).mockResolvedValueOnce({
-      blockId: markdownBlock.id,
+      brickId: markdownBlock.id,
       key: uuidv4(),
       args: { markdown },
       ctxt: { "@input": {}, "@options": {} },

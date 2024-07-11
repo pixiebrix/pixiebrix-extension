@@ -51,7 +51,7 @@ export const brickOptionsFactory = define<BrickOptions>({
   meta: derive<BrickOptions, RunMetadata>(
     (options) => ({
       runId: null,
-      extensionId: options.logger?.context.modComponentId,
+      modComponentId: options.logger?.context.modComponentId,
       branches: [],
     }),
     "logger",

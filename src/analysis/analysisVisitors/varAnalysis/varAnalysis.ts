@@ -495,7 +495,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
     const traceRecord = this.trace.find(
       (x) =>
-        x.blockInstanceId === blockConfig.instanceId &&
+        x.brickInstanceId === blockConfig.instanceId &&
         x.templateContext != null,
     );
 

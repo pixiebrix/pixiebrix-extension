@@ -66,7 +66,7 @@ describe("AddDynamicTextSnippet", () => {
 
       await reducePipeline(pipeline, simpleInput({}), {
         ...testOptions("v3"),
-        extensionId,
+        modComponentId: extensionId,
         logger,
       });
 
@@ -114,7 +114,7 @@ describe("AddDynamicTextSnippet", () => {
 
       await reducePipeline(pipeline, simpleInput({}), {
         ...testOptions("v3"),
-        extensionId,
+        modComponentId: extensionId,
         logger,
       });
 

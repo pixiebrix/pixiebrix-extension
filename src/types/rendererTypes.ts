@@ -28,9 +28,9 @@ type BaseRendererPayload = {
   /**
    * The ModComponent that produced the payload.
    * Marked Nullishable as part of the StrictNullChecks migration.
-   * TODO: Revisit and determine if this should be required.
+   * TODO: Revisit and determine if modComponentId should be required.
    */
-  extensionId: Nullishable<UUID>;
+  modComponentId: Nullishable<UUID>;
   /**
    * The ModComponent run that produced the payload
    * @since 1.7.0
@@ -50,19 +50,19 @@ export type RendererLoadingPayload = Except<BaseRendererPayload, "runId"> & {
  */
 export type RendererRunPayload = BaseRendererPayload & {
   /**
-   * The registry id of the renderer block, e.g., @pixiebrix/table
+   * The registry id of the renderer brick, e.g., @pixiebrix/table
    */
-  blockId: RegistryId;
+  brickId: RegistryId;
   /**
-   * The BlockArg to pass to the renderer
-   * @see BlockProps.args
+   * The BrickArgs to pass to the renderer
+   * @see BrickProps.args
    * @see BrickArgs
    */
   args: unknown;
   /**
    * The context to pass to the renderer
-   * @see BlockProps.context
-   * @see BlockOptions
+   * @see BrickProps.context
+   * @see BrickOptions
    */
   ctxt: unknown;
 };

@@ -26,10 +26,7 @@ import { Events } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/data/service/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { modComponentWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
-import {
-  useGetEditablePackagesQuery,
-  useSaveStandaloneModDefinitionMutation,
-} from "@/data/service/api";
+import { useGetEditablePackagesQuery } from "@/data/service/api";
 import modComponentsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -77,10 +74,6 @@ function selectErrorMessage(error: unknown): string {
 
 type SaveOptions = {
   /**
-   * True to save a copy of the ModComponentBase to the user's account
-   */
-  pushToCloud: boolean;
-  /**
    * Should the permissions be checked before saving?
    */
   checkPermissions: boolean;
@@ -125,8 +118,6 @@ function useUpsertModComponentFormState(): SaveCallback {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const { data: editablePackages } = useGetEditablePackagesQuery();
-  const [saveStandaloneModDefinition] =
-    useSaveStandaloneModDefinitionMutation();
 
   const saveModComponentFormState = useCallback(
     async (
@@ -217,15 +208,6 @@ function useUpsertModComponentFormState(): SaveCallback {
             },
           }),
         );
-
-        if (options.pushToCloud && !modComponent._deployment) {
-          await saveStandaloneModDefinition({
-            modComponent: {
-              ...modComponent,
-              updateTimestamp,
-            },
-          }).unwrap();
-        }
 
         dispatch(markClean(modComponentFormState.uuid));
       } catch (error) {

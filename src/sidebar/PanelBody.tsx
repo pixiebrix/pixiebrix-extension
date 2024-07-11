@@ -51,7 +51,7 @@ import { mapPathToTraceBranches } from "@/pageEditor/documentBuilder/utils";
 import { getPlatform } from "@/platform/platformContext";
 
 type BodyProps = {
-  blockId?: RegistryId;
+  brickId?: RegistryId;
   body?: RendererOutput;
   meta?: PanelRunMeta;
 };
@@ -59,11 +59,11 @@ type BodyProps = {
 const BodyContainer: React.FC<
   // In the future, may want to support providing isFetching to show a loading indicator/badge over the previous content
   BodyProps & { onAction?: (action: SubmitPanelAction) => void }
-> = ({ blockId, body, onAction, meta }) => (
+> = ({ brickId, body, onAction, meta }) => (
   // Use a shadow dom to prevent the webpage styles from affecting the sidebar
-  <EmotionShadowRoot className="full-height" data-testid={blockId}>
+  <EmotionShadowRoot className="full-height" data-testid={brickId}>
     <RendererComponent
-      blockId={blockId}
+      brickId={brickId}
       body={body}
       meta={meta}
       onAction={onAction}
@@ -169,20 +169,20 @@ const PanelBody: React.FunctionComponent<{
         dispatch(slice.actions.reactivate());
 
         const {
-          blockId,
+          brickId,
           ctxt: brickArgsContext,
           args,
           runId,
-          extensionId,
+          modComponentId,
         } = payload;
 
         console.debug("Running panel body for panel payload", payload);
 
-        const block = await brickRegistry.lookup(blockId);
+        const block = await brickRegistry.lookup(brickId);
 
         const logger = platform.logger.childLogger({
           ...context,
-          brickId: blockId,
+          brickId,
         });
 
         const branches = tracePath ? mapPathToTraceBranches(tracePath) : [];
@@ -192,7 +192,7 @@ const PanelBody: React.FunctionComponent<{
           ctxt: brickArgsContext as UnknownObject,
           meta: {
             runId,
-            extensionId,
+            modComponentId,
             branches,
           },
           logger,
@@ -216,7 +216,7 @@ const PanelBody: React.FunctionComponent<{
               options: apiVersionOptions("v3"),
               messageContext: logger.context,
               meta: {
-                extensionId,
+                modComponentId,
                 runId,
                 branches: [...branches, branch],
               },
@@ -229,7 +229,7 @@ const PanelBody: React.FunctionComponent<{
           },
         });
 
-        if (!runId || !extensionId) {
+        if (!runId || !modComponentId) {
           console.warn("PanelBody requires runId in RendererPayload", {
             payload,
           });
@@ -242,9 +242,9 @@ const PanelBody: React.FunctionComponent<{
         dispatch(
           slice.actions.success({
             data: {
-              blockId,
+              brickId,
               body: body as RendererOutput,
-              meta: { runId, extensionId },
+              meta: { runId, modComponentId },
             },
           }),
         );
