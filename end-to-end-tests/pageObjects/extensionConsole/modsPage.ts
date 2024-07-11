@@ -84,7 +84,7 @@ export class ModsPage extends BasePageObject {
    * For deletion, use deleteModByName because it handles deactivation/confirmation.
    * @see deleteModByName
    */
-  async actionForModByName(modId: string, actionName: string): Promise<void> {
+  async actionForModById(modId: string, actionName: string): Promise<void> {
     await this.page.bringToFront();
     await this.searchModsInput.fill(modId);
     await expect(this.getByText(`results for "${modId}`)).toBeVisible();
@@ -98,7 +98,7 @@ export class ModsPage extends BasePageObject {
    * Deletes a mod by name. This method will conditionally deactivate the mod as needed.
    * Will fail if the mod is not found, or multiple mods are found for the same mod name.
    * @param modName the name of the mod to delete (user must have permission to delete the mod)
-   * @see actionForModByName
+   * @see actionForModById
    */
   async deleteModByName(modName: string) {
     await this.page.bringToFront();
