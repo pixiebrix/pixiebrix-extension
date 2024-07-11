@@ -27,16 +27,12 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import { type Except } from "type-fest";
 import { joinName } from "@/utils/formUtils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { isEmpty } from "lodash";
-import { oauth2Storage } from "@/auth/authConstants";
 import { AnnotationType } from "@/types/annotationTypes";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { SHEET_FIELD_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import { getSpreadsheet } from "@/contrib/google/sheets/core/sheetsApi";
 import { hasCachedAuthData } from "@/background/messenger/api";
-import useOnMountOnly from "@/hooks/useOnMountOnly";
-import { ReusableAbortController } from "abort-utils";
 
 type GoogleSheetState = {
   googleAccount: SanitizedIntegrationConfig | null;
@@ -63,20 +59,6 @@ const RequireGoogleSheet: React.FC<{
     setIsRetrying(true);
     googleAccountAsyncState.refetch();
   }, [googleAccountAsyncState, isRetrying]);
-
-  const loginController = new ReusableAbortController();
-
-  function listenForLogin(googleAccount: SanitizedIntegrationConfig) {
-    oauth2Storage.onChanged((newValue) => {
-      if (!isEmpty(newValue[googleAccount.id])) {
-        googleAccountAsyncState.refetch();
-        loginController.abortAndReset();
-      }
-    }, loginController.signal);
-  }
-
-  // Clean up the listener on unmount if it hasn't fired yet
-  useOnMountOnly(() => loginController.abortAndReset.bind(loginController));
 
   const resultAsyncState: AsyncState<GoogleSheetState> = useDeriveAsyncState(
     googleAccountAsyncState,
@@ -125,8 +107,6 @@ const RequireGoogleSheet: React.FC<{
           setIsRetrying(false);
         }
       }
-
-      listenForLogin(googleAccount);
 
       return {
         googleAccount,
