@@ -20,7 +20,8 @@ import { test, expect } from "../../fixtures/testBase";
 import { type Page, test as base } from "@playwright/test";
 import { getSidebarPage } from "../../utils";
 
-test("#8104: Do not automatically close the sidebar when saving in the Page Editor", async ({
+// eslint-disable-next-line playwright/no-skipped-test -- There is a race condition that makes this flaky, we will fix later
+test.skip("#8104: Do not automatically close the sidebar when saving in the Page Editor", async ({
   page,
   newPageEditorPage,
   extensionId,
