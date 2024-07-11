@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import Modals from "../modals/Modals";
 import { selectIsInsertingNewStarterBrick } from "@/pageEditor/store/editor/editorSelectors";
@@ -31,14 +31,22 @@ import { isScriptableUrl } from "webext-content-scripts";
 import Loader from "@/components/Loader";
 import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelectors";
 import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
 const EditorLayout: React.FunctionComponent = () => {
+  const dispatch = useDispatch();
   const isInserting = useSelector(selectIsInsertingNewStarterBrick);
   const { restrict } = useFlags();
   const isRestricted = restrict("page-editor");
   const isStaleSession = useSelector(selectIsStaleSession);
 
   const url = useCurrentInspectedUrl();
+
+  useEffect(() => {
+    if (isStaleSession) {
+      dispatch(editorActions.hideModal());
+    }
+  }, [dispatch, isStaleSession]);
 
   if (!url) {
     // Nearly immediate, likely never shown
