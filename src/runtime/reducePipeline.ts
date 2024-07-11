@@ -415,7 +415,7 @@ async function executeBrickWithValidatedProps(
             if (error instanceof HeadlessModeError) {
               payload = {
                 key: runId,
-                brickId: error.blockId,
+                brickId: error.brickId,
                 args: error.args,
                 ctxt: error.ctxt,
                 modComponentId,

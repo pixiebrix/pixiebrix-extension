@@ -217,7 +217,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
       if (error instanceof HeadlessModeError) {
         this.platform.panels.upsertPanel(modComponentRef, heading, {
-          brickId: error.blockId,
+          brickId: error.brickId,
           key: uuidv4(),
           ctxt: error.ctxt,
           args: error.args,

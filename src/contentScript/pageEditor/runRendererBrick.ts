@@ -71,7 +71,7 @@ export async function runRendererBrick({
     if (error instanceof HeadlessModeError) {
       payload = {
         key: nonce,
-        brickId: error.blockId,
+        brickId: error.brickId,
         args: error.args,
         ctxt: error.ctxt,
         modComponentId: modComponentRef.modComponentId,
