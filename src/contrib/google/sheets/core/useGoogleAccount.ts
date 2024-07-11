@@ -23,7 +23,6 @@ import { useContext, useEffect } from "react";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { validateRegistryId } from "@/types/helpers";
 import reportError from "@/telemetry/reportError";
-import { ReusableAbortController } from "abort-utils";
 import { oauth2Storage } from "@/auth/authConstants";
 import { isEmpty } from "lodash";
 
@@ -34,7 +33,7 @@ function useGoogleAccountLoginListener({
   refetch,
 }: FetchableAsyncState<SanitizedIntegrationConfig | null>) {
   useEffect(() => {
-    const loginController = new ReusableAbortController();
+    const loginController = new AbortController();
 
     // Automatically refetch the google account on login
     oauth2Storage.onChanged((newValue) => {
@@ -42,12 +41,11 @@ function useGoogleAccountLoginListener({
       // eslint-disable-next-line security/detect-object-injection -- not user provided
       if (id && !isEmpty(newValue[id])) {
         refetch();
-        loginController.abortAndReset();
       }
     }, loginController.signal);
 
     return () => {
-      loginController.abortAndReset();
+      loginController.abort();
     };
   }, [googleAccount, refetch]);
 }
