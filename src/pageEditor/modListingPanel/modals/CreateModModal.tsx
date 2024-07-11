@@ -234,7 +234,7 @@ const CreateModModalBody: React.FC = () => {
         type="submit"
         disabled={!isValid || isSubmitting}
       >
-        Create
+        Save
       </Button>
     </Modal.Footer>
   );
@@ -268,7 +268,7 @@ const CreateModModal: React.FunctionComponent = () => {
   }, [dispatch]);
 
   return (
-    <ModalLayout title="Create new mod" show={show} onHide={hideModal}>
+    <ModalLayout title="Save new mod" show={show} onHide={hideModal}>
       <CreateModModalBody />
     </ModalLayout>
   );

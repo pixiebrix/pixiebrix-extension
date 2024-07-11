@@ -22,7 +22,7 @@ import { ModifiesModState } from "./utils";
 export class CreateModModal extends BasePageObject {
   modIdInput = this.getByTestId("registryId-id-id");
   modNameInput = this.getByLabel("Name", { exact: true });
-  createButton = this.getByRole("button", { name: "Create" });
+  saveButton = this.getByRole("button", { name: "Save" });
 
   /**
    * Creates a mod using the Create Mod modal, with the given modId and modName.
@@ -35,7 +35,7 @@ export class CreateModModal extends BasePageObject {
 
     await this.modIdInput.fill(modId);
     await this.modNameInput.fill(modName);
-    await this.createButton.click();
+    await this.saveButton.click();
 
     return modId;
   }
