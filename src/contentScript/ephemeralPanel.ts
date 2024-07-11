@@ -125,7 +125,7 @@ export async function ephemeralPanel({
       nonce,
       payload: {
         key: uuidv4(),
-        extensionId: panelEntryMetadata.modComponentRef.modComponentId,
+        modComponentId: panelEntryMetadata.modComponentRef.modComponentId,
         loadingMessage: "Loading",
       },
     });
