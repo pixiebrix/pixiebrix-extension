@@ -27,7 +27,6 @@ export class ModTableItem extends BasePageObject {
     // Wrapped in `toPass` due to flakiness with dropdown visibility
     // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8458
     await expect(async () => {
-      // Open the dropdown action menu for the specified mod in the table
       await this.dropdownButton.click();
       await this.getByRole("button", { name: actionName }).click();
     }).toPass({ timeout: 5000 });
