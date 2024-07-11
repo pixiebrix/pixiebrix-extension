@@ -149,6 +149,16 @@ export async function waitForSelectionMenuReadiness(page: Page) {
   }).toPass({ timeout: 5000 });
 }
 
+// Waits for the snippet shortcut menu to be ready to use (listeners are created and at least one action is registered).
+// see: https://github.com/pixiebrix/pixiebrix-extension/blob/c295c6c99b4851c9a52807ac5199b36789d62824/src/contentScript/snippetShortcutMenu/snippetShortcutMenuController.tsx#L378
+export async function waitForSnippetShortcutMenuReadiness(page: Page) {
+  await expect(async () => {
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-pb-snippet-shortcut-menu-ready",
+    );
+  }).toPass({ timeout: 5000 });
+}
+
 // Waits for the quick bar to be ready to use
 async function waitForQuickBarReadiness(page: Page) {
   await expect(async () => {
