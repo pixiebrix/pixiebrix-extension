@@ -450,7 +450,7 @@ describe("editor state migrations", () => {
       );
     });
 
-    it("migrates the from states", () => {
+    it("migrates the form states", () => {
       const formStateV2 = formStateFactoryV2();
       const expectedEditorStateV3: EditorStateV3 & PersistedState = {
         ...initialStateV3,
