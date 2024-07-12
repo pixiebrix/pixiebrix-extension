@@ -29,9 +29,11 @@ export class ModTableItem extends BasePageObject {
     await expect(async () => {
       await this.dropdownButton.click();
       await this.getByRole("button", { name: actionName }).click({
-        timeout: 0, // Handle retrying in the `toPass` block
+        // Handle retrying in the `toPass` block, set to near-zero to avoid waiting.
+        // It can't be 0 because playwright then will default to the global action timeout value.
+        timeout: 100,
       });
-    }).toPass({ timeout: 5000 });
+    }).toPass({ timeout: 6000 });
   }
 }
 
