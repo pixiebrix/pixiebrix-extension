@@ -25,7 +25,7 @@ import {
 import { mapValues, omit } from "lodash";
 import {
   formStateFactory,
-  InternalFormStateOverride,
+  type InternalFormStateOverride,
 } from "@/testUtils/factories/pageEditorFactories";
 import {
   type IntegrationDependencyV1,
