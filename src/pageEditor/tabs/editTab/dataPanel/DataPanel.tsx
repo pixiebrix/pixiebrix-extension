@@ -59,6 +59,7 @@ import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { BrickTypes } from "@/runtime/runtimeTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -179,7 +180,10 @@ const DataPanel: React.FC = () => {
 
   const isRenderedPanelStale = useMemo(() => {
     // Only show alert for Panel and Side Panel mod components
-    if (activeModComponentFormState.type !== "actionPanel") {
+    if (
+      activeModComponentFormState.starterBrick.definition.type !==
+      StarterBrickTypes.SIDEBAR_PANEL
+    ) {
       return false;
     }
 

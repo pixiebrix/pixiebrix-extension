@@ -29,6 +29,7 @@ import DataTabJsonTree from "./DataTabJsonTree";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
 import BrickConfigFormStateTab from "./tabs/BrickConfigFormStateTab";
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const StarterBrickDataPanel: React.FC = () => {
   const { flagOn } = useFlags();
@@ -37,6 +38,11 @@ const StarterBrickDataPanel: React.FC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
+  assertNotNullish(
+    activeModComponentFormState,
+    "StarterBrickDataPanel cannot be rendered without an activeModComponentFormState",
+  );
+
   const {
     modComponent: { brickPipeline },
     starterBrick,
@@ -138,9 +144,7 @@ const StarterBrickDataPanel: React.FC = () => {
           mountOnEnter
           unmountOnExit
         >
-          <StarterBrickPreview
-            modComponentFormState={activeModComponentFormState}
-          />
+          <StarterBrickPreview />
         </Tab.Pane>
         <ModVariablesTab />
       </Tab.Content>

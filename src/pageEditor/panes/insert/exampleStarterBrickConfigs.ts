@@ -16,7 +16,10 @@
  */
 
 import { type BrickPipeline } from "@/bricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { toExpression } from "@/utils/expressionUtils";
@@ -25,12 +28,12 @@ const documentBrickId = validateRegistryId("@pixiebrix/document");
 const quickbarActionId = validateRegistryId("@pixiebrix/quickbar/add");
 
 export function getExampleBrickPipeline(type: StarterBrickType): BrickPipeline {
-  if (type === "actionPanel") {
+  if (type === StarterBrickTypes.SIDEBAR_PANEL) {
     const documentBuilderBrick = createNewConfiguredBrick(documentBrickId);
     return [documentBuilderBrick];
   }
 
-  if (type === "quickBarProvider") {
+  if (type === StarterBrickTypes.DYNAMIC_QUICK_BAR) {
     const quickbarActionBrick = createNewConfiguredBrick(quickbarActionId);
     quickbarActionBrick.config = {
       title: "Example Action",

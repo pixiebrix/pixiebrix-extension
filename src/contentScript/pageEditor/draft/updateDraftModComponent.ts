@@ -29,6 +29,7 @@ import {
   showSidebar,
 } from "@/contentScript/sidebarController";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 export async function updateDraftModComponent({
   extensionPointConfig,
@@ -40,13 +41,13 @@ export async function updateDraftModComponent({
   // https://github.com/pixiebrix/pixiebrix-extension/pull/8226
   if (
     isLoadedInIframe() &&
-    extensionPointConfig.definition.type === "actionPanel"
+    extensionPointConfig.definition.type === StarterBrickTypes.SIDEBAR_PANEL
   ) {
     return;
   }
 
   // HACK: adjust behavior when using the Page Editor
-  if (extensionPointConfig.definition.type === "trigger") {
+  if (extensionPointConfig.definition.type === StarterBrickTypes.TRIGGER) {
     // Prevent auto-run of interval trigger when using the Page Editor because you lose track of trace across runs
     const triggerDefinition =
       extensionPointConfig.definition as TriggerDefinition;
@@ -60,7 +61,7 @@ export async function updateDraftModComponent({
 
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated draft mod component
   // will automatically replace the old panel because the panels are keyed by extension id
-  if (starterBrick.kind !== "actionPanel") {
+  if (starterBrick.kind !== StarterBrickTypes.SIDEBAR_PANEL) {
     removeDraftModComponents(extensionConfig.id, { clearTrace: false });
   }
 
@@ -70,7 +71,7 @@ export async function updateDraftModComponent({
   starterBrick.registerModComponent(resolved);
   await runDraftModComponent(extensionConfig.id, starterBrick);
 
-  if (starterBrick.kind === "actionPanel") {
+  if (starterBrick.kind === StarterBrickTypes.SIDEBAR_PANEL) {
     await showSidebar();
     await activateExtensionPanel(extensionConfig.id);
   }

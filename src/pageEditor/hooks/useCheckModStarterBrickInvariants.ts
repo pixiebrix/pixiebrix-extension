@@ -21,7 +21,6 @@ import {
 } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -30,10 +29,10 @@ import {
   type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
-import { assertNotNullish } from "@/utils/nullishUtils";
 import { type InnerDefinitions, DefinitionKinds } from "@/types/registryTypes";
 import produce from "immer";
 import { buildModComponents } from "@/pageEditor/panes/save/saveHelpers";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 type SourceModParts = {
   sourceModDefinition?: ModDefinition;
@@ -84,9 +83,7 @@ function useCheckModStarterBrickInvariants(): (
           continue;
         }
 
-        const adapter = ADAPTERS.get(formState.type);
-        assertNotNullish(adapter, `Adapter not found for ${formState.type}`);
-        const { selectStarterBrickDefinition } = adapter;
+        const { selectStarterBrickDefinition } = adapterForComponent(formState);
 
         const definitionFromComponent = {
           kind: DefinitionKinds.STARTER_BRICK,

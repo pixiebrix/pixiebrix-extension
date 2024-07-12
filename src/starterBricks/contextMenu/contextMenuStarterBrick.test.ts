@@ -35,6 +35,7 @@ import {
   type ContextMenuDefinition,
   type ContextMenuConfig,
 } from "@/starterBricks/contextMenu/contextMenuTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
 const ensureContextMenuMock = jest.mocked(ensureContextMenu);
@@ -51,7 +52,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
         name: "Test Starter Brick",
       }) as Metadata,
     definition: define<ContextMenuDefinition>({
-      type: "contextMenu",
+      type: StarterBrickTypes.CONTEXT_MENU,
       contexts: () => ["page"] as any,
       targetMode: "document",
       isAvailable: () => ({

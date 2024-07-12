@@ -114,7 +114,7 @@ export const initialState: EditorState = {
   isDimensionsWarningDismissed: false,
 
   // Not persisted
-  inserting: null,
+  insertingStarterBrickType: null,
   isVariablePopoverVisible: false,
 };
 
@@ -313,8 +313,16 @@ export const editorSlice = createSlice({
     resetEditor() {
       return initialState;
     },
-    toggleInsert(state, action: PayloadAction<StarterBrickType | null>) {
-      state.inserting = action.payload;
+    setInsertingStarterBrickType(
+      state,
+      action: PayloadAction<StarterBrickType>,
+    ) {
+      state.insertingStarterBrickType = action.payload;
+      state.beta = false;
+      state.error = null;
+    },
+    clearInsertingStarterBrickType(state) {
+      state.insertingStarterBrickType = null;
       state.beta = false;
       state.error = null;
     },
@@ -327,7 +335,7 @@ export const editorSlice = createSlice({
     ) {
       const modComponentFormState =
         action.payload as Draft<ModComponentFormState>;
-      state.inserting = null;
+      state.insertingStarterBrickType = null;
       state.modComponentFormStates.push(modComponentFormState);
       state.dirty[modComponentFormState.uuid] = true;
 
@@ -867,11 +875,6 @@ export const editorSlice = createSlice({
     hideModal(state) {
       state.visibleModalKey = null;
     },
-    hideModalIfShowing(state, action: PayloadAction<ModalKey>) {
-      if (state.visibleModalKey === action.payload) {
-        state.visibleModalKey = null;
-      }
-    },
     editModOptionsValues(state, action: PayloadAction<OptionsArgs>) {
       const modId = state.activeModId;
       if (modId == null) {
@@ -1024,12 +1027,14 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 4,
+  version: 5,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: [
     "inserting",
+    "insertingStarterBrickType",
     "isVarPopoverVisible",
     "isSaveDataIntegrityErrorModalVisible",
+    "visibleModalKey",
   ],
 };
 

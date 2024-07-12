@@ -52,6 +52,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { screen } from "@testing-library/react";
 import type { Trigger } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { getPlatform } from "@/platform/platformContext";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 let hidden = false;
 
@@ -88,7 +89,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
         name: "Test Starter Brick",
       }) as Metadata,
     definition: define<TriggerDefinition>({
-      type: "trigger",
+      type: StarterBrickTypes.TRIGGER,
       background: derive<TriggerDefinition, boolean>((x) =>
         getDefaultAllowInactiveFramesForTrigger(x.trigger!),
       ),

@@ -29,7 +29,6 @@ import {
 } from "@/types/helpers";
 import { compact, pick, sortBy } from "lodash";
 import { produce } from "immer";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   DEFAULT_STARTER_BRICK_VAR,
@@ -65,6 +64,7 @@ import {
   isStarterBrickDefinitionPropEqual,
 } from "@/starterBricks/starterBrickUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -271,9 +271,8 @@ export function replaceModComponent(
       activatedModComponent,
     );
 
-    const adapter = ADAPTERS.get(newModComponent.type);
-    assertNotNullish(adapter, `No adapter found for ${newModComponent.type}`);
-    const { selectModComponent, selectStarterBrickDefinition } = adapter;
+    const { selectModComponent, selectStarterBrickDefinition } =
+      adapterForComponent(newModComponent);
     const rawModComponent = selectModComponent(newModComponent);
     const starterBrickId = newModComponent.starterBrick.metadata.id;
     const hasInnerDefinition = isInnerDefinitionRegistryId(starterBrickId);
@@ -450,12 +449,8 @@ export function buildNewMod({
 
     const unsavedModComponents: ModComponentBase[] =
       dirtyModComponentFormStates.map((modComponentFormState) => {
-        const adapter = ADAPTERS.get(modComponentFormState.type);
-        assertNotNullish(
-          adapter,
-          `No adapter found for ${modComponentFormState.type}`,
-        );
-        const { selectModComponent, selectStarterBrickDefinition } = adapter;
+        const { selectModComponent, selectStarterBrickDefinition } =
+          adapterForComponent(modComponentFormState);
 
         const unsavedModComponent = selectModComponent(modComponentFormState);
 

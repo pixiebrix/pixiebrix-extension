@@ -45,6 +45,7 @@ import {
   type SidebarConfig,
   type SidebarDefinition,
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ...jest.requireActual("@/contentScript/sidebarController"),
@@ -64,7 +65,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
         name: "Test Starter Brick",
       }) as Metadata,
     definition: define<SidebarDefinition>({
-      type: "actionPanel",
+      type: StarterBrickTypes.SIDEBAR_PANEL,
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
       }),

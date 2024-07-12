@@ -66,7 +66,11 @@ import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrick,
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import {
   isContextInvalidatedError,
   notifyContextInvalidated,
@@ -208,8 +212,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   private readonly reportedEvents = new Set<UUID>();
   private readonly reportedErrors = new Set<UUID>();
 
-  public get kind(): "trigger" {
-    return "trigger";
+  public get kind(): StarterBrickType {
+    return StarterBrickTypes.TRIGGER;
   }
 
   readonly capabilities: PlatformCapability[] = ["dom", "state"];
@@ -1069,7 +1073,7 @@ export function fromJS(
   config: StarterBrickDefinitionLike<TriggerDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
-  if (type !== "trigger") {
+  if (type !== StarterBrickTypes.TRIGGER) {
     throw new Error(`Expected type=trigger, got ${type}`);
   }
 
