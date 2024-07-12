@@ -36,9 +36,10 @@ import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTy
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Except } from "type-fest";
 import {
-  type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
+  type BaseFormStateV3,
+  type BaseFormStateV4,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
 
 export type AddBrickLocation = {
@@ -90,7 +91,7 @@ export type EditorStateV1 = {
   inserting: StarterBrickType | null;
 
   /**
-   * The uuid of the active mod component form state, if a mod component is selected
+   * The uuid of the active mod component form state, if a mod component is eselected
    */
   activeElementId: UUID | null;
 
@@ -355,8 +356,15 @@ export type EditorStateV4 = Except<
 /**
  * @deprecated - Do not use versioned state types directly, exported for testing
  */
-export type EditorStateV5 = Except<EditorStateV4, "inserting"> & {
+export type EditorStateV5 = Except<
+  EditorStateV4,
+  | "inserting"
+  | "modComponentFormStates"
+  | "deletedModComponentFormStatesByModId"
+> & {
   insertingStarterBrickType: StarterBrickType | null;
+  modComponentFormStates: BaseFormStateV4[];
+  deletedModComponentFormStatesByModId: Record<string, BaseFormStateV4[]>;
 };
 
 export type EditorState = Except<

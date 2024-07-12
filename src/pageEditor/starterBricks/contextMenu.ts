@@ -57,7 +57,6 @@ function fromNativeElement(
   const title = "Context menu item";
 
   return {
-    type: StarterBrickTypes.CONTEXT_MENU,
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
@@ -182,7 +181,7 @@ function asDraftModComponent(
 
 const config: ModComponentFormStateAdapter<undefined, ContextMenuFormState> = {
   displayOrder: 1,
-  elementType: StarterBrickTypes.CONTEXT_MENU,
+  starterBrickType: StarterBrickTypes.CONTEXT_MENU,
   label: "Context Menu",
   baseClass: ContextMenuStarterBrickABC,
   EditorNode: ContextMenuConfiguration,

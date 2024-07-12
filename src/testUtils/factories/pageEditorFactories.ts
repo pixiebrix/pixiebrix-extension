@@ -32,7 +32,6 @@ import {
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type BrickPipeline } from "@/bricks/types";
@@ -43,26 +42,26 @@ import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
 import quickBar from "@/pageEditor/starterBricks/quickBar";
 import trigger from "@/pageEditor/starterBricks/trigger";
 import { type TraceRecord } from "@/telemetry/trace";
-import { type JsonObject } from "type-fest";
+import { type Except, type JsonObject } from "type-fest";
 import sidebar from "@/pageEditor/starterBricks/sidebar";
 import { traceRecordFactory } from "@/testUtils/factories/traceFactories";
 import {
   brickConfigFactory,
   pipelineFactory,
 } from "@/testUtils/factories/brickFactories";
-import { type DerivedFunction } from "cooky-cutter/dist/derive";
 import { type BaseModComponentState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { type Permissions } from "webextension-polyfill";
 
 export const baseModComponentStateFactory = define<BaseModComponentState>({
   brickPipeline: () => pipelineFactory(),
 });
 
-type InternalFormStateOverride = ModComponentFormState & {
-  extensionPoint: DerivedFunction<
-    ModComponentFormState,
-    StarterBrickDefinitionLike
-  >;
+type InternalFormStateOverride = Except<
+  ModComponentFormState,
+  "starterBrick"
+> & {
+  starterBrick: StarterBrickDefinitionLike;
 };
 
 const internalFormStateFactory = define<InternalFormStateOverride>({
@@ -74,38 +73,36 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
     return [];
   },
   modMetadata: undefined,
-  type: StarterBrickTypes.SIDEBAR_PANEL,
+  permissions(): Permissions.Permissions {
+    return {
+      permissions: [],
+      origins: [],
+    };
+  },
   label: (i: number) => `Element ${i}`,
   modComponent: baseModComponentStateFactory,
-  // @ts-expect-error -- TODO: verify typings
-  starterBrick: derive<ModComponentFormState, StarterBrickDefinitionLike>(
-    ({ type }) => {
-      // FIXME: the starter brick type produced is not based on the type provided
-      const starterBrick = starterBrickDefinitionFactory();
-      if (type) {
-        starterBrick.definition.type = type;
-      }
-
-      return starterBrick;
-    },
-    "type",
-  ),
+  starterBrick: starterBrickDefinitionFactory,
 });
 
 export const formStateFactory = (
   override?: FactoryConfig<ModComponentFormState>,
   pipelineOverride?: BrickPipeline,
+  starterBrickOverride?: StarterBrickDefinitionLike,
 ): ModComponentFormState => {
+  const factoryConfig: FactoryConfig<InternalFormStateOverride> =
+    (override as FactoryConfig<InternalFormStateOverride>) || {};
+
   if (pipelineOverride) {
-    return internalFormStateFactory({
-      ...override,
-      modComponent: baseModComponentStateFactory({
-        brickPipeline: pipelineOverride,
-      }),
-    } as InternalFormStateOverride);
+    factoryConfig.modComponent = baseModComponentStateFactory({
+      brickPipeline: pipelineOverride,
+    });
   }
 
-  return internalFormStateFactory(override as InternalFormStateOverride);
+  if (starterBrickOverride) {
+    factoryConfig.starterBrick = starterBrickOverride;
+  }
+
+  return internalFormStateFactory(factoryConfig) as ModComponentFormState;
 };
 
 // Define a method to reset the sequence for formStateFactory given that it's not a factory definition

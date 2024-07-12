@@ -180,7 +180,10 @@ const DataPanel: React.FC = () => {
 
   const isRenderedPanelStale = useMemo(() => {
     // Only show alert for Panel and Side Panel mod components
-    if (activeModComponentFormState.type !== StarterBrickTypes.SIDEBAR_PANEL) {
+    if (
+      activeModComponentFormState.starterBrick.definition.type !==
+      StarterBrickTypes.SIDEBAR_PANEL
+    ) {
       return false;
     }
 

@@ -38,7 +38,6 @@ import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
@@ -72,6 +71,7 @@ import {
 } from "@/utils/modUtils";
 import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
@@ -640,13 +640,13 @@ describe("buildNewMod", () => {
       extensionPointId: starterBrick.metadata.id,
     }) as SerializedModComponent;
 
-    const adapter = ADAPTERS.get(starterBrick.definition.type);
+    const { fromModComponent } = adapter(starterBrick.definition.type);
 
     // Mock this lookup for the adapter call that follows
     jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
     // Use the adapter to convert to ModComponentFormState
-    const modComponentFormState = (await adapter.fromModComponent(
+    const modComponentFormState = (await fromModComponent(
       modComponent,
     )) as ModComponentFormState;
 
@@ -829,11 +829,11 @@ describe("buildNewMod", () => {
           const modComponent = state.extensions[i];
 
           // Load the adapter for this mod component
-          const adapter = ADAPTERS.get(starterBrick.definition.type);
+          const { fromModComponent } = adapter(starterBrick.definition.type);
 
           // Use the adapter to convert to FormState
           // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
-          const modComponentFormState = (await adapter.fromModComponent(
+          const modComponentFormState = (await fromModComponent(
             modComponent,
           )) as ModComponentFormState;
 

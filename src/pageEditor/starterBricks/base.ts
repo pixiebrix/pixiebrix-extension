@@ -202,7 +202,7 @@ export function baseSelectModComponent({
 
 export function makeInitialBaseState(
   uuid: UUID = uuidv4(),
-): Except<BaseFormState, "type" | "label" | "starterBrick"> {
+): Except<BaseFormState, "label" | "starterBrick"> {
   return {
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,

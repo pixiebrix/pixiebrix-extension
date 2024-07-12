@@ -18,9 +18,10 @@
 import { type PersistedState, type MigrationManifest } from "redux-persist";
 import { mapValues, omit } from "lodash";
 import {
-  type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
+  type BaseFormStateV3,
+  type BaseFormStateV4,
   type BaseModComponentStateV1,
   type BaseModComponentStateV2,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
@@ -33,7 +34,7 @@ import {
   type EditorStateV1,
   type EditorStateV3,
   type EditorStateV4,
-  EditorStateV5,
+  type EditorStateV5,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
@@ -153,20 +154,36 @@ export function migrateEditorStateV3({
     ...rest,
     modComponentFormStates: modComponentFormStates.map((element) =>
       migrateFormStateV2(element),
-    ) as ModComponentFormState[],
+    ),
     deletedModComponentFormStatesByModId: mapValues(
       deletedModComponentFormStatesByModId,
       (formStates) => formStates.map((element) => migrateFormStateV2(element)),
-    ) as Record<string, ModComponentFormState[]>,
+    ),
   };
+}
+
+export function migrateFormStateV3({
+  type,
+  ...rest
+}: BaseFormStateV3): BaseFormStateV4 {
+  return rest;
 }
 
 export function migrateEditorStateV4({
   inserting,
+  modComponentFormStates,
+  deletedModComponentFormStatesByModId,
   ...rest
 }: EditorStateV4 & PersistedState): EditorStateV5 & PersistedState {
   return {
     ...rest,
     insertingStarterBrickType: inserting,
+    modComponentFormStates: modComponentFormStates.map((element) =>
+      migrateFormStateV3(element),
+    ) as ModComponentFormState[],
+    deletedModComponentFormStatesByModId: mapValues(
+      deletedModComponentFormStatesByModId,
+      (formStates) => formStates.map((element) => migrateFormStateV3(element)),
+    ) as Record<string, ModComponentFormState[]>,
   };
 }

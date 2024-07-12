@@ -17,7 +17,7 @@
 
 import React, { useCallback, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import ToggleField from "@/pageEditor/components/ToggleField";
 import { Button } from "react-bootstrap";
 import { updateDraftModComponent } from "@/contentScript/messenger/api";
@@ -28,14 +28,18 @@ import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
-import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
 function isPanel(modComponentFormState: ModComponentFormState | null): boolean {
-  return [StarterBrickTypes.SIDEBAR_PANEL].includes(
-    modComponentFormState?.type ?? "",
+  if (!modComponentFormState) {
+    return false;
+  }
+
+  return (
+    modComponentFormState.starterBrick.definition.type ===
+    StarterBrickTypes.SIDEBAR_PANEL
   );
 }
 
@@ -45,12 +49,17 @@ function isPanel(modComponentFormState: ModComponentFormState | null): boolean {
 function isAutomaticTrigger(
   modComponentFormState: ModComponentFormState,
 ): boolean {
+  if (!modComponentFormState) {
+    return false;
+  }
+
   const automatic = ["load", "appear", "initialize", "interval"];
+  const { definition: starterBrickDefinition } =
+    modComponentFormState.starterBrick;
   return (
-    modComponentFormState?.type === StarterBrickTypes.TRIGGER &&
-    automatic.includes(
-      modComponentFormState?.starterBrick.definition.trigger ?? "",
-    )
+    starterBrickDefinition.type === StarterBrickTypes.TRIGGER &&
+    starterBrickDefinition.trigger != null &&
+    automatic.includes(starterBrickDefinition.trigger)
   );
 }
 
@@ -104,20 +113,14 @@ const ReloadToolbar: React.FunctionComponent<{
   refreshMillis?: number;
 }> = ({ modComponentFormState, refreshMillis = DEFAULT_RELOAD_MILLIS }) => {
   const sessionId = useSelector(selectSessionId);
+  const { asDraftModComponent } = adapterForComponent(modComponentFormState);
 
   const run = useCallback(async () => {
-    const adapter = ADAPTERS.get(modComponentFormState.type);
-    assertNotNullish(
-      adapter,
-      `Adapter not found for ${modComponentFormState.type}`,
-    );
-    const { asDraftModComponent: factory } = adapter;
-
     updateDraftModComponent(
       allFramesInInspectedTab,
-      factory(modComponentFormState),
+      asDraftModComponent(modComponentFormState),
     );
-  }, [modComponentFormState]);
+  }, [asDraftModComponent, modComponentFormState]);
 
   const manualRun = async () => {
     // Report before the run to report even if the run errors

@@ -54,7 +54,6 @@ function fromNativeElement(
   _element: null,
 ): TriggerFormState {
   return {
-    type: StarterBrickTypes.TRIGGER,
     label: `My ${getDomain(url)} trigger`,
     ...makeInitialBaseState(),
     starterBrick: {
@@ -211,7 +210,7 @@ async function fromModComponent(
 
 const config: ModComponentFormStateAdapter<undefined, TriggerFormState> = {
   displayOrder: 4,
-  elementType: StarterBrickTypes.TRIGGER,
+  starterBrickType: StarterBrickTypes.TRIGGER,
   label: "Trigger",
   baseClass: TriggerStarterBrickABC,
   EditorNode: TriggerConfiguration,

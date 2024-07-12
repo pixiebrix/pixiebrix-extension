@@ -56,7 +56,7 @@ function useAddNewModComponent(): AddNewModComponent {
 
       dispatch(
         actions.setInsertingStarterBrickType(
-          modComponentFormStateAdapter.elementType,
+          modComponentFormStateAdapter.starterBrickType,
         ),
       );
 
@@ -93,7 +93,7 @@ function useAddNewModComponent(): AddNewModComponent {
         dispatch(actions.checkActiveModComponentAvailability());
 
         reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
-          type: modComponentFormStateAdapter.elementType,
+          type: modComponentFormStateAdapter.starterBrickType,
         });
       } catch (error) {
         if (isSpecificError(error, CancelError)) {

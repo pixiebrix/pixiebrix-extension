@@ -44,10 +44,7 @@ import {
   type CustomEventOptions,
   type DebounceOptions,
 } from "@/starterBricks/types";
-import {
-  type StarterBrickType,
-  StarterBrickTypes,
-} from "@/types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
 import { type Menus } from "webextension-polyfill";
 import {
@@ -68,7 +65,7 @@ type ButtonModComponentState = BaseModComponentState &
   Except<ButtonStarterBrickConfig, "action">;
 type ButtonStarterBrickState = BaseStarterBrickState & {
   definition: {
-    type: StarterBrickType;
+    type: typeof StarterBrickTypes.BUTTON;
     containerSelector: string;
     position?: ButtonPosition;
     template: string;
@@ -92,7 +89,6 @@ type ButtonStarterBrickState = BaseStarterBrickState & {
 
 export interface ButtonFormState
   extends BaseFormState<ButtonModComponentState, ButtonStarterBrickState> {
-  type: typeof StarterBrickTypes.BUTTON;
   containerInfo: ElementInfo | null;
 }
 
@@ -122,15 +118,15 @@ type SidebarStarterBrickState = BaseStarterBrickState & {
   };
 };
 
-export interface SidebarFormState
-  extends BaseFormState<SidebarModComponentState, SidebarStarterBrickState> {
-  type: typeof StarterBrickTypes.SIDEBAR_PANEL;
-}
+export type SidebarFormState = BaseFormState<
+  SidebarModComponentState,
+  SidebarStarterBrickState
+>;
 
 // TriggerFormState
 type TriggerStarterBrickState = BaseStarterBrickState & {
   definition: {
-    type: StarterBrickType;
+    type: typeof StarterBrickTypes.TRIGGER;
     rootSelector?: string;
     trigger?: TriggerTrigger;
     reader: SingleLayerReaderConfig;
@@ -162,17 +158,17 @@ export function isTriggerStarterBrick(
   return starterBrick.definition.type === StarterBrickTypes.TRIGGER;
 }
 
-export interface TriggerFormState
-  extends BaseFormState<BaseModComponentState, TriggerStarterBrickState> {
-  type: typeof StarterBrickTypes.TRIGGER;
-}
+export type TriggerFormState = BaseFormState<
+  BaseModComponentState,
+  TriggerStarterBrickState
+>;
 
 // ContextMenuFormState
 type ContextMenuModComponentState = BaseModComponentState &
   Except<ContextMenuConfig, "action">;
 type ContextMenuStarterBrickState = BaseStarterBrickState & {
   definition: {
-    type: StarterBrickType;
+    type: typeof StarterBrickTypes.CONTEXT_MENU;
     defaultOptions: ContextMenuDefaultOptions;
     documentUrlPatterns: string[];
     contexts: Menus.ContextType[];
@@ -182,20 +178,17 @@ type ContextMenuStarterBrickState = BaseStarterBrickState & {
   };
 };
 
-export interface ContextMenuFormState
-  extends BaseFormState<
-    ContextMenuModComponentState,
-    ContextMenuStarterBrickState
-  > {
-  type: typeof StarterBrickTypes.CONTEXT_MENU;
-}
+export type ContextMenuFormState = BaseFormState<
+  ContextMenuModComponentState,
+  ContextMenuStarterBrickState
+>;
 
 // QuickBarFormState
 type QuickBarModComponentState = BaseModComponentState &
   Except<QuickBarConfig, "action">;
 type QuickBarStarterBrickState = BaseStarterBrickState & {
   definition: {
-    type: StarterBrickType;
+    type: typeof StarterBrickTypes.QUICK_BAR_ACTION;
     defaultOptions: QuickBarDefaultOptions;
     documentUrlPatterns: string[];
     contexts: Menus.ContextType[];
@@ -212,7 +205,7 @@ type QuickBarProviderModComponentState = BaseModComponentState &
   };
 type QuickBarProviderStarterBrickState = BaseStarterBrickState & {
   definition: {
-    type: StarterBrickType;
+    type: typeof StarterBrickTypes.DYNAMIC_QUICK_BAR;
     defaultOptions: QuickBarProviderDefaultOptions;
     documentUrlPatterns: string[];
     reader: SingleLayerReaderConfig;
@@ -229,18 +222,15 @@ export function isQuickBarStarterBrick(
   ].includes(starterBrick.definition.type);
 }
 
-export interface QuickBarFormState
-  extends BaseFormState<QuickBarModComponentState, QuickBarStarterBrickState> {
-  type: typeof StarterBrickTypes.QUICK_BAR_ACTION;
-}
+export type QuickBarFormState = BaseFormState<
+  QuickBarModComponentState,
+  QuickBarStarterBrickState
+>;
 
-export interface QuickBarProviderFormState
-  extends BaseFormState<
-    QuickBarProviderModComponentState,
-    QuickBarProviderStarterBrickState
-  > {
-  type: typeof StarterBrickTypes.DYNAMIC_QUICK_BAR;
-}
+export type QuickBarProviderFormState = BaseFormState<
+  QuickBarProviderModComponentState,
+  QuickBarProviderStarterBrickState
+>;
 
 /**
  * @deprecated We want to deconstruct ComponentFormState and using reducers instead of

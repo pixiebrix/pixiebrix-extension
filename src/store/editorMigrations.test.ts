@@ -16,11 +16,11 @@
  */
 
 import {
-  type EditorStateV3,
   type EditorStateV1,
   type EditorStateV2,
+  type EditorStateV3,
   type EditorStateV4,
-  EditorStateV5,
+  type EditorStateV5,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { mapValues, omit } from "lodash";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -33,11 +33,12 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
-  type BaseModComponentStateV2,
+  type BaseFormStateV3,
+  type BaseFormStateV4,
   type BaseModComponentStateV1,
+  type BaseModComponentStateV2,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type PersistedState } from "redux-persist";
 import {
@@ -46,6 +47,8 @@ import {
   migrateEditorStateV3,
   migrateEditorStateV4,
 } from "@/store/editorMigrations";
+import { type FactoryConfig } from "cooky-cutter/dist/define";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 const initialStateV1: EditorStateV1 & PersistedState = {
   selectionSeq: 0,
@@ -195,87 +198,169 @@ const initialStateV5: EditorStateV5 & PersistedState = {
   },
 };
 
+function unmigrateServices(
+  integrationDependencies: IntegrationDependencyV2[] = [],
+): IntegrationDependencyV1[] {
+  return integrationDependencies.map(
+    ({ integrationId, outputKey, configId, isOptional, apiVersion }) => ({
+      id: integrationId,
+      outputKey,
+      config: configId,
+      isOptional,
+      apiVersion,
+    }),
+  );
+}
+
+function unmigrateFormStateV2toV1(formState: BaseFormStateV2): BaseFormStateV1 {
+  return {
+    ...omit(formState, "integrationDependencies"),
+    services: unmigrateServices(formState.integrationDependencies),
+  };
+}
+
+function unmigrateDeletedElements(
+  deletedElements: Record<string, BaseFormStateV2[]>,
+): Record<string, BaseFormStateV1[]> {
+  return mapValues(deletedElements, (formStates) =>
+    formStates.map((formState) => unmigrateFormStateV2toV1(formState)),
+  );
+}
+
+function unmigrateEditorStateV2toV1(
+  state: EditorStateV2 & PersistedState,
+): EditorStateV1 & PersistedState {
+  return {
+    ...omit(state, "elements", "deletedElementsByRecipeId"),
+    elements: state.elements.map((element) =>
+      unmigrateFormStateV2toV1(element),
+    ),
+    deletedElementsByRecipeId: unmigrateDeletedElements(
+      state.deletedElementsByRecipeId,
+    ),
+  };
+}
+
+function unmigrateModComponentStateV2toV1(
+  state: BaseModComponentStateV2,
+): BaseModComponentStateV1 {
+  return {
+    blockPipeline: state.brickPipeline,
+  };
+}
+
+function unmigrateFormStateV3toV2(formState: BaseFormStateV3): BaseFormStateV2 {
+  return {
+    ...omit(formState, ["modMetadata", "modComponent", "starterBrick"]),
+    recipe: formState.modMetadata,
+    extension: unmigrateModComponentStateV2toV1(formState.modComponent),
+    extensionPoint: formState.starterBrick,
+  };
+}
+
+function unmigrateEditorStateV3toV2(
+  state: EditorStateV3 & PersistedState,
+): EditorStateV2 & PersistedState {
+  return {
+    ...omit(
+      state,
+      "activeModComponentId",
+      "activeModId",
+      "expandedModId",
+      "modComponentFormStates",
+      "knownEditableBrickIds",
+      "brickPipelineUIStateById",
+      "copiedBrick",
+      "dirtyModOptionsById",
+      "dirtyModMetadataById",
+      "addBrickLocation",
+      "keepLocalCopyOnCreateMod",
+      "deletedModComponentFormStatesByModId",
+      "availableActivatedModComponentIds",
+      "isPendingAvailableActivatedModComponents",
+      "availableDraftModComponentIds",
+      "isPendingDraftModComponents",
+    ),
+    activeElementId: state.activeModComponentId,
+    activeRecipeId: state.activeModId,
+    expandedRecipeId: state.expandedModId,
+    elements: state.modComponentFormStates,
+    knownEditable: state.knownEditableBrickIds,
+    elementUIStates: state.brickPipelineUIStateById,
+    copiedBlock: state.copiedBrick,
+    dirtyRecipeOptionsById: state.dirtyModOptionsById,
+    dirtyRecipeMetadataById: state.dirtyModMetadataById,
+    addBlockLocation: state.addBrickLocation,
+    keepLocalCopyOnCreateRecipe: state.keepLocalCopyOnCreateMod,
+    deletedElementsByRecipeId: state.deletedModComponentFormStatesByModId,
+    availableInstalledIds: state.availableActivatedModComponentIds,
+    isPendingInstalledExtensions:
+      state.isPendingAvailableActivatedModComponents,
+    availableDynamicIds: state.availableDraftModComponentIds,
+    isPendingDynamicExtensions: state.isPendingDraftModComponents,
+  };
+}
+
+function unmigrateEditorStateV4toV3(
+  state: EditorStateV4 & PersistedState,
+): EditorStateV3 & PersistedState {
+  return {
+    ...omit(
+      state,
+      "modComponentFormStates",
+      "deletedModComponentFormStatesByModId",
+    ),
+    modComponentFormStates: state.modComponentFormStates.map((formState) =>
+      unmigrateFormStateV3toV2(formState),
+    ),
+    deletedModComponentFormStatesByModId: mapValues(
+      state.deletedModComponentFormStatesByModId,
+      (formStates) =>
+        formStates.map((formState) => unmigrateFormStateV3toV2(formState)),
+    ),
+  };
+}
+
+function unmigrateFormStateV4toV3(formState: BaseFormStateV4): BaseFormStateV3 {
+  return {
+    ...formState,
+    type: formState.starterBrick.definition.type,
+  };
+}
+
+function unmigrateEditorStateV5toV4(
+  state: EditorStateV5 & PersistedState,
+): EditorStateV4 & PersistedState {
+  return {
+    ...omit(
+      state,
+      "insertingStarterBrickType",
+      "modComponentFormStates",
+      "deletedModComponentFormStatesByModId",
+    ),
+    inserting: state.insertingStarterBrickType,
+    modComponentFormStates: state.modComponentFormStates.map((formState) =>
+      unmigrateFormStateV4toV3(formState),
+    ),
+    deletedModComponentFormStatesByModId: mapValues(
+      state.deletedModComponentFormStatesByModId,
+      (formStates) =>
+        formStates.map((formState) => unmigrateFormStateV4toV3(formState)),
+    ),
+  };
+}
+
+type SimpleFactory<T> = (override?: FactoryConfig<T>) => T;
+
+const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = formStateFactory;
+const formStateFactoryV3: SimpleFactory<BaseFormStateV3> = () =>
+  unmigrateFormStateV4toV3(formStateFactoryV4());
+const formStateFactoryV2: SimpleFactory<BaseFormStateV2> = () =>
+  unmigrateFormStateV3toV2(formStateFactoryV3());
+
 describe("editor state migrations", () => {
-  function unmigrateServices(
-    integrationDependencies: IntegrationDependencyV2[] = [],
-  ): IntegrationDependencyV1[] {
-    return integrationDependencies.map(
-      ({ integrationId, outputKey, configId, isOptional, apiVersion }) => ({
-        id: integrationId,
-        outputKey,
-        config: configId,
-        isOptional,
-        apiVersion,
-      }),
-    );
-  }
-
-  function unmigrateFormState(formState: BaseFormStateV2): BaseFormStateV1 {
-    return {
-      ...omit(formState, "integrationDependencies"),
-      services: unmigrateServices(formState.integrationDependencies),
-    };
-  }
-
-  function unmigrateDeletedElements(
-    deletedElements: Record<string, BaseFormStateV2[]>,
-  ): Record<string, BaseFormStateV1[]> {
-    return mapValues(deletedElements, (formStates) =>
-      formStates.map((formState) => unmigrateFormState(formState)),
-    );
-  }
-
-  function unmigrateEditorStateV2(
-    state: EditorStateV2 & PersistedState,
-  ): EditorStateV1 & PersistedState {
-    return {
-      ...omit(state, "elements", "deletedElementsByRecipeId"),
-      elements: state.elements.map((element) => unmigrateFormState(element)),
-      deletedElementsByRecipeId: unmigrateDeletedElements(
-        state.deletedElementsByRecipeId,
-      ),
-    };
-  }
-
-  function unmigrateModComponentStateV1(
-    state: BaseModComponentStateV2,
-  ): BaseModComponentStateV1 {
-    return {
-      blockPipeline: state.brickPipeline,
-    };
-  }
-
-  function unmigrateFormStateV2(formState: BaseFormStateV3): BaseFormStateV2 {
-    return {
-      ...omit(formState, ["modMetadata", "modComponent", "starterBrick"]),
-      recipe: formState.modMetadata,
-      extension: unmigrateModComponentStateV1(formState.modComponent),
-      extensionPoint: formState.starterBrick,
-    };
-  }
-
-  function unmigrateEditorStateV3(
-    state: EditorStateV4 & PersistedState,
-  ): EditorStateV3 & PersistedState {
-    return {
-      ...omit(
-        state,
-        "modComponentFormStates",
-        "deletedModComponentFormStatesByModId",
-      ),
-      modComponentFormStates: state.modComponentFormStates.map((formState) =>
-        unmigrateFormStateV2(formState),
-      ),
-      deletedModComponentFormStatesByModId: mapValues(
-        state.deletedModComponentFormStatesByModId,
-        (formStates) =>
-          formStates.map((formState) => unmigrateFormStateV2(formState)),
-      ),
-    };
-  }
-
-  describe("migrateEditorStateV1", () => {
-    it("migrates empty state", () => {
+  describe("migrateEditorState V1 to V2", () => {
+    it("migrates initial state", () => {
       expect(migrateEditorStateV1(initialStateV1)).toStrictEqual(
         initialStateV2,
       );
@@ -284,73 +369,62 @@ describe("editor state migrations", () => {
     it("migrates state with elements with no services", () => {
       const expectedState = {
         ...initialStateV2,
-        elements: [
-          unmigrateFormStateV2(formStateFactory()),
-          unmigrateFormStateV2(formStateFactory()),
-        ],
+        elements: [formStateFactoryV2(), formStateFactoryV2()],
       };
-      const unmigrated = unmigrateEditorStateV2(expectedState);
+      const unmigrated = unmigrateEditorStateV2toV1(expectedState);
       expect(migrateEditorStateV1(unmigrated)).toStrictEqual(expectedState);
     });
 
     it("migrates state with elements with services and deleted elements", () => {
-      const fooElement1 = unmigrateFormStateV2(
-        formStateFactory({
-          modMetadata: modMetadataFactory({
-            id: validateRegistryId("foo"),
-          }),
-          integrationDependencies: [
-            integrationDependencyFactory({
-              configId: uuidSequence,
-            }),
-            integrationDependencyFactory({
-              configId: uuidSequence,
-            }),
-          ],
+      const fooElement1 = formStateFactoryV2({
+        recipe: modMetadataFactory({
+          id: validateRegistryId("foo"),
         }),
-      );
-      const fooElement2 = unmigrateFormStateV2(
-        formStateFactory({
-          modMetadata: modMetadataFactory({
-            id: validateRegistryId("foo"),
+        integrationDependencies: [
+          integrationDependencyFactory({
+            configId: uuidSequence,
           }),
-          integrationDependencies: [
-            integrationDependencyFactory({
-              configId: uuidSequence,
-            }),
-            integrationDependencyFactory({
-              configId: uuidSequence,
-            }),
-          ],
-        }),
-      );
-      const barElement = unmigrateFormStateV2(
-        formStateFactory({
-          modMetadata: modMetadataFactory({
-            id: validateRegistryId("bar"),
+          integrationDependencyFactory({
+            configId: uuidSequence,
           }),
-          integrationDependencies: [
-            integrationDependencyFactory({
-              configId: uuidSequence,
-            }),
-            integrationDependencyFactory({
-              configId: uuidSequence,
-            }),
-          ],
+        ],
+      });
+      const fooElement2 = formStateFactoryV2({
+        recipe: modMetadataFactory({
+          id: validateRegistryId("foo"),
         }),
-      );
+        integrationDependencies: [
+          integrationDependencyFactory({
+            configId: uuidSequence,
+          }),
+          integrationDependencyFactory({
+            configId: uuidSequence,
+          }),
+        ],
+      });
+      const barElement = formStateFactoryV2({
+        recipe: modMetadataFactory({
+          id: validateRegistryId("bar"),
+        }),
+        integrationDependencies: [
+          integrationDependencyFactory({
+            configId: uuidSequence,
+          }),
+          integrationDependencyFactory({
+            configId: uuidSequence,
+          }),
+        ],
+      });
       const expectedState = {
         ...initialStateV2,
         elements: [
-          unmigrateFormStateV2(
-            formStateFactory({
-              integrationDependencies: [
-                integrationDependencyFactory({
-                  configId: uuidSequence,
-                }),
-              ],
-            }),
-          ),
+          formStateFactoryV2({
+            integrationDependencies: [
+              integrationDependencyFactory({
+                configId: uuidSequence,
+              }),
+            ],
+          }),
           fooElement1,
           fooElement2,
           barElement,
@@ -360,41 +434,67 @@ describe("editor state migrations", () => {
           bar: [barElement],
         },
       };
-      const unmigrated = unmigrateEditorStateV2(expectedState);
+      const unmigrated = unmigrateEditorStateV2toV1(expectedState);
       expect(migrateEditorStateV1(unmigrated)).toStrictEqual(expectedState);
     });
   });
 
-  describe("migrateEditorStateV2", () => {
-    it("migrates empty state", () => {
+  describe("migrateEditorState V2 to V3", () => {
+    it("migrates initial state", () => {
       expect(migrateEditorStateV2(initialStateV2)).toStrictEqual(
         initialStateV3,
       );
     });
+
+    it("migrates the from states", () => {
+      const formStateV2 = formStateFactoryV2();
+      const expectedEditorStateV3: EditorStateV3 & PersistedState = {
+        ...initialStateV3,
+        modComponentFormStates: [formStateV2],
+      };
+      const unmigrated = unmigrateEditorStateV3toV2(expectedEditorStateV3);
+      expect(migrateEditorStateV2(unmigrated)).toStrictEqual(
+        expectedEditorStateV3,
+      );
+    });
   });
 
-  describe("migrateEditorStateV3", () => {
-    it("migrates empty state", () => {
+  describe("migrateEditorState V3 to V4", () => {
+    it("migrates initial state", () => {
       expect(migrateEditorStateV3(initialStateV3)).toStrictEqual(
         initialStateV4,
       );
     });
 
     it("migrates the form states", () => {
-      const formState = formStateFactory();
-      const expectedState = {
+      const formStateV3 = formStateFactoryV3();
+      const expectedEditorStateV4: EditorStateV4 & PersistedState = {
         ...initialStateV4,
-        modComponentFormStates: [formState],
+        modComponentFormStates: [formStateV3],
       };
-      const unmigrated = unmigrateEditorStateV3(expectedState);
-      expect(migrateEditorStateV3(unmigrated)).toStrictEqual(expectedState);
+      const unmigrated = unmigrateEditorStateV4toV3(expectedEditorStateV4);
+      expect(migrateEditorStateV3(unmigrated)).toStrictEqual(
+        expectedEditorStateV4,
+      );
     });
   });
 
-  describe("migrateEditorStateV4", () => {
+  describe("migrateEditorState V4 to V5", () => {
     it("migrates empty state", () => {
       expect(migrateEditorStateV4(initialStateV4)).toStrictEqual(
         initialStateV5,
+      );
+    });
+
+    it("migrates the inserting field and the form states", () => {
+      const expectedEditorStateV5: EditorStateV5 & PersistedState = {
+        ...initialStateV5,
+        insertingStarterBrickType: StarterBrickTypes.BUTTON,
+        modComponentFormStates: [formStateFactoryV4(), formStateFactoryV4()],
+      };
+      const unmigrated = unmigrateEditorStateV5toV4(expectedEditorStateV5);
+      expect(migrateEditorStateV4(unmigrated)).toStrictEqual(
+        expectedEditorStateV5,
       );
     });
   });

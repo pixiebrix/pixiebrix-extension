@@ -54,7 +54,6 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   const title = "Quick Bar item";
 
   return {
-    type: StarterBrickTypes.QUICK_BAR_ACTION,
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
@@ -179,7 +178,7 @@ function asDraftModComponent(
 
 const config: ModComponentFormStateAdapter<undefined, QuickBarFormState> = {
   displayOrder: 1,
-  elementType: StarterBrickTypes.QUICK_BAR_ACTION,
+  starterBrickType: StarterBrickTypes.QUICK_BAR_ACTION,
   label: "Quick Bar Action",
   baseClass: QuickBarStarterBrickABC,
   EditorNode: QuickBarConfiguration,

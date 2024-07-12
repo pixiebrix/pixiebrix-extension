@@ -51,7 +51,6 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const heading = "Sidebar Panel";
 
   return {
-    type: StarterBrickTypes.SIDEBAR_PANEL,
     label: heading,
     ...base,
     starterBrick: {
@@ -172,7 +171,7 @@ async function fromModComponent(
 
 const config: ModComponentFormStateAdapter<never, SidebarFormState> = {
   displayOrder: 3,
-  elementType: StarterBrickTypes.SIDEBAR_PANEL,
+  starterBrickType: StarterBrickTypes.SIDEBAR_PANEL,
   label: "Sidebar Panel",
   baseClass: SidebarStarterBrickABC,
   selectNativeElement: undefined,

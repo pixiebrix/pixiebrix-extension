@@ -17,21 +17,23 @@
 
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import {
   faExclamationTriangle,
   faEyeSlash,
-  faPuzzlePiece,
 } from "@fortawesome/free-solid-svg-icons";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import Icon from "@/icons/Icon";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
 
 export const ModComponentIcon: React.FunctionComponent<{
   type: StarterBrickType;
 }> = ({ type }) => (
   <FontAwesomeIcon
     fixedWidth
-    icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece}
+    // Does this need to be backwards compatible with older starter brick types?
+    // Why did old code have a "default" icon (faPuzzlePiece)?
+    // icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece}
+    icon={adapter(type).icon}
   />
 );
 

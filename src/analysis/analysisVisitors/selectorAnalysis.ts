@@ -90,14 +90,14 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
   override id = "selector";
 
   override async run(component: ModComponentFormState): Promise<void> {
-    switch (component.type) {
+    switch (component.starterBrick.definition.type) {
       case StarterBrickTypes.BUTTON: {
-        this.checkAction(component);
+        this.checkAction(component as ButtonFormState);
         break;
       }
 
       case StarterBrickTypes.TRIGGER: {
-        this.checkTrigger(component);
+        this.checkTrigger(component as TriggerFormState);
         break;
       }
 

@@ -57,7 +57,6 @@ function fromNativeElement(
   const title = "Dynamic Quick Bar";
 
   return {
-    type: StarterBrickTypes.DYNAMIC_QUICK_BAR,
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
@@ -172,7 +171,7 @@ const config: ModComponentFormStateAdapter<
   QuickBarProviderFormState
 > = {
   displayOrder: 1,
-  elementType: StarterBrickTypes.DYNAMIC_QUICK_BAR,
+  starterBrickType: StarterBrickTypes.DYNAMIC_QUICK_BAR,
   label: "Dynamic Quick Bar",
   baseClass: QuickBarProviderStarterBrickABC,
   EditorNode: QuickBarProviderConfiguration,

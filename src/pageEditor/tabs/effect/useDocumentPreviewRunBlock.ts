@@ -37,9 +37,9 @@ import { isExpression } from "@/utils/expressionUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { validateRegistryId } from "@/types/helpers";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 type Location = "modal" | "panel";
 
@@ -109,7 +109,6 @@ export default function useDocumentPreviewRunBlock(
   const formState = useSelector(selectActiveModComponentFormState);
 
   const {
-    type,
     uuid: modComponentId,
     modMetadata,
     apiVersion,
@@ -179,9 +178,9 @@ export default function useDocumentPreviewRunBlock(
 
       dispatch(previewSlice.actions.startPreview());
 
-      const adapter = ADAPTERS.get(type);
+      const { selectModComponent } = adapterForComponent(formState);
       const starterBrickId = validateRegistryId(
-        adapter.selectModComponent(formState).extensionPointId,
+        selectModComponent(formState).extensionPointId,
       );
       assertNotNullish(starterBrickId, "Expected starter brick id");
 

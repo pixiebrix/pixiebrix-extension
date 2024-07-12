@@ -1027,10 +1027,11 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 4,
+  version: 5,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: [
     "inserting",
+    "insertingStarterBrickType",
     "isVarPopoverVisible",
     "isSaveDataIntegrityErrorModalVisible",
     "visibleModalKey",

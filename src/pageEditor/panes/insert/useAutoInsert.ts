@@ -11,7 +11,7 @@ import {
   type StarterBrickType,
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
 import notify from "@/utils/notify";
 import {
   allFramesInInspectedTab,
@@ -22,54 +22,57 @@ import { updateDraftModComponent } from "@/contentScript/messenger/api";
 
 const { addModComponentFormState, clearInsertingStarterBrickType } = actions;
 
-function useAutoInsert(type: StarterBrickType): void {
+function useAutoInsert(starterBrickType: StarterBrickType): void {
   const dispatch = useDispatch();
 
   useAsyncEffect(async () => {
     // These have their own UI, so don't auto-insert
-    if (type === StarterBrickTypes.BUTTON || type == null) {
+    if (
+      starterBrickType === StarterBrickTypes.BUTTON ||
+      starterBrickType == null
+    ) {
       return;
     }
 
     try {
       const url = await getCurrentInspectedURL();
 
-      const config = ADAPTERS.get(type);
+      const { fromNativeElement, asDraftModComponent } =
+        adapter(starterBrickType);
 
       const metadata = internalStarterBrickMetaFactory();
 
-      const formState = config.fromNativeElement(
+      const formState = fromNativeElement(
         url,
         metadata,
         // eslint-disable-next-line unicorn/no-useless-undefined -- typescript expects the argument
         undefined,
       ) as ModComponentFormState;
 
-      formState.modComponent.brickPipeline = getExampleBrickPipeline(
-        formState.type,
-      );
+      formState.modComponent.brickPipeline =
+        getExampleBrickPipeline(starterBrickType);
 
       dispatch(addModComponentFormState(formState));
       dispatch(actions.checkActiveModComponentAvailability());
 
       updateDraftModComponent(
         allFramesInInspectedTab,
-        config.asDraftModComponent(formState),
+        asDraftModComponent(formState),
       );
 
       // TODO: report if created new, or using existing foundation
       reportEvent(Events.PAGE_EDITOR_START, {
-        type: config.elementType,
+        type: starterBrickType,
       });
 
-      if (config.elementType === StarterBrickTypes.SIDEBAR_PANEL) {
+      if (starterBrickType === StarterBrickTypes.SIDEBAR_PANEL) {
         // For convenience, open the side panel if it's not already open so that the user doesn't
         // have to manually toggle it
         void openSidePanel(inspectedTab.tabId);
       }
 
       reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
-        type: config.elementType,
+        type: starterBrickType,
       });
     } catch (error) {
       notify.error({
@@ -78,7 +81,7 @@ function useAutoInsert(type: StarterBrickType): void {
       });
       dispatch(clearInsertingStarterBrickType());
     }
-  }, [type, dispatch]);
+  }, [starterBrickType, dispatch]);
 }
 
 export default useAutoInsert;

@@ -21,7 +21,6 @@ import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import useFlags from "@/hooks/useFlags";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { useSelector } from "react-redux";
 import {
   selectActiveModComponentAnalysisAnnotationsForPath,
@@ -38,6 +37,7 @@ import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
   const { isConfigured } = useQuickbarShortcut();
@@ -66,11 +66,14 @@ const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
 const FoundationNodeConfigPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showVersionField = flagOn("page-editor-developer");
-  const { starterBrick } = useSelector(selectActiveModComponentFormState) ?? {};
-  assertNotNullish(
-    starterBrick,
-    "starterBrick not found in active mod component form state",
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
   );
+  assertNotNullish(
+    activeModComponentFormState,
+    "FoundationNodeConfigPanel cannot be rendered when there is no activeModComponentFormState",
+  );
+  const { starterBrick } = activeModComponentFormState;
 
   // For now, don't allow modifying starter brick packages via the Page Editor.
   const isLocked = useMemo(
@@ -78,12 +81,7 @@ const FoundationNodeConfigPanel: React.FC = () => {
     [starterBrick.metadata.id],
   );
 
-  const adapter = ADAPTERS.get(starterBrick.definition.type);
-  assertNotNullish(
-    adapter,
-    `Adapter not found for ${starterBrick.definition.type}`,
-  );
-  const { EditorNode } = adapter;
+  const { EditorNode } = adapterForComponent(activeModComponentFormState);
 
   return (
     <>

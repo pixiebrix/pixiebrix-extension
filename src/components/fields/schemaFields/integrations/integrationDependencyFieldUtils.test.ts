@@ -210,7 +210,6 @@ describe("selectVariables", () => {
       ],
       permissions: emptyPermissionsFactory(),
       optionsArgs: {},
-      type: StarterBrickTypes.SIDEBAR_PANEL,
       modMetadata: null,
       modComponent: {
         brickPipeline: [
