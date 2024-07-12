@@ -27,15 +27,7 @@ import { adapter } from "@/pageEditor/starterBricks/adapter";
 
 export const ModComponentIcon: React.FunctionComponent<{
   type: StarterBrickType;
-}> = ({ type }) => (
-  <FontAwesomeIcon
-    fixedWidth
-    // Does this need to be backwards compatible with older starter brick types?
-    // Why did old code have a "default" icon (faPuzzlePiece)?
-    // icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece}
-    icon={adapter(type).icon}
-  />
-);
+}> = ({ type }) => <FontAwesomeIcon fixedWidth icon={adapter(type).icon} />;
 
 export const NotAvailableIcon: React.FunctionComponent = () => (
   <FontAwesomeIcon icon={faEyeSlash} title="Not available on page" />
