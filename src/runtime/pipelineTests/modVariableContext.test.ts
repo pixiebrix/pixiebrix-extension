@@ -27,10 +27,10 @@ import {
   setState,
   StateNamespaces,
 } from "@/platform/state/stateController";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { toExpression } from "@/utils/expressionUtils";
+import { standaloneModComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 beforeEach(() => {
   brickRegistry.clear();
@@ -43,8 +43,10 @@ describe("modVariableContext", () => {
       namespace: StateNamespaces.MOD,
       data: { run: true },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: null,
-      modId: null,
+      modComponentRef: {
+        modComponentId: null,
+        modId: null,
+      },
     });
 
     const pipeline = [
@@ -69,8 +71,7 @@ describe("modVariableContext", () => {
       namespace: StateNamespaces.MOD,
       data: { run: true },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: autoUUIDSequence(),
-      modId: undefined,
+      modComponentRef: standaloneModComponentRefFactory(),
     });
 
     const pipeline = [
@@ -95,8 +96,7 @@ describe("modVariableContext", () => {
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: autoUUIDSequence(),
-      modId: undefined,
+      modComponentRef: standaloneModComponentRefFactory(),
     });
 
     const pipeline = [
@@ -122,8 +122,7 @@ describe("modVariableContext", () => {
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: autoUUIDSequence(),
-      modId: undefined,
+      modComponentRef: standaloneModComponentRefFactory(),
     });
 
     const pipeline = [
@@ -147,8 +146,7 @@ describe("modVariableContext", () => {
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: autoUUIDSequence(),
-      modId: undefined,
+      modComponentRef: standaloneModComponentRefFactory(),
     });
 
     const pipeline = [

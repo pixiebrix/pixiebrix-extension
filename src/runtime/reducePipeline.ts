@@ -79,6 +79,7 @@ import type { Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 import { getPlatform } from "@/platform/platformContext";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
+import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -968,7 +969,9 @@ export async function reducePipeline(
       isLastBlock: index === pipelineArray.length - 1,
       previousOutput: output,
       context: extendModVariableContext(localVariableContext, {
-        modId: pipelineLogger.context.modId,
+        modComponentRef: mapMessageContextToModComponentRef(
+          pipelineLogger.context,
+        ),
         options,
         // Mod variable is updated when each block is run
         update: true,
@@ -1041,7 +1044,9 @@ async function reducePipelineExpression(
       previousOutput: legacyOutput,
       // Assume @input and @options are present
       context: extendModVariableContext(context as BrickArgsContext, {
-        modId: pipelineLogger.context.modId,
+        modComponentRef: mapMessageContextToModComponentRef(
+          pipelineLogger.context,
+        ),
         options,
         // Update mod variable when each block is run
         update: true,

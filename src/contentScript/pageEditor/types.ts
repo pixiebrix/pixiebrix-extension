@@ -66,7 +66,7 @@ export type RunBrickArgs = {
   /**
    * The Brick configuration.
    */
-  blockConfig: BrickConfig;
+  brickConfig: BrickConfig;
   /**
    * Context to render the BlockArg, should include @input, @options, and integrations context
    * @see IntegrationsContext

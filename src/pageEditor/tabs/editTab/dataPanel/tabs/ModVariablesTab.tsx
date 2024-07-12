@@ -56,7 +56,8 @@ const ModVariablesTab: React.VFC = () => {
 
   const state = useAsyncState<StateValues>(
     async () => {
-      const context = {
+      // Page State doesn't require the starterBrickId
+      const modComponentRef = {
         modComponentId: activeModComponentFormState?.uuid,
         modId: activeModComponentFormState?.modMetadata?.id,
       };
@@ -65,17 +66,17 @@ const ModVariablesTab: React.VFC = () => {
       return resolveObj<UnknownObject | string>({
         Public: getPageState(inspectedTab, {
           namespace: StateNamespaces.PUBLIC,
-          ...context,
+          modComponentRef,
         }),
         Mod: activeModComponentFormState?.modMetadata
           ? getPageState(inspectedTab, {
               namespace: StateNamespaces.MOD,
-              ...context,
+              modComponentRef,
             })
           : Promise.resolve("Starter Brick is not in a mod package"),
         Private: getPageState(inspectedTab, {
           namespace: StateNamespaces.PRIVATE,
-          ...context,
+          modComponentRef,
         }),
       }) as Promise<StateValues>;
     },

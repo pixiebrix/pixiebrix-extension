@@ -73,6 +73,15 @@ export const selectActiveModComponentFormState = createSelector(
 export const selectActiveModId = ({ editor }: EditorRootState) =>
   editor.activeModId;
 
+export const selectActiveModComponentRef = createSelector(
+  selectActiveModComponentId,
+  selectActiveModId,
+  (activeModComponentId, activeModId) => ({
+    modComponentId: activeModComponentId,
+    modId: activeModId,
+  }),
+);
+
 export const selectIsInsertingNewStarterBrick = ({ editor }: EditorRootState) =>
   editor.inserting;
 

@@ -22,6 +22,7 @@ import { selectKnownVarsForActiveNode } from "./varSelectors";
 import VariablesTree from "./VariablesTree";
 import {
   selectActiveModComponentFormState,
+  selectActiveModComponentRef,
   selectPipelineMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
@@ -163,6 +164,9 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
+
+  const modComponentRef = useSelector(selectActiveModComponentRef);
+
   const pipelineMap = useSelector(selectPipelineMap) ?? {};
   const { allBricks } = useAllBricks();
 
@@ -178,8 +182,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     async () =>
       getPageState(inspectedTab, {
         namespace: StateNamespaces.MOD,
-        modComponentId: null,
-        modId: activeModComponentFormState?.modMetadata?.id,
+        modComponentRef,
       }),
     [],
   );

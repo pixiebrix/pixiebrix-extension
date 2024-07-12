@@ -58,10 +58,11 @@ import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";
 import { showModal } from "@/contentScript/modalDom";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
-
+import {
+  modComponentRefFactory,
+  standaloneModComponentRefFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/contentScript/modalDom");
 jest.mock("@/contentScript/sidebarController");
@@ -347,17 +348,12 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const modComponentId = autoUUIDSequence();
+    const modComponentRef = standaloneModComponentRefFactory();
 
     const options = {
       ...testOptions("v3"),
       logger: new ConsoleLogger(
-        mapModComponentRefToMessageContext(
-          modComponentRefFactory({
-            modComponentId,
-            modId: null,
-          }),
-        ),
+        mapModComponentRefToMessageContext(modComponentRef),
       ),
     };
 
@@ -374,8 +370,7 @@ describe("DisplayTemporaryInfo", () => {
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId,
-      modId: null,
+      modComponentRef,
     });
 
     await tick();

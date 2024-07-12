@@ -179,12 +179,12 @@ describe("sidebarExtension", () => {
       })(),
     );
 
-    const extension = modComponentFactory({
+    const modComponent = modComponentFactory({
       extensionPointId: starterBrick.id,
       _recipe: modMetadataFactory(),
     });
 
-    starterBrick.registerModComponent(extension);
+    starterBrick.registerModComponent(modComponent);
 
     await starterBrick.install();
 
@@ -194,8 +194,10 @@ describe("sidebarExtension", () => {
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: extension.id,
-      modId: extension._recipe!.id,
+      modComponentRef: {
+        modComponentId: modComponent.id,
+        modId: modComponent._recipe!.id,
+      },
     });
 
     // Doesn't run because sidebar is not visible
@@ -215,8 +217,10 @@ describe("sidebarExtension", () => {
       // Data needs to be different than previous to trigger a state change event
       data: { foo: 42 },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: extension.id,
-      modId: extension._recipe!.id,
+      modComponentRef: {
+        modComponentId: modComponent.id,
+        modId: modComponent._recipe!.id,
+      },
     });
 
     await tick();
@@ -228,8 +232,10 @@ describe("sidebarExtension", () => {
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: autoUUIDSequence(),
-      modId: registryIdFactory(),
+      modComponentRef: {
+        modComponentId: autoUUIDSequence(),
+        modId: registryIdFactory(),
+      },
     });
 
     await tick();
@@ -277,8 +283,10 @@ describe("sidebarExtension", () => {
         namespace: StateNamespaces.MOD,
         data: { foo: i },
         mergeStrategy: MergeStrategies.REPLACE,
-        modComponentId: extension.id,
-        modId: extension._recipe!.id,
+        modComponentRef: {
+          modComponentId: extension.id,
+          modId: extension._recipe!.id,
+        },
       });
     }
 

@@ -212,7 +212,7 @@ export default function useDocumentPreviewRunBlock(
           },
           args: {
             apiVersion,
-            blockConfig: {
+            brickConfig: {
               ...removeEmptyValues(brickConfig),
               if: undefined,
             },

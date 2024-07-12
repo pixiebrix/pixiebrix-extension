@@ -34,13 +34,11 @@ import {
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { type Brick } from "@/types/brickTypes";
-import {
-  autoUUIDSequence,
-  registryIdFactory,
-} from "@/testUtils/factories/stringFactories";
 import { type UUID } from "@/types/stringTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -63,19 +61,16 @@ const makeAsyncModVariablePipeline = (
   },
 });
 
-const extensionId = autoUUIDSequence();
-const blueprintId = registryIdFactory();
+const modComponentRef = modComponentRefFactory();
 
-const logger = new ConsoleLogger({
-  modComponentId: extensionId,
-  modId: blueprintId,
-});
+const logger = new ConsoleLogger(
+  mapModComponentRefToMessageContext(modComponentRef),
+);
 
-function expectPageState(expectedState: UnknownObject) {
+function expectPageState(expectedState: UnknownObject): void {
   const pageState = getState({
     namespace: StateNamespaces.MOD,
-    modComponentId: extensionId,
-    modId: blueprintId,
+    modComponentRef,
   });
 
   expect(pageState).toStrictEqual(expectedState);
@@ -90,8 +85,7 @@ describe("WithAsyncModVariable", () => {
     setState({
       namespace: StateNamespaces.MOD,
       data: {},
-      modId: blueprintId,
-      modComponentId: extensionId,
+      modComponentRef,
       mergeStrategy: MergeStrategies.REPLACE,
     });
 
