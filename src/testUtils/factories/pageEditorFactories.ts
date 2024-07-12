@@ -57,7 +57,9 @@ export const baseModComponentStateFactory = define<BaseModComponentState>({
   brickPipeline: () => pipelineFactory(),
 });
 
-type InternalFormStateOverride = Except<
+// TODO: Work out the type conflicts between StarterBrickDefinitionLike and BaseStarterBrickState
+//       and then we can remove this type completely.
+export type InternalFormStateOverride = Except<
   ModComponentFormState,
   "starterBrick"
 > & {
@@ -85,12 +87,12 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
 });
 
 export const formStateFactory = (
-  override?: FactoryConfig<ModComponentFormState>,
+  override?: FactoryConfig<InternalFormStateOverride>,
   pipelineOverride?: BrickPipeline,
   starterBrickOverride?: StarterBrickDefinitionLike,
 ): ModComponentFormState => {
   const factoryConfig: FactoryConfig<InternalFormStateOverride> =
-    (override as FactoryConfig<InternalFormStateOverride>) || {};
+    override || {};
 
   if (pipelineOverride) {
     factoryConfig.modComponent = baseModComponentStateFactory({
@@ -131,7 +133,7 @@ export const triggerFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<ModComponentFormState>,
+    } as FactoryConfig<InternalFormStateOverride>,
     pipelineOverride,
   ) as TriggerFormState;
 };
@@ -154,7 +156,7 @@ export const sidebarPanelFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<ModComponentFormState>,
+    } as FactoryConfig<InternalFormStateOverride>,
     pipelineOverride,
   ) as SidebarFormState;
 };
@@ -176,7 +178,7 @@ export const contextMenuFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<ModComponentFormState>,
+    } as FactoryConfig<InternalFormStateOverride>,
     pipelineOverride,
   ) as ContextMenuFormState;
 };
@@ -198,7 +200,7 @@ export const quickbarFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<ModComponentFormState>,
+    } as FactoryConfig<InternalFormStateOverride>,
     pipelineOverride,
   ) as QuickBarFormState;
 };
@@ -224,7 +226,7 @@ export const menuItemFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<ModComponentFormState>,
+    } as FactoryConfig<InternalFormStateOverride>,
     pipelineOverride,
   ) as ButtonFormState;
 };

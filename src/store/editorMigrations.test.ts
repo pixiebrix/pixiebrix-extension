@@ -23,7 +23,10 @@ import {
   type EditorStateV5,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { mapValues, omit } from "lodash";
-import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  formStateFactory,
+  InternalFormStateOverride,
+} from "@/testUtils/factories/pageEditorFactories";
 import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
@@ -352,7 +355,8 @@ function unmigrateEditorStateV5toV4(
 
 type SimpleFactory<T> = (override?: FactoryConfig<T>) => T;
 
-const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = formStateFactory;
+const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = (override) =>
+  formStateFactory(override as InternalFormStateOverride);
 const formStateFactoryV3: SimpleFactory<BaseFormStateV3> = () =>
   unmigrateFormStateV4toV3(formStateFactoryV4());
 const formStateFactoryV2: SimpleFactory<BaseFormStateV2> = () =>
