@@ -24,7 +24,6 @@ import {
   selectActiveModComponentFormState,
   selectPipelineMap,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import SourceLabel from "./SourceLabel";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useAsyncEffect } from "use-async-effect";
@@ -47,6 +46,7 @@ import { inspectedTab } from "@/pageEditor/context/connection";
 import useEventListener from "@/hooks/useEventListener";
 import { StateNamespaces } from "@/platform/state/stateController";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 const emptyVarMap = new VarMap();
 
@@ -199,10 +199,11 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     };
   }, [dispatch]);
 
-  const starterBrickLabel = activeModComponentFormState?.type
-    ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
-      ADAPTERS.get(activeModComponentFormState.type)!.label
-    : "";
+  let starterBrickLabel = "";
+  if (activeModComponentFormState) {
+    const { label } = adapterForComponent(activeModComponentFormState);
+    starterBrickLabel = label;
+  }
 
   const { allOptions, filteredOptions } = useMemo(() => {
     const values = { ...trace?.templateContext };

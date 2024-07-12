@@ -16,7 +16,6 @@
  */
 
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import {
   internalStarterBrickMetaFactory,
   lookupStarterBrick,
@@ -44,6 +43,7 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { normalizeModDefinition } from "@/utils/modUtils";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
@@ -120,11 +120,11 @@ describe("useBuildAndValidateMod", () => {
           const modComponent = state.extensions[i];
 
           // Load the adapter for this mod component
-          const adapter = ADAPTERS.get(starterBrick.definition.type);
+          const { fromModComponent } = adapter(starterBrick.definition.type);
 
           // Use the adapter to convert to FormState
           // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
-          const modComponentFormState = (await adapter.fromModComponent(
+          const modComponentFormState = (await fromModComponent(
             modComponent,
           )) as ModComponentFormState;
 

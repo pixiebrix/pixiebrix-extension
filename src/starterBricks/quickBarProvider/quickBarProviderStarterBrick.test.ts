@@ -47,6 +47,7 @@ import {
   type QuickBarProviderDefinition,
   type QuickBarProviderConfig,
 } from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
@@ -58,7 +59,7 @@ jest.mock("@/auth/featureFlagStorage", () => ({
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   genericExtensionPointFactory({
     definition: define<QuickBarProviderDefinition>({
-      type: "quickBarProvider",
+      type: StarterBrickTypes.DYNAMIC_QUICK_BAR,
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
       }),

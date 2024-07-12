@@ -34,16 +34,33 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { type DraftModComponent } from "@/contentScript/pageEditor/types";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-export const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>(
-  [
-    [StarterBrickTypes.TRIGGER, triggerModComponent],
-    [StarterBrickTypes.CONTEXT_MENU, contextMenuModComponent],
-    [StarterBrickTypes.SIDEBAR_PANEL, sidebarPanelModComponent],
-    [StarterBrickTypes.BUTTON, buttonModComponent],
-    [StarterBrickTypes.QUICK_BAR_ACTION, quickBarActionModComponent],
-    [StarterBrickTypes.DYNAMIC_QUICK_BAR, quickBarProviderModComponent],
-  ],
-);
+const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>([
+  [StarterBrickTypes.TRIGGER, triggerModComponent],
+  [StarterBrickTypes.CONTEXT_MENU, contextMenuModComponent],
+  [StarterBrickTypes.SIDEBAR_PANEL, sidebarPanelModComponent],
+  [StarterBrickTypes.BUTTON, buttonModComponent],
+  [StarterBrickTypes.QUICK_BAR_ACTION, quickBarActionModComponent],
+  [StarterBrickTypes.DYNAMIC_QUICK_BAR, quickBarProviderModComponent],
+]);
+
+export const ALL_ADAPTERS = [...ADAPTERS.values()];
+
+export function adapter(
+  starterBrickType: StarterBrickType,
+): ModComponentFormStateAdapter {
+  const adapter = ADAPTERS.get(starterBrickType);
+  assertNotNullish(
+    adapter,
+    `No adapter found for starter brick type: ${starterBrickType}`,
+  );
+  return adapter;
+}
+
+export function adapterForComponent(
+  formState: ModComponentFormState,
+): ModComponentFormStateAdapter {
+  return adapter(formState.starterBrick.definition.type);
+}
 
 export async function selectType(
   modComponent: ModComponentBase,
@@ -88,10 +105,11 @@ export async function modComponentToFormState(
 export function formStateToDraftModComponent(
   modComponentFormState: ModComponentFormState,
 ): DraftModComponent {
-  const adapter = ADAPTERS.get(modComponentFormState.type);
+  const starterBrickType = modComponentFormState.starterBrick.definition.type;
+  const adapter = ADAPTERS.get(starterBrickType);
   assertNotNullish(
     adapter,
-    `No adapter found for starter brick type: ${modComponentFormState.type}`,
+    `No adapter found for starter brick type: ${starterBrickType}`,
   );
   return adapter.asDraftModComponent(modComponentFormState);
 }

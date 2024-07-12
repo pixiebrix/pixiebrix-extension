@@ -57,7 +57,6 @@ function fromNativeElement(
   button: ButtonSelectionResult,
 ): ButtonFormState {
   return {
-    type: StarterBrickTypes.BUTTON,
     label: `My ${getDomain(url)} button`,
     ...makeInitialBaseState(button.uuid),
     containerInfo: button.containerInfo,
@@ -188,7 +187,7 @@ const config: ModComponentFormStateAdapter<
   ButtonFormState
 > = {
   displayOrder: 0,
-  elementType: StarterBrickTypes.BUTTON,
+  starterBrickType: StarterBrickTypes.BUTTON,
   label: "Button",
   icon: faMousePointer,
   baseClass: ButtonStarterBrickABC,

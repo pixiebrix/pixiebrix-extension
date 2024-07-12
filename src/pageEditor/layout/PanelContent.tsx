@@ -60,7 +60,9 @@ const cleanUpStarterBrickForModComponentFormState = (
   modComponentFormState: EditorState["modComponentFormStates"][number],
 ) => {
   if (
-    STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(modComponentFormState.type)
+    STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(
+      modComponentFormState.starterBrick.definition.type,
+    )
   ) {
     return;
   }

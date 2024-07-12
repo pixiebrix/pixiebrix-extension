@@ -44,6 +44,7 @@ import {
   type ContextMenuConfig,
 } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 function fromNativeElement(
   url: string,
@@ -56,15 +57,14 @@ function fromNativeElement(
   const title = "Context menu item";
 
   return {
-    type: "contextMenu",
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
     starterBrick: {
       metadata,
       definition: {
-        type: "contextMenu",
-        reader: getImplicitReader("contextMenu"),
+        type: StarterBrickTypes.CONTEXT_MENU,
+        reader: getImplicitReader(StarterBrickTypes.CONTEXT_MENU),
         documentUrlPatterns: isAvailable.matchPatterns,
         contexts: ["all"],
         targetMode: "eventTarget",
@@ -96,7 +96,7 @@ function selectStarterBrickDefinition(
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
     definition: {
-      type: "contextMenu",
+      type: StarterBrickTypes.CONTEXT_MENU,
       documentUrlPatterns,
       contexts,
       targetMode,
@@ -130,8 +130,8 @@ async function fromModComponent(
   const starterBrick = await lookupStarterBrick<
     ContextMenuDefinition,
     ContextMenuConfig,
-    "contextMenu"
-  >(config, "contextMenu");
+    typeof StarterBrickTypes.CONTEXT_MENU
+  >(config, StarterBrickTypes.CONTEXT_MENU);
   const {
     documentUrlPatterns = [],
     defaultOptions = {},
@@ -154,7 +154,7 @@ async function fromModComponent(
     starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
-        type: "contextMenu",
+        type: StarterBrickTypes.CONTEXT_MENU,
         documentUrlPatterns,
         defaultOptions,
         targetMode,
@@ -171,7 +171,7 @@ function asDraftModComponent(
   contextMenuFormState: ContextMenuFormState,
 ): DraftModComponent {
   return {
-    type: "contextMenu",
+    type: StarterBrickTypes.CONTEXT_MENU,
     extension: selectModComponent(contextMenuFormState, {
       includeInstanceIds: true,
     }),
@@ -181,7 +181,7 @@ function asDraftModComponent(
 
 const config: ModComponentFormStateAdapter<undefined, ContextMenuFormState> = {
   displayOrder: 1,
-  elementType: "contextMenu",
+  starterBrickType: StarterBrickTypes.CONTEXT_MENU,
   label: "Context Menu",
   baseClass: ContextMenuStarterBrickABC,
   EditorNode: ContextMenuConfiguration,

@@ -202,7 +202,7 @@ export function baseSelectModComponent({
 
 export function makeInitialBaseState(
   uuid: UUID = uuidv4(),
-): Except<BaseFormState, "type" | "label" | "starterBrick"> {
+): Except<BaseFormState, "label" | "starterBrick"> {
   return {
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
@@ -404,11 +404,16 @@ export function getImplicitReader(
     { element: validateRegistryId("@pixiebrix/html/element") },
   ] as const;
 
-  if (type === "trigger") {
+  if (type === StarterBrickTypes.TRIGGER) {
     return readerTypeHack([...base, ...elementAddons]);
   }
 
-  if (type === "quickBar" || type === "quickBarProvider") {
+  if (
+    [
+      StarterBrickTypes.QUICK_BAR_ACTION,
+      StarterBrickTypes.DYNAMIC_QUICK_BAR,
+    ].includes(type)
+  ) {
     return readerTypeHack([
       ...base,
       ...elementAddons,
@@ -416,7 +421,7 @@ export function getImplicitReader(
     ]);
   }
 
-  if (type === "contextMenu") {
+  if (type === StarterBrickTypes.CONTEXT_MENU) {
     // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by
     // the contextMenu starter brick.
     return readerTypeHack([...base, ...elementAddons]);

@@ -120,7 +120,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
         );
         dispatch(actions.checkActiveModComponentAvailability());
 
-        if (type === "actionPanel") {
+        if (type === StarterBrickTypes.SIDEBAR_PANEL) {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between mod components within the same mod.
           await openSidePanel(inspectedTab.tabId);
