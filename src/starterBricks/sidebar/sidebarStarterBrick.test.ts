@@ -38,7 +38,10 @@ import {
   setState,
   StateNamespaces,
 } from "@/platform/state/stateController";
-import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import {
+  modComponentRefFactory,
+  modMetadataFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import brickRegistry from "@/bricks/registry";
 import { sleep } from "@/utils/timeUtils";
 import { getPlatform } from "@/platform/platformContext";
@@ -232,10 +235,7 @@ describe("sidebarExtension", () => {
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentRef: {
-        modComponentId: autoUUIDSequence(),
-        modId: registryIdFactory(),
-      },
+      modComponentRef: modComponentRefFactory(),
     });
 
     await tick();
