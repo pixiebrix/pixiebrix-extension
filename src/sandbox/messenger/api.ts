@@ -72,6 +72,7 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
         }),
       {
         retries: 3,
+        shouldRetry: (error) => error.name === "TimeoutError",
         onFailedAttempt(error) {
           console.warn(
             `Failed to send message ${type} to sandbox. Retrying... Attempt ${error.attemptNumber}`,
