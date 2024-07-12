@@ -51,7 +51,7 @@ describe("@pixiebrix/state/set", () => {
 
     let result = await brick.transform(
       { data: { foo: 42, bar: 42 } } as any,
-      brickOptionsFactory(brickOptions),
+      brickOptions,
     );
     expect(result).toStrictEqual({ foo: 42, bar: 42 });
 
@@ -60,7 +60,7 @@ describe("@pixiebrix/state/set", () => {
         data: { foo: 1 },
         mergeStrategy: MergeStrategies.SHALLOW,
       }),
-      brickOptionsFactory(brickOptions),
+      brickOptions,
     );
     expect(result).toStrictEqual({ foo: 1, bar: 42 });
   });
@@ -135,7 +135,7 @@ describe("@pixiebrix/state/set", () => {
       brick.getModVariableSchema({
         id: brick.id,
         config: {
-          namespace: "extension",
+          namespace: StateNamespaces.PRIVATE,
           data: {
             foo: toExpression("nunjucks", "{{ @hello }}"),
           },
