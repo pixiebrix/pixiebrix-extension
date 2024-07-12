@@ -46,7 +46,7 @@ import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import {
   type StarterBrick,
-  StarterBrickType,
+  type StarterBrickType,
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";

@@ -45,7 +45,7 @@ import { guessSelectedElement } from "@/utils/selectionController";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import {
   type StarterBrick,
-  StarterBrickType,
+  type StarterBrickType,
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
@@ -76,9 +76,8 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
   static isQuickBarStarterBrick(
     starterBrick: StarterBrick,
   ): starterBrick is QuickBarStarterBrickABC {
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any
-    -- Need to access a type specific property (QuickBarStarterBrick._definition) on a base-typed entity (StarterBrick) */
     return (
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- Need to access a type specific property (QuickBarStarterBrick._definition) on a base-typed entity (StarterBrick) */
       (starterBrick as any)?._definition?.type ===
       StarterBrickTypes.QUICK_BAR_ACTION
     );

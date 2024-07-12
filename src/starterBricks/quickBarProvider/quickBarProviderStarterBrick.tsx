@@ -45,7 +45,7 @@ import {
 import { type Reader } from "@/types/bricks/readerTypes";
 import {
   type StarterBrick,
-  StarterBrickType,
+  type StarterBrickType,
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -75,9 +75,8 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   static isQuickBarProviderStarterBrick(
     starterBrick: StarterBrick,
   ): starterBrick is QuickBarProviderStarterBrickABC {
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any
-    -- Need to access a type specific property (QuickBarProviderStarterBrickABC._definition) on a base-typed entity (StarterBrick) */
     return (
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- Need to access a type specific property (QuickBarProviderStarterBrickABC._definition) on a base-typed entity (StarterBrick) */
       (starterBrick as any)?._definition?.type ===
       StarterBrickTypes.DYNAMIC_QUICK_BAR
     );

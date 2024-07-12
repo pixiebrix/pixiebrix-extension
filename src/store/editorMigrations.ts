@@ -162,7 +162,7 @@ export function migrateEditorStateV3({
   };
 }
 
-export function migrateFormStateV3({
+function migrateFormStateV3({
   type,
   ...rest
 }: BaseFormStateV3): BaseFormStateV4 {

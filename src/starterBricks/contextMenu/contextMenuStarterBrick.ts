@@ -52,7 +52,7 @@ import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import {
   type StarterBrick,
-  StarterBrickType,
+  type StarterBrickType,
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";

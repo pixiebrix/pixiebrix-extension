@@ -68,7 +68,7 @@ import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 import {
   type StarterBrick,
-  StarterBrickType,
+  type StarterBrickType,
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import {
