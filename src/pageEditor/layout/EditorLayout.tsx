@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
 import { useDispatch, useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
@@ -43,8 +43,25 @@ const EditorLayout: React.FunctionComponent = () => {
 
   const url = useCurrentInspectedUrl();
 
-  const prevIsStaleSession = usePreviousValue(isStaleSession);
-  if (!prevIsStaleSession && isStaleSession) {
+  const currentPane = useMemo(
+    () =>
+      isRestricted ? (
+        <RestrictedPane />
+      ) : isStaleSession ? (
+        <StaleSessionPane />
+      ) : isInserting ? (
+        <InsertPane inserting={isInserting} />
+      ) : (
+        <>
+          <ModListingPanel />
+          <EditorContent />
+        </>
+      ),
+    [isInserting, isRestricted, isStaleSession],
+  );
+
+  const previousPane = usePreviousValue(currentPane);
+  if (previousPane !== currentPane) {
     dispatch(editorActions.hideModal());
   }
 
@@ -59,20 +76,7 @@ const EditorLayout: React.FunctionComponent = () => {
 
   return (
     <>
-      <div className={styles.root}>
-        {isRestricted ? (
-          <RestrictedPane />
-        ) : isStaleSession ? (
-          <StaleSessionPane />
-        ) : isInserting ? (
-          <InsertPane inserting={isInserting} />
-        ) : (
-          <>
-            <ModListingPanel />
-            <EditorContent />
-          </>
-        )}
-      </div>
+      <div className={styles.root}>{currentPane}</div>
       <Modals />
     </>
   );
