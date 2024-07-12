@@ -65,7 +65,7 @@ export const brickOptionsFactory = define<BrickOptions>({
 });
 
 /**
- * ReduceOptions factory
+ * ReduceOptions factory for passing to runtime reducer methods
  * @see ReduceOptions
  * @see apiVersionOptions
  */

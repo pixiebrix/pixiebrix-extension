@@ -129,6 +129,9 @@ type CommonOptions = ApiVersionOptions & {
   abortSignal?: AbortSignal;
 };
 
+/**
+ * @see reduceOptionsFactory
+ */
 export type ReduceOptions = CommonOptions & RunMetadata;
 
 export type InitialValues = {

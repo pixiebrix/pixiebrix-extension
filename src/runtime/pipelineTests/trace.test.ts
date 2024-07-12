@@ -34,9 +34,11 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
 import { type BrickPipeline } from "@/bricks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
+import { type RenderedArgs } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { standaloneModComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 const addEntryMock = jest.mocked(traces.addEntry);
 const addExitMock = jest.mocked(traces.addExit);
@@ -227,27 +229,26 @@ describe("Trace normal execution", () => {
 
     const instanceId = uuidv4();
     const runId = uuidv4();
-    const extensionId = uuidv4();
+    const modComponentRef = standaloneModComponentRefFactory();
+    const logger = new ConsoleLogger(
+      mapModComponentRefToMessageContext(modComponentRef),
+    );
 
-    const blockConfig = {
+    const brickConfig = {
       id: echoBrick.id,
       config: { message: "{{@input.inputArg}}" },
       instanceId,
     };
 
-    const logger = new ConsoleLogger().childLogger({
-      modComponentId: extensionId,
-    });
-
-    await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
+    await reducePipeline(brickConfig, simpleInput({ inputArg: "hello" }), {
       ...reduceOptionsFactory("v2"),
       runId,
       logger,
-      modComponentId: extensionId,
+      modComponentId: modComponentRef.modComponentId,
     });
 
     const meta: TraceRecordMeta = {
-      modComponentId: extensionId,
+      modComponentId: modComponentRef.modComponentId,
       runId,
       branches: [],
       brickInstanceId: instanceId,
@@ -257,7 +258,7 @@ describe("Trace normal execution", () => {
     const expectedEntry: TraceEntryData = {
       ...meta,
       timestamp: timestamp.toISOString(),
-      brickConfig: blockConfig,
+      brickConfig,
       templateContext: { "@input": { inputArg: "hello" }, "@options": {} },
       renderedArgs: { message: "hello" } as unknown as RenderedArgs,
       renderError: null,
@@ -285,8 +286,12 @@ describe("Trace normal execution", () => {
 
     const instanceId = uuidv4();
     const runId = uuidv4();
-    const extensionId = uuidv4();
-    const outputKey = "echo" as OutputKey;
+    const outputKey = validateOutputKey("echo");
+
+    const modComponentRef = standaloneModComponentRefFactory();
+    const logger = new ConsoleLogger(
+      mapModComponentRefToMessageContext(modComponentRef),
+    );
 
     const blockConfig: BrickPipeline = [
       {
@@ -302,19 +307,15 @@ describe("Trace normal execution", () => {
       },
     ];
 
-    const logger = new ConsoleLogger().childLogger({
-      modComponentId: extensionId,
-    });
-
     await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
       ...reduceOptionsFactory("v2"),
-      modComponentId: extensionId,
+      modComponentId: modComponentRef.modComponentId,
       runId,
       logger,
     });
 
     const meta: TraceRecordMeta = {
-      modComponentId: extensionId,
+      modComponentId: modComponentRef.modComponentId,
       runId,
       branches: [],
       brickInstanceId: instanceId,
@@ -340,10 +341,14 @@ describe("Trace normal execution", () => {
 
     const instanceId = uuidv4();
     const runId = uuidv4();
-    const extensionId = uuidv4();
-    const outputKey = "never" as OutputKey;
+    const modComponentRef = standaloneModComponentRefFactory();
+    const logger = new ConsoleLogger(
+      mapModComponentRefToMessageContext(modComponentRef),
+    );
 
-    const blockConfig: BrickPipeline = [
+    const outputKey = validateOutputKey("never");
+
+    const brickConfig: BrickPipeline = [
       {
         id: throwBrick.id,
         config: { message: "{{@input.inputArg}}" },
@@ -357,12 +362,8 @@ describe("Trace normal execution", () => {
       },
     ];
 
-    const logger = new ConsoleLogger().childLogger({
-      modComponentId: extensionId,
-    });
-
     await expect(async () => {
-      await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
+      await reducePipeline(brickConfig, simpleInput({ inputArg: "hello" }), {
         ...reduceOptionsFactory("v2"),
         runId,
         logger,
@@ -370,7 +371,7 @@ describe("Trace normal execution", () => {
     }).rejects.toThrow();
 
     const meta: TraceRecordMeta = {
-      modComponentId: extensionId,
+      modComponentId: modComponentRef.modComponentId,
       runId,
       branches: [],
       brickInstanceId: instanceId,

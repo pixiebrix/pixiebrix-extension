@@ -15,32 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
 import {
   MergeStrategies,
+  StateNamespaces,
   TEST_resetState,
 } from "@/platform/state/stateController";
+import ConsoleLogger from "@/utils/ConsoleLogger";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { standaloneModComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 beforeEach(() => {
   TEST_resetState();
 });
 
 describe("@pixiebrix/state/get", () => {
-  test("default to blueprint state", async () => {
+  test("default to mod namespace", async () => {
     const brick = new GetPageState();
-    const logger = new ConsoleLogger({
-      modComponentId: uuidv4(),
-      modId: validateRegistryId("test/123"),
-    });
-    await brick.transform(
-      unsafeAssumeValidArg({}),
-      brickOptionsFactory({ logger }),
-    );
+    await brick.transform(unsafeAssumeValidArg({}), brickOptionsFactory());
   });
 
   test("is page state aware", async () => {
@@ -52,14 +47,11 @@ describe("@pixiebrix/state/get", () => {
 describe("@pixiebrix/state/set", () => {
   test("shallow merge", async () => {
     const brick = new SetPageState();
-    const logger = new ConsoleLogger({
-      modComponentId: uuidv4(),
-      modId: validateRegistryId("test/123"),
-    });
+    const brickOptions = brickOptionsFactory();
 
     let result = await brick.transform(
       { data: { foo: 42, bar: 42 } } as any,
-      brickOptionsFactory({ logger }),
+      brickOptionsFactory(brickOptions),
     );
     expect(result).toStrictEqual({ foo: 42, bar: 42 });
 
@@ -68,7 +60,7 @@ describe("@pixiebrix/state/set", () => {
         data: { foo: 1 },
         mergeStrategy: MergeStrategies.SHALLOW,
       }),
-      brickOptionsFactory({ logger }),
+      brickOptionsFactory(brickOptions),
     );
     expect(result).toStrictEqual({ foo: 1, bar: 42 });
   });
@@ -77,10 +69,7 @@ describe("@pixiebrix/state/set", () => {
     const { SetPageState } = await import("@/bricks/effects/pageState");
 
     const brick = new SetPageState();
-    const logger = new ConsoleLogger({
-      modComponentId: uuidv4(),
-      modId: validateRegistryId("test/123"),
-    });
+    const brickOptions = brickOptionsFactory();
 
     const original = {
       primitiveArray: [42],
@@ -89,10 +78,7 @@ describe("@pixiebrix/state/set", () => {
       objectArray: [{ a: 42 }],
     };
 
-    let result = await brick.transform(
-      { data: original } as any,
-      brickOptionsFactory({ logger }),
-    );
+    let result = await brick.transform({ data: original } as any, brickOptions);
     expect(result).toStrictEqual(original);
 
     result = await brick.transform(
@@ -105,7 +91,7 @@ describe("@pixiebrix/state/set", () => {
         },
         mergeStrategy: MergeStrategies.DEEP,
       }),
-      brickOptionsFactory({ logger }),
+      brickOptions,
     );
 
     // NOTE: lodash's `merge` behavior is different from deepmerge from Python. Lodash will zip the list items together
@@ -163,31 +149,28 @@ describe("set and get", () => {
   test("default to blueprint state", async () => {
     const setState = new SetPageState();
     const getState = new GetPageState();
-    const logger = new ConsoleLogger({
-      modComponentId: uuidv4(),
-      modId: validateRegistryId("test/123"),
-    });
+    const brickOptions = brickOptionsFactory();
 
     await setState.transform(
       unsafeAssumeValidArg({ data: { foo: 42 } }),
-      brickOptionsFactory({ logger }),
+      brickOptions,
     );
     let result = await getState.transform(
       unsafeAssumeValidArg({}),
-      brickOptionsFactory({ logger }),
+      brickOptions,
     );
 
     expect(result).toStrictEqual({ foo: 42 });
 
     result = await getState.transform(
-      unsafeAssumeValidArg({ namespace: "extension" }),
-      brickOptionsFactory({ logger }),
+      unsafeAssumeValidArg({ namespace: StateNamespaces.PRIVATE }),
+      brickOptions,
     );
     expect(result).toStrictEqual({});
 
     result = await getState.transform(
-      unsafeAssumeValidArg({ namespace: "shared" }),
-      brickOptionsFactory({ logger }),
+      unsafeAssumeValidArg({ namespace: StateNamespaces.PUBLIC }),
+      brickOptions,
     );
     expect(result).toStrictEqual({});
   });
@@ -195,30 +178,32 @@ describe("set and get", () => {
   test("default to shared if not part of blueprint", async () => {
     const setState = new SetPageState();
     const getState = new GetPageState();
-    const logger = new ConsoleLogger({
-      modComponentId: uuidv4(),
+    const brickOptions = brickOptionsFactory({
+      logger: new ConsoleLogger(
+        mapModComponentRefToMessageContext(standaloneModComponentRefFactory()),
+      ),
     });
 
     await setState.transform(
       unsafeAssumeValidArg({ data: { foo: 42 } }),
-      brickOptionsFactory({ logger }),
+      brickOptions,
     );
     let result = await getState.transform(
       unsafeAssumeValidArg({}),
-      brickOptionsFactory({ logger }),
+      brickOptions,
     );
 
     expect(result).toStrictEqual({ foo: 42 });
 
     result = await getState.transform(
-      unsafeAssumeValidArg({ namespace: "extension" }),
-      brickOptionsFactory({ logger }),
+      unsafeAssumeValidArg({ namespace: StateNamespaces.PRIVATE }),
+      brickOptions,
     );
     expect(result).toStrictEqual({});
 
     result = await getState.transform(
-      unsafeAssumeValidArg({ namespace: "shared" }),
-      brickOptionsFactory({ logger }),
+      unsafeAssumeValidArg({ namespace: StateNamespaces.PUBLIC }),
+      brickOptions,
     );
     expect(result).toStrictEqual({ foo: 42 });
   });

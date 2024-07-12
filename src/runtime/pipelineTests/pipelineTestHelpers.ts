@@ -337,7 +337,6 @@ class DeferBrick extends BrickABC {
 }
 
 export const echoBrick = new EchoBrick();
-
 export const contextBrick = new ContextBrick();
 export const optionsBrick = new OptionsBrick();
 export const identityBrick = new IdentityBrick();
