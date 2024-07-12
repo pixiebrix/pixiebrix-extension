@@ -19,9 +19,10 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { cloneDeep, isEqual, merge } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { type JsonObject, type ValueOf } from "type-fest";
+import { type Except, type JsonObject, type ValueOf } from "type-fest";
 import { assertPlatformCapability } from "@/platform/platformContext";
-import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 export const MergeStrategies = {
   SHALLOW: "shallow",
@@ -78,21 +79,20 @@ function dispatchStateChangeEventOnChange({
   previous,
   next,
   namespace,
-  modComponentId,
-  modId: modid,
+  modComponentRef: { modComponentId, modId },
 }: {
   previous: unknown;
   next: unknown;
   namespace: string;
-  modComponentId: Nullishable<UUID>;
-  modId: Nullishable<RegistryId>;
+  modComponentRef: Except<ModComponentRef, "starterBrickId">;
 }) {
   if (!isEqual(previous, next)) {
     // For now, leave off the event data because we're using a public channel
     const detail = {
       namespace,
+      // XXX: are using old names required for backward compatability in mods since it's passed as `@input.event`?
       extensionId: modComponentId,
-      blueprintId: modid,
+      blueprintId: modId,
     };
 
     console.debug("Dispatching statechange", detail);
@@ -106,25 +106,24 @@ export function setState({
   namespace,
   data,
   mergeStrategy,
-  modComponentId,
-  // Normalize undefined to null for lookup
-  modId = null,
+  modComponentRef,
 }: {
   namespace: StateNamespace;
   data: JsonObject;
   mergeStrategy: MergeStrategy;
-  modComponentId: Nullishable<UUID>;
-  modId: Nullishable<RegistryId>;
+  modComponentRef: Except<ModComponentRef, "starterBrickId">;
 }) {
   assertPlatformCapability("state");
+
+  // Normalize modId undefined to null for lookup
+  const { modComponentId, modId = null } = modComponentRef;
 
   const notifyOnChange = (previous: JsonObject, next: JsonObject) => {
     dispatchStateChangeEventOnChange({
       previous,
       next,
       namespace,
-      modComponentId,
-      modId,
+      modComponentRef,
     });
   };
 
@@ -166,13 +165,11 @@ export function setState({
 
 export function getState({
   namespace,
-  modComponentId,
-  // Normalize undefined to null for lookup
-  modId = null,
+  // Normalize modId undefined to null for lookup
+  modComponentRef: { modComponentId, modId = null },
 }: {
   namespace: StateNamespace;
-  modComponentId: Nullishable<UUID>;
-  modId: Nullishable<RegistryId>;
+  modComponentRef: Except<ModComponentRef, "starterBrickId">;
 }): JsonObject {
   assertPlatformCapability("state");
 

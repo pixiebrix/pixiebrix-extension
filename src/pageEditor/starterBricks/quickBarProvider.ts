@@ -44,6 +44,7 @@ import {
   type QuickBarProviderConfig,
 } from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 function fromNativeElement(
   url: string,
@@ -56,15 +57,14 @@ function fromNativeElement(
   const title = "Dynamic Quick Bar";
 
   return {
-    type: "quickBarProvider",
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
     starterBrick: {
       metadata,
       definition: {
-        type: "quickBarProvider",
-        reader: getImplicitReader("quickBarProvider"),
+        type: StarterBrickTypes.DYNAMIC_QUICK_BAR,
+        reader: getImplicitReader(StarterBrickTypes.DYNAMIC_QUICK_BAR),
         documentUrlPatterns: isAvailable.matchPatterns,
         defaultOptions: {},
         isAvailable,
@@ -87,7 +87,7 @@ function selectStarterBrickDefinition(
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
     definition: {
-      type: "quickBarProvider",
+      type: StarterBrickTypes.DYNAMIC_QUICK_BAR,
       documentUrlPatterns,
       reader,
       isAvailable: cleanIsAvailable(isAvailable),
@@ -118,8 +118,8 @@ async function fromModComponent(
   const starterBrick = await lookupStarterBrick<
     QuickBarProviderDefinition,
     QuickBarProviderConfig,
-    "quickBarProvider"
-  >(config, "quickBarProvider");
+    typeof StarterBrickTypes.DYNAMIC_QUICK_BAR
+  >(config, StarterBrickTypes.DYNAMIC_QUICK_BAR);
 
   const {
     documentUrlPatterns = [],
@@ -141,7 +141,7 @@ async function fromModComponent(
     starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
-        type: "quickBarProvider",
+        type: StarterBrickTypes.DYNAMIC_QUICK_BAR,
         documentUrlPatterns,
         defaultOptions,
         // See comment on SingleLayerReaderConfig
@@ -156,7 +156,7 @@ function asDraftModComponent(
   quickBarProviderFormState: QuickBarProviderFormState,
 ): DraftModComponent {
   return {
-    type: "quickBarProvider",
+    type: StarterBrickTypes.DYNAMIC_QUICK_BAR,
     extension: selectModComponent(quickBarProviderFormState, {
       includeInstanceIds: true,
     }),
@@ -171,7 +171,7 @@ const config: ModComponentFormStateAdapter<
   QuickBarProviderFormState
 > = {
   displayOrder: 1,
-  elementType: "quickBarProvider",
+  starterBrickType: StarterBrickTypes.DYNAMIC_QUICK_BAR,
   label: "Dynamic Quick Bar",
   baseClass: QuickBarProviderStarterBrickABC,
   EditorNode: QuickBarProviderConfiguration,

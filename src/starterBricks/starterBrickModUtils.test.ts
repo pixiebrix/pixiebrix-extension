@@ -123,7 +123,7 @@ describe("starterBrickModUtils", () => {
 
       const result = getAllModComponentDefinitionsWithType(
         modDefinition,
-        "actionPanel",
+        StarterBrickTypes.SIDEBAR_PANEL,
       );
 
       expect(result).toStrictEqual([]);

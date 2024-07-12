@@ -19,12 +19,12 @@ import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   simpleInput,
-  testOptions,
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import Retry from "@/bricks/transformers/controlFlow/Retry";
 import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const retryBlock = new Retry();
 
@@ -51,7 +51,7 @@ describe("Retry", () => {
     };
 
     return expect(
-      reducePipeline(pipeline, simpleInput({}), testOptions("v3")),
+      reducePipeline(pipeline, simpleInput({}), reduceOptionsFactory("v3")),
     ).rejects.toThrow();
   });
 
@@ -74,7 +74,7 @@ describe("Retry", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({

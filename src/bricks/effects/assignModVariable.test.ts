@@ -16,7 +16,6 @@
  */
 
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { validateRegistryId } from "@/types/helpers";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import {
@@ -25,27 +24,25 @@ import {
   setState,
   StateNamespaces,
 } from "@/platform/state/stateController";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
-const modComponentId = autoUUIDSequence();
-const modId = validateRegistryId("test/123");
+const modComponentRef = modComponentRefFactory();
 
 const brick = new AssignModVariable();
 
-const logger = new ConsoleLogger({
-  modComponentId,
-  modId,
-});
+const logger = new ConsoleLogger(
+  mapModComponentRefToMessageContext(modComponentRef),
+);
 
 const brickOptions = brickOptionsFactory({ logger });
 
 beforeEach(() => {
   setState({
     namespace: StateNamespaces.MOD,
-    modId,
-    modComponentId,
+    modComponentRef,
     mergeStrategy: MergeStrategies.REPLACE,
     data: {},
   });
@@ -66,8 +63,7 @@ describe("@pixiebrix/state/assign", () => {
     expect(
       getState({
         namespace: StateNamespaces.MOD,
-        modId,
-        modComponentId,
+        modComponentRef,
       }),
     ).toEqual({ foo: { bar: 42 } });
   });
@@ -100,8 +96,7 @@ describe("@pixiebrix/state/assign", () => {
     expect(
       getState({
         namespace: StateNamespaces.MOD,
-        modId,
-        modComponentId,
+        modComponentRef,
       }),
     ).toEqual({ foo: null });
   });
@@ -120,8 +115,7 @@ describe("@pixiebrix/state/assign", () => {
     expect(
       getState({
         namespace: StateNamespaces.MOD,
-        modId,
-        modComponentId,
+        modComponentRef,
       }),
     ).toEqual({ foo: 42, bar: 0 });
   });

@@ -37,7 +37,7 @@ const InsertPane: React.FC<{ inserting: StarterBrickType }> = ({
   const dispatch = useDispatch();
 
   const cancelInsert = useCallback(async () => {
-    dispatch(actions.toggleInsert(null));
+    dispatch(actions.clearInsertingStarterBrickType());
     await cancelSelect(inspectedTab);
   }, [dispatch]);
 

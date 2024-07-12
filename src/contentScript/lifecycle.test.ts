@@ -33,6 +33,7 @@ import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefi
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type getModComponentState } from "@/store/extensionsStorage";
 import { getPlatform } from "@/platform/platformContext";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 let starterBrickRegistry: any;
 let lifecycleModule: any;
@@ -55,7 +56,7 @@ const starterBrickDefinitionFactory = (
         name: "Test Starter Brick",
       }) as Metadata,
     definition: define<TriggerDefinition>({
-      type: "trigger",
+      type: StarterBrickTypes.TRIGGER,
       background: false,
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],

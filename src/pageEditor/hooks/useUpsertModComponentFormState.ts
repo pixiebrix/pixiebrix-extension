@@ -20,7 +20,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/data/service/apiClient";
@@ -38,6 +37,7 @@ import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 const { saveModComponent } = modComponentsSlice.actions;
 const { markClean } = editorSlice.actions;
@@ -132,12 +132,8 @@ function useUpsertModComponentFormState(): SaveCallback {
         );
       }
 
-      const adapter = ADAPTERS.get(modComponentFormState.type);
-
-      assertNotNullish(
-        adapter,
-        `No adapter found for ${modComponentFormState.type}`,
-      );
+      const { selectStarterBrickDefinition, selectModComponent } =
+        adapterForComponent(modComponentFormState);
 
       const starterBrickId = modComponentFormState.starterBrick.metadata.id;
       const hasInnerStarterBrick = isInnerDefinitionRegistryId(starterBrickId);
@@ -156,7 +152,7 @@ function useUpsertModComponentFormState(): SaveCallback {
 
         if (!isLocked) {
           try {
-            const starterBrickConfig = adapter.selectStarterBrickDefinition(
+            const starterBrickConfig = selectStarterBrickDefinition(
               modComponentFormState,
             );
             const packageId = modComponentFormState.installed
@@ -179,22 +175,22 @@ function useUpsertModComponentFormState(): SaveCallback {
 
       reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_UPDATE, {
         sessionId,
-        type: modComponentFormState.type,
+        type: modComponentFormState.starterBrick.definition.type,
         modId,
       });
 
       try {
-        let modComponent = adapter.selectModComponent(modComponentFormState);
+        let modComponent = selectModComponent(modComponentFormState);
         const updateTimestamp: Timestamp =
           new Date().toISOString() as Timestamp;
 
         if (hasInnerStarterBrick) {
-          const starterBrickConfig = adapter.selectStarterBrickDefinition(
+          const { definition } = selectStarterBrickDefinition(
             modComponentFormState,
           );
           modComponent = modComponentWithInnerDefinitions(
             modComponent,
-            starterBrickConfig.definition,
+            definition,
           );
         }
 

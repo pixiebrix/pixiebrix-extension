@@ -29,7 +29,10 @@ import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { getThisFrame } from "webext-messenger";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrick,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
@@ -309,7 +312,10 @@ export function removeDraftModComponents(
         _draftModComponentStarterBrickMap.get(modComponentId);
       assertNotNullish(starterBrick, "starterBrick must be defined");
 
-      if (starterBrick.kind === "actionPanel" && preserveSidebar) {
+      if (
+        starterBrick.kind === StarterBrickTypes.SIDEBAR_PANEL &&
+        preserveSidebar
+      ) {
         const sidebar = starterBrick as SidebarStarterBrickABC;
         sidebar.HACK_uninstallExceptModComponent(modComponentId);
       } else {
@@ -438,9 +444,9 @@ async function loadActivatedModComponents(): Promise<StarterBrick[]> {
       const draftStarterBrick = _draftModComponentStarterBrickMap.get(
         modComponent.id,
       );
-      // Include sidebar (i.e. "actionPanel") starter brick kind as those are replaced
+      // Include sidebar starter brick kind as those are replaced
       // by the sidebar itself, automatically replacing old panels keyed by mod component id
-      return draftStarterBrick?.kind === "actionPanel";
+      return draftStarterBrick?.kind === StarterBrickTypes.SIDEBAR_PANEL;
     }
 
     // Exclude disabled deployments

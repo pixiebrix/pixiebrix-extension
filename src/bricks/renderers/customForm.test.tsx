@@ -40,6 +40,7 @@ import {
   StateNamespaces,
 } from "@/platform/state/stateController";
 import type { Target } from "@/types/messengerTypes";
+import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 const brick = new CustomFormRenderer();
 
@@ -352,8 +353,9 @@ describe("CustomFormRenderer", () => {
       expect(
         getState({
           namespace: StateNamespaces.MOD,
-          modComponentId: options.logger.context.modComponentId,
-          modId: options.logger.context.modId,
+          modComponentRef: mapMessageContextToModComponentRef(
+            options.logger.context,
+          ),
         }),
       ).toStrictEqual({
         name: value,

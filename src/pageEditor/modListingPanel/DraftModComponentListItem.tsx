@@ -93,7 +93,9 @@ const DraftModComponentListItem: React.FunctionComponent<
     selectIsModComponentSavedOnCloud(modComponentFormState.uuid),
   );
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
-  const isButton = modComponentFormState.type === StarterBrickTypes.BUTTON;
+  const isButton =
+    modComponentFormState.starterBrick.definition.type ===
+    StarterBrickTypes.BUTTON;
 
   const showOverlay = useCallback(async (uuid: UUID) => {
     await enableOverlay(inspectedTab, `[data-pb-uuid="${uuid}"]`);
@@ -162,7 +164,10 @@ const DraftModComponentListItem: React.FunctionComponent<
 
         dispatch(actions.setActiveModComponentId(modComponentFormState.uuid));
 
-        if (modComponentFormState.type === "actionPanel") {
+        if (
+          modComponentFormState.starterBrick.definition.type ===
+          StarterBrickTypes.SIDEBAR_PANEL
+        ) {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between mod components within the same mod.
           await openSidePanel(inspectedTab.tabId);
@@ -179,7 +184,9 @@ const DraftModComponentListItem: React.FunctionComponent<
           [styles.nested]: isNested,
         })}
       >
-        <ModComponentIcon type={modComponentFormState.type} />
+        <ModComponentIcon
+          type={modComponentFormState.starterBrick.definition.type}
+        />
       </span>
       <span className={styles.name}>{getLabel(modComponentFormState)}</span>
       {!isAvailable && (

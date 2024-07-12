@@ -60,6 +60,7 @@ import { isDatabasePreviewField } from "@/components/fields/schemaFields/fieldTy
 import { isRequired } from "@/utils/schemaUtils";
 import type { Schema } from "@/types/schemaTypes";
 import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: extensionsReducer, actions: extensionsActions } =
@@ -116,7 +117,7 @@ function closeStarterModTabs({
 }): SidebarState {
   const actionPanelDefinitions = getAllModComponentDefinitionsWithType(
     modDefinition,
-    "actionPanel",
+    StarterBrickTypes.SIDEBAR_PANEL,
   );
   const activatedModComponents = selectModComponentsForMod(
     modDefinition.metadata.id,

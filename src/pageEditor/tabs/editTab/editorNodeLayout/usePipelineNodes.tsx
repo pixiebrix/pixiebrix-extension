@@ -75,13 +75,13 @@ import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBrick from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBrick";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName, joinPathParts } from "@/utils/formUtils";
 import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/pageEditor/documentBuilder/preview/ElementPreview";
 import { getBrickPipelineNodeSummary } from "@/pageEditor/tabs/editTab/editorNodeLayout/nodeSummary";
 import { BrickTypes } from "@/runtime/runtimeTypes";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -223,9 +223,11 @@ const usePipelineNodes = (): {
   const pasteBlock = usePasteBrick();
   const showPaste = pasteBlock && isApiAtLeastV2;
 
-  const starterBrickType = activeModComponentFormState.type;
-  const { label: starterBrickLabel, icon: starterBrickIcon } =
-    ADAPTERS.get(starterBrickType);
+  const {
+    starterBrickType,
+    label: starterBrickLabel,
+    icon: starterBrickIcon,
+  } = adapterForComponent(activeModComponentFormState);
   const rootPipeline = activeModComponentFormState.modComponent.brickPipeline;
   const rootPipelineFlavor = getRootPipelineFlavor(starterBrickType);
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});

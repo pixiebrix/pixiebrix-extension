@@ -21,10 +21,10 @@ import {
   identityBrick,
   pipelineBrick,
   simpleInput,
-  testOptions,
 } from "./pipelineTestHelpers";
 import { toExpression } from "@/utils/expressionUtils";
 import { validateRegistryId } from "@/types/helpers";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();
@@ -44,7 +44,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({ length: 1 });
   });
@@ -61,7 +61,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({
       data: toExpression("pipeline", [
