@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSidebarPage, runModViaQuickBar } from "../../utils";
 import { test, expect } from "../../fixtures/testBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 
@@ -42,5 +41,14 @@ test("#8821: ensure Javascript script errors are thrown during brick runtime", a
     .getModStarterBrick("8821 Repro", "8821 Repro")
     .select();
 
+  await pageEditorPage.brickActionsPanel
+    .getBrickByName("Run JavaScript Function")
+    .click();
+
   await pageEditorPage.getByText("Run Trigger").click();
+  await expect(
+    pageEditorPage.getByText(
+      "Error running user-defined JavaScript. Test error.",
+    ),
+  ).toBeVisible();
 });
