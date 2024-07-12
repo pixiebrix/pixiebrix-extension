@@ -23,6 +23,7 @@ import pMemoize, { pMemoizeClear } from "p-memoize";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import pRetry from "p-retry";
 import { type JsonObject } from "type-fest";
+import { TimeoutError } from "p-timeout";
 
 const SANDBOX_SHADOW_ROOT_ID = "pixiebrix-sandbox";
 
@@ -72,7 +73,7 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
         }),
       {
         retries: 3,
-        shouldRetry: (error) => error.name === "TimeoutError",
+        shouldRetry: (error) => error.name === TimeoutError.name,
         onFailedAttempt(error) {
           console.warn(
             `Failed to send message ${type} to sandbox. Retrying... Attempt ${error.attemptNumber}`,
