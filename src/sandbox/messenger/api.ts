@@ -24,6 +24,7 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import pRetry from "p-retry";
 import { type JsonObject } from "type-fest";
 import { TimeoutError } from "p-timeout";
+import { isSpecificError } from "@/errors/errorHelpers";
 
 const SANDBOX_SHADOW_ROOT_ID = "pixiebrix-sandbox";
 
@@ -73,7 +74,7 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
         }),
       {
         retries: 3,
-        shouldRetry: (error) => error.name === TimeoutError.name,
+        shouldRetry: (error) => isSpecificError(error, TimeoutError),
         onFailedAttempt(error) {
           console.warn(
             `Failed to send message ${type} to sandbox. Retrying... Attempt ${error.attemptNumber}`,
@@ -82,7 +83,7 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
       },
     );
   } catch (error) {
-    if (error.name === TimeoutError.name) {
+    if (isSpecificError(error, TimeoutError)) {
       throw new Error(
         `Failed to send message ${type} to sandbox. The host page may be preventing the sandbox from loading.`,
         {
