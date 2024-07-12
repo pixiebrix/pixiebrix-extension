@@ -53,7 +53,7 @@ import { type BaseModComponentState } from "@/pageEditor/store/editor/baseFormSt
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type Permissions } from "webextension-polyfill";
 
-export const baseModComponentStateFactory = define<BaseModComponentState>({
+const baseModComponentStateFactory = define<BaseModComponentState>({
   brickPipeline: () => pipelineFactory(),
 });
 
