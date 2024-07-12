@@ -58,7 +58,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
 
   const [counter, setCounter] = useState(0);
 
-  if (!meta.extensionId) {
+  if (!meta.modComponentId) {
     throw new Error("ButtonElement requires meta.extensionId");
   }
 

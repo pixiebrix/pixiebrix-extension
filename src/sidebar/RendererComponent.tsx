@@ -10,10 +10,10 @@ import { type RendererOutput } from "@/types/runtimeTypes";
  */
 const RendererComponent: React.FunctionComponent<{
   onAction?: (action: SubmitPanelAction) => void;
-  blockId?: RegistryId;
+  brickId?: RegistryId;
   body?: RendererOutput;
   meta?: PanelRunMeta;
-}> = ({ body, meta, blockId, onAction }) =>
+}> = ({ body, meta, brickId, onAction }) =>
   useMemo(() => {
     if (!body) {
       return null;
@@ -33,9 +33,9 @@ const RendererComponent: React.FunctionComponent<{
 
     // Enrich with metadata about the run
     const enrichedProps: UnknownObject =
-      blockId === "@pixiebrix/document" ? { ...props, meta, onAction } : props;
+      brickId === "@pixiebrix/document" ? { ...props, meta, onAction } : props;
 
     return <Component {...enrichedProps} />;
-  }, [body, meta, blockId, onAction]);
+  }, [body, meta, brickId, onAction]);
 
 export default RendererComponent;

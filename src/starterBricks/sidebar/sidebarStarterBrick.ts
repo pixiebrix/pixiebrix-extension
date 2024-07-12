@@ -210,25 +210,25 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         modId: modComponent._recipe?.id,
       };
 
-      const meta = {
+      const runMetadata = {
         runId,
-        extensionId: modComponent.id,
+        modComponentId: modComponent.id,
       };
 
       if (error instanceof HeadlessModeError) {
         this.platform.panels.upsertPanel(modComponentRef, heading, {
-          blockId: error.blockId,
+          brickId: error.brickId,
           key: uuidv4(),
           ctxt: error.ctxt,
           args: error.args,
-          ...meta,
+          ...runMetadata,
         });
       } else {
         componentLogger.error(error);
         this.platform.panels.upsertPanel(modComponentRef, heading, {
           key: uuidv4(),
           error: serializeError(error),
-          ...meta,
+          ...runMetadata,
         });
       }
     }

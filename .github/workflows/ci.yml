@@ -20,6 +20,10 @@ env:
   # Staging URL, also directly used by webpack
   SERVICE_URL: https://app-stg.pixiebrix.com/
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -236,4 +240,6 @@ jobs:
           comment-title: "Playwright test results"
           report-file: ./playwright-report/results.json
           report-url: ${{ steps.upload-merged-playwright-report-step.outputs.artifact-url }}
+          custom-info: "For more information on how to debug and view this report, [see our readme](https://github.com/pixiebrix/pixiebrix-extension/blob/main/end-to-end-tests/README.md#github-ci-integration)"
+
         if: (success() || failure()) && github.event_name == 'pull_request'

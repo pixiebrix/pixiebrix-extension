@@ -40,9 +40,12 @@ describe("BrowserBanner", () => {
     await waitForEffect();
 
     expect(
-      screen.getByText("PixieBrix officially supports Google Chrome", {
-        exact: false,
-      }),
+      screen.getByText(
+        "PixieBrix officially supports Google Chrome and Microsoft Edge.",
+        {
+          exact: false,
+        },
+      ),
     ).toBeInTheDocument();
 
     expect(asFragment()).toMatchSnapshot();
@@ -60,9 +63,12 @@ describe("BrowserBanner", () => {
     await waitForEffect();
 
     expect(
-      screen.queryByText("PixieBrix officially supports Google Chrome.", {
-        exact: false,
-      }),
+      screen.queryByText(
+        "PixieBrix officially supports Google Chrome and Microsoft Edge.",
+        {
+          exact: false,
+        },
+      ),
     ).not.toBeInTheDocument();
 
     expect(asFragment()).toMatchSnapshot();

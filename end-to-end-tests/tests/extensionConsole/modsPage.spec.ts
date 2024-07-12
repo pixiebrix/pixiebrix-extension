@@ -25,7 +25,7 @@ test("can open mod in the workshop", async ({ page, extensionId }) => {
 
   const modsPage = new ModsPage(page, extensionId);
   await modsPage.goto();
-  await modsPage.actionForModByName(modId, "Edit in Workshop");
+  await modsPage.actionForModById(modId, "Edit in Workshop");
 
   await expect(async () => {
     const pageTitle = await page.title();

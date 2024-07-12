@@ -74,7 +74,6 @@ test("authenticate with affiliated user", async ({
     const deployedMod = modsPage.modTableItemById(
       "@affiliated-test-team/my-pbxvercelapp-trigger",
     );
-    await expect(deployedMod).toBeVisible();
-    await expect(deployedMod).toContainText("version 1.0.0");
+    await expect(deployedMod.getByText("version 1.0.0")).toBeVisible();
   });
 });

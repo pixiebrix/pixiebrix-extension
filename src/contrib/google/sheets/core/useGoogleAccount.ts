@@ -19,24 +19,49 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { integrationConfigLocator } from "@/background/messenger/api";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { validateRegistryId } from "@/types/helpers";
 import reportError from "@/telemetry/reportError";
+import { oauth2Storage } from "@/auth/authConstants";
+import { isEmpty } from "lodash";
 
 const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");
+
+function useGoogleAccountLoginListener({
+  data: googleAccount,
+  refetch,
+}: FetchableAsyncState<SanitizedIntegrationConfig | null>) {
+  useEffect(() => {
+    const loginController = new AbortController();
+
+    // Automatically refetch the google account on login
+    oauth2Storage.onChanged((newValue) => {
+      const { id } = googleAccount ?? {};
+      // eslint-disable-next-line security/detect-object-injection -- not user provided
+      if (id && !isEmpty(newValue[id])) {
+        refetch();
+      }
+    }, loginController.signal);
+
+    return () => {
+      loginController.abort();
+    };
+  }, [googleAccount, refetch]);
+}
 
 /**
  * Hook to get the Google account from mod integrations context
  */
 function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | null> {
   const { integrationDependencies } = useContext(ModIntegrationsContext);
+
   // Dependency may not exist, do not destructure here
   const googleDependency = integrationDependencies.find(
     ({ integrationId }) => integrationId === GOOGLE_PKCE_INTEGRATION_ID,
   );
 
-  return useAsyncState(async () => {
+  const googleAccountAsyncState = useAsyncState(async () => {
     if (googleDependency?.configId == null) {
       return null;
     }
@@ -51,6 +76,10 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
       return null;
     }
   }, [googleDependency]);
+
+  useGoogleAccountLoginListener(googleAccountAsyncState);
+
+  return googleAccountAsyncState;
 }
 
 export default useGoogleAccount;
