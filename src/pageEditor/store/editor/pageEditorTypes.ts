@@ -91,7 +91,7 @@ export type EditorStateV1 = {
   inserting: StarterBrickType | null;
 
   /**
-   * The uuid of the active mod component form state, if a mod component is eselected
+   * The uuid of the active mod component form state, if a mod component is selected
    */
   activeElementId: UUID | null;
 
