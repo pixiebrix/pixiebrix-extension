@@ -33,7 +33,7 @@ export class ModTableItem extends BasePageObject {
         // It can't be 0 because playwright then will default to the global action timeout value.
         timeout: 100,
       });
-    }).toPass({ timeout: 6000 });
+    }).toPass({ timeout: 4000 });
   }
 }
 
