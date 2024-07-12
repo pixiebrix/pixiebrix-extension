@@ -17,21 +17,17 @@
 import { define } from "cooky-cutter";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
-import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
+import { DefinitionKinds, type Metadata } from "@/types/registryTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
-import {
-  autoUUIDSequence,
-  registryIdFactory,
-  uuidSequence,
-} from "@/testUtils/factories/stringFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type BrickPipeline } from "@/bricks/types";
 import { fromJS } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import { RunReason } from "@/types/runtimeTypes";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import {
   getReservedPanelEntries,
-  sidebarShowEvents,
   isSidePanelOpen,
+  sidebarShowEvents,
 } from "@/contentScript/sidebarController";
 import {
   MergeStrategies,
@@ -46,8 +42,8 @@ import brickRegistry from "@/bricks/registry";
 import { sleep } from "@/utils/timeUtils";
 import { getPlatform } from "@/platform/platformContext";
 import {
-  type SidebarDefinition,
   type SidebarConfig,
+  type SidebarDefinition,
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 
 jest.mock("@/contentScript/sidebarController", () => ({
