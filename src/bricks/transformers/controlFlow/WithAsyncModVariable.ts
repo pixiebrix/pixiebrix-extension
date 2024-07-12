@@ -38,6 +38,7 @@ import { PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 /**
  * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
@@ -180,7 +181,6 @@ export class WithAsyncModVariable extends TransformerABC {
     { logger, runPipeline }: BrickOptions,
   ) {
     const requestId = uuidv4();
-    const { modId: blueprintId, modComponentId: extensionId } = logger.context;
 
     if (isNullOrBlank(stateKey)) {
       throw new PropError(
@@ -203,8 +203,7 @@ export class WithAsyncModVariable extends TransformerABC {
         // Using shallow will replace the state key, but keep other keys
         mergeStrategy:
           strategy === "put" ? MergeStrategies.SHALLOW : MergeStrategies.DEEP,
-        modComponentId: extensionId,
-        modId: blueprintId,
+        modComponentRef: mapMessageContextToModComponentRef(logger.context),
       });
     };
 
@@ -214,8 +213,7 @@ export class WithAsyncModVariable extends TransformerABC {
     // Get/set page state calls are synchronous from the content script, so safe to call sequentially
     const currentState = getState({
       namespace: StateNamespaces.MOD,
-      modComponentId: extensionId,
-      modId: blueprintId,
+      modComponentRef: mapMessageContextToModComponentRef(logger.context),
     });
 
     // eslint-disable-next-line security/detect-object-injection -- user provided value that's readonly

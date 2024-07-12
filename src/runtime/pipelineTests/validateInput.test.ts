@@ -20,12 +20,7 @@ import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { InputValidationError } from "@/bricks/errors";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import {
-  contextBrick,
-  echoBrick,
-  simpleInput,
-  testOptions,
-} from "./pipelineTestHelpers";
+import { contextBrick, echoBrick, simpleInput } from "./pipelineTestHelpers";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { BrickABC } from "@/types/brickTypes";
 import { validateRegistryId } from "@/types/helpers";
@@ -47,6 +42,7 @@ import type {
 import { toExpression } from "@/utils/expressionUtils";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const locateMock = jest.mocked(
   integrationConfigLocator.findSanitizedIntegrationConfig,
@@ -110,7 +106,7 @@ describe("apiVersion: v1", () => {
       await reducePipeline(
         pipeline,
         simpleInput({ inputArg: 42 }),
-        testOptions("v1"),
+        reduceOptionsFactory("v1"),
       );
     } catch (error) {
       expect(error).toBeInstanceOf(InputValidationError);
@@ -125,7 +121,11 @@ describe("apiVersion: v1", () => {
       },
     ];
     try {
-      await reducePipeline(pipeline, simpleInput({}), testOptions("v1"));
+      await reducePipeline(
+        pipeline,
+        simpleInput({}),
+        reduceOptionsFactory("v1"),
+      );
     } catch (error) {
       expect(error).toBeInstanceOf(InputValidationError);
     }
@@ -145,7 +145,7 @@ describe("apiVersion: v2", () => {
       await reducePipeline(
         pipeline,
         simpleInput({ inputArg: 42 }),
-        testOptions("v2"),
+        reduceOptionsFactory("v2"),
       );
     } catch (error) {
       expect(error).toBeInstanceOf(InputValidationError);
@@ -171,7 +171,7 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions(apiVersion),
+      reduceOptionsFactory(apiVersion),
     );
 
     expect(result).toStrictEqual({
@@ -216,7 +216,7 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         ...simpleInput({}),
         serviceContext,
       },
-      testOptions(apiVersion),
+      reduceOptionsFactory(apiVersion),
     );
   }
 
@@ -319,7 +319,11 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     let actualError: unknown;
 
     try {
-      await reducePipeline(pipeline, simpleInput({}), testOptions(apiVersion));
+      await reducePipeline(
+        pipeline,
+        simpleInput({}),
+        reduceOptionsFactory(apiVersion),
+      );
     } catch (error) {
       actualError = error;
     }

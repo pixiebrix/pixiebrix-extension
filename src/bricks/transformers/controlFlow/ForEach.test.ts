@@ -19,11 +19,11 @@ import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   simpleInput,
-  testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const forEachBlock = new ForEach();
 
@@ -51,7 +51,7 @@ describe("ForEach", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ elements: [1, 2, 3] }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({ message: "iteration 3" });
   });

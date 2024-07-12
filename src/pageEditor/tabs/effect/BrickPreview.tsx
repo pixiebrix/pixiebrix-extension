@@ -33,7 +33,7 @@ import { isEmpty } from "lodash";
 import { type TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { runBrickPreview } from "@/contentScript/messenger/api";
-import { useField, useFormikContext } from "formik";
+import { useField } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import getType from "@/runtime/getType";
 import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
@@ -43,13 +43,14 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type BaseStarterBrickState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { useSelector } from "react-redux";
+import { selectActiveModComponentRef } from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -151,7 +152,8 @@ const BrickPreview: React.FunctionComponent<{
     outputKey: brickConfig.outputKey,
   });
 
-  const { values } = useFormikContext<ModComponentFormState>();
+  const modComponentRef = useSelector(selectActiveModComponentRef);
+
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
   const [{ value: integrationDependencies }] = useField<
     IntegrationDependency[]
@@ -174,7 +176,7 @@ const BrickPreview: React.FunctionComponent<{
       try {
         const output = await runBrickPreview(inspectedTab, {
           apiVersion,
-          blockConfig: {
+          brickConfig: {
             ...removeEmptyValues(brickConfig),
             if: undefined,
           },
@@ -185,7 +187,7 @@ const BrickPreview: React.FunctionComponent<{
             )),
           },
           rootSelector: undefined,
-          modId: values.modMetadata?.id,
+          modComponentRef,
         });
         dispatch(previewSlice.actions.setSuccess({ output, outputKey }));
       } catch (error) {

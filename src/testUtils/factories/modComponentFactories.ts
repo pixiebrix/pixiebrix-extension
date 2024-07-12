@@ -41,6 +41,16 @@ export const modComponentRefFactory = define<ModComponentRef>({
   starterBrickId: registryIdFactory,
 });
 
+/**
+ * Factory for a mod component ref that is not associated with a mod.
+ * @deprecated standalone mod components are deprecated
+ */
+export const standaloneModComponentRefFactory = define<ModComponentRef>({
+  modComponentId: uuidSequence,
+  modId: undefined,
+  starterBrickId: registryIdFactory,
+});
+
 export const modMetadataFactory = extend<Metadata, ModMetadata>(
   metadataFactory,
   {

@@ -22,6 +22,7 @@ import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectActiveModComponentNodeInfo,
+  selectActiveModComponentRef,
   selectParentNodeInfo,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
@@ -37,9 +38,6 @@ import { isExpression } from "@/utils/expressionUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
-import { validateRegistryId } from "@/types/helpers";
-import { assertNotNullish } from "@/utils/nullishUtils";
-import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 type Location = "modal" | "panel";
 
@@ -107,14 +105,9 @@ export default function useDocumentPreviewRunBlock(
   const [state, dispatch] = useReducer(previewSlice.reducer, initialState);
 
   const formState = useSelector(selectActiveModComponentFormState);
+  const modComponentRef = useSelector(selectActiveModComponentRef);
 
-  const {
-    uuid: modComponentId,
-    modMetadata,
-    apiVersion,
-    integrationDependencies,
-    starterBrick,
-  } = formState;
+  const { apiVersion, integrationDependencies, starterBrick } = formState;
 
   const { blockConfig: brickConfig } = useSelector(
     selectActiveModComponentNodeInfo(brickInstanceId),
@@ -178,12 +171,6 @@ export default function useDocumentPreviewRunBlock(
 
       dispatch(previewSlice.actions.startPreview());
 
-      const { selectModComponent } = adapterForComponent(formState);
-      const starterBrickId = validateRegistryId(
-        selectModComponent(formState).extensionPointId,
-      );
-      assertNotNullish(starterBrickId, "Expected starter brick id");
-
       // If the block is configured to inherit the root element, and the
       // starter brick is a trigger, try to get the root element from the
       // starter brick.
@@ -204,14 +191,10 @@ export default function useDocumentPreviewRunBlock(
         await runRendererBrick(inspectedTab, {
           runId: traceRecord.runId,
           title,
-          modComponentRef: {
-            modComponentId,
-            modId: modMetadata?.id,
-            starterBrickId,
-          },
+          modComponentRef,
           args: {
             apiVersion,
-            blockConfig: {
+            brickConfig: {
               ...removeEmptyValues(brickConfig),
               if: undefined,
             },

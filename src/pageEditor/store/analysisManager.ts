@@ -214,8 +214,10 @@ async function varAnalysisFactory(
   // The actual mod variables
   const modState = await getPageState(inspectedTab, {
     namespace: StateNamespaces.MOD,
-    modComponentId: activeModComponentFormState.uuid,
-    modId: activeModComponentFormState.modMetadata?.id,
+    modComponentRef: {
+      modComponentId: activeModComponentFormState.uuid,
+      modId: activeModComponentFormState.modMetadata?.id,
+    },
   });
 
   return new VarAnalysis({

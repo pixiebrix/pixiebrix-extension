@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type JsonObject } from "type-fest";
+import { type Except, type JsonObject } from "type-fest";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
@@ -29,7 +29,6 @@ import {
   SCHEMA_ALLOW_ANY,
   type UiSchema,
 } from "@/types/schemaTypes";
-import { type RegistryId } from "@/types/registryTypes";
 import {
   type BrickArgs,
   type BrickOptions,
@@ -46,15 +45,14 @@ import { getPlatform } from "@/platform/platformContext";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import { type CustomFormComponentProps } from "./CustomFormComponent";
 import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
-import {
-  assumeNotNullish_UNSAFE,
-  type Nullishable,
-} from "@/utils/nullishUtils";
+import { assumeNotNullish_UNSAFE } from "@/utils/nullishUtils";
 import {
   MergeStrategies,
   type StateNamespace,
   StateNamespaces,
 } from "@/platform/state/stateController";
+import { type ModComponentRef } from "@/types/modComponentTypes";
+import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 interface DatabaseResult {
   success: boolean;
@@ -81,8 +79,6 @@ export type Storage =
       service: SanitizedIntegrationConfig;
     }
   | StateStorage;
-
-type Context = { blueprintId: Nullishable<RegistryId>; extensionId: UUID };
 
 /**
  * Action to perform after the onSubmit handler is executed.
@@ -284,9 +280,7 @@ export class CustomFormRenderer extends RendererABC {
     }>,
     { logger, runPipeline, platform }: BrickOptions,
   ): Promise<ComponentRef> {
-    if (logger.context.modComponentId == null) {
-      throw new Error("modComponentId is required");
-    }
+    const modComponentRef = mapMessageContextToModComponentRef(logger.context);
 
     // Redundant with the JSON Schema input validation for `required`. But keeping here for clarity
     if (!storage) {
@@ -311,12 +305,11 @@ export class CustomFormRenderer extends RendererABC {
       assumeNotNullish_UNSAFE(recordId);
     }
 
-    const { modId: blueprintId, modComponentId: extensionId } = logger.context;
-
-    const initialData = await getInitialData(storage, recordId, {
-      blueprintId,
-      extensionId,
-    });
+    const initialData = await getInitialData(
+      storage,
+      recordId,
+      modComponentRef,
+    );
 
     const normalizedData = normalizeIncomingFormData(schema, initialData);
 
@@ -366,16 +359,20 @@ export class CustomFormRenderer extends RendererABC {
               );
 
               if (postSubmitAction === "save") {
-                await setData(storage, recordId, normalizedValues, {
-                  blueprintId,
-                  extensionId,
-                });
+                await setData(
+                  storage,
+                  recordId,
+                  normalizedValues,
+                  modComponentRef,
+                );
               }
             } else {
-              await setData(storage, recordId, normalizedValues, {
-                blueprintId,
-                extensionId,
-              });
+              await setData(
+                storage,
+                recordId,
+                normalizedValues,
+                modComponentRef,
+              );
             }
 
             if (successMessage) {
@@ -401,7 +398,7 @@ export class CustomFormRenderer extends RendererABC {
 async function getInitialData(
   storage: Storage,
   recordId: string,
-  { blueprintId, extensionId }: Partial<Context>,
+  modComponentRef: Except<ModComponentRef, "starterBrickId">,
 ): Promise<UnknownObject> {
   switch (storage.type) {
     case "state": {
@@ -423,8 +420,7 @@ async function getInitialData(
       // is rendered in. And for the PixieBrix sidebar, target the top-level frame.
       return getPageState(topLevelFrame, {
         namespace,
-        modId: blueprintId,
-        modComponentId: extensionId,
+        modComponentRef,
       });
     }
 
@@ -458,7 +454,7 @@ async function setData(
   storage: Storage,
   recordId: string,
   values: UnknownObject,
-  { blueprintId, extensionId }: Context,
+  modComponentRef: ModComponentRef,
 ): Promise<void> {
   const cleanValues = ensureJsonObject(values);
 
@@ -487,8 +483,7 @@ async function setData(
         namespace: storage.namespace ?? StateNamespaces.MOD,
         data: cleanValues,
         mergeStrategy: MergeStrategies.SHALLOW,
-        modComponentId: extensionId,
-        modId: blueprintId,
+        modComponentRef,
       });
       return;
     }
