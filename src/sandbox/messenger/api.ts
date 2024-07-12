@@ -82,12 +82,16 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
       },
     );
   } catch (error) {
-    throw new Error(
-      `Failed to send message ${type} to sandbox. The host page may be preventing the sandbox from loading.`,
-      {
-        cause: error,
-      },
-    );
+    if (error.name === TimeoutError.name) {
+      throw new Error(
+        `Failed to send message ${type} to sandbox. The host page may be preventing the sandbox from loading.`,
+        {
+          cause: error,
+        },
+      );
+    }
+
+    throw error;
   }
 }
 
