@@ -32,10 +32,7 @@ import { type PipelineExpression } from "@/types/runtimeTypes";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import userEvent from "@testing-library/user-event";
-import {
-  baseModComponentStateFactory,
-  formStateFactory,
-} from "@/testUtils/factories/pageEditorFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { validateRegistryId } from "@/types/helpers";
 
@@ -57,15 +54,13 @@ const renderElementPreview = (
   };
 
   const formState = formStateFactory({
-    modComponent: baseModComponentStateFactory({
-      brickPipeline: [
-        brickConfigFactory({
-          config: {
-            body: [element],
-          },
-        }),
-      ],
-    }),
+    pipelineOverride: [
+      brickConfigFactory({
+        config: {
+          body: [element],
+        },
+      }),
+    ],
   });
 
   return render(<ElementPreview {...props} />, {

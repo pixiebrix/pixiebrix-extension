@@ -38,15 +38,17 @@ import { toExpression } from "@/utils/expressionUtils";
 import { uuidv4 } from "@/types/helpers";
 
 function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
-  const formState = formStateFactory(undefined, [
-    {
-      id: DocumentRenderer.BRICK_ID,
-      config: {
-        body: [documentBuilderElement],
+  const formState = formStateFactory({
+    pipelineOverride: [
+      {
+        id: DocumentRenderer.BRICK_ID,
+        config: {
+          body: [documentBuilderElement],
+        },
+        instanceId: uuidv4(),
       },
-      instanceId: uuidv4(),
-    },
-  ]);
+    ],
+  });
 
   const PreviewContainer = () => {
     const [activeElement, setActiveElement] = useState<string | null>(null);
@@ -153,24 +155,26 @@ describe("Show live preview", () => {
 
   function renderPreviewInTemporaryDisplayPipeline() {
     const containerElement = createNewDocumentBuilderElement("container");
-    const formState = formStateFactory(undefined, [
-      {
-        id: DisplayTemporaryInfo.BRICK_ID,
-        instanceId: uuidSequence(1),
-        config: {
-          title: toExpression("nunjucks", "Test Tab"),
-          body: toExpression("pipeline", [
-            {
-              id: DocumentRenderer.BRICK_ID,
-              instanceId: uuidSequence(2),
-              config: {
-                body: [containerElement],
+    const formState = formStateFactory({
+      pipelineOverride: [
+        {
+          id: DisplayTemporaryInfo.BRICK_ID,
+          instanceId: uuidSequence(1),
+          config: {
+            title: toExpression("nunjucks", "Test Tab"),
+            body: toExpression("pipeline", [
+              {
+                id: DocumentRenderer.BRICK_ID,
+                instanceId: uuidSequence(2),
+                config: {
+                  body: [containerElement],
+                },
               },
-            },
-          ]),
+            ]),
+          },
         },
-      },
-    ]);
+      ],
+    });
 
     const PreviewContainer = () => {
       const [activeElement, setActiveElement] = useState<string | null>(null);

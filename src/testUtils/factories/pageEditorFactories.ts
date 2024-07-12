@@ -86,13 +86,19 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   starterBrick: starterBrickDefinitionFactory,
 });
 
-export const formStateFactory = (
-  override?: FactoryConfig<InternalFormStateOverride>,
-  pipelineOverride?: BrickPipeline,
-  starterBrickOverride?: StarterBrickDefinitionLike,
-): ModComponentFormState => {
+type FormStateFactoryOptions = {
+  formStateOverride?: FactoryConfig<InternalFormStateOverride>;
+  pipelineOverride?: BrickPipeline;
+  starterBrickOverride?: StarterBrickDefinitionLike;
+};
+
+export const formStateFactory = ({
+  formStateOverride,
+  pipelineOverride,
+  starterBrickOverride,
+}: FormStateFactoryOptions = {}): ModComponentFormState => {
   const factoryConfig: FactoryConfig<InternalFormStateOverride> =
-    override || {};
+    formStateOverride || {};
 
   if (pipelineOverride) {
     factoryConfig.modComponent = baseModComponentStateFactory({
@@ -120,7 +126,7 @@ export const triggerFormStateFactory = (
   override?: FactoryConfig<TriggerFormState>,
   pipelineOverride?: BrickPipeline,
 ) => {
-  const defaultTriggerProps = trigger.fromNativeElement(
+  const defaultProps = trigger.fromNativeElement(
     "https://test.com",
     metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
@@ -129,20 +135,20 @@ export const triggerFormStateFactory = (
     null,
   );
 
-  return formStateFactory(
-    {
-      ...defaultTriggerProps,
+  return formStateFactory({
+    formStateOverride: {
+      ...defaultProps,
       ...override,
     } as FactoryConfig<InternalFormStateOverride>,
     pipelineOverride,
-  ) as TriggerFormState;
+  }) as TriggerFormState;
 };
 
 export const sidebarPanelFormStateFactory = (
   override?: FactoryConfig<SidebarFormState>,
   pipelineOverride?: BrickPipeline,
 ): SidebarFormState => {
-  const defaultTriggerProps = sidebar.fromNativeElement(
+  const defaultProps = sidebar.fromNativeElement(
     "https://test.com",
     metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
@@ -152,20 +158,20 @@ export const sidebarPanelFormStateFactory = (
     undefined as never,
   );
 
-  return formStateFactory(
-    {
-      ...defaultTriggerProps,
+  return formStateFactory({
+    formStateOverride: {
+      ...defaultProps,
       ...override,
     } as FactoryConfig<InternalFormStateOverride>,
     pipelineOverride,
-  ) as SidebarFormState;
+  }) as SidebarFormState;
 };
 
 export const contextMenuFormStateFactory = (
   override?: FactoryConfig<ContextMenuFormState>,
   pipelineOverride?: BrickPipeline,
 ) => {
-  const defaultTriggerProps = contextMenu.fromNativeElement(
+  const defaultProps = contextMenu.fromNativeElement(
     "https://test.com",
     metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
@@ -174,20 +180,20 @@ export const contextMenuFormStateFactory = (
     null,
   );
 
-  return formStateFactory(
-    {
-      ...defaultTriggerProps,
+  return formStateFactory({
+    formStateOverride: {
+      ...defaultProps,
       ...override,
     } as FactoryConfig<InternalFormStateOverride>,
     pipelineOverride,
-  ) as ContextMenuFormState;
+  }) as ContextMenuFormState;
 };
 
 export const quickbarFormStateFactory = (
   override?: FactoryConfig<QuickBarFormState>,
   pipelineOverride?: BrickPipeline,
 ) => {
-  const defaultTriggerProps = quickBar.fromNativeElement(
+  const defaultProps = quickBar.fromNativeElement(
     "https://test.com",
     metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
@@ -196,13 +202,13 @@ export const quickbarFormStateFactory = (
     null,
   );
 
-  return formStateFactory(
-    {
-      ...defaultTriggerProps,
+  return formStateFactory({
+    formStateOverride: {
+      ...defaultProps,
       ...override,
     } as FactoryConfig<InternalFormStateOverride>,
     pipelineOverride,
-  ) as QuickBarFormState;
+  }) as QuickBarFormState;
 };
 
 export const menuItemFormStateFactory = (
@@ -222,13 +228,13 @@ export const menuItemFormStateFactory = (
     } as ButtonSelectionResult,
   );
 
-  return formStateFactory(
-    {
+  return formStateFactory({
+    formStateOverride: {
       ...defaultTriggerProps,
       ...override,
     } as FactoryConfig<InternalFormStateOverride>,
     pipelineOverride,
-  ) as ButtonFormState;
+  }) as ButtonFormState;
 };
 
 const foundationOutputFactory = define<JsonObject>({

@@ -73,9 +73,11 @@ describe("checkEventNamesAnalysis", () => {
       eventName: "myevent",
     };
 
-    const otherFormState = formStateFactory({}, [
-      { id: CustomEventEffect.BRICK_ID, config: { eventName: "myevent" } },
-    ]);
+    const otherFormState = formStateFactory({
+      pipelineOverride: [
+        { id: CustomEventEffect.BRICK_ID, config: { eventName: "myevent" } },
+      ],
+    });
 
     const analysis = new CheckEventNamesAnalysis([
       triggerFormState,
@@ -93,14 +95,16 @@ describe("checkEventNamesAnalysis", () => {
       eventName: "myevent",
     };
 
-    const otherFormState = formStateFactory({}, [
-      {
-        id: CustomEventEffect.BRICK_ID,
-        config: {
-          eventName: toExpression("nunjucks", "{{@myevent}}"),
+    const otherFormState = formStateFactory({
+      pipelineOverride: [
+        {
+          id: CustomEventEffect.BRICK_ID,
+          config: {
+            eventName: toExpression("nunjucks", "{{@myevent}}"),
+          },
         },
-      },
-    ]);
+      ],
+    });
 
     const analysis = new CheckEventNamesAnalysis([
       triggerFormState,
@@ -122,14 +126,16 @@ describe("checkEventNamesAnalysis", () => {
       eventName: "myevent",
     };
 
-    const otherFormState = formStateFactory({}, [
-      {
-        id: CustomEventEffect.BRICK_ID,
-        config: {
-          eventName: "myevent2",
+    const otherFormState = formStateFactory({
+      pipelineOverride: [
+        {
+          id: CustomEventEffect.BRICK_ID,
+          config: {
+            eventName: "myevent2",
+          },
         },
-      },
-    ]);
+      ],
+    });
 
     const analysis = new CheckEventNamesAnalysis([
       triggerFormState,

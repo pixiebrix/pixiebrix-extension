@@ -169,7 +169,9 @@ describe("draftModComponentStorage", () => {
   test("removes active recipe", async () => {
     const mod = modMetadataFactory();
     const formState1 = formStateFactory({
-      modMetadata: mod,
+      formStateOverride: {
+        modMetadata: mod,
+      },
     });
     const formState1BrickConfigurationUIStates: Record<
       UUID,
@@ -183,7 +185,9 @@ describe("draftModComponentStorage", () => {
       } as BrickConfigurationUIState,
     };
     const formState2 = formStateFactory({
-      modMetadata: mod,
+      formStateOverride: {
+        modMetadata: mod,
+      },
     });
     const formState2BrickConfigurationUIStates: Record<
       UUID,
@@ -270,7 +274,9 @@ describe("draftModComponentStorage", () => {
   test("removes inactive recipe", async () => {
     const mod = modMetadataFactory();
     const formState1 = formStateFactory({
-      modMetadata: mod,
+      formStateOverride: {
+        modMetadata: mod,
+      },
     });
     const formState1BrickConfigurationUIStates: Record<
       UUID,
@@ -284,7 +290,9 @@ describe("draftModComponentStorage", () => {
       } as BrickConfigurationUIState,
     };
     const formState2 = formStateFactory({
-      modMetadata: mod,
+      formStateOverride: {
+        modMetadata: mod,
+      },
     });
     const formState2BrickConfigurationUIStates: Record<
       UUID,

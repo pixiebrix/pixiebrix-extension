@@ -23,10 +23,7 @@ import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
 import { screen } from "@testing-library/react";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import {
-  baseModComponentStateFactory,
-  formStateFactory,
-} from "@/testUtils/factories/pageEditorFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -37,9 +34,7 @@ describe("FormModalOptions", () => {
     const brick = createNewConfiguredBrick(FormTransformer.BRICK_ID);
 
     const initialValues = formStateFactory({
-      modComponent: baseModComponentStateFactory({
-        brickPipeline: [brick],
-      }),
+      pipelineOverride: [brick],
     });
 
     render(

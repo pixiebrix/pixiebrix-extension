@@ -60,15 +60,13 @@ describe("Listen to navigationEvent", () => {
   test("an element is selected", async () => {
     jest.spyOn(tabStateActions, "connectToContentScript");
 
-    const formState = formStateFactory(
-      undefined,
-      undefined,
-      starterBrickDefinitionFactory({
+    const formState = formStateFactory({
+      starterBrickOverride: starterBrickDefinitionFactory({
         definition: starterBrickDefinitionPropFactory({
           type: StarterBrickTypes.SIDEBAR_PANEL,
         }),
       }),
-    );
+    });
     render(<PanelContent />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));

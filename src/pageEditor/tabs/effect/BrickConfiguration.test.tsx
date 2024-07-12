@@ -73,9 +73,10 @@ function renderBrickConfiguration(
 test("renders", async () => {
   const brick = echoBrick;
   brickRegistry.register([brick]);
-  const initialState = formStateFactory({ apiVersion: "v3" }, [
-    brickConfigFactory({ id: brick.id }),
-  ]);
+  const initialState = formStateFactory({
+    formStateOverride: { apiVersion: "v3" },
+    pipelineOverride: [brickConfigFactory({ id: brick.id })],
+  });
   const { asFragment } = renderBrickConfiguration(
     <BrickConfiguration
       name="modComponent.brickPipeline[0]"
