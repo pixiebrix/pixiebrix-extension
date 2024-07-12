@@ -1025,6 +1025,7 @@ export const persistEditorConfig = {
     "inserting",
     "isVarPopoverVisible",
     "isSaveDataIntegrityErrorModalVisible",
+    "visibleModalKey",
   ],
 };
 
