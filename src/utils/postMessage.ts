@@ -37,7 +37,7 @@ import { assertNotNullish } from "./nullishUtils";
 import { type JsonValue } from "type-fest";
 import { type AbortSignalAsOptions } from "./promiseUtils";
 
-const TIMEOUT_MS = 1000;
+const TIMEOUT_MS = 3000;
 
 export type Payload = JsonValue | void;
 
