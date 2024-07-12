@@ -17,9 +17,10 @@
 
 import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { echoBrick, simpleInput, testOptions } from "./pipelineTestHelpers";
+import { echoBrick, simpleInput } from "./pipelineTestHelpers";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();
@@ -39,7 +40,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ foo: "a & b" }),
-      testOptions(apiVersion),
+      reduceOptionsFactory(apiVersion),
     );
     expect(result).toStrictEqual({ message: "a &amp; b" });
   });
@@ -58,7 +59,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ foo: "a & b" }),
-      testOptions(apiVersion),
+      reduceOptionsFactory(apiVersion),
     );
     expect(result).toStrictEqual({ message: "a & b" });
   });

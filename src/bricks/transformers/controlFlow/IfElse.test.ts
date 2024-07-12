@@ -20,13 +20,13 @@ import {
   rootAwareBrick,
   simpleInput,
   teapotBrick,
-  testOptions,
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const ifElseBlock = new IfElse();
 
@@ -53,7 +53,7 @@ describe("IfElse", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({ prop: "I'm a teapot" });
   });
@@ -82,7 +82,7 @@ describe("IfElse", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({ prop: "I'm a teapot" });
   });
@@ -100,7 +100,7 @@ describe("IfElse", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({ prop: "I'm a teapot" });
   });
@@ -117,7 +117,7 @@ describe("IfElse", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toBeNull();
   });
@@ -138,7 +138,7 @@ describe("IfElse", () => {
         optionsArgs: {},
         serviceContext: {},
       },
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({
       tagName: "DIV",

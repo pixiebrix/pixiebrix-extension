@@ -23,7 +23,6 @@ import {
   echoBrick,
   simpleInput,
   teapotBrick,
-  testOptions,
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { DocumentRenderer } from "@/bricks/renderers/document";
@@ -63,6 +62,7 @@ import {
   standaloneModComponentRefFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 jest.mock("@/contentScript/modalDom");
 jest.mock("@/contentScript/sidebarController");
@@ -71,15 +71,6 @@ jest.mock("@/utils/iframeUtils");
 
 const displayTemporaryInfoBlock = new DisplayTemporaryInfo();
 const renderer = new DocumentRenderer();
-
-function reduceOptionsFactory() {
-  return {
-    ...testOptions("v3"),
-    logger: new ConsoleLogger(
-      mapModComponentRefToMessageContext(modComponentRefFactory()),
-    ),
-  };
-}
 
 describe("DisplayTemporaryInfo", () => {
   beforeEach(() => {
@@ -115,7 +106,7 @@ describe("DisplayTemporaryInfo", () => {
     };
 
     await reducePipeline(pipeline, simpleInput({}), {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger: new ConsoleLogger(
         mapModComponentRefToMessageContext(modComponentRef),
       ),
@@ -192,7 +183,7 @@ describe("DisplayTemporaryInfo", () => {
     const modComponentRef = modComponentRefFactory();
 
     const options = {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger: new ConsoleLogger(
         mapModComponentRefToMessageContext(modComponentRef),
       ),
@@ -232,7 +223,7 @@ describe("DisplayTemporaryInfo", () => {
     };
 
     const options = {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger: new ConsoleLogger(
         mapModComponentRefToMessageContext(modComponentRef),
       ),
@@ -351,7 +342,7 @@ describe("DisplayTemporaryInfo", () => {
     const modComponentRef = standaloneModComponentRefFactory();
 
     const options = {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger: new ConsoleLogger(
         mapModComponentRefToMessageContext(modComponentRef),
       ),

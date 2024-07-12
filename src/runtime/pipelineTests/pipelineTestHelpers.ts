@@ -1,11 +1,9 @@
-import ConsoleLogger from "@/utils/ConsoleLogger";
 import { type InitialValues } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { mapArgs } from "@/runtime/mapArgs";
 import { BusinessError } from "@/errors/businessErrors";
-import { UNSET_UUID, validateRegistryId } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import {
-  type ApiVersion,
   type BrickArgs,
   type BrickOptions,
   type OptionsArgs,
@@ -17,8 +15,6 @@ import { isDeferExpression } from "@/utils/expressionUtils";
 import isPromise from "is-promise";
 import { type JsonValue } from "type-fest";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-
-const logger = new ConsoleLogger();
 
 /**
  * A test helper brick that returns and stores the BrickOptions.context.
@@ -361,16 +357,5 @@ export function simpleInput(input: UnknownObject): InitialValues {
     root: null,
     serviceContext: {},
     optionsArgs: {} as OptionsArgs,
-  };
-}
-
-/**
- * Common reducePipeline options
- */
-export function testOptions(version: ApiVersion) {
-  return {
-    logger,
-    extensionId: UNSET_UUID,
-    ...apiVersionOptions(version),
   };
 }

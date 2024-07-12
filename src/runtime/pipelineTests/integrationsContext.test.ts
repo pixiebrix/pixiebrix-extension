@@ -22,7 +22,6 @@ import {
   echoBrick,
   identityBrick,
   simpleInput,
-  testOptions,
 } from "./pipelineTestHelpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { integrationConfigLocator } from "@/background/messenger/api";
@@ -46,6 +45,7 @@ import { toExpression } from "@/utils/expressionUtils";
 import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import pixiebrixIntegrationDependencyFactory from "@/integrations/util/pixiebrixIntegrationDependencyFactory";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();
@@ -79,7 +79,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
           ...simpleInput({}),
           serviceContext,
         },
-        testOptions(apiVersion),
+        reduceOptionsFactory(apiVersion),
       );
 
       expect(result).toStrictEqual({
@@ -146,7 +146,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
           ...simpleInput({}),
           serviceContext,
         },
-        testOptions(apiVersion),
+        reduceOptionsFactory(apiVersion),
       );
 
       expect(result).toStrictEqual({
@@ -186,7 +186,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         ...simpleInput({}),
         serviceContext,
       },
-      testOptions(apiVersion),
+      reduceOptionsFactory(apiVersion),
     );
     expect(result).toStrictEqual({
       data: pixiebrixConfigurationFactory(),
@@ -228,7 +228,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         ...simpleInput({}),
         serviceContext,
       },
-      testOptions(apiVersion),
+      reduceOptionsFactory(apiVersion),
     );
     expect(result).toStrictEqual({
       data: "abc123",
@@ -256,7 +256,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         ...simpleInput({}),
         serviceContext,
       },
-      testOptions(apiVersion),
+      reduceOptionsFactory(apiVersion),
     );
     expect(result).toStrictEqual({
       data: pixiebrixConfigurationFactory(),
@@ -299,7 +299,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         ...simpleInput({}),
         serviceContext,
       },
-      testOptions(apiVersion),
+      reduceOptionsFactory(apiVersion),
     );
     expect(result).toStrictEqual({
       data: "abc123",
@@ -349,7 +349,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
           ...simpleInput({}),
           serviceContext,
         },
-        testOptions(apiVersion),
+        reduceOptionsFactory(apiVersion),
       );
       expect(result).toStrictEqual({
         data: "abc123",

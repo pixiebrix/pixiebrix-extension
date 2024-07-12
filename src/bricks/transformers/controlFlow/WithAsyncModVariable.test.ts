@@ -19,7 +19,6 @@ import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyn
 import {
   DeferredEchoBrick,
   simpleInput,
-  testOptions,
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
@@ -39,6 +38,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -105,7 +105,7 @@ describe("WithAsyncModVariable", () => {
     const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", "foo");
 
     const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger,
     });
 
@@ -132,7 +132,7 @@ describe("WithAsyncModVariable", () => {
     const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", "foo");
 
     const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger,
     });
 
@@ -162,7 +162,7 @@ describe("WithAsyncModVariable", () => {
     const pipeline = makeAsyncModVariablePipeline(throwBrick, "error", "foo");
 
     const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger,
     });
 
@@ -219,12 +219,12 @@ describe("WithAsyncModVariable", () => {
     );
 
     await reducePipeline(stalePipeline, simpleInput({}), {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger,
     });
 
     const secondOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger,
     });
 

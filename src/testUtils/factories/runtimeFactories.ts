@@ -15,12 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickOptions, type RunMetadata } from "@/types/runtimeTypes";
+import {
+  type ApiVersion,
+  type BrickOptions,
+  type RunMetadata,
+} from "@/types/runtimeTypes";
 import { define, derive } from "cooky-cutter";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import type { ReduceOptions } from "@/runtime/reducePipeline";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 
 /**
  * Factory for BrickOptions to pass to Brick.run method.
@@ -57,3 +63,27 @@ export const brickOptionsFactory = define<BrickOptions>({
     "logger",
   ),
 });
+
+/**
+ * ReduceOptions factory
+ * @see ReduceOptions
+ * @see apiVersionOptions
+ */
+export function reduceOptionsFactory(
+  runtimeVersion: ApiVersion = "v3",
+): ReduceOptions {
+  const modComponentRef = modComponentRefFactory();
+  const logger = new ConsoleLogger(
+    mapModComponentRefToMessageContext(modComponentRef),
+  );
+
+  return {
+    modComponentId: modComponentRef.modComponentId,
+    logger,
+    runId: null,
+    headless: false,
+    branches: [],
+    logValues: true,
+    ...apiVersionOptions(runtimeVersion),
+  };
+}

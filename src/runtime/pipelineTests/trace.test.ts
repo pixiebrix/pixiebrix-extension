@@ -21,7 +21,6 @@ import {
   contextBrick,
   echoBrick,
   simpleInput,
-  testOptions,
   throwBrick,
 } from "./pipelineTestHelpers";
 import { uuidv4 } from "@/types/helpers";
@@ -37,6 +36,7 @@ import { type BrickPipeline } from "@/bricks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const addEntryMock = jest.mocked(traces.addEntry);
 const addExitMock = jest.mocked(traces.addExit);
@@ -61,7 +61,7 @@ describe("Trace normal exit", () => {
         instanceId,
       },
       simpleInput({ inputArg: "hello" }),
-      { ...testOptions("v3"), runId: uuidv4() },
+      { ...reduceOptionsFactory("v3"), runId: uuidv4() },
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -96,7 +96,7 @@ describe("Trace normal exit", () => {
       },
       simpleInput({ inputArg: "hello" }),
       // `runId` defaults to null
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -119,7 +119,7 @@ describe("Trace render error", () => {
           instanceId,
         },
         simpleInput({ inputArg: "hello" }),
-        { ...testOptions("v3"), runId: uuidv4() },
+        { ...reduceOptionsFactory("v3"), runId: uuidv4() },
       ),
     ).rejects.toThrow(/doesNotExist/);
 
@@ -155,7 +155,7 @@ describe("Trace render error", () => {
         instanceId,
       },
       simpleInput({ inputArg: "hello" }),
-      { ...testOptions("v3"), runId: uuidv4() },
+      { ...reduceOptionsFactory("v3"), runId: uuidv4() },
     );
 
     expect(traces.addEntry).toHaveBeenCalledTimes(1);
@@ -200,7 +200,7 @@ describe("Trace conditional execution", () => {
         },
       ],
       simpleInput({ inputArg: "hello" }),
-      { ...testOptions("v3"), runId: uuidv4() },
+      { ...reduceOptionsFactory("v3"), runId: uuidv4() },
     );
 
     expect(traces.addEntry).toHaveBeenCalledTimes(2);
@@ -240,7 +240,7 @@ describe("Trace normal execution", () => {
     });
 
     await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
-      ...testOptions("v2"),
+      ...reduceOptionsFactory("v2"),
       runId,
       logger,
       modComponentId: extensionId,
@@ -307,7 +307,7 @@ describe("Trace normal execution", () => {
     });
 
     await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
-      ...testOptions("v2"),
+      ...reduceOptionsFactory("v2"),
       modComponentId: extensionId,
       runId,
       logger,
@@ -363,7 +363,7 @@ describe("Trace normal execution", () => {
 
     await expect(async () => {
       await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
-        ...testOptions("v2"),
+        ...reduceOptionsFactory("v2"),
         runId,
         logger,
       });
@@ -401,7 +401,7 @@ describe("Tracing disabled", () => {
         },
       },
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -416,7 +416,7 @@ describe("Tracing disabled", () => {
         },
       },
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -442,7 +442,7 @@ describe("Tracing disabled", () => {
         },
       },
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({});

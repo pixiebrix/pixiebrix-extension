@@ -28,7 +28,6 @@ import {
   OptionsBrick,
   optionsBrick,
   simpleInput,
-  testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import Run from "@/bricks/transformers/controlFlow/Run";
@@ -40,6 +39,7 @@ import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 
 import { toExpression } from "@/utils/expressionUtils";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 TEST_setContext("contentScript");
 
@@ -174,7 +174,7 @@ test("inner pipelines receive correct context", async () => {
   await reducePipeline(
     pipeline,
     simpleInput({ customInput: "Closure Environment" }),
-    testOptions("v3"),
+    reduceOptionsFactory("v3"),
   );
 
   expect(ContextBrick.contexts[0]).toStrictEqual({
@@ -385,7 +385,7 @@ describe("tracing", () => {
       pipeline,
       simpleInput({ customInput: "Closure Environment" }),
       {
-        ...testOptions("v3"),
+        ...reduceOptionsFactory("v3"),
         runId,
         modComponentId,
         branches: initialBranches,

@@ -17,8 +17,9 @@
 
 import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { deferBrick, simpleInput, testOptions } from "./pipelineTestHelpers";
+import { deferBrick, simpleInput } from "./pipelineTestHelpers";
 import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();
@@ -43,7 +44,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ value: 42 }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual([
       // The deferBrick is set up to look for !defer expression as the top level expression
@@ -70,7 +71,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ value: 42 }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual([
       // The deferBrick is set up to look for !defer expression as the top level expression

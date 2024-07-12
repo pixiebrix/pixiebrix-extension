@@ -18,10 +18,7 @@
 import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import brickRegistry from "@/bricks/registry";
-import {
-  simpleInput,
-  testOptions,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { simpleInput } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { toExpression } from "@/utils/expressionUtils";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
@@ -30,6 +27,7 @@ import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new AddDynamicTextSnippet();
 const identity = new IdentityTransformer();
@@ -65,7 +63,7 @@ describe("AddDynamicTextSnippet", () => {
       };
 
       await reducePipeline(pipeline, simpleInput({}), {
-        ...testOptions("v3"),
+        ...reduceOptionsFactory("v3"),
         modComponentId: extensionId,
         logger,
       });
@@ -113,7 +111,7 @@ describe("AddDynamicTextSnippet", () => {
       };
 
       await reducePipeline(pipeline, simpleInput({}), {
-        ...testOptions("v3"),
+        ...reduceOptionsFactory("v3"),
         modComponentId: extensionId,
         logger,
       });

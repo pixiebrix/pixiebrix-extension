@@ -21,7 +21,6 @@ import {
   contextBrick,
   echoBrick,
   simpleInput,
-  testOptions,
   throwBrick,
 } from "./pipelineTestHelpers";
 import { sendDeploymentAlert } from "@/background/messenger/api";
@@ -31,6 +30,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { serializeError } from "serialize-error";
 import { ContextError } from "@/errors/genericErrors";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();
@@ -54,7 +54,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
             },
           },
           simpleInput({ inputArg: "hello" }),
-          testOptions(apiVersion),
+          reduceOptionsFactory(apiVersion),
         );
       }).rejects.toThrow();
 
@@ -78,7 +78,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
           },
         },
         simpleInput({ inputArg: "hello" }),
-        { ...testOptions(apiVersion), logger },
+        { ...reduceOptionsFactory(apiVersion), logger },
       );
 
       await expect(pipeline).rejects.toThrow(ContextError);
