@@ -37,7 +37,6 @@ import { useSelector } from "react-redux";
 import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/store/editor/editorSelectors";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { joinName } from "@/utils/formUtils";
-import { STATE_CHANGE_EVENT_TYPE } from "@/platform/state/stateTypes";
 
 function supportsSelector(trigger: Trigger) {
   return ![
@@ -121,22 +120,22 @@ const TriggerConfiguration: React.FC<{
         onChange={onTriggerChange}
         {...makeLockableFieldProps("Trigger Event", isLocked)}
       >
-        <option value="load">Page Load / Navigation</option>
-        <option value="interval">Interval</option>
-        <option value="initialize">Initialize</option>
-        <option value="appear">Appear</option>
-        <option value="click">Click</option>
-        <option value="dblclick">Double Click</option>
-        <option value="blur">Blur</option>
-        <option value="mouseover">Mouseover</option>
-        <option value="hover">Hover</option>
-        <option value="selectionchange">Selection Change</option>
-        <option value="keydown">Keydown</option>
-        <option value="keyup">Keyup</option>
-        <option value="keypress">Keypress</option>
-        <option value="change">Change</option>
-        <option value={STATE_CHANGE_EVENT_TYPE}>State Change</option>
-        <option value="custom">Custom Event</option>
+        <option value={Triggers.LOAD}>Page Load / Navigation</option>
+        <option value={Triggers.INTERVAL}>Interval</option>
+        <option value={Triggers.INITIALIZE}>Initialize</option>
+        <option value={Triggers.APPEAR}>Appear</option>
+        <option value={Triggers.CLICK}>Click</option>
+        <option value={Triggers.DOUBLE_CLICK}>Double Click</option>
+        <option value={Triggers.BLUR}>Blur</option>
+        <option value={Triggers.MOUSEOVER}>Mouseover</option>
+        <option value={Triggers.HOVER}>Hover</option>
+        <option value={Triggers.SELECTION_CHANGE}>Selection Change</option>
+        <option value={Triggers.KEYDOWN}>Keydown</option>
+        <option value={Triggers.KEYUP}>Keyup</option>
+        <option value={Triggers.KEYPRESS}>Keypress</option>
+        <option value={Triggers.CHANGE}>Change</option>
+        <option value={Triggers.STATE_CHANGE}>State Change</option>
+        <option value={Triggers.CUSTOM}>Custom Event</option>
       </ConnectedFieldTemplate>
 
       {trigger === "custom" && (
