@@ -55,7 +55,7 @@ export const Triggers = {
   INITIALIZE: "initialize",
   BLUR: "blur",
   CLICK: "click",
-  DBLCLICK: "dblclick",
+  DOUBLE_CLICK: "dblclick",
   MOUSEOVER: "mouseover",
   // https://ux.stackexchange.com/questions/109288/how-long-in-milliseconds-is-long-enough-to-decide-a-user-is-actually-hovering
   HOVER: "hover",
