@@ -29,7 +29,10 @@ import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
 import { type DebounceOptions } from "@/starterBricks/types";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
-import { type Trigger } from "@/starterBricks/trigger/triggerStarterBrickTypes";
+import {
+  type Trigger,
+  Triggers,
+} from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { useSelector } from "react-redux";
 import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/store/editor/editorSelectors";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
@@ -38,10 +41,10 @@ import { STATE_CHANGE_EVENT_TYPE } from "@/platform/state/stateTypes";
 
 function supportsSelector(trigger: Trigger) {
   return ![
-    "load",
-    "interval",
-    "selectionchange",
-    STATE_CHANGE_EVENT_TYPE,
+    Triggers.LOAD,
+    Triggers.INTERVAL,
+    Triggers.SELECTION_CHANGE,
+    Triggers.STATE_CHANGE,
   ].includes(trigger);
 }
 

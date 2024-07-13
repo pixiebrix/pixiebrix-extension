@@ -22,12 +22,18 @@ import type { Placement } from "@/contentScript/popoverDom";
 import type { Except, ValueOf } from "type-fest";
 import { type Nullishable } from "@/utils/nullishUtils";
 
+/**
+ * @see RefreshTrigger
+ */
+// Match naming of the sidebar panel extension point triggers
 export const RefreshTriggers = {
   MANUAL: "manual",
   STATE_CHANGE: "statechange",
 } as const;
 
-// Match naming of the sidebar panel extension point triggers
+/**
+ * @see RefreshTriggers
+ */
 export type RefreshTrigger = ValueOf<typeof RefreshTriggers>;
 
 export type TemporaryPanelEntryMetadata = Except<
