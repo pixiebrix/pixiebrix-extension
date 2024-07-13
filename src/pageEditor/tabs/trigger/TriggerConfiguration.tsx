@@ -49,7 +49,7 @@ function supportsSelector(trigger: Trigger) {
 
 function supportsTargetMode(trigger: Trigger) {
   // XXX: why doesn't `appear` support target mode?
-  return supportsSelector(trigger) && trigger !== "appear";
+  return supportsSelector(trigger) && trigger !== Triggers.APPEAR;
 }
 
 const TriggerConfiguration: React.FC<{
@@ -83,12 +83,12 @@ const TriggerConfiguration: React.FC<{
       void setFieldValue(fieldName("targetMode"), null);
     }
 
-    if (nextTrigger !== "interval") {
+    if (nextTrigger !== Triggers.INTERVAL) {
       void setFieldValue(fieldName("intervalMillis"), null);
       void setFieldValue(fieldName("background"), null);
     }
 
-    if (nextTrigger === "custom") {
+    if (nextTrigger === Triggers.CUSTOM) {
       void setFieldValue(fieldName("customEvent"), { eventName: "" });
     } else {
       void setFieldValue(fieldName("customEvent"), null);
@@ -99,7 +99,7 @@ const TriggerConfiguration: React.FC<{
       getDefaultReportModeForTrigger(nextTrigger),
     );
 
-    if (nextTrigger === "selectionchange" && debounce == null) {
+    if (nextTrigger === Triggers.SELECTION_CHANGE && debounce == null) {
       // Add debounce by default, because the selection event fires for every event when clicking and dragging
       void setFieldValue(fieldName("debounce"), {
         waitMillis: 250,
@@ -138,7 +138,7 @@ const TriggerConfiguration: React.FC<{
         <option value={Triggers.CUSTOM}>Custom Event</option>
       </ConnectedFieldTemplate>
 
-      {trigger === "custom" && (
+      {trigger === Triggers.CUSTOM && (
         <ConnectedFieldTemplate
           title="Custom Event"
           description="The custom event name. Select an event from this Mod, or type a new event name"
@@ -152,7 +152,7 @@ const TriggerConfiguration: React.FC<{
         />
       )}
 
-      {trigger === "interval" && (
+      {trigger === Triggers.INTERVAL && (
         <ConnectedFieldTemplate
           name={fieldName("intervalMillis")}
           title="Interval (ms)"
