@@ -50,7 +50,7 @@ import { type ModComponentRef } from "@/types/modComponentTypes";
 import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 import {
   MergeStrategies,
-  StateNamespace,
+  type StateNamespace,
   StateNamespaces,
 } from "@/platform/state/stateTypes";
 

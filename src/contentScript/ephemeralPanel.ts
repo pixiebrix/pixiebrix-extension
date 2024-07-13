@@ -40,7 +40,7 @@ import {
 import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
 import {
   RefreshTriggers,
-  TemporaryPanelDefinition,
+  type TemporaryPanelDefinition,
 } from "@/platform/panels/panelTypes";
 import type { Location } from "@/types/starterBrickTypes";
 import { getThisFrame } from "webext-messenger";

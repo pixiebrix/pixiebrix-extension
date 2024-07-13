@@ -28,8 +28,8 @@ import { propertiesToSchema } from "@/utils/schemaUtils";
 import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 import {
   MergeStrategies,
-  MergeStrategy,
-  StateNamespace,
+  type MergeStrategy,
+  type StateNamespace,
   StateNamespaces,
 } from "@/platform/state/stateTypes";
 
