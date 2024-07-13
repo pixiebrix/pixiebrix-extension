@@ -21,19 +21,22 @@ import { BasePageObject } from "../basePageObject";
 
 export class ModTableItem extends BasePageObject {
   dropdownButton = this.locator(".dropdown");
+  dropdownMenu = this.locator(".dropdown-menu");
   statusCell = this.getByTestId("status-cell");
 
   async clickAction(actionName: string) {
     // Wrapped in `toPass` due to flakiness with dropdown visibility
     // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8458
     await expect(async () => {
-      await this.dropdownButton.click();
-      await this.getByRole("button", { name: actionName }).click({
-        // Handle retrying in the `toPass` block, set to near-zero to avoid waiting.
-        // It can't be 0 because playwright then will default to the global action timeout value.
-        timeout: 100,
+      if (!(await this.dropdownMenu.isVisible())) {
+        await this.dropdownButton.click();
+      }
+
+      await this.dropdownMenu.getByRole("button", { name: actionName }).click({
+        // Short timeout in order to handle retrying in the `toPass` block.
+        timeout: 500,
       });
-    }).toPass({ timeout: 4000 });
+    }).toPass({ timeout: 5000 });
   }
 }
 
