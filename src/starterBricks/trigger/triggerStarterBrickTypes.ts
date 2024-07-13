@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ValueOf } from "type-fest";
+import { type ValueOf } from "type-fest";
 
 export type AttachMode =
   // Attach handlers once (for any elements available at the time of attaching handlers) (default)
@@ -73,7 +73,11 @@ export const Triggers = {
 
 export type Trigger = ValueOf<typeof Triggers>;
 
-export const KEYBOARD_TRIGGERS: Trigger[] = ["keydown", "keyup", "keypress"];
+export const KEYBOARD_TRIGGERS: Trigger[] = [
+  Triggers.KEYDOWN,
+  Triggers.KEYUP,
+  Triggers.KEYPRESS,
+];
 
 /**
  * Triggers considered user actions for the purpose of defaulting the reportMode if not provided.
@@ -85,11 +89,11 @@ export const KEYBOARD_TRIGGERS: Trigger[] = ["keydown", "keyup", "keypress"];
  * @see getDefaultReportModeForTrigger
  */
 export const USER_ACTION_TRIGGERS: Trigger[] = [
-  "click",
-  "dblclick",
-  "blur",
-  "mouseover",
-  "hover",
+  Triggers.CLICK,
+  Triggers.DOUBLE_CLICK,
+  Triggers.BLUR,
+  Triggers.MOUSEOVER,
+  Triggers.HOVER,
 ];
 
 export type IntervalArgs = {
