@@ -18,9 +18,10 @@
 import { type PersistedState, type MigrationManifest } from "redux-persist";
 import { mapValues, omit } from "lodash";
 import {
-  type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
+  type BaseFormStateV3,
+  type BaseFormStateV4,
   type BaseModComponentStateV1,
   type BaseModComponentStateV2,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
@@ -33,6 +34,7 @@ import {
   type EditorStateV1,
   type EditorStateV3,
   type EditorStateV4,
+  type EditorStateV5,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
@@ -44,6 +46,7 @@ export const migrations: MigrationManifest = {
   2: (state: EditorStateV1 & PersistedState) => migrateEditorStateV1(state),
   3: (state: EditorStateV2 & PersistedState) => migrateEditorStateV2(state),
   4: (state: EditorStateV3 & PersistedState) => migrateEditorStateV3(state),
+  5: (state: EditorStateV4 & PersistedState) => migrateEditorStateV4(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -151,10 +154,36 @@ export function migrateEditorStateV3({
     ...rest,
     modComponentFormStates: modComponentFormStates.map((element) =>
       migrateFormStateV2(element),
-    ) as ModComponentFormState[],
+    ),
     deletedModComponentFormStatesByModId: mapValues(
       deletedModComponentFormStatesByModId,
       (formStates) => formStates.map((element) => migrateFormStateV2(element)),
+    ),
+  };
+}
+
+function migrateFormStateV3({
+  type,
+  ...rest
+}: BaseFormStateV3): BaseFormStateV4 {
+  return rest;
+}
+
+export function migrateEditorStateV4({
+  inserting,
+  modComponentFormStates,
+  deletedModComponentFormStatesByModId,
+  ...rest
+}: EditorStateV4 & PersistedState): EditorStateV5 & PersistedState {
+  return {
+    ...rest,
+    insertingStarterBrickType: inserting,
+    modComponentFormStates: modComponentFormStates.map((element) =>
+      migrateFormStateV3(element),
+    ) as ModComponentFormState[],
+    deletedModComponentFormStatesByModId: mapValues(
+      deletedModComponentFormStatesByModId,
+      (formStates) => formStates.map((element) => migrateFormStateV3(element)),
     ) as Record<string, ModComponentFormState[]>,
   };
 }

@@ -17,7 +17,6 @@
 
 import React from "react";
 import { Badge, Dropdown, DropdownButton } from "react-bootstrap";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortBy } from "lodash";
@@ -31,11 +30,9 @@ import { Events } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { ALL_ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 
-const sortedStarterBricks = sortBy(
-  [...ADAPTERS.values()],
-  (x) => x.displayOrder,
-);
+const sortedModComponentAdapters = sortBy(ALL_ADAPTERS, (x) => x.displayOrder);
 
 const TEMPLATE_TELEMETRY_SOURCE = "starter_brick_menu";
 
@@ -67,22 +64,22 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
 
   const { data: entries = [] } = useAsyncState<React.ReactNode>(async () => {
     const results = await Promise.all(
-      sortedStarterBricks.map(async (config) => {
-        if (!config.flag) {
+      sortedModComponentAdapters.map(async ({ flag }) => {
+        if (!flag) {
           return true;
         }
 
-        return flagOn(config.flag);
+        return flagOn(flag);
       }),
     );
 
     return (
-      sortedStarterBricks
+      sortedModComponentAdapters
         // eslint-disable-next-line security/detect-object-injection -- array index
         .filter((_, index) => results[index])
         .map((config) => (
           <DropdownEntry
-            key={config.elementType}
+            key={config.starterBrickType}
             caption={config.label}
             icon={config.icon}
             beta={Boolean(config.flag)}

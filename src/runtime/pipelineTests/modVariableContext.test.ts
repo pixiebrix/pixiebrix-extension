@@ -20,17 +20,17 @@ import {
   contextBrick,
   echoBrick,
   simpleInput,
-  testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import {
   MergeStrategies,
   setState,
   StateNamespaces,
 } from "@/platform/state/stateController";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { toExpression } from "@/utils/expressionUtils";
+import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();
@@ -39,12 +39,15 @@ beforeEach(() => {
 
 describe("modVariableContext", () => {
   test("use mod variable in variable condition", async () => {
+    const options = reduceOptionsFactory("v3");
+
     setState({
       namespace: StateNamespaces.MOD,
       data: { run: true },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: null,
-      modId: null,
+      modComponentRef: mapMessageContextToModComponentRef(
+        options.logger.context,
+      ),
     });
 
     const pipeline = [
@@ -52,25 +55,28 @@ describe("modVariableContext", () => {
         id: echoBrick.id,
         if: toExpression("var", "@mod.run"),
         config: {
-          message: "Ran block",
+          message: "Ran brick",
         },
       },
     ];
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({}), optionsArgs: {} },
-      testOptions("v3"),
+      options,
     );
-    expect(result).toStrictEqual({ message: "Ran block" });
+    expect(result).toStrictEqual({ message: "Ran brick" });
   });
 
   test("use mod variable in nunjucks condition", async () => {
+    const options = reduceOptionsFactory("v3");
+
     setState({
       namespace: StateNamespaces.MOD,
       data: { run: true },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: autoUUIDSequence(),
-      modId: undefined,
+      modComponentRef: mapMessageContextToModComponentRef(
+        options.logger.context,
+      ),
     });
 
     const pipeline = [
@@ -85,18 +91,21 @@ describe("modVariableContext", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({}), optionsArgs: {} },
-      testOptions("v3"),
+      options,
     );
     expect(result).toStrictEqual({ message: "Ran block" });
   });
 
   test("mod variable appears in context", async () => {
+    const options = reduceOptionsFactory("v3");
+
     setState({
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: autoUUIDSequence(),
-      modId: undefined,
+      modComponentRef: mapMessageContextToModComponentRef(
+        options.logger.context,
+      ),
     });
 
     const pipeline = [
@@ -108,7 +117,7 @@ describe("modVariableContext", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({}), optionsArgs: {} },
-      testOptions("v3"),
+      options,
     );
     expect(contextAsPlainObject(result as UnknownObject)).toStrictEqual({
       "@input": {},
@@ -118,12 +127,15 @@ describe("modVariableContext", () => {
   });
 
   test("use mod variable in nunjucks body", async () => {
+    const options = reduceOptionsFactory("v3");
+
     setState({
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: autoUUIDSequence(),
-      modId: undefined,
+      modComponentRef: mapMessageContextToModComponentRef(
+        options.logger.context,
+      ),
     });
 
     const pipeline = [
@@ -137,18 +149,21 @@ describe("modVariableContext", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({}), optionsArgs: {} },
-      testOptions("v3"),
+      options,
     );
     expect(result).toStrictEqual({ message: "Hello, Bob" });
   });
 
   test("use mod variable in variable body", async () => {
+    const options = reduceOptionsFactory("v3");
+
     setState({
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: autoUUIDSequence(),
-      modId: undefined,
+      modComponentRef: mapMessageContextToModComponentRef(
+        options.logger.context,
+      ),
     });
 
     const pipeline = [
@@ -162,7 +177,7 @@ describe("modVariableContext", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({}), optionsArgs: {} },
-      testOptions("v3"),
+      options,
     );
     expect(result).toStrictEqual({ message: "Bob" });
   });

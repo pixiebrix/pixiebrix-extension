@@ -98,7 +98,7 @@ describe("checkAvailableInstalledExtensions", () => {
         },
         definition(): QuickBarDefinition {
           return {
-            type: "quickBar",
+            type: StarterBrickTypes.QUICK_BAR_ACTION,
             contexts: ["all"],
             documentUrlPatterns: [testUrl],
             isAvailable: {

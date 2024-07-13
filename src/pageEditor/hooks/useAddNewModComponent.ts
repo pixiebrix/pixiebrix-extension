@@ -54,7 +54,11 @@ function useAddNewModComponent(): AddNewModComponent {
         return;
       }
 
-      dispatch(actions.toggleInsert(modComponentFormStateAdapter.elementType));
+      dispatch(
+        actions.setInsertingStarterBrickType(
+          modComponentFormStateAdapter.starterBrickType,
+        ),
+      );
 
       if (!modComponentFormStateAdapter.selectNativeElement) {
         // If the foundation is not for a native element, stop after toggling insertion mode
@@ -89,7 +93,7 @@ function useAddNewModComponent(): AddNewModComponent {
         dispatch(actions.checkActiveModComponentAvailability());
 
         reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
-          type: modComponentFormStateAdapter.elementType,
+          type: modComponentFormStateAdapter.starterBrickType,
         });
       } catch (error) {
         if (isSpecificError(error, CancelError)) {
@@ -101,7 +105,7 @@ function useAddNewModComponent(): AddNewModComponent {
           error,
         });
       } finally {
-        dispatch(actions.toggleInsert(null));
+        dispatch(actions.clearInsertingStarterBrickType());
       }
     },
     [dispatch, flagOff, suggestElements],

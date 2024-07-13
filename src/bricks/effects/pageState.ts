@@ -31,6 +31,7 @@ import {
   type StateNamespace,
   StateNamespaces,
 } from "@/platform/state/stateController";
+import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 /**
  * Namespace options for use in oneOf.
@@ -150,15 +151,11 @@ export class SetPageState extends TransformerABC {
     }>,
     { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
-    const { modId, modComponentId } = logger.context;
-
     return platform.state.setState({
       namespace,
       data,
       mergeStrategy,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7891
-      modComponentId: modComponentId!,
-      modId,
+      modComponentRef: mapMessageContextToModComponentRef(logger.context),
     });
   }
 }
@@ -205,12 +202,9 @@ export class GetPageState extends TransformerABC {
     }: BrickArgs<{ namespace?: StateNamespace }>,
     { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
-    const { modId, modComponentId } = logger.context;
-
     return platform.state.getState({
       namespace,
-      modId,
-      modComponentId,
+      modComponentRef: mapMessageContextToModComponentRef(logger.context),
     });
   }
 }

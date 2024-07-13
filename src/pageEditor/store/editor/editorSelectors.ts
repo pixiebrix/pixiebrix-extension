@@ -73,8 +73,27 @@ export const selectActiveModComponentFormState = createSelector(
 export const selectActiveModId = ({ editor }: EditorRootState) =>
   editor.activeModId;
 
-export const selectIsInsertingNewStarterBrick = ({ editor }: EditorRootState) =>
-  editor.inserting;
+export const selectInsertingStarterBrickType = ({ editor }: EditorRootState) =>
+  editor.insertingStarterBrickType;
+
+export const selectActiveModComponentRef = createSelector(
+  selectActiveModComponentFormState,
+  selectActiveModId,
+  (formState, modId) => {
+    assertNotNullish(
+      formState,
+      "selectActiveModComponentRef can only be used in a mod component context",
+    );
+
+    return {
+      modComponentId: formState.uuid,
+      modId,
+      // XXX: the Page Editor form state uses an artificial id. When it's added to the page, it will be replaced
+      // with the hash id calculated during hydration
+      starterBrickId: formState.starterBrick.metadata.id,
+    };
+  },
+);
 
 export const selectErrorState = ({ editor }: EditorRootState) => ({
   isBetaError: editor.error && editor.beta,

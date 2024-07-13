@@ -19,7 +19,10 @@ import React from "react";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { getPageState } from "@/contentScript/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectActiveModComponentFormState,
+  selectActiveModComponentRef,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { faExternalLinkAlt, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
@@ -50,35 +53,30 @@ type StateValues = {
  * Data panel tab displaying mod variables, and private/public state.
  */
 const ModVariablesTab: React.VFC = () => {
+  const modComponentRef = useSelector(selectActiveModComponentRef);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
 
   const state = useAsyncState<StateValues>(
-    async () => {
-      const context = {
-        modComponentId: activeModComponentFormState?.uuid,
-        modId: activeModComponentFormState?.modMetadata?.id,
-      };
-
+    async () =>
       // Cast because `resolveObj` doesn't keep track of the keys
-      return resolveObj<UnknownObject | string>({
+      resolveObj<UnknownObject | string>({
         Public: getPageState(inspectedTab, {
           namespace: StateNamespaces.PUBLIC,
-          ...context,
+          modComponentRef,
         }),
         Mod: activeModComponentFormState?.modMetadata
           ? getPageState(inspectedTab, {
               namespace: StateNamespaces.MOD,
-              ...context,
+              modComponentRef,
             })
           : Promise.resolve("Starter Brick is not in a mod package"),
         Private: getPageState(inspectedTab, {
           namespace: StateNamespaces.PRIVATE,
-          ...context,
+          modComponentRef,
         }),
-      }) as Promise<StateValues>;
-    },
+      }) as Promise<StateValues>,
     [],
     {
       initialValue: {

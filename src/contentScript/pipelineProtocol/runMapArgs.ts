@@ -18,9 +18,8 @@
 import { type Args, mapArgs, type MapOptions } from "@/runtime/mapArgs";
 import { type Except } from "type-fest";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
-import { type RegistryId } from "@/types/registryTypes";
 import { expectContext } from "@/utils/expectContext";
-import { type Nullishable } from "@/utils/nullishUtils";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * Run `mapArgs` in the contentScript.
@@ -38,12 +37,13 @@ import { type Nullishable } from "@/utils/nullishUtils";
  */
 export async function runMapArgs({
   config,
+  modComponentRef,
   context,
   options,
-  modId,
 }: {
   config: Args;
   context: UnknownObject;
+  modComponentRef: ModComponentRef;
   options: Except<MapOptions, "implicitRender"> & {
     /**
      * True to extend the context with the mod variable.
@@ -51,12 +51,10 @@ export async function runMapArgs({
      */
     extendModVariable: boolean;
   };
-  modId: Nullishable<RegistryId>;
 }): Promise<unknown> {
   expectContext("contentScript");
-
   const extendedContext = extendModVariableContext(context, {
-    modId,
+    modComponentRef,
     options,
     // The mod variable is only update when running a brick in a pipeline. It's not updated for `defer` expressions,
     // e.g., when rendering items for a ListElement in the Document Builder.

@@ -39,6 +39,7 @@ import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { appApiMock } from "@/testUtils/appApiMock";
 import type MockAdapter from "axios-mock-adapter";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -66,7 +67,7 @@ function setupInputs(): {
       name: "Text Starter Brick 1",
     }),
     definition: {
-      type: "contextMenu",
+      type: StarterBrickTypes.CONTEXT_MENU,
       isAvailable: {
         matchPatterns: ["*://*/*"],
         selectors: [],

@@ -50,7 +50,11 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrick,
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import pluralize from "@/utils/pluralize";
@@ -137,8 +141,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
   abstract readonly contexts: Menus.ContextType[];
 
-  public get kind(): "contextMenu" {
-    return "contextMenu";
+  public get kind(): StarterBrickType {
+    return StarterBrickTypes.CONTEXT_MENU;
   }
 
   readonly capabilities: PlatformCapability[] = ["contextMenu"];
@@ -485,7 +489,7 @@ export function fromJS(
   config: StarterBrickDefinitionLike<ContextMenuDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
-  if (type !== "contextMenu") {
+  if (type !== StarterBrickTypes.CONTEXT_MENU) {
     throw new Error(`Expected type=contextMenu, got ${type}`);
   }
 

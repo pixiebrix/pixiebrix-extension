@@ -192,11 +192,26 @@ export type BaseFormStateV3<
   modMetadata: ModComponentBase["_recipe"] | undefined;
 };
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type BaseFormStateV4<
+  TModComponent extends BaseModComponentStateV2 = BaseModComponentStateV2,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
+> = Except<
+  BaseFormStateV3<TModComponent, TStarterBrick>,
+  /**
+   * @since 2.0.6
+   * The starter brick type is available on the `starterBrick` property, this is not needed
+   */
+  "type"
+>;
+
 export type BaseFormState<
   TModComponent extends BaseModComponentState = BaseModComponentState,
   TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<
-  BaseFormStateV3<TModComponent, TStarterBrick>,
+  BaseFormStateV4<TModComponent, TStarterBrick>,
   "integrationDependencies"
 > & {
   /**

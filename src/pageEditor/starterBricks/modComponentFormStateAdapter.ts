@@ -36,7 +36,7 @@ export interface ModComponentFormStateAdapter<
   /**
    * The internal starter brick type, e.g., menuItem, contextMenu, etc.
    */
-  readonly elementType: StarterBrickType;
+  readonly starterBrickType: StarterBrickType;
 
   /**
    * The StarterBrickConfig class corresponding to the starter brick

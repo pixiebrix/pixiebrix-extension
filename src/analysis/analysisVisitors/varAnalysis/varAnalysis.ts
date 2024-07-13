@@ -40,7 +40,6 @@ import {
   isDocumentBuilderElementArray,
   type ListElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { fromJS } from "@/starterBricks/factory";
 import { type Schema } from "@/types/schemaTypes";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
@@ -57,6 +56,7 @@ import makeIntegrationsContextFromDependencies from "@/integrations/util/makeInt
 import { getOutputReference, isOutputKey } from "@/runtime/runtimeTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { BusinessError } from "@/errors/businessErrors";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -139,14 +139,9 @@ async function setInputVars(
   formState: ModComponentFormState,
   contextVars: VarMap,
 ): Promise<void> {
-  const adapter = ADAPTERS.get(formState.starterBrick.definition.type);
-  assertNotNullish(
-    adapter,
-    `Adapter not found for ${formState.starterBrick.definition.type}`,
-  );
-  const config = adapter.selectStarterBrickDefinition(formState);
+  const { selectStarterBrickDefinition } = adapterForComponent(formState);
 
-  const starterBrick = fromJS(config);
+  const starterBrick = fromJS(selectStarterBrickDefinition(formState));
 
   const reader = await starterBrick.defaultReader();
 
@@ -698,7 +693,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     });
 
     this.visitRootPipeline(formState.modComponent.brickPipeline, {
-      starterBrickType: formState.type,
+      starterBrickType: formState.starterBrick.definition.type,
     });
   }
 

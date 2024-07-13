@@ -19,7 +19,6 @@ import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyn
 import {
   DeferredEchoBrick,
   simpleInput,
-  testOptions,
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
@@ -34,13 +33,12 @@ import {
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { type Brick } from "@/types/brickTypes";
-import {
-  autoUUIDSequence,
-  registryIdFactory,
-} from "@/testUtils/factories/stringFactories";
 import { type UUID } from "@/types/stringTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -63,19 +61,16 @@ const makeAsyncModVariablePipeline = (
   },
 });
 
-const extensionId = autoUUIDSequence();
-const blueprintId = registryIdFactory();
+const modComponentRef = modComponentRefFactory();
 
-const logger = new ConsoleLogger({
-  modComponentId: extensionId,
-  modId: blueprintId,
-});
+const logger = new ConsoleLogger(
+  mapModComponentRefToMessageContext(modComponentRef),
+);
 
-function expectPageState(expectedState: UnknownObject) {
+function expectPageState(expectedState: UnknownObject): void {
   const pageState = getState({
     namespace: StateNamespaces.MOD,
-    modComponentId: extensionId,
-    modId: blueprintId,
+    modComponentRef,
   });
 
   expect(pageState).toStrictEqual(expectedState);
@@ -90,8 +85,7 @@ describe("WithAsyncModVariable", () => {
     setState({
       namespace: StateNamespaces.MOD,
       data: {},
-      modId: blueprintId,
-      modComponentId: extensionId,
+      modComponentRef,
       mergeStrategy: MergeStrategies.REPLACE,
     });
 
@@ -111,7 +105,7 @@ describe("WithAsyncModVariable", () => {
     const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", "foo");
 
     const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger,
     });
 
@@ -138,7 +132,7 @@ describe("WithAsyncModVariable", () => {
     const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", "foo");
 
     const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger,
     });
 
@@ -168,7 +162,7 @@ describe("WithAsyncModVariable", () => {
     const pipeline = makeAsyncModVariablePipeline(throwBrick, "error", "foo");
 
     const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger,
     });
 
@@ -225,12 +219,12 @@ describe("WithAsyncModVariable", () => {
     );
 
     await reducePipeline(stalePipeline, simpleInput({}), {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger,
     });
 
     const secondOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...testOptions("v3"),
+      ...reduceOptionsFactory("v3"),
       logger,
     });
 

@@ -19,13 +19,13 @@ import brickRegistry from "@/bricks/registry";
 import {
   simpleInput,
   teapotBrick,
-  testOptions,
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 
 import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const tryExceptBlock = new TryExcept();
 
@@ -45,7 +45,7 @@ describe("TryExcept", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({ prop: "I'm a teapot" });
   });
@@ -61,7 +61,7 @@ describe("TryExcept", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({ prop: "I'm a teapot" });
   });
@@ -77,7 +77,7 @@ describe("TryExcept", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toBeUndefined();
   });

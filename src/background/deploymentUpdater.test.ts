@@ -39,7 +39,6 @@ import {
   editorSlice,
   initialState as initialEditorState,
 } from "@/pageEditor/store/editor/editorSlice";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ButtonFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { parsePackage } from "@/registry/packageRegistry";
 import { registry } from "@/background/messenger/api";
@@ -68,6 +67,7 @@ import {
   queueReloadModEveryTab,
   reloadModsEveryTab,
 } from "@/contentScript/messenger/api";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
 
 TEST_setContext("background");
 
@@ -392,9 +392,8 @@ describe("syncDeployments", () => {
     });
 
     let editorState = initialEditorState;
-    const element = (await ADAPTERS.get(
-      starterBrick.definition.type,
-    ).fromModComponent(modComponent)) as ButtonFormState;
+    const { fromModComponent } = adapter(starterBrick.definition.type);
+    const element = (await fromModComponent(modComponent)) as ButtonFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addModComponentFormState(element),
@@ -502,9 +501,8 @@ describe("syncDeployments", () => {
     });
 
     let editorState = initialEditorState;
-    const element = (await ADAPTERS.get(
-      StarterBrickTypes.BUTTON,
-    ).fromModComponent(modComponent)) as ButtonFormState;
+    const { fromModComponent } = adapter(StarterBrickTypes.BUTTON);
+    const element = (await fromModComponent(modComponent)) as ButtonFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addModComponentFormState(element),
@@ -795,9 +793,13 @@ describe("syncDeployments", () => {
 
     let editorState = initialEditorState;
 
-    const personalModComponentFormState = (await ADAPTERS.get(
+    const personalModComponentAdapter = adapter(
       personalStarterBrick.definition.type,
-    ).fromModComponent(standaloneModComponent)) as ButtonFormState;
+    );
+    const personalModComponentFormState =
+      (await personalModComponentAdapter.fromModComponent(
+        standaloneModComponent,
+      )) as ButtonFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addModComponentFormState(
@@ -805,9 +807,13 @@ describe("syncDeployments", () => {
       ),
     );
 
-    const deploymentElement = (await ADAPTERS.get(
+    const deploymentModComponentAdapter = adapter(
       deploymentStarterBrick.definition.type,
-    ).fromModComponent(deploymentModComponent)) as ButtonFormState;
+    );
+    const deploymentElement =
+      (await deploymentModComponentAdapter.fromModComponent(
+        deploymentModComponent,
+      )) as ButtonFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addModComponentFormState(deploymentElement),

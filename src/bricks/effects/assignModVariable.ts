@@ -11,6 +11,7 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 /**
  * A simple brick to assign a value to a Mod Variable.
@@ -96,14 +97,11 @@ class AssignModVariable extends EffectABC {
     }>,
     { logger }: BrickOptions,
   ): Promise<void> {
-    const { modId, modComponentId } = logger.context;
-
     setState({
       namespace: StateNamespaces.MOD,
       data: { [variableName]: value },
       mergeStrategy: MergeStrategies.SHALLOW,
-      modComponentId,
-      modId,
+      modComponentRef: mapMessageContextToModComponentRef(logger.context),
     });
   }
 }
