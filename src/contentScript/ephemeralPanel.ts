@@ -38,12 +38,16 @@ import {
   updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
 import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
-import type { TemporaryPanelDefinition } from "@/platform/panels/panelTypes";
+import {
+  RefreshTriggers,
+  TemporaryPanelDefinition,
+} from "@/platform/panels/panelTypes";
 import type { Location } from "@/types/starterBrickTypes";
 import { getThisFrame } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import { showModal } from "@/contentScript/modalDom";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { STATE_CHANGE_EVENT_TYPE } from "@/platform/state/stateTypes";
 
 export async function createFrameSource(
   nonce: string,
@@ -226,8 +230,8 @@ export async function ephemeralPanel({
     }
   };
 
-  if (refreshTrigger === "statechange") {
-    $(document).on("statechange", rerender);
+  if (refreshTrigger === RefreshTriggers.STATE_CHANGE) {
+    $(document).on(STATE_CHANGE_EVENT_TYPE, rerender);
   }
 
   try {
@@ -256,7 +260,7 @@ export async function ephemeralPanel({
     }
   } finally {
     controller.abort();
-    $(document).off("statechange", rerender);
+    $(document).off(STATE_CHANGE_EVENT_TYPE, rerender);
   }
 
   return {};

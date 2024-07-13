@@ -46,13 +46,13 @@ import IsolatedComponent from "@/components/IsolatedComponent";
 import { type CustomFormComponentProps } from "./CustomFormComponent";
 import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
 import { assumeNotNullish_UNSAFE } from "@/utils/nullishUtils";
-import {
-  MergeStrategies,
-  type StateNamespace,
-  StateNamespaces,
-} from "@/platform/state/stateController";
 import { type ModComponentRef } from "@/types/modComponentTypes";
 import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
+import {
+  MergeStrategies,
+  StateNamespace,
+  StateNamespaces,
+} from "@/platform/state/stateTypes";
 
 interface DatabaseResult {
   success: boolean;

@@ -21,16 +21,13 @@ import {
   echoBrick,
   simpleInput,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import {
-  MergeStrategies,
-  setState,
-  StateNamespaces,
-} from "@/platform/state/stateController";
+import { setState } from "@/platform/state/stateController";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { toExpression } from "@/utils/expressionUtils";
 import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 beforeEach(() => {
   brickRegistry.clear();

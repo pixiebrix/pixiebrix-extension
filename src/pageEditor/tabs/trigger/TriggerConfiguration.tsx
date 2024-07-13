@@ -34,11 +34,15 @@ import { useSelector } from "react-redux";
 import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/store/editor/editorSelectors";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { joinName } from "@/utils/formUtils";
+import { STATE_CHANGE_EVENT_TYPE } from "@/platform/state/stateTypes";
 
 function supportsSelector(trigger: Trigger) {
-  return !["load", "interval", "selectionchange", "statechange"].includes(
-    trigger,
-  );
+  return ![
+    "load",
+    "interval",
+    "selectionchange",
+    STATE_CHANGE_EVENT_TYPE,
+  ].includes(trigger);
 }
 
 function supportsTargetMode(trigger: Trigger) {
@@ -128,7 +132,7 @@ const TriggerConfiguration: React.FC<{
         <option value="keyup">Keyup</option>
         <option value="keypress">Keypress</option>
         <option value="change">Change</option>
-        <option value="statechange">State Change</option>
+        <option value={STATE_CHANGE_EVENT_TYPE}>State Change</option>
         <option value="custom">Custom Event</option>
       </ConnectedFieldTemplate>
 

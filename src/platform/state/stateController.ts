@@ -19,26 +19,18 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { cloneDeep, isEqual, merge } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { type Except, type JsonObject, type ValueOf } from "type-fest";
+import { type Except, type JsonObject } from "type-fest";
 import { assertPlatformCapability } from "@/platform/platformContext";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type ModComponentRef } from "@/types/modComponentTypes";
-
-export const MergeStrategies = {
-  SHALLOW: "shallow",
-  REPLACE: "replace",
-  DEEP: "deep",
-} as const;
-
-export type MergeStrategy = ValueOf<typeof MergeStrategies>;
-
-export const StateNamespaces = {
-  MOD: "blueprint",
-  PRIVATE: "extension",
-  PUBLIC: "shared",
-} as const;
-
-export type StateNamespace = ValueOf<typeof StateNamespaces>;
+import {
+  MergeStrategies,
+  type MergeStrategy,
+  STATE_CHANGE_EVENT_TYPE,
+  type StateChangeEventDetail,
+  type StateNamespace,
+  StateNamespaces,
+} from "@/platform/state/stateTypes";
 
 const privateState = new Map<UUID, JsonObject>();
 
@@ -83,21 +75,24 @@ function dispatchStateChangeEventOnChange({
 }: {
   previous: unknown;
   next: unknown;
-  namespace: string;
+  namespace: StateNamespace;
   modComponentRef: Except<ModComponentRef, "starterBrickId">;
 }) {
   if (!isEqual(previous, next)) {
-    // For now, leave off the event data because we're using a public channel
+    // For now, leave off the event data because state controller in content script  is using we're using
+    // events, which is a public channel (the host site/other extensions can see the event).
     const detail = {
       namespace,
-      // XXX: are using old names required for backward compatability in mods since it's passed as `@input.event`?
       extensionId: modComponentId,
       blueprintId: modId,
-    };
+    } satisfies StateChangeEventDetail;
 
     console.debug("Dispatching statechange", detail);
 
-    const event = new CustomEvent("statechange", { detail, bubbles: true });
+    const event = new CustomEvent(STATE_CHANGE_EVENT_TYPE, {
+      detail,
+      bubbles: true,
+    });
     document.dispatchEvent(event);
   }
 }
