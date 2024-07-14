@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isApiVersionAtLeast } from "@/runtime/runtimeUtils";
+import {
+  castConstantCondition,
+  isApiVersionAtLeast,
+} from "@/runtime/runtimeUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("isApiVersionAtLeast()", () => {
   test("v2 is at least v1", () => {
@@ -29,5 +33,29 @@ describe("isApiVersionAtLeast()", () => {
   });
   test("v1 is not at least v2", () => {
     expect(isApiVersionAtLeast("v1", "v2")).toBe(false);
+  });
+});
+
+describe("castConstantCondition", () => {
+  it("returns undefined for non-constant conditions", () => {
+    expect(
+      castConstantCondition(toExpression("nunjucks", "{{ @input.foo }}")),
+    ).toBeUndefined();
+  });
+
+  it("returns true for truthy string", () => {
+    expect(castConstantCondition(toExpression("nunjucks", "yes"))).toBe(true);
+  });
+
+  it("returns false for empty string", () => {
+    expect(castConstantCondition(toExpression("nunjucks", ""))).toBe(false);
+  });
+
+  it("returns false for falsy string value", () => {
+    expect(castConstantCondition("{{ @input.foo }}")).toBe(false);
+  });
+
+  it.each([true, false])("returns boolean literal: %s", (value) => {
+    expect(castConstantCondition(value)).toBe(value);
   });
 });

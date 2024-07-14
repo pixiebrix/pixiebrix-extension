@@ -78,6 +78,8 @@
     "./analysis/analysisVisitors/brickIdVisitor.ts",
     "./analysis/analysisVisitors/brickTypeAnalysis.test.ts",
     "./analysis/analysisVisitors/brickTypeAnalysis.ts",
+    "./analysis/analysisVisitors/conditionAnalysis.ts",
+    "./analysis/analysisVisitors/conditionAnalysis.test.ts",
     "./analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis.test.ts",
     "./analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis.ts",
     "./analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor.test.ts",
