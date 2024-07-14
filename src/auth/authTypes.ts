@@ -275,6 +275,9 @@ export type AuthRootState = {
 
 /**
  * A shared secret for retrieving deployments without per-user authentication.
+ *
+ * Introduced to support the Automation Anywhere Automation Co-Pilot Widget Sidebar Integration.
+ *
  * @since 2.0.6
  */
 export type DeploymentKey = Tagged<string, "DeploymentKey">;

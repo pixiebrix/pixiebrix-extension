@@ -32,6 +32,8 @@ const serviceUrlStorage = new StorageItem<ConfiguredHost>("service-url");
  * Can be overridden by:
  * - Settings on the SettingsPage
  * - Managed storage (configured by Enterprise IT)
+ *
+ * @see DEFAULT_SERVICE_URL
  */
 export async function getBaseURL(): Promise<string> {
   if (isExtensionContext()) {

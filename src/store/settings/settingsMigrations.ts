@@ -62,7 +62,5 @@ function migrateSettingsStateV3(
     // @since 1.8.11 - Migrate all users to true for these settings, make settings required
     textSelectionMenu: true,
     snippetShortcutMenu: true,
-    // @since 2.0.6 - deploymentKey added as optional
-    deploymentKey: undefined,
   };
 }

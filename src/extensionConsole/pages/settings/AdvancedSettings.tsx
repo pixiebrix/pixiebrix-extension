@@ -124,6 +124,22 @@ const AdvancedSettings: React.FunctionComponent = () => {
             />
             <Form.Text muted>The base URL of the PixieBrix API</Form.Text>
           </Form.Group>
+          {flagOn("deployment-key") && (
+            <Form.Group controlId="deploymentKey">
+              <Form.Label>Deployment Key</Form.Label>
+              <Form.Control
+                type="text"
+                defaultValue={deploymentKey ?? ""}
+                onBlur={async (event: React.FocusEvent<HTMLInputElement>) => {
+                  await setDeploymentKey(event.target.value);
+                }}
+              />
+              <Form.Text muted>
+                A shared key for receiving mod deployments without user
+                authentication
+              </Form.Text>
+            </Form.Group>
+          )}
           <Form.Group controlId="formAuthIntegration">
             <Form.Label>Authentication Integration</Form.Label>
             <Form.Control
@@ -184,23 +200,6 @@ const AdvancedSettings: React.FunctionComponent = () => {
               Provide an authentication type to force authentication
             </Form.Text>
           </Form.Group>
-
-          {flagOn("deployment-key") && (
-            <Form.Group controlId="deploymentKey">
-              <Form.Label>Deployment Key</Form.Label>
-              <Form.Control
-                type="text"
-                defaultValue={deploymentKey ?? ""}
-                onBlur={async (event: React.FocusEvent<HTMLInputElement>) => {
-                  await setDeploymentKey(event.target.value);
-                }}
-              />
-              <Form.Text muted>
-                A shared key for receiving deployments without user
-                authentication.
-              </Form.Text>
-            </Form.Group>
-          )}
         </Form>
       </Card.Body>
       <Card.Footer className={styles.cardFooter}>

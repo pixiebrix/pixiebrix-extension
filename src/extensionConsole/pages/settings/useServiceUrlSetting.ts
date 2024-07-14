@@ -28,7 +28,10 @@ const SAVING_URL_TIMEOUT_MS = 4000;
 /**
  * Hook to validate and update the user-configured PixieBrix service URL setting.
  */
-function useServiceUrlSetting(): [string, (value: string) => Promise<void>] {
+function useServiceUrlSetting(): [
+  string | undefined,
+  (value: string) => Promise<void>,
+] {
   const [serviceUrl, setServiceUrl] = useConfiguredHost();
 
   // XXX: consider using useUserAction instead of useCallback.
@@ -37,6 +40,11 @@ function useServiceUrlSetting(): [string, (value: string) => Promise<void>] {
     async (value: string) => {
       const newPixiebrixUrl = value.trim();
       console.debug("Update service URL", { newPixiebrixUrl, serviceUrl });
+
+      if (newPixiebrixUrl === serviceUrl) {
+        // Return early to prevent unnecessary updates/UI notifications
+        return;
+      }
 
       try {
         // Ensure it's a valid URL

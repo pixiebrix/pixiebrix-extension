@@ -31,7 +31,7 @@ export const deploymentKeyStorage = new StorageItem<DeploymentKey>(
 /**
  * Returns the shared deployment key, or undefined if not set.
  *
- * Set via:
+ * Set by, in order of precedence:
  * - Settings on the SettingsPage
  * - Managed storage (configured by Enterprise IT)
  */
@@ -46,15 +46,23 @@ export async function getDeploymentKey(): Promise<DeploymentKey | undefined> {
 
 type ConfiguredDeploymentKeyResult = [
   DeploymentKey | undefined,
-  (deploymentKey: DeploymentKey) => Promise<void>,
+  (deploymentKey: DeploymentKey | undefined) => Promise<void>,
 ];
+
+async function setter(deploymentKey: DeploymentKey | undefined): Promise<void> {
+  if (deploymentKey == null) {
+    return deploymentKeyStorage.remove();
+  }
+
+  return deploymentKeyStorage.set(deploymentKey);
+}
 
 /**
  * User-configured deployment key. Overrides the managed deployment key.
  */
 export function useConfiguredDeploymentKey(): ConfiguredDeploymentKeyResult {
-  return useUpdatableAsyncState(
+  return useUpdatableAsyncState<DeploymentKey | undefined>(
     deploymentKeyStorage.get,
-    deploymentKeyStorage.set,
+    setter,
   );
 }

@@ -18,6 +18,10 @@
 import { useConfiguredDeploymentKey } from "@/auth/deploymentKey";
 import useUserAction from "@/hooks/useUserAction";
 import { type DeploymentKey } from "@/auth/authTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { CancelError } from "@/errors/businessErrors";
+
+const deploymentKeyRegex = /^[\dA-Za-z]{32,128}$/;
 
 /**
  * Hook to update the user-configured deployment key setting.
@@ -32,14 +36,33 @@ function useDeploymentKeySetting(): [
   const update = useUserAction(
     async (value: string) => {
       // XXX: future improvement, check that deployment key is valid?
-      await setDeploymentKey(value as DeploymentKey);
+      const nextDeploymentKey = isNullOrBlank(value)
+        ? undefined
+        : (value as DeploymentKey);
+
+      if (
+        (deploymentKey == null && nextDeploymentKey == null) ||
+        nextDeploymentKey === deploymentKey
+      ) {
+        // Throwing CancelError prevents success/error message from showing
+        throw new CancelError("No deployment key change provided");
+      }
+
+      if (
+        nextDeploymentKey != null &&
+        !deploymentKeyRegex.test(nextDeploymentKey)
+      ) {
+        throw new Error("Invalid deployment key format provided");
+      }
+
+      await setDeploymentKey(nextDeploymentKey);
     },
     {
       successMessage:
         "Updated deployment key. You must reload the browser extension",
       errorMessage: "Error updating deployment key",
     },
-    [setDeploymentKey],
+    [deploymentKey, setDeploymentKey],
   );
 
   return [deploymentKey, update] as const;

@@ -152,18 +152,18 @@ export async function clearPartnerAuthData(): Promise<void> {
 /**
  * Return PixieBrix API authentication headers, or null if not authenticated.
  *
- * Headers can either be:
+ * Headers can be, in order of precedence:
  * - Native PixieBrix token
- * - Share PixieBrix deployment key
  * - Partner Bearer JWT
+ * - Shared PixieBrix deployment key
  *
  * @since 2.0.6 added deployment key authentication
  */
 export async function getAuthHeaders(): Promise<UnknownObject | null> {
-  const [deploymentKey, nativeToken, partnerAuth] = await Promise.all([
+  const [nativeToken, partnerAuth, deploymentKey] = await Promise.all([
     getExtensionToken(),
-    getDeploymentKey(),
     getPartnerAuthData(),
+    getDeploymentKey(),
   ]);
 
   if (nativeToken) {
@@ -228,6 +228,7 @@ export async function getExtensionAuth(): Promise<
 export async function clearCachedAuthSecrets(): Promise<void> {
   console.debug("Clearing extension auth");
   await Promise.all([
+    // Don't clear deploymentKeyStorage, as it's a user-configured setting vs. the token material returned by a server
     extensionKeyStorage.remove(),
     partnerTokenStorage.remove(),
   ]);
