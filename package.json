@@ -124,7 +124,7 @@
     "prop-types": "^15.7.2",
     "psl": "^1.8.0",
     "react": "^17.0.2",
-    "react-ace": "^11.0.1",
+    "react-ace": "^12.0.0",
     "react-autosuggest": "^10.1.0",
     "react-beautiful-dnd-next": "^11.0.5",
     "react-bootstrap": "^1.6.1",
