@@ -24,18 +24,18 @@ import { withoutTrailingSlash } from "@/utils/urlUtils";
 
 type ConfiguredHost = string;
 
-const serviceStorage = new StorageItem<ConfiguredHost>("service-url");
+const serviceUrlStorage = new StorageItem<ConfiguredHost>("service-url");
 
 /**
  * Return the base URL of the PixieBrix service.
  *
- * Can be overriden by:
+ * Can be overridden by:
  * - Settings on the SettingsPage
  * - Managed storage (configured by Enterprise IT)
  */
 export async function getBaseURL(): Promise<string> {
   if (isExtensionContext()) {
-    const configured = await serviceStorage.get();
+    const configured = await serviceUrlStorage.get();
     if (configured) {
       return withoutTrailingSlash(configured);
     }
@@ -59,5 +59,5 @@ type ConfiguredHostResult = [
  * Hook for retrieving/setting the manually configured host.
  */
 export function useConfiguredHost(): ConfiguredHostResult {
-  return useUpdatableAsyncState(serviceStorage.get, serviceStorage.set);
+  return useUpdatableAsyncState(serviceUrlStorage.get, serviceUrlStorage.set);
 }

@@ -19,7 +19,6 @@ import styles from "./SettingsCard.module.scss";
 
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Card, Form } from "react-bootstrap";
-import { useConfiguredHost } from "@/data/service/baseService";
 import React, { useCallback } from "react";
 import {
   clearCachedAuthSecrets,
@@ -31,10 +30,8 @@ import settingsSlice, {
   useActivatePartnerTheme,
 } from "@/store/settings/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { assertProtocolUrl } from "@/utils/urlUtils";
 import { selectSettings } from "@/store/settings/settingsSelectors";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
-import pTimeout from "p-timeout";
+import { validateRegistryId } from "@/types/helpers";
 import useUserAction from "@/hooks/useUserAction";
 import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/data/service/api";
@@ -44,19 +41,18 @@ import { reloadIfNewVersionIsReady } from "@/utils/extensionUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import { refreshPartnerAuthentication } from "@/background/messenger/api";
-
-const SAVING_URL_NOTIFICATION_ID = uuidv4();
-const SAVING_URL_TIMEOUT_MS = 4000;
+import useServiceUrlSetting from "@/extensionConsole/pages/settings/useServiceUrlSetting";
+import useDeploymentKeySetting from "@/extensionConsole/pages/settings/useDeploymentKeySetting";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { restrict, permit } = useFlags();
+  const { restrict, permit, flagOn } = useFlags();
   const { partnerId, authIntegrationId, authMethod } =
     useSelector(selectSettings);
   const { exportDiagnostics } = useDiagnostics();
   const activatePartnerTheme = useActivatePartnerTheme();
-
-  const [serviceURL, setServiceURL] = useConfiguredHost();
+  const [serviceUrl, setServiceUrl] = useServiceUrlSetting();
+  const [deploymentKey, setDeploymentKey] = useDeploymentKeySetting();
 
   const clear = useCallback(async () => {
     await clearCachedAuthSecrets();
@@ -83,7 +79,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
     [dispatch],
   );
 
-  const reload = useCallback(() => {
+  const reloadExtension = useCallback(() => {
     browser.runtime.reload();
   }, []);
 
@@ -95,56 +91,6 @@ const AdvancedSettings: React.FunctionComponent = () => {
       notify.info("No update available");
     }
   }, []);
-
-  const handleServiceURLUpdate = useCallback(
-    async (event: React.FocusEvent<HTMLInputElement>) => {
-      const newPixiebrixUrl = event.target.value.trim();
-      console.debug("Update service URL", { newPixiebrixUrl, serviceURL });
-
-      try {
-        // Ensure it's a valid URL
-        if (newPixiebrixUrl) {
-          assertProtocolUrl(newPixiebrixUrl, ["https:"]);
-        }
-      } catch (error) {
-        notify.error({
-          id: SAVING_URL_NOTIFICATION_ID,
-          error,
-          reportError: false,
-        });
-        return;
-      }
-
-      try {
-        if (newPixiebrixUrl) {
-          // Ensure it's connectable
-          const response = await pTimeout(
-            fetch(new URL("api/me", newPixiebrixUrl).href),
-            { milliseconds: SAVING_URL_TIMEOUT_MS },
-          );
-
-          // Ensure it returns a JSON response. It's just `{}` when the user is logged out.
-          await response.json();
-        }
-      } catch {
-        notify.error({
-          id: SAVING_URL_NOTIFICATION_ID,
-          message: "The URL does not appear to point to a PixieBrix server",
-          reportError: false,
-        });
-        return;
-      }
-
-      await setServiceURL(newPixiebrixUrl);
-      notify.success({
-        id: SAVING_URL_NOTIFICATION_ID,
-        message: "Service URL updated. The extension must be reloaded",
-        dismissable: false,
-        autoDismissTimeMs: Number.POSITIVE_INFINITY,
-      });
-    },
-    [serviceURL, setServiceURL],
-  );
 
   const testPartnerRefreshToken = useUserAction(
     async () => {
@@ -170,8 +116,10 @@ const AdvancedSettings: React.FunctionComponent = () => {
             <Form.Control
               type="text"
               placeholder={DEFAULT_SERVICE_URL}
-              defaultValue={serviceURL}
-              onBlur={handleServiceURLUpdate}
+              defaultValue={serviceUrl}
+              onBlur={async (event: React.FocusEvent<HTMLInputElement>) => {
+                await setServiceUrl(event.target.value);
+              }}
               disabled={restrict("service-url")}
             />
             <Form.Text muted>The base URL of the PixieBrix API</Form.Text>
@@ -236,10 +184,27 @@ const AdvancedSettings: React.FunctionComponent = () => {
               Provide an authentication type to force authentication
             </Form.Text>
           </Form.Group>
+
+          {flagOn("deployment-key") && (
+            <Form.Group controlId="deploymentKey">
+              <Form.Label>Deployment Key</Form.Label>
+              <Form.Control
+                type="text"
+                defaultValue={deploymentKey ?? ""}
+                onBlur={async (event: React.FocusEvent<HTMLInputElement>) => {
+                  await setDeploymentKey(event.target.value);
+                }}
+              />
+              <Form.Text muted>
+                A shared key for receiving deployments without user
+                authentication.
+              </Form.Text>
+            </Form.Group>
+          )}
         </Form>
       </Card.Body>
       <Card.Footer className={styles.cardFooter}>
-        <Button variant="info" onClick={reload}>
+        <Button variant="info" onClick={reloadExtension}>
           Reload Extension
         </Button>
 
