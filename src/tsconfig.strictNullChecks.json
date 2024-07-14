@@ -892,6 +892,7 @@
     "./extensionConsole/pages/settings/SettingsPage.tsx",
     "./extensionConsole/pages/settings/StorageSettings.tsx",
     "./extensionConsole/pages/settings/useDeploymentKeySetting.ts",
+    "./extensionConsole/pages/settings/useDeploymentKeySetting.test.ts",
     "./extensionConsole/pages/settings/useDiagnostics.test.ts",
     "./extensionConsole/pages/settings/useDiagnostics.ts",
     "./extensionConsole/pages/settings/useServiceUrlSetting.ts",

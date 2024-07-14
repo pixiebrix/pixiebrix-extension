@@ -49,7 +49,6 @@ function useDeploymentKeySetting(): [
       }
 
       // XXX: future improvement, check that deployment key is valid by sending a request to the server?
-
       if (
         nextDeploymentKey != null &&
         !deploymentKeyRegex.test(nextDeploymentKey)
