@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DeploymentKey } from "@/auth/authTypes";
+import { type DeploymentKey } from "@/auth/authTypes";
 
 /**
  * The managed storage state is stored in the browser's managed storage area. Configured by the Enterprise IT department

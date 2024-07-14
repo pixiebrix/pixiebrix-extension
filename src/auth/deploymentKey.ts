@@ -44,11 +44,6 @@ export async function getDeploymentKey(): Promise<DeploymentKey | undefined> {
   return readManagedStorageByKey("deploymentKey");
 }
 
-type ConfiguredDeploymentKeyResult = [
-  DeploymentKey | undefined,
-  (deploymentKey: DeploymentKey | undefined) => Promise<void>,
-];
-
 async function setter(deploymentKey: DeploymentKey | undefined): Promise<void> {
   if (deploymentKey == null) {
     return deploymentKeyStorage.remove();
@@ -60,7 +55,10 @@ async function setter(deploymentKey: DeploymentKey | undefined): Promise<void> {
 /**
  * User-configured deployment key. Overrides the managed deployment key.
  */
-export function useConfiguredDeploymentKey(): ConfiguredDeploymentKeyResult {
+export function useConfiguredDeploymentKey(): [
+  DeploymentKey | undefined,
+  (deploymentKey: DeploymentKey | undefined) => Promise<void>,
+] {
   return useUpdatableAsyncState<DeploymentKey | undefined>(
     deploymentKeyStorage.get,
     setter,
