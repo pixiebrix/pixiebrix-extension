@@ -116,6 +116,7 @@
     "./auth/authStorage.ts",
     "./auth/authTypes.ts",
     "./auth/authUtils.ts",
+    "./auth/deploymentKey.ts",
     "./auth/featureFlagStorage.test.ts",
     "./auth/featureFlagStorage.ts",
     "./auth/isAuthenticationAxiosError.ts",
