@@ -58,7 +58,7 @@ import {
   isExpression,
   isTextLiteralOrNull,
 } from "@/utils/expressionUtils";
-import { Nullishable } from "@/utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick
@@ -151,8 +151,9 @@ async function renderConfigOption(
  * Returns the boolean value of a constant condition, or undefined if the condition is not a constant.
  * @param condition the brick condition
  * @see BrickConfig.if
+ * @since 2.0.6
  */
-export function castConstantCondition(
+export function getConstantConditionOrUndefined(
   condition: Nullishable<BrickCondition>,
 ): boolean | undefined {
   if (condition == null) {

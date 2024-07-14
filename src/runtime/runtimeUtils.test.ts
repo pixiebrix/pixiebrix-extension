@@ -16,7 +16,7 @@
  */
 
 import {
-  castConstantCondition,
+  getConstantConditionOrUndefined,
   isApiVersionAtLeast,
 } from "@/runtime/runtimeUtils";
 import { toExpression } from "@/utils/expressionUtils";
@@ -39,23 +39,29 @@ describe("isApiVersionAtLeast()", () => {
 describe("castConstantCondition", () => {
   it("returns undefined for non-constant conditions", () => {
     expect(
-      castConstantCondition(toExpression("nunjucks", "{{ @input.foo }}")),
+      getConstantConditionOrUndefined(
+        toExpression("nunjucks", "{{ @input.foo }}"),
+      ),
     ).toBeUndefined();
   });
 
   it("returns true for truthy string", () => {
-    expect(castConstantCondition(toExpression("nunjucks", "yes"))).toBe(true);
+    expect(
+      getConstantConditionOrUndefined(toExpression("nunjucks", "yes")),
+    ).toBe(true);
   });
 
   it("returns false for empty string", () => {
-    expect(castConstantCondition(toExpression("nunjucks", ""))).toBe(false);
+    expect(getConstantConditionOrUndefined(toExpression("nunjucks", ""))).toBe(
+      false,
+    );
   });
 
   it("returns false for falsy string value", () => {
-    expect(castConstantCondition("{{ @input.foo }}")).toBe(false);
+    expect(getConstantConditionOrUndefined("{{ @input.foo }}")).toBe(false);
   });
 
   it.each([true, false])("returns boolean literal: %s", (value) => {
-    expect(castConstantCondition(value)).toBe(value);
+    expect(getConstantConditionOrUndefined(value)).toBe(value);
   });
 });

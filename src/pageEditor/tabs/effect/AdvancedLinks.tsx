@@ -26,7 +26,7 @@ import { Button } from "react-bootstrap";
 import { isExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
 import { windowOptions } from "@/pageEditor/tabs/effect/configurationConstants";
-import { castConstantCondition } from "@/runtime/runtimeUtils";
+import { getConstantConditionOrUndefined } from "@/runtime/runtimeUtils";
 
 export const DEFAULT_TEMPLATE_ENGINE_VALUE: TemplateEngine = "mustache";
 
@@ -40,7 +40,7 @@ type AdvancedLinksProps = {
 const ConditionPreview: React.FunctionComponent<{
   condition: BrickCondition;
 }> = ({ condition }) => {
-  const constantCondition = castConstantCondition(condition);
+  const constantCondition = getConstantConditionOrUndefined(condition);
 
   if (constantCondition == null) {
     const value = isExpression(condition) ? condition.__value__ : condition;

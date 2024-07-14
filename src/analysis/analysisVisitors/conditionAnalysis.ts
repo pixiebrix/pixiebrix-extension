@@ -18,7 +18,7 @@
 import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
-import { castConstantCondition } from "@/runtime/runtimeUtils";
+import { getConstantConditionOrUndefined } from "@/runtime/runtimeUtils";
 import { isTemplateExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { AnnotationType } from "@/types/annotationTypes";
@@ -39,7 +39,7 @@ class ConditionAnalysis extends AnalysisVisitorABC {
     const conditionPosition = nestedPosition(position, "if");
     const condition = brickConfig.if;
 
-    if (castConstantCondition(condition) != null) {
+    if (getConstantConditionOrUndefined(condition) != null) {
       if (
         isTemplateExpression(condition) &&
         isNullOrBlank(condition.__value__)
@@ -58,7 +58,7 @@ class ConditionAnalysis extends AnalysisVisitorABC {
             },
           ],
         });
-      } else if (castConstantCondition(condition)) {
+      } else if (getConstantConditionOrUndefined(condition)) {
         this.annotations.push({
           position: conditionPosition,
           message:
