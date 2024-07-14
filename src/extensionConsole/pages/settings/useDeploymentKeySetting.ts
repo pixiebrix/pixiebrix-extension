@@ -21,6 +21,7 @@ import { type DeploymentKey } from "@/auth/authTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { CancelError } from "@/errors/businessErrors";
 
+// https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
 const deploymentKeyRegex = /^[\dA-Za-z]{32,128}$/;
 
 /**
@@ -35,7 +36,6 @@ function useDeploymentKeySetting(): [
 
   const update = useUserAction(
     async (value: string) => {
-      // XXX: future improvement, check that deployment key is valid?
       const nextDeploymentKey = isNullOrBlank(value)
         ? undefined
         : (value as DeploymentKey);
@@ -47,6 +47,8 @@ function useDeploymentKeySetting(): [
         // Throwing CancelError prevents success/error message from showing
         throw new CancelError("No deployment key change provided");
       }
+
+      // XXX: future improvement, check that deployment key is valid by sending a request to the server?
 
       if (
         nextDeploymentKey != null &&
