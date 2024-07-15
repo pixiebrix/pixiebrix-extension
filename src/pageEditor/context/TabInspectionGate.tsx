@@ -31,7 +31,13 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 const TabSelector: React.FC<{ onSelect: (tabId: number) => void }> = ({
   onSelect,
 }) => {
-  const { data, error } = useAsyncState(async () => queryTabs({}), []);
+  const { data, error } = useAsyncState(
+    async () =>
+      queryTabs({
+        url: "*://*/*",
+      }),
+    [],
+  );
 
   if (error) {
     return <div>Error Querying Tabs: {getErrorMessage(error)}</div>;

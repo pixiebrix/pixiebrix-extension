@@ -65,30 +65,18 @@ test("Unavailable mod", async ({ page, extensionId, newPageEditorPage }) => {
 });
 
 test("Page Editor reload", async ({ page, newPageEditorPage, extensionId }) => {
-  let pageEditorPage: PageEditorPage;
+  await page.goto("/");
+  const firstPageEditorPage = await newPageEditorPage(page.url());
 
-  await test.step("Activate mod, and initialize page editor", async () => {
-    const modId = "@e2e-testing/simple-sidebar-panel";
-    const modActivationPage = new ActivateModPage(page, extensionId, modId);
-    await modActivationPage.goto();
-    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
-    await page.goto("/");
-    pageEditorPage = await newPageEditorPage(page.url());
-  });
+  const newPage = await page.context().newPage();
+  newPage.goto("/bootstrap-5");
+  const secondPageEditorPage = await newPageEditorPage(page.url());
 
-  await test.step("Activate another mod to trigger a Page Editor refresh", async () => {
-    const modId = "@e2e-testing/show-alert";
-    const newPage = await page.context().newPage();
-    const modActivationPage = new ActivateModPage(newPage, extensionId, modId);
-    await modActivationPage.goto();
-    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
-  });
+  await secondPageEditorPage.modListingPanel.addStarterBrick("Trigger");
 
-  await test.step("Verify the add brick modal is hidden after the Page Editor refreshes", async () => {
-    await expect(
-      pageEditorPage.getByText(
-        "There were changes made in a different instance of the Page Editor. Reload this Page Editor to sync the changes.",
-      ),
-    ).toBeVisible();
-  });
+  await expect(
+    firstPageEditorPage.getByText(
+      "There were changes made in a different instance of the Page Editor. Reload this Page Editor to sync the changes.",
+    ),
+  ).toBeVisible();
 });
