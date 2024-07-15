@@ -311,10 +311,11 @@ export function defaultMenuOption(
         sortVarMapKeys(currentVars) as UnknownRecord,
       ).find((x) => x.startsWith(part));
 
-      assertNotNullish(match, "Expected match to exist");
+      if (match) {
+        // No exact match, return first partial match as default.
+        result.unshift(match);
+      }
 
-      // No exact match, return first partial match as default.
-      result.unshift(match);
       break;
     }
 
