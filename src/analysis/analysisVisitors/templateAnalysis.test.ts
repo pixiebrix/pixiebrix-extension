@@ -31,7 +31,7 @@ function httpBrickModComponentFactory(expression: Expression<unknown>) {
   const formState = triggerFormStateFactory();
   formState.modComponent.brickPipeline = [
     brickConfigFactory({
-      id: RemoteMethod.BLOCK_ID,
+      id: RemoteMethod.BRICK_ID,
       config: {
         url: expression,
       },

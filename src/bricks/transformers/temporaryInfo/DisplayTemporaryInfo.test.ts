@@ -333,7 +333,7 @@ describe("DisplayTemporaryInfo", () => {
       config: {
         title: "Test Temp Panel",
         body: toExpression("pipeline", [
-          { id: ContextBrick.BLOCK_ID, config: {} },
+          { id: ContextBrick.BRICK_ID, config: {} },
           { id: renderer.id, config },
         ]),
         location: "panel",

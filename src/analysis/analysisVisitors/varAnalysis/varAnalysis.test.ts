@@ -1181,7 +1181,7 @@ describe("Invalid template", () => {
 
   beforeEach(() => {
     const invalidEchoBlock = {
-      id: EchoBrick.BLOCK_ID,
+      id: EchoBrick.BRICK_ID,
       config: {
         message: toExpression(
           "nunjucks",
@@ -1190,7 +1190,7 @@ describe("Invalid template", () => {
       },
     };
     const validEchoBlock = {
-      id: EchoBrick.BLOCK_ID,
+      id: EchoBrick.BRICK_ID,
       config: {
         message: toExpression(
           "nunjucks",
@@ -1230,7 +1230,7 @@ describe("var expression annotations", () => {
           outputKey: validateOutputKey("foo"),
         }),
         {
-          id: EchoBrick.BLOCK_ID,
+          id: EchoBrick.BRICK_ID,
           config: {
             message: toExpression("var", "@foo"),
           },
@@ -1248,7 +1248,7 @@ describe("var expression annotations", () => {
     const formState = formStateFactory({
       brickPipeline: [
         {
-          id: EchoBrick.BLOCK_ID,
+          id: EchoBrick.BRICK_ID,
           config: {
             message: toExpression("var", ""),
           },
@@ -1266,7 +1266,7 @@ describe("var expression annotations", () => {
     const formState = formStateFactory({
       brickPipeline: [
         {
-          id: EchoBrick.BLOCK_ID,
+          id: EchoBrick.BRICK_ID,
           config: {
             message: toExpression("var", "foo"),
           },
@@ -1288,7 +1288,7 @@ describe("var expression annotations", () => {
     const formState = formStateFactory({
       brickPipeline: [
         {
-          id: EchoBrick.BLOCK_ID,
+          id: EchoBrick.BRICK_ID,
           config: {
             message: toExpression("var", "  "),
           },
@@ -1308,7 +1308,7 @@ describe("var expression annotations", () => {
     const formState = formStateFactory({
       brickPipeline: [
         {
-          id: EchoBrick.BLOCK_ID,
+          id: EchoBrick.BRICK_ID,
           config: {
             message: toExpression("var", "@"),
           },
@@ -1329,7 +1329,7 @@ describe("var analysis integration tests", () => {
   it("should handle trigger event", async () => {
     const formState = triggerFormStateFactory(undefined, [
       {
-        id: EchoBrick.BLOCK_ID,
+        id: EchoBrick.BRICK_ID,
         config: {
           message: toExpression(
             "nunjucks",
@@ -1351,7 +1351,7 @@ describe("var analysis integration tests", () => {
   it("should handle trigger custom event", async () => {
     const formState = triggerFormStateFactory(undefined, [
       {
-        id: EchoBrick.BLOCK_ID,
+        id: EchoBrick.BRICK_ID,
         config: {
           message: toExpression(
             "nunjucks",
@@ -1373,7 +1373,7 @@ describe("var analysis integration tests", () => {
   it("should handle trigger selectionchange event", async () => {
     const formState = triggerFormStateFactory(undefined, [
       {
-        id: EchoBrick.BLOCK_ID,
+        id: EchoBrick.BRICK_ID,
         config: {
           message: toExpression(
             "nunjucks",

@@ -152,9 +152,9 @@ describe("generateFreshOutputKey", () => {
 
   it("should default to output for transformer", async () => {
     class TransformerBrick extends TransformerABC {
-      static BLOCK_ID = validateRegistryId("test/transformer");
+      static BRICK_ID = validateRegistryId("test/transformer");
       constructor() {
-        super(TransformerBrick.BLOCK_ID, "Transformer Brick");
+        super(TransformerBrick.BRICK_ID, "Transformer Brick");
       }
 
       inputSchema = {};
@@ -192,9 +192,9 @@ describe("generateFreshOutputKey", () => {
 
   it("should return undefined for effect", async () => {
     class EffectBrick extends EffectABC {
-      static BLOCK_ID = validateRegistryId("test/effect");
+      static BRICK_ID = validateRegistryId("test/effect");
       constructor() {
-        super(EffectBrick.BLOCK_ID, "Effect Brick");
+        super(EffectBrick.BRICK_ID, "Effect Brick");
       }
 
       inputSchema = {};

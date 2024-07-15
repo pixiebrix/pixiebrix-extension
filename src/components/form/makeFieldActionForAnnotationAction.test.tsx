@@ -33,7 +33,7 @@ describe("makeFieldActionForAnnotationAction", () => {
 
     const formState = triggerFormStateFactory(undefined, [
       {
-        id: ContextBrick.BLOCK_ID,
+        id: ContextBrick.BRICK_ID,
         config: {},
         if: toExpression("nunjucks", " "),
         outputKey: validateOutputKey("foo"),

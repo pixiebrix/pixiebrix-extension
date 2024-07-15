@@ -20,12 +20,12 @@ import { propertiesToSchema } from "@/utils/schemaUtils";
  * A test helper brick that returns and stores the BrickOptions.context.
  */
 export class ContextBrick extends BrickABC {
-  static BLOCK_ID = validateRegistryId("test/context");
+  static BRICK_ID = validateRegistryId("test/context");
 
   static contexts: UnknownObject[] = [];
 
   constructor() {
-    super(ContextBrick.BLOCK_ID, "Return Context");
+    super(ContextBrick.BRICK_ID, "Return Context");
   }
 
   static clearContexts() {
@@ -44,12 +44,12 @@ export class ContextBrick extends BrickABC {
  * A test helper brick that returns and stores the brick options it was called with.
  */
 export class OptionsBrick extends BrickABC {
-  static BLOCK_ID = validateRegistryId("test/options");
+  static BRICK_ID = validateRegistryId("test/options");
 
   static options: BrickOptions[] = [];
 
   constructor() {
-    super(OptionsBrick.BLOCK_ID, "Return Options");
+    super(OptionsBrick.BRICK_ID, "Return Options");
   }
 
   static clearOptions() {
@@ -68,9 +68,9 @@ export class OptionsBrick extends BrickABC {
  * A test helper brick that echos a message.
  */
 export class EchoBrick extends BrickABC {
-  static BLOCK_ID = validateRegistryId("test/echo");
+  static BRICK_ID = validateRegistryId("test/echo");
   constructor() {
-    super(EchoBrick.BLOCK_ID, "Echo Brick");
+    super(EchoBrick.BRICK_ID, "Echo Brick");
   }
 
   inputSchema = propertiesToSchema(
@@ -88,10 +88,10 @@ export class EchoBrick extends BrickABC {
 }
 
 export class DeferredEchoBrick extends BrickABC {
-  static BLOCK_ID = validateRegistryId("test/deferred");
+  static BRICK_ID = validateRegistryId("test/deferred");
   readonly promiseOrFactory: Promise<unknown> | (() => Promise<unknown>);
   constructor(promiseOrFactory: Promise<unknown> | (() => Promise<unknown>)) {
-    super(DeferredEchoBrick.BLOCK_ID, "Deferred Brick");
+    super(DeferredEchoBrick.BRICK_ID, "Deferred Brick");
     this.promiseOrFactory = promiseOrFactory;
   }
 
