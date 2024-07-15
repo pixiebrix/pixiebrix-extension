@@ -26,5 +26,5 @@ export type SetActiveField = React.Dispatch<React.SetStateAction<string>>;
 
 export type SelectStringOption = {
   label: string;
-  value: string;
+  value: string | null;
 };

@@ -57,6 +57,7 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { Collapse } from "react-bootstrap";
 import { joinName, joinPathParts } from "@/utils/formUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -98,7 +99,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
   uiOptionsPath,
 }) => {
   const configName = partial(joinName, uiOptionsPath);
-  const [{ value: showSubmitToolbar = false }] = useField<boolean | null>(
+  const [{ value: showSubmitToolbar }] = useField<boolean | null>(
     configName("submitToolbar", "show"),
   );
 
@@ -133,7 +134,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
         }}
         isRequired
       />
-      <Collapse in={showSubmitToolbar}>
+      <Collapse in={showSubmitToolbar ?? false}>
         <SchemaField
           name={configName("submitToolbar", "icon")}
           schema={{ $ref: "https://app.pixiebrix.com/schemas/icon#" }}
@@ -163,7 +164,9 @@ const FieldEditor: React.FC<{
     `${fullPropertyName}.${fieldName}`;
 
   const [internalPropertyName, setInternalPropertyName] = useState<string>("");
-  const [propertyNameError, setPropertyNameError] = useState<string>(null);
+  const [propertyNameError, setPropertyNameError] = useState<string | null>(
+    null,
+  );
   useEffect(() => {
     setInternalPropertyName(propertyName);
     setPropertyNameError(null);
@@ -178,6 +181,10 @@ const FieldEditor: React.FC<{
   );
 
   const validatePropertyName = (nextName: string) => {
+    assertNotNullish(
+      schema,
+      "Schema must be defined to validate property name",
+    );
     const error = validateNextPropertyName(schema, propertyName, nextName);
 
     setPropertyNameError(error);
@@ -227,7 +234,14 @@ const FieldEditor: React.FC<{
   };
 
   const getSelectedUiTypeOption = () => {
+    assertNotNullish(
+      schema?.properties,
+      "Schema properties must be defined to get selected UI type option",
+    );
     const fieldSchema = schema.properties[propertyName];
+
+    assertNotNullish(fieldSchema, `Field schema not found for ${propertyName}`);
+
     if (typeof fieldSchema === "boolean") {
       return UNKNOWN_OPTION;
     }
@@ -268,6 +282,11 @@ const FieldEditor: React.FC<{
     target: { value: nextIsRequired },
   }: React.ChangeEvent<CheckBoxLike>) => {
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      assertNotNullish(
+        draft.schema,
+        "Schema must be defined to change required",
+      );
+
       draft.schema.required ||= [];
 
       if (nextIsRequired) {
@@ -284,7 +303,7 @@ const FieldEditor: React.FC<{
     await setRjsfSchema(nextRjsfSchema);
   };
 
-  const isRequired = (schema.required ?? []).includes(propertyName);
+  const isRequired = (schema?.required ?? []).includes(propertyName);
 
   const selectedUiTypeOption = getSelectedUiTypeOption();
 
@@ -325,7 +344,7 @@ const FieldEditor: React.FC<{
         }
       : parseUiType(selectedUiTypeOption.value);
 
-  const defaultFieldProps: SchemaFieldProps =
+  const defaultFieldProps: SchemaFieldProps | null =
     selectedUiTypeOption.value == null
       ? null
       : {
@@ -382,9 +401,9 @@ const FieldEditor: React.FC<{
       )}
 
       {defaultFieldProps &&
-        !FIELD_TYPES_WITHOUT_DEFAULT.includes(selectedUiTypeOption.value) && (
-          <SchemaField {...defaultFieldProps} />
-        )}
+        !FIELD_TYPES_WITHOUT_DEFAULT.includes(
+          selectedUiTypeOption.value ?? "",
+        ) && <SchemaField {...defaultFieldProps} />}
 
       {shouldShowPlaceholderText(uiType) && (
         <SchemaField {...placeholderProps} />
