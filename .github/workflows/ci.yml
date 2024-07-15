@@ -21,7 +21,7 @@ env:
   SERVICE_URL: https://app-stg.pixiebrix.com/
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
