@@ -17,6 +17,7 @@
 
 import { BasePageObject } from "../basePageObject";
 import { uuidv4 } from "@/types/helpers";
+import { expect } from "../../fixtures/testBase";
 
 export type StarterBrickUIName =
   | "Context Menu"
@@ -30,6 +31,12 @@ export class ModListItem extends BasePageObject {
   saveButton = this.locator("[data-icon=save]");
   get menuButton() {
     return this.getByLabel(" - Ellipsis");
+  }
+
+  async isAvailable() {
+    return this.getByRole("img", {
+      name: "Not available on page",
+    }).isVisible();
   }
 
   async select() {

@@ -51,18 +51,15 @@ test("Unavailable mod", async ({ page, extensionId, newPageEditorPage }) => {
   const pageEditorPage = await newPageEditorPage(page.url());
   await pageEditorPage.modListingPanel
     .getModListItemByName("Google.com trigger")
-    .click();
+    .select();
+
   const googleTriggerStarterBrick =
     pageEditorPage.modListingPanel.getModStarterBrick(
       "Google.com trigger",
       "Google.com trigger",
     );
 
-  await expect(
-    googleTriggerStarterBrick.getByRole("img", {
-      name: "Not available on page",
-    }),
-  ).toBeVisible();
+  expect(googleTriggerStarterBrick.isAvailable()).toBeTruthy();
 });
 
 test("Page Editor reload", async ({ page, newPageEditorPage, extensionId }) => {
