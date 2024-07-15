@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  ActivateModPage,
-  ModsPage,
-} from "../../pageObjects/extensionConsole/modsPage";
+import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { test, expect } from "../../fixtures/testBase";
 
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import type { PageEditorPage } from "../../pageObjects/pageEditor/pageEditorPage";
+import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
 
 test("Restricted browser page", async ({
   page,
@@ -32,9 +29,7 @@ test("Restricted browser page", async ({
 }) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
-
-  const modsPage = new ModsPage(page, extensionId);
-  await modsPage.goto();
+  await page.goto(getBaseExtensionConsoleUrl(extensionId));
 
   await expect(
     pageEditorPage.getByText("Get started with PixieBrix"),
@@ -67,7 +62,7 @@ test("Page Editor reload", async ({ page, newPageEditorPage, extensionId }) => {
   const firstPageEditorPage = await newPageEditorPage(page.url());
 
   const newPage = await page.context().newPage();
-  newPage.goto("/bootstrap-5");
+  await newPage.goto("/bootstrap-5");
   const secondPageEditorPage = await newPageEditorPage(page.url());
 
   await secondPageEditorPage.modListingPanel.addStarterBrick("Trigger");
