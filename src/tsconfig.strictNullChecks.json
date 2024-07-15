@@ -4,8 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./pageEditor/fields/FormModalOptions.tsx",
-    "./components/formBuilder/edit/FormEditor.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -64,6 +62,7 @@
     "./analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis.ts",
     "./analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor.test.ts",
     "./analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor.ts",
+    "./analysis/analysisVisitors/formBrickAnalysis.ts",
     "./analysis/analysisVisitors/httpRequestAnalysis.test.ts",
     "./analysis/analysisVisitors/httpRequestAnalysis.ts",
     "./analysis/analysisVisitors/modComponentUrlPatternAnalysis.test.ts",
@@ -582,6 +581,7 @@
     "./components/formBuilder/TextAreaWidget.tsx",
     "./components/formBuilder/edit/ActiveField.tsx",
     "./components/formBuilder/edit/FieldEditor.tsx",
+    "./components/formBuilder/edit/FormEditor.tsx",
     "./components/formBuilder/edit/FormIntroFields.tsx",
     "./components/formBuilder/formBuilderHelpers.test.ts",
     "./components/formBuilder/formBuilderHelpers.ts",
@@ -1111,6 +1111,7 @@
     "./pageEditor/fields/DatabaseGetOptions.tsx",
     "./pageEditor/fields/DatabaseOptions.tsx",
     "./pageEditor/fields/DatabasePutOptions.tsx",
+    "./pageEditor/fields/FormModalOptions.tsx",
     "./pageEditor/fields/LocationWidget.tsx",
     "./pageEditor/fields/MultiSelectWidget.tsx",
     "./pageEditor/fields/PipelineToggleField.tsx",
