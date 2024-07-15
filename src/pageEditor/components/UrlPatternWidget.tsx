@@ -66,9 +66,9 @@ const UrlPatternWidget: React.VFC<SchemaFieldProps> = (props) => {
       }}
     >
       <ArrayWidget
-        schema={{ items: urlSchemaProject }}
         addButtonCaption="Add URL Pattern"
         {...props}
+        schema={{ items: urlSchemaProject }}
       />
     </FieldRuntimeContext.Provider>
   );
