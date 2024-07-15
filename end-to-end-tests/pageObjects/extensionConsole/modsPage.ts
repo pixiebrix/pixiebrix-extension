@@ -18,6 +18,7 @@
 import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
 import { BasePageObject } from "../basePageObject";
+import { ensureVisibility } from "../../utils";
 
 export class ModTableItem extends BasePageObject {
   dropdownButton = this.locator(".dropdown");
@@ -158,8 +159,8 @@ export class ActivateModPage extends BasePageObject {
     await this.page.goto(this.activateModUrl);
 
     await expect(this.getByText("Activate Mod")).toBeVisible();
-    // Loading the mod details may take more than 5 seconds
-    await expect(this.getByText(this.modId)).toBeVisible({
+    // Loading the mod details may take a long time. Using ensureVisibility because the modId may be attached and hidden
+    await ensureVisibility(this.getByText(this.modId), {
       timeout: 10_000,
     });
   }
