@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./extensionConsole/pages/activateMod/OptionsBody.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -868,6 +867,9 @@
     "./extensionConsole/pages/activateMod/IntegrationDescriptor.tsx",
     "./extensionConsole/pages/activateMod/IntegrationsBody.test.tsx",
     "./extensionConsole/pages/activateMod/IntegrationsBody.tsx",
+    "./extensionConsole/pages/activateMod/OptionsBody.stories.tsx",
+    "./extensionConsole/pages/activateMod/OptionsBody.test.tsx",
+    "./extensionConsole/pages/activateMod/OptionsBody.tsx",
     "./extensionConsole/pages/activateMod/UrlPermissionsList.tsx",
     "./extensionConsole/pages/deployments/DeploymentsContext.tsx",
     "./extensionConsole/pages/deployments/activateDeployments.ts",
