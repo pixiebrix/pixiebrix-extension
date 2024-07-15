@@ -23,6 +23,7 @@ import { test, expect } from "../../fixtures/testBase";
 
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
+import type { PageEditorPage } from "../../pageObjects/pageEditor/pageEditorPage";
 
 test("Restricted browser page", async ({
   page,
@@ -51,7 +52,7 @@ test("Unavailable mod", async ({ page, extensionId, newPageEditorPage }) => {
     .getModListItemByName("Google.com trigger")
     .click();
   const googleTriggerStarterBrick =
-    await pageEditorPage.modListingPanel.getModStarterBrick(
+    pageEditorPage.modListingPanel.getModStarterBrick(
       "Google.com trigger",
       "Google.com trigger",
     );
@@ -61,4 +62,33 @@ test("Unavailable mod", async ({ page, extensionId, newPageEditorPage }) => {
       name: "Not available on page",
     }),
   ).toBeVisible();
+});
+
+test("Page Editor reload", async ({ page, newPageEditorPage, extensionId }) => {
+  let pageEditorPage: PageEditorPage;
+
+  await test.step("Activate mod, and initialize page editor", async () => {
+    const modId = "@e2e-testing/simple-sidebar-panel";
+    const modActivationPage = new ActivateModPage(page, extensionId, modId);
+    await modActivationPage.goto();
+    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+    await page.goto("/");
+    pageEditorPage = await newPageEditorPage(page.url());
+  });
+
+  await test.step("Activate another mod to trigger a Page Editor refresh", async () => {
+    const modId = "@e2e-testing/show-alert";
+    const newPage = await page.context().newPage();
+    const modActivationPage = new ActivateModPage(newPage, extensionId, modId);
+    await modActivationPage.goto();
+    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+  });
+
+  await test.step("Verify the add brick modal is hidden after the Page Editor refreshes", async () => {
+    await expect(
+      pageEditorPage.getByText(
+        "There were changes made in a different instance of the Page Editor. Reload this Page Editor to sync the changes.",
+      ),
+    ).toBeVisible();
+  });
 });
