@@ -66,16 +66,10 @@ export class PageEditorPage extends BasePageObject {
     // Set the viewport size to the expected in horizontal layout size of the devconsole when docked on the bottom.
     await this.page.setViewportSize({ width: 1280, height: 600 });
     await this.getByTestId(`tab-${this.urlToConnectTo}`).click();
-    const connectedPageHeading = this.getByRole("heading", {
+    const heading = this.getByRole("heading", {
       name: "Welcome to the Page Editor!",
     });
-    const restrictedPageHeading = this.getByRole("heading", {
-      name: "Get started with PixieBrix",
-    });
-    await Promise.race([
-      expect(connectedPageHeading).toBeVisible(),
-      expect(restrictedPageHeading).toBeVisible(),
-    ]);
+    await expect(heading).toBeVisible();
   }
 
   async bringToFront() {

@@ -30,10 +30,11 @@ test("Restricted browser page", async ({
   newPageEditorPage,
   extensionId,
 }) => {
+  await page.goto("/");
+  const pageEditorPage = await newPageEditorPage(page.url());
+
   const modsPage = new ModsPage(page, extensionId);
   await modsPage.goto();
-
-  const pageEditorPage = await newPageEditorPage(page.url());
 
   await expect(
     pageEditorPage.getByText("Get started with PixieBrix"),
