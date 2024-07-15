@@ -87,16 +87,15 @@ describe("ConnectedFieldTemplate", () => {
       );
 
     it("shows analysis error", async () => {
-      const formState = formStateFactory(
-        undefined,
-        pipelineFactory(
+      const formState = formStateFactory({
+        brickPipeline: pipelineFactory(
           brickConfigFactory({
             config: {
               testField: "test value",
             },
           }),
         ),
-      );
+      });
 
       const path = "modComponent.brickPipeline[0].config.testField";
 
@@ -136,16 +135,15 @@ describe("ConnectedFieldTemplate", () => {
     });
 
     it("shows both formik and analysis error", async () => {
-      const formState = formStateFactory(
-        undefined,
-        pipelineFactory(
+      const formState = formStateFactory({
+        brickPipeline: pipelineFactory(
           brickConfigFactory({
             config: {
               testField: "test value",
             },
           }),
         ),
-      );
+      });
 
       const path = "modComponent.brickPipeline[0].config.testField";
 
@@ -201,16 +199,15 @@ describe("ConnectedFieldTemplate", () => {
     });
 
     it("shows multiple analysis errors", async () => {
-      const formState = formStateFactory(
-        undefined,
-        pipelineFactory(
+      const formState = formStateFactory({
+        brickPipeline: pipelineFactory(
           brickConfigFactory({
             config: {
               testField: "test value",
             },
           }),
         ),
-      );
+      });
 
       const path = "modComponent.brickPipeline[0].config.testField";
 
@@ -270,16 +267,15 @@ describe("ConnectedFieldTemplate", () => {
     });
 
     it("does not show analysis error annotation when the annotation detail does not match the field value", async () => {
-      const formState = formStateFactory(
-        undefined,
-        pipelineFactory(
+      const formState = formStateFactory({
+        brickPipeline: pipelineFactory(
           brickConfigFactory({
             config: {
               testField: toExpression("var", "@mod."),
             },
           }),
         ),
-      );
+      });
 
       const path = "modComponent.brickPipeline[0].config.testField";
 

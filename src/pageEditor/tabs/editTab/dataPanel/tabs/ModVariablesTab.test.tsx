@@ -61,7 +61,9 @@ describe("ModVariablesTab", () => {
 
   test("it renders with mod's mod component", async () => {
     const formState = formStateFactory({
-      modMetadata: modMetadataFactory(),
+      formStateConfig: {
+        modMetadata: modMetadataFactory(),
+      },
     });
     const { asFragment } = await renderPageStateTab(formState);
     expect(asFragment()).toMatchSnapshot();

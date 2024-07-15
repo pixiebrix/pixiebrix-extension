@@ -68,7 +68,9 @@ describe("ActivatedModComponentListItem", () => {
     // is selected (active) in the sidebar
     const modComponent = modComponentFactory();
     const formState = formStateFactory({
-      uuid: modComponent.id,
+      formStateConfig: {
+        uuid: modComponent.id,
+      },
     });
     render(
       <ActivatedModComponentListItem modComponent={modComponent} isAvailable />,
