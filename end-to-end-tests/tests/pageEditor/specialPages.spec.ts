@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ModsPage } from "../../pageObjects/extensionConsole/modsPage";
+import {
+  ActivateModPage,
+  ModsPage,
+} from "../../pageObjects/extensionConsole/modsPage";
 import { test, expect } from "../../fixtures/testBase";
 
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
 
-test("Restricted browser page panel", async ({
+test("Restricted browser page", async ({
   page,
   newPageEditorPage,
   extensionId,
@@ -33,5 +36,29 @@ test("Restricted browser page panel", async ({
 
   await expect(
     pageEditorPage.getByText("Get started with PixieBrix"),
+  ).toBeVisible();
+});
+
+test("Unavailable mod", async ({ page, extensionId, newPageEditorPage }) => {
+  const modId = "@e2e-testing/googlecom-trigger";
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.goto();
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
+  await page.goto("/");
+  const pageEditorPage = await newPageEditorPage(page.url());
+  await pageEditorPage.modListingPanel
+    .getModListItemByName("Google.com trigger")
+    .click();
+  const googleTriggerStarterBrick =
+    await pageEditorPage.modListingPanel.getModStarterBrick(
+      "Google.com trigger",
+      "Google.com trigger",
+    );
+
+  await expect(
+    googleTriggerStarterBrick.getByRole("img", {
+      name: "Not available on page",
+    }),
   ).toBeVisible();
 });
