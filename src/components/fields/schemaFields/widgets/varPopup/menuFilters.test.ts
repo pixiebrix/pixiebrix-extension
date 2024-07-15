@@ -254,13 +254,13 @@ describe("expandCurrentVariableLevel", () => {
 });
 
 describe("defaultMenuOption", () => {
-  test("it handles empty var map", () => {
+  test("handles empty var map", () => {
     const options = getMenuOptions(new VarMap(), {});
     const filteredOptions = filterOptionsByVariable(options, "@input.foo");
     expect(defaultMenuOption(filteredOptions, "@input.foo")).toBeNull();
   });
 
-  test("it defaults to exact nested variable", () => {
+  test("defaults to exact nested variable", () => {
     const varMap = new VarMap();
     varMap.setExistenceFromValues({
       source: "input",
@@ -282,7 +282,7 @@ describe("defaultMenuOption", () => {
     ]);
   });
 
-  test("it defaults to first partial match", () => {
+  test("defaults to first partial match", () => {
     const varMap = new VarMap();
     varMap.setExistenceFromValues({
       source: "input",
@@ -303,7 +303,25 @@ describe("defaultMenuOption", () => {
     ]);
   });
 
-  test("it default for '@'", () => {
+  test("skips the partial check for a trailing dot", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: "42",
+          foz: "42",
+        },
+      },
+    });
+
+    const options = getMenuOptions(varMap, {});
+    const filteredOptions = filterOptionsByVariable(options, "@input.");
+
+    expect(defaultMenuOption(filteredOptions, "@input.")).toEqual(["@input"]);
+  });
+
+  test("default for '@'", () => {
     const varMap = new VarMap();
     varMap.setExistenceFromValues({
       source: "input",
@@ -322,7 +340,7 @@ describe("defaultMenuOption", () => {
     expect(defaultMenuOption(filteredOptions, "@")).toEqual(["@input"]);
   });
 
-  test("it default to last source", () => {
+  test("default to last source", () => {
     const varMap = new VarMap();
     varMap.setExistenceFromValues({
       source: "input",
@@ -350,7 +368,7 @@ describe("defaultMenuOption", () => {
 });
 
 describe("moveMenuOption", () => {
-  test("it moves to next matching nested option", () => {
+  test("moves to next matching nested option", () => {
     const varMap = new VarMap();
     varMap.setExistenceFromValues({
       source: "input",
@@ -375,7 +393,7 @@ describe("moveMenuOption", () => {
     ).toEqual(["foz", "@input"]);
   });
 
-  test("it wraps around forward within nested vars", () => {
+  test("wraps around forward within nested vars", () => {
     const varMap = new VarMap();
     varMap.setExistenceFromValues({
       source: "input",
@@ -400,7 +418,7 @@ describe("moveMenuOption", () => {
     ).toEqual(["foo", "@input"]);
   });
 
-  test("it wraps backward within nested var", () => {
+  test("wraps backward within nested var", () => {
     const varMap = new VarMap();
     varMap.setExistenceFromValues({
       source: "input",
@@ -425,7 +443,7 @@ describe("moveMenuOption", () => {
     ).toEqual(["foz", "@input"]);
   });
 
-  test("it moves to previous nested option", () => {
+  test("moves to previous nested option", () => {
     const varMap = new VarMap();
     varMap.setExistenceFromValues({
       source: "input",
