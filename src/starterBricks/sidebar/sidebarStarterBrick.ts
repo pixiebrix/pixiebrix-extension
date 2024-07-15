@@ -63,7 +63,7 @@ import {
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { mapModComponentToMessageContext } from "@/utils/modUtils";
-import { STATE_CHANGE_EVENT_TYPE } from "@/platform/state/stateTypes";
+import { STATE_CHANGE_JS_EVENT_TYPE } from "@/platform/state/stateTypes";
 
 export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConfig> {
   abstract get trigger(): Trigger;
@@ -317,7 +317,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     let relevantModComponents;
 
     switch (this.trigger) {
-      case STATE_CHANGE_EVENT_TYPE: {
+      case STATE_CHANGE_JS_EVENT_TYPE: {
         // For performance, only run mod components that could be impacted by the state change.
         // Perform the check _before_ debounce, so that the debounce timer is not impacted by state from other mods.
         // See https://github.com/pixiebrix/pixiebrix-extension/issues/6804 for more details/considerations.

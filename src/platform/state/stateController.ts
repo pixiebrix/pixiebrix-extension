@@ -26,7 +26,7 @@ import { type ModComponentRef } from "@/types/modComponentTypes";
 import {
   MergeStrategies,
   type MergeStrategy,
-  STATE_CHANGE_EVENT_TYPE,
+  STATE_CHANGE_JS_EVENT_TYPE,
   type StateChangeEventDetail,
   type StateNamespace,
   StateNamespaces,
@@ -79,7 +79,7 @@ function dispatchStateChangeEventOnChange({
   modComponentRef: Except<ModComponentRef, "starterBrickId">;
 }) {
   if (!isEqual(previous, next)) {
-    // For now, leave off the event data because state controller in content script  is using we're using
+    // For now, leave off the event data because state controller in the content script uses JavaScript/DOM
     // events, which is a public channel (the host site/other extensions can see the event).
     const detail = {
       namespace,
@@ -89,7 +89,7 @@ function dispatchStateChangeEventOnChange({
 
     console.debug("Dispatching statechange", detail);
 
-    const event = new CustomEvent(STATE_CHANGE_EVENT_TYPE, {
+    const event = new CustomEvent(STATE_CHANGE_JS_EVENT_TYPE, {
       detail,
       bubbles: true,
     });

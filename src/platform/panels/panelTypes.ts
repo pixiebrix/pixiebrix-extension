@@ -25,7 +25,7 @@ import { type Nullishable } from "@/utils/nullishUtils";
 /**
  * @see RefreshTrigger
  */
-// Match naming of the sidebar panel extension point triggers
+// Match naming of the sidebar panel starter brick triggers
 export const RefreshTriggers = {
   MANUAL: "manual",
   STATE_CHANGE: "statechange",

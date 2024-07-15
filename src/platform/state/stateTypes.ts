@@ -37,9 +37,9 @@ export const StateNamespaces = {
 export type StateNamespace = ValueOf<typeof StateNamespaces>;
 
 /**
- * JS event name fired for state change events.
+ * JavaScript event name fired for state change events.
  */
-export const STATE_CHANGE_EVENT_TYPE = "statechange" as const;
+export const STATE_CHANGE_JS_EVENT_TYPE = "statechange" as const;
 
 /**
  * Event detail fired when mod state changes.
@@ -60,7 +60,7 @@ export function isStateChangeEvent(
   event: Event,
 ): event is CustomEvent<StateChangeEventDetail> {
   return (
-    event.type === STATE_CHANGE_EVENT_TYPE &&
+    event.type === STATE_CHANGE_JS_EVENT_TYPE &&
     "detail" in event &&
     "namespace" in (event as CustomEvent).detail
   );

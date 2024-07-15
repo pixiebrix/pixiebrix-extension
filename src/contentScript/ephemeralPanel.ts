@@ -47,7 +47,7 @@ import { getThisFrame } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import { showModal } from "@/contentScript/modalDom";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { STATE_CHANGE_EVENT_TYPE } from "@/platform/state/stateTypes";
+import { STATE_CHANGE_JS_EVENT_TYPE } from "@/platform/state/stateTypes";
 
 export async function createFrameSource(
   nonce: string,
@@ -231,7 +231,7 @@ export async function ephemeralPanel({
   };
 
   if (refreshTrigger === RefreshTriggers.STATE_CHANGE) {
-    $(document).on(STATE_CHANGE_EVENT_TYPE, rerender);
+    $(document).on(STATE_CHANGE_JS_EVENT_TYPE, rerender);
   }
 
   try {
@@ -260,7 +260,7 @@ export async function ephemeralPanel({
     }
   } finally {
     controller.abort();
-    $(document).off(STATE_CHANGE_EVENT_TYPE, rerender);
+    $(document).off(STATE_CHANGE_JS_EVENT_TYPE, rerender);
   }
 
   return {};

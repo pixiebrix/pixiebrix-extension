@@ -19,7 +19,7 @@ import { setState } from "@/platform/state/stateController";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   MergeStrategies,
-  STATE_CHANGE_EVENT_TYPE,
+  STATE_CHANGE_JS_EVENT_TYPE,
   StateNamespaces,
 } from "@/platform/state/stateTypes";
 
@@ -27,7 +27,7 @@ describe("pageState", () => {
   it("deep merge triggers event", () => {
     const listener = jest.fn();
 
-    document.addEventListener(STATE_CHANGE_EVENT_TYPE, listener);
+    document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
 
     const modComponentRef = modComponentRefFactory();
 
@@ -44,7 +44,7 @@ describe("pageState", () => {
   it("deep merges async state", () => {
     const listener = jest.fn();
 
-    document.addEventListener(STATE_CHANGE_EVENT_TYPE, listener);
+    document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
 
     const modComponentRef = modComponentRefFactory();
 

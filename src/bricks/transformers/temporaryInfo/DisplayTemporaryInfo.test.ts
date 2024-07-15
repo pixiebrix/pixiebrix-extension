@@ -61,7 +61,7 @@ import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import {
   MergeStrategies,
-  STATE_CHANGE_EVENT_TYPE,
+  STATE_CHANGE_JS_EVENT_TYPE,
   StateNamespaces,
 } from "@/platform/state/stateTypes";
 import { RefreshTriggers } from "@/platform/panels/panelTypes";
@@ -309,7 +309,7 @@ describe("DisplayTemporaryInfo", () => {
 
     expect(jest.mocked(showTemporarySidebarPanel)).toHaveBeenCalled();
 
-    $(document).trigger(STATE_CHANGE_EVENT_TYPE);
+    $(document).trigger(STATE_CHANGE_JS_EVENT_TYPE);
 
     await tick();
 
