@@ -53,13 +53,13 @@ describe("ModVariablesTab", () => {
     return utils;
   }
 
-  test("it renders with standalone mod component", async () => {
+  it("renders with standalone mod component", async () => {
     const formState = formStateFactory();
     const { asFragment } = await renderPageStateTab(formState);
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("it renders with mod's mod component", async () => {
+  it("renders with mod's mod component", async () => {
     const formState = formStateFactory({
       formStateConfig: {
         modMetadata: modMetadataFactory(),

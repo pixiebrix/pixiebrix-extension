@@ -43,7 +43,7 @@ describe("SetInputValue", () => {
     await expect(setInputValueBrick.isRootAware()).resolves.toBe(true);
   });
 
-  test("it sets text field value", async () => {
+  it("sets text field value", async () => {
     await setInputValueBrick.run(
       unsafeAssumeValidArg({
         inputs: [{ selector: "[name='name']", value: "Bob Smith" }],
@@ -54,7 +54,7 @@ describe("SetInputValue", () => {
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
   });
 
-  test("it is root aware", async () => {
+  it("is root aware", async () => {
     await setInputValueBrick.run(
       unsafeAssumeValidArg({
         inputs: [{ selector: "[name='name']", value: "Bob Smith" }],
@@ -138,7 +138,7 @@ describe("FormFill", () => {
     await expect(formFillBrick.isRootAware()).resolves.toBe(true);
   });
 
-  test("it sets text field value", async () => {
+  it("sets text field value", async () => {
     await formFillBrick.run(
       unsafeAssumeValidArg({
         formSelector: "form",
@@ -150,7 +150,7 @@ describe("FormFill", () => {
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
   });
 
-  test("it is root aware", async () => {
+  it("is root aware", async () => {
     const promise = formFillBrick.run(
       unsafeAssumeValidArg({
         formSelector: "form",

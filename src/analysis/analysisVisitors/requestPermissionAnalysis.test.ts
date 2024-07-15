@@ -45,7 +45,7 @@ describe("requestPermissionAnalysis", () => {
     containsMock.mockReset();
   });
 
-  test("it annotates http: url", async () => {
+  it("annotates http: url", async () => {
     const visitor = new RequestPermissionAnalysis();
     const formState = brickModComponentFactory("http://example.com");
 
@@ -63,7 +63,7 @@ describe("requestPermissionAnalysis", () => {
     ]);
   });
 
-  test("it annotates invalid url", async () => {
+  it("annotates invalid url", async () => {
     const visitor = new RequestPermissionAnalysis();
     const formState = brickModComponentFactory(
       "https://there is a space in here",
@@ -82,7 +82,7 @@ describe("requestPermissionAnalysis", () => {
     ]);
   });
 
-  test("it annotates insufficient permissions", async () => {
+  it("annotates insufficient permissions", async () => {
     const visitor = new RequestPermissionAnalysis();
     const formState = brickModComponentFactory("https://example.com");
 

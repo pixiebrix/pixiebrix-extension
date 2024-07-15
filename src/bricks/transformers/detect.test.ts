@@ -39,22 +39,19 @@ describe("DetectElement", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test.each([undefined, false])(
-    "it detects element: %s",
-    async (isRootAware) => {
-      const result = await brick.run(
-        unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        brickOptionsFactory(),
-      );
+  it.each([undefined, false])("detects element: %s", async (isRootAware) => {
+    const result = await brick.run(
+      unsafeAssumeValidArg({ selector: "button", isRootAware }),
+      brickOptionsFactory(),
+    );
 
-      expect(result).toStrictEqual({
-        count: 1,
-        exists: true,
-      });
-    },
-  );
+    expect(result).toStrictEqual({
+      count: 1,
+      exists: true,
+    });
+  });
 
-  test("it uses root if isRootAware: true", async () => {
+  it("uses root if isRootAware: true", async () => {
     const result = await brick.run(
       unsafeAssumeValidArg({ selector: "button", isRootAware: true }),
       brickOptionsFactory({

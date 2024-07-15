@@ -21,7 +21,7 @@ import { renderHook } from "@testing-library/react-hooks";
 import { cloneDeep } from "lodash";
 
 describe("useKeyboardNavigation", () => {
-  test("only sets the default active key path when the menu options change, ignoring referential inequality", async () => {
+  it("only sets the default active key path when the menu options change, ignoring referential inequality", async () => {
     const onSelect = jest.fn();
     const menuOptions: MenuOptions = [
       ["input", { "@input": { description: {}, icon: {} } }],
@@ -66,7 +66,7 @@ describe("useKeyboardNavigation", () => {
     expect(prevResult.activeKeyPath).toBe(result.current.activeKeyPath);
   });
 
-  test("sets the default active key path when the likely variable changes", async () => {
+  it("sets the default active key path when the likely variable changes", async () => {
     const onSelect = jest.fn();
     const menuOptions: MenuOptions = [
       ["input", { "@input": { description: {}, icon: {} } }],

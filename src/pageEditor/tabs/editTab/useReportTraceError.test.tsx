@@ -84,7 +84,7 @@ beforeEach(() => {
 });
 
 describe("useReportTraceError", () => {
-  test("it reports an error", () => {
+  it("reports an error", () => {
     renderUseReportTraceError([traceErrorFactory()]);
     expect(reportEvent).toHaveBeenCalledWith(
       "PageEditorExtensionError",

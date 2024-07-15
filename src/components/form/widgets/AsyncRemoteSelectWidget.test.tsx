@@ -123,7 +123,7 @@ describe("AsyncRemoteSelectWidget", () => {
     });
   });
 
-  test("it passes the current value to the factory", async () => {
+  it("passes the current value to the factory", async () => {
     const onChangeMock = jest.fn();
     const optionsFactoryMock = jest.fn().mockResolvedValue([]);
 
