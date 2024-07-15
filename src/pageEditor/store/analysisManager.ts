@@ -45,8 +45,8 @@ import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis
 import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import SelectorAnalysis from "@/analysis/analysisVisitors/selectorAnalysis";
-import { StateNamespaces } from "@/platform/state/stateController";
 import ConditionAnalysis from "@/analysis/analysisVisitors/conditionAnalysis";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 const runtimeActions = runtimeSlice.actions;
 

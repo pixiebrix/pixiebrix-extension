@@ -22,7 +22,8 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes";
-import { StateNamespaces } from "@/platform/state/stateController";
+
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 describe("PageStateAnalysis", () => {
   it.each([SetPageState.BRICK_ID, GetPageState.BRICK_ID])(

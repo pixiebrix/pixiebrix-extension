@@ -47,11 +47,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import pDefer from "p-defer";
 import { type RendererErrorPayload } from "@/types/rendererTypes";
-import {
-  MergeStrategies,
-  setState,
-  StateNamespaces,
-} from "@/platform/state/stateController";
+import { setState } from "@/platform/state/stateController";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";
@@ -63,6 +59,12 @@ import {
 } from "@/testUtils/factories/modComponentFactories";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import {
+  MergeStrategies,
+  STATE_CHANGE_JS_EVENT_TYPE,
+  StateNamespaces,
+} from "@/platform/state/stateTypes";
+import { RefreshTriggers } from "@/platform/panels/panelTypes";
 
 jest.mock("@/contentScript/modalDom");
 jest.mock("@/contentScript/sidebarController");
@@ -297,7 +299,7 @@ describe("DisplayTemporaryInfo", () => {
         title: "Test Temp Panel",
         body: toExpression("pipeline", [{ id: renderer.id, config }]),
         location: "panel",
-        refreshTrigger: "statechange",
+        refreshTrigger: RefreshTriggers.MANUAL,
       },
     };
 
@@ -307,7 +309,7 @@ describe("DisplayTemporaryInfo", () => {
 
     expect(jest.mocked(showTemporarySidebarPanel)).toHaveBeenCalled();
 
-    $(document).trigger("statechange");
+    $(document).trigger(STATE_CHANGE_JS_EVENT_TYPE);
 
     await tick();
 
@@ -335,7 +337,7 @@ describe("DisplayTemporaryInfo", () => {
           { id: renderer.id, config },
         ]),
         location: "panel",
-        refreshTrigger: "statechange",
+        refreshTrigger: RefreshTriggers.STATE_CHANGE,
       },
     };
 

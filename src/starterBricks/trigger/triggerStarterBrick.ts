@@ -51,6 +51,7 @@ import {
   type ReportMode,
   type TargetMode,
   type Trigger,
+  Triggers,
   USER_ACTION_TRIGGERS,
 } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import {
@@ -118,7 +119,7 @@ export function getDefaultAllowInactiveFramesForTrigger(
 ): boolean {
   // Prior to 1.8.7, the `background` flag was ignored for non-interval triggers. Therefore, the effective
   // default was `true` for non-interval triggers.
-  return trigger !== "interval";
+  return trigger !== Triggers.INTERVAL;
 }
 
 async function interval({
@@ -749,7 +750,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     { watch = false }: { watch?: boolean },
   ): void {
     const domEventName =
-      this.trigger === "custom"
+      this.trigger === Triggers.CUSTOM
         ? this.customTriggerOptions?.eventName
         : this.trigger;
 
@@ -834,7 +835,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     const $root = await this.getRoot();
 
     switch (this.trigger) {
-      case "load": {
+      case Triggers.LOAD: {
         assertNotNullish($root, "Root is required");
         await this.debouncedRunTriggersAndNotify([...$root], {
           nativeEvent: null,
@@ -842,35 +843,31 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         break;
       }
 
-      case "interval": {
+      case Triggers.INTERVAL: {
         this.attachInterval();
         break;
       }
 
-      case "initialize": {
+      case Triggers.INITIALIZE: {
         assertNotNullish($root, "Root is required");
         this.attachInitializeTrigger($root);
         break;
       }
 
-      case "appear": {
+      case Triggers.APPEAR: {
         assertNotNullish($root, "Root is required");
         this.assertElement($root);
         this.attachAppearTrigger($root);
         break;
       }
 
-      case "selectionchange": {
+      case Triggers.STATE_CHANGE:
+      case Triggers.SELECTION_CHANGE: {
         this.attachDocumentTrigger();
         break;
       }
 
-      case "statechange": {
-        this.attachDocumentTrigger();
-        break;
-      }
-
-      case "custom": {
+      case Triggers.CUSTOM: {
         assertNotNullish($root, "Root is required");
         this.attachDOMTrigger($root, { watch: false });
         break;

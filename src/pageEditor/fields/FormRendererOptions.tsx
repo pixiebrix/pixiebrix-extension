@@ -44,7 +44,8 @@ import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedColla
 import type { PipelineExpression } from "@/types/runtimeTypes";
 import { Collapse } from "react-bootstrap";
 import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
-import { StateNamespaces } from "@/platform/state/stateController";
+
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 const recordIdSchema: Schema = {
   type: "string",

@@ -22,7 +22,8 @@ import {
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type DeferExpression } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
-import { StateNamespaces } from "@/platform/state/stateController";
+
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 const documentBuilderElementExtras: Record<"form", DocumentBuilderElementType> =
   {

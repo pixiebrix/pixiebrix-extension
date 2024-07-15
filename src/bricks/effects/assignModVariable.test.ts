@@ -18,16 +18,12 @@
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import {
-  getState,
-  MergeStrategies,
-  setState,
-  StateNamespaces,
-} from "@/platform/state/stateController";
+import { getState, setState } from "@/platform/state/stateController";
 import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 const modComponentRef = modComponentRefFactory();
 

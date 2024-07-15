@@ -18,12 +18,7 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
-import {
-  getState,
-  MergeStrategies,
-  setState,
-  StateNamespaces,
-} from "@/platform/state/stateController";
+import { getState, setState } from "@/platform/state/stateController";
 import {
   type BrickArgs,
   type BrickOptions,
@@ -39,6 +34,7 @@ import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 /**
  * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
