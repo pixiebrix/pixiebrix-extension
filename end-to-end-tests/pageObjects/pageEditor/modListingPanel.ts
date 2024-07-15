@@ -17,8 +17,6 @@
 
 import { BasePageObject } from "../basePageObject";
 import { uuidv4 } from "@/types/helpers";
-import { expect } from "../../fixtures/testBase";
-
 export type StarterBrickUIName =
   | "Context Menu"
   | "Trigger"
