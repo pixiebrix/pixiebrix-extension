@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/components/SelectorMatchWidget.tsx",
     "./components/fields/schemaFields/widgets/UrlMatchPatternWidget.tsx",
     "./components/fields/schemaFields/widgets/TextWidget.tsx",
     "./components/fields/schemaFields/CssClassField.tsx",
