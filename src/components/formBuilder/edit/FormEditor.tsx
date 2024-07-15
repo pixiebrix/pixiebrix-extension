@@ -37,14 +37,14 @@ import { type Schema } from "@/types/schemaTypes";
 import { produce } from "immer";
 import { joinName } from "@/utils/formUtils";
 import { ActiveField } from "./ActiveField";
-import { assertNotNullish } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 export type FormEditorProps = {
   /**
    * The Formik name of the form field.
    */
   name: string;
-  activeField?: string;
+  activeField: Nullishable<string>;
   setActiveField: SetActiveField;
   fieldTypes?: SelectStringOption[];
 };

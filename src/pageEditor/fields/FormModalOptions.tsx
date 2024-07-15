@@ -114,12 +114,14 @@ const FormModalOptions: React.FC<{
       <ConnectedCollapsibleFieldSection title={"Advanced: Theme"}>
         <SchemaField
           name={configName("stylesheets")}
-          schema={TEMPORARY_FORM_SCHEMA.properties.stylesheets as Schema}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- hardcoded schema
+          schema={TEMPORARY_FORM_SCHEMA.properties!.stylesheets as Schema}
         />
         <SchemaField
           name={configName("disableParentStyles")}
           schema={
-            TEMPORARY_FORM_SCHEMA.properties.disableParentStyles as Schema
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- hardcoded schema
+            TEMPORARY_FORM_SCHEMA.properties!.disableParentStyles as Schema
           }
         />
       </ConnectedCollapsibleFieldSection>
