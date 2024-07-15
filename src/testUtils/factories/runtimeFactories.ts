@@ -31,6 +31,7 @@ import {
 import type { ReduceOptions } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * Factory for BrickOptions to pass to Brick.run method.
@@ -75,7 +76,7 @@ export const brickOptionsFactory = define<BrickOptions>({
 export const runMetadataFactory = define<RunMetadata>({
   runId: null,
   modComponentRef: modComponentRefFactory,
-  branches: [],
+  branches: () => [] as RunMetadata["branches"],
 });
 
 /**
@@ -85,8 +86,11 @@ export const runMetadataFactory = define<RunMetadata>({
  */
 export function reduceOptionsFactory(
   runtimeVersion: ApiVersion = "v3",
+  {
+    modComponentRef: modComponentRefOverride,
+  }: { modComponentRef?: ModComponentRef } = {},
 ): ReduceOptions {
-  const modComponentRef = modComponentRefFactory();
+  const modComponentRef = modComponentRefOverride ?? modComponentRefFactory();
   const logger = new ConsoleLogger(
     mapModComponentRefToMessageContext(modComponentRef),
   );

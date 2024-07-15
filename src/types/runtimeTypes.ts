@@ -24,7 +24,7 @@ import { type BrickPipeline } from "@/bricks/types";
 import { type PanelPayload } from "./sidebarTypes";
 import { type PlatformProtocol } from "@/platform/platformProtocol";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { ModComponentRef } from "@/types/modComponentTypes";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.

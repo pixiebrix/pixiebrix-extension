@@ -16,16 +16,10 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
 import CustomEventEffect from "@/bricks/effects/customEvent";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new CustomEventEffect();
-
-const logger = new ConsoleLogger({
-  modComponentId: uuidSequence(0),
-});
 
 describe("CustomEventEffect", () => {
   beforeEach(() => {
@@ -52,7 +46,6 @@ describe("CustomEventEffect", () => {
       unsafeAssumeValidArg({ eventName: "foo" }),
       brickOptionsFactory({
         root: document.querySelector("button")!,
-        logger,
       }),
     );
 
@@ -67,7 +60,6 @@ describe("CustomEventEffect", () => {
       unsafeAssumeValidArg({ eventName: "foo" }),
       brickOptionsFactory({
         root: document.querySelector("button")!,
-        logger,
       }),
     );
 
