@@ -21,23 +21,33 @@ import {
   type CustomEventOptions,
   type DebounceOptions,
 } from "@/starterBricks/types";
+import { type ValueOf } from "type-fest";
 
 export type SidebarConfig = {
   heading: string;
   body: BrickConfig | BrickPipeline;
 };
 
-export type Trigger =
-  // `load` is page load/navigation (default for backward compatability)
-  | "load"
+/**
+ * Sidebar refresh triggers
+ */
+export const SidebarTriggers = {
+  // Page load/navigation (default for backward compatability)
+  LOAD: "load",
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
-  | "selectionchange"
-  // A change in the shared page state
-  | "statechange"
+  SELECTION_CHANGE: "selectionchange",
+  // A change in the mod page state
+  STATE_CHANGE: "statechange",
   // Manually, e.g., via the Page Editor or Show Sidebar brick
-  | "manual"
+  MANUAL: "manual",
   // A custom event configured by the user
-  | "custom";
+  CUSTOM: "custom",
+} as const;
+
+/**
+ * Sidebar refresh triggers
+ */
+export type Trigger = ValueOf<typeof SidebarTriggers>;
 
 export interface SidebarDefinition extends StarterBrickDefinitionProp {
   /**

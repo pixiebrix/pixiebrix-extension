@@ -29,11 +29,7 @@ import {
   isSidePanelOpen,
   sidebarShowEvents,
 } from "@/contentScript/sidebarController";
-import {
-  MergeStrategies,
-  setState,
-  StateNamespaces,
-} from "@/platform/state/stateController";
+import { setState } from "@/platform/state/stateController";
 import {
   modComponentRefFactory,
   modMetadataFactory,
@@ -44,8 +40,10 @@ import { getPlatform } from "@/platform/platformContext";
 import {
   type SidebarConfig,
   type SidebarDefinition,
+  SidebarTriggers,
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ...jest.requireActual("@/contentScript/sidebarController"),
@@ -175,7 +173,7 @@ describe("sidebarExtension", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "statechange",
+        trigger: SidebarTriggers.STATE_CHANGE,
       })(),
     );
 
@@ -249,7 +247,7 @@ describe("sidebarExtension", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "statechange",
+        trigger: SidebarTriggers.STATE_CHANGE,
         debounce: {
           waitMillis: debounceMillis,
           trailing: true,

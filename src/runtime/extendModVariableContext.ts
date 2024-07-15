@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getState, StateNamespaces } from "@/platform/state/stateController";
+import { getState } from "@/platform/state/stateController";
 import apiVersionOptions, {
   type ApiVersionOptions,
 } from "@/runtime/apiVersionOptions";
@@ -24,6 +24,7 @@ import { type ApiVersion } from "@/types/runtimeTypes";
 import { assertPlatformCapability } from "@/platform/platformContext";
 import { type ModComponentRef } from "@/types/modComponentTypes";
 import { type Except } from "type-fest";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 /**
  * Variable for accessing the mod Page State.

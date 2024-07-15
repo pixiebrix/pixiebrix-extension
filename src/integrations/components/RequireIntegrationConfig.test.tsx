@@ -113,14 +113,13 @@ describe("RequireIntegrationConfig", () => {
 
   it("shows auth options and renders children when option is selected", async () => {
     checkIntegrationAuthMock.mockResolvedValue(true);
-    const formState = formStateFactory(
-      undefined,
-      pipelineFactory({
+    const formState = formStateFactory({
+      brickPipeline: pipelineFactory({
         config: {
           integration: null,
         },
       }),
-    );
+    });
     render(
       <RequireIntegrationConfig
         integrationFieldSchema={integrationFieldSchema}
@@ -171,14 +170,13 @@ describe("RequireIntegrationConfig", () => {
 
   it("does not show children and shows error alert when integration auth is not valid", async () => {
     checkIntegrationAuthMock.mockResolvedValue(false);
-    const formState = formStateFactory(
-      undefined,
-      pipelineFactory({
+    const formState = formStateFactory({
+      brickPipeline: pipelineFactory({
         config: {
           integration: null,
         },
       }),
-    );
+    });
     render(
       <RequireIntegrationConfig
         integrationFieldSchema={integrationFieldSchema}
@@ -244,16 +242,16 @@ describe("RequireIntegrationConfig", () => {
 
   it("shows retry button in error alert that calls validate again when clicked", async () => {
     checkIntegrationAuthMock.mockResolvedValue(false);
-    const formState = formStateFactory(
-      {
+    const formState = formStateFactory({
+      formStateConfig: {
         integrationDependencies: [integrationDependency1],
       },
-      pipelineFactory({
+      brickPipeline: pipelineFactory({
         config: {
           integration: makeVariableExpression(integrationDependency1.outputKey),
         },
       }),
-    );
+    });
     render(
       <RequireIntegrationConfig
         integrationFieldSchema={integrationFieldSchema}
@@ -297,16 +295,16 @@ describe("RequireIntegrationConfig", () => {
       configId: remoteConfig.id,
     });
 
-    const formState = formStateFactory(
-      {
+    const formState = formStateFactory({
+      formStateConfig: {
         integrationDependencies: [remoteDependency],
       },
-      pipelineFactory({
+      brickPipeline: pipelineFactory({
         config: {
           integration: makeVariableExpression(remoteDependency.outputKey),
         },
       }),
-    );
+    });
     render(
       <RequireIntegrationConfig
         integrationFieldSchema={integrationFieldSchema}

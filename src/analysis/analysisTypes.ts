@@ -23,6 +23,7 @@ import { type UUID } from "@/types/stringTypes";
 
 export enum AnalysisAnnotationActionType {
   AddValueToArray,
+  UnsetValue,
 }
 
 export type AnalysisAnnotationAction = {

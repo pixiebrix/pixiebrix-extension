@@ -23,7 +23,7 @@ import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 const brick = new ErrorEffect();
 
 describe("ErrorEffect", () => {
-  test("it throws BusinessError", async () => {
+  it("throws BusinessError", async () => {
     await expect(
       brick.run(unsafeAssumeValidArg({}), brickOptionsFactory()),
     ).rejects.toThrow(BusinessError);

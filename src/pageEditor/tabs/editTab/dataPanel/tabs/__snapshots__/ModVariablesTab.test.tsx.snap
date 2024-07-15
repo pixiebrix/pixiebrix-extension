@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ModVariablesTab it renders with mod's mod component 1`] = `
+exports[`ModVariablesTab renders with mod's mod component 1`] = `
 <DocumentFragment>
   <div
     aria-hidden="false"
@@ -286,7 +286,7 @@ exports[`ModVariablesTab it renders with mod's mod component 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ModVariablesTab it renders with standalone mod component 1`] = `
+exports[`ModVariablesTab renders with standalone mod component 1`] = `
 <DocumentFragment>
   <div
     aria-hidden="false"

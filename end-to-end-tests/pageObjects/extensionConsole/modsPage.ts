@@ -18,18 +18,24 @@
 import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
 import { BasePageObject } from "../basePageObject";
+import { ensureVisibility } from "../../utils";
 
 export class ModTableItem extends BasePageObject {
   dropdownButton = this.locator(".dropdown");
+  dropdownMenu = this.locator(".dropdown-menu");
   statusCell = this.getByTestId("status-cell");
 
   async clickAction(actionName: string) {
     // Wrapped in `toPass` due to flakiness with dropdown visibility
     // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8458
     await expect(async () => {
-      await this.dropdownButton.click();
-      await this.getByRole("button", { name: actionName }).click({
-        timeout: 0, // Handle retrying in the `toPass` block
+      if (!(await this.dropdownMenu.isVisible())) {
+        await this.dropdownButton.click();
+      }
+
+      await this.dropdownMenu.getByRole("button", { name: actionName }).click({
+        // Short timeout in order to handle retrying in the `toPass` block.
+        timeout: 500,
       });
     }).toPass({ timeout: 5000 });
   }
@@ -153,8 +159,8 @@ export class ActivateModPage extends BasePageObject {
     await this.page.goto(this.activateModUrl);
 
     await expect(this.getByText("Activate Mod")).toBeVisible();
-    // Loading the mod details may take more than 5 seconds
-    await expect(this.getByText(this.modId)).toBeVisible({
+    // Loading the mod details may take a long time. Using ensureVisibility because the modId may be attached and hidden
+    await ensureVisibility(this.getByText(this.modId), {
       timeout: 10_000,
     });
   }

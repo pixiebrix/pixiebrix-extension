@@ -78,7 +78,7 @@ const sampleButtons: ActionButton[] = [
 ];
 
 describe("EditorTabLayout", () => {
-  test("it renders", () => {
+  it("renders", () => {
     expect(
       render(
         <EditorTabLayout tabs={sampleTabItems} actionButtons={sampleButtons} />,

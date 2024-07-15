@@ -19,14 +19,11 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
-import {
-  MergeStrategies,
-  StateNamespaces,
-  TEST_resetState,
-} from "@/platform/state/stateController";
+import { TEST_resetState } from "@/platform/state/stateController";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 import { standaloneModComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 beforeEach(() => {
   TEST_resetState();

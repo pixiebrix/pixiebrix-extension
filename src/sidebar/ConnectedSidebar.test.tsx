@@ -109,7 +109,7 @@ describe("SidebarApp", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("it registers the navigation listener", async () => {
+  it("registers the navigation listener", async () => {
     await mockAuthenticatedMeApiResponse();
     const { unmount } = render(
       <MemoryRouter>

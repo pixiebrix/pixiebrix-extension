@@ -32,8 +32,8 @@ import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type ShouldExpandNodeInitially } from "react-json-tree";
 import { inspectedTab } from "@/pageEditor/context/connection";
-import { StateNamespaces } from "@/platform/state/stateController";
 import { resolveObj } from "@/utils/promiseUtils";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 // We used to expand nodes initially. But makes state hard to read when using async state with long values, e.g.,
 // long ChatGPT responses

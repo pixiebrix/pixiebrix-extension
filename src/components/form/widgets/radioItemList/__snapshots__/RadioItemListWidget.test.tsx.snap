@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`RadioItemListWidget it renders 1`] = `
+exports[`RadioItemListWidget renders 1`] = `
 <DocumentFragment>
   <form
     action="#"

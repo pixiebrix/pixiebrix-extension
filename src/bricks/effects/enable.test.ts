@@ -32,8 +32,8 @@ describe("EnableEffect", () => {
     `;
   });
 
-  test.each([undefined, false])(
-    "it enables element for isRootAware: %s",
+  it.each([undefined, false])(
+    "enables element for isRootAware: %s",
     async (isRootAware) => {
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
@@ -44,7 +44,7 @@ describe("EnableEffect", () => {
     },
   );
 
-  test("it enables element for isRootAware: true", async () => {
+  it("enables element for isRootAware: true", async () => {
     await brick.run(
       unsafeAssumeValidArg({ isRootAware: true }),
       brickOptionsFactory({ root: document.querySelector("button")! }),

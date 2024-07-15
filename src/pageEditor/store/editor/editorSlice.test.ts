@@ -127,8 +127,8 @@ describe("DataPanel state", () => {
 describe("Add/Remove Bricks", () => {
   let editor: EditorState;
 
-  const source = formStateFactory(
-    {
+  const source = formStateFactory({
+    formStateConfig: {
       label: "Test Mod Component",
       integrationDependencies: [
         integrationDependencyFactory({
@@ -138,8 +138,8 @@ describe("Add/Remove Bricks", () => {
         }),
       ],
     },
-    [brickWithIntegration, standardBrick],
-  );
+    brickPipeline: [brickWithIntegration, standardBrick],
+  });
 
   beforeEach(() => {
     brickRegistry.clear();

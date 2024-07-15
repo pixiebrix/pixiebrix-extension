@@ -27,10 +27,7 @@ import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import {
-  baseModComponentStateFactory,
-  formStateFactory,
-} from "@/testUtils/factories/pageEditorFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -48,16 +45,14 @@ describe("DocumentOptions", () => {
     stylesheets: string[] = [],
   ): ModComponentFormState {
     return formStateFactory({
-      modComponent: baseModComponentStateFactory({
-        brickPipeline: [
-          brickConfigFactory({
-            config: {
-              body: documentElements,
-              stylesheets,
-            },
-          }),
-        ],
-      }),
+      brickPipeline: [
+        brickConfigFactory({
+          config: {
+            body: documentElements,
+            stylesheets,
+          },
+        }),
+      ],
     });
   }
 
@@ -184,12 +179,12 @@ describe("DocumentOptions", () => {
 
       // Form state for the test
       const formState = formStateFactory({
-        integrationDependencies,
-        modComponent: baseModComponentStateFactory({
-          brickPipeline: [
-            brickConfigFactory({ config: documentWithButtonConfig }),
-          ],
-        }),
+        formStateConfig: {
+          integrationDependencies,
+        },
+        brickPipeline: [
+          brickConfigFactory({ config: documentWithButtonConfig }),
+        ],
       });
 
       const { getFormState } = renderDocumentOptions(formState, "0");

@@ -36,8 +36,8 @@ describe("HideEffect", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test.each([undefined, false])(
-    "it hides element for isRootAware: %s",
+  it.each([undefined, false])(
+    "hides element for isRootAware: %s",
     async (isRootAware) => {
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
@@ -48,7 +48,7 @@ describe("HideEffect", () => {
     },
   );
 
-  test("it hides element for isRootAware: true", async () => {
+  it("hides element for isRootAware: true", async () => {
     await brick.run(
       unsafeAssumeValidArg({ isRootAware: true }),
       brickOptionsFactory({ root: document.querySelector("button")! }),
@@ -57,7 +57,7 @@ describe("HideEffect", () => {
     expect(document.querySelector("button")).not.toBeVisible();
   });
 
-  test("it removes element", async () => {
+  it("removes element", async () => {
     await brick.run(
       unsafeAssumeValidArg({ isRootAware: true, mode: "remove" }),
       brickOptionsFactory({ root: document.querySelector("button")! }),

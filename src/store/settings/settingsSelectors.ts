@@ -22,7 +22,7 @@ export const selectUpdatePromptState = createSelector(
   [
     ({ settings }: SettingsRootState) => settings,
     (
-      state: SettingsRootState,
+      _state: SettingsRootState,
       args: { now: number; enforceUpdateMillis: number | null },
     ) => args,
   ],

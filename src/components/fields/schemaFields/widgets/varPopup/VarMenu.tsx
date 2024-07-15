@@ -45,9 +45,9 @@ import { isEmpty } from "lodash";
 import { getSelectedLineVirtualElement } from "@/components/fields/schemaFields/widgets/varPopup/utils";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import useEventListener from "@/hooks/useEventListener";
-import { StateNamespaces } from "@/platform/state/stateController";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 const emptyVarMap = new VarMap();
 

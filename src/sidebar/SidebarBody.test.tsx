@@ -53,7 +53,7 @@ describe("SidebarBody", () => {
       .mockReturnValue({ activeTheme: initialTheme, isLoading: false });
   });
 
-  test("it renders with anonymous user", async () => {
+  it("renders with anonymous user", async () => {
     jest
       .mocked(useConnectedTargetUrl)
       .mockReturnValueOnce("https://www.example.com");
@@ -63,7 +63,7 @@ describe("SidebarBody", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("it renders with authenticated user", async () => {
+  it("renders with authenticated user", async () => {
     jest
       .mocked(useConnectedTargetUrl)
       .mockReturnValueOnce("https://www.example.com");
@@ -73,7 +73,7 @@ describe("SidebarBody", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("it renders error when URL is restricted", async () => {
+  it("renders error when URL is restricted", async () => {
     jest
       .mocked(useConnectedTargetUrl)
       .mockReturnValueOnce("chrome://extensions");

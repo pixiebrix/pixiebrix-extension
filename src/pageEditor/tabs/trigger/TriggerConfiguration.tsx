@@ -29,21 +29,27 @@ import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
 import { type DebounceOptions } from "@/starterBricks/types";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
-import { type Trigger } from "@/starterBricks/trigger/triggerStarterBrickTypes";
+import {
+  type Trigger,
+  Triggers,
+} from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { useSelector } from "react-redux";
 import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/store/editor/editorSelectors";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { joinName } from "@/utils/formUtils";
 
 function supportsSelector(trigger: Trigger) {
-  return !["load", "interval", "selectionchange", "statechange"].includes(
-    trigger,
-  );
+  return ![
+    Triggers.LOAD,
+    Triggers.INTERVAL,
+    Triggers.SELECTION_CHANGE,
+    Triggers.STATE_CHANGE,
+  ].includes(trigger);
 }
 
 function supportsTargetMode(trigger: Trigger) {
   // XXX: why doesn't `appear` support target mode?
-  return supportsSelector(trigger) && trigger !== "appear";
+  return supportsSelector(trigger) && trigger !== Triggers.APPEAR;
 }
 
 const TriggerConfiguration: React.FC<{
@@ -77,12 +83,12 @@ const TriggerConfiguration: React.FC<{
       void setFieldValue(fieldName("targetMode"), null);
     }
 
-    if (nextTrigger !== "interval") {
+    if (nextTrigger !== Triggers.INTERVAL) {
       void setFieldValue(fieldName("intervalMillis"), null);
       void setFieldValue(fieldName("background"), null);
     }
 
-    if (nextTrigger === "custom") {
+    if (nextTrigger === Triggers.CUSTOM) {
       void setFieldValue(fieldName("customEvent"), { eventName: "" });
     } else {
       void setFieldValue(fieldName("customEvent"), null);
@@ -93,7 +99,7 @@ const TriggerConfiguration: React.FC<{
       getDefaultReportModeForTrigger(nextTrigger),
     );
 
-    if (nextTrigger === "selectionchange" && debounce == null) {
+    if (nextTrigger === Triggers.SELECTION_CHANGE && debounce == null) {
       // Add debounce by default, because the selection event fires for every event when clicking and dragging
       void setFieldValue(fieldName("debounce"), {
         waitMillis: 250,
@@ -114,25 +120,25 @@ const TriggerConfiguration: React.FC<{
         onChange={onTriggerChange}
         {...makeLockableFieldProps("Trigger Event", isLocked)}
       >
-        <option value="load">Page Load / Navigation</option>
-        <option value="interval">Interval</option>
-        <option value="initialize">Initialize</option>
-        <option value="appear">Appear</option>
-        <option value="click">Click</option>
-        <option value="dblclick">Double Click</option>
-        <option value="blur">Blur</option>
-        <option value="mouseover">Mouseover</option>
-        <option value="hover">Hover</option>
-        <option value="selectionchange">Selection Change</option>
-        <option value="keydown">Keydown</option>
-        <option value="keyup">Keyup</option>
-        <option value="keypress">Keypress</option>
-        <option value="change">Change</option>
-        <option value="statechange">State Change</option>
-        <option value="custom">Custom Event</option>
+        <option value={Triggers.LOAD}>Page Load / Navigation</option>
+        <option value={Triggers.INTERVAL}>Interval</option>
+        <option value={Triggers.INITIALIZE}>Initialize</option>
+        <option value={Triggers.APPEAR}>Appear</option>
+        <option value={Triggers.CLICK}>Click</option>
+        <option value={Triggers.DOUBLE_CLICK}>Double Click</option>
+        <option value={Triggers.BLUR}>Blur</option>
+        <option value={Triggers.MOUSEOVER}>Mouseover</option>
+        <option value={Triggers.HOVER}>Hover</option>
+        <option value={Triggers.SELECTION_CHANGE}>Selection Change</option>
+        <option value={Triggers.KEYDOWN}>Keydown</option>
+        <option value={Triggers.KEYUP}>Keyup</option>
+        <option value={Triggers.KEYPRESS}>Keypress</option>
+        <option value={Triggers.CHANGE}>Change</option>
+        <option value={Triggers.STATE_CHANGE}>State Change</option>
+        <option value={Triggers.CUSTOM}>Custom Event</option>
       </ConnectedFieldTemplate>
 
-      {trigger === "custom" && (
+      {trigger === Triggers.CUSTOM && (
         <ConnectedFieldTemplate
           title="Custom Event"
           description="The custom event name. Select an event from this Mod, or type a new event name"
@@ -146,7 +152,7 @@ const TriggerConfiguration: React.FC<{
         />
       )}
 
-      {trigger === "interval" && (
+      {trigger === Triggers.INTERVAL && (
         <ConnectedFieldTemplate
           name={fieldName("intervalMillis")}
           title="Interval (ms)"

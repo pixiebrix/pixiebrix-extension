@@ -15,18 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { setState } from "@/platform/state/stateController";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   MergeStrategies,
-  setState,
+  STATE_CHANGE_JS_EVENT_TYPE,
   StateNamespaces,
-} from "@/platform/state/stateController";
-import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+} from "@/platform/state/stateTypes";
 
 describe("pageState", () => {
   it("deep merge triggers event", () => {
     const listener = jest.fn();
 
-    document.addEventListener("statechange", listener);
+    document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
 
     const modComponentRef = modComponentRefFactory();
 
@@ -43,7 +44,7 @@ describe("pageState", () => {
   it("deep merges async state", () => {
     const listener = jest.fn();
 
-    document.addEventListener("statechange", listener);
+    document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
 
     const modComponentRef = modComponentRefFactory();
 

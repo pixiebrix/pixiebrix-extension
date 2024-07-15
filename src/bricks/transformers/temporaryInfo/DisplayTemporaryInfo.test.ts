@@ -47,11 +47,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import pDefer from "p-defer";
 import { type RendererErrorPayload } from "@/types/rendererTypes";
-import {
-  MergeStrategies,
-  setState,
-  StateNamespaces,
-} from "@/platform/state/stateController";
+import { setState } from "@/platform/state/stateController";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";
@@ -63,6 +59,12 @@ import {
 } from "@/testUtils/factories/modComponentFactories";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import {
+  MergeStrategies,
+  STATE_CHANGE_JS_EVENT_TYPE,
+  StateNamespaces,
+} from "@/platform/state/stateTypes";
+import { RefreshTriggers } from "@/platform/panels/panelTypes";
 
 jest.mock("@/contentScript/modalDom");
 jest.mock("@/contentScript/sidebarController");
@@ -93,7 +95,7 @@ describe("DisplayTemporaryInfo", () => {
     await expect(displayTemporaryInfoBlock.isRootAware()).resolves.toBe(true);
   });
 
-  test("it returns run payload for sidebar panel", async () => {
+  it("returns run payload for sidebar panel", async () => {
     const modComponentRef = modComponentRefFactory();
 
     const config = getExampleBrickConfig(renderer.id);
@@ -135,7 +137,7 @@ describe("DisplayTemporaryInfo", () => {
     });
   });
 
-  test("it returns error", async () => {
+  it("returns error", async () => {
     const message = "display info test error";
 
     const pipeline = {
@@ -169,7 +171,7 @@ describe("DisplayTemporaryInfo", () => {
     expect(errorMessage).toStrictEqual(message);
   });
 
-  test("it registers panel for modal", async () => {
+  it("registers panel for modal", async () => {
     const config = getExampleBrickConfig(renderer.id);
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
@@ -207,7 +209,7 @@ describe("DisplayTemporaryInfo", () => {
     });
   });
 
-  test("it errors from frame", async () => {
+  it("errors from frame", async () => {
     const modComponentRef = modComponentRefFactory();
     jest.mocked(isLoadedInIframe).mockReturnValue(true);
 
@@ -251,7 +253,7 @@ describe("DisplayTemporaryInfo", () => {
     ).rejects.toThrow("Target must be an element for popover");
   });
 
-  test("it registers a popover panel", async () => {
+  it("registers a popover panel", async () => {
     document.body.innerHTML = '<div><div id="target"></div></div>';
 
     const config = getExampleBrickConfig(renderer.id);
@@ -282,7 +284,7 @@ describe("DisplayTemporaryInfo", () => {
     ).not.toBeNull();
   });
 
-  test("it listens for statechange", async () => {
+  it("listens for statechange", async () => {
     document.body.innerHTML = '<div><div id="target"></div></div>';
 
     const deferredPromise = pDefer<any>();
@@ -297,7 +299,7 @@ describe("DisplayTemporaryInfo", () => {
         title: "Test Temp Panel",
         body: toExpression("pipeline", [{ id: renderer.id, config }]),
         location: "panel",
-        refreshTrigger: "statechange",
+        refreshTrigger: RefreshTriggers.MANUAL,
       },
     };
 
@@ -307,7 +309,7 @@ describe("DisplayTemporaryInfo", () => {
 
     expect(jest.mocked(showTemporarySidebarPanel)).toHaveBeenCalled();
 
-    $(document).trigger("statechange");
+    $(document).trigger(STATE_CHANGE_JS_EVENT_TYPE);
 
     await tick();
 
@@ -335,7 +337,7 @@ describe("DisplayTemporaryInfo", () => {
           { id: renderer.id, config },
         ]),
         location: "panel",
-        refreshTrigger: "statechange",
+        refreshTrigger: RefreshTriggers.STATE_CHANGE,
       },
     };
 

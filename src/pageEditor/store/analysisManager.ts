@@ -45,7 +45,8 @@ import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis
 import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import SelectorAnalysis from "@/analysis/analysisVisitors/selectorAnalysis";
-import { StateNamespaces } from "@/platform/state/stateController";
+import ConditionAnalysis from "@/analysis/analysisVisitors/conditionAnalysis";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -226,6 +227,16 @@ async function varAnalysisFactory(
     modVariables: variables.knownSchemas,
   });
 }
+
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new ConditionAnalysis(),
+  {
+    matcher: isAnyOf(
+      editorActions.syncModComponentFormState,
+      ...nodeListMutationActions,
+    ),
+  },
+);
 
 // OutputKeyAnalysis seems to be the slowest one, so we register it in the end
 pageEditorAnalysisManager.registerAnalysisEffect(
