@@ -81,7 +81,7 @@ describe("RendererComponent", () => {
       <RendererComponent
         brickId={validateRegistryId("@pixiebrix/document")}
         body={{ Component: DocumentView as any, props }}
-        meta={{ runId, modComponentRef }}
+        meta={props.options.meta}
         onAction={onAction}
       />,
     );

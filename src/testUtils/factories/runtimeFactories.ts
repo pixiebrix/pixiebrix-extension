@@ -24,14 +24,17 @@ import { define, derive } from "cooky-cutter";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
-import {
-  mapMessageContextToModComponentRef,
-  mapModComponentRefToMessageContext,
-} from "@/utils/modUtils";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 import type { ReduceOptions } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type ModComponentRef } from "@/types/modComponentTypes";
+
+export const runMetadataFactory = define<RunMetadata>({
+  runId: null,
+  modComponentRef: modComponentRefFactory,
+  branches: () => [] as RunMetadata["branches"],
+});
 
 /**
  * Factory for BrickOptions to pass to Brick.run method.
@@ -45,13 +48,16 @@ export const brickOptionsFactory = define<BrickOptions>({
     return {};
   },
   platform: () => contentScriptPlatform,
-  logger() {
-    const modComponentRef = modComponentRefFactory();
-    // MessageContext expects undefined instead of null for blueprintId
-    return new ConsoleLogger(
-      mapModComponentRefToMessageContext(modComponentRef),
+  meta: runMetadataFactory,
+  logger: derive<BrickOptions, BrickOptions["logger"]>((options) => {
+    assertNotNullish(
+      options.meta,
+      "You must provide BrickOptions.meta to derive logger",
     );
-  },
+    return new ConsoleLogger(
+      mapModComponentRefToMessageContext(options.meta.modComponentRef),
+    );
+  }, "meta"),
   root: () => document,
   runPipeline: () =>
     jest.fn().mockRejectedValue(new Error("runPipeline mock not implemented")),
@@ -59,24 +65,6 @@ export const brickOptionsFactory = define<BrickOptions>({
     jest
       .fn()
       .mockRejectedValue(new Error("runRendererPipeline mock not implemented")),
-  meta: derive<BrickOptions, RunMetadata>((options) => {
-    const context = options.logger?.context;
-
-    assertNotNullish(context, "Expected logger");
-
-    return {
-      runId: null,
-      // We might instead use the factory here and instead derive the logger
-      modComponentRef: mapMessageContextToModComponentRef(context),
-      branches: [],
-    };
-  }, "logger"),
-});
-
-export const runMetadataFactory = define<RunMetadata>({
-  runId: null,
-  modComponentRef: modComponentRefFactory,
-  branches: () => [] as RunMetadata["branches"],
 });
 
 /**
