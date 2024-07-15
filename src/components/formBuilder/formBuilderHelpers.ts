@@ -20,7 +20,7 @@ import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { type Draft, produce } from "immer";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
-import { compact, isEmpty } from "lodash";
+import { compact } from "lodash";
 import {
   KEYS_OF_UI_SCHEMA,
   type Schema,
@@ -302,9 +302,7 @@ export const produceSchemaOnUiTypeChange = (
  * @param draft The mutable draft of the RJSF schema
  */
 export const normalizeSchema = (draft: Draft<RJSFSchema>) => {
-  if (isEmpty(draft.schema)) {
-    draft.schema = minimalSchemaFactory();
-  }
+  draft.schema ??= minimalSchemaFactory();
 
   if (
     draft.schema.required !== undefined &&

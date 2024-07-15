@@ -22,7 +22,9 @@ export type RJSFSchema = {
   uiSchema: UiSchema;
 };
 
-export type SetActiveField = React.Dispatch<React.SetStateAction<string>>;
+export type SetActiveField = React.Dispatch<
+  React.SetStateAction<string | undefined>
+>;
 
 export type SelectStringOption = {
   label: string;

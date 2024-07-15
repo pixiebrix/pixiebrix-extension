@@ -153,7 +153,7 @@ const FieldEditor: React.FC<{
   name: string;
   propertyName: string;
   setActiveField: SetActiveField;
-  fieldTypes: SelectStringOption[];
+  fieldTypes?: SelectStringOption[];
 }> = ({ name, propertyName, setActiveField, fieldTypes }) => {
   const [{ value: rjsfSchema }, , { setValue: setRjsfSchema }] =
     useField<RJSFSchema>(name);
@@ -273,7 +273,7 @@ const FieldEditor: React.FC<{
       extra,
     });
 
-    const selected = fieldTypes.find((option) => option.value === uiType);
+    const selected = fieldTypes?.find((option) => option.value === uiType);
 
     return selected ?? UNKNOWN_OPTION;
   };
