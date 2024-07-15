@@ -36,6 +36,8 @@ export function splitStartingEmoji(value: string) {
  * @param chars the characters to trim
  * @see trimEnd
  */
+export function trimEndOnce(value: null, chars: string): null;
+export function trimEndOnce(value: string, chars: string): string;
 export function trimEndOnce(
   value: string | null,
   chars: string,
