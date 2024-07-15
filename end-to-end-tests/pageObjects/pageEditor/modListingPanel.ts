@@ -17,6 +17,7 @@
 
 import { BasePageObject } from "../basePageObject";
 import { uuidv4 } from "@/types/helpers";
+
 export type StarterBrickUIName =
   | "Context Menu"
   | "Trigger"
