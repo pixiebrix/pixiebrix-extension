@@ -4,6 +4,9 @@
     "strictNullChecks": true
   },
   "files": [
+    "./components/integrations/IntegrationConfigEditorModal.tsx",
+    "./components/formBuilder/edit/FormIntroFields.tsx",
+    "./components/fields/schemaFields/widgets/registerDefaultWidgets.ts",
     "./pageEditor/components/UrlPatternWidget.tsx",
     "./pageEditor/components/SelectorMatchWidget.tsx",
     "./components/fields/schemaFields/widgets/UrlMatchPatternWidget.tsx",
