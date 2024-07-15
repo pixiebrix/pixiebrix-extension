@@ -114,7 +114,7 @@ describe("RequireIntegrationConfig", () => {
   it("shows auth options and renders children when option is selected", async () => {
     checkIntegrationAuthMock.mockResolvedValue(true);
     const formState = formStateFactory({
-      pipelineOverride: pipelineFactory({
+      brickPipeline: pipelineFactory({
         config: {
           integration: null,
         },
@@ -171,7 +171,7 @@ describe("RequireIntegrationConfig", () => {
   it("does not show children and shows error alert when integration auth is not valid", async () => {
     checkIntegrationAuthMock.mockResolvedValue(false);
     const formState = formStateFactory({
-      pipelineOverride: pipelineFactory({
+      brickPipeline: pipelineFactory({
         config: {
           integration: null,
         },
@@ -243,10 +243,10 @@ describe("RequireIntegrationConfig", () => {
   it("shows retry button in error alert that calls validate again when clicked", async () => {
     checkIntegrationAuthMock.mockResolvedValue(false);
     const formState = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         integrationDependencies: [integrationDependency1],
       },
-      pipelineOverride: pipelineFactory({
+      brickPipeline: pipelineFactory({
         config: {
           integration: makeVariableExpression(integrationDependency1.outputKey),
         },
@@ -296,10 +296,10 @@ describe("RequireIntegrationConfig", () => {
     });
 
     const formState = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         integrationDependencies: [remoteDependency],
       },
-      pipelineOverride: pipelineFactory({
+      brickPipeline: pipelineFactory({
         config: {
           integration: makeVariableExpression(remoteDependency.outputKey),
         },

@@ -29,7 +29,7 @@ describe("PageStateAnalysis", () => {
     "shows info on shared page state for %s",
     async (registryId) => {
       const state = formStateFactory({
-        pipelineOverride: [
+        brickPipeline: [
           {
             id: registryId,
             config: {
@@ -52,7 +52,7 @@ describe("PageStateAnalysis", () => {
 
   it("shows info on shared page state for custom form", async () => {
     const state = formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         {
           id: CustomFormRenderer.BRICK_ID,
           config: {
@@ -77,7 +77,7 @@ describe("PageStateAnalysis", () => {
 
   it("shows warning on mod page state for custom form if not mod", async () => {
     const state = formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         {
           id: CustomFormRenderer.BRICK_ID,
           config: {
@@ -104,7 +104,7 @@ describe("PageStateAnalysis", () => {
     "shows warning on blueprint if not in mod %s",
     async (registryId) => {
       const state = formStateFactory({
-        pipelineOverride: [
+        brickPipeline: [
           {
             id: registryId,
             config: {
@@ -129,7 +129,7 @@ describe("PageStateAnalysis", () => {
     "no warning on blueprint if in mod %s",
     async (registryId) => {
       const state = formStateFactory({
-        pipelineOverride: [
+        brickPipeline: [
           {
             id: registryId,
             config: {

@@ -357,7 +357,7 @@ type SimpleFactory<T> = (override?: FactoryConfig<T>) => T;
 
 const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = (override) =>
   formStateFactory({
-    formStateOverride: override as FactoryConfig<InternalFormStateOverride>,
+    formStateConfig: override as FactoryConfig<InternalFormStateOverride>,
   });
 const formStateFactoryV3: SimpleFactory<BaseFormStateV3> = () =>
   unmigrateFormStateV4toV3(formStateFactoryV4());

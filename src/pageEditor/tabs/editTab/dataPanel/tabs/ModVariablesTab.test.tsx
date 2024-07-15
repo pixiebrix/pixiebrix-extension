@@ -61,7 +61,7 @@ describe("ModVariablesTab", () => {
 
   test("it renders with mod's mod component", async () => {
     const formState = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata: modMetadataFactory(),
       },
     });

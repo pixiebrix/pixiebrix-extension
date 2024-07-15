@@ -87,27 +87,27 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
 });
 
 type FormStateFactoryOptions = {
-  formStateOverride?: FactoryConfig<InternalFormStateOverride>;
-  pipelineOverride?: BrickPipeline;
-  starterBrickOverride?: StarterBrickDefinitionLike;
+  formStateConfig?: FactoryConfig<InternalFormStateOverride>;
+  brickPipeline?: BrickPipeline;
+  starterBrick?: StarterBrickDefinitionLike;
 };
 
 export const formStateFactory = ({
-  formStateOverride,
-  pipelineOverride,
-  starterBrickOverride,
+  formStateConfig,
+  brickPipeline,
+  starterBrick,
 }: FormStateFactoryOptions = {}): ModComponentFormState => {
   const factoryConfig: FactoryConfig<InternalFormStateOverride> =
-    formStateOverride || {};
+    formStateConfig || {};
 
-  if (pipelineOverride) {
+  if (brickPipeline) {
     factoryConfig.modComponent = baseModComponentStateFactory({
-      brickPipeline: pipelineOverride,
+      brickPipeline,
     });
   }
 
-  if (starterBrickOverride) {
-    factoryConfig.starterBrick = starterBrickOverride;
+  if (starterBrick) {
+    factoryConfig.starterBrick = starterBrick;
   }
 
   return internalFormStateFactory(factoryConfig) as ModComponentFormState;
@@ -136,11 +136,11 @@ export const triggerFormStateFactory = (
   );
 
   return formStateFactory({
-    formStateOverride: {
+    formStateConfig: {
       ...defaultProps,
       ...override,
     } as FactoryConfig<InternalFormStateOverride>,
-    pipelineOverride,
+    brickPipeline: pipelineOverride,
   }) as TriggerFormState;
 };
 
@@ -159,11 +159,11 @@ export const sidebarPanelFormStateFactory = (
   );
 
   return formStateFactory({
-    formStateOverride: {
+    formStateConfig: {
       ...defaultProps,
       ...override,
     } as FactoryConfig<InternalFormStateOverride>,
-    pipelineOverride,
+    brickPipeline: pipelineOverride,
   }) as SidebarFormState;
 };
 
@@ -181,11 +181,11 @@ export const contextMenuFormStateFactory = (
   );
 
   return formStateFactory({
-    formStateOverride: {
+    formStateConfig: {
       ...defaultProps,
       ...override,
     } as FactoryConfig<InternalFormStateOverride>,
-    pipelineOverride,
+    brickPipeline: pipelineOverride,
   }) as ContextMenuFormState;
 };
 
@@ -203,11 +203,11 @@ export const quickbarFormStateFactory = (
   );
 
   return formStateFactory({
-    formStateOverride: {
+    formStateConfig: {
       ...defaultProps,
       ...override,
     } as FactoryConfig<InternalFormStateOverride>,
-    pipelineOverride,
+    brickPipeline: pipelineOverride,
   }) as QuickBarFormState;
 };
 
@@ -229,11 +229,11 @@ export const menuItemFormStateFactory = (
   );
 
   return formStateFactory({
-    formStateOverride: {
+    formStateConfig: {
       ...defaultTriggerProps,
       ...override,
     } as FactoryConfig<InternalFormStateOverride>,
-    pipelineOverride,
+    brickPipeline: pipelineOverride,
   }) as ButtonFormState;
 };
 

@@ -34,7 +34,7 @@ describe("FormModalOptions", () => {
     const brick = createNewConfiguredBrick(FormTransformer.BRICK_ID);
 
     const initialValues = formStateFactory({
-      pipelineOverride: [brick],
+      brickPipeline: [brick],
     });
 
     render(

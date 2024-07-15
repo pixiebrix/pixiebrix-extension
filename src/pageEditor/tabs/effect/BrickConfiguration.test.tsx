@@ -74,8 +74,8 @@ test("renders", async () => {
   const brick = echoBrick;
   brickRegistry.register([brick]);
   const initialState = formStateFactory({
-    formStateOverride: { apiVersion: "v3" },
-    pipelineOverride: [brickConfigFactory({ id: brick.id })],
+    formStateConfig: { apiVersion: "v3" },
+    brickPipeline: [brickConfigFactory({ id: brick.id })],
   });
   const { asFragment } = renderBrickConfiguration(
     <BrickConfiguration

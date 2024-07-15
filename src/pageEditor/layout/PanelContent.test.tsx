@@ -61,7 +61,7 @@ describe("Listen to navigationEvent", () => {
     jest.spyOn(tabStateActions, "connectToContentScript");
 
     const formState = formStateFactory({
-      starterBrickOverride: starterBrickDefinitionFactory({
+      starterBrick: starterBrickDefinitionFactory({
         definition: starterBrickDefinitionPropFactory({
           type: StarterBrickTypes.SIDEBAR_PANEL,
         }),

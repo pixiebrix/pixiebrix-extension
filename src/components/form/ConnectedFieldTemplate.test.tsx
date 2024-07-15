@@ -88,7 +88,7 @@ describe("ConnectedFieldTemplate", () => {
 
     it("shows analysis error", async () => {
       const formState = formStateFactory({
-        pipelineOverride: pipelineFactory(
+        brickPipeline: pipelineFactory(
           brickConfigFactory({
             config: {
               testField: "test value",
@@ -136,7 +136,7 @@ describe("ConnectedFieldTemplate", () => {
 
     it("shows both formik and analysis error", async () => {
       const formState = formStateFactory({
-        pipelineOverride: pipelineFactory(
+        brickPipeline: pipelineFactory(
           brickConfigFactory({
             config: {
               testField: "test value",
@@ -200,7 +200,7 @@ describe("ConnectedFieldTemplate", () => {
 
     it("shows multiple analysis errors", async () => {
       const formState = formStateFactory({
-        pipelineOverride: pipelineFactory(
+        brickPipeline: pipelineFactory(
           brickConfigFactory({
             config: {
               testField: "test value",
@@ -268,7 +268,7 @@ describe("ConnectedFieldTemplate", () => {
 
     it("does not show analysis error annotation when the annotation detail does not match the field value", async () => {
       const formState = formStateFactory({
-        pipelineOverride: pipelineFactory(
+        brickPipeline: pipelineFactory(
           brickConfigFactory({
             config: {
               testField: toExpression("var", "@mod."),

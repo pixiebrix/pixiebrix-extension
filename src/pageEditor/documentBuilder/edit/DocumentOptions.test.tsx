@@ -45,7 +45,7 @@ describe("DocumentOptions", () => {
     stylesheets: string[] = [],
   ): ModComponentFormState {
     return formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         brickConfigFactory({
           config: {
             body: documentElements,
@@ -179,10 +179,10 @@ describe("DocumentOptions", () => {
 
       // Form state for the test
       const formState = formStateFactory({
-        formStateOverride: {
+        formStateConfig: {
           integrationDependencies,
         },
-        pipelineOverride: [
+        brickPipeline: [
           brickConfigFactory({ config: documentWithButtonConfig }),
         ],
       });

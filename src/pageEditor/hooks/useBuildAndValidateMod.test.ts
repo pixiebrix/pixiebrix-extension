@@ -180,7 +180,7 @@ describe("useBuildAndValidateMod", () => {
     });
 
     const dirtyFormState1 = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata,
       },
     });

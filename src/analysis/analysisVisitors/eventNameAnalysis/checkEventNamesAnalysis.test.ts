@@ -74,7 +74,7 @@ describe("checkEventNamesAnalysis", () => {
     };
 
     const otherFormState = formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         { id: CustomEventEffect.BRICK_ID, config: { eventName: "myevent" } },
       ],
     });
@@ -96,7 +96,7 @@ describe("checkEventNamesAnalysis", () => {
     };
 
     const otherFormState = formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         {
           id: CustomEventEffect.BRICK_ID,
           config: {
@@ -127,7 +127,7 @@ describe("checkEventNamesAnalysis", () => {
     };
 
     const otherFormState = formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         {
           id: CustomEventEffect.BRICK_ID,
           config: {

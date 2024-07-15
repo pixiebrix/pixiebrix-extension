@@ -51,7 +51,7 @@ describe("useCompareModComponentCounts", () => {
       metadata: modMetadata,
     });
     const formState = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata,
       },
     });
@@ -97,7 +97,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const dirtyFormState = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata,
       },
     });
@@ -134,12 +134,12 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const dirtyFormState1 = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata,
       },
     });
     const dirtyFormState2 = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata,
       },
     });
@@ -171,7 +171,7 @@ describe("useCompareModComponentCounts", () => {
       metadata: modMetadata,
     });
     const formState = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata,
       },
     });
@@ -203,7 +203,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata,
       },
     });
@@ -294,7 +294,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata,
       },
     });
@@ -327,7 +327,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata,
       },
     });
@@ -360,7 +360,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata,
       },
     });
@@ -393,7 +393,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata,
       },
     });

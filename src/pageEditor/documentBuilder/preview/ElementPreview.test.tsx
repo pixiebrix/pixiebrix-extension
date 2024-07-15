@@ -54,7 +54,7 @@ const renderElementPreview = (
   };
 
   const formState = formStateFactory({
-    pipelineOverride: [
+    brickPipeline: [
       brickConfigFactory({
         config: {
           body: [element],

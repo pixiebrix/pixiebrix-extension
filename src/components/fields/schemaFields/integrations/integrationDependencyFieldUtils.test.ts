@@ -35,7 +35,7 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
     const formState = formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         brickConfigFactory({
           config: {
             data: false,
@@ -61,7 +61,7 @@ describe("selectVariables", () => {
     };
 
     const formState = formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         brickConfigFactory({
           config: serviceConfig,
         }),
@@ -74,7 +74,7 @@ describe("selectVariables", () => {
 
   test("do not select variable with path seperator", () => {
     const formState = formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         brickConfigFactory({
           config: {
             foo: toExpression("var", "@foo.bar"),
@@ -113,7 +113,7 @@ describe("selectVariables", () => {
     };
 
     const formState = formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         brickConfigFactory({
           config: documentWithButtonConfig,
         }),
@@ -147,7 +147,7 @@ describe("selectVariables", () => {
     };
 
     const formState = formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         brickConfigFactory({
           config: documentWithButtonConfig,
         }),
@@ -196,7 +196,7 @@ describe("selectVariables", () => {
     };
 
     const formState = formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         brickConfigFactory({
           config: documentWithButtonConfig,
         }),

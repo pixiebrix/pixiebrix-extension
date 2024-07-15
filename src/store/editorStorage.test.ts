@@ -169,7 +169,7 @@ describe("draftModComponentStorage", () => {
   test("removes active recipe", async () => {
     const mod = modMetadataFactory();
     const formState1 = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata: mod,
       },
     });
@@ -185,7 +185,7 @@ describe("draftModComponentStorage", () => {
       } as BrickConfigurationUIState,
     };
     const formState2 = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata: mod,
       },
     });
@@ -274,7 +274,7 @@ describe("draftModComponentStorage", () => {
   test("removes inactive recipe", async () => {
     const mod = modMetadataFactory();
     const formState1 = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata: mod,
       },
     });
@@ -290,7 +290,7 @@ describe("draftModComponentStorage", () => {
       } as BrickConfigurationUIState,
     };
     const formState2 = formStateFactory({
-      formStateOverride: {
+      formStateConfig: {
         modMetadata: mod,
       },
     });

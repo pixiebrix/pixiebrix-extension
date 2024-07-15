@@ -128,7 +128,7 @@ describe("Add/Remove Bricks", () => {
   let editor: EditorState;
 
   const source = formStateFactory({
-    formStateOverride: {
+    formStateConfig: {
       label: "Test Mod Component",
       integrationDependencies: [
         integrationDependencyFactory({
@@ -138,7 +138,7 @@ describe("Add/Remove Bricks", () => {
         }),
       ],
     },
-    pipelineOverride: [brickWithIntegration, standardBrick],
+    brickPipeline: [brickWithIntegration, standardBrick],
   });
 
   beforeEach(() => {

@@ -39,7 +39,7 @@ import { uuidv4 } from "@/types/helpers";
 
 function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
   const formState = formStateFactory({
-    pipelineOverride: [
+    brickPipeline: [
       {
         id: DocumentRenderer.BRICK_ID,
         config: {
@@ -156,7 +156,7 @@ describe("Show live preview", () => {
   function renderPreviewInTemporaryDisplayPipeline() {
     const containerElement = createNewDocumentBuilderElement("container");
     const formState = formStateFactory({
-      pipelineOverride: [
+      brickPipeline: [
         {
           id: DisplayTemporaryInfo.BRICK_ID,
           instanceId: uuidSequence(1),

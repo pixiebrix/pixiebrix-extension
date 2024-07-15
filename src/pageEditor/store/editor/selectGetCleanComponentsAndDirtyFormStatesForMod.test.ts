@@ -178,7 +178,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       const newFormStates: ModComponentFormState[] = [];
       for (let i = 0; i < newCount; i++) {
         const formState = formStateFactory({
-          formStateOverride: {
+          formStateConfig: {
             modMetadata: primaryModMetadata,
           },
         });
@@ -218,7 +218,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       const extraNewFormStates: ModComponentFormState[] = [];
       for (let i = 0; i < extraNew; i++) {
         const formState = formStateFactory({
-          formStateOverride: {
+          formStateConfig: {
             modMetadata: otherModMetadata,
           },
         });

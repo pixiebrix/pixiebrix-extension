@@ -180,7 +180,7 @@ describe("mod variables", () => {
   test("it includes mod variables entry", async () => {
     const analysis = new VarAnalysis({ modState: { foo: 42 } });
     const extension = formStateFactory({
-      pipelineOverride: [brickConfigFactory()],
+      brickPipeline: [brickConfigFactory()],
     });
     await analysis.run(extension);
 

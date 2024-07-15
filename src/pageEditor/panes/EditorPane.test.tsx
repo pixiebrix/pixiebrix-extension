@@ -142,7 +142,7 @@ afterEach(async () => clock.runAllAsync());
 
 const getPlainFormState = (): ModComponentFormState =>
   formStateFactory({
-    pipelineOverride: [
+    brickPipeline: [
       brickConfigFactory({
         id: echoBrick.id,
         outputKey: "echoOutput" as OutputKey,
@@ -158,7 +158,7 @@ const getPlainFormState = (): ModComponentFormState =>
 
 const getSidebarPanelPlainFormState = (): ModComponentFormState =>
   formStateFactory({
-    pipelineOverride: [
+    brickPipeline: [
       brickConfigFactory({
         id: echoBrick.id,
         outputKey: "echoOutput" as OutputKey,
@@ -170,7 +170,7 @@ const getSidebarPanelPlainFormState = (): ModComponentFormState =>
         config: defaultBrickConfig(teapotBrick.inputSchema),
       }),
     ],
-    starterBrickOverride: starterBrickDefinitionFactory({
+    starterBrick: starterBrickDefinitionFactory({
       definition: starterBrickDefinitionPropFactory({
         type: StarterBrickTypes.SIDEBAR_PANEL,
       }),
@@ -179,7 +179,7 @@ const getSidebarPanelPlainFormState = (): ModComponentFormState =>
 
 const getFormStateWithSubPipelines = (): ModComponentFormState =>
   formStateFactory({
-    pipelineOverride: [
+    brickPipeline: [
       brickConfigFactory({
         id: echoBrick.id,
         outputKey: "echoOutput" as OutputKey,
@@ -207,7 +207,7 @@ const getFormStateWithSubPipelines = (): ModComponentFormState =>
 
 const getSidebarFormStateWithSubPipelines = (): ModComponentFormState =>
   formStateFactory({
-    pipelineOverride: [
+    brickPipeline: [
       brickConfigFactory({
         id: echoBrick.id,
         outputKey: "echoOutput" as OutputKey,
@@ -231,7 +231,7 @@ const getSidebarFormStateWithSubPipelines = (): ModComponentFormState =>
         },
       }),
     ],
-    starterBrickOverride: starterBrickDefinitionFactory({
+    starterBrick: starterBrickDefinitionFactory({
       definition: starterBrickDefinitionPropFactory({
         type: StarterBrickTypes.SIDEBAR_PANEL,
       }),
@@ -334,7 +334,7 @@ describe("can add a node", () => {
 
   test("to an empty mod component", async () => {
     const modComponentFormState = formStateFactory({
-      pipelineOverride: [],
+      brickPipeline: [],
     });
     render(
       <>
@@ -890,7 +890,7 @@ describe("validation", () => {
       pipelineFlavor: PipelineFlavor.NoEffect,
       formFactory: () =>
         formStateFactory({
-          starterBrickOverride: starterBrickDefinitionFactory({
+          starterBrick: starterBrickDefinitionFactory({
             definition: starterBrickDefinitionPropFactory({
               type: StarterBrickTypes.SIDEBAR_PANEL,
             }),
@@ -949,7 +949,7 @@ describe("brick validation in Add Brick Modal UI", () => {
       pipelineFlavor: PipelineFlavor.NoEffect,
       formFactory: () =>
         formStateFactory({
-          starterBrickOverride: starterBrickDefinitionFactory({
+          starterBrick: starterBrickDefinitionFactory({
             definition: starterBrickDefinitionPropFactory({
               type: StarterBrickTypes.SIDEBAR_PANEL,
             }),

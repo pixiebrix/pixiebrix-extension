@@ -105,7 +105,7 @@ describe("filterSidebarItems", () => {
           modComponentFactory({ label: "Foo" }),
           modComponentFactory({ label: "Bar" }),
           formStateFactory({
-            formStateOverride: { label: "foo" },
+            formStateConfig: { label: "foo" },
           }),
         ],
       }),
