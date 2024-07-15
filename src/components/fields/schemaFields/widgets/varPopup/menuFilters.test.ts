@@ -316,9 +316,12 @@ describe("defaultMenuOption", () => {
     });
 
     const options = getMenuOptions(varMap, {});
-    const filteredOptions = filterOptionsByVariable(options, "@input.");
+    const filteredOptions = filterOptionsByVariable(options, "@input.foo.");
 
-    expect(defaultMenuOption(filteredOptions, "@input.")).toEqual(["@input"]);
+    expect(defaultMenuOption(filteredOptions, "@input.foo.")).toEqual([
+      "foo",
+      "@input",
+    ]);
   });
 
   test("default for '@'", () => {

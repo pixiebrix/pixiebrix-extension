@@ -17,7 +17,7 @@
 
 import { type UnknownRecord } from "type-fest/source/internal";
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
-import { compact, isEmpty, reverse, toPath } from "lodash";
+import { compact, reverse, toPath } from "lodash";
 import {
   ALLOW_ANY_CHILD,
   IS_ARRAY,
@@ -306,15 +306,15 @@ export function defaultMenuOption(
   for (const part of rest) {
     assertNotNullish(part, "Expected part to be non-null");
 
-    // Part is not an empty string but is not in the current vars, find the first partial match
-    if (!isEmpty(part) && !Object.hasOwn(currentVars, part)) {
+    // Find the the first partial match, if it exists
+    if (!Object.hasOwn(currentVars, part)) {
       const match = Object.keys(
         sortVarMapKeys(currentVars) as UnknownRecord,
       ).find((x) => x.startsWith(part));
 
-      assertNotNullish(match, `Expected match to exist for part: ${part}`);
-
-      result.unshift(match);
+      if (match) {
+        result.unshift(match);
+      }
 
       break;
     }
