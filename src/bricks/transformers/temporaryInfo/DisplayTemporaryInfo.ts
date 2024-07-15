@@ -27,9 +27,10 @@ import { type JsonObject } from "type-fest";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Location } from "@/types/starterBrickTypes";
-import type {
-  RefreshTrigger,
-  TemporaryPanelEntryMetadata,
+import {
+  type RefreshTrigger,
+  RefreshTriggers,
+  type TemporaryPanelEntryMetadata,
 } from "@/platform/panels/panelTypes";
 import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
@@ -76,8 +77,11 @@ class DisplayTemporaryInfo extends TransformerABC {
         type: "string",
         title: "Refresh Trigger",
         oneOf: [
-          { const: "manual", title: "Manual" },
-          { const: "statechange", title: "Mod Variable/Page State Changed" },
+          { const: RefreshTriggers.MANUAL, title: "Manual" },
+          {
+            const: RefreshTriggers.STATE_CHANGE,
+            title: "Mod Variable/Page State Changed",
+          },
         ],
         description: "An optional trigger for refreshing the document",
       },
@@ -91,7 +95,7 @@ class DisplayTemporaryInfo extends TransformerABC {
       title,
       body: bodyPipeline,
       location = "panel",
-      refreshTrigger = "manual",
+      refreshTrigger = RefreshTriggers.MANUAL,
       isRootAware = false,
     }: BrickArgs<{
       title: string;

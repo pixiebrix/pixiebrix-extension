@@ -19,6 +19,17 @@ import { type SetStateAction, useCallback, useState } from "react";
 import { type Promisable } from "type-fest";
 import useAsyncEffect from "use-async-effect";
 
+/**
+ * Hook to manage state that can be retrieved/updated asynchronously, e.g., a StorageItem.
+ *
+ * Returns undefined while the initial state is fetching, or if there was an error fetching the initial value.
+ *
+ * Does NOT correspond to the AsyncState abstraction.
+ *
+ * @param getter the getter function for the state
+ * @param setter the setter function for the state
+ * @see StorageItem
+ */
 export default function useUpdatableAsyncState<S = undefined>(
   getter: () => Promise<S>,
   setter: (value: S) => Promisable<void>,
@@ -39,6 +50,7 @@ export default function useUpdatableAsyncState<S = undefined>(
   const update = useCallback(
     async (newValue: S) => {
       await setter(newValue);
+      // Wait until state provider is updated before updating hook state
       setValue(newValue);
     },
     [setValue, setter],

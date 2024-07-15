@@ -21,15 +21,20 @@ import { BasePageObject } from "../basePageObject";
 
 export class ModTableItem extends BasePageObject {
   dropdownButton = this.locator(".dropdown");
+  dropdownMenu = this.locator(".dropdown-menu");
   statusCell = this.getByTestId("status-cell");
 
   async clickAction(actionName: string) {
     // Wrapped in `toPass` due to flakiness with dropdown visibility
     // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8458
     await expect(async () => {
-      await this.dropdownButton.click();
-      await this.getByRole("button", { name: actionName }).click({
-        timeout: 0, // Handle retrying in the `toPass` block
+      if (!(await this.dropdownMenu.isVisible())) {
+        await this.dropdownButton.click();
+      }
+
+      await this.dropdownMenu.getByRole("button", { name: actionName }).click({
+        // Short timeout in order to handle retrying in the `toPass` block.
+        timeout: 500,
       });
     }).toPass({ timeout: 5000 });
   }

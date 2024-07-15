@@ -38,6 +38,9 @@ export const initialSettingsState: SettingsState = {
    * @since 1.8.11 default to true
    */
   textSelectionMenu: true,
+  /**
+   * @since 1.8.11 default to true
+   */
   snippetShortcutMenu: true,
   /**
    * @since 1.8.6 default to true

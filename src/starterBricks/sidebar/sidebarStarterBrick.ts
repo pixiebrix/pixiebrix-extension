@@ -59,9 +59,11 @@ import {
   type SidebarDefinition,
   type SidebarConfig,
   type Trigger,
+  SidebarTriggers,
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { mapModComponentToMessageContext } from "@/utils/modUtils";
+import { STATE_CHANGE_JS_EVENT_TYPE } from "@/platform/state/stateTypes";
 
 export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConfig> {
   abstract get trigger(): Trigger;
@@ -315,7 +317,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     let relevantModComponents;
 
     switch (this.trigger) {
-      case "statechange": {
+      case STATE_CHANGE_JS_EVENT_TYPE: {
         // For performance, only run mod components that could be impacted by the state change.
         // Perform the check _before_ debounce, so that the debounce timer is not impacted by state from other mods.
         // See https://github.com/pixiebrix/pixiebrix-extension/issues/6804 for more details/considerations.
@@ -382,7 +384,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
     // On the initial run or a manual run, run directly
     if (
-      this.trigger === "load" ||
+      this.trigger === SidebarTriggers.LOAD ||
       [
         RunReason.MANUAL,
         RunReason.INITIAL_LOAD,
@@ -392,10 +394,13 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       void this.debouncedRefreshPanels(this.modComponents);
     }
 
-    if (this.trigger === "selectionchange" || this.trigger === "statechange") {
+    if (
+      this.trigger === SidebarTriggers.SELECTION_CHANGE ||
+      this.trigger === SidebarTriggers.STATE_CHANGE
+    ) {
       this.attachEventTrigger(this.trigger);
     } else if (
-      this.trigger === "custom" &&
+      this.trigger === SidebarTriggers.CUSTOM &&
       this.customTriggerOptions?.eventName
     ) {
       this.attachEventTrigger(this.customTriggerOptions?.eventName);
@@ -474,7 +479,7 @@ class RemotePanelStarterBrick extends SidebarStarterBrickABC {
 
   get trigger(): Trigger {
     // Default to load for backward compatability
-    return this.definition.trigger ?? "load";
+    return this.definition.trigger ?? SidebarTriggers.LOAD;
   }
 
   async isAvailable(): Promise<boolean> {
