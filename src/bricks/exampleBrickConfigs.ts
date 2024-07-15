@@ -34,10 +34,8 @@ import CommentEffect from "@/bricks/effects/comment";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
-import {
-  MergeStrategies,
-  StateNamespaces,
-} from "@/platform/state/stateController";
+
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 /**
  * Get an example brick config for a given brick id.

@@ -44,7 +44,7 @@ describe("DraftModComponentListItem", () => {
     formStateFactory.resetSequence();
   });
 
-  test("it renders not active element", () => {
+  it("renders not active element", () => {
     const formState = formStateFactory();
     expect(
       render(
@@ -71,7 +71,7 @@ describe("DraftModComponentListItem", () => {
     ).toMatchSnapshot();
   });
 
-  test("it renders active element", () => {
+  it("renders active element", () => {
     const formState = formStateFactory();
     expect(
       render(

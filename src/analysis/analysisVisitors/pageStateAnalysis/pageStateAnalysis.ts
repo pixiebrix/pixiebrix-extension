@@ -26,7 +26,8 @@ import {
   type StateStorage,
   type Storage,
 } from "@/bricks/renderers/customForm";
-import { StateNamespaces } from "@/platform/state/stateController";
+
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 const fallbackMessage =
   "This brick is not in a Mod. It will fall back to Public state, which other Mods can read and overwrite.";

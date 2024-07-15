@@ -31,6 +31,11 @@ test("brick actions panel behavior", async ({
   newPageEditorPage,
   verifyModDefinitionSnapshot,
 }) => {
+  test.slow(
+    true,
+    "Longer test due to verifying each brick action in one user flow",
+  );
+
   const { id: modId } = modDefinitionsMap[testModDefinitionName];
   const { id: otherModId } = modDefinitionsMap[otherTestMod];
   let pageEditorPage: PageEditorPage;

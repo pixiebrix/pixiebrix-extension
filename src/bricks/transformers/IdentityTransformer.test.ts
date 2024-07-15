@@ -49,7 +49,7 @@ describe("IdentityTransformer.schema", () => {
 });
 
 describe("IdentityTransformer.run", () => {
-  test("it returns same value", async () => {
+  it("returns same value", async () => {
     const value = { foo: "bar" };
     const result = await brick.run(
       unsafeAssumeValidArg(value),
@@ -58,7 +58,7 @@ describe("IdentityTransformer.run", () => {
     expect(result).toStrictEqual(value);
   });
 
-  test("it accepts null", async () => {
+  it("accepts null", async () => {
     const result = await brick.run(
       unsafeAssumeValidArg(null),
       brickOptionsFactory(),
@@ -66,7 +66,7 @@ describe("IdentityTransformer.run", () => {
     expect(result).toBeNull();
   });
 
-  test("it accepts array", async () => {
+  it("accepts array", async () => {
     const result = await brick.run(
       unsafeAssumeValidArg([]),
       brickOptionsFactory(),

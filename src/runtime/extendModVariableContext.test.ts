@@ -19,14 +19,11 @@ import extendModVariableContext, {
   contextAsPlainObject,
   isModVariableContext,
 } from "@/runtime/extendModVariableContext";
-import {
-  MergeStrategies,
-  setState,
-  StateNamespaces,
-} from "@/platform/state/stateController";
+import { setState } from "@/platform/state/stateController";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { standaloneModComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 describe("createModVariableProxy", () => {
   beforeEach(() => {

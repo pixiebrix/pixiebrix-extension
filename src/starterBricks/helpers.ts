@@ -22,6 +22,8 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { $safeFind } from "@/utils/domUtils";
 import { onAbort } from "abort-utils";
 
+import { isStateChangeEvent } from "@/platform/state/stateTypes";
+
 /**
  * Attach a callback to be called when a node is removed from the DOM
  * @param node the DOM node to observe
@@ -185,10 +187,10 @@ export function shouldModComponentRunForStateChange(
   modComponent: ModComponentBase,
   event: Event,
 ): boolean {
-  if (event instanceof CustomEvent) {
+  if (isStateChangeEvent(event)) {
     const { detail } = event;
 
-    // Ignore state changes from shared state and unrelated extensions/blueprints
+    // Ignore state changes from shared state and unrelated mods/mod components
     return (
       detail?.extensionId === modComponent.id ||
       (modComponent._recipe?.id != null &&

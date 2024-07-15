@@ -36,8 +36,8 @@ describe("ShowEffect", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test.each([undefined, false])(
-    "it shows element for isRootAware: %s",
+  it.each([undefined, false])(
+    "shows element for isRootAware: %s",
     async (isRootAware) => {
       expect(document.querySelector("button")).not.toBeVisible();
 
@@ -50,7 +50,7 @@ describe("ShowEffect", () => {
     },
   );
 
-  test("it shows element for isRootAware: true", async () => {
+  it("shows element for isRootAware: true", async () => {
     await brick.run(
       unsafeAssumeValidArg({ isRootAware: true }),
       brickOptionsFactory({ root: document.querySelector("button")! }),

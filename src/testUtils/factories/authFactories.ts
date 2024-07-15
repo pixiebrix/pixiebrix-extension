@@ -19,6 +19,7 @@ import { define, derive, extend } from "cooky-cutter";
 import {
   type AuthState,
   type AuthUserOrganization,
+  type DeploymentKey,
   type OrganizationAuthState,
   type PartnerAuthData,
   type TokenAuthData,
@@ -35,6 +36,7 @@ import {
   type RequiredMePartnerResponse,
 } from "@/data/service/responseTypeHelpers";
 import { type SetRequired } from "type-fest";
+import { padStart } from "lodash";
 
 function emailFactory(n: number): string {
   return `user${n}@test.com`;
@@ -190,3 +192,26 @@ export const partnerAuthDataFactory = define<PartnerAuthData>({
   refreshParamPayload: null,
   refreshExtraHeaders: null,
 });
+
+let keyCounter = 0;
+
+/**
+ * Generate a deployment key for testing.
+ * @since 2.0.6
+ */
+export function deploymentKeyFactory(): DeploymentKey {
+  const value = padStart(keyCounter.toString(), 64, "0");
+  keyCounter++;
+  return value as DeploymentKey;
+}
+
+/**
+ * Generate a native PixieBrix user token for testing.
+ * @since 2.0.6
+ */
+export function userTokenFactory(): string {
+  // Share counter with deploymentKeyFactory to avoid collisions
+  const value = padStart(keyCounter.toString(), 64, "0");
+  keyCounter++;
+  return value;
+}

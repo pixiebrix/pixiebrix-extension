@@ -19,7 +19,9 @@ import {
   type AnalysisAnnotationAction,
   AnalysisAnnotationActionType,
 } from "@/analysis/analysisTypes";
-import { type FormikContextType, getIn, setIn } from "formik";
+import { type FormikContextType } from "formik";
+// Use lodash's get/set because formik's does not mutate the object in place.
+import { get as getIn, set as setIn } from "lodash";
 import type { FieldAnnotationAction } from "@/components/form/FieldAnnotation";
 import { produce } from "immer";
 
@@ -31,10 +33,20 @@ export function makeFieldActionForAnnotationAction<Values>(
     caption: action.caption,
     async action() {
       const newValues = produce(formik.values, (draft) => {
-        if (action.type === AnalysisAnnotationActionType.AddValueToArray) {
-          const array = getIn(draft, action.path) as unknown[];
-          array.push(action.value);
-          setIn(draft, action.path, array);
+        switch (action.type) {
+          case AnalysisAnnotationActionType.AddValueToArray: {
+            const array = getIn(draft, action.path) as unknown[];
+            array.push(action.value);
+            setIn(draft as UnknownObject, action.path, array);
+            break;
+          }
+
+          case AnalysisAnnotationActionType.UnsetValue: {
+            setIn(draft as UnknownObject, action.path, undefined);
+            break;
+          }
+
+          default:
         }
       });
 

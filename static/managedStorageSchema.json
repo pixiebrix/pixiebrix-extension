@@ -41,6 +41,10 @@
       "description": "PixieBrix service URL",
       "default": "https://app.pixiebrix.com"
     },
+    "deploymentKey": {
+      "type": "string",
+      "description": "Shared deployment key for receiving deployments without user-authentication"
+    },
     "disableBrowserWarning": {
       "type": "boolean",
       "description": "Disable the browser warning for non-Chrome browsers, e.g., Microsoft Edge",

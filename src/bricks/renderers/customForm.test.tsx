@@ -37,10 +37,10 @@ import {
   TEST_resetState,
   getState,
   setState,
-  StateNamespaces,
 } from "@/platform/state/stateController";
 import type { Target } from "@/types/messengerTypes";
 import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 const brick = new CustomFormRenderer();
 

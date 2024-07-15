@@ -24,12 +24,7 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import brickRegistry from "@/bricks/registry";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import {
-  getState,
-  MergeStrategies,
-  setState,
-  StateNamespaces,
-} from "@/platform/state/stateController";
+import { getState, setState } from "@/platform/state/stateController";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { type Brick } from "@/types/brickTypes";
@@ -39,6 +34,7 @@ import { toExpression } from "@/utils/expressionUtils";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 

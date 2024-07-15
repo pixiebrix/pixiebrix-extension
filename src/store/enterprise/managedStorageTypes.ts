@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type DeploymentKey } from "@/auth/authTypes";
+
 /**
  * The managed storage state is stored in the browser's managed storage area. Configured by the Enterprise IT department
  * as part of force install of the extension.
@@ -61,6 +63,11 @@ export type ManagedStorageState = {
    * PixieBrix service URL
    */
   serviceUrl?: string;
+  /**
+   * Shared deployment key for receiving deployments without user-authentication.
+   * @since 2.0.6
+   */
+  deploymentKey?: DeploymentKey;
   /**
    * Disable the browser warning for non-Chrome browsers, e.g., Microsoft Edge
    * @since 1.7.36

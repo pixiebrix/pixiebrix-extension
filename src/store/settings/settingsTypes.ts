@@ -170,6 +170,9 @@ export type SettingsStateV4 = SettingsStateV3 & {
    * @since 1.8.11 SettingsStateV4 makes textSelectionMenu and snippetShortcutMenu required
    */
   textSelectionMenu: boolean;
+  /**
+   * @since 1.8.11 SettingsStateV4 makes textSelectionMenu and snippetShortcutMenu required
+   */
   snippetShortcutMenu: boolean;
 };
 

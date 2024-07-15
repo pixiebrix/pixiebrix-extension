@@ -42,7 +42,7 @@ jest.mock("@/pageEditor/context/connection");
 const { reducer: modComponentsReducer } = modComponentsSlice;
 
 describe("checkActiveModComponentAvailability", () => {
-  test("it checks the active element correctly", async () => {
+  it("checks the active element correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
     jest.mocked(getCurrentInspectedURL).mockResolvedValue(testUrl);
 

@@ -220,7 +220,7 @@ describe("checkPartnerAuth", () => {
 });
 
 describe("handleInstall", () => {
-  test("it opens extension console if not linked on CWS install", async () => {
+  it("opens extension console if not linked on CWS install", async () => {
     // App setup tab isn't open
     queryTabsMock.mockResolvedValue([]);
     isLinkedMock.mockResolvedValue(false);

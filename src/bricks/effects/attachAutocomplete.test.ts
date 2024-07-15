@@ -47,7 +47,7 @@ describe("AttachAutocomplete", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test("it attaches autocomplete", async () => {
+  it("attaches autocomplete", async () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: "[name='name']" }),
       brickOptionsFactory({
@@ -61,7 +61,7 @@ describe("AttachAutocomplete", () => {
     );
   });
 
-  test("it is root aware", async () => {
+  it("is root aware", async () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: "[name='name']", isRootAware: true }),
       brickOptionsFactory({

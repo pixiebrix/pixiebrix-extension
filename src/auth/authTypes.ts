@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Except } from "type-fest";
+import { type Except, type Tagged } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
@@ -27,6 +27,7 @@ import { type UserRole } from "@/types/contract";
 import { type UserMilestone } from "@/data/model/UserMilestone";
 
 export type AuthSharing = "private" | "shared" | "built-in";
+
 export interface AuthOption {
   label: string;
   value: UUID;
@@ -131,7 +132,6 @@ export type PartnerAuthData = {
    * Extra HTTP headers to send with every request.
    */
   extraHeaders: Record<string, string> | null;
-
   /**
    * The refresh request URL
    * @since 2.0.3
@@ -272,3 +272,12 @@ export type AuthState = {
 export type AuthRootState = {
   auth: AuthState;
 };
+
+/**
+ * A shared secret for retrieving deployments without per-user authentication.
+ *
+ * Introduced to support the Automation Anywhere Automation Co-Pilot Widget Sidebar Integration.
+ *
+ * @since 2.0.6
+ */
+export type DeploymentKey = Tagged<string, "DeploymentKey">;
