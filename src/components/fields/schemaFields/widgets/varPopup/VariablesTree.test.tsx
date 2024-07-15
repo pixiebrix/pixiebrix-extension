@@ -47,7 +47,7 @@ testItRenders({
 });
 
 describe("VariablesTree", () => {
-  test("it sorts nested variables", () => {
+  it("sorts nested variables", () => {
     const varMap = new VarMap();
     varMap.setExistenceFromValues({
       source: "input",

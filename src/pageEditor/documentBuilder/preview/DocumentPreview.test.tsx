@@ -202,7 +202,7 @@ describe("Show live preview", () => {
     });
   }
 
-  test("it renders the button", async () => {
+  it("renders the button", async () => {
     renderPreviewInTemporaryDisplayPipeline();
     await waitForEffect();
     jest.runOnlyPendingTimers();

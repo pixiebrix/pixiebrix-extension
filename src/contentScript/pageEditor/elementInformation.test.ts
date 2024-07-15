@@ -18,14 +18,14 @@
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 
 describe("getAttributeExamples", () => {
-  test("it gets attributes", () => {
+  it("gets attributes", () => {
     document.body.innerHTML = '<div id="abc"></div>';
     expect(getAttributeExamples("#abc")).toEqual([
       { name: "id", value: "abc" },
     ]);
   });
 
-  test("it gets data attributes", () => {
+  it("gets data attributes", () => {
     document.body.innerHTML = '<div id="abc" data-foo="abc"></div>';
     expect(getAttributeExamples("#abc")).toEqual([
       { name: "id", value: "abc" },
@@ -34,7 +34,7 @@ describe("getAttributeExamples", () => {
     ]);
   });
 
-  test("it takes first duplicate for the example value", () => {
+  it("takes first duplicate for the example value", () => {
     document.body.innerHTML = '<div><a id="abc"></a><a id="def"></a></div>';
     expect(getAttributeExamples("a")).toEqual([{ name: "id", value: "abc" }]);
   });

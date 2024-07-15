@@ -40,7 +40,7 @@ const sampleHeader = "This is a test header for radio item select";
 const fieldName = "testField";
 
 describe("RadioItemListWidget", () => {
-  test("it renders", () => {
+  it("renders", () => {
     expect(
       render(
         <RadioItemListWidget

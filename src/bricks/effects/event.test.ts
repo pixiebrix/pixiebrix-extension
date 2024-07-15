@@ -36,8 +36,8 @@ describe("ElementEvent", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test.each([undefined, false])(
-    "it clicks element for isRootAware: %s",
+  it.each([undefined, false])(
+    "clicks element for isRootAware: %s",
     async (isRootAware) => {
       const clickHandler = jest.fn();
       document.querySelector("button")!.addEventListener("click", clickHandler);
@@ -55,7 +55,7 @@ describe("ElementEvent", () => {
     },
   );
 
-  test("it clicks element for isRootAware: true", async () => {
+  it("clicks element for isRootAware: true", async () => {
     const clickHandler = jest.fn();
     document.querySelector("button")!.addEventListener("click", clickHandler);
 
