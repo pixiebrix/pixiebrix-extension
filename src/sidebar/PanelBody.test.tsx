@@ -23,15 +23,15 @@ import { serializeError } from "serialize-error";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
-import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import {
   type RendererErrorPayload,
   type RendererRunPayload,
 } from "@/types/rendererTypes";
 import { screen } from "shadow-dom-testing-library";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
-const modComponentId = uuidv4();
-const modId = registryIdFactory();
+const modComponentRef = modComponentRefFactory();
 
 describe("PanelBody", () => {
   beforeAll(() => {
@@ -43,14 +43,14 @@ describe("PanelBody", () => {
       key: uuidv4(),
       error: serializeError(new Error("test error")),
       runId: uuidv4(),
-      modComponentId,
+      modComponentRef,
     };
 
     const { asFragment } = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{ modComponentId, modId }}
+        context={mapModComponentRefToMessageContext(modComponentRef)}
         payload={payload}
       />,
     );
@@ -63,14 +63,14 @@ describe("PanelBody", () => {
       key: uuidv4(),
       error: serializeError(new BusinessError("test error")),
       runId: uuidv4(),
-      modComponentId,
+      modComponentRef,
     };
 
     const { asFragment } = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{ modComponentId, modId }}
+        context={mapModComponentRefToMessageContext(modComponentRef)}
         payload={payload}
       />,
     );
@@ -83,14 +83,14 @@ describe("PanelBody", () => {
       key: uuidv4(),
       error: serializeError(new CancelError("test error")),
       runId: uuidv4(),
-      modComponentId,
+      modComponentRef,
     };
 
     const { asFragment } = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{ modComponentId, modId }}
+        context={mapModComponentRefToMessageContext(modComponentRef)}
         payload={payload}
       />,
     );
@@ -102,7 +102,7 @@ describe("PanelBody", () => {
     const payload: RendererRunPayload = {
       key: uuidv4(),
       runId: uuidv4(),
-      modComponentId,
+      modComponentRef,
       brickId: validateRegistryId("@pixiebrix/html"),
       args: {
         html: "<h1>Test</h1>",
@@ -114,7 +114,7 @@ describe("PanelBody", () => {
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{ modComponentId, modId }}
+        context={mapModComponentRefToMessageContext(modComponentRef)}
         payload={payload}
       />,
     );
@@ -129,7 +129,7 @@ describe("PanelBody", () => {
     const payload: RendererRunPayload = {
       key: uuidv4(),
       runId: uuidv4(),
-      modComponentId,
+      modComponentRef,
       brickId: validateRegistryId("@pixiebrix/html"),
       args: {
         html: "<h1>Test</h1>",
@@ -141,7 +141,7 @@ describe("PanelBody", () => {
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{ modComponentId, modId }}
+        context={mapModComponentRefToMessageContext(modComponentRef)}
         payload={payload}
       />,
     );
@@ -157,7 +157,7 @@ describe("PanelBody", () => {
     const payload: RendererRunPayload = {
       key: uuidv4(),
       runId: uuidv4(),
-      modComponentId,
+      modComponentRef,
       brickId: validateRegistryId("@pixiebrix/document"),
       args: {
         body: [
@@ -215,7 +215,7 @@ describe("PanelBody", () => {
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{ modComponentId, modId }}
+        context={mapModComponentRefToMessageContext(modComponentRef)}
         payload={payload}
       />,
     );

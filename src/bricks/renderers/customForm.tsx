@@ -47,7 +47,6 @@ import { type CustomFormComponentProps } from "./CustomFormComponent";
 import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
 import { assumeNotNullish_UNSAFE } from "@/utils/nullishUtils";
 import { type ModComponentRef } from "@/types/modComponentTypes";
-import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 import {
   MergeStrategies,
   type StateNamespace,
@@ -278,10 +277,8 @@ export class CustomFormRenderer extends RendererABC {
       onSubmit?: PipelineExpression;
       postSubmitAction?: PostSubmitAction;
     }>,
-    { logger, runPipeline, platform }: BrickOptions,
+    { meta: { modComponentRef }, runPipeline, platform }: BrickOptions,
   ): Promise<ComponentRef> {
-    const modComponentRef = mapMessageContextToModComponentRef(logger.context);
-
     // Redundant with the JSON Schema input validation for `required`. But keeping here for clarity
     if (!storage) {
       throw new PropError(

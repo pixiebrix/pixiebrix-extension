@@ -75,7 +75,10 @@ import {
   type ContextMenuDefinition,
 } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { mapModComponentToMessageContext } from "@/utils/modUtils";
+import {
+  getModComponentRef,
+  mapModComponentToMessageContext,
+} from "@/utils/modUtils";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
@@ -373,6 +376,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
         await reduceModComponentPipeline(actionConfig, initialValues, {
           logger: modComponentLogger,
+          modComponentRef: getModComponentRef(modComponent),
           ...apiVersionOptions(modComponent.apiVersion),
         });
 

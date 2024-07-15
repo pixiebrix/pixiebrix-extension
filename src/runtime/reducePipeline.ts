@@ -23,7 +23,7 @@ import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/bricks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
-import { type JsonObject } from "type-fest";
+import { type JsonObject, type SetRequired } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
@@ -79,7 +79,6 @@ import type { Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 import { getPlatform } from "@/platform/platformContext";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
-import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -341,14 +340,14 @@ async function executeBrickWithValidatedProps(
     }
 
     case "self": {
-      const { runId, modComponentId, branches } = options.trace;
+      const { runId, modComponentRef, branches } = options.trace;
 
       return brick.run(args, {
         platform: getPlatform(),
         ...commonOptions,
         ...options,
         meta: {
-          modComponentId,
+          modComponentRef,
           runId,
           branches,
         },
@@ -369,7 +368,7 @@ async function executeBrickWithValidatedProps(
             {
               ...options,
               runId,
-              modComponentId,
+              modComponentRef,
               branches: [...branches, branch],
             },
           );
@@ -392,7 +391,7 @@ async function executeBrickWithValidatedProps(
             throw new Error("Expected object context for v3+ runtime");
           }
 
-          const { runId, modComponentId, branches } = options.trace;
+          const { runId, modComponentRef, branches } = options.trace;
           let payload: PanelPayload;
           try {
             await reducePipelineExpression(
@@ -408,7 +407,7 @@ async function executeBrickWithValidatedProps(
                 // This (headless) is the important difference from the call in runPipeline() above
                 headless: true,
                 runId,
-                modComponentId,
+                modComponentRef,
                 branches: [...branches, branch],
               },
             );
@@ -422,14 +421,14 @@ async function executeBrickWithValidatedProps(
                 brickId: error.brickId,
                 args: error.args,
                 ctxt: error.ctxt,
-                modComponentId,
+                modComponentRef,
                 runId,
               };
             } else {
               payload = {
                 key: runId,
                 error: serializeError(error),
-                modComponentId,
+                modComponentRef,
                 runId,
               };
             }
@@ -528,9 +527,11 @@ function selectTraceRecordMeta(
   resolvedConfig: ResolvedBrickConfig,
   options: RunBrickOptions,
 ): TraceRecordMeta {
+  // TODO: where does modComponentId come from?
   return {
     ...options.trace,
     brickId: resolvedConfig.config.id,
+    modComponentId: options.trace.modComponentRef.modComponentId,
   };
 }
 
@@ -611,15 +612,18 @@ async function runBrick(
 async function applyReduceDefaults({
   logValues,
   runId,
-  modComponentId,
+  modComponentRef,
   logger: providedLogger,
   ...overrides
-}: Partial<ReduceOptions>): Promise<ReduceOptions> {
+}: SetRequired<
+  Partial<ReduceOptions>,
+  "modComponentRef"
+>): Promise<ReduceOptions> {
   const globalLoggingConfig = await getLoggingConfig();
   const logger = providedLogger ?? new ConsoleLogger();
 
   return {
-    modComponentId: modComponentId ?? logger.context.modComponentId,
+    modComponentRef,
     validateInput: true,
     headless: false,
     // Default to the `apiVersion: v1, v2` data passing behavior and renderer behavior
@@ -651,7 +655,7 @@ export async function brickReducer(
   const { index, isLastBlock, previousOutput, context, root } = state;
   const {
     runId,
-    modComponentId,
+    modComponentRef,
     explicitDataFlow,
     logValues,
     logger,
@@ -670,9 +674,7 @@ export async function brickReducer(
     ...options,
     trace: {
       runId,
-      // Be defensive if the call site doesn't provide an extensionId
-      // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3751
-      modComponentId: modComponentId ?? logger.context.modComponentId,
+      modComponentRef,
       brickInstanceId: brickConfig.instanceId,
       branches,
     },
@@ -912,19 +914,16 @@ async function getBrickLogger(
 export async function reduceModComponentPipeline(
   pipeline: BrickConfig | BrickPipeline,
   initialValues: InitialValues,
-  partialOptions: Partial<ReduceOptions> = {},
+  partialOptions: SetRequired<Partial<ReduceOptions>, "modComponentRef">,
 ): Promise<unknown> {
   const platform = getPlatform();
-  const pipelineLogger = partialOptions.logger ?? new ConsoleLogger();
 
   if (platform.capabilities.includes("debugger")) {
     try {
-      const { modComponentId: extensionId } = pipelineLogger.context;
-
-      if (extensionId) {
-        // `await` promise to avoid race condition where the calls here delete entries from this call to reducePipeline
-        await platform.debugger.clear(extensionId);
-      }
+      // `await` promise to avoid race condition where the calls here delete entries from this call to reducePipeline
+      await platform.debugger.clear(
+        partialOptions.modComponentRef.modComponentId,
+      );
     } catch {
       // NOP
     }
@@ -945,7 +944,7 @@ export async function reduceModComponentPipeline(
 export async function reducePipeline(
   pipeline: BrickConfig | BrickPipeline,
   initialValues: InitialValues,
-  partialOptions: Partial<ReduceOptions>,
+  partialOptions: SetRequired<Partial<ReduceOptions>, "modComponentRef">,
 ): Promise<unknown> {
   const options = await applyReduceDefaults(partialOptions);
 
@@ -972,9 +971,7 @@ export async function reducePipeline(
       isLastBlock: index === pipelineArray.length - 1,
       previousOutput: output,
       context: extendModVariableContext(localVariableContext, {
-        modComponentRef: mapMessageContextToModComponentRef(
-          pipelineLogger.context,
-        ),
+        modComponentRef: partialOptions.modComponentRef,
         options,
         // Mod variable is updated when each block is run
         update: true,
@@ -1047,9 +1044,7 @@ async function reducePipelineExpression(
       previousOutput: legacyOutput,
       // Assume @input and @options are present
       context: extendModVariableContext(context as BrickArgsContext, {
-        modComponentRef: mapMessageContextToModComponentRef(
-          pipelineLogger.context,
-        ),
+        modComponentRef: options.modComponentRef,
         options,
         // Update mod variable when each block is run
         update: true,

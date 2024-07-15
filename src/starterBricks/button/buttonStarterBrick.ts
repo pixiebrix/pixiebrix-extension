@@ -92,7 +92,10 @@ import {
   type ButtonTargetMode,
 } from "@/starterBricks/button/buttonStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { mapModComponentToMessageContext } from "@/utils/modUtils";
+import {
+  getModComponentRef,
+  mapModComponentToMessageContext,
+} from "@/utils/modUtils";
 
 const DATA_ATTR = "data-pb-uuid";
 
@@ -537,6 +540,7 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
       const show = await reducePipeline(modComponent.config.if, initialValues, {
         // Don't pass extension: modComponentLogger because our log display doesn't handle the in-starter brick
         // conditionals yet
+        modComponentRef: getModComponentRef(modComponent),
         ...versionOptions,
       });
 
@@ -619,6 +623,7 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
 
           await reduceModComponentPipeline(actionConfig, initialValues, {
             logger: modComponentLogger,
+            modComponentRef: getModComponentRef(modComponent),
             ...apiVersionOptions(modComponent.apiVersion),
           });
 

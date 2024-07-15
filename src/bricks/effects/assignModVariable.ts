@@ -7,7 +7,6 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 /**
@@ -92,13 +91,13 @@ class AssignModVariable extends EffectABC {
       // Input is validated, so we know value is a JsonPrimitive or JsonObject
       value: JsonPrimitive | JsonObject;
     }>,
-    { logger }: BrickOptions,
+    { meta: { modComponentRef } }: BrickOptions,
   ): Promise<void> {
     setState({
       namespace: StateNamespaces.MOD,
       data: { [variableName]: value },
       mergeStrategy: MergeStrategies.SHALLOW,
-      modComponentRef: mapMessageContextToModComponentRef(logger.context),
+      modComponentRef,
     });
   }
 }

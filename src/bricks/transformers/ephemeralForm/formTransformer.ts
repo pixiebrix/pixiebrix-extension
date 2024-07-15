@@ -23,7 +23,6 @@ import { type BrickConfig } from "@/bricks/types";
 import { type FormDefinition } from "@/platform/forms/formTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
-import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 export const TEMPORARY_FORM_SCHEMA: Schema = {
   type: "object",
@@ -117,7 +116,7 @@ export class FormTransformer extends TransformerABC {
       stylesheets = [],
       disableParentStyles = false,
     }: BrickArgs<FormDefinition>,
-    { logger, abortSignal, platform }: BrickOptions,
+    { meta: { modComponentRef }, abortSignal, platform }: BrickOptions,
   ): Promise<unknown> {
     // Repackage the definition from the brick input with default values
     const formDefinition: FormDefinition = {
@@ -138,11 +137,7 @@ export class FormTransformer extends TransformerABC {
 
     try {
       // `mapMessageContextToModComponentRef` throws if there's no mod component or starter brick in the context
-      return await platform.form(
-        formDefinition,
-        controller,
-        mapMessageContextToModComponentRef(logger.context),
-      );
+      return await platform.form(formDefinition, controller, modComponentRef);
     } finally {
       controller.abort();
     }

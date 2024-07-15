@@ -299,6 +299,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       try {
         await reduceModComponentPipeline(generator, initialValues, {
           logger: modComponentLogger,
+          modComponentRef: getModComponentRef(modComponent),
           ...apiVersionOptions(modComponent.apiVersion),
           abortSignal,
         });

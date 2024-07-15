@@ -328,7 +328,7 @@ export type ActivatePanelOptions = {
  * Metadata about the extension that produced the panel content
  * @since 1.7.0
  */
-export type PanelRunMeta = Pick<RunMetadata, "runId" | "modComponentId">;
+export type PanelRunMetadata = Pick<RunMetadata, "runId" | "modComponentRef">;
 
 export type SidebarState = SidebarEntries & {
   activeKey: Nullishable<string>;

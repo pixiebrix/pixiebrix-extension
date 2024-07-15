@@ -24,6 +24,8 @@ import {
 } from "@/testUtils/factories/stringFactories";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import type { SemVerString } from "@/types/registryTypes";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 const brick = new RunMetadataTransformer();
 
@@ -77,14 +79,13 @@ describe("RunMetadataTransformer", () => {
   });
 
   it("returns deployed mod metadata", async () => {
-    const modComponentId = autoUUIDSequence();
+    const modComponentRef = modComponentRefFactory();
     const deploymentId = autoUUIDSequence();
-    const modId = registryIdFactory();
+
     const runId = autoUUIDSequence();
 
     const logger = new ConsoleLogger({
-      modComponentId,
-      modId,
+      ...mapModComponentRefToMessageContext(modComponentRef),
       modVersion: "1.0.0" as SemVerString,
       deploymentId,
     });
@@ -95,17 +96,17 @@ describe("RunMetadataTransformer", () => {
         logger,
         meta: {
           runId,
-          modComponentId,
+          modComponentRef,
           branches: [],
         },
       }),
     );
 
     expect(result).toEqual({
-      modComponentId,
+      modComponentRef,
       deploymentId,
       mod: {
-        id: modId,
+        id: modComponentRef.modId,
         version: "1.0.0",
       },
       runId,

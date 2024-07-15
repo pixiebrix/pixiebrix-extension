@@ -24,6 +24,7 @@ import { type BrickPipeline } from "@/bricks/types";
 import { type PanelPayload } from "./sidebarTypes";
 import { type PlatformProtocol } from "@/platform/platformProtocol";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.
@@ -302,12 +303,14 @@ export type Branch = {
  */
 export interface RunMetadata {
   /**
-   * The mod component that's running the brick. Used to correlate trace records across all runs/branches.
-   * @since 1.7.0
-   * Marked Nullishable as part of the StrictNullChecks migration.
-   * TODO: Revisit and determine if modComponentId should be required.
+   * The mod component that's running the brick. Used to:
+   *
+   * - Associate UI elements with the mod component (e.g., forms, quickbar actions, etc.)
+   * - Used to correlate trace records across all runs/branches.
+   *
+   * @since 2.0.6 is the full ModComponentRef instead of just the modComponentId
    */
-  modComponentId: Nullishable<UUID>;
+  modComponentRef: ModComponentRef;
   /**
    * A unique run id to correlate trace records across branches for a run, or null to disable tracing.
    */

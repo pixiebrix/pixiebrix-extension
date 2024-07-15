@@ -88,7 +88,10 @@ import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
-import { mapModComponentToMessageContext } from "@/utils/modUtils";
+import {
+  getModComponentRef,
+  mapModComponentToMessageContext,
+} from "@/utils/modUtils";
 
 type TriggerTarget = Document | HTMLElement;
 
@@ -417,6 +420,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
     await reduceModComponentPipeline(actionConfig, initialValues, {
       logger: componentLogger,
+      modComponentRef: getModComponentRef(modComponent),
       ...apiVersionOptions(modComponent.apiVersion),
     });
   }

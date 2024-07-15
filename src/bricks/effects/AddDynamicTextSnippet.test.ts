@@ -68,7 +68,7 @@ describe("AddDynamicTextSnippet", () => {
           // Preview is optional
           preview: undefined,
           handler: expect.toBeFunction(),
-          componentId: reduceOptions.modComponentId,
+          componentId: reduceOptions.modComponentRef.modComponentId,
           context: {
             ...reduceOptions.logger.context,
             brickId: brick.id,
@@ -109,7 +109,7 @@ describe("AddDynamicTextSnippet", () => {
           title: "Echo",
           preview,
           handler: expect.toBeFunction(),
-          componentId: reduceOptions.modComponentId,
+          componentId: reduceOptions.modComponentRef.modComponentId,
           context: {
             ...reduceOptions.logger.context,
             brickId: brick.id,

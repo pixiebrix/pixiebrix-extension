@@ -27,6 +27,8 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { toExpression } from "@/utils/expressionUtils";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   runHeadlessPipeline: jest
@@ -43,7 +45,8 @@ describe("RendererComponent", () => {
 
   test("provide onAction to document renderer", async () => {
     const runId = uuidv4();
-    const modComponentId = uuidv4();
+
+    const modComponentRef = modComponentRefFactory();
     const onAction = jest.fn();
 
     runHeadlessPipelineMock.mockRejectedValue(
@@ -63,10 +66,12 @@ describe("RendererComponent", () => {
     const props = {
       body: [config],
       options: brickOptionsFactory({
-        logger: new ConsoleLogger({ modComponentId }),
+        logger: new ConsoleLogger(
+          mapModComponentRefToMessageContext(modComponentRef),
+        ),
         meta: {
           runId,
-          modComponentId,
+          modComponentRef,
           branches: [],
         },
       }),
@@ -76,7 +81,7 @@ describe("RendererComponent", () => {
       <RendererComponent
         brickId={validateRegistryId("@pixiebrix/document")}
         body={{ Component: DocumentView as any, props }}
-        meta={{ runId, modComponentId }}
+        meta={{ runId, modComponentRef }}
         onAction={onAction}
       />,
     );

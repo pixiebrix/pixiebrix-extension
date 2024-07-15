@@ -244,7 +244,7 @@ describe("Trace normal execution", () => {
       ...reduceOptionsFactory("v2"),
       runId,
       logger,
-      modComponentId: modComponentRef.modComponentId,
+      modComponentRef,
     });
 
     const meta: TraceRecordMeta = {
@@ -309,7 +309,7 @@ describe("Trace normal execution", () => {
 
     await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
       ...reduceOptionsFactory("v2"),
-      modComponentId: modComponentRef.modComponentId,
+      modComponentRef,
       runId,
       logger,
     });

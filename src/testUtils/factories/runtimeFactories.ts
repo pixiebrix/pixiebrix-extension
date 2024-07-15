@@ -24,9 +24,13 @@ import { define, derive } from "cooky-cutter";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
-import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import {
+  mapMessageContextToModComponentRef,
+  mapModComponentRefToMessageContext,
+} from "@/utils/modUtils";
 import type { ReduceOptions } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Factory for BrickOptions to pass to Brick.run method.
@@ -54,14 +58,24 @@ export const brickOptionsFactory = define<BrickOptions>({
     jest
       .fn()
       .mockRejectedValue(new Error("runRendererPipeline mock not implemented")),
-  meta: derive<BrickOptions, RunMetadata>(
-    (options) => ({
+  meta: derive<BrickOptions, RunMetadata>((options) => {
+    const context = options.logger?.context;
+
+    assertNotNullish(context, "Expected logger");
+
+    return {
       runId: null,
-      modComponentId: options.logger?.context.modComponentId,
+      // We might instead use the factory here and instead derive the logger
+      modComponentRef: mapMessageContextToModComponentRef(context),
       branches: [],
-    }),
-    "logger",
-  ),
+    };
+  }, "logger"),
+});
+
+export const runMetadataFactory = define<RunMetadata>({
+  runId: null,
+  modComponentRef: modComponentRefFactory,
+  branches: [],
 });
 
 /**
@@ -78,7 +92,7 @@ export function reduceOptionsFactory(
   );
 
   return {
-    modComponentId: modComponentRef.modComponentId,
+    modComponentRef,
     logger,
     runId: null,
     headless: false,
