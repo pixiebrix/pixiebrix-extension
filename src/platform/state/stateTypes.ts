@@ -46,6 +46,7 @@ export const STATE_CHANGE_JS_EVENT_TYPE = "statechange" as const;
  */
 export type StateChangeEventDetail = {
   namespace: StateNamespace;
+  // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8845 -- rename deprecated fieldnames
   // Keep using extensionId/blueprintId for now for backward compatability because the values are made available
   // in `@input.event`. It's unlikely anyone is relying on them in the wild, though.
   extensionId: UUID;
