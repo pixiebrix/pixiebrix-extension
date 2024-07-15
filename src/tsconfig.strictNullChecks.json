@@ -4,7 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
-    "./contrib/google/sheets/ui/TabField.tsx",
+    "./contrib/google/sheets/ui/RequireGoogleSheet.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -786,6 +786,8 @@
     "./contrib/google/sheets/core/useSpreadsheetId.test.tsx",
     "./contrib/google/sheets/core/useSpreadsheetId.ts",
     "./contrib/google/sheets/ui/SpreadsheetPickerWidget.tsx",
+    "./contrib/google/sheets/ui/TabField.test.tsx",
+    "./contrib/google/sheets/ui/TabField.tsx",
     "./contrib/hubspot/upsert.ts",
     "./contrib/navigationRules.ts",
     "./contrib/pipedrive/create.ts",
