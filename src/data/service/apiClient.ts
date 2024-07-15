@@ -70,7 +70,7 @@ async function setupApiClient(): Promise<void> {
 
   apiClientInstance = axios.create({
     baseURL: await getBaseURL(),
-    headers: authHeaders,
+    headers: { ...authHeaders },
   });
 
   apiClientInstance.interceptors.request.use(async (config) => {

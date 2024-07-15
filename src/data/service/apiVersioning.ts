@@ -31,6 +31,10 @@ const API_VERSION_MAP = new Map<string, ApiVersion>([
   ["/api/me/", "1.1"],
 ]);
 
-export function getURLApiVersion(url: string): string {
+export function getURLApiVersion(url: string | undefined): string {
+  if (!url) {
+    return DEFAULT_API_VERSION;
+  }
+
   return API_VERSION_MAP.get(url) || DEFAULT_API_VERSION;
 }
