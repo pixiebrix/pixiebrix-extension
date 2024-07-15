@@ -193,14 +193,25 @@ export const partnerAuthDataFactory = define<PartnerAuthData>({
   refreshExtraHeaders: null,
 });
 
-let deploymentKeyCounter = 0;
+let keyCounter = 0;
 
 /**
  * Generate a deployment key for testing.
  * @since 2.0.6
  */
 export function deploymentKeyFactory(): DeploymentKey {
-  const value = padStart(deploymentKeyCounter.toString(), 64, "0");
-  deploymentKeyCounter++;
+  const value = padStart(keyCounter.toString(), 64, "0");
+  keyCounter++;
   return value as DeploymentKey;
+}
+
+/**
+ * Generate a native PixieBrix user token for testing.
+ * @since 2.0.6
+ */
+export function userTokenFactory(): string {
+  // Share counter with deploymentKeyFactory to avoid collisions
+  const value = padStart(keyCounter.toString(), 64, "0");
+  keyCounter++;
+  return value;
 }

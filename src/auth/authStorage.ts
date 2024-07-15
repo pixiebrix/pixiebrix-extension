@@ -92,7 +92,7 @@ export async function readAuthData(): Promise<
  * @see getDeploymentKey
  */
 export async function getExtensionToken(): Promise<string | undefined> {
-  const { token } = await readAuthData();
+  const { token } = (await readAuthData()) ?? {};
   return token;
 }
 
@@ -153,7 +153,7 @@ export async function clearPartnerAuthData(): Promise<void> {
  * Return PixieBrix API authentication headers, or null if not authenticated.
  *
  * Headers can be, in order of precedence:
- * - Native PixieBrix token
+ * - Native PixieBrix user token
  * - Partner Bearer JWT
  * - Shared PixieBrix deployment key
  *
