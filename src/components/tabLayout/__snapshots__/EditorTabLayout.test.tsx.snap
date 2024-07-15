@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EditorTabLayout it renders 1`] = `
+exports[`EditorTabLayout renders 1`] = `
 <DocumentFragment>
   <div
     class="root"
