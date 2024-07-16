@@ -32,7 +32,7 @@ export class ModListItem extends BasePageObject {
     return this.getByLabel(" - Ellipsis");
   }
 
-  unavailableIcon() {
+  get unavailableIcon() {
     return this.getByRole("img", {
       name: "Not available on page",
     });
