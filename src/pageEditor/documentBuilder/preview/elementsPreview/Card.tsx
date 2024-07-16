@@ -43,7 +43,7 @@ const Card: React.FunctionComponent<CardProps> = ({
   elementRef,
   ...restPreviewProps
 }) => {
-  const { bodyClassName, ...restCardProps } = props;
+  const { bodyClassName, ...restCardProps } = props ?? {};
   return (
     <div
       className={cx(documentTreeStyles.shiftRightWrapper, className)}
@@ -60,7 +60,7 @@ const Card: React.FunctionComponent<CardProps> = ({
       />
       <Component
         {...restCardProps}
-        bodyClassName={cx(bodyClassName, styles.cardBody)}
+        bodyClassName={cx(bodyClassName as string, styles.cardBody)}
       >
         {children}
       </Component>
