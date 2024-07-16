@@ -30,7 +30,7 @@ import { type Except } from "type-fest";
  *
  * Leaving off the more obscure URL parts for now
  */
-export const urlSchemaProject: Schema = {
+const urlSchemaProject: Schema = {
   type: "object",
   properties: {
     hostname: {
