@@ -32,18 +32,22 @@ test("copying a mod that uses the PixieBrix API is copied correctly", async ({
   extensionId,
   verifyModDefinitionSnapshot,
 }) => {
-  const modId = "@e2e-testing/test/write-to-db-static";
-  const modName = "Write to Hard-Coded DB";
+  const sourceModId = "@e2e-testing/test/write-to-db-static";
+  const sourceModName = "Write to Hard-Coded DB";
   const modUuid = uuidv4();
   const copyModId = `@extension-e2e-test-unaffiliated/write-to-hard-coded-db-${modUuid}`;
 
   await test.step("Activate the mod to be copied", async () => {
-    const modActivationPage = new ActivateModPage(page, extensionId, modId);
+    const modActivationPage = new ActivateModPage(
+      page,
+      extensionId,
+      sourceModId,
+    );
     await modActivationPage.goto();
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
     await verifyModDefinitionSnapshot({
-      modId,
+      modId: sourceModId,
       snapshotName: "write-to-db-static-origin",
       mode: "current",
     });
@@ -52,7 +56,7 @@ test("copying a mod that uses the PixieBrix API is copied correctly", async ({
   await test.step("Copy the mod", async () => {
     await page.goto("/");
     const pageEditorPage = await newPageEditorPage(page.url());
-    await pageEditorPage.copyMod(modName, modUuid);
+    await pageEditorPage.copyMod(sourceModName, modUuid);
 
     await expect(
       pageEditorPage.getByRole("textbox", { name: "Mod ID" }),
@@ -60,13 +64,13 @@ test("copying a mod that uses the PixieBrix API is copied correctly", async ({
 
     await expect(
       pageEditorPage.getByRole("textbox", { name: "Name" }),
-    ).toHaveValue(`${modName} (Copy)`);
+    ).toHaveValue(`${sourceModName} (Copy)`);
 
     await verifyModDefinitionSnapshot({
       modId: copyModId,
       snapshotName: "write-to-db-static-copy",
       mode: "diff",
-      prevModId: modId,
+      prevModId: sourceModId,
     });
   });
 });
@@ -99,18 +103,22 @@ test("run a copied mod with a built-in integration", async ({
     return route.continue();
   });
 
-  const modId = "@e2e-testing/giphy/giphy-search";
-  const modName = "GIPHY Search";
+  const sourceModId = "@e2e-testing/giphy/giphy-search";
+  const sourceModName = "GIPHY Search";
   const modUuid = uuidv4();
   const copyModId = `@extension-e2e-test-unaffiliated/giphy-search-${modUuid}`;
 
   await test.step("Activate the mod to be copied", async () => {
-    const modActivationPage = new ActivateModPage(page, extensionId, modId);
+    const modActivationPage = new ActivateModPage(
+      page,
+      extensionId,
+      sourceModId,
+    );
     await modActivationPage.goto();
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
     await verifyModDefinitionSnapshot({
-      modId,
+      modId: sourceModId,
       snapshotName: "giphy-search-origin",
       mode: "current",
     });
@@ -119,7 +127,7 @@ test("run a copied mod with a built-in integration", async ({
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
   await test.step("Copy the mod", async () => {
-    await pageEditorPage.copyMod(modName, modUuid);
+    await pageEditorPage.copyMod(sourceModName, modUuid);
 
     await expect(
       pageEditorPage.getByRole("textbox", { name: "Mod ID" }),
@@ -127,18 +135,18 @@ test("run a copied mod with a built-in integration", async ({
 
     await expect(
       pageEditorPage.getByRole("textbox", { name: "Name" }),
-    ).toHaveValue(`${modName} (Copy)`);
+    ).toHaveValue(`${sourceModName} (Copy)`);
 
     await verifyModDefinitionSnapshot({
       modId: copyModId,
       snapshotName: "giphy-search-copy",
       mode: "diff",
-      prevModId: modId,
+      prevModId: sourceModId,
     });
   });
 
   await test.step("Deactivate the original mod", async () => {
-    await pageEditorPage.deactivateMod(modName);
+    await pageEditorPage.deactivateMod(sourceModName);
   });
 
   await test.step("Run the copied mod", async () => {
