@@ -18,14 +18,31 @@
 import { BasePageObject } from "../basePageObject";
 import { ModifiesModState } from "./utils";
 
-export class BrickConfigurationPanel extends BasePageObject {
+export class ConfigurationForm extends BasePageObject {
   @ModifiesModState
   async fillField(fieldLabel: string, value: string) {
-    await this.getByLabel(fieldLabel).fill(value);
+    const field = this.getByLabel(fieldLabel);
+    // Click to enable the field, if it's not already enabled
+    await field.click();
+    await field.fill(value);
   }
 
   @ModifiesModState
   async fillFieldByPlaceholder(fieldPlaceholder: string, value: string) {
-    await this.getByPlaceholder(fieldPlaceholder).fill(value);
+    const field = this.getByPlaceholder(fieldPlaceholder);
+    // Click to enable the field, if it's not already enabled
+    await field.click();
+    await field.fill(value);
+  }
+
+  getToggleSwitch(label: string) {
+    // The form toggle component does not have its label properly connected with the control element,
+    // so we can't use `getByLabel` here
+    return this.locator(`.switch-group:near(:text("${label}"))`);
+  }
+
+  @ModifiesModState
+  async toggleSwitch(label: string) {
+    await this.getToggleSwitch(label).click();
   }
 }
