@@ -57,7 +57,7 @@ test("Connect action in partner auth sidebar takes user to the Extension Console
   const consolePagePromise = context.waitForEvent("page");
 
   await connectLink.click({
-    force: true,
+    noWaitAfter: true,
   });
 
   const extensionConsolePage = await consolePagePromise;
