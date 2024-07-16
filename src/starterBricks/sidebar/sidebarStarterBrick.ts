@@ -367,9 +367,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     // Reserve placeholders in the sidebar for when it becomes visible. `Run` is called from lifecycle.ts on navigation;
     // the sidebar won't be visible yet on initial page load.
     this.platform.panels.reservePanels(
-      this.modComponents.map((modComponent) =>
-        getModComponentRef(modComponent),
-      ),
+      this.modComponents.map((x) => getModComponentRef(x)),
     );
 
     if (!(await this.platform.panels.isContainerVisible())) {
