@@ -19,10 +19,7 @@ import React from "react";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { getPageState } from "@/contentScript/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import {
-  selectActiveModComponentFormState,
-  selectActiveModComponentRef,
-} from "@/pageEditor/store/editor/editorSelectors";
+import { selectActiveModComponentRef } from "@/pageEditor/store/editor/editorSelectors";
 import { faExternalLinkAlt, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
@@ -54,9 +51,6 @@ type StateValues = {
  */
 const ModVariablesTab: React.VFC = () => {
   const modComponentRef = useSelector(selectActiveModComponentRef);
-  const activeModComponentFormState = useSelector(
-    selectActiveModComponentFormState,
-  );
 
   const state = useAsyncState<StateValues>(
     async () =>
@@ -66,12 +60,10 @@ const ModVariablesTab: React.VFC = () => {
           namespace: StateNamespaces.PUBLIC,
           modComponentRef,
         }),
-        Mod: activeModComponentFormState?.modMetadata
-          ? getPageState(inspectedTab, {
-              namespace: StateNamespaces.MOD,
-              modComponentRef,
-            })
-          : Promise.resolve("Starter Brick is not in a mod package"),
+        Mod: getPageState(inspectedTab, {
+          namespace: StateNamespaces.MOD,
+          modComponentRef,
+        }),
         Private: getPageState(inspectedTab, {
           namespace: StateNamespaces.PRIVATE,
           modComponentRef,
