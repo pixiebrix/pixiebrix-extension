@@ -184,7 +184,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       isActive={isActive}
       elementRef={elementRef}
     >
-      {props?.children}
+      {props.children}
       {isContainer &&
         previewElement.children.map((childElement, i) => {
           const childElementName = `${elementName}.children.${i}`;

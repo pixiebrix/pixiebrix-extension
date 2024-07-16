@@ -43,7 +43,7 @@ function filterCssClassesForPreview(props: UnknownObject | undefined): void {
   // Never hide elements in the preview
   delete props.hidden;
 
-  if (typeof props?.className === "string") {
+  if (typeof props.className === "string") {
     props.className = props.className
       .split(" ")
       .filter((x) =>

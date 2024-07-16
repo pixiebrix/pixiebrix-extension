@@ -46,7 +46,7 @@ const Container: React.FunctionComponent<ContainerProps> = ({
   <Component
     {...restPreviewProps}
     className={cx(
-      props?.className ?? "",
+      props.className ?? "",
       className,
       documentTreeStyles.container,
     )}
