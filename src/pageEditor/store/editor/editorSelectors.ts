@@ -76,6 +76,9 @@ export const selectActiveModId = ({ editor }: EditorRootState) =>
 export const selectInsertingStarterBrickType = ({ editor }: EditorRootState) =>
   editor.insertingStarterBrickType;
 
+export const selectIsInsertingStarterBrick = ({ editor }: EditorRootState) =>
+  editor.insertingStarterBrickType != null;
+
 export const selectActiveModComponentRef = createSelector(
   selectActiveModComponentFormState,
   selectActiveModId,
