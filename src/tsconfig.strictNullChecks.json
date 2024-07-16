@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/modals/addBrickModal/useAddBrick.ts",
     "./pageEditor/fields/AssignModVariableOptions.tsx",
     "./pageEditor/fields/AlertOptions.tsx",
     "./pageEditor/fields/RemoteMethodOptions.tsx",

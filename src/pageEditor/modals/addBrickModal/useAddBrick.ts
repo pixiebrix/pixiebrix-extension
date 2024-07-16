@@ -63,8 +63,12 @@ function useAddBrick(): AddBrick {
   const sessionId = useSelector(selectSessionId);
   const activeModComponent = useSelector(selectActiveModComponentFormState);
   const pipelineMap = useSelector(selectPipelineMap);
-
   const addBlockLocation = useSelector(selectAddBlockLocation);
+
+  assertNotNullish(
+    activeModComponent,
+    "Active mod component is required to add brick",
+  );
 
   const makeNewBrick = useCallback(
     async (brick: Brick): Promise<BrickConfig> => {
