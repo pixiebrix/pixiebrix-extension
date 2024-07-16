@@ -18,8 +18,8 @@
 import { BasePageObject } from "../basePageObject";
 
 export class ModEditorPane extends BasePageObject {
-  modId = this.getByLabel("Mod ID");
-  name = this.getByLabel("Name");
-  version = this.getByLabel("Version");
-  description = this.getByLabel("Description");
+  modId = this.getByRole("textbox", { name: "Mod ID" });
+  name = this.getByRole("textbox", { name: "Name" });
+  version = this.getByRole("textbox", { name: "Version" });
+  description = this.getByRole("textbox", { name: "Description" });
 }

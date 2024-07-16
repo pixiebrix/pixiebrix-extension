@@ -129,13 +129,11 @@ test("run a copied mod with a built-in integration", async ({
   await test.step("Copy the mod", async () => {
     await pageEditorPage.copyMod(sourceModName, modUuid);
 
-    await expect(
-      pageEditorPage.getByRole("textbox", { name: "Mod ID" }),
-    ).toHaveValue(copyModId);
+    await expect(pageEditorPage.modEditorPane.modId).toHaveValue(copyModId);
 
-    await expect(
-      pageEditorPage.getByRole("textbox", { name: "Name" }),
-    ).toHaveValue(`${sourceModName} (Copy)`);
+    await expect(pageEditorPage.modEditorPane.name).toHaveValue(
+      `${sourceModName} (Copy)`,
+    );
 
     await verifyModDefinitionSnapshot({
       modId: copyModId,
@@ -149,7 +147,9 @@ test("run a copied mod with a built-in integration", async ({
     await pageEditorPage.deactivateMod(sourceModName);
   });
 
-  await test.step("Run the copied mod", async () => {
+  await test.step("Run the copied mod to verify that the copy activated correctly", async () => {
+    // Note: this step was copied from the "can activate a mod with built-in integration" test
+    // See: end-to-end-tests/tests/extensionConsole/activation.spec.ts
     await page.goto("/");
 
     const floatingActionButton = new FloatingActionButton(page);
