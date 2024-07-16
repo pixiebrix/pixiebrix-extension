@@ -16,10 +16,44 @@
  */
 
 import { BasePageObject } from "../basePageObject";
+import { ConfigurationForm } from "./configurationForm";
 
-export class ModEditorPane extends BasePageObject {
+class MetadataConfigurationForm extends ConfigurationForm {
   modId = this.getByRole("textbox", { name: "Mod ID" });
   name = this.getByRole("textbox", { name: "Name" });
   version = this.getByRole("textbox", { name: "Version" });
   description = this.getByRole("textbox", { name: "Description" });
+}
+
+class CurrentInputsConfigurationForm extends ConfigurationForm {
+  noConfigurationRequiredMessage = this.getByText(
+    "This mod does not require any configuration",
+  );
+}
+
+class InputConfigurationForm extends ConfigurationForm {
+  addNewFieldButton = this.getByRole("button", { name: "Add new field" });
+}
+
+export class ModEditorPane extends BasePageObject {
+  editMetadataTab = this.getByRole("tab", { name: "Edit" });
+  editMetadataTabPanel = new MetadataConfigurationForm(
+    this.getByRole("tabpanel").filter({
+      hasText: "Mod Metadata",
+    }),
+  );
+
+  currentInputsTab = this.getByRole("tab", { name: "Current Inputs" });
+  currentInputsTabPanel = new CurrentInputsConfigurationForm(
+    this.getByRole("tabpanel").filter({
+      hasText: "Mod Input Options",
+    }),
+  );
+
+  inputFormTab = this.getByRole("tab", { name: "Input Form" });
+  inputFormTabPanel = new InputConfigurationForm(
+    this.getByRole("tabpanel").filter({
+      hasText: "Advanced: Mod Options",
+    }),
+  );
 }
