@@ -44,8 +44,11 @@ test("Connect action in partner auth sidebar takes user to the Extension Console
 
   await page.goto("/");
   await runModViaQuickBar(page, "Open Sidebar");
-  const sideBarPage = await getSidebarPage(page, extensionId);
-  await sideBarPage.getByRole("link", { name: "Connect Account" }).click();
+  const sidebarPage = await getSidebarPage(page, extensionId);
+  await expect(
+    sidebarPage.getByText("Connect your Automation Co-Pilot account"),
+  ).toBeVisible();
+  await sidebarPage.getByRole("link", { name: "Connect Account" }).click();
 
   const extensionConsolePage = page
     .context()
