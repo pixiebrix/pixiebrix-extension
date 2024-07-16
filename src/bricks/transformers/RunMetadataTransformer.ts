@@ -22,7 +22,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { SemVerString } from "@/types/registryTypes";
 
 type ModMetadata = {
   id: string;
@@ -91,7 +90,7 @@ class RunMetadataTransformer extends TransformerABC {
             description: "The mod version",
           },
         },
-        required: ["id", "version"],
+        required: ["id"],
       },
       deploymentId: {
         type: ["string", "null"],
@@ -115,8 +114,8 @@ class RunMetadataTransformer extends TransformerABC {
           ? null
           : {
               id: context.modId,
-              // `modVersion` won't be present standalone mod components
-              version: context.modVersion ?? ("0.0.0" as SemVerString),
+              // `modVersion` won't be present for standalone mod components
+              version: context.modVersion,
             },
       deploymentId: context.deploymentId ?? null,
       modComponentId: meta.modComponentRef.modComponentId,
