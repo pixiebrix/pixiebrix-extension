@@ -214,8 +214,8 @@ async function varAnalysisFactory(
   const modComponentRef = selectActiveModComponentRef(state);
 
   assertNotNullish(
-    activeModComponentFormState,
-    "activeModComponentFormState not found",
+    modComponentRef,
+    "varAnalysisFactory can only be used in an active mod component context",
   );
 
   // The potential mod known mod variables
