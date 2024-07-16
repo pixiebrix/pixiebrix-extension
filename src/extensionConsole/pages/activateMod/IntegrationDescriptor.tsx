@@ -22,7 +22,7 @@ import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 const IntegrationDescriptor: React.FunctionComponent<{
-  integrationConfigs: IntegrationDefinition[];
+  integrationConfigs?: IntegrationDefinition[];
   integrationId: RegistryId;
 }> = ({ integrationId, integrationConfigs }) => {
   const config = useMemo(

@@ -17,9 +17,7 @@
 
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
-import UrlPatternWidget, {
-  urlSchemaProject,
-} from "@/pageEditor/components/UrlPatternWidget";
+import UrlPatternWidget from "@/pageEditor/components/UrlPatternWidget";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 beforeEach(() => {
@@ -29,7 +27,7 @@ beforeEach(() => {
 describe("UrlPatternWidget", () => {
   test("render empty widget", () => {
     expect(
-      render(<UrlPatternWidget name="pattern" schema={urlSchemaProject} />, {
+      render(<UrlPatternWidget name="pattern" />, {
         initialValues: {
           pattern: [],
         },
@@ -39,7 +37,7 @@ describe("UrlPatternWidget", () => {
 
   test("render single pattern", () => {
     expect(
-      render(<UrlPatternWidget name="pattern" schema={urlSchemaProject} />, {
+      render(<UrlPatternWidget name="pattern" />, {
         initialValues: {
           pattern: [
             {

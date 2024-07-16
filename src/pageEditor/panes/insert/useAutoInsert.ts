@@ -22,7 +22,7 @@ import { updateDraftModComponent } from "@/contentScript/messenger/api";
 
 const { addModComponentFormState, clearInsertingStarterBrickType } = actions;
 
-function useAutoInsert(starterBrickType: StarterBrickType): void {
+function useAutoInsert(starterBrickType: StarterBrickType | null): void {
   const dispatch = useDispatch();
 
   useAsyncEffect(async () => {
