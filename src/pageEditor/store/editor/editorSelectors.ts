@@ -83,8 +83,10 @@ export const selectIsInsertingStarterBrick = ({ editor }: EditorRootState) =>
   editor.insertingStarterBrickType != null;
 
 /**
+ * Select a runtime ModComponentRef for the mod component being edited
  * @since 2.0.6 returns a synthetic mod id for standalone mods
  * @see getStandaloneModComponentRuntimeModId
+ * @see ModComponentRef
  */
 export const selectActiveModComponentRef = createSelector(
   selectActiveModComponentFormState,
