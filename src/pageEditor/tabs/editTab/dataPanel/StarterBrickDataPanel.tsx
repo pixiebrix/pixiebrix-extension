@@ -49,6 +49,11 @@ const StarterBrickDataPanel: React.FC = () => {
   } = activeModComponentFormState;
   const firstBrickInstanceId = brickPipeline[0]?.instanceId;
 
+  assertNotNullish(
+    firstBrickInstanceId,
+    "StarterBrickDataPanel requires a brick instance ID",
+  );
+
   const { record: firstBrickTraceRecord } = useSelector(
     makeSelectBrickTrace(firstBrickInstanceId),
   );
