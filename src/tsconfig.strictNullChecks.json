@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/documentBuilder/preview/elementsPreview/Container.tsx",
     "./pageEditor/documentBuilder/preview/elementsPreview/Card.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
