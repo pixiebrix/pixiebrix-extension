@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/documentBuilder/hooks/useMoveElement.ts",
     "./contrib/google/sheets/ui/RequireGoogleSheet.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
