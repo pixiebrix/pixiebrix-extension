@@ -77,7 +77,7 @@ describe("PageStateAnalysis", () => {
   });
 
   it.each([SetPageState.BRICK_ID, GetPageState.BRICK_ID])(
-    "no warning on mod if in mod %s",
+    "shows no warning mod namespace for brick in mod: %s",
     async (registryId) => {
       const state = formStateFactory({
         brickPipeline: [
