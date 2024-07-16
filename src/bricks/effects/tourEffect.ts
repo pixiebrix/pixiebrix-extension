@@ -122,7 +122,7 @@ export class TourEffect extends EffectABC {
       steps?: Step[];
       isRootAware?: boolean;
     }>,
-    { root = document, abortSignal: blockAbortSignal, logger }: BrickOptions,
+    { root = document, abortSignal: brickAbortSignal }: BrickOptions,
   ): Promise<void> {
     if (steps.length === 0) {
       throw new PropError(
@@ -133,7 +133,6 @@ export class TourEffect extends EffectABC {
       );
     }
 
-    const { modComponentId } = logger.context;
     const abortController = new AbortController();
     const stylesheetLink = await injectStylesheet(stylesheetUrl);
 
@@ -165,11 +164,6 @@ export class TourEffect extends EffectABC {
         "No matching element found for first step in tour",
       );
     }
-
-    assertNotNullish(
-      modComponentId,
-      "modComponentId is required to run a tour",
-    );
 
     const tour = introJs()
       .setOptions({
@@ -204,7 +198,7 @@ export class TourEffect extends EffectABC {
     };
 
     abortController.signal.addEventListener("abort", handleAbort);
-    blockAbortSignal?.addEventListener("abort", handleAbort);
+    brickAbortSignal?.addEventListener("abort", handleAbort);
 
     await tourPromise;
   }

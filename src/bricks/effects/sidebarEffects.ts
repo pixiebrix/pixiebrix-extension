@@ -68,7 +68,7 @@ export class ShowSidebar extends EffectABC {
       panelHeading?: string;
       forcePanel?: boolean;
     }>,
-    { logger }: BrickOptions,
+    { meta: { modComponentRef } }: BrickOptions,
   ): Promise<void> {
     expectContext("contentScript");
 
@@ -79,7 +79,8 @@ export class ShowSidebar extends EffectABC {
       sidebarController.updateSidebar({
         force: forcePanel,
         panelHeading,
-        blueprintId: logger.context.modId,
+        // ActivatePanelOptions currently expects undefined not null
+        blueprintId: modComponentRef.modId ?? undefined,
       }),
     );
   }

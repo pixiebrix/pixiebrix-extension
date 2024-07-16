@@ -30,6 +30,7 @@ import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type PanelContext } from "@/types/sidebarTypes";
 import { type RendererRunPayload } from "@/types/rendererTypes";
 import useAsyncState from "@/hooks/useAsyncState";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 type BlockElementProps = {
   pipeline: BrickPipeline;
@@ -46,7 +47,10 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   } = useContext(DocumentContext);
 
   // Logger context will have both modComponentId and modId because they're passed from the containing PanelBody
-  const panelContext = logger.context as PanelContext;
+  const panelContext = {
+    ...logger.context,
+    ...mapModComponentRefToMessageContext(meta.modComponentRef),
+  } satisfies PanelContext;
 
   const {
     data: payload,
