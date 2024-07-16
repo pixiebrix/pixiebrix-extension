@@ -38,10 +38,10 @@ type Step = {
 };
 
 export class TourEffect extends EffectABC {
-  static readonly BLOCK_ID = validateRegistryId("@pixiebrix/tour");
+  static readonly BRICK_ID = validateRegistryId("@pixiebrix/tour");
 
   constructor() {
-    super(TourEffect.BLOCK_ID, "Show Tour", "Show step-by-step tour");
+    super(TourEffect.BRICK_ID, "Show Tour", "Show step-by-step tour");
   }
 
   override async isRootAware(): Promise<boolean> {

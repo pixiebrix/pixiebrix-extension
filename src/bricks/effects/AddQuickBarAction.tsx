@@ -68,11 +68,11 @@ const DEFAULT_PRIORITY = 1;
  * @see QuickBarProviderExtensionPoint
  */
 class AddQuickBarAction extends EffectABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/quickbar/add");
+  static BRICK_ID = validateRegistryId("@pixiebrix/quickbar/add");
 
   constructor() {
     super(
-      AddQuickBarAction.BLOCK_ID,
+      AddQuickBarAction.BRICK_ID,
       "Add Quick Bar Action",
       "Add an action to the PixieBrix Quick Bar",
     );
