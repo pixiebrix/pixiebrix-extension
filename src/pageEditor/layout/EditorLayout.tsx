@@ -20,7 +20,7 @@ import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
 import { useDispatch, useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import Modals from "../modals/Modals";
-import { selectInsertingStarterBrickType } from "@/pageEditor/store/editor/editorSelectors";
+import { selectIsInsertingStarterBrick } from "@/pageEditor/store/editor/editorSelectors";
 import EditorContent from "@/pageEditor/layout/EditorContent";
 import styles from "./EditorLayout.module.scss";
 import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
@@ -36,7 +36,7 @@ import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 const EditorLayout: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const isInserting = useSelector(selectInsertingStarterBrickType);
+  const isInserting = useSelector(selectIsInsertingStarterBrick);
   const { restrict } = useFlags();
   const isRestricted = restrict("page-editor");
   const isStaleSession = useSelector(selectIsStaleSession);
@@ -50,7 +50,7 @@ const EditorLayout: React.FunctionComponent = () => {
       ) : isStaleSession ? (
         <StaleSessionPane />
       ) : isInserting ? (
-        <InsertPane inserting={isInserting} />
+        <InsertPane />
       ) : (
         <>
           <ModListingPanel />
