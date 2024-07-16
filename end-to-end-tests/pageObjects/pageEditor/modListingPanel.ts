@@ -32,6 +32,10 @@ export class ModListItem extends BasePageObject {
     return this.getByLabel(" - Ellipsis");
   }
 
+  get copyButton() {
+    return this.getByRole("button", { name: "Make a copy" });
+  }
+
   async select() {
     return this.click();
   }

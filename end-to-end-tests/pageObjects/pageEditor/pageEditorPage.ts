@@ -135,6 +135,21 @@ export class PageEditorPage extends BasePageObject {
   }
 
   @ModifiesModState
+  async copyMod(modName: string, modUuid: UUID) {
+    const modListItem = this.modListingPanel.getModListItemByName(modName);
+    await modListItem.select();
+
+    await modListItem.menuButton.click();
+    await modListItem.copyButton.click();
+
+    // Create mod modal is shown
+    const createModModal = new CreateModModal(this.getByRole("dialog"));
+    const modId = await createModModal.copyMod(modName, modUuid);
+
+    this.savedPackageModIds.push(modId);
+  }
+
+  @ModifiesModState
   async createModFromModComponent({
     modNameRoot,
     modComponentName,
