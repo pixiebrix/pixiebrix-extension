@@ -16,7 +16,7 @@
  */
 
 import { type Logger } from "@/types/loggerTypes";
-import { castArray, isPlainObject, once } from "lodash";
+import { castArray, isPlainObject, omit, once } from "lodash";
 import { requestRun, sendDeploymentAlert } from "@/background/messenger/api";
 import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
@@ -527,9 +527,9 @@ function selectTraceRecordMeta(
   resolvedConfig: ResolvedBrickConfig,
   options: RunBrickOptions,
 ): TraceRecordMeta {
-  // TODO: where does modComponentId come from?
   return {
-    ...options.trace,
+    // TraceRecordMeta uses modComponentId instead of modComponentRef
+    ...omit(options.trace, "modComponentRef"),
     brickId: resolvedConfig.config.id,
     modComponentId: options.trace.modComponentRef.modComponentId,
   };

@@ -28,7 +28,6 @@ import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 import type { ReduceOptions } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { type ModComponentRef } from "@/types/modComponentTypes";
 
 export const runMetadataFactory = define<RunMetadata>({
   runId: null,
@@ -73,23 +72,23 @@ export const brickOptionsFactory = define<BrickOptions>({
  * @see apiVersionOptions
  */
 export function reduceOptionsFactory(
+  // XXX: How to handle traits in cooky-cutter similar to Python's Factory Boy?
+  // https://factoryboy.readthedocs.io/en/stable/introduction.html#altering-a-factory-s-behavior-parameters-and-traits
   runtimeVersion: ApiVersion = "v3",
-  {
-    modComponentRef: modComponentRefOverride,
-  }: { modComponentRef?: ModComponentRef } = {},
+  overrides: Partial<ReduceOptions> = {},
 ): ReduceOptions {
-  const modComponentRef = modComponentRefOverride ?? modComponentRefFactory();
-  const logger = new ConsoleLogger(
-    mapModComponentRefToMessageContext(modComponentRef),
-  );
+  const modComponentRef = overrides.modComponentRef ?? modComponentRefFactory();
+  const logger =
+    overrides.logger ??
+    new ConsoleLogger(mapModComponentRefToMessageContext(modComponentRef));
 
   return {
     modComponentRef,
     logger,
-    runId: null,
-    headless: false,
-    branches: [],
-    logValues: true,
+    runId: overrides.runId ?? null,
+    headless: overrides.headless ?? false,
+    branches: overrides.branches ?? [],
+    logValues: overrides.logValues ?? true,
     ...apiVersionOptions(runtimeVersion),
   };
 }

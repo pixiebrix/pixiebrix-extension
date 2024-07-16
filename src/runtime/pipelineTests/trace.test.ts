@@ -231,9 +231,6 @@ describe("Trace normal execution", () => {
     const instanceId = autoUUIDSequence();
     const runId = autoUUIDSequence();
     const modComponentRef = standaloneModComponentRefFactory();
-    const logger = new ConsoleLogger(
-      mapModComponentRefToMessageContext(modComponentRef),
-    );
 
     const brickConfig = {
       id: echoBrick.id,
@@ -241,14 +238,13 @@ describe("Trace normal execution", () => {
       instanceId,
     };
 
-    await reducePipeline(brickConfig, simpleInput({ inputArg: "hello" }), {
-      ...reduceOptionsFactory("v2"),
-      runId,
-      logger,
-      modComponentRef,
-    });
+    await reducePipeline(
+      brickConfig,
+      simpleInput({ inputArg: "hello" }),
+      reduceOptionsFactory("v2", { runId, modComponentRef }),
+    );
 
-    const meta: TraceRecordMeta = {
+    const expectedMeta: TraceRecordMeta = {
       modComponentId: modComponentRef.modComponentId,
       runId,
       branches: [],
@@ -257,7 +253,7 @@ describe("Trace normal execution", () => {
     };
 
     const expectedEntry: TraceEntryData = {
-      ...meta,
+      ...expectedMeta,
       timestamp: timestamp.toISOString(),
       brickConfig,
       templateContext: { "@input": { inputArg: "hello" }, "@options": {} },
@@ -266,7 +262,7 @@ describe("Trace normal execution", () => {
     };
 
     const expectedExit: TraceExitData = {
-      ...meta,
+      ...expectedMeta,
       outputKey: undefined,
       output: { message: "hello" },
       skippedRun: false,
@@ -290,9 +286,6 @@ describe("Trace normal execution", () => {
     const outputKey = validateOutputKey("echo");
 
     const modComponentRef = standaloneModComponentRefFactory();
-    const logger = new ConsoleLogger(
-      mapModComponentRefToMessageContext(modComponentRef),
-    );
 
     const brickPipeline: BrickPipeline = [
       {
@@ -308,14 +301,13 @@ describe("Trace normal execution", () => {
       },
     ];
 
-    await reducePipeline(brickPipeline, simpleInput({ inputArg: "hello" }), {
-      ...reduceOptionsFactory("v2"),
-      modComponentRef,
-      runId,
-      logger,
-    });
+    await reducePipeline(
+      brickPipeline,
+      simpleInput({ inputArg: "hello" }),
+      reduceOptionsFactory("v2", { modComponentRef, runId }),
+    );
 
-    const meta: TraceRecordMeta = {
+    const expectedMeta: TraceRecordMeta = {
       modComponentId: modComponentRef.modComponentId,
       runId,
       branches: [],
@@ -324,7 +316,7 @@ describe("Trace normal execution", () => {
     };
 
     const expectedExit: TraceExitData = {
-      ...meta,
+      ...expectedMeta,
       outputKey,
       output: { message: "hello" },
       skippedRun: false,

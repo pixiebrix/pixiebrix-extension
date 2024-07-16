@@ -21,13 +21,14 @@ import {
   brickOptionsFactory,
   runMetadataFactory,
 } from "@/testUtils/factories/runtimeFactories";
-import {
-  autoUUIDSequence,
-  registryIdFactory,
-} from "@/testUtils/factories/stringFactories";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import type { SemVerString } from "@/types/registryTypes";
-import { standaloneModComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import {
+  modComponentRefFactory,
+  standaloneModComponentRefFactory,
+} from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 const brick = new RunMetadataTransformer();
 
@@ -50,26 +51,26 @@ describe("RunMetadataTransformer", () => {
   });
 
   it("returns packaged mod metadata", async () => {
-    const modComponentId = autoUUIDSequence();
-    const modId = registryIdFactory();
+    const modComponentRef = modComponentRefFactory();
+
     const logger = new ConsoleLogger({
-      modComponentId,
-      modId,
+      ...mapModComponentRefToMessageContext(modComponentRef),
       modVersion: "1.0.0" as SemVerString,
     });
 
     const result = await brick.run(
       unsafeAssumeValidArg({}),
       brickOptionsFactory({
+        meta: runMetadataFactory({ modComponentRef }),
         logger,
       }),
     );
 
     expect(result).toEqual({
-      modComponentId,
+      modComponentId: modComponentRef.modComponentId,
       deploymentId: null,
       mod: {
-        id: modId,
+        id: modComponentRef.modId,
         version: "1.0.0",
       },
       runId: null,
@@ -78,6 +79,7 @@ describe("RunMetadataTransformer", () => {
 
   it("returns deployed mod metadata", async () => {
     const deploymentId = autoUUIDSequence();
+
     const brickOptions = brickOptionsFactory();
     brickOptions.logger = brickOptions.logger.childLogger({
       modVersion: "1.0.0" as SemVerString,
@@ -92,13 +94,13 @@ describe("RunMetadataTransformer", () => {
     const result = await brick.run(unsafeAssumeValidArg({}), brickOptions);
 
     expect(result).toEqual({
+      runId,
       modComponentId,
       deploymentId,
       mod: {
         id: modId,
         version: "1.0.0",
       },
-      runId,
     });
   });
 });

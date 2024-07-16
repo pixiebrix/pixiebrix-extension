@@ -23,6 +23,7 @@ import {
   type ModMetadata,
 } from "@/types/modComponentTypes";
 import {
+  autoUUIDSequence,
   registryIdFactory,
   timestampFactory,
   uuidSequence,
@@ -36,7 +37,8 @@ import { type StandaloneModDefinition } from "@/types/contract";
 import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 
 export const modComponentRefFactory = define<ModComponentRef>({
-  modComponentId: uuidSequence,
+  // Don't repeat UUIDs across contexts
+  modComponentId: () => autoUUIDSequence(),
   modId: registryIdFactory,
   starterBrickId: registryIdFactory,
 });
@@ -46,7 +48,8 @@ export const modComponentRefFactory = define<ModComponentRef>({
  * @deprecated standalone mod components are deprecated
  */
 export const standaloneModComponentRefFactory = define<ModComponentRef>({
-  modComponentId: uuidSequence,
+  // Don't repeat UUIDs across contexts
+  modComponentId: () => autoUUIDSequence(),
   modId: undefined,
   starterBrickId: registryIdFactory,
 });

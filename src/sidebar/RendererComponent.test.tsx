@@ -16,19 +16,20 @@
  */
 
 import React from "react";
-import { render, act } from "@/sidebar/testHelpers";
+import { act, render } from "@/sidebar/testHelpers";
 import RendererComponent from "@/sidebar/RendererComponent";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import DocumentView from "@/bricks/renderers/documentView/DocumentView";
 import { screen } from "shadow-dom-testing-library";
 import { SubmitPanelAction } from "@/bricks/errors";
-import ConsoleLogger from "@/utils/ConsoleLogger";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
-import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import {
+  brickOptionsFactory,
+  runMetadataFactory,
+} from "@/testUtils/factories/runtimeFactories";
 import { toExpression } from "@/utils/expressionUtils";
-import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
-import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   runHeadlessPipeline: jest
@@ -44,9 +45,6 @@ describe("RendererComponent", () => {
   });
 
   test("provide onAction to document renderer", async () => {
-    const runId = uuidv4();
-
-    const modComponentRef = modComponentRefFactory();
     const onAction = jest.fn();
 
     runHeadlessPipelineMock.mockRejectedValue(
@@ -66,21 +64,16 @@ describe("RendererComponent", () => {
     const props = {
       body: [config],
       options: brickOptionsFactory({
-        logger: new ConsoleLogger(
-          mapModComponentRefToMessageContext(modComponentRef),
-        ),
-        meta: {
-          runId,
-          modComponentRef,
-          branches: [],
-        },
+        meta: runMetadataFactory({
+          runId: autoUUIDSequence(),
+        }),
       }),
     };
 
     render(
       <RendererComponent
         brickId={validateRegistryId("@pixiebrix/document")}
-        body={{ Component: DocumentView as any, props }}
+        body={{ Component: DocumentView, props }}
         meta={props.options.meta}
         onAction={onAction}
       />,

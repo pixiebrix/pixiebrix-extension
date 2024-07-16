@@ -312,7 +312,7 @@ export interface RunMetadata {
    */
   modComponentRef: ModComponentRef;
   /**
-   * A unique run id to correlate trace records across branches for a run, or null to disable tracing.
+   * A unique run id to correlate trace records across branches for a run, or nullish to disable tracing.
    */
   runId: Nullishable<UUID>;
   /**
