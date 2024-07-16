@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/modals/addBrickModal/AddBrickModal.tsx",
     "./pageEditor/documentBuilder/edit/DocumentOptions.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",

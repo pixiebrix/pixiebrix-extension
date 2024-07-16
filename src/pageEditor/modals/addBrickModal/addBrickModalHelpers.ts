@@ -18,6 +18,7 @@
 import { BRICK_RESULT_COLUMN_COUNT } from "@/pageEditor/modals/addBrickModal/addBrickModalConstants";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ItemKeyInput } from "@/pageEditor/modals/addBrickModal/addBrickModalTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export function getFlatArrayIndex({
   rowIndex,
@@ -37,7 +38,7 @@ export function getItemKey({
   columnIndex,
   data: { brickOptions },
   rowIndex,
-}: ItemKeyInput): RegistryId | number | undefined {
+}: ItemKeyInput): RegistryId | number {
   const resultIndex = getFlatArrayIndex({ rowIndex, columnIndex });
   // Number of bricks for the last Grid row could be less than the number of columns
   // Returning the index here, ItemRenderer will render an empty cell
@@ -45,5 +46,9 @@ export function getItemKey({
     return resultIndex;
   }
 
-  return brickOptions.at(resultIndex)?.value;
+  const key = brickOptions.at(resultIndex)?.value;
+
+  assertNotNullish(key, `Item key at resultIndex: ${resultIndex} is nullish`);
+
+  return key;
 }
