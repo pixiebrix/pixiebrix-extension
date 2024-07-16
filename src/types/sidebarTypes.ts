@@ -303,6 +303,8 @@ export type ActivatePanelOptions = {
    */
   refresh?: boolean;
 
+  // XXX: can't use ModComponentRef directly here, because extensionId and/or blueprintId might be excluded depending
+  // on the specificity of the request
   /**
    * The id of the extension panel to show. Included so the Page Editor can request a specific panel to show when
    * editing the extension
@@ -316,6 +318,7 @@ export type ActivatePanelOptions = {
    * @since 1.6.5
    */
   blueprintId?: RegistryId;
+
   /**
    * A panel heading name to match
    *
@@ -328,7 +331,7 @@ export type ActivatePanelOptions = {
  * Metadata about the extension that produced the panel content
  * @since 1.7.0
  */
-export type PanelRunMeta = Pick<RunMetadata, "runId" | "modComponentId">;
+export type PanelRunMetadata = Pick<RunMetadata, "runId" | "modComponentRef">;
 
 export type SidebarState = SidebarEntries & {
   activeKey: Nullishable<string>;

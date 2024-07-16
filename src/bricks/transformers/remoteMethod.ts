@@ -65,11 +65,11 @@ export const inputProperties: Record<string, Schema> = {
 };
 
 export class RemoteMethod extends TransformerABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/http");
+  static BRICK_ID = validateRegistryId("@pixiebrix/http");
 
   constructor() {
     super(
-      RemoteMethod.BLOCK_ID,
+      RemoteMethod.BRICK_ID,
       "HTTP Request",
       "Send an RESTful HTTP request, i.e., GET, PUT, POST, PATCH, DELETE",
     );

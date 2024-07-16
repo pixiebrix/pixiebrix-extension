@@ -12,16 +12,17 @@ import { type Schema } from "@/types/schemaTypes";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import LayoutWidget from "@/components/LayoutWidget";
 import { findLast } from "lodash";
+import { type FormikErrors } from "formik";
 
 export const ActiveField: React.FC<{
   name: string;
   activeField: string;
   setActiveField: SetActiveField;
-  fieldTypes: SelectStringOption[];
-  schema: Schema;
+  fieldTypes?: SelectStringOption[];
+  schema?: Schema;
   uiOrder: string[];
   propertyKeys: string[];
-  setUiOrder: (uiOrder: string[]) => Promise<void | string[]>;
+  setUiOrder: (uiOrder: string[]) => Promise<void | FormikErrors<string[]>>;
 }> = ({
   name,
   activeField,

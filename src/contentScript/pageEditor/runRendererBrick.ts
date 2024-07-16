@@ -74,14 +74,14 @@ export async function runRendererBrick({
         brickId: error.brickId,
         args: error.args,
         ctxt: error.ctxt,
-        modComponentId: modComponentRef.modComponentId,
+        modComponentRef,
         runId,
       };
     } else {
       payload = {
         key: nonce,
         error: serializeError(error),
-        modComponentId: modComponentRef.modComponentId,
+        modComponentRef,
         runId,
       };
     }

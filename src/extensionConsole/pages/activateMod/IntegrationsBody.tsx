@@ -36,6 +36,7 @@ import { joinName } from "@/utils/formUtils";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import { freeze } from "@/utils/objectUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 interface OwnProps {
   mod: ModDefinition;
@@ -60,6 +61,7 @@ const IntegrationsBody: React.FunctionComponent<OwnProps> = ({
     useAuthOptions(),
     EMPTY_AUTH_OPTIONS,
   );
+  assertNotNullish(authOptions, "authOptions must be defined");
   const [
     integrationDependenciesField,
     { error: integrationDependenciesFieldError },
@@ -77,7 +79,8 @@ const IntegrationsBody: React.FunctionComponent<OwnProps> = ({
       return false;
     }
 
-    const configurationOptions = authOptions.filter(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- authOptions has a fallback value
+    const configurationOptions = authOptions!.filter(
       (option) => option.serviceId === integrationId,
     );
 
@@ -88,10 +91,13 @@ const IntegrationsBody: React.FunctionComponent<OwnProps> = ({
 
     if (hideBuiltInIntegrations) {
       // Show the field if there are options for the service that are not built-in
-      return authOptions.some(
-        (option) =>
-          option.serviceId === integrationId &&
-          option.sharingType !== "built-in",
+      return (
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- authOptions has a fallback value
+        authOptions!.some(
+          (option) =>
+            option.serviceId === integrationId &&
+            option.sharingType !== "built-in",
+        ) ?? false
       );
     }
 

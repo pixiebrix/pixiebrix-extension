@@ -30,6 +30,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { normalizeShortcut } from "@/bricks/effects/AddTextSnippets";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type SnippetArgs = {
   /**
@@ -107,22 +108,28 @@ class AddDynamicTextSnippet extends EffectABC {
       preview,
       generate: generatePipeline,
     }: BrickArgs<SnippetArgs>,
-    { logger, runPipeline, platform, abortSignal }: BrickOptions,
+    {
+      logger,
+      runPipeline,
+      platform,
+      abortSignal,
+      meta: { modComponentRef },
+    }: BrickOptions,
   ): Promise<void> {
     // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the menu
     if (abortSignal?.aborted) {
       return;
     }
 
-    if (logger.context.modComponentId == null) {
-      throw new Error("Must be run in the context of a mod");
-    }
+    const { modComponentId } = modComponentRef;
+
+    assertNotNullish(modComponentId, "Must be run in the context of a mod");
 
     // Counter to keep track of the action run number for tracing
     let counter = 0;
 
     platform.snippetShortcutMenu.register({
-      componentId: logger.context.modComponentId,
+      componentId: modComponentId,
       context: logger.context,
       // Trim leading command key in shortcut to be resilient to user input
       shortcut: normalizeShortcut(shortcut),

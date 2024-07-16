@@ -23,7 +23,6 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import brickRegistry from "@/bricks/registry";
-import ConsoleLogger from "@/utils/ConsoleLogger";
 import { getState, setState } from "@/platform/state/stateController";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
@@ -32,7 +31,6 @@ import { type UUID } from "@/types/stringTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
-import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
@@ -58,10 +56,6 @@ const makeAsyncModVariablePipeline = (
 });
 
 const modComponentRef = modComponentRefFactory();
-
-const logger = new ConsoleLogger(
-  mapModComponentRefToMessageContext(modComponentRef),
-);
 
 function expectPageState(expectedState: UnknownObject): void {
   const pageState = getState({
@@ -100,10 +94,11 @@ describe("WithAsyncModVariable", () => {
   test("returns request nonce and initializes page state immediately", async () => {
     const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", "foo");
 
-    const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...reduceOptionsFactory("v3"),
-      logger,
-    });
+    const brickOutput = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
 
     expect(brickOutput).toStrictEqual({
       requestId: expect.toBeString(),
@@ -127,10 +122,11 @@ describe("WithAsyncModVariable", () => {
   test("returns request nonce and sets page state on success", async () => {
     const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", "foo");
 
-    const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...reduceOptionsFactory("v3"),
-      logger,
-    });
+    const brickOutput = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
 
     deferred.resolve();
     await tick();
@@ -157,10 +153,11 @@ describe("WithAsyncModVariable", () => {
   test("returns request nonce and sets page state on error", async () => {
     const pipeline = makeAsyncModVariablePipeline(throwBrick, "error", "foo");
 
-    const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...reduceOptionsFactory("v3"),
-      logger,
-    });
+    const brickOutput = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
 
     await tick();
 
@@ -214,15 +211,17 @@ describe("WithAsyncModVariable", () => {
       modVariable,
     );
 
-    await reducePipeline(stalePipeline, simpleInput({}), {
-      ...reduceOptionsFactory("v3"),
-      logger,
-    });
+    await reducePipeline(
+      stalePipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
 
-    const secondOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...reduceOptionsFactory("v3"),
-      logger,
-    });
+    const secondOutput = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
 
     // Neither are resolved, should be in loading state
     expectPageState({

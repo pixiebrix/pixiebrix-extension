@@ -34,7 +34,6 @@ import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
 } from "@/integrations/integrationTypes";
-import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * ModMetadata that includes sharing information.
@@ -288,9 +287,10 @@ export type ModComponentRef = {
   modComponentId: UUID;
 
   /**
-   * Mod the ModComponent is from, or nullish for a standalone ModComponent.
+   * Mod the ModComponent is from. An `@internal` scope, if from a standalone mod component.
+   * @see INNER_SCOPE
    */
-  modId: Nullishable<RegistryId>;
+  modId: RegistryId;
 
   /**
    * Registry id of the mod component's StarterBrick.

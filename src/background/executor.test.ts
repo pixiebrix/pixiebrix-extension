@@ -16,10 +16,7 @@
  */
 
 import { requestRunInAllFrames } from "@/background/executor";
-import {
-  registryIdFactory,
-  uuidSequence,
-} from "@/testUtils/factories/stringFactories";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type MessengerMeta } from "webext-messenger";
 import { runBrick } from "@/contentScript/messenger/api";
 import { type WebNavigation } from "webextension-polyfill";
@@ -27,6 +24,9 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { define, derive } from "cooky-cutter";
 import { type RemoteBrickOptions } from "@/contentScript/messenger/runBrickTypes";
 import { messengerMetaFactory } from "@/testUtils/factories/messengerFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { runMetadataFactory } from "@/testUtils/factories/runtimeFactories";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type GetAllFramesCallbackDetailsItemType =
   WebNavigation.GetAllFramesCallbackDetailsItemType;
@@ -42,17 +42,17 @@ const runBrickMock = jest.mocked(runBrick);
 
 const optionsFactory = define<RemoteBrickOptions>({
   ctxt: () => ({}),
-  messageContext: (i: number) => ({
-    modComponentId: uuidSequence(i),
-  }),
-  meta: derive<RemoteBrickOptions, RemoteBrickOptions["meta"]>(
-    (options) => ({
-      modComponentId: options.messageContext!.modComponentId,
-      runId: null,
-      branches: [],
-    }),
-    "messageContext",
-  ),
+  meta: runMetadataFactory,
+  messageContext: derive<
+    RemoteBrickOptions,
+    RemoteBrickOptions["messageContext"]
+  >((options) => {
+    assertNotNullish(
+      options.meta,
+      "You must provide meta to derive messageContext",
+    );
+    return mapModComponentRefToMessageContext(options.meta.modComponentRef);
+  }, "meta"),
 });
 
 beforeEach(() => {

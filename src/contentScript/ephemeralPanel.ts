@@ -86,6 +86,7 @@ export async function ephemeralPanel({
   onCloseClick,
 }: TemporaryPanelDefinition): Promise<JsonObject> {
   expectContext("contentScript");
+  const { modComponentId } = panelEntryMetadata.modComponentRef;
 
   if (location === "panel" && isLoadedInIframe()) {
     // Validate before registerEmptyTemporaryPanel to avoid an uncaught promise rejection
@@ -118,7 +119,7 @@ export async function ephemeralPanel({
     registerEmptyTemporaryPanel({
       nonce,
       location,
-      modComponentId: panelEntryMetadata.modComponentRef.modComponentId,
+      modComponentId,
     });
 
     await showSidebar();
@@ -129,7 +130,7 @@ export async function ephemeralPanel({
       nonce,
       payload: {
         key: uuidv4(),
-        modComponentId: panelEntryMetadata.modComponentRef.modComponentId,
+        modComponentRef: panelEntryMetadata.modComponentRef,
         loadingMessage: "Loading",
       },
     });
@@ -152,7 +153,7 @@ export async function ephemeralPanel({
     registerEmptyTemporaryPanel({
       nonce,
       location,
-      modComponentId: panelEntryMetadata.modComponentRef.modComponentId,
+      modComponentId,
     });
 
     // Create a source URL for content that will be loaded in the panel iframe
@@ -239,7 +240,7 @@ export async function ephemeralPanel({
       nonce,
       location,
       entry,
-      modComponentId: entry.modComponentRef.modComponentId,
+      modComponentId,
       onRegister: onReady,
     });
     return panelAction ?? {};

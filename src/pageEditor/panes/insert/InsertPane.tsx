@@ -16,23 +16,21 @@
  */
 
 import React, { useCallback } from "react";
-import {
-  type StarterBrickType,
-  StarterBrickTypes,
-} from "@/types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import InsertButtonPane from "@/pageEditor/panes/insert/InsertButtonPane";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
 import useAutoInsert from "@/pageEditor/panes/insert/useAutoInsert";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { cancelSelect } from "@/contentScript/messenger/api";
+import { selectInsertingStarterBrickType } from "@/pageEditor/store/editor/editorSelectors";
 
-const InsertPane: React.FC<{ inserting: StarterBrickType }> = ({
-  inserting,
-}) => {
+const InsertPane: React.FC = () => {
+  const starterBrickType = useSelector(selectInsertingStarterBrickType);
+
   // Auto-insert if the StarterBrickType supports it
-  useAutoInsert(inserting);
+  useAutoInsert(starterBrickType);
 
   const dispatch = useDispatch();
 
@@ -42,9 +40,9 @@ const InsertPane: React.FC<{ inserting: StarterBrickType }> = ({
   }, [dispatch]);
 
   // Cancel insert with escape key
-  useEscapeHandler(cancelInsert, inserting != null);
+  useEscapeHandler(cancelInsert, starterBrickType != null);
 
-  switch (inserting) {
+  switch (starterBrickType) {
     case StarterBrickTypes.BUTTON: {
       return <InsertButtonPane cancel={cancelInsert} />;
     }

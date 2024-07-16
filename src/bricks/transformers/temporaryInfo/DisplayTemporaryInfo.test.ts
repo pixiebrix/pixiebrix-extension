@@ -107,12 +107,11 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    await reducePipeline(pipeline, simpleInput({}), {
-      ...reduceOptionsFactory("v3"),
-      logger: new ConsoleLogger(
-        mapModComponentRefToMessageContext(modComponentRef),
-      ),
-    });
+    await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
 
     // Show function will be called with a "loading" payload
     expect(showTemporarySidebarPanel).toHaveBeenCalledExactlyOnceWith({
@@ -183,15 +182,11 @@ describe("DisplayTemporaryInfo", () => {
     };
 
     const modComponentRef = modComponentRefFactory();
-
-    const options = {
-      ...reduceOptionsFactory("v3"),
-      logger: new ConsoleLogger(
-        mapModComponentRefToMessageContext(modComponentRef),
-      ),
-    };
-
-    await reducePipeline(pipeline, simpleInput({}), options);
+    await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
 
     expect(showModal).toHaveBeenCalled();
     expect(showTemporarySidebarPanel).not.toHaveBeenCalled();
@@ -333,7 +328,7 @@ describe("DisplayTemporaryInfo", () => {
       config: {
         title: "Test Temp Panel",
         body: toExpression("pipeline", [
-          { id: ContextBrick.BLOCK_ID, config: {} },
+          { id: ContextBrick.BRICK_ID, config: {} },
           { id: renderer.id, config },
         ]),
         location: "panel",
@@ -343,14 +338,11 @@ describe("DisplayTemporaryInfo", () => {
 
     const modComponentRef = standaloneModComponentRefFactory();
 
-    const options = {
-      ...reduceOptionsFactory("v3"),
-      logger: new ConsoleLogger(
-        mapModComponentRefToMessageContext(modComponentRef),
-      ),
-    };
-
-    void reducePipeline(pipeline, simpleInput({}), options);
+    void reducePipeline(
+      pipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
 
     await tick();
 

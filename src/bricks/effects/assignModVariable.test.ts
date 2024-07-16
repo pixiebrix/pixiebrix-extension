@@ -15,25 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ConsoleLogger from "@/utils/ConsoleLogger";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { getState, setState } from "@/platform/state/stateController";
 import { validateBrickInputOutput } from "@/validators/schemaValidator";
-import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import {
+  brickOptionsFactory,
+  runMetadataFactory,
+} from "@/testUtils/factories/runtimeFactories";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
-import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
-
-const modComponentRef = modComponentRefFactory();
 
 const brick = new AssignModVariable();
 
-const logger = new ConsoleLogger(
-  mapModComponentRefToMessageContext(modComponentRef),
-);
+const modComponentRef = modComponentRefFactory();
 
-const brickOptions = brickOptionsFactory({ logger });
+const brickOptions = brickOptionsFactory({
+  meta: runMetadataFactory({ modComponentRef }),
+});
 
 beforeEach(() => {
   setState({

@@ -25,7 +25,7 @@ import {
   isRendererLoadingPayload,
   type PanelContext,
   type PanelPayload,
-  type PanelRunMeta,
+  type PanelRunMetadata,
 } from "@/types/sidebarTypes";
 import RendererComponent from "@/sidebar/RendererComponent";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
@@ -53,7 +53,7 @@ import { getPlatform } from "@/platform/platformContext";
 type BodyProps = {
   brickId?: RegistryId;
   body?: RendererOutput;
-  meta?: PanelRunMeta;
+  meta?: PanelRunMetadata;
 };
 
 const BodyContainer: React.FC<
@@ -173,7 +173,7 @@ const PanelBody: React.FunctionComponent<{
           ctxt: brickArgsContext,
           args,
           runId,
-          modComponentId,
+          modComponentRef,
         } = payload;
 
         console.debug("Running panel body for panel payload", payload);
@@ -192,7 +192,7 @@ const PanelBody: React.FunctionComponent<{
           ctxt: brickArgsContext as UnknownObject,
           meta: {
             runId,
-            modComponentId,
+            modComponentRef,
             branches,
           },
           logger,
@@ -216,7 +216,7 @@ const PanelBody: React.FunctionComponent<{
               options: apiVersionOptions("v3"),
               messageContext: logger.context,
               meta: {
-                modComponentId,
+                modComponentRef,
                 runId,
                 branches: [...branches, branch],
               },
@@ -229,12 +229,6 @@ const PanelBody: React.FunctionComponent<{
           },
         });
 
-        if (!runId || !modComponentId) {
-          console.warn("PanelBody requires runId in RendererPayload", {
-            payload,
-          });
-        }
-
         if (!isMounted()) {
           return;
         }
@@ -244,7 +238,7 @@ const PanelBody: React.FunctionComponent<{
             data: {
               brickId,
               body: body as RendererOutput,
-              meta: { runId, modComponentId },
+              meta: { runId, modComponentRef },
             },
           }),
         );

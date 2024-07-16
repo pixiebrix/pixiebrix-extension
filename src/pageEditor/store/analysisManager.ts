@@ -36,7 +36,10 @@ import analysisSlice from "@/analysis/analysisSlice";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
 import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
-import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectActiveModComponentFormState,
+  selectActiveModComponentRef,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
@@ -47,6 +50,7 @@ import { inspectedTab } from "@/pageEditor/context/connection";
 import SelectorAnalysis from "@/analysis/analysisVisitors/selectorAnalysis";
 import ConditionAnalysis from "@/analysis/analysisVisitors/conditionAnalysis";
 import { StateNamespaces } from "@/platform/state/stateTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -65,14 +69,15 @@ async function selectActiveModFormStates(
   if (activeModComponentFormState?.modMetadata) {
     const dirtyModComponentFormStates =
       state.editor.modComponentFormStates.filter(
-        (x) => x.modMetadata?.id === activeModComponentFormState.modMetadata.id,
+        (x) =>
+          x.modMetadata?.id === activeModComponentFormState.modMetadata?.id,
       );
     const dirtyIds = new Set(dirtyModComponentFormStates.map((x) => x.uuid));
 
     const activatedModComponents = selectActivatedModComponents(state);
     const otherModComponents = activatedModComponents.filter(
       (x) =>
-        x._recipe?.id === activeModComponentFormState.modMetadata.id &&
+        x._recipe?.id === activeModComponentFormState.modMetadata?.id &&
         !dirtyIds.has(x.id),
     );
     const otherModComponentFormStates = await Promise.all(
@@ -202,11 +207,16 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 );
 
 async function varAnalysisFactory(
-  action: PayloadAction<{ modComponentId: UUID; records: TraceRecord[] }>,
+  _action: PayloadAction<{ modComponentId: UUID; records: TraceRecord[] }>,
   state: RootState,
 ) {
   const trace = selectActiveModComponentTraces(state);
-  const activeModComponentFormState = selectActiveModComponentFormState(state);
+  const modComponentRef = selectActiveModComponentRef(state);
+
+  assertNotNullish(
+    modComponentRef,
+    "varAnalysisFactory can only be used in an active mod component context",
+  );
 
   // The potential mod known mod variables
   const formStates = await selectActiveModFormStates(state);
@@ -215,10 +225,7 @@ async function varAnalysisFactory(
   // The actual mod variables
   const modState = await getPageState(inspectedTab, {
     namespace: StateNamespaces.MOD,
-    modComponentRef: {
-      modComponentId: activeModComponentFormState.uuid,
-      modId: activeModComponentFormState.modMetadata?.id,
-    },
+    modComponentRef,
   });
 
   return new VarAnalysis({

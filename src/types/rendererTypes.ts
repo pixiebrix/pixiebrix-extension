@@ -19,6 +19,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { type Except } from "type-fest";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 type BaseRendererPayload = {
   /**
@@ -27,10 +28,9 @@ type BaseRendererPayload = {
   key: Nullishable<string>;
   /**
    * The ModComponent that produced the payload.
-   * Marked Nullishable as part of the StrictNullChecks migration.
-   * TODO: Revisit and determine if modComponentId should be required.
+   * @since 2.0.6 is a ModComponentRef
    */
-  modComponentId: Nullishable<UUID>;
+  modComponentRef: ModComponentRef;
   /**
    * The ModComponent run that produced the payload
    * @since 1.7.0

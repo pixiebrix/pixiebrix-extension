@@ -26,6 +26,7 @@ import { joinPathParts } from "@/utils/formUtils";
 import StylesheetsContext, {
   useStylesheetsContextWithDocumentDefault,
 } from "@/components/StylesheetsContext";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,
@@ -35,15 +36,13 @@ const DocumentView: React.FC<DocumentViewProps> = ({
   meta,
   onAction,
 }) => {
-  if (!meta?.runId) {
-    // The sidebar panel should dynamically pass the prop through
-    throw new Error("meta.runId is required for DocumentView");
-  }
-
-  if (!meta?.modComponentId) {
-    // The sidebar panel should dynamically pass the prop through
-    throw new Error("meta.modComponentId is required for DocumentView");
-  }
+  // The code for RendererComponent isn't fully type-safe. So dynamically check the necessary meta props are passed in.
+  assertNotNullish(meta, "meta is required for DocumentView");
+  assertNotNullish(meta.runId, "meta.runId is required for DocumentView");
+  assertNotNullish(
+    meta.modComponentRef,
+    "meta.modComponentRef is required for DocumentView",
+  );
 
   const { stylesheets } = useStylesheetsContextWithDocumentDefault({
     newStylesheets,

@@ -27,7 +27,7 @@ describe("conditionAnalysis", () => {
   it("no warning for unset field", async () => {
     const formState = triggerFormStateFactory({}, [
       {
-        id: ContextBrick.BLOCK_ID,
+        id: ContextBrick.BRICK_ID,
         config: {},
         outputKey: validateOutputKey("foo"),
       },
@@ -42,7 +42,7 @@ describe("conditionAnalysis", () => {
   it("warning for blank value", async () => {
     const formState = triggerFormStateFactory({}, [
       {
-        id: ContextBrick.BLOCK_ID,
+        id: ContextBrick.BRICK_ID,
         config: {},
         if: toExpression("nunjucks", " "),
         outputKey: validateOutputKey("foo"),
@@ -69,7 +69,7 @@ describe("conditionAnalysis", () => {
   it.each([true, false])("info for boolean literal", async (value) => {
     const formState = triggerFormStateFactory({}, [
       {
-        id: ContextBrick.BLOCK_ID,
+        id: ContextBrick.BRICK_ID,
         config: {},
         if: value,
         outputKey: validateOutputKey("foo"),
@@ -89,7 +89,7 @@ describe("conditionAnalysis", () => {
   it.each(["y", "f"])("info for template literal", async (value) => {
     const formState = triggerFormStateFactory({}, [
       {
-        id: ContextBrick.BLOCK_ID,
+        id: ContextBrick.BRICK_ID,
         config: {},
         if: toExpression("nunjucks", value),
         outputKey: validateOutputKey("foo"),

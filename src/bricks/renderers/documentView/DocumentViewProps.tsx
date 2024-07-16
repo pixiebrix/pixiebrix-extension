@@ -17,8 +17,11 @@
 
 import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { type SubmitPanelAction } from "@/bricks/errors";
-import { type BrickArgsContext, type BrickOptions } from "@/types/runtimeTypes";
-import { type UUID } from "@/types/stringTypes";
+import {
+  type BrickArgsContext,
+  type BrickOptions,
+  type RunMetadata,
+} from "@/types/runtimeTypes";
 
 export type DocumentViewProps = {
   /**
@@ -39,8 +42,6 @@ export type DocumentViewProps = {
   disableParentStyles?: boolean;
 
   options: BrickOptions<BrickArgsContext>;
-  meta: {
-    runId: UUID;
-    modComponentId: UUID;
-  };
+
+  meta: Pick<RunMetadata, "runId" | "modComponentRef">;
 };
