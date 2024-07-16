@@ -26,7 +26,7 @@ import ElementPreview from "./ElementPreview";
 import { ROOT_ELEMENT_TYPES } from "@/pageEditor/documentBuilder/allowedElementTypes";
 import cx from "classnames";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
-import useDocumentPreviewRunBlock from "@/pageEditor/tabs/effect/useDocumentPreviewRunBlock";
+import useDocumentPreviewRunBrick from "@/pageEditor/tabs/effect/useDocumentPreviewRunBlock";
 import { useSelector } from "react-redux";
 import {
   selectActiveNodeId,
@@ -86,7 +86,7 @@ const DocumentPreview = ({
     error: previewError,
     isRunning: isPreviewRunning,
     runBlockPreview,
-  } = useDocumentPreviewRunBlock(activeNodeId);
+  } = useDocumentPreviewRunBrick(activeNodeId);
 
   const traceRecord = useSelector(
     selectActiveModComponentTraceForBrick(activeNodeId),
