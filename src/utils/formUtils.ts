@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type Nullishable } from "@/utils/nullishUtils";
 import { compact } from "lodash";
 
 const specialCharsRegex = /[\s.[\]]/;
@@ -29,7 +30,7 @@ const specialCharsRegex = /[\s.[\]]/;
  */
 export function joinName(
   baseFieldName: string | null,
-  ...rest: Array<string | null>
+  ...rest: Array<Nullishable<string>>
 ): string {
   const fieldNames = compact(rest);
 

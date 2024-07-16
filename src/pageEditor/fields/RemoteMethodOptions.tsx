@@ -24,6 +24,8 @@ import React, { useEffect } from "react";
 import { Alert } from "react-bootstrap";
 import { isTemplateExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { type Schema } from "@/types/schemaTypes";
 
 export const REMOTE_METHOD_ID = validateRegistryId("@pixiebrix/http");
 
@@ -58,37 +60,38 @@ const RemoteMethodOptions: React.FunctionComponent<
     setShowJsonWarning(isJsonString(data));
   }, [data]);
 
+  assertNotNullish(inputProperties, "inputProperties is required");
+
   return (
     <div>
-      {/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- inputProperties is hardcoded schema */}
+      {/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion -- strictNullChecks requires the cast */}
       <SchemaField
         name={configName("url")}
-        schema={inputProperties.url!}
+        schema={inputProperties.url as Schema}
         isRequired
       />
       <SchemaField
         name={configName("service")}
-        schema={inputProperties.service!}
+        schema={inputProperties.service as Schema}
       />
       <SchemaField
         name={configName("method")}
-        schema={inputProperties.method!}
+        schema={inputProperties.method as Schema}
       />
       <SchemaField
         name={configName("params")}
-        schema={inputProperties.params!}
+        schema={inputProperties.params as Schema}
       />
       <SchemaField
         name={configName("headers")}
-        schema={inputProperties.headers!}
+        schema={inputProperties.headers as Schema}
       />
       <SchemaField
         name={dataFieldName}
-        schema={inputProperties.data!}
+        schema={inputProperties.data as Schema}
         defaultType="object"
       />
-      {/* eslint-enable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion */}
-
+      {/* eslint-enable @typescript-eslint/no-unnecessary-type-assertion -- strictNullChecks requires the cast */}
       {showJsonWarning && (
         <Alert variant="warning">
           <p>
