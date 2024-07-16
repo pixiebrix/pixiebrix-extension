@@ -36,7 +36,6 @@ import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { freeze } from "@/utils/objectUtils";
-import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -94,9 +93,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
               config: config.__value__,
               context: elementContext.options.ctxt,
               options: apiVersionOptions("v3"),
-              modComponentRef: mapMessageContextToModComponentRef(
-                documentContext.options.logger.context,
-              ),
+              modComponentRef: documentContext.options.meta.modComponentRef,
             },
           )) as DocumentBuilderElement;
         } else {

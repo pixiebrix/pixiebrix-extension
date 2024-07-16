@@ -29,7 +29,6 @@ import { $safeFind } from "@/utils/domUtils";
 import { BusinessError } from "@/errors/businessErrors";
 import { type RunBrickArgs } from "@/contentScript/pageEditor/types";
 import { type ModComponentRef } from "@/types/modComponentTypes";
-import { type Except } from "type-fest";
 
 /**
  * Run a single brick (e.g., for generating output previews)
@@ -42,7 +41,7 @@ export async function runBrickPreview({
   modComponentRef,
   rootSelector,
 }: RunBrickArgs & {
-  modComponentRef: Except<ModComponentRef, "starterBrickId">;
+  modComponentRef: ModComponentRef;
 }): Promise<unknown> {
   const versionOptions = apiVersionOptions(apiVersion);
 
@@ -84,13 +83,15 @@ export async function runBrickPreview({
 
   const options: ReduceOptions = {
     ...versionOptions,
+    modComponentRef,
     branches: [],
     headless: true,
-    logValues: false,
+    // Exclude logger context to prevent the run from being shown in logs for the mod component/brick
     logger: new ConsoleLogger(),
-    // Excluding runId will prevent the run from being stored in traces
+    logValues: false,
+    // Exclude runId to prevent the run from being stored in traces. (Including the run in traces would reset the
+    // run shown in the brick actions panel of the Page Editor.)
     runId: null,
-    modComponentId: null,
   };
 
   // Exclude the outputKey so that `output` is the output of the brick. Alternatively we could have taken then

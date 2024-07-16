@@ -25,7 +25,6 @@ import { setState } from "@/platform/state/stateController";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { toExpression } from "@/utils/expressionUtils";
-import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
@@ -42,9 +41,7 @@ describe("modVariableContext", () => {
       namespace: StateNamespaces.MOD,
       data: { run: true },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentRef: mapMessageContextToModComponentRef(
-        options.logger.context,
-      ),
+      modComponentRef: options.modComponentRef,
     });
 
     const pipeline = [
@@ -71,9 +68,7 @@ describe("modVariableContext", () => {
       namespace: StateNamespaces.MOD,
       data: { run: true },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentRef: mapMessageContextToModComponentRef(
-        options.logger.context,
-      ),
+      modComponentRef: options.modComponentRef,
     });
 
     const pipeline = [
@@ -100,9 +95,7 @@ describe("modVariableContext", () => {
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentRef: mapMessageContextToModComponentRef(
-        options.logger.context,
-      ),
+      modComponentRef: options.modComponentRef,
     });
 
     const pipeline = [
@@ -130,9 +123,7 @@ describe("modVariableContext", () => {
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentRef: mapMessageContextToModComponentRef(
-        options.logger.context,
-      ),
+      modComponentRef: options.modComponentRef,
     });
 
     const pipeline = [
@@ -158,9 +149,7 @@ describe("modVariableContext", () => {
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentRef: mapMessageContextToModComponentRef(
-        options.logger.context,
-      ),
+      modComponentRef: options.modComponentRef,
     });
 
     const pipeline = [

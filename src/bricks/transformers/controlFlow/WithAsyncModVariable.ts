@@ -33,7 +33,6 @@ import { PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 /**
@@ -174,7 +173,7 @@ export class WithAsyncModVariable extends TransformerABC {
       body: PipelineExpression;
       stateKey: string;
     }>,
-    { logger, runPipeline }: BrickOptions,
+    { meta: { modComponentRef }, runPipeline }: BrickOptions,
   ) {
     const requestId = uuidv4();
 
@@ -199,7 +198,7 @@ export class WithAsyncModVariable extends TransformerABC {
         // Using shallow will replace the state key, but keep other keys
         mergeStrategy:
           strategy === "put" ? MergeStrategies.SHALLOW : MergeStrategies.DEEP,
-        modComponentRef: mapMessageContextToModComponentRef(logger.context),
+        modComponentRef,
       });
     };
 
@@ -209,7 +208,7 @@ export class WithAsyncModVariable extends TransformerABC {
     // Get/set page state calls are synchronous from the content script, so safe to call sequentially
     const currentState = getState({
       namespace: StateNamespaces.MOD,
-      modComponentRef: mapMessageContextToModComponentRef(logger.context),
+      modComponentRef,
     });
 
     // eslint-disable-next-line security/detect-object-injection -- user provided value that's readonly

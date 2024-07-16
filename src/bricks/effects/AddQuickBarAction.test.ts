@@ -17,12 +17,12 @@
 
 import AddQuickBarAction from "@/bricks/effects/AddQuickBarAction";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import {
+  brickOptionsFactory,
+  runMetadataFactory,
+} from "@/testUtils/factories/runtimeFactories";
 import { platformMock } from "@/testUtils/platformMock";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
-
-import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 const brick = new AddQuickBarAction();
 
@@ -50,9 +50,7 @@ describe("AddQuickBarAction", () => {
       unsafeAssumeValidArg({ title: "test" }),
       brickOptionsFactory({
         platform,
-        logger: new ConsoleLogger(
-          mapModComponentRefToMessageContext(modComponentRef),
-        ),
+        meta: runMetadataFactory({ modComponentRef }),
         abortSignal: abortController.signal,
       }),
     );

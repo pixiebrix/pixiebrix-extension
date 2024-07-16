@@ -46,7 +46,7 @@ export type TraceRecordMeta = {
   modComponentId: Nullishable<UUID>;
 
   /**
-   * Extension run id. Unique run id to correlate trace entries from the same extension run.
+   * Mod component run id. Unique run id to correlate trace entries from the same mod component run.
    */
   runId: Nullishable<UUID>;
 

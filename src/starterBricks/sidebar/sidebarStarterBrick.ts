@@ -62,7 +62,10 @@ import {
   SidebarTriggers,
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
-import { mapModComponentToMessageContext } from "@/utils/modUtils";
+import {
+  getModComponentRef,
+  mapModComponentToMessageContext,
+} from "@/utils/modUtils";
 import { STATE_CHANGE_JS_EVENT_TYPE } from "@/platform/state/stateTypes";
 
 export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConfig> {
@@ -203,6 +206,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       await reduceModComponentPipeline(body, initialValues, {
         headless: true,
         logger: componentLogger,
+        modComponentRef: getModComponentRef(modComponent),
         ...apiVersionOptions(modComponent.apiVersion),
         runId,
       });
@@ -218,7 +222,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
       const runMetadata = {
         runId,
-        modComponentId: modComponent.id,
+        modComponentRef,
       };
 
       if (error instanceof HeadlessModeError) {

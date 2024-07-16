@@ -117,7 +117,7 @@ class RunMetadataTransformer extends TransformerABC {
               version: context.modVersion,
             },
       deploymentId: context.deploymentId ?? null,
-      modComponentId: context.modComponentId ?? null,
+      modComponentId: meta.modComponentRef.modComponentId,
       runId: meta.runId,
     };
   }

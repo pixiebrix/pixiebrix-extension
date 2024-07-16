@@ -27,6 +27,13 @@ import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactor
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 import type { ReduceOptions } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { assertNotNullish } from "@/utils/nullishUtils";
+
+export const runMetadataFactory = define<RunMetadata>({
+  runId: null,
+  modComponentRef: modComponentRefFactory,
+  branches: () => [] as RunMetadata["branches"],
+});
 
 /**
  * Factory for BrickOptions to pass to Brick.run method.
@@ -40,13 +47,16 @@ export const brickOptionsFactory = define<BrickOptions>({
     return {};
   },
   platform: () => contentScriptPlatform,
-  logger() {
-    const modComponentRef = modComponentRefFactory();
-    // MessageContext expects undefined instead of null for blueprintId
-    return new ConsoleLogger(
-      mapModComponentRefToMessageContext(modComponentRef),
+  meta: runMetadataFactory,
+  logger: derive<BrickOptions, BrickOptions["logger"]>((options) => {
+    assertNotNullish(
+      options.meta,
+      "You must provide BrickOptions.meta to derive logger",
     );
-  },
+    return new ConsoleLogger(
+      mapModComponentRefToMessageContext(options.meta.modComponentRef),
+    );
+  }, "meta"),
   root: () => document,
   runPipeline: () =>
     jest.fn().mockRejectedValue(new Error("runPipeline mock not implemented")),
@@ -54,14 +64,6 @@ export const brickOptionsFactory = define<BrickOptions>({
     jest
       .fn()
       .mockRejectedValue(new Error("runRendererPipeline mock not implemented")),
-  meta: derive<BrickOptions, RunMetadata>(
-    (options) => ({
-      runId: null,
-      modComponentId: options.logger?.context.modComponentId,
-      branches: [],
-    }),
-    "logger",
-  ),
 });
 
 /**
@@ -70,20 +72,23 @@ export const brickOptionsFactory = define<BrickOptions>({
  * @see apiVersionOptions
  */
 export function reduceOptionsFactory(
+  // XXX: How to handle traits in cooky-cutter similar to Python's Factory Boy?
+  // https://factoryboy.readthedocs.io/en/stable/introduction.html#altering-a-factory-s-behavior-parameters-and-traits
   runtimeVersion: ApiVersion = "v3",
+  overrides: Partial<ReduceOptions> = {},
 ): ReduceOptions {
-  const modComponentRef = modComponentRefFactory();
-  const logger = new ConsoleLogger(
-    mapModComponentRefToMessageContext(modComponentRef),
-  );
+  const modComponentRef = overrides.modComponentRef ?? modComponentRefFactory();
+  const logger =
+    overrides.logger ??
+    new ConsoleLogger(mapModComponentRefToMessageContext(modComponentRef));
 
   return {
-    modComponentId: modComponentRef.modComponentId,
+    modComponentRef,
     logger,
-    runId: null,
-    headless: false,
-    branches: [],
-    logValues: true,
+    runId: overrides.runId ?? null,
+    headless: overrides.headless ?? false,
+    branches: overrides.branches ?? [],
+    logValues: overrides.logValues ?? true,
     ...apiVersionOptions(runtimeVersion),
   };
 }
