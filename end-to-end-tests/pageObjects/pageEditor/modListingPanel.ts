@@ -36,6 +36,10 @@ export class ModListItem extends BasePageObject {
     return this.getByRole("button", { name: "Make a copy" });
   }
 
+  get deactivateButton() {
+    return this.getByRole("button", { name: "Deactivate" });
+  }
+
   async select() {
     return this.click();
   }
