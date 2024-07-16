@@ -356,7 +356,9 @@ function unmigrateEditorStateV5toV4(
 type SimpleFactory<T> = (override?: FactoryConfig<T>) => T;
 
 const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = (override) =>
-  formStateFactory(override as InternalFormStateOverride);
+  formStateFactory({
+    formStateConfig: override as FactoryConfig<InternalFormStateOverride>,
+  });
 const formStateFactoryV3: SimpleFactory<BaseFormStateV3> = () =>
   unmigrateFormStateV4toV3(formStateFactoryV4());
 const formStateFactoryV2: SimpleFactory<BaseFormStateV2> = () =>

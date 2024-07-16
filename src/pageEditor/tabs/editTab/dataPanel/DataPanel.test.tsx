@@ -62,7 +62,7 @@ describe("DataPanel", () => {
     reportEventMock.mockClear();
   });
 
-  test("it renders with form state and trace data", async () => {
+  it("renders with form state and trace data", async () => {
     const { asFragment } = renderDataPanel();
     await waitForEffect();
 

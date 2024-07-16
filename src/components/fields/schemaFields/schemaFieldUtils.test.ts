@@ -19,7 +19,7 @@ import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils"
 import { type Schema } from "@/types/schemaTypes";
 
 describe("sortedFields", () => {
-  test("it sorts by type first", () => {
+  it("sorts by type first", () => {
     expect(
       sortedFields(
         {
@@ -35,7 +35,7 @@ describe("sortedFields", () => {
     ).toStrictEqual(["zzz", "aaa"]);
   });
 
-  test("it sorts by database type first", () => {
+  it("sorts by database type first", () => {
     expect(
       sortedFields(
         {
@@ -51,7 +51,7 @@ describe("sortedFields", () => {
     ).toStrictEqual(["zzz", "aaa"]);
   });
 
-  test("it prefers title", () => {
+  it("prefers title", () => {
     expect(
       sortedFields(
         {
@@ -68,7 +68,7 @@ describe("sortedFields", () => {
     ).toStrictEqual(["bbb", "aaa"]);
   });
 
-  test("it sorts by uiSchema order with missing entry", () => {
+  it("sorts by uiSchema order with missing entry", () => {
     // Unlike RFSJ, don't throw an error if an entry is missing. Just throw it at the end
     expect(
       sortedFields(
@@ -90,7 +90,7 @@ describe("sortedFields", () => {
     ).toStrictEqual(["bbb", "aaa", "ccc"]);
   });
 
-  test("it sorts by uiSchema *", () => {
+  it("sorts by uiSchema *", () => {
     expect(
       sortedFields(
         {
@@ -111,7 +111,7 @@ describe("sortedFields", () => {
     ).toStrictEqual(["bbb", "ccc", "aaa"]);
   });
 
-  test("it sorts optional fields", () => {
+  it("sorts optional fields", () => {
     expect(
       sortedFields(
         {

@@ -30,7 +30,7 @@ describe("ElementReader", () => {
     );
   });
 
-  test("it produces valid element reference", async () => {
+  it("produces valid element reference", async () => {
     const div = document.createElement("div");
     const { ref } = await reader.read(div);
     expect(validateUUID(ref)).not.toBeNull();

@@ -116,7 +116,7 @@ describe("@pixiebrix/state/assign", () => {
     ).toEqual({ foo: 42, bar: 0 });
   });
 
-  test("it returns mod variables", async () => {
+  it("returns mod variables", async () => {
     await expect(
       brick.getModVariableSchema({
         id: brick.id,

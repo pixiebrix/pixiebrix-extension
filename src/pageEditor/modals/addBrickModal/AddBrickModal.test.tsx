@@ -47,7 +47,7 @@ beforeAll(() => {
 });
 
 describe("AddBrickModal", () => {
-  test("it renders", async () => {
+  it("renders", async () => {
     const formState = formStateFactory();
     const { asFragment } = render(<AddBrickModal />, {
       setupRedux(dispatch) {
@@ -71,7 +71,7 @@ describe("AddBrickModal", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("it renders with tag selected and search query", async () => {
+  it("renders with tag selected and search query", async () => {
     const formState = formStateFactory();
 
     const { asFragment } = render(<AddBrickModal />, {

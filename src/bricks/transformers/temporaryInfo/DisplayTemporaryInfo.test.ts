@@ -95,7 +95,7 @@ describe("DisplayTemporaryInfo", () => {
     await expect(displayTemporaryInfoBlock.isRootAware()).resolves.toBe(true);
   });
 
-  test("it returns run payload for sidebar panel", async () => {
+  it("returns run payload for sidebar panel", async () => {
     const modComponentRef = modComponentRefFactory();
 
     const config = getExampleBrickConfig(renderer.id);
@@ -137,7 +137,7 @@ describe("DisplayTemporaryInfo", () => {
     });
   });
 
-  test("it returns error", async () => {
+  it("returns error", async () => {
     const message = "display info test error";
 
     const pipeline = {
@@ -171,7 +171,7 @@ describe("DisplayTemporaryInfo", () => {
     expect(errorMessage).toStrictEqual(message);
   });
 
-  test("it registers panel for modal", async () => {
+  it("registers panel for modal", async () => {
     const config = getExampleBrickConfig(renderer.id);
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
@@ -209,7 +209,7 @@ describe("DisplayTemporaryInfo", () => {
     });
   });
 
-  test("it errors from frame", async () => {
+  it("errors from frame", async () => {
     const modComponentRef = modComponentRefFactory();
     jest.mocked(isLoadedInIframe).mockReturnValue(true);
 
@@ -253,7 +253,7 @@ describe("DisplayTemporaryInfo", () => {
     ).rejects.toThrow("Target must be an element for popover");
   });
 
-  test("it registers a popover panel", async () => {
+  it("registers a popover panel", async () => {
     document.body.innerHTML = '<div><div id="target"></div></div>';
 
     const config = getExampleBrickConfig(renderer.id);
@@ -284,7 +284,7 @@ describe("DisplayTemporaryInfo", () => {
     ).not.toBeNull();
   });
 
-  test("it listens for statechange", async () => {
+  it("listens for statechange", async () => {
     document.body.innerHTML = '<div><div id="target"></div></div>';
 
     const deferredPromise = pDefer<any>();

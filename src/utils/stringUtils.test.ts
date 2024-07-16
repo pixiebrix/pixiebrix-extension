@@ -88,15 +88,15 @@ describe("string utilities", () => {
 });
 
 describe("trimEndOnce", () => {
-  test("it allows null", () => {
+  it("allows null", () => {
     expect(trimEndOnce(null, " ")).toBeNull();
   });
 
-  test("it trims only once", () => {
+  it("trims only once", () => {
     expect(trimEndOnce("aa", "a")).toBe("a");
   });
 
-  test("it trims only if match", () => {
+  it("trims only if match", () => {
     expect(trimEndOnce("ab", "a")).toBe("ab");
   });
 });

@@ -23,7 +23,7 @@ import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 const brick = new CancelEffect();
 
 describe("CancelEffect", () => {
-  test("it throws CancelError", async () => {
+  it("throws CancelError", async () => {
     await expect(
       brick.run(unsafeAssumeValidArg({}), brickOptionsFactory()),
     ).rejects.toThrow(CancelError);

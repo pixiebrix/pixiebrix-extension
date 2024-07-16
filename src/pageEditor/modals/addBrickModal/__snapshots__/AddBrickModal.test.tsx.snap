@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AddBrickModal it renders 1`] = `
+exports[`AddBrickModal renders 1`] = `
 <DocumentFragment>
   <div
     class="fade modal-backdrop show"
@@ -228,7 +228,7 @@ exports[`AddBrickModal it renders 1`] = `
 </DocumentFragment>
 `;
 
-exports[`AddBrickModal it renders with tag selected and search query 1`] = `
+exports[`AddBrickModal renders with tag selected and search query 1`] = `
 <DocumentFragment>
   <div
     class="fade modal-backdrop show"

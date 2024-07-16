@@ -306,15 +306,16 @@ export function defaultMenuOption(
   for (const part of rest) {
     assertNotNullish(part, "Expected part to be non-null");
 
+    // Find the the first partial match, if it exists
     if (!Object.hasOwn(currentVars, part)) {
       const match = Object.keys(
         sortVarMapKeys(currentVars) as UnknownRecord,
       ).find((x) => x.startsWith(part));
 
-      assertNotNullish(match, "Expected match to exist");
+      if (match) {
+        result.unshift(match);
+      }
 
-      // No exact match, return first partial match as default.
-      result.unshift(match);
       break;
     }
 

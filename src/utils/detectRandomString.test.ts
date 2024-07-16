@@ -107,16 +107,16 @@ describe("guessUsefulness", () => {
 });
 
 describe("selectorTypes", () => {
-  test("it detects simple selector", () => {
+  it("detects simple selector", () => {
     expect(selectorTypes(".nav")).toStrictEqual(["CLASS"]);
     expect(selectorTypes("nav")).toStrictEqual(["TAG"]);
   });
 
-  test("it detects combo selector", () => {
+  it("detects combo selector", () => {
     expect(selectorTypes("nav.nav")).toStrictEqual(["TAG", "CLASS"]);
   });
 
-  test("it returns empty array for invalid selector", () => {
+  it("returns empty array for invalid selector", () => {
     expect(selectorTypes("! nav")).toStrictEqual([]);
   });
 });

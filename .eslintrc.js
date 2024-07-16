@@ -63,6 +63,17 @@ module.exports = {
       "error",
       { ignore: ["eslint-enable"] },
     ],
+    "jest/valid-title": [
+      "error",
+      {
+        mustNotMatch: {
+          test: [
+            /^it/.source,
+            'Test title should not begin with `it`. Use `it("should ...")` or omit `it` from the title instead.',
+          ],
+        },
+      },
+    ],
     "local-rules/noNullRtkQueryArgs": "error",
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/noExpressionLiterals": "error",

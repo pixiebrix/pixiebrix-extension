@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SidebarBody it renders error when URL is restricted 1`] = `
+exports[`SidebarBody renders error when URL is restricted 1`] = `
 <DocumentFragment>
   <div
     class="d-flex py-2 pl-2 pr-0 align-items-center"
@@ -84,7 +84,7 @@ exports[`SidebarBody it renders error when URL is restricted 1`] = `
 </DocumentFragment>
 `;
 
-exports[`SidebarBody it renders with anonymous user 1`] = `
+exports[`SidebarBody renders with anonymous user 1`] = `
 <DocumentFragment>
   <div
     class="d-flex py-2 pl-2 pr-0 align-items-center"
@@ -174,7 +174,7 @@ exports[`SidebarBody it renders with anonymous user 1`] = `
 </DocumentFragment>
 `;
 
-exports[`SidebarBody it renders with authenticated user 1`] = `
+exports[`SidebarBody renders with authenticated user 1`] = `
 <DocumentFragment>
   <div
     class="d-flex py-2 pl-2 pr-0 align-items-center"

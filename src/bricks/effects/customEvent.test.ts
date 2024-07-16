@@ -44,7 +44,7 @@ describe("CustomEventEffect", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test("it fires custom event", async () => {
+  it("fires custom event", async () => {
     const eventHandler = jest.fn();
     document.querySelector("button")!.addEventListener("foo", eventHandler);
 
@@ -59,7 +59,7 @@ describe("CustomEventEffect", () => {
     expect(eventHandler).toHaveBeenCalled();
   });
 
-  test("it bubbles custom event", async () => {
+  it("bubbles custom event", async () => {
     const eventHandler = jest.fn();
     document.querySelector("div")!.addEventListener("foo", eventHandler);
 
