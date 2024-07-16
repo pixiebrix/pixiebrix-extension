@@ -107,7 +107,7 @@ export interface SchemaFieldProps {
   /**
    * Reference to the input DOM element. Used for instance by the Variable autosuggest popup
    */
-  inputRef?: React.MutableRefObject<HTMLElement>;
+  inputRef?: React.MutableRefObject<HTMLElement | null>;
 }
 
 export type SchemaFieldComponent = React.FunctionComponent<SchemaFieldProps>;

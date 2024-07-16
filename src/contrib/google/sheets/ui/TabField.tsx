@@ -29,7 +29,7 @@ import useAsyncEffect from "use-async-effect";
 const TabField: React.FC<
   SchemaFieldProps & { spreadsheet: Spreadsheet | null }
 > = ({ name, spreadsheet }) => {
-  const inputRef = useRef<HTMLTextAreaElement>();
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const [{ value: tabName }, , { setValue: setTabName }] = useField<
     string | Expression
@@ -40,7 +40,9 @@ const TabField: React.FC<
 
   if (spreadsheet) {
     lastGoodTabNames.current =
-      spreadsheet.sheets?.map((sheet) => sheet.properties.title) ?? [];
+      spreadsheet.sheets
+        ?.map((x) => x.properties?.title)
+        .filter((x) => x != null) ?? [];
   }
 
   const fieldSchema: Schema = {
@@ -65,7 +67,7 @@ const TabField: React.FC<
     const tabNames = lastGoodTabNames.current;
 
     // Set to empty nunjucks expression if no tab names have loaded
-    if (isEmpty(tabNames)) {
+    if (tabNames.length === 0) {
       await setTabName(toExpression("nunjucks", ""));
       return;
     }
@@ -76,7 +78,8 @@ const TabField: React.FC<
     }
 
     // Remaining cases are either empty expression or invalid, selected tab name, so set to first tab name
-    await setTabName(tabNames[0]);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+    await setTabName(tabNames[0]!);
   }, [spreadsheet?.spreadsheetId, allTabNames]);
 
   // TODO: re-add info message that tab will be created

@@ -33,6 +33,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { SHEET_FIELD_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import { getSpreadsheet } from "@/contrib/google/sheets/core/sheetsApi";
 import { hasCachedAuthData } from "@/background/messenger/api";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type GoogleSheetState = {
   googleAccount: SanitizedIntegrationConfig | null;
@@ -83,6 +84,12 @@ const RequireGoogleSheet: React.FC<{
             googleAccount,
             spreadsheetId,
           });
+
+          assertNotNullish(
+            spreadsheet.properties,
+            "Spreadsheet properties are missing",
+          );
+
           return {
             googleAccount,
             spreadsheet,

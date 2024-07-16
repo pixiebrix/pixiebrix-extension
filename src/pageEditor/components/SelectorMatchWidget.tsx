@@ -43,9 +43,9 @@ const SelectorMatchWidget: React.VFC<SchemaFieldProps> = (props) => {
       }}
     >
       <ArrayWidget
-        schema={selectorMatchItemSchema}
         addButtonCaption="Add Selector"
         {...props}
+        schema={selectorMatchItemSchema}
       />
     </FieldRuntimeContext.Provider>
   );

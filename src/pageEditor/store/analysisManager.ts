@@ -47,6 +47,7 @@ import { inspectedTab } from "@/pageEditor/context/connection";
 import SelectorAnalysis from "@/analysis/analysisVisitors/selectorAnalysis";
 import ConditionAnalysis from "@/analysis/analysisVisitors/conditionAnalysis";
 import { StateNamespaces } from "@/platform/state/stateTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -65,14 +66,15 @@ async function selectActiveModFormStates(
   if (activeModComponentFormState?.modMetadata) {
     const dirtyModComponentFormStates =
       state.editor.modComponentFormStates.filter(
-        (x) => x.modMetadata?.id === activeModComponentFormState.modMetadata.id,
+        (x) =>
+          x.modMetadata?.id === activeModComponentFormState.modMetadata?.id,
       );
     const dirtyIds = new Set(dirtyModComponentFormStates.map((x) => x.uuid));
 
     const activatedModComponents = selectActivatedModComponents(state);
     const otherModComponents = activatedModComponents.filter(
       (x) =>
-        x._recipe?.id === activeModComponentFormState.modMetadata.id &&
+        x._recipe?.id === activeModComponentFormState.modMetadata?.id &&
         !dirtyIds.has(x.id),
     );
     const otherModComponentFormStates = await Promise.all(
@@ -207,6 +209,11 @@ async function varAnalysisFactory(
 ) {
   const trace = selectActiveModComponentTraces(state);
   const activeModComponentFormState = selectActiveModComponentFormState(state);
+
+  assertNotNullish(
+    activeModComponentFormState,
+    "activeModComponentFormState not found",
+  );
 
   // The potential mod known mod variables
   const formStates = await selectActiveModFormStates(state);
