@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/tabs/modOptionsValues/ModOptionsValuesEditor.tsx",
     "./pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor.tsx",
     "./pageEditor/tabs/effect/useDocumentPreviewRunBlock.ts",
     "./pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel.tsx",
