@@ -20,12 +20,4 @@ import { BasePageObject } from "../basePageObject";
 export class DeactivateModModal extends BasePageObject {
   cancelButton = this.getByRole("button", { name: "Cancel" });
   deactivateButton = this.getByRole("button", { name: "Deactivate" });
-
-  async deactivateMod(): Promise<void> {
-    await this.deactivateButton.click();
-  }
-
-  async cancelDeactivation(): Promise<void> {
-    await this.cancelButton.click();
-  }
 }

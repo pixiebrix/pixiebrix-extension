@@ -128,7 +128,7 @@ export class PageEditorPage extends BasePageObject {
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
     await modListItem.saveButton.click();
-    // Create mod modal is shown
+
     const createModModal = new CreateModModal(this.getByRole("dialog"));
     const modId = await createModModal.createMod(modName, modUuid);
 
@@ -143,7 +143,6 @@ export class PageEditorPage extends BasePageObject {
     await modListItem.menuButton.click();
     await modListItem.copyButton.click();
 
-    // Create mod modal is shown
     const createModModal = new CreateModModal(this.getByRole("dialog"));
     const modId = await createModModal.copyMod(modName, modUuid);
 
@@ -158,7 +157,7 @@ export class PageEditorPage extends BasePageObject {
     await modListItem.deactivateButton.click();
 
     const deactivateModModal = new DeactivateModModal(this.getByRole("dialog"));
-    await deactivateModModal.deactivateMod();
+    await deactivateModModal.deactivateButton.click();
   }
 
   @ModifiesModState
