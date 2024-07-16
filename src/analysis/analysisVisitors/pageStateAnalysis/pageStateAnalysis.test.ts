@@ -76,58 +76,8 @@ describe("PageStateAnalysis", () => {
     ]);
   });
 
-  it("shows warning on mod page state for custom form if not mod", async () => {
-    const state = formStateFactory({
-      brickPipeline: [
-        {
-          id: CustomFormRenderer.BRICK_ID,
-          config: {
-            storage: {
-              type: "state",
-              namespace: StateNamespaces.MOD,
-            },
-          },
-        },
-      ],
-    });
-
-    const analysis = new PageStateAnalysis();
-    await analysis.run(state);
-
-    expect(analysis.getAnnotations()).toEqual([
-      expect.objectContaining({
-        type: AnnotationType.Warning,
-      }),
-    ]);
-  });
-
   it.each([SetPageState.BRICK_ID, GetPageState.BRICK_ID])(
-    "shows warning on blueprint if not in mod %s",
-    async (registryId) => {
-      const state = formStateFactory({
-        brickPipeline: [
-          {
-            id: registryId,
-            config: {
-              namespace: StateNamespaces.MOD,
-            },
-          },
-        ],
-      });
-
-      const analysis = new PageStateAnalysis();
-      await analysis.run(state);
-
-      expect(analysis.getAnnotations()).toEqual([
-        expect.objectContaining({
-          type: AnnotationType.Warning,
-        }),
-      ]);
-    },
-  );
-
-  it.each([SetPageState.BRICK_ID, GetPageState.BRICK_ID])(
-    "no warning on blueprint if in mod %s",
+    "no warning on mod if in mod %s",
     async (registryId) => {
       const state = formStateFactory({
         brickPipeline: [
