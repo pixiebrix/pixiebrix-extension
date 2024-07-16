@@ -22,7 +22,10 @@ import extendModVariableContext, {
 import { setState } from "@/platform/state/stateController";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { standaloneModComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import {
+  modComponentRefFactory,
+  standaloneModComponentRefFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 describe("createModVariableProxy", () => {
@@ -125,7 +128,7 @@ describe("createModVariableProxy", () => {
   });
 
   it("update if update flag is set", () => {
-    const modComponentRef = standaloneModComponentRefFactory();
+    const modComponentRef = modComponentRefFactory();
 
     const ctxt1 = extendModVariableContext(
       {},
@@ -140,7 +143,7 @@ describe("createModVariableProxy", () => {
     });
 
     const ctxt2 = extendModVariableContext(ctxt1, {
-      modComponentRef: standaloneModComponentRefFactory(),
+      modComponentRef: modComponentRefFactory({ modId: modComponentRef.modId }),
       update: true,
       options: apiVersionOptions("v3"),
     });

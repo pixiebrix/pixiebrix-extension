@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Config, define, extend } from "cooky-cutter";
+import { type Config, define, derive, extend } from "cooky-cutter";
 import {
   type ActivatedModComponent,
   type ModComponentBase,
@@ -34,7 +34,13 @@ import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type StandaloneModDefinition } from "@/types/contract";
-import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
+import {
+  type Metadata,
+  DefinitionKinds,
+  type RegistryId,
+} from "@/types/registryTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { getStandaloneModComponentRuntimeModId } from "@/utils/modUtils";
 
 export const modComponentRefFactory = define<ModComponentRef>({
   // Don't repeat UUIDs across contexts
@@ -44,13 +50,20 @@ export const modComponentRefFactory = define<ModComponentRef>({
 });
 
 /**
- * Factory for a mod component ref that is not associated with a mod.
+ * Factory for a mod component ref from a standalone mod component.
  * @deprecated standalone mod components are deprecated
+ * @since 2.0.6 provides a internal mod id instead of `undefined`
  */
 export const standaloneModComponentRefFactory = define<ModComponentRef>({
   // Don't repeat UUIDs across contexts
   modComponentId: () => autoUUIDSequence(),
-  modId: undefined,
+  modId: derive<ModComponentRef, RegistryId>((ref) => {
+    assertNotNullish(
+      ref.modComponentId,
+      "modComponentId is required to derive modId",
+    );
+    return getStandaloneModComponentRuntimeModId(ref.modComponentId);
+  }, "modComponentId"),
   starterBrickId: registryIdFactory,
 });
 
