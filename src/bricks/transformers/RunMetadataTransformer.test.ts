@@ -34,18 +34,23 @@ const brick = new RunMetadataTransformer();
 
 describe("RunMetadataTransformer", () => {
   it("returns standalone mod metadata", async () => {
+    const modComponentRef = standaloneModComponentRefFactory();
+
     const brickOptions = brickOptionsFactory({
       meta: runMetadataFactory({
-        modComponentRef: standaloneModComponentRefFactory(),
+        modComponentRef,
       }),
     });
 
     const result = await brick.run(unsafeAssumeValidArg({}), brickOptions);
 
     expect(result).toEqual({
-      modComponentId: brickOptions.meta.modComponentRef.modComponentId,
+      modComponentId: modComponentRef.modComponentId,
+      mod: {
+        id: modComponentRef.modId,
+        version: undefined,
+      },
       deploymentId: null,
-      mod: null,
       runId: null,
     });
   });

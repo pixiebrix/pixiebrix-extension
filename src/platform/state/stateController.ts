@@ -35,7 +35,7 @@ import {
 const privateState = new Map<UUID, JsonObject>();
 
 /**
- * The blueprint page state, or null for shared state
+ * The mod page state or null for shared page state.
  */
 const modState = new Map<RegistryId | null, JsonObject>();
 
@@ -110,8 +110,7 @@ export function setState({
 }) {
   assertPlatformCapability("state");
 
-  // Normalize modId undefined to null for lookup
-  const { modComponentId, modId = null } = modComponentRef;
+  const { modComponentId, modId } = modComponentRef;
 
   const notifyOnChange = (previous: JsonObject, next: JsonObject) => {
     dispatchStateChangeEventOnChange({
@@ -160,8 +159,7 @@ export function setState({
 
 export function getState({
   namespace,
-  // Normalize modId undefined to null for lookup
-  modComponentRef: { modComponentId, modId = null },
+  modComponentRef: { modComponentId, modId },
 }: {
   namespace: StateNamespace;
   modComponentRef: Except<ModComponentRef, "starterBrickId">;

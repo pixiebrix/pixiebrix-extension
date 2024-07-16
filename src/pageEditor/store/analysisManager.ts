@@ -36,7 +36,10 @@ import analysisSlice from "@/analysis/analysisSlice";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
 import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
-import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectActiveModComponentFormState,
+  selectActiveModComponentRef,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
@@ -204,15 +207,15 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 );
 
 async function varAnalysisFactory(
-  action: PayloadAction<{ modComponentId: UUID; records: TraceRecord[] }>,
+  _action: PayloadAction<{ modComponentId: UUID; records: TraceRecord[] }>,
   state: RootState,
 ) {
   const trace = selectActiveModComponentTraces(state);
-  const activeModComponentFormState = selectActiveModComponentFormState(state);
+  const modComponentRef = selectActiveModComponentRef(state);
 
   assertNotNullish(
-    activeModComponentFormState,
-    "activeModComponentFormState not found",
+    modComponentRef,
+    "varAnalysisFactory can only be used in an active mod component context",
   );
 
   // The potential mod known mod variables
@@ -222,10 +225,7 @@ async function varAnalysisFactory(
   // The actual mod variables
   const modState = await getPageState(inspectedTab, {
     namespace: StateNamespaces.MOD,
-    modComponentRef: {
-      modComponentId: activeModComponentFormState.uuid,
-      modId: activeModComponentFormState.modMetadata?.id,
-    },
+    modComponentRef,
   });
 
   return new VarAnalysis({

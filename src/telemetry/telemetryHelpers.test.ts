@@ -51,17 +51,6 @@ describe("mapModComponentRefToEventData", () => {
     });
   });
 
-  it("replaces null with undefined", () => {
-    const value = modComponentRefFactory({
-      modId: null,
-    });
-    expect(mapModComponentRefToMessageContext(value)).toStrictEqual({
-      modComponentId: value.modComponentId,
-      modId: undefined,
-      starterBrickId: value.starterBrickId,
-    });
-  });
-
   it("round trips mod component reference", () => {
     const value = modComponentRefFactory();
     expect(

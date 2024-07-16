@@ -214,11 +214,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       // noinspection ExceptionCaughtLocallyJS
       throw new NoRendererError();
     } catch (error) {
-      const modComponentRef = {
-        modComponentId: modComponent.id,
-        starterBrickId: this.id,
-        modId: modComponent._recipe?.id,
-      };
+      const modComponentRef = getModComponentRef(modComponent);
 
       const runMetadata = {
         runId,
@@ -371,11 +367,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     // Reserve placeholders in the sidebar for when it becomes visible. `Run` is called from lifecycle.ts on navigation;
     // the sidebar won't be visible yet on initial page load.
     this.platform.panels.reservePanels(
-      this.modComponents.map((modComponent) => ({
-        modComponentId: modComponent.id,
-        starterBrickId: this.id,
-        modId: modComponent._recipe?.id,
-      })),
+      this.modComponents.map((x) => getModComponentRef(x)),
     );
 
     if (!(await this.platform.panels.isContainerVisible())) {
@@ -423,11 +415,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       // In the future, we might instead consider gating sidebar content loading based on mods both having been
       // `install`ed and `runComponents` called completed at least once.
       this.platform.panels.reservePanels(
-        this.modComponents.map((components) => ({
-          modComponentId: components.id,
-          starterBrickId: this.id,
-          modId: components._recipe?.id,
-        })),
+        this.modComponents.map((x) => getModComponentRef(x)),
       );
 
       // Add event listener so content for the panel is calculated/loaded when the sidebar opens

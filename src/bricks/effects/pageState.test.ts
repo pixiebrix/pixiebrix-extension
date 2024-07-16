@@ -16,14 +16,10 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import {
-  brickOptionsFactory,
-  runMetadataFactory,
-} from "@/testUtils/factories/runtimeFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
 import { TEST_resetState } from "@/platform/state/stateController";
-import { standaloneModComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 beforeEach(() => {
@@ -171,39 +167,6 @@ describe("set and get", () => {
       brickOptions,
     );
     expect(result).toStrictEqual({});
-  });
-
-  test("default to shared if not part of blueprint", async () => {
-    const setState = new SetPageState();
-    const getState = new GetPageState();
-    const brickOptions = brickOptionsFactory({
-      meta: runMetadataFactory({
-        modComponentRef: standaloneModComponentRefFactory(),
-      }),
-    });
-
-    await setState.transform(
-      unsafeAssumeValidArg({ data: { foo: 42 } }),
-      brickOptions,
-    );
-    let result = await getState.transform(
-      unsafeAssumeValidArg({}),
-      brickOptions,
-    );
-
-    expect(result).toStrictEqual({ foo: 42 });
-
-    result = await getState.transform(
-      unsafeAssumeValidArg({ namespace: StateNamespaces.PRIVATE }),
-      brickOptions,
-    );
-    expect(result).toStrictEqual({});
-
-    result = await getState.transform(
-      unsafeAssumeValidArg({ namespace: StateNamespaces.PUBLIC }),
-      brickOptions,
-    );
-    expect(result).toStrictEqual({ foo: 42 });
   });
 
   test("is page state aware", async () => {

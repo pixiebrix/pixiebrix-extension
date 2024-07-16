@@ -36,7 +36,11 @@ import {
   type ModComponentRef,
   type SerializedModComponent,
 } from "@/types/modComponentTypes";
-import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
+import {
+  DefinitionKinds,
+  INNER_SCOPE,
+  type RegistryId,
+} from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { InvalidTypeError } from "@/errors/genericErrors";
 import { assertNotNullish, type Nullishable } from "./nullishUtils";
@@ -57,17 +61,43 @@ import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
 import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBrickUtils";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type SetRequired } from "type-fest";
+import { validateRegistryId } from "@/types/helpers";
+
+/**
+ * Returns a synthetic mod id for a standalone mod component for use in the runtime
+ * @param modComponentId the standalone mod component id
+ * @see INNER_SCOPE
+ */
+export function getStandaloneModComponentRuntimeModId(
+  modComponentId: UUID,
+): RegistryId {
+  return validateRegistryId(
+    `${INNER_SCOPE}/mod/${modComponentId.toLowerCase()}`,
+  );
+}
+
+/**
+ * Returns a modId suitable for use in the runtime.
+ * @since 2.0.6
+ */
+function getRuntimeModId(modComponent: ModComponentBase): RegistryId {
+  return (
+    modComponent._recipe?.id ??
+    getStandaloneModComponentRuntimeModId(modComponent.id)
+  );
+}
 
 /**
  * Returns the ModComponentRef for a given mod component.
  * @see mapMessageContextToModComponentRef
  */
 export function getModComponentRef(
+  // Must be HydratedModComponent so `extensionPointId` points to a registryId
   modComponent: HydratedModComponent,
 ): ModComponentRef {
   return {
     modComponentId: modComponent.id,
-    modId: modComponent._recipe?.id,
+    modId: getRuntimeModId(modComponent),
     starterBrickId: modComponent.extensionPointId,
   };
 }
@@ -86,7 +116,7 @@ export function mapModComponentToMessageContext(
     modComponentId: modComponent.id,
     starterBrickId: modComponent.extensionPointId,
     deploymentId: modComponent._deployment?.id,
-    modId: modComponent._recipe?.id,
+    modId: getRuntimeModId(modComponent),
     modVersion: modComponent._recipe?.version,
   };
 }
@@ -97,13 +127,12 @@ export function mapModComponentToMessageContext(
  */
 export function mapModComponentRefToMessageContext(
   modComponentRef: ModComponentRef,
-): SetRequired<MessageContext, "modComponentId" | "starterBrickId"> {
+): SetRequired<MessageContext, "modComponentId" | "starterBrickId" | "modId"> {
   // Fields are currently named the same. In the future, the fields might temporarily diverge.
   return {
     modComponentId: modComponentRef.modComponentId,
     starterBrickId: modComponentRef.starterBrickId,
-    // MessageContext expects undefined instead of null/undefined
-    modId: modComponentRef.modId ?? undefined,
+    modId: modComponentRef.modId,
   };
 }
 
@@ -118,6 +147,7 @@ export function mapModComponentRefToMessageContext(
 export function mapMessageContextToModComponentRef(
   context: MessageContext,
 ): ModComponentRef {
+  assertNotNullish(context.modId, "modId is required for ModComponentRef");
   assertNotNullish(
     context.modComponentId,
     "modComponentId is required for ModComponentRef",
