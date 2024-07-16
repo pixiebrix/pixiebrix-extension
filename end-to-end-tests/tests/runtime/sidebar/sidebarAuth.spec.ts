@@ -25,6 +25,7 @@ import { getSidebarPage, runModViaQuickBar } from "../../../utils";
 test("Connect action in partner auth sidebar takes user to the Extension Console", async ({
   page,
   extensionId,
+  context,
 }) => {
   const modId = "@e2e-testing/open-sidebar-via-quickbar";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -48,13 +49,18 @@ test("Connect action in partner auth sidebar takes user to the Extension Console
   await expect(
     sidebarPage.getByText("Connect your Automation Co-Pilot account"),
   ).toBeVisible();
-  await sidebarPage.getByRole("link", { name: "Connect Account" }).click();
+  const connectLink = sidebarPage.getByRole("link", {
+    name: "Connect Account",
+  });
+  await expect(connectLink).toBeVisible();
 
-  const extensionConsolePage = page
-    .context()
-    .pages()
-    .find((p) => p.url().includes(getBaseExtensionConsoleUrl(extensionId)));
+  const consolePagePromise = context.waitForEvent("page");
 
+  await connectLink.click({
+    force: true,
+  });
+
+  const extensionConsolePage = await consolePagePromise;
   await expect(
     extensionConsolePage.getByText("Set up your account"),
   ).toBeVisible();
