@@ -60,32 +60,35 @@ const RemoteMethodOptions: React.FunctionComponent<
 
   return (
     <div>
+      {/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- inputProperties is hardcoded schema */}
       <SchemaField
         name={configName("url")}
-        schema={inputProperties.url}
+        schema={inputProperties.url!}
         isRequired
       />
       <SchemaField
         name={configName("service")}
-        schema={inputProperties.service}
+        schema={inputProperties.service!}
       />
       <SchemaField
         name={configName("method")}
-        schema={inputProperties.method}
+        schema={inputProperties.method!}
       />
       <SchemaField
         name={configName("params")}
-        schema={inputProperties.params}
+        schema={inputProperties.params!}
       />
       <SchemaField
         name={configName("headers")}
-        schema={inputProperties.headers}
+        schema={inputProperties.headers!}
       />
       <SchemaField
         name={dataFieldName}
-        schema={inputProperties.data}
+        schema={inputProperties.data!}
         defaultType="object"
       />
+      {/* eslint-enable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion */}
+
       {showJsonWarning && (
         <Alert variant="warning">
           <p>

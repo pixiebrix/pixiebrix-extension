@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/fields/RemoteMethodOptions.tsx",
     "./pageEditor/fields/FormRendererOptions.tsx",
     "./pageEditor/documentBuilder/edit/RemoveElement.tsx",
     "./pageEditor/documentBuilder/edit/MoveElement.tsx",
