@@ -40,7 +40,10 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { selectKnownEventNames } from "@/analysis/analysisSelectors";
-import { normalizeModOptionsDefinition } from "@/utils/modUtils";
+import {
+  normalizeModOptionsDefinition,
+  getStandaloneModComponentRuntimeModId,
+} from "@/utils/modUtils";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
@@ -79,6 +82,10 @@ export const selectInsertingStarterBrickType = ({ editor }: EditorRootState) =>
 export const selectIsInsertingStarterBrick = ({ editor }: EditorRootState) =>
   editor.insertingStarterBrickType != null;
 
+/**
+ * @since 2.0.6 returns a synthetic mod id for standalone mods
+ * @see getStandaloneModComponentRuntimeModId
+ */
 export const selectActiveModComponentRef = createSelector(
   selectActiveModComponentFormState,
   selectActiveModId,
@@ -90,7 +97,7 @@ export const selectActiveModComponentRef = createSelector(
 
     return {
       modComponentId: formState.uuid,
-      modId,
+      modId: modId ?? getStandaloneModComponentRuntimeModId(formState.uuid),
       // XXX: the Page Editor form state uses an artificial id. When it's added to the page, it will be replaced
       // with the hash id calculated during hydration
       starterBrickId: formState.starterBrick.metadata.id,
