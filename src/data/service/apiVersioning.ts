@@ -24,6 +24,10 @@ const DEFAULT_API_VERSION = "1.0";
 const API_VERSIONS = [DEFAULT_API_VERSION, "1.1", "2.0"];
 export type ApiVersion = (typeof API_VERSIONS)[number];
 
+// Don't include the baseURL in the map keys because the base URL is baked into the axios instance,
+// see setupApiClient(), so the URL we're matching against will always be relative.
+// Also, the URL must be the full path string. We're not currently doing any regex or substring matching,
+// see getURLApiVersion().
 const API_VERSION_MAP = new Map<string, ApiVersion>([
   // @since 1.8.10 -- excludes the package config
   ["/api/deployments/", "1.1"],
