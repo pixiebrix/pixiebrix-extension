@@ -38,7 +38,7 @@ export function getLatestCall(records: TraceRecord[]): TraceRecord | undefined {
  */
 export function getLatestBrickCall(
   records: TraceRecord[],
-  blockInstanceId: UUID,
+  blockInstanceId: UUID | undefined,
 ): TraceRecord | undefined {
   return getLatestCall(
     records.filter(

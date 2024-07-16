@@ -65,7 +65,7 @@ export const selectTraceErrors = createSelector(
 );
 
 export function makeSelectBrickTrace(
-  blockInstanceId: UUID,
+  blockInstanceId: UUID | undefined,
 ): EditorSelector<{ record?: TraceRecord }> {
   return ({ runtime, editor }: RootState) => {
     const records = editor.activeModComponentId
