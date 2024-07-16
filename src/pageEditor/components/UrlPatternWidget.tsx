@@ -23,6 +23,7 @@ import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/starterBrick
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { type Except } from "type-fest";
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/URLPattern
@@ -54,7 +55,9 @@ export const urlSchemaProject: Schema = {
   },
 };
 
-const UrlPatternWidget: React.VFC<SchemaFieldProps> = (props) => {
+const UrlPatternWidget: React.VFC<Except<SchemaFieldProps, "schema">> = (
+  props,
+) => {
   const { values: formState } = useFormikContext<ModComponentFormState>();
 
   return (

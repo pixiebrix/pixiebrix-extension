@@ -224,7 +224,7 @@ async function varAnalysisFactory(
     namespace: StateNamespaces.MOD,
     modComponentRef: {
       modComponentId: activeModComponentFormState.uuid,
-      modId: activeModComponentFormState?.modMetadata?.id,
+      modId: activeModComponentFormState.modMetadata?.id,
     },
   });
 
