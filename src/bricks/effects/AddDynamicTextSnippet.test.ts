@@ -56,9 +56,7 @@ describe("AddDynamicTextSnippet", () => {
         },
       };
 
-      await reducePipeline(pipeline, simpleInput({}), {
-        ...reduceOptions,
-      });
+      await reducePipeline(pipeline, simpleInput({}), reduceOptions);
 
       expect(snippetRegistry.snippetShortcuts).toStrictEqual([
         {

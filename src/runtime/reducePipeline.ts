@@ -575,7 +575,7 @@ async function runBrick(
     if (selectTraceEnabled(trace)) {
       getPlatform().debugger.traces.exit({
         ...trace,
-        modComponentId: logger.context.modComponentId,
+        modComponentId: trace.modComponentRef.modComponentId,
         brickId: brick.id,
         isFinal: true,
         isRenderer: true,
@@ -845,7 +845,7 @@ function throwBrickError(
     getPlatform().debugger.traces.exit({
       runId,
       branches,
-      modComponentId: logger.context.modComponentId,
+      modComponentId: options.modComponentRef.modComponentId,
       brickId: brickConfig.id,
       brickInstanceId: brickConfig.instanceId,
       error: serializeError(error),
