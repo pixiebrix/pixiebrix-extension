@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/hooks/useSaveMod.ts",
     "./pageEditor/documentBuilder/preview/ElementPreview.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
