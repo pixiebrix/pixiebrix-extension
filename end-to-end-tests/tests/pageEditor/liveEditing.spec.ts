@@ -78,6 +78,9 @@ test("live editing behavior", async ({
     await pageEditor.editorPane.renderPanelButton.click();
     const sidebar = await getSidebarPage(page, extensionId);
     await expect(
+      sidebar.getByRole("tab", { name: "Sidebar Panel" }),
+    ).toBeVisible();
+    await expect(
       sidebar.getByRole("heading", { name: "Example document" }),
     ).toBeVisible();
 
