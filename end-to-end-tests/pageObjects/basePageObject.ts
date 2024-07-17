@@ -94,4 +94,9 @@ export class BasePageObject {
     this.filter = this.root.filter.bind(this.root);
     this.click = this.root.click.bind(this.root);
   }
+
+  // The switch component that we use does not connect the label properly connected with the control element,
+  // so we can't use `getByLabel` here, and also does not have a "role"
+  getSwitchByLabel = (label: string) =>
+    this.locator(`.switch:near(:text("${label}"))`);
 }

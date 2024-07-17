@@ -35,14 +35,8 @@ export class ConfigurationForm extends BasePageObject {
     await field.fill(value);
   }
 
-  getToggleSwitch(label: string) {
-    // The form toggle component does not have its label properly connected with the control element,
-    // so we can't use `getByLabel` here
-    return this.locator(`.switch-group:near(:text("${label}"))`);
-  }
-
   @ModifiesModState
   async toggleSwitch(label: string) {
-    await this.getToggleSwitch(label).click();
+    await this.getSwitchByLabel(label).click();
   }
 }
