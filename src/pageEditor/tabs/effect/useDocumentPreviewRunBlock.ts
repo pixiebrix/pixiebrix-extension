@@ -38,10 +38,11 @@ import { isExpression } from "@/utils/expressionUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type Location = "modal" | "panel";
 
-type BlockPreviewState = {
+type BrickPreviewState = {
   /**
    * The output from the block
    */
@@ -58,14 +59,14 @@ type BlockPreviewState = {
   isRunning: boolean;
 };
 
-type BlockPreviewRunBlock = BlockPreviewState & {
+type BlockPreviewRunBlock = BrickPreviewState & {
   /**
    * The handler to run the block
    */
   runBlockPreview: () => void;
 };
 
-const initialState: BlockPreviewState = {
+const initialState: BrickPreviewState = {
   output: null,
   error: null,
   isRunning: false,
@@ -107,11 +108,17 @@ export default function useDocumentPreviewRunBlock(
   const formState = useSelector(selectActiveModComponentFormState);
   const modComponentRef = useSelector(selectActiveModComponentRef);
 
+  assertNotNullish(
+    formState,
+    "An active mod component form state is required to preview a document renderer brick",
+  );
+
   const { apiVersion, integrationDependencies, starterBrick } = formState;
 
-  const { blockConfig: brickConfig } = useSelector(
-    selectActiveModComponentNodeInfo(brickInstanceId),
-  );
+  const { blockConfig: brickConfig } =
+    useSelector(selectActiveModComponentNodeInfo(brickInstanceId)) ?? {};
+
+  assertNotNullish(brickConfig, `No brickConfig found for ${brickInstanceId}`);
 
   const {
     data: previewInfo,
@@ -187,6 +194,8 @@ export default function useDocumentPreviewRunBlock(
       const location: Location =
         (parentNodeInfo?.blockConfig.config.location as Location) ?? "panel";
 
+      assertNotNullish(traceRecord?.runId, "trace record run ID not found");
+
       try {
         await runRendererBrick(inspectedTab, {
           runId: traceRecord.runId,
@@ -205,7 +214,9 @@ export default function useDocumentPreviewRunBlock(
         });
         dispatch(previewSlice.actions.setSuccess({ output: {} }));
       } catch (error) {
-        dispatch(previewSlice.actions.setError({ error }));
+        dispatch(
+          previewSlice.actions.setError({ error: error as SimpleErrorObject }),
+        );
       }
     },
     300,
