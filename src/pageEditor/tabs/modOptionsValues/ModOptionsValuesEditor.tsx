@@ -56,6 +56,7 @@ const NoModOptions: React.FC = () => (
 const ModOptionsValuesContent: React.FC = () => {
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
+
   const {
     data: mod,
     isFetching: isFetchingMod,

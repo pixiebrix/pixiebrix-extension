@@ -159,8 +159,12 @@ export const selectDirtyModOptionsDefinitions = ({ editor }: EditorRootState) =>
 
 const dirtyOptionsDefinitionsForModIdSelector = createSelector(
   selectDirtyModOptionsDefinitions,
-  (_state: EditorRootState, modId: RegistryId) => modId,
+  (_state: EditorRootState, modId: RegistryId | null) => modId,
   (dirtyOptionsDefinitionsByModId, modId) => {
+    if (modId == null) {
+      return;
+    }
+
     // eslint-disable-next-line security/detect-object-injection -- RegistryId for mod
     const options = dirtyOptionsDefinitionsByModId[modId];
 
@@ -175,19 +179,19 @@ const dirtyOptionsDefinitionsForModIdSelector = createSelector(
 );
 
 export const selectDirtyOptionsDefinitionsForModId =
-  (modId: RegistryId) => (state: EditorRootState) =>
+  (modId: RegistryId | null) => (state: EditorRootState) =>
     dirtyOptionsDefinitionsForModIdSelector(state, modId);
 
 const dirtyOptionValuesForModIdSelector = createSelector(
   selectNotDeletedModComponentFormStates,
-  (_state: EditorRootState, modId: RegistryId) => modId,
+  (_state: EditorRootState, modId: RegistryId | null) => modId,
   (formStates, modId) =>
     formStates.find((formState) => formState.modMetadata?.id === modId)
       ?.optionsArgs,
 );
 
 export const selectDirtyOptionValuesForModId =
-  (modId: RegistryId) => (state: EditorRootState) =>
+  (modId: RegistryId | null) => (state: EditorRootState) =>
     dirtyOptionValuesForModIdSelector(state, modId);
 
 export const selectDirtyModMetadata = ({ editor }: EditorRootState) =>
