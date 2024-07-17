@@ -26,6 +26,7 @@ test("Connect action in partner auth sidebar takes user to the Extension Console
   page,
   extensionId,
   context,
+  chromiumChannel,
 }) => {
   const modId = "@e2e-testing/open-sidebar-via-quickbar";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -67,6 +68,14 @@ test("Connect action in partner auth sidebar takes user to the Extension Console
   }
 
   const extensionConsolePage = await consolePagePromise;
+
+  // eslint-disable-next-line playwright/no-conditional-in-test -- msedge bug
+  if (chromiumChannel === "msedge") {
+    // Another msedge bug causes the browser to fail to open the extension console page from the sidebar until you refresh the page.
+    //   "Error: This script should only be loaded in a browser extension."
+    await extensionConsolePage.reload();
+  }
+
   await expect(
     extensionConsolePage.getByText("Set up your account"),
   ).toBeVisible();
