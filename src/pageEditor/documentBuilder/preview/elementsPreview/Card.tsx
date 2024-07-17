@@ -60,7 +60,7 @@ const Card: React.FunctionComponent<CardProps> = ({
       />
       <Component
         {...restCardProps}
-        bodyClassName={cx(bodyClassName as string, styles.cardBody)}
+        bodyClassName={cx(bodyClassName ?? "", styles.cardBody)}
       >
         {children}
       </Component>

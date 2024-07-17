@@ -46,9 +46,9 @@ export function getItemKey({
     return resultIndex;
   }
 
-  const key = brickOptions.at(resultIndex)?.value;
+  const option = brickOptions.at(resultIndex);
 
-  assertNotNullish(key, `Item key at resultIndex: ${resultIndex} is nullish`);
+  assertNotNullish(option, `Brick option at index: ${resultIndex} is nullish`);
 
-  return key;
+  return option.value;
 }

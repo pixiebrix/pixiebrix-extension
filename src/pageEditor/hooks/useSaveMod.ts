@@ -106,8 +106,10 @@ function useSaveMod(): ModSaver {
    * Throws errors for various bad states
    * @returns boolean indicating successful save
    */
-  async function save(modId: RegistryId): Promise<boolean> {
-    assertNotNullish(editablePackages, "Editable packages not loaded");
+  async function save(modId: RegistryId): Promise<boolean | undefined> {
+    if (!editablePackages) {
+      return;
+    }
 
     const modDefinition = modDefinitions?.find(
       (mod) => mod.metadata.id === modId,

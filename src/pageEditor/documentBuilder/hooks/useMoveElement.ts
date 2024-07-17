@@ -36,7 +36,7 @@ export function arrayMove(
 ): void {
   const element = array.at(fromIndex);
   array.splice(fromIndex, 1);
-  array.splice(Number(toIndex), 0, element);
+  array.splice(toIndex, 0, element);
 }
 
 export function acceptDrop(
