@@ -28,23 +28,21 @@ const MoveElement: React.FC<MoveElementProps> = ({ documentBodyName }) => {
   const { canMoveUp, canMoveDown, moveElement } =
     useMoveWithinParent(documentBodyName);
 
-  return (
-    (canMoveUp || canMoveDown) && (
-      <FieldTemplate
-        name="layoutButtons"
-        label="Element Order"
-        as={LayoutWidget}
-        canMoveUp={canMoveUp}
-        moveUp={() => {
-          moveElement("up");
-        }}
-        canMoveDown={canMoveDown}
-        moveDown={() => {
-          moveElement("down");
-        }}
-      />
-    )
-  );
+  return canMoveUp || canMoveDown ? (
+    <FieldTemplate
+      name="layoutButtons"
+      label="Element Order"
+      as={LayoutWidget}
+      canMoveUp={canMoveUp}
+      moveUp={() => {
+        moveElement("up");
+      }}
+      canMoveDown={canMoveDown}
+      moveDown={() => {
+        moveElement("down");
+      }}
+    />
+  ) : null;
 };
 
 export default MoveElement;

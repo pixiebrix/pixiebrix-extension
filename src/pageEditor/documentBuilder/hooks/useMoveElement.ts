@@ -85,7 +85,7 @@ export function moveElement(
       });
 
       const children = [...sourceParent.children];
-      arrayMove(children, source.index, destination.index);
+      arrayMove(children, source.index, Number(destination.index));
       sourceParent.children = children;
       return;
     }
@@ -102,7 +102,7 @@ export function moveElement(
       1,
     );
     (getIn(destinationParent, "children") as DocumentBuilderElement[]).splice(
-      destination.index,
+      Number(destination.index),
       0,
       documentBuilderElement,
     );
@@ -121,7 +121,7 @@ function useMoveElement(documentBodyName: string) {
   return useCallback(
     async (
       sourcePosition: TreeSourcePosition,
-      destinationPosition?: TreeDestinationPosition,
+      destinationPosition: TreeDestinationPosition,
     ) => {
       // For now, just clear out the active element to ensure the active elementName is valid in the new tree
       setActiveElement(null);

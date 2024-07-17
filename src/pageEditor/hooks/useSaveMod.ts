@@ -48,6 +48,7 @@ import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import type { ModComponentBase } from "@/types/modComponentTypes";
 import { pick } from "lodash";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const { actions: optionsActions } = modComponentsSlice;
 
@@ -105,7 +106,11 @@ function useSaveMod(): ModSaver {
    * Throws errors for various bad states
    * @returns boolean indicating successful save
    */
-  async function save(modId: RegistryId): Promise<boolean> {
+  async function save(modId: RegistryId): Promise<boolean | undefined> {
+    if (!editablePackages) {
+      return;
+    }
+
     const modDefinition = modDefinitions?.find(
       (mod) => mod.metadata.id === modId,
     );
@@ -149,12 +154,16 @@ function useSaveMod(): ModSaver {
       (x) => x.name === newMod.metadata.id,
     )?.id;
 
+    assertNotNullish(packageId, "Package ID is required to upsert a mod");
+
     const upsertResponse = await updateMod({
       packageId,
       modDefinition: newMod,
     }).unwrap();
 
     const newModMetadata = selectModMetadata(newMod, upsertResponse);
+
+    assertNotNullish(newModMetadata, "New mod metadata is required");
 
     // Don't push to cloud since we're saving it with the mod
     await Promise.all(
