@@ -64,7 +64,7 @@ test("Connect action in partner auth sidebar takes user to the Extension Console
     // closed see https://github.com/w3c/webextensions/issues/588
     //
     // The sidebar closing prematurely causes the click to fail in playwright, despite the tab being opened correctly
-    // as a result of the external link action. Ignore the error and continue; expect the console page to be opened correctly.
+    // as a result of following the external link. Ignore the error and continue; expect the console page to be opened correctly.
   }
 
   const extensionConsolePage = await consolePagePromise;
