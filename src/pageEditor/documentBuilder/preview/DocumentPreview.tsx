@@ -19,7 +19,12 @@ import previewStyles from "./ElementPreview.module.scss";
 import documentTreeStyles from "@/pageEditor/documentBuilder/preview/documentTree.module.scss";
 import styles from "./DocumentPreview.module.scss";
 import { useField } from "formik";
-import React, { type MouseEventHandler, useMemo, useState } from "react";
+import React, {
+  type MouseEventHandler,
+  type MutableRefObject,
+  useMemo,
+  useState,
+} from "react";
 import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import AddElementAction from "./AddElementAction";
 import ElementPreview from "./ElementPreview";
@@ -45,14 +50,14 @@ type DocumentPreviewProps = {
   documentBodyName: string;
   activeElement: string;
   setActiveElement: (activeElement: string) => void;
-  menuBoundary?: Element;
+  boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 };
 
 const DocumentPreview = ({
   documentBodyName,
   activeElement,
   setActiveElement,
-  menuBoundary,
+  boundingBoxRef,
 }: DocumentPreviewProps) => {
   const [{ value: body }] =
     useField<DocumentBuilderElement[]>(documentBodyName);
@@ -142,7 +147,7 @@ const DocumentPreview = ({
             previewElement={childElement}
             activeElement={activeElement}
             setActiveElement={setActiveElement}
-            menuBoundary={menuBoundary}
+            boundingBoxRef={boundingBoxRef}
             hoveredElement={hoveredElement}
             setHoveredElement={setHoveredElement}
           />
@@ -152,7 +157,7 @@ const DocumentPreview = ({
           elementsCollectionName={documentBodyName}
           allowedTypes={ROOT_ELEMENT_TYPES}
           className={previewStyles.addElement}
-          menuBoundary={menuBoundary}
+          boundingBoxRef={boundingBoxRef}
         />
       </ClickableElement>
     </>

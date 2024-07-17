@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import React from "react";
+import React, { type MutableRefObject } from "react";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import {
   type DocumentBuilderElement,
@@ -34,14 +34,14 @@ type AddElementActionProps = {
   elementsCollectionName: string;
   allowedTypes?: DocumentBuilderElementType[];
   className?: string;
-  menuBoundary?: Element;
+  boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 };
 
 const AddElementAction: React.FC<AddElementActionProps> = ({
   elementsCollectionName,
   allowedTypes = DOCUMENT_BUILDER_ELEMENT_TYPES,
   className,
-  menuBoundary,
+  boundingBoxRef,
 }) => {
   const [{ value: elementsCollection }, , { setValue }] = useField<
     DocumentBuilderElement[]
@@ -79,7 +79,7 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
       className={className}
       toggleClassName={styles.toggle}
       items={[...elementItems, ...pipelineItems]}
-      menuBoundary={menuBoundary}
+      boundingBoxRef={boundingBoxRef}
     />
   );
 };

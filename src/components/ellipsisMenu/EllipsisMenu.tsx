@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ReactElement, type SyntheticEvent } from "react";
-import { Dropdown } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cx from "classnames";
+import { type MutableRefObject, type ReactElement } from "react";
+import { type RequireExactlyOne } from "type-fest";
+import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
+import React from "react";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import type { RequireExactlyOne } from "type-fest";
-import styles from "./EllipsisMenu.module.scss";
-import { type ButtonVariant } from "react-bootstrap/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "@szhsin/react-menu/dist/index.css";
+import "@szhsin/react-menu/dist/transitions/slide.css";
 
 type EllipsisMenuItemInternal = {
   /**
@@ -67,7 +67,7 @@ type EllipsisMenuProps = {
   /**
    * The bootstrap button variant for the toggle
    */
-  variant?: ButtonVariant;
+  variant?: string;
 
   /**
    * The bootstrap button size for the toggle. Note that
@@ -85,7 +85,7 @@ type EllipsisMenuProps = {
    * The boundary element for the dropdown menu popup
    * @see DropdownMenuProps.popperConfig
    */
-  menuBoundary?: Element;
+  boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 
   /**
    * Align the dropdown menu to the right side of the toggle
@@ -101,88 +101,50 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
   variant = "light",
   size = "sm",
   items,
-  menuBoundary,
+  boundingBoxRef,
   alignRight,
-}) => {
-  const onToggle = (
-    isOpen: boolean,
-    event: SyntheticEvent<Dropdown>,
-    metadata: {
-      source: "select" | "click" | "rootClose" | "keydown";
-    },
-  ) => {
-    event.stopPropagation();
-
-    if (metadata.source === "click" && isOpen) {
-      try {
-        // The click on this toggle doesn't go beyond the component,
-        // hence no other element knows that the click happened.
-        // Simulating the click on the body will let other menus know user clicked somewhere.
-        document.body.click();
-      } catch (error) {
-        console.debug(
-          "EllipsisMenu. Failed to trigger closing other menus",
-          error,
-        );
-      }
-    }
-  };
-
-  // This will set the boundary element for the Ellipsis menu popup
-  const dropdownMenuOptions = menuBoundary
-    ? {
-        modifiers: [
-          {
-            name: "flip",
-            options: {
-              boundary: menuBoundary,
-            },
-          },
-        ],
-      }
-    : undefined;
-
-  return (
-    <Dropdown alignRight onToggle={onToggle} className={className}>
-      <Dropdown.Toggle
-        className={cx(styles.toggle, toggleClassName)}
-        variant={variant}
-        size={size === "md" ? undefined : size}
+}) => (
+  <Menu
+    boundingBoxRef={boundingBoxRef}
+    className={className}
+    menuButton={
+      <MenuButton
         aria-label={ariaLabel}
+        onClick={(event) => {
+          console.log("MenuButton onClick", event);
+          event.stopPropagation();
+        }}
       >
         <FontAwesomeIcon icon={faEllipsisV} />
-      </Dropdown.Toggle>
-      <Dropdown.Menu popperConfig={dropdownMenuOptions} alignRight={alignRight}>
-        {items
-          .filter((x) => !x.hide)
-          .map((item) =>
-            item.href ? (
-              <Dropdown.Item
-                key={item.title}
-                href={item.href}
-                className={item.className}
-                disabled={item.disabled}
-                // There's a bug: the link stays active after clicking it
-                active={false}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {item.icon} {item.title}
-              </Dropdown.Item>
-            ) : (
-              <Dropdown.Item
-                key={item.title}
-                onClick={item.action}
-                className={item.className}
-                disabled={item.disabled}
-              >
-                {item.icon} {item.title}
-              </Dropdown.Item>
-            ),
-          )}
-      </Dropdown.Menu>
-    </Dropdown>
-  );
-};
+      </MenuButton>
+    }
+  >
+    {items
+      .filter((x) => !x.hide)
+      .map((item) =>
+        item.href ? (
+          <MenuItem
+            key={item.title}
+            href={item.href}
+            className={item.className}
+            disabled={item.disabled}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {item.icon} {item.title}
+          </MenuItem>
+        ) : (
+          <MenuItem
+            key={item.title}
+            onClick={item.action}
+            className={item.className}
+            disabled={item.disabled}
+          >
+            {item.icon} {item.title}
+          </MenuItem>
+        ),
+      )}
+  </Menu>
+);
 
 export default EllipsisMenu;
