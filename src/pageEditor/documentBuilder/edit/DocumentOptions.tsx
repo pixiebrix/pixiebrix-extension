@@ -29,6 +29,7 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { DOCUMENT_SCHEMA } from "@/bricks/renderers/document";
 import { type Schema } from "@/types/schemaTypes";
 import { UncollapsibleFieldSection } from "@/pageEditor/fields/CollapsibleFieldSection";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DocumentOptions: React.FC<{
   name: string;
@@ -48,6 +49,11 @@ const DocumentOptions: React.FC<{
     }
     // Exclude setValue because reference changes on render
   }, [bodyValue]);
+
+  assertNotNullish(
+    DOCUMENT_SCHEMA.properties,
+    "Hardcoded document schema missing properties",
+  );
 
   return (
     <ConfigErrorBoundary>

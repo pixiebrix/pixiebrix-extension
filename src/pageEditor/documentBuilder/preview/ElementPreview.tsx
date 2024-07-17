@@ -30,6 +30,7 @@ import { SCROLL_TO_HEADER_NODE_EVENT } from "@/pageEditor/tabs/editTab/editorNod
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { selectActiveNodeId } from "@/pageEditor/store/editor/editorSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT =
   "scroll-to-document-preview-element";
@@ -73,7 +74,8 @@ const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
     }
 
     const scrollIntoView = () => {
-      elementRef.current.scrollIntoView({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
+      elementRef.current!.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
@@ -130,6 +132,8 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       setActiveElement(elementName);
     }
 
+    assertNotNullish(activeNodeId, "activeNodeId is required to expand node");
+
     dispatch(actions.expandBrickPipelineNode(activeNodeId));
 
     window.dispatchEvent(
@@ -184,9 +188,9 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       isActive={isActive}
       elementRef={elementRef}
     >
-      {props?.children}
+      {props.children}
       {isContainer &&
-        previewElement.children.map((childElement, i) => {
+        previewElement.children?.map((childElement, i) => {
           const childElementName = `${elementName}.children.${i}`;
           return (
             <ElementPreview

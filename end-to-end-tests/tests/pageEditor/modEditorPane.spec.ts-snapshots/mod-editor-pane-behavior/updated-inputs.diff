@@ -1,0 +1,62 @@
+Index: updated-inputs
+===================================================================
+--- updated-inputs
++++ updated-inputs
+@@ -30,45 +30,56 @@
+                               heading: h1
+                               title: !nunjucks Simple Sidebar Panel
+                             type: header
+                         config: {}
+                         type: column
+                     config: {}
+                     type: row
+                   - children:
+                       - children:
+                           - config:
+                               enableMarkdown: true
+                               text: !nunjucks >-
+                                 Simple sidebar panel for testing sidepanel
+                                 open/close behavior
+                             type: text
+                         config: {}
+                         type: column
+                     config: {}
+                     type: row
+                 config: {}
+                 type: container
+           id: '@pixiebrix/document'
+           root: null
+           rootMode: document
+       heading: Simple Sidebar Panel
+     id: extensionPoint
+     label: Simple Sidebar Panel
+     permissions:
+       origins: []
+       permissions: []
+     services: {}
+ kind: recipe
+ metadata:
+   description: Created with the PixieBrix Page Editor (updated)
+   id: >-
+     @extension-e2e-test-unaffiliated/simple-sidebar-panel-00000000-0000-0000-0000-000000000000
+   name: Simple Sidebar Panel (Updated)
+   version: 1.0.2
+ options:
+   schema:
+-    properties: {}
++    description: Just do it!
++    properties:
++      testField:
++        default: default val
++        description: test description
++        title: test label
++        type: string
++    required:
++      - testField
+     type: object
+   uiSchema:
++    testField:
++      ui:placeholder: test placeholder
+     ui:order:
++      - testField
+       - '*'

@@ -25,7 +25,7 @@ import { faTag } from "@fortawesome/free-solid-svg-icons";
 
 export type TagItem = {
   tag: string;
-  icon?: IconStringDefinition;
+  icon?: IconStringDefinition | null;
   svgIcon?: string;
 };
 

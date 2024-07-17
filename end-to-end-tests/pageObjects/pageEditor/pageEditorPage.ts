@@ -23,7 +23,7 @@ import { type UUID } from "@/types/stringTypes";
 import { BasePageObject } from "../basePageObject";
 import { ModListingPanel } from "./modListingPanel";
 import { BrickActionsPanel } from "./brickActionsPanel";
-import { BrickConfigurationPanel } from "./brickConfigurationPanel";
+import { ConfigurationForm } from "./configurationForm";
 import { DataPanel } from "./dataPanel";
 import { ModEditorPane } from "./modEditorPane";
 import { ModifiesModState } from "./utils";
@@ -43,7 +43,7 @@ export class PageEditorPage extends BasePageObject {
   );
 
   modEditorPane = new ModEditorPane(this.getByTestId("modEditorPane"));
-  brickConfigurationPanel = new BrickConfigurationPanel(
+  brickConfigurationPanel = new ConfigurationForm(
     this.getByTestId("brickConfigurationPanel"),
   );
 

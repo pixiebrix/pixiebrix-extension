@@ -45,7 +45,11 @@ const Container: React.FunctionComponent<ContainerProps> = ({
 }) => (
   <Component
     {...restPreviewProps}
-    className={cx(props.className, className, documentTreeStyles.container)}
+    className={cx(
+      props.className ?? "",
+      className,
+      documentTreeStyles.container,
+    )}
     ref={elementRef}
   >
     <Flaps
