@@ -26,6 +26,7 @@ import {
 import styles from "./AddElementAction.module.scss";
 import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
+import cx from "classnames";
 
 type AddElementActionProps = {
   /**
@@ -76,8 +77,7 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
 
   return (
     <EllipsisMenu
-      className={className}
-      toggleClassName={styles.toggle}
+      menuButtonClassName={cx(className, styles.toggle)}
       items={[...elementItems, ...pipelineItems]}
       boundingBoxRef={boundingBoxRef}
     />

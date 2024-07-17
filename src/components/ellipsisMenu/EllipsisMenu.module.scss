@@ -15,13 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.toggle:global(.dropdown-toggle)::after {
-  display: none;
-}
+.button {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border-radius: 4px;
+  border: none;
 
-// the md and lg size are too wide for the ellipsis menu! override and make it narrower
-// when it is not the small button size.
-.toggle:not(:global(.btn-sm)) {
-  padding-left: 15px;
-  padding-right: 15px;
+  background-color: #e8f3fc;
+  color: #1368aa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:disabled {
+    background-color: #e8f3fc;
+    color: #b8dbf6;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: #ddedfb;
+    color: #0f5388;
+  }
+
+  &:active {
+    box-shadow: none !important;
+  }
+
+  &:active:not(:disabled) {
+    background-color: #b8dbf6 !important;
+    color: #0b3e66 !important;
+  }
 }

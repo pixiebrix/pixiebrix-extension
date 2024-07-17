@@ -23,6 +23,8 @@ import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "@szhsin/react-menu/dist/index.css";
 import "@szhsin/react-menu/dist/transitions/slide.css";
+import styles from "./EllipsisMenu.module.scss";
+import cx from "classnames";
 
 type EllipsisMenuItemInternal = {
   /**
@@ -57,25 +59,6 @@ export type EllipsisMenuItem = RequireExactlyOne<
 type EllipsisMenuProps = {
   ariaLabel?: string;
 
-  className?: string;
-
-  /**
-   * The className prop for the dropdown menu toggle
-   */
-  toggleClassName?: string;
-
-  /**
-   * The bootstrap button variant for the toggle
-   */
-  variant?: string;
-
-  /**
-   * The bootstrap button size for the toggle. Note that
-   * "md" is the bootstrap style for when neither the "btn-sm"
-   * nor the "btn-lg" class is present.
-   */
-  size?: "sm" | "md" | "lg";
-
   /**
    * The dropdown menu options
    */
@@ -88,30 +71,25 @@ type EllipsisMenuProps = {
   boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 
   /**
-   * Align the dropdown menu to the right side of the toggle
-   * @see DropdownMenuProps.alignRight
+   * The className prop for the menu button toggle
    */
-  alignRight?: boolean;
+  menuButtonClassName?: string;
 };
 
 const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
   ariaLabel,
-  className,
-  toggleClassName,
-  variant = "light",
-  size = "sm",
   items,
   boundingBoxRef,
-  alignRight,
+  menuButtonClassName,
 }) => (
   <Menu
+    align="end"
     boundingBoxRef={boundingBoxRef}
-    className={className}
     menuButton={
       <MenuButton
         aria-label={ariaLabel}
+        className={cx(styles.button, menuButtonClassName)}
         onClick={(event) => {
-          console.log("MenuButton onClick", event);
           event.stopPropagation();
         }}
       >
