@@ -21,7 +21,6 @@ import { type Page, test as base } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../../../pageObjects/constants";
 import { ActivateModPage } from "../../../pageObjects/extensionConsole/modsPage";
 import { getSidebarPage, runModViaQuickBar } from "../../../utils";
-import { isSpecificError } from "@/errors/errorHelpers";
 
 test("Connect action in partner auth sidebar takes user to the Extension Console", async ({
   page,
