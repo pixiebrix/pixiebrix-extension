@@ -51,19 +51,56 @@ test("mod editor pane behavior", async ({
       "Simple Sidebar Panel",
     );
     await modListItem.select();
-    await expect(modEditorPane.modId).toHaveValue(modId);
+    await expect(modEditorPane.editMetadataTabPanel.modId).toHaveValue(modId);
   });
 
   await test.step("Change mod metadata", async () => {
-    await modEditorPane.name.fill("Simple Sidebar Panel (Updated)");
-    await modEditorPane.version.fill("1.0.2");
-    await modEditorPane.description.fill(
+    await modEditorPane.editMetadataTabPanel.fillField(
+      "name",
+      "Simple Sidebar Panel (Updated)",
+    );
+    await modEditorPane.editMetadataTabPanel.fillField("version", "1.0.2");
+    await modEditorPane.editMetadataTabPanel.fillField(
+      "description",
       "Created with the PixieBrix Page Editor (updated)",
     );
     await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({
       modId,
       snapshotName: "updated-metadata",
+    });
+  });
+
+  await test.step("Add and update mod inputs", async () => {
+    await modEditorPane.currentInputsTab.click();
+    await expect(
+      modEditorPane.currentInputsTabPanel.noConfigurationRequiredMessage,
+    ).toBeVisible();
+    await modEditorPane.inputFormTab.click();
+    const { inputFormTabPanel } = modEditorPane;
+    await inputFormTabPanel.fillField("Activation Instructions", "Just do it!");
+    await inputFormTabPanel.addNewFieldButton.click();
+    await inputFormTabPanel.fillField("Name", "testField");
+    await inputFormTabPanel.fillField("Label", "test label");
+    await inputFormTabPanel.fillField("Field Description", "test description");
+    await inputFormTabPanel.fillField("Placeholder", "test placeholder");
+    await inputFormTabPanel.fillField("Default Value", "default val");
+    await inputFormTabPanel.toggleSwitch("Required Field?");
+
+    await modEditorPane.currentInputsTab.click();
+    await expect(
+      modEditorPane.currentInputsTabPanel.getByLabel("test label", {
+        exact: true,
+      }),
+    ).toHaveValue("default val");
+    await modEditorPane.currentInputsTabPanel.fillField(
+      "test label",
+      "some real value",
+    );
+    await pageEditorPage.saveActiveMod();
+    await verifyModDefinitionSnapshot({
+      modId,
+      snapshotName: "updated-inputs",
     });
   });
 });

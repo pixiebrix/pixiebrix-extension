@@ -90,6 +90,13 @@ describe("arrayMove", () => {
     arrayMove(copy, 0, 1);
     expect(copy).toStrictEqual([2, 1, 3]);
   });
+
+  test("NaN toIndex does change the array", () => {
+    const original = [1, 2, 3];
+    const copy = [...original];
+    arrayMove(copy, 0, Number.NaN);
+    expect(copy).toStrictEqual([1, 2, 3]);
+  });
 });
 
 describe("moveElement", () => {

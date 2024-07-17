@@ -123,7 +123,7 @@ export function isButtonElement(
 
 export type DocumentBuilderComponent = {
   Component: ElementType;
-  props?: UnknownObject | undefined;
+  props: UnknownObject;
 };
 
 /**

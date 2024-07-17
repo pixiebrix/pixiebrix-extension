@@ -28,7 +28,7 @@ export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
   selectNotDeletedModComponentFormStates,
   selectIsModComponentDirtyById,
   (activatedModComponents, formStates, isDirtyByComponentId) =>
-    (modId: RegistryId) => {
+    (modId: RegistryId | null) => {
       const dirtyModComponentFormStates = formStates.filter(
         (formState) =>
           formState.modMetadata?.id === modId &&
