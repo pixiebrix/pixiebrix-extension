@@ -21,6 +21,7 @@ import { type Page, test as base } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../../../pageObjects/constants";
 import { ActivateModPage } from "../../../pageObjects/extensionConsole/modsPage";
 import { getSidebarPage, runModViaQuickBar } from "../../../utils";
+import { isSpecificError } from "@/errors/errorHelpers";
 
 test("Connect action in partner auth sidebar takes user to the Extension Console", async ({
   page,
@@ -56,9 +57,15 @@ test("Connect action in partner auth sidebar takes user to the Extension Console
 
   const consolePagePromise = context.waitForEvent("page");
 
-  await connectLink.click({
-    noWaitAfter: true,
-  });
+  try {
+    await connectLink.click();
+  } catch {
+    // There is a known issue with Edge where clicking external links in the sidebar will implicitly cause the sidebar to be
+    // closed see https://github.com/w3c/webextensions/issues/588
+    //
+    // The sidebar closing prematurely causes the click to fail in playwright, despite the tab being opened correctly
+    // as a result of the external link action. Ignore the error and continue; expect the console page to be opened correctly.
+  }
 
   const extensionConsolePage = await consolePagePromise;
   await expect(
