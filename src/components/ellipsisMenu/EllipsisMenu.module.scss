@@ -38,10 +38,6 @@
     color: #0f5388;
   }
 
-  &:active {
-    box-shadow: none !important;
-  }
-
   &:active:not(:disabled) {
     background-color: #b8dbf6 !important;
     color: #0b3e66 !important;

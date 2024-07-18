@@ -24,7 +24,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "@szhsin/react-menu/dist/index.css";
 import "@szhsin/react-menu/dist/transitions/slide.css";
 import styles from "./EllipsisMenu.module.scss";
-import cx from "classnames";
 
 type EllipsisMenuItemInternal = {
   /**
@@ -71,7 +70,7 @@ type EllipsisMenuProps = {
   boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 
   /**
-   * The className prop for the menu button toggle
+   * The className prop for the menu button toggle. Overrides the default styling.
    */
   menuButtonClassName?: string;
 };
@@ -88,7 +87,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
     menuButton={
       <MenuButton
         aria-label={ariaLabel}
-        className={cx(styles.button, menuButtonClassName)}
+        className={menuButtonClassName ?? styles.button}
         onClick={(event) => {
           event.stopPropagation();
         }}
