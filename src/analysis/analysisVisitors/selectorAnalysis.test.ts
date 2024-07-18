@@ -161,6 +161,40 @@ describe("SelectorAnalysis", () => {
     ]);
   });
 
+  it("detects template in selector literal", async () => {
+    const analysis = new SelectorAnalysis();
+
+    const formState = triggerFormStateFactory();
+
+    formState.modComponent.brickPipeline = [
+      {
+        id: highlight.id,
+        config: {
+          elements: [
+            {
+              selector: 'div:contains("{{foo}}")',
+            },
+          ],
+        },
+      },
+    ];
+
+    await analysis.run(formState);
+
+    expect(analysis.getAnnotations()).toStrictEqual([
+      {
+        analysisId: "selector",
+        message: expect.stringMatching(
+          /Selector literal appears to contain a template expression/,
+        ),
+        position: {
+          path: "modComponent.brickPipeline.0.config.elements.0.selector",
+        },
+        type: "info",
+      },
+    ]);
+  });
+
   it("detects selectors passed to highlight brick", async () => {
     const analysis = new SelectorAnalysis();
 
