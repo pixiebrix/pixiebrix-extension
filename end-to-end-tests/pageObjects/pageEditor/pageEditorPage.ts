@@ -28,7 +28,31 @@ import { DataPanel } from "./dataPanel";
 import { ModEditorPane } from "./modEditorPane";
 import { ModifiesModState } from "./utils";
 import { CreateModModal } from "./createModModal";
+import { DeactivateModModal } from "end-to-end-tests/pageObjects/pageEditor/deactivateModModal";
 
+class EditorPane extends BasePageObject {
+  editTab = this.getByRole("tab", { name: "Edit" });
+  logsTab = this.getByRole("tab", { name: "Logs" });
+
+  runTriggerButton = this.getByRole("button", { name: "Run Trigger" });
+  autoRunTrigger = this.getSwitchByLabel("Auto-Run");
+
+  renderPanelButton = this.getByRole("button", {
+    name: "Render Panel",
+  });
+
+  autoRenderPanel = this.getSwitchByLabel("Auto-Render");
+
+  brickActionsPanel = new BrickActionsPanel(
+    this.getByTestId("brickActionsPanel"),
+  );
+
+  brickConfigurationPanel = new ConfigurationForm(
+    this.getByTestId("brickConfigurationPanel"),
+  );
+
+  dataPanel = new DataPanel(this.getByTestId("dataPanel"));
+}
 /**
  * Page object for the Page Editor. Prefer the newPageEditorPage fixture in testBase.ts to directly creating an
  * instance of this class to take advantage of automatic cleanup of saved mods.
@@ -38,16 +62,14 @@ export class PageEditorPage extends BasePageObject {
   private readonly savedPackageModIds: string[] = [];
 
   modListingPanel = new ModListingPanel(this.getByTestId("modListingPanel"));
-  brickActionsPanel = new BrickActionsPanel(
-    this.getByTestId("brickActionsPanel"),
-  );
 
   modEditorPane = new ModEditorPane(this.getByTestId("modEditorPane"));
-  brickConfigurationPanel = new ConfigurationForm(
-    this.getByTestId("brickConfigurationPanel"),
-  );
 
-  dataPanel = new DataPanel(this.getByTestId("dataPanel"));
+  editorPane = new EditorPane(this.getByTestId("editorPane"));
+  brickActionsPanel = this.editorPane.brickActionsPanel;
+  brickConfigurationPanel = this.editorPane.brickConfigurationPanel;
+  dataPanel = this.editorPane.dataPanel;
+
   templateGalleryButton = this.getByRole("button", {
     name: "Launch Template Gallery",
   });
@@ -127,11 +149,36 @@ export class PageEditorPage extends BasePageObject {
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
     await modListItem.saveButton.click();
-    // Create mod modal is shown
+
     const createModModal = new CreateModModal(this.getByRole("dialog"));
     const modId = await createModModal.createMod(modName, modUuid);
 
     this.savedPackageModIds.push(modId);
+  }
+
+  @ModifiesModState
+  async copyMod(modName: string, modUuid: UUID) {
+    const modListItem = this.modListingPanel.getModListItemByName(modName);
+    await modListItem.select();
+
+    await modListItem.menuButton.click();
+    await modListItem.copyButton.click();
+
+    const createModModal = new CreateModModal(this.getByRole("dialog"));
+    const modId = await createModModal.copyMod(modName, modUuid);
+
+    this.savedPackageModIds.push(modId);
+  }
+
+  async deactivateMod(modName: string) {
+    const modListItem = this.modListingPanel.getModListItemByName(modName);
+    await modListItem.select();
+
+    await modListItem.menuButton.click();
+    await modListItem.deactivateButton.click();
+
+    const deactivateModModal = new DeactivateModModal(this.getByRole("dialog"));
+    await deactivateModModal.deactivateButton.click();
   }
 
   @ModifiesModState

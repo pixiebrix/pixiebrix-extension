@@ -1,0 +1,133 @@
+kind: recipe
+options:
+  schema:
+    type: object
+    $schema: https://json-schema.org/draft/2019-09/schema#
+    properties: {}
+  uiSchema:
+    ui:order:
+      - '*'
+metadata:
+  id: '@e2e-testing/giphy/giphy-search'
+  name: GIPHY Search
+  version: 1.0.0
+  description: Search GIPHY from Quick Bar and view results in your Sidebar
+apiVersion: v3
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: quickBar
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/selection'
+        - element: '@pixiebrix/html/element'
+      contexts:
+        - all
+      targetMode: eventTarget
+      isAvailable:
+        selectors: []
+        urlPatterns: []
+        matchPatterns: []
+      documentUrlPatterns:
+        - '*://*/*'
+extensionPoints:
+  - label: GIPHY Search
+    config:
+      icon:
+        id: giphy
+        size: 16
+        library: simple-icons
+      title: GIPHY Search
+      action:
+        - id: '@pixiebrix/form-modal'
+          root: null
+          config:
+            schema:
+              type: object
+              title: !nunjucks GIPHY Search
+              required:
+                - search
+              properties:
+                search:
+                  type: string
+                  title: !nunjucks Search Query
+            location: modal
+            uiSchema: {}
+            cancelable: true
+            submitCaption: !nunjucks Search
+          rootMode: document
+          outputKey: form
+        - id: '@pixiebrix/http'
+          root: null
+          config:
+            url: !nunjucks https://api.giphy.com/v1/gifs/search
+            method: get
+            params:
+              q: !var '@form.search'
+              lang: !nunjucks en
+              limit: 26
+              offset: 0
+              rating: !nunjucks g
+            service: !var '@giphy'
+          rootMode: document
+          outputKey: response
+        - id: '@pixiebrix/display'
+          root: null
+          config:
+            body: !pipeline 
+              - id: '@pixiebrix/document'
+                root: null
+                config:
+                  body:
+                    - type: container
+                      config: {}
+                      children:
+                        - type: row
+                          config: {}
+                          children:
+                            - type: column
+                              config: {}
+                              children:
+                                - type: header
+                                  config:
+                                    title: !nunjucks GIPHY Results for "{{ @form.search }}"
+                                    heading: h3
+                                - type: text
+                                  config:
+                                    text: !nunjucks >-
+                                      Right click a GIF below to copy the image
+                                      to your clipboard, which you can paste
+                                      into your message
+                                    enableMarkdown: true
+                    - type: container
+                      config: {}
+                      children:
+                        - type: row
+                          config: {}
+                          children:
+                            - type: list
+                              config:
+                                array: !var '@response.data'
+                                element: !defer 
+                                  type: column
+                                  config:
+                                    className: !nunjucks m-0 p-0
+                                  children:
+                                    - type: image
+                                      config:
+                                        url: !var '@gif.images.fixed_width_downsampled.url'
+                                        width: !nunjucks '200'
+                                        height: !nunjucks >-
+                                          200*{{@gif.images.fixed_width_downsampled.width
+                                          /
+                                          @gif.images.fixed_width_downsampled.height}}
+                                elementKey: gif
+                rootMode: document
+            title: !nunjucks GIPHY Search Results
+          rootMode: document
+          outputKey: infoOutput
+    permissions: {}
+    id: extensionPoint
+    services:
+      giphy: '@pixies/giphy/giphy-service'

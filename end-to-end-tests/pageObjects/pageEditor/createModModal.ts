@@ -39,4 +39,20 @@ export class CreateModModal extends BasePageObject {
 
     return modId;
   }
+
+  /**
+   * Creates a copy of a mod using the Create Mod modal, with the given modId.
+   * The mod name is derived from the original mod name plus "(Copy)"".
+   * @param modName the modName to use
+   * @param modUuid the UUID of the mod component from adding the starter brick
+   */
+  @ModifiesModState
+  async copyMod(modName: string, modUuid: UUID): Promise<string> {
+    const modId = `${modName.split(" ").join("-").toLowerCase()}-${modUuid}`;
+
+    await this.modIdInput.fill(modId);
+    await this.saveButton.click();
+
+    return modId;
+  }
 }

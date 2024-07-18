@@ -34,7 +34,7 @@ describe("UserDefinedIntegration", () => {
     const integration = fromJS(
       automationAnywhere as unknown as IntegrationDefinition,
     );
-    expect(integration.version).toBe("1.0.2");
+    expect(integration.version).toBe("1.1.0");
     expect(integration.schema.properties).toBeObject();
   });
 

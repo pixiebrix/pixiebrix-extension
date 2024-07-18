@@ -80,7 +80,7 @@ test("can activate a mod with built-in integration", async ({
     return route.continue();
   });
 
-  const modId = "@pixies/giphy/giphy-search";
+  const modId = "@e2e-testing/giphy/giphy-search";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();
 

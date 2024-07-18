@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../../fixtures/testBase";
-import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
+import { test, expect } from "../../../fixtures/testBase";
+import { ActivateModPage } from "../../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import { getSidebarPage, runModViaQuickBar } from "../../utils";
-import { SERVICE_URL } from "../../env";
+import { getSidebarPage, runModViaQuickBar } from "../../../utils";
+import { SERVICE_URL } from "../../../env";
 
 test("sidebar mod panels are persistent during navigation", async ({
   page,

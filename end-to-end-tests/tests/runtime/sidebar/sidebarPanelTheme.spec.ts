@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../../fixtures/testBase";
-import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
-import { getSidebarPage, runModViaQuickBar } from "../../utils";
+import { test, expect } from "../../../fixtures/testBase";
+import { ActivateModPage } from "../../../pageObjects/extensionConsole/modsPage";
+import { getSidebarPage, runModViaQuickBar } from "../../../utils";
 
 test("custom sidebar theme css file is applied to all levels of sidebar document", async ({
   page,

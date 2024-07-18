@@ -54,7 +54,7 @@ test("Unavailable mod", async ({ page, extensionId, newPageEditorPage }) => {
       "Google.com trigger",
     );
 
-  await expect(googleTriggerStarterBrick.unavailableIcon()).toBeVisible();
+  await expect(googleTriggerStarterBrick.unavailableIcon).toBeVisible();
 });
 
 test("Page Editor reload", async ({ page, newPageEditorPage, extensionId }) => {

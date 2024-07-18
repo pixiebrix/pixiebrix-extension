@@ -5,6 +5,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
   <form
     autocomplete="off"
     class="form full-height"
+    data-testid="editorPane"
     novalidate=""
   >
     <div
@@ -1409,6 +1410,7 @@ exports[`renders the first selected node 1`] = `
   <form
     autocomplete="off"
     class="form full-height"
+    data-testid="editorPane"
     novalidate=""
   >
     <div

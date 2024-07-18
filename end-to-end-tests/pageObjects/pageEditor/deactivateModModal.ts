@@ -16,27 +16,8 @@
  */
 
 import { BasePageObject } from "../basePageObject";
-import { ModifiesModState } from "./utils";
 
-export class ConfigurationForm extends BasePageObject {
-  @ModifiesModState
-  async fillField(fieldLabel: string, value: string) {
-    const field = this.getByLabel(fieldLabel);
-    // Click to enable the field, if it's not already enabled
-    await field.click();
-    await field.fill(value);
-  }
-
-  @ModifiesModState
-  async fillFieldByPlaceholder(fieldPlaceholder: string, value: string) {
-    const field = this.getByPlaceholder(fieldPlaceholder);
-    // Click to enable the field, if it's not already enabled
-    await field.click();
-    await field.fill(value);
-  }
-
-  @ModifiesModState
-  async toggleSwitch(label: string) {
-    await this.getSwitchByLabel(label).click();
-  }
+export class DeactivateModModal extends BasePageObject {
+  cancelButton = this.getByRole("button", { name: "Cancel" });
+  deactivateButton = this.getByRole("button", { name: "Deactivate" });
 }
