@@ -74,7 +74,7 @@ function useAddNewModComponent(): AddNewModComponent {
 
         const metadata = internalStarterBrickMetaFactory();
 
-        const initialState = modComponentFormStateAdapter.fromNativeElement(
+        const initialFormState = modComponentFormStateAdapter.fromNativeElement(
           url,
           metadata,
           element,
@@ -82,12 +82,12 @@ function useAddNewModComponent(): AddNewModComponent {
 
         updateDraftModComponent(
           allFramesInInspectedTab,
-          modComponentFormStateAdapter.asDraftModComponent(initialState),
+          modComponentFormStateAdapter.asDraftModComponent(initialFormState),
         );
 
         dispatch(
           actions.addModComponentFormState(
-            initialState as ModComponentFormState,
+            initialFormState as ModComponentFormState,
           ),
         );
         dispatch(actions.checkActiveModComponentAvailability());

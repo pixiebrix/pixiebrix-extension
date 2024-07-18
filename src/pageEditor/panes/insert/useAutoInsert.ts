@@ -42,22 +42,22 @@ function useAutoInsert(starterBrickType: StarterBrickType | null): void {
 
       const metadata = internalStarterBrickMetaFactory();
 
-      const formState = fromNativeElement(
+      const initialFormState = fromNativeElement(
         url,
         metadata,
         // eslint-disable-next-line unicorn/no-useless-undefined -- typescript expects the argument
         undefined,
       ) as ModComponentFormState;
 
-      formState.modComponent.brickPipeline =
+      initialFormState.modComponent.brickPipeline =
         getExampleBrickPipeline(starterBrickType);
 
-      dispatch(addModComponentFormState(formState));
+      dispatch(addModComponentFormState(initialFormState));
       dispatch(actions.checkActiveModComponentAvailability());
 
       updateDraftModComponent(
         allFramesInInspectedTab,
-        asDraftModComponent(formState),
+        asDraftModComponent(initialFormState),
       );
 
       // TODO: report if created new, or using existing foundation
