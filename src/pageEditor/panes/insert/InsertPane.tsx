@@ -21,16 +21,12 @@ import InsertButtonPane from "@/pageEditor/panes/insert/InsertButtonPane";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
-import useAutoInsert from "@/pageEditor/panes/insert/useAutoInsert";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { selectInsertingStarterBrickType } from "@/pageEditor/store/editor/editorSelectors";
 
 const InsertPane: React.FC = () => {
   const starterBrickType = useSelector(selectInsertingStarterBrickType);
-
-  // Auto-insert if the StarterBrickType supports it
-  useAutoInsert(starterBrickType);
 
   const dispatch = useDispatch();
 

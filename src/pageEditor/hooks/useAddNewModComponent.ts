@@ -56,11 +56,6 @@ function useAddNewModComponent(): AddNewModComponent {
 
       dispatch(actions.setInsertingStarterBrickType(adapter.starterBrickType));
 
-      if (!adapter.selectNativeElement) {
-        // If the foundation is not for a native element, stop after toggling insertion mode
-        return;
-      }
-
       try {
         const element = adapter.selectNativeElement
           ? await adapter.selectNativeElement(inspectedTab, suggestElements)
