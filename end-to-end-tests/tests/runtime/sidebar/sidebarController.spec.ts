@@ -15,11 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../../fixtures/testBase";
-import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
+import { test, expect } from "../../../fixtures/testBase";
+import { ActivateModPage } from "../../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import { getSidebarPage, isSidebarOpen, runModViaQuickBar } from "../../utils";
+import {
+  getSidebarPage,
+  isSidebarOpen,
+  runModViaQuickBar,
+} from "../../../utils";
 
 test.describe("sidebar controller", () => {
   test("can open sidebar immediately from iframe without focus dialog", async ({
