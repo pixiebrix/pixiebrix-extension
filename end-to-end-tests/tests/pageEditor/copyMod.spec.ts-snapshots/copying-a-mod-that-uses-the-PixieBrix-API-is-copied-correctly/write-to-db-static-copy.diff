@@ -1,0 +1,59 @@
+Index: write-to-db-static-copy
+===================================================================
+--- write-to-db-static-copy
++++ write-to-db-static-copy
+@@ -22,51 +22,52 @@
+     kind: extensionPoint
+ extensionPoints:
+   - config:
+       action:
+         - config: {}
+           id: '@pixiebrix/timestamp'
+           outputKey: instant
+           root: null
+           rootMode: document
+         - config: {}
+           id: '@pixiebrix/session'
+           outputKey: session
+           root: null
+           rootMode: document
+         - config:
+             databaseId: !nunjucks 00000000-0000-0000-0000-000000000000
+             key: !nunjucks '{{@session.email}}-{{@instant.timestamp}}'
+             mergeStrategy: replace
+             service: !var '@pixiebrix'
+             value:
+               Test: !nunjucks '42'
+           id: '@pixiebrix/data/put'
+           outputKey: record
+           root: null
+           rootMode: document
+         - config: {}
+           id: '@pixiebrix/confetti'
+           root: null
+           rootMode: document
+       title: Write to Hard-Coded DB
+     id: extensionPoint
+     label: Write to DB
+     permissions:
+       origins: []
+       permissions: []
+     services:
+       pixiebrix: '@pixiebrix/api'
+ kind: recipe
+ metadata:
+   description: Regression test to write to a Hard-Coded DB
+-  id: '@e2e-testing/test/write-to-db-static'
+-  name: Write to Hard-Coded DB
++  id: >-
++    @extension-e2e-test-unaffiliated/write-to-hard-coded-db-00000000-0000-0000-0000-000000000000
++  name: Write to Hard-Coded DB (Copy)
+   version: 1.0.0
+ options:
+   schema:
+     $schema: https://json-schema.org/draft/2019-09/schema#
+     properties: {}
+     type: object
+   uiSchema:
+     ui:order:
+       - '*'

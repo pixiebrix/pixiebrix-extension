@@ -13,6 +13,7 @@ One-time setup:
   - Copy `.env.example` to `.env.development`.
   - Fill in the required values:
     - The test user password `E2E_TEST_USER_PASSWORD_UNAFFILIATED`
+    - The test user password `E2E_TEST_USER_PASSWORD_AFFILIATED`
     - Uncomment `REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1`
     - Uncomment `SHADOW_DOM=open`
     - Uncomment `DATADOG_CLIENT_TOKEN` (used for telemetry tests, can be set to a fake token, e.g. `secret123`)

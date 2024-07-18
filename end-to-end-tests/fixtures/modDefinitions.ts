@@ -56,11 +56,14 @@ export const test = pageContextFixture.extend<{
    * @param options.snapshotName The name of the snapshot to verify against.
    * @param options.mode The mode to use for verifying the snapshot. `diff` will compare the current mod definition
    * to the last known state, while `current` will compare the whole current mod definition to the snapshot.
+   * @param options.prevModId The previous mod id to compare the current mod definition against. If provided, this will
+   * be used to lookup the snapshot to compare against. For example: comparing a copied mod to the original.
    */
   verifyModDefinitionSnapshot: (options: {
     modId: string;
     snapshotName: string;
     mode?: "diff" | "current";
+    prevModId?: string;
   }) => Promise<void>;
 }>({
   modDefinitionNames: [],
@@ -111,10 +114,12 @@ export const test = pageContextFixture.extend<{
       modId,
       snapshotName,
       mode = "diff",
+      prevModId,
     }: {
       modId: string;
       snapshotName: string;
       mode?: "diff" | "current";
+      prevModId?: string;
     }) => {
       await workshopPage.goto();
       const editPage = await workshopPage.findAndSelectMod(modId);
@@ -122,13 +127,21 @@ export const test = pageContextFixture.extend<{
       const currentModDefinitionYaml = await editPage.editor.getValue();
       // See if this mod is being tracked in modDefinitions.
       const lastModDefinitionEntry = Object.entries(modDefinitionsMap).find(
-        ([_name, { id }]) => id === modId,
+        ([_name, { id }]) => {
+          if (prevModId) {
+            return id === prevModId;
+          }
+
+          return id === modId;
+        },
       );
 
       if (mode === "diff") {
         if (!lastModDefinitionEntry) {
           throw new Error(
-            `Mod definition for ${modId} not found in modDefinitions. Cannot verify a diff.`,
+            `Mod definition for ${
+              prevModId ?? modId
+            } not found in modDefinitions. Cannot verify a diff.`,
           );
         }
 
