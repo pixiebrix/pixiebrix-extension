@@ -59,11 +59,11 @@ test("copying a mod that uses the PixieBrix API is copied correctly", async ({
     await pageEditorPage.copyMod(sourceModName, modUuid);
 
     await expect(
-      pageEditorPage.getByRole("textbox", { name: "Mod ID" }),
+      pageEditorPage.modEditorPane.editMetadataTabPanel.modId,
     ).toHaveValue(copyModId);
 
     await expect(
-      pageEditorPage.getByRole("textbox", { name: "Name" }),
+      pageEditorPage.modEditorPane.editMetadataTabPanel.name,
     ).toHaveValue(`${sourceModName} (Copy)`);
 
     await verifyModDefinitionSnapshot({
@@ -129,11 +129,13 @@ test("run a copied mod with a built-in integration", async ({
   await test.step("Copy the mod", async () => {
     await pageEditorPage.copyMod(sourceModName, modUuid);
 
-    await expect(pageEditorPage.modEditorPane.modId).toHaveValue(copyModId);
+    await expect(
+      pageEditorPage.modEditorPane.editMetadataTabPanel.modId,
+    ).toHaveValue(copyModId);
 
-    await expect(pageEditorPage.modEditorPane.name).toHaveValue(
-      `${sourceModName} (Copy)`,
-    );
+    await expect(
+      pageEditorPage.modEditorPane.editMetadataTabPanel.name,
+    ).toHaveValue(`${sourceModName} (Copy)`);
 
     await verifyModDefinitionSnapshot({
       modId: copyModId,
