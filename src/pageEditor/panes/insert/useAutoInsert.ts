@@ -52,6 +52,7 @@ function useAutoInsert(starterBrickType: StarterBrickType | null): void {
       initialFormState.modComponent.brickPipeline =
         getExampleBrickPipeline(starterBrickType);
 
+      // ********************
       dispatch(addModComponentFormState(initialFormState));
       dispatch(actions.checkActiveModComponentAvailability());
 
@@ -59,6 +60,7 @@ function useAutoInsert(starterBrickType: StarterBrickType | null): void {
         allFramesInInspectedTab,
         asDraftModComponent(initialFormState),
       );
+      // ********************
 
       // TODO: report if created new, or using existing foundation
       reportEvent(Events.PAGE_EDITOR_START, {

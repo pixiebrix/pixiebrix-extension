@@ -78,19 +78,17 @@ function useAddNewModComponent(): AddNewModComponent {
           url,
           metadata,
           element,
-        );
+        ) as ModComponentFormState;
+
+        // ********************
+        dispatch(actions.addModComponentFormState(initialFormState));
+        dispatch(actions.checkActiveModComponentAvailability());
 
         updateDraftModComponent(
           allFramesInInspectedTab,
           modComponentFormStateAdapter.asDraftModComponent(initialFormState),
         );
-
-        dispatch(
-          actions.addModComponentFormState(
-            initialFormState as ModComponentFormState,
-          ),
-        );
-        dispatch(actions.checkActiveModComponentAvailability());
+        // ********************
 
         reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
           type: modComponentFormStateAdapter.starterBrickType,
