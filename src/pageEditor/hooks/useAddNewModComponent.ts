@@ -45,28 +45,21 @@ function useAddNewModComponent(): AddNewModComponent {
   );
 
   return useCallback(
-    async (modComponentFormStateAdapter: ModComponentFormStateAdapter) => {
-      if (
-        modComponentFormStateAdapter.flag &&
-        flagOff(modComponentFormStateAdapter.flag)
-      ) {
+    async (adapter: ModComponentFormStateAdapter) => {
+      if (adapter.flag && flagOff(adapter.flag)) {
         dispatch(actions.betaError());
         return;
       }
 
-      dispatch(
-        actions.setInsertingStarterBrickType(
-          modComponentFormStateAdapter.starterBrickType,
-        ),
-      );
+      dispatch(actions.setInsertingStarterBrickType(adapter.starterBrickType));
 
-      if (!modComponentFormStateAdapter.selectNativeElement) {
+      if (!adapter.selectNativeElement) {
         // If the foundation is not for a native element, stop after toggling insertion mode
         return;
       }
 
       try {
-        const element = await modComponentFormStateAdapter.selectNativeElement(
+        const element = await adapter.selectNativeElement(
           inspectedTab,
           suggestElements,
         );
@@ -74,7 +67,7 @@ function useAddNewModComponent(): AddNewModComponent {
 
         const metadata = internalStarterBrickMetaFactory();
 
-        const initialFormState = modComponentFormStateAdapter.fromNativeElement(
+        const initialFormState = adapter.fromNativeElement(
           url,
           metadata,
           element,
@@ -86,12 +79,12 @@ function useAddNewModComponent(): AddNewModComponent {
 
         updateDraftModComponent(
           allFramesInInspectedTab,
-          modComponentFormStateAdapter.asDraftModComponent(initialFormState),
+          adapter.asDraftModComponent(initialFormState),
         );
         // ********************
 
         reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
-          type: modComponentFormStateAdapter.starterBrickType,
+          type: adapter.starterBrickType,
         });
       } catch (error) {
         if (isSpecificError(error, CancelError)) {
@@ -99,7 +92,7 @@ function useAddNewModComponent(): AddNewModComponent {
         }
 
         notify.error({
-          message: `Error adding ${modComponentFormStateAdapter.label.toLowerCase()}`,
+          message: `Error adding ${adapter.label.toLowerCase()}`,
           error,
         });
       } finally {
