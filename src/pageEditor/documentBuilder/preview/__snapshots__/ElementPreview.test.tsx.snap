@@ -48,32 +48,28 @@ exports[`can preview default card 1`] = `
           class="container cardBody overflow-auto card-body"
           data-testid="card-body"
         >
-          <div
-            class="addElement dropdown"
+          <button
+            aria-expanded="false"
+            aria-haspopup="true"
+            class="szh-menu-button button addElement ellipsisMenu"
+            type="button"
           >
-            <button
-              aria-expanded="false"
-              aria-haspopup="true"
-              class="toggle toggle dropdown-toggle btn btn-light btn-sm"
-              type="button"
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+              data-icon="ellipsis-v"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 192 512"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-hidden="true"
-                class="svg-inline--fa fa-ellipsis-v fa-w-6 "
-                data-icon="ellipsis-v"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                viewBox="0 0 192 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
-                  fill="currentColor"
-                />
-              </svg>
-            </button>
-          </div>
+              <path
+                d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -99,32 +95,28 @@ exports[`can preview default column 1`] = `
       >
         Column
       </span>
-      <div
-        class="addElement dropdown"
+      <button
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="szh-menu-button button addElement ellipsisMenu"
+        type="button"
       >
-        <button
-          aria-expanded="false"
-          aria-haspopup="true"
-          class="toggle toggle dropdown-toggle btn btn-light btn-sm"
-          type="button"
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+          data-icon="ellipsis-v"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 192 512"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <svg
-            aria-hidden="true"
-            class="svg-inline--fa fa-ellipsis-v fa-w-6 "
-            data-icon="ellipsis-v"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 192 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
-              fill="currentColor"
-            />
-          </svg>
-        </button>
-      </div>
+          <path
+            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
     </div>
     <button
       type="submit"
@@ -154,40 +146,10 @@ exports[`can preview default container 1`] = `
           >
             Column
           </span>
-          <div
-            class="addElement dropdown"
-          >
-            <button
-              aria-expanded="false"
-              aria-haspopup="true"
-              class="toggle toggle dropdown-toggle btn btn-light btn-sm"
-              type="button"
-            >
-              <svg
-                aria-hidden="true"
-                class="svg-inline--fa fa-ellipsis-v fa-w-6 "
-                data-icon="ellipsis-v"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                viewBox="0 0 192 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
-                  fill="currentColor"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div
-          class="addElement dropdown"
-        >
           <button
             aria-expanded="false"
             aria-haspopup="true"
-            class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+            class="szh-menu-button button addElement ellipsisMenu"
             type="button"
           >
             <svg
@@ -207,14 +169,10 @@ exports[`can preview default container 1`] = `
             </svg>
           </button>
         </div>
-      </div>
-      <div
-        class="addElement dropdown"
-      >
         <button
           aria-expanded="false"
           aria-haspopup="true"
-          class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+          class="szh-menu-button button addElement ellipsisMenu"
           type="button"
         >
           <svg
@@ -234,6 +192,28 @@ exports[`can preview default container 1`] = `
           </svg>
         </button>
       </div>
+      <button
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="szh-menu-button button addElement ellipsisMenu"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+          data-icon="ellipsis-v"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 192 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
     </div>
     <button
       type="submit"
@@ -368,40 +348,10 @@ exports[`can preview default row 1`] = `
         >
           Column
         </span>
-        <div
-          class="addElement dropdown"
-        >
-          <button
-            aria-expanded="false"
-            aria-haspopup="true"
-            class="toggle toggle dropdown-toggle btn btn-light btn-sm"
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              class="svg-inline--fa fa-ellipsis-v fa-w-6 "
-              data-icon="ellipsis-v"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
-              viewBox="0 0 192 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
-                fill="currentColor"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
-      <div
-        class="addElement dropdown"
-      >
         <button
           aria-expanded="false"
           aria-haspopup="true"
-          class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+          class="szh-menu-button button addElement ellipsisMenu"
           type="button"
         >
           <svg
@@ -421,6 +371,28 @@ exports[`can preview default row 1`] = `
           </svg>
         </button>
       </div>
+      <button
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="szh-menu-button button addElement ellipsisMenu"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+          data-icon="ellipsis-v"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 192 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
     </div>
     <button
       type="submit"

@@ -91,6 +91,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
       <MenuButton
         aria-label={ariaLabel}
         className={cx(styles.button, menuButtonClassName)}
+        data-testid="ellipsis-menu-button"
         onClick={(event) => {
           event.stopPropagation();
         }}

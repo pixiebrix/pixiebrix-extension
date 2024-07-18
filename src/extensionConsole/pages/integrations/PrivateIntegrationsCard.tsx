@@ -80,7 +80,6 @@ const Actions: React.VoidFunctionComponent<{
 
   return (
     <EllipsisMenu
-      menuButtonClassName={styles.button}
       items={[
         {
           title: "Configure",
