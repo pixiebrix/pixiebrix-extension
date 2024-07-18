@@ -15,23 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.toggle {
-  padding: 3px !important;
-
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: #f8f9fa;
-  border-color: #f8f9fa;
-  color: #212529;
-  border: 1px solid transparent;
-
-  &:hover:not(:disabled) {
-    background-color: #e2e6ea;
-    border-color: #dae0e5;
-  }
-
-  &:active:not(:disabled) {
-    background-color: #dae0e5;
-    border-color: #d3d9df;
-  }
+// Increase specificity to override the default styles
+.ellipsisMenu.ellipsisMenu {
+  width: unset;
+  height: unset;
+  padding: 3px;
 }

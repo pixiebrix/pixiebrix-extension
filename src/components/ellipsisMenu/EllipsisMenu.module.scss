@@ -21,25 +21,16 @@
   padding: 6px;
   border-radius: 4px;
   border: none;
+  font-size: 0.875rem;
 
-  background-color: #e8f3fc;
-  color: #1368aa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: var(--theme-light);
+  color: #212529;
 
-  &:disabled {
-    background-color: #e8f3fc;
-    color: #b8dbf6;
+  &:hover {
+    background-color: #e2e6ea;
   }
 
-  &:hover:not(:disabled) {
-    background-color: #ddedfb;
-    color: #0f5388;
-  }
-
-  &:active:not(:disabled) {
-    background-color: #b8dbf6 !important;
-    color: #0b3e66 !important;
+  &:active {
+    background-color: #dae0e5;
   }
 }

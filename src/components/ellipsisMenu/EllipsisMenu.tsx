@@ -24,6 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "@szhsin/react-menu/dist/index.css";
 import "@szhsin/react-menu/dist/transitions/slide.css";
 import styles from "./EllipsisMenu.module.scss";
+import cx from "classnames";
 
 type EllipsisMenuItemInternal = {
   /**
@@ -70,7 +71,7 @@ type EllipsisMenuProps = {
   boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 
   /**
-   * The className prop for the menu button toggle. Overrides the default styling.
+   * The className prop for the menu button toggle.
    */
   menuButtonClassName?: string;
 };
@@ -83,11 +84,13 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
 }) => (
   <Menu
     align="end"
+    direction="bottom"
+    gap={4}
     boundingBoxRef={boundingBoxRef}
     menuButton={
       <MenuButton
         aria-label={ariaLabel}
-        className={menuButtonClassName ?? styles.button}
+        className={cx(styles.button, menuButtonClassName)}
         onClick={(event) => {
           event.stopPropagation();
         }}
@@ -108,7 +111,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
             target="_blank"
             rel="noopener noreferrer"
           >
-            {item.icon} {item.title}
+            {item.icon}&nbsp;{item.title}
           </MenuItem>
         ) : (
           <MenuItem
@@ -117,7 +120,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
             className={item.className}
             disabled={item.disabled}
           >
-            {item.icon} {item.title}
+            {item.icon}&nbsp;{item.title}
           </MenuItem>
         ),
       )}

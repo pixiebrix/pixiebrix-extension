@@ -77,7 +77,7 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
 
   return (
     <EllipsisMenu
-      menuButtonClassName={cx(className, styles.toggle)}
+      menuButtonClassName={cx(className, styles.ellipsisMenu)}
       items={[...elementItems, ...pipelineItems]}
       boundingBoxRef={boundingBoxRef}
     />
