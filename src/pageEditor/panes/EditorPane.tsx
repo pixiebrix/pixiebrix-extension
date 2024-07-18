@@ -89,23 +89,21 @@ const EditorPane: React.VFC = () => {
 
   return (
     <ErrorBoundary key={key}>
-      <div data-testid="editorPane">
-        <Formik
-          key={key}
-          initialValues={activeModComponentFormState}
-          onSubmit={() => {
-            console.error(
-              "Formik's submit should not be called to save a mod component.",
-            );
-          }}
-          // Don't validate -- we're using analysis, so we don't pass in a validation schema here
-          validateOnMount={false}
-          validateOnChange={false}
-          validateOnBlur={false}
-        >
-          {({ values }) => <EditorPaneContent modComponentFormState={values} />}
-        </Formik>
-      </div>
+      <Formik
+        key={key}
+        initialValues={activeModComponentFormState}
+        onSubmit={() => {
+          console.error(
+            "Formik's submit should not be called to save a mod component.",
+          );
+        }}
+        // Don't validate -- we're using analysis, so we don't pass in a validation schema here
+        validateOnMount={false}
+        validateOnChange={false}
+        validateOnBlur={false}
+      >
+        {({ values }) => <EditorPaneContent modComponentFormState={values} />}
+      </Formik>
     </ErrorBoundary>
   );
 };

@@ -95,6 +95,7 @@ const ModComponentFormStateWizard: React.FunctionComponent<{
           noValidate
           onReset={handleReset}
           className={cx(styles.form, "full-height")}
+          data-testid="editorPane"
         >
           <Nav
             variant="pills"
