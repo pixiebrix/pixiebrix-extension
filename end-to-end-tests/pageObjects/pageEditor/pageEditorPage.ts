@@ -29,6 +29,29 @@ import { ModEditorPane } from "./modEditorPane";
 import { ModifiesModState } from "./utils";
 import { CreateModModal } from "./createModModal";
 
+class EditorPane extends BasePageObject {
+  editTab = this.getByRole("tab", { name: "Edit" });
+  logsTab = this.getByRole("tab", { name: "Logs" });
+
+  runTriggerButton = this.getByRole("button", { name: "Run Trigger" });
+  autoRunTrigger = this.getSwitchByLabel("Auto-Run");
+
+  renderPanelButton = this.getByRole("button", {
+    name: "Render Panel",
+  });
+
+  autoRenderPanel = this.getSwitchByLabel("Auto-Render");
+
+  brickActionsPanel = new BrickActionsPanel(
+    this.getByTestId("brickActionsPanel"),
+  );
+
+  brickConfigurationPanel = new ConfigurationForm(
+    this.getByTestId("brickConfigurationPanel"),
+  );
+
+  dataPanel = new DataPanel(this.getByTestId("dataPanel"));
+}
 /**
  * Page object for the Page Editor. Prefer the newPageEditorPage fixture in testBase.ts to directly creating an
  * instance of this class to take advantage of automatic cleanup of saved mods.
@@ -38,16 +61,14 @@ export class PageEditorPage extends BasePageObject {
   private readonly savedPackageModIds: string[] = [];
 
   modListingPanel = new ModListingPanel(this.getByTestId("modListingPanel"));
-  brickActionsPanel = new BrickActionsPanel(
-    this.getByTestId("brickActionsPanel"),
-  );
 
   modEditorPane = new ModEditorPane(this.getByTestId("modEditorPane"));
-  brickConfigurationPanel = new ConfigurationForm(
-    this.getByTestId("brickConfigurationPanel"),
-  );
 
-  dataPanel = new DataPanel(this.getByTestId("dataPanel"));
+  editorPane = new EditorPane(this.getByTestId("editorPane"));
+  brickActionsPanel = this.editorPane.brickActionsPanel;
+  brickConfigurationPanel = this.editorPane.brickConfigurationPanel;
+  dataPanel = this.editorPane.dataPanel;
+
   templateGalleryButton = this.getByRole("button", {
     name: "Launch Template Gallery",
   });
