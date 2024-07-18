@@ -54,12 +54,17 @@ function useAddNewModComponent(): AddNewModComponent {
         return;
       }
 
-      dispatch(actions.setInsertingStarterBrickType(adapter.starterBrickType));
-
       try {
-        const element = adapter.selectNativeElement
-          ? await adapter.selectNativeElement(inspectedTab, suggestElements)
-          : null;
+        let element = null;
+        if (adapter.selectNativeElement) {
+          dispatch(
+            actions.setInsertingStarterBrickType(adapter.starterBrickType),
+          );
+          element = await adapter.selectNativeElement(
+            inspectedTab,
+            suggestElements,
+          );
+        }
 
         const url = await getCurrentInspectedURL();
         const metadata = internalStarterBrickMetaFactory();
