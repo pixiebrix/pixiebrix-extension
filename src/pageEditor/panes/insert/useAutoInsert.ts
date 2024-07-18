@@ -20,8 +20,6 @@ import {
 } from "@/pageEditor/context/connection";
 import { updateDraftModComponent } from "@/contentScript/messenger/api";
 
-const { addModComponentFormState, clearInsertingStarterBrickType } = actions;
-
 function useAutoInsert(starterBrickType: StarterBrickType | null): void {
   const dispatch = useDispatch();
 
@@ -53,7 +51,7 @@ function useAutoInsert(starterBrickType: StarterBrickType | null): void {
         getExampleBrickPipeline(starterBrickType);
 
       // ********************
-      dispatch(addModComponentFormState(initialFormState));
+      dispatch(actions.addModComponentFormState(initialFormState));
       dispatch(actions.checkActiveModComponentAvailability());
 
       updateDraftModComponent(
@@ -81,7 +79,7 @@ function useAutoInsert(starterBrickType: StarterBrickType | null): void {
         message: "Error adding mod",
         error,
       });
-      dispatch(clearInsertingStarterBrickType());
+      dispatch(actions.clearInsertingStarterBrickType());
     }
   }, [starterBrickType, dispatch]);
 }
