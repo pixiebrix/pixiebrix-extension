@@ -16,9 +16,12 @@
  */
 
 export enum DataPanelTabKey {
-  Context = "context",
+  /**
+   * The input arguments/variables for the mod.
+   * @since 2.0.6
+   */
+  Input = "input",
   ModVariables = "modVariables",
-  Rendered = "rendered",
   Output = "output",
   Preview = "preview",
   Outline = "outline",

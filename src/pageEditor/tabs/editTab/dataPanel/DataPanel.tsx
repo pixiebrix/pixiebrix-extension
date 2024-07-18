@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect, useMemo } from "react";
-import { isEmpty, isEqual, pickBy, omit } from "lodash";
+import { isEqual, omit } from "lodash";
 import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
@@ -39,10 +39,10 @@ import ModVariablesTab from "./tabs/ModVariablesTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import {
+  selectActiveBuilderPreviewElement,
   selectActiveModComponentFormState,
   selectActiveNodeId,
   selectActiveNodeInfo,
-  selectActiveBuilderPreviewElement,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import Alert from "@/components/Alert";
@@ -53,29 +53,13 @@ import DocumentOutline from "@/pageEditor/documentBuilder/outline/DocumentOutlin
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
 import BrickConfigFormStateTab from "./tabs/BrickConfigFormStateTab";
-import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { BrickTypes } from "@/runtime/runtimeTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-
-/**
- * Exclude irrelevant top-level keys.
- */
-const contextFilter = (value: unknown, key: string) => {
-  // `@options` comes from marketplace-activated mod components. There's a chance the user might add a brick that has
-  // @options as an output key. In that case, we'd expect values to flow into it. So just checking to see if there's
-  // any data is a good compromise even though we miss the corner-case where @options is user-defined but empty
-  if (key === "@options" && isEmpty(value)) {
-    return false;
-  }
-
-  // At one point, we also excluded keys that weren't prefixed with "@" as a stop-gap for encouraging the use of output
-  // keys. With the introduction of ApiVersion v2, we removed that filter
-  return true;
-};
+import InputDataTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/InputDataTab";
 
 const DataPanel: React.FC = () => {
   const activeNodeId = useSelector(selectActiveNodeId);
@@ -129,11 +113,6 @@ const DataPanel: React.FC = () => {
 
     return !isEqual(record.brickConfig, brickConfig);
   }, [isInputStale, record, brickConfig]);
-
-  const relevantContext = useMemo(
-    () => pickBy(record?.templateContext ?? {}, contextFilter),
-    [record?.templateContext],
-  );
 
   const documentBodyFieldName = joinPathParts(brickPath, "config.body");
   const brickCommentsFieldName = joinPathParts(brickPath, "comments");
@@ -211,7 +190,7 @@ const DataPanel: React.FC = () => {
       <div>
         <Nav variant="tabs">
           <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey={DataPanelTabKey.Context}>Context</Nav.Link>
+            <Nav.Link eventKey={DataPanelTabKey.Input}>Input</Nav.Link>
           </Nav.Item>
           <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey={DataPanelTabKey.ModVariables}>
@@ -232,9 +211,7 @@ const DataPanel: React.FC = () => {
               </Nav.Item>
             </>
           )}
-          <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey={DataPanelTabKey.Rendered}>Rendered</Nav.Link>
-          </Nav.Item>
+
           <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey={DataPanelTabKey.Output}>Output</Nav.Link>
           </Nav.Item>
@@ -251,20 +228,7 @@ const DataPanel: React.FC = () => {
           </Nav.Item>
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
-          <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
-            {isInputStale && (
-              <Alert variant="warning">
-                A previous brick has changed, input context may be out of date
-              </Alert>
-            )}
-            <DataTabJsonTree
-              data={contextAsPlainObject(relevantContext)}
-              copyable
-              searchable
-              tabKey={DataPanelTabKey.Context}
-              label="Context"
-            />
-          </DataTab>
+          <InputDataTab isInputStale={isInputStale} traceRecord={record} />
           <ModVariablesTab />
           {showDeveloperTabs && (
             <>
@@ -272,39 +236,6 @@ const DataPanel: React.FC = () => {
               <BrickConfigFormStateTab config={brickConfig} />
             </>
           )}
-          <DataTab eventKey={DataPanelTabKey.Rendered} isTraceEmpty={!record}>
-            {record?.renderError ? (
-              <>
-                {record.skippedRun ? (
-                  <Alert variant="info">
-                    Error rendering input arguments, but brick was skipped
-                    because condition was not met
-                  </Alert>
-                ) : (
-                  <Alert variant="danger">
-                    Error rendering input arguments
-                  </Alert>
-                )}
-                <ErrorDisplay error={record.renderError} />
-              </>
-            ) : (
-              <>
-                {isInputStale && (
-                  <Alert variant="warning">
-                    A previous brick has changed, input context may be out of
-                    date
-                  </Alert>
-                )}
-                <DataTabJsonTree
-                  data={record?.renderedArgs}
-                  copyable
-                  searchable
-                  tabKey={DataPanelTabKey.Rendered}
-                  label="Rendered Inputs"
-                />
-              </>
-            )}
-          </DataTab>
           <DataTab
             eventKey={DataPanelTabKey.Output}
             isTraceEmpty={!record}

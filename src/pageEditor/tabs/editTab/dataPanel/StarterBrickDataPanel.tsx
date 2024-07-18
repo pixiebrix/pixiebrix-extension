@@ -60,9 +60,6 @@ const StarterBrickDataPanel: React.FC = () => {
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <Nav variant="tabs">
-        <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey={DataPanelTabKey.Context}>Context</Nav.Link>
-        </Nav.Item>
         {showDeveloperTabs && (
           <>
             <Nav.Item className={dataPanelStyles.tabNav}>
@@ -78,7 +75,7 @@ const StarterBrickDataPanel: React.FC = () => {
           </>
         )}
         <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey={DataPanelTabKey.Rendered}>Rendered</Nav.Link>
+          <Nav.Link eventKey={DataPanelTabKey.Input}>Input</Nav.Link>
         </Nav.Item>
         <Nav.Item className={dataPanelStyles.tabNav}>
           <Nav.Link eventKey={DataPanelTabKey.Output}>Output</Nav.Link>
@@ -94,13 +91,10 @@ const StarterBrickDataPanel: React.FC = () => {
       </Nav>
       <Tab.Content>
         <Tab.Pane
-          eventKey={DataPanelTabKey.Context}
+          eventKey={DataPanelTabKey.Input}
           className={dataPanelStyles.tabPane}
         >
-          <div className="text-muted">
-            This is the first step in the execution flow, so it does not receive
-            inputs from any other brick.
-          </div>
+          <div className="text-muted">Starter Bricks do not receive input.</div>
         </Tab.Pane>
         {showDeveloperTabs && (
           <>
@@ -108,15 +102,6 @@ const StarterBrickDataPanel: React.FC = () => {
             <BrickConfigFormStateTab config={starterBrick} />
           </>
         )}
-        <Tab.Pane
-          eventKey={DataPanelTabKey.Rendered}
-          className={dataPanelStyles.tabPane}
-        >
-          <div className="text-muted">
-            This is the first step in the execution flow, so it does not receive
-            inputs from any other brick.
-          </div>
-        </Tab.Pane>
         <Tab.Pane
           eventKey={DataPanelTabKey.Output}
           className={dataPanelStyles.tabPane}
@@ -133,8 +118,7 @@ const StarterBrickDataPanel: React.FC = () => {
             />
           ) : (
             <div className="text-muted">
-              This is the first step in the execution flow, so it does not
-              receive inputs from any other brick.
+              Add a brick and run the mod to view Starter Brick output.
             </div>
           )}
         </Tab.Pane>
