@@ -88,7 +88,7 @@ function useAddNewModComponent(): AddNewModComponent {
           adapter.asDraftModComponent(initialFormState),
         );
 
-        // TODO: report if created new, or using existing foundation
+        // TODO: deprecate this event? it's basically the same as Events.MOD_COMPONENT_ADD_NEW
         reportEvent(Events.PAGE_EDITOR_START, {
           type: adapter.starterBrickType,
         });
