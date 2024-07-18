@@ -42,10 +42,10 @@ inputSchema:
 uiSchema:
   ui:order:
     - controlRoomUrl
+    - apiVersion
     - username
     - password
     - apiKey
-    - apiVersion
     - folderId
     - "*"
 authentication:
