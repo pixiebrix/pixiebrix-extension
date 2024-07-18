@@ -23,7 +23,6 @@ import {
 import { clearModComponentTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import { type BrickConfig } from "@/bricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
 import {
   type AddBrickLocation,
   type EditorRootState,
@@ -313,19 +312,6 @@ export const editorSlice = createSlice({
     resetEditor() {
       return initialState;
     },
-    setInsertingStarterBrickType(
-      state,
-      action: PayloadAction<StarterBrickType>,
-    ) {
-      state.insertingStarterBrickType = action.payload;
-      state.beta = false;
-      state.error = null;
-    },
-    clearInsertingStarterBrickType(state) {
-      state.insertingStarterBrickType = null;
-      state.beta = false;
-      state.error = null;
-    },
     markEditable(state, action: PayloadAction<RegistryId>) {
       state.knownEditableBrickIds.push(action.payload);
     },
@@ -335,7 +321,6 @@ export const editorSlice = createSlice({
     ) {
       const modComponentFormState =
         action.payload as Draft<ModComponentFormState>;
-      state.insertingStarterBrickType = null;
       state.modComponentFormStates.push(modComponentFormState);
       state.dirty[modComponentFormState.uuid] = true;
 
