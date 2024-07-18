@@ -34,6 +34,9 @@ import {
   getCurrentInspectedURL,
   inspectedTab,
 } from "@/pageEditor/context/connection";
+import { getExampleBrickPipeline } from "@/pageEditor/panes/insert/exampleStarterBrickConfigs";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { openSidePanel } from "@/utils/sidePanelUtils";
 
 type AddNewModComponent = (config: ModComponentFormStateAdapter) => void;
 
@@ -63,15 +66,18 @@ function useAddNewModComponent(): AddNewModComponent {
           inspectedTab,
           suggestElements,
         );
+
         const url = await getCurrentInspectedURL();
-
         const metadata = internalStarterBrickMetaFactory();
-
         const initialFormState = adapter.fromNativeElement(
           url,
           metadata,
           element,
         ) as ModComponentFormState;
+
+        initialFormState.modComponent.brickPipeline = getExampleBrickPipeline(
+          adapter.starterBrickType,
+        );
 
         // ********************
         dispatch(actions.addModComponentFormState(initialFormState));
@@ -81,6 +87,18 @@ function useAddNewModComponent(): AddNewModComponent {
           allFramesInInspectedTab,
           adapter.asDraftModComponent(initialFormState),
         );
+
+        // TODO: report if created new, or using existing foundation
+        reportEvent(Events.PAGE_EDITOR_START, {
+          type: adapter.starterBrickType,
+        });
+
+        if (adapter.starterBrickType === StarterBrickTypes.SIDEBAR_PANEL) {
+          // For convenience, open the side panel if it's not already open so that the user doesn't
+          // have to manually toggle it
+          void openSidePanel(inspectedTab.tabId);
+        }
+
         // ********************
 
         reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
