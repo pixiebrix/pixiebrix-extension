@@ -107,7 +107,14 @@ const SelectionToolPopover: React.FC<{
             </>
           )}
 
-          <Button size="sm" variant="info" onClick={onCancel}>
+          <Button
+            size="sm"
+            variant="info"
+            onClick={() => {
+              // Avoid passing event to onDone method in case the provided method takes an optional argument
+              onCancel();
+            }}
+          >
             Cancel
           </Button>
           <Button
