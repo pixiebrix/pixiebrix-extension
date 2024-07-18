@@ -499,6 +499,21 @@ export const editorSlice = createSlice({
     },
 
     /**
+     * Updates the viewMode on a DataPane tab
+     */
+    setNodeDataPanelTabViewMode(
+      state,
+      action: PayloadAction<{ tabKey: DataPanelTabKey; viewMode: string }>,
+    ) {
+      const { tabKey, viewMode } = action.payload;
+
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+
+      brickConfigurationUIState.dataPanel[tabKey].viewMode = viewMode;
+    },
+
+    /**
      * Updates the query on a DataPane tab with the JsonTree component
      */
     setNodeDataPanelTabSearchQuery(

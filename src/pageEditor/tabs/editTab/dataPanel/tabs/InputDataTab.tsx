@@ -20,17 +20,29 @@ import Alert from "@/components/Alert";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { type TraceRecord } from "@/telemetry/trace";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { FormCheck } from "react-bootstrap";
 import { isEmpty, pickBy } from "lodash";
 import ErrorDisplay from "@/pageEditor/tabs/editTab/dataPanel/ErrorDisplay";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { type ValueOf } from "type-fest";
+
+const ViewModes = {
+  Arguments: "arguments",
+  Variables: "variables",
+} as const;
+
+type ViewMode = ValueOf<typeof ViewModes>;
 
 /**
- * Exclude irrelevant top-level keys.
+ * Exclude irrelevant top-level keys in the context passed to the brick.
  */
-const contextFilter = (value: unknown, key: string) => {
+const contextFilter = (value: unknown, key: string): boolean => {
   // `@options` comes from marketplace-activated mod components. There's a chance the user might add a brick that has
   // @options as an output key. In that case, we'd expect values to flow into it. So just checking to see if there's
   // any data is a good compromise even though we miss the corner-case where @options is user-defined but empty
@@ -95,15 +107,48 @@ const ArgumentsBody: React.FunctionComponent<{ traceRecord: TraceRecord }> = ({
   );
 };
 
+const ViewModeRadio: React.FunctionComponent<{
+  label: string;
+  viewMode: ViewMode;
+  isChecked: boolean;
+  onSelect: () => void;
+}> = ({ viewMode, isChecked, onSelect, label }) => (
+  <FormCheck
+    type="radio"
+    value={viewMode}
+    checked={isChecked}
+    onChange={() => {
+      onSelect();
+    }}
+    label={label}
+    name="inputView"
+    id="inputViewArguments"
+  />
+);
+
 /**
- * Data Panel tab displaying input arguments and variables.
- * @since 2.0.6
+ * Data Panel tab displaying input arguments and variables
+ * @since 2.0.6 includes both arguments and variables in a single panel
  */
 const InputDataTab: React.FunctionComponent<{
   traceRecord: Nullishable<TraceRecord>;
   isInputStale: boolean;
 }> = ({ isInputStale, traceRecord }) => {
-  const [value, setValue] = useState<"arguments" | "variables">("arguments");
+  const dispatch = useDispatch();
+
+  const { viewMode = ViewModes.Arguments } =
+    useSelector((state: RootState) =>
+      selectNodeDataPanelTabState(state, DataPanelTabKey.Input),
+    ) ?? {};
+
+  const setViewMode = (value: string) => {
+    dispatch(
+      actions.setNodeDataPanelTabViewMode({
+        tabKey: DataPanelTabKey.Input,
+        viewMode: value,
+      }),
+    );
+  };
 
   return (
     <DataTab eventKey={DataPanelTabKey.Input} isTraceEmpty={!traceRecord}>
@@ -115,34 +160,28 @@ const InputDataTab: React.FunctionComponent<{
       <div className="d-flex">
         <div>View</div>
         <div>
-          <FormCheck
-            type="radio"
-            value="arguments"
-            checked={value === "arguments"}
-            onChange={() => {
-              setValue("arguments");
+          <ViewModeRadio
+            viewMode={ViewModes.Arguments}
+            isChecked={viewMode === ViewModes.Arguments}
+            onSelect={() => {
+              setViewMode(ViewModes.Arguments);
             }}
             label="Arguments"
-            name="inputView"
-            id="inputViewArguments"
           />
         </div>
         <div>
-          <FormCheck
-            type="radio"
-            value="variables"
-            checked={value === "variables"}
-            onChange={() => {
-              setValue("variables");
+          <ViewModeRadio
+            viewMode={ViewModes.Variables}
+            isChecked={viewMode === ViewModes.Variables}
+            onSelect={() => {
+              setViewMode(ViewModes.Variables);
             }}
             label="Variables"
-            name="inputView"
-            id="inputViewVariables"
           />
         </div>
       </div>
 
-      {value === "arguments" ? (
+      {viewMode === ViewModes.Arguments ? (
         <ArgumentsBody traceRecord={traceRecord} />
       ) : (
         <VariablesBody traceRecord={traceRecord} />

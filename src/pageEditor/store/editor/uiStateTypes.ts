@@ -60,6 +60,12 @@ export type PipelineMap = Record<UUID, NodeInfo>;
 
 export type DataPanelTabUIState = {
   /**
+   * The subview of the Data Panel tab. For example, show input arguments vs. available variables.
+   * @since 2.0.6
+   */
+  viewMode: string;
+
+  /**
    * The filter query of the JsonTree component
    */
   query: string;
