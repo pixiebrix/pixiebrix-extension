@@ -15,18 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
-import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import React, { createContext, useCallback, useContext, useState } from "react";
+import {
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import InsertButtonPane from "@/pageEditor/panes/insert/InsertButtonPane";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { cancelSelect } from "@/contentScript/messenger/api";
-import { selectInsertingStarterBrickType } from "@/pageEditor/store/editor/editorSelectors";
+
+export const InsertPaneContext = createContext<{
+  insertingStarterBrickType: StarterBrickType | null;
+  setInsertingStarterBrickType: (starterBrickType: StarterBrickType) => void;
+}>({
+  insertingStarterBrickType: null,
+  setInsertingStarterBrickType() {
+    throw new Error("setInsertingStarterBrickType not configured");
+  },
+});
+
+export const InsertPaneProvider: React.FunctionComponent = ({ children }) => {
+  const [insertingStarterBrickType, setInsertingStarterBrickType] =
+    useState<StarterBrickType | null>(null);
+
+  return (
+    <InsertPaneContext.Provider
+      value={{ insertingStarterBrickType, setInsertingStarterBrickType }}
+    >
+      {children}
+    </InsertPaneContext.Provider>
+  );
+};
 
 const InsertPane: React.FC = () => {
-  const starterBrickType = useSelector(selectInsertingStarterBrickType);
+  const { insertingStarterBrickType: starterBrickType } =
+    useContext(InsertPaneContext);
 
   const dispatch = useDispatch();
 

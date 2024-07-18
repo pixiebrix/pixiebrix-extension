@@ -15,16 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
 import { useDispatch, useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import Modals from "../modals/Modals";
-import { selectIsInsertingStarterBrick } from "@/pageEditor/store/editor/editorSelectors";
 import EditorContent from "@/pageEditor/layout/EditorContent";
 import styles from "./EditorLayout.module.scss";
 import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
-import InsertPane from "@/pageEditor/panes/insert/InsertPane";
+import InsertPane, {
+  InsertPaneContext,
+} from "@/pageEditor/panes/insert/InsertPane";
 import useCurrentInspectedUrl from "../hooks/useCurrentInspectedUrl";
 import NonScriptablePage from "../panes/NonScriptablePage";
 import { isScriptableUrl } from "webext-content-scripts";
@@ -36,7 +37,8 @@ import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 const EditorLayout: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const isInserting = useSelector(selectIsInsertingStarterBrick);
+  const { insertingStarterBrickType } = useContext(InsertPaneContext);
+  const isInserting = Boolean(insertingStarterBrickType);
   const { restrict } = useFlags();
   const isRestricted = restrict("page-editor");
   const isStaleSession = useSelector(selectIsStaleSession);

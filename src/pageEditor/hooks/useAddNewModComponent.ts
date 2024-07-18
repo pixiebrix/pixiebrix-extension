@@ -16,7 +16,7 @@
  */
 
 import { useDispatch, useSelector } from "react-redux";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import notify from "@/utils/notify";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
@@ -37,11 +37,13 @@ import {
 import { getExampleBrickPipeline } from "@/pageEditor/panes/insert/exampleStarterBrickConfigs";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { openSidePanel } from "@/utils/sidePanelUtils";
+import { InsertPaneContext } from "@/pageEditor/panes/insert/InsertPane";
 
 type AddNewModComponent = (config: ModComponentFormStateAdapter) => void;
 
 function useAddNewModComponent(): AddNewModComponent {
   const dispatch = useDispatch();
+  const { setInsertingStarterBrickType } = useContext(InsertPaneContext);
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
     (x) => x.settings.suggestElements ?? false,
@@ -57,9 +59,7 @@ function useAddNewModComponent(): AddNewModComponent {
       try {
         let element = null;
         if (adapter.selectNativeElement) {
-          dispatch(
-            actions.setInsertingStarterBrickType(adapter.starterBrickType),
-          );
+          setInsertingStarterBrickType(adapter.starterBrickType);
           element = await adapter.selectNativeElement(
             inspectedTab,
             suggestElements,
@@ -110,7 +110,7 @@ function useAddNewModComponent(): AddNewModComponent {
           error,
         });
       } finally {
-        dispatch(actions.clearInsertingStarterBrickType());
+        setInsertingStarterBrickType(null);
       }
     },
     [dispatch, flagOff, suggestElements],
