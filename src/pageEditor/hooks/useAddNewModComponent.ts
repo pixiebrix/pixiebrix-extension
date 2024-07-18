@@ -62,10 +62,9 @@ function useAddNewModComponent(): AddNewModComponent {
       }
 
       try {
-        const element = await adapter.selectNativeElement(
-          inspectedTab,
-          suggestElements,
-        );
+        const element = adapter.selectNativeElement
+          ? await adapter.selectNativeElement(inspectedTab, suggestElements)
+          : null;
 
         const url = await getCurrentInspectedURL();
         const metadata = internalStarterBrickMetaFactory();
@@ -79,7 +78,6 @@ function useAddNewModComponent(): AddNewModComponent {
           adapter.starterBrickType,
         );
 
-        // ********************
         dispatch(actions.addModComponentFormState(initialFormState));
         dispatch(actions.checkActiveModComponentAvailability());
 
@@ -98,8 +96,6 @@ function useAddNewModComponent(): AddNewModComponent {
           // have to manually toggle it
           void openSidePanel(inspectedTab.tabId);
         }
-
-        // ********************
 
         reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
           type: adapter.starterBrickType,
