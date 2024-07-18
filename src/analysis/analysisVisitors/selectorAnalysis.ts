@@ -36,6 +36,7 @@ import { guessUsefulness } from "@/utils/detectRandomString";
 import type { Schema } from "@/types/schemaTypes";
 import { isObject } from "@/utils/objectUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 
 // `jQuery` selector extension: https://api.jquery.com/category/selectors/jquery-selector-extensions/
 const jQueryExtensions = new Set([
@@ -230,8 +231,9 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     if (containsTemplateExpression(selector)) {
       this.annotations.push({
         position,
-        message:
-          "Selector literal appears to contain a template expression. To use a text template as a selector, use the Identity Function brick to assign the value to a variable.",
+        message: `Selector literal appears to contain a template expression. To use a text template as a selector, use the ${
+          new IdentityTransformer().name
+        } brick to assign the value to a variable.`,
         analysisId: this.id,
         type: AnnotationType.Info,
       });
