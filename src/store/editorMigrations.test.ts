@@ -393,7 +393,7 @@ function unmigrateEditorStateV6toV5(
   state: EditorStateV6 & PersistedState,
 ): EditorStateV5 & PersistedState {
   return {
-    ...omit(state, "insertingStarterBrickType"),
+    ...state,
     insertingStarterBrickType: null,
   };
 }
