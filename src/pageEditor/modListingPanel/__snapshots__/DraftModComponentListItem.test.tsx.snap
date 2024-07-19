@@ -61,6 +61,7 @@ exports[`DraftModComponentListItem renders active element 1`] = `
           aria-haspopup="true"
           aria-label="Element 1 - Ellipsis"
           class="szh-menu-button button ellipsisMenu"
+          data-testid="ellipsis-menu-button"
           type="button"
         >
           <svg

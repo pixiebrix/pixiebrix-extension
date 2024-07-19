@@ -52,6 +52,7 @@ exports[`can preview default card 1`] = `
             aria-expanded="false"
             aria-haspopup="true"
             class="szh-menu-button button addElement ellipsisMenu"
+            data-testid="ellipsis-menu-button"
             type="button"
           >
             <svg
@@ -99,6 +100,7 @@ exports[`can preview default column 1`] = `
         aria-expanded="false"
         aria-haspopup="true"
         class="szh-menu-button button addElement ellipsisMenu"
+        data-testid="ellipsis-menu-button"
         type="button"
       >
         <svg
@@ -150,6 +152,7 @@ exports[`can preview default container 1`] = `
             aria-expanded="false"
             aria-haspopup="true"
             class="szh-menu-button button addElement ellipsisMenu"
+            data-testid="ellipsis-menu-button"
             type="button"
           >
             <svg
@@ -173,6 +176,7 @@ exports[`can preview default container 1`] = `
           aria-expanded="false"
           aria-haspopup="true"
           class="szh-menu-button button addElement ellipsisMenu"
+          data-testid="ellipsis-menu-button"
           type="button"
         >
           <svg
@@ -196,6 +200,7 @@ exports[`can preview default container 1`] = `
         aria-expanded="false"
         aria-haspopup="true"
         class="szh-menu-button button addElement ellipsisMenu"
+        data-testid="ellipsis-menu-button"
         type="button"
       >
         <svg
@@ -352,6 +357,7 @@ exports[`can preview default row 1`] = `
           aria-expanded="false"
           aria-haspopup="true"
           class="szh-menu-button button addElement ellipsisMenu"
+          data-testid="ellipsis-menu-button"
           type="button"
         >
           <svg
@@ -375,6 +381,7 @@ exports[`can preview default row 1`] = `
         aria-expanded="false"
         aria-haspopup="true"
         class="szh-menu-button button addElement ellipsisMenu"
+        data-testid="ellipsis-menu-button"
         type="button"
       >
         <svg
