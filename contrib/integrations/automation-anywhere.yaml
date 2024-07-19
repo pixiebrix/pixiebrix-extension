@@ -16,7 +16,7 @@ inputSchema:
       pattern: '^https:\/\/(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])(:\d{1,5})?$'
     apiVersion:
       type: string
-      description: Control Room authentication API version. Use v2 for Control Room version v.31 and later
+      description: Control Room authentication API version. Use v2 for Control Room v.31 and later
       default: v2
       enum:
         - v1
@@ -39,6 +39,15 @@ inputSchema:
   required:
     - controlRoomUrl
     - username
+uiSchema:
+  ui:order:
+    - controlRoomUrl
+    - apiVersion
+    - username
+    - password
+    - apiKey
+    - folderId
+    - "*"
 authentication:
   baseURL: "{{{ controlRoomUrl }}}"
   token:
