@@ -35,7 +35,7 @@ import {
   type EditorStateV3,
   type EditorStateV4,
   type EditorStateV5,
-  EditorStateV6,
+  type EditorStateV6,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
