@@ -111,9 +111,6 @@ export const initialState: EditorState = {
   isModListExpanded: true,
   isDataPanelExpanded: true,
   isDimensionsWarningDismissed: false,
-
-  // Not persisted
-  insertingStarterBrickType: null,
   isVariablePopoverVisible: false,
 };
 
@@ -1012,11 +1009,10 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 5,
+  version: 6,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: [
     "inserting",
-    "insertingStarterBrickType",
     "isVarPopoverVisible",
     "isSaveDataIntegrityErrorModalVisible",
     "visibleModalKey",

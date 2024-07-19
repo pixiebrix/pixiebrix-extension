@@ -35,6 +35,7 @@ import {
   type EditorStateV3,
   type EditorStateV4,
   type EditorStateV5,
+  EditorStateV6,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
@@ -47,6 +48,7 @@ export const migrations: MigrationManifest = {
   3: (state: EditorStateV2 & PersistedState) => migrateEditorStateV2(state),
   4: (state: EditorStateV3 & PersistedState) => migrateEditorStateV3(state),
   5: (state: EditorStateV4 & PersistedState) => migrateEditorStateV4(state),
+  6: (state: EditorStateV5 & PersistedState) => migrateEditorStateV5(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -186,4 +188,11 @@ export function migrateEditorStateV4({
       (formStates) => formStates.map((element) => migrateFormStateV3(element)),
     ) as Record<string, ModComponentFormState[]>,
   };
+}
+
+export function migrateEditorStateV5({
+  insertingStarterBrickType,
+  ...rest
+}: EditorStateV5 & PersistedState): EditorStateV6 & PersistedState {
+  return rest;
 }
