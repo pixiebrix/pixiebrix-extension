@@ -25,12 +25,14 @@ import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { cancelSelect } from "@/contentScript/messenger/api";
 
-export const InsertPaneContext = createContext<{
+type InsertPaneContextProps = {
   insertingStarterBrickType: StarterBrickType | null;
   setInsertingStarterBrickType: (
     starterBrickType: StarterBrickType | null,
   ) => void;
-}>({
+};
+
+const InsertPaneContext = createContext<InsertPaneContextProps>({
   insertingStarterBrickType: null,
   setInsertingStarterBrickType() {
     throw new Error("setInsertingStarterBrickType not configured");
@@ -50,11 +52,13 @@ export const InsertPaneProvider: React.FunctionComponent = ({ children }) => {
   );
 };
 
+export function useInsertPane(): InsertPaneContextProps {
+  return useContext(InsertPaneContext);
+}
+
 const InsertPane: React.FC = () => {
-  const {
-    insertingStarterBrickType: starterBrickType,
-    setInsertingStarterBrickType,
-  } = useContext(InsertPaneContext);
+  const { insertingStarterBrickType, setInsertingStarterBrickType } =
+    useInsertPane();
 
   const cancelInsert = useCallback(async () => {
     setInsertingStarterBrickType(null);
@@ -62,9 +66,9 @@ const InsertPane: React.FC = () => {
   }, [setInsertingStarterBrickType]);
 
   // Cancel insert with escape key
-  useEscapeHandler(cancelInsert, starterBrickType != null);
+  useEscapeHandler(cancelInsert, insertingStarterBrickType != null);
 
-  switch (starterBrickType) {
+  switch (insertingStarterBrickType) {
     case StarterBrickTypes.BUTTON: {
       return <InsertButtonPane cancel={cancelInsert} />;
     }

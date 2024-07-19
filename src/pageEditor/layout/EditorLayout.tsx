@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
 import { useDispatch, useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
@@ -24,7 +24,7 @@ import EditorContent from "@/pageEditor/layout/EditorContent";
 import styles from "./EditorLayout.module.scss";
 import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
 import InsertPane, {
-  InsertPaneContext,
+  useInsertPane,
 } from "@/pageEditor/panes/insert/InsertPane";
 import useCurrentInspectedUrl from "../hooks/useCurrentInspectedUrl";
 import NonScriptablePage from "../panes/NonScriptablePage";
@@ -37,7 +37,7 @@ import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 const EditorLayout: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { insertingStarterBrickType } = useContext(InsertPaneContext);
+  const { insertingStarterBrickType } = useInsertPane();
   const isInserting = Boolean(insertingStarterBrickType);
   const { restrict } = useFlags();
   const isRestricted = restrict("page-editor");
