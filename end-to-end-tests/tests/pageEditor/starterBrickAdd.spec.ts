@@ -85,6 +85,7 @@ test("Add new Sidebar Panel starter brick", async ({
     await pageEditorPage.brickActionsPanel.getBricksInPipeline();
   expect(brickPipeline).toHaveLength(2);
   await expect(brickPipeline[0]).toContainText("Sidebar Panel");
+  await expect(brickPipeline[1]).toContainText("Render Document");
   await expect(
     pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
       name: "Name",
@@ -93,4 +94,35 @@ test("Add new Sidebar Panel starter brick", async ({
 
   const sidebarPage = await getSidebarPage(page, extensionId);
   await expect(sidebarPage.getByText("Example Document")).toBeVisible();
+});
+
+test("Add new Trigger starter brick", async ({ page, newPageEditorPage }) => {
+  await page.goto("/");
+  const pageEditorPage = await newPageEditorPage(page.url());
+  await pageEditorPage.modListingPanel.addStarterBrick("Trigger");
+  const brickPipeline =
+    await pageEditorPage.brickActionsPanel.getBricksInPipeline();
+  expect(brickPipeline).toHaveLength(1);
+  await expect(brickPipeline[0]).toContainText("Trigger");
+  await expect(
+    pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+      name: "Name",
+    }),
+  ).toHaveValue("My pbx.vercel.app trigger");
+});
+
+// eslint-disable-next-line playwright/expect-expect -- The test is checking for page navigation
+test("Add new from Start with a Template", async ({
+  page,
+  newPageEditorPage,
+}) => {
+  await page.goto("/");
+  const pageEditorPage = await newPageEditorPage(page.url());
+  await pageEditorPage.modListingPanel.addButton.click();
+  await pageEditorPage.modListingPanel
+    .locator("[role=button].dropdown-item", {
+      hasText: "Start with a Template",
+    })
+    .click();
+  await page.waitForURL(/https:\/\/www.pixiebrix.com\/templates-gallery/);
 });
