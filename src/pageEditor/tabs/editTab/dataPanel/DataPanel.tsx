@@ -250,9 +250,7 @@ const DataPanel: React.FC = () => {
         <Tab.Content
           className={dataPanelStyles.tabContent}
           ref={(element: HTMLElement) => {
-            if (showDocumentPreview) {
-              popupBoundaryRef.current = element;
-            }
+            popupBoundaryRef.current = showDocumentPreview ? element : null;
           }}
         >
           <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
