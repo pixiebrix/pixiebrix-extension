@@ -86,11 +86,6 @@ function useAddNewModComponent(): AddNewModComponent {
           adapter.asDraftModComponent(initialFormState),
         );
 
-        // TODO: deprecate this event? it's basically the same as Events.MOD_COMPONENT_ADD_NEW
-        reportEvent(Events.PAGE_EDITOR_START, {
-          type: adapter.starterBrickType,
-        });
-
         if (adapter.starterBrickType === StarterBrickTypes.SIDEBAR_PANEL) {
           // For convenience, open the side panel if it's not already open so that the user doesn't
           // have to manually toggle it
