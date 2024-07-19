@@ -36,6 +36,8 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { uuidv4 } from "@/types/helpers";
+import useReduxState from "@/hooks/useReduxState";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 
 function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
   const formState = formStateFactory({
@@ -51,7 +53,11 @@ function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
   });
 
   const PreviewContainer = () => {
-    const [activeElement, setActiveElement] = useState<string | null>(null);
+    const [activeElement, setActiveElement] = useReduxState(
+      selectActiveBuilderPreviewElement,
+      actions.setActiveBuilderPreviewElement,
+    );
+
     return (
       <DocumentPreview
         documentBodyName="modComponent.brickPipeline[0].config.body"
@@ -114,13 +120,12 @@ describe("Add new element", () => {
     expect(firstDropdown).toHaveAttribute("aria-haspopup", "true");
   });
 
-  test.only("can add an element to a container", async () => {
+  test("can add an element to a container", async () => {
     renderDocumentPreview(createNewDocumentBuilderElement("container"));
 
     const firstDropdown = screen.getAllByTestId("ellipsis-menu-button").at(0);
 
     await userEvent.click(firstDropdown);
-    screen.logTestingPlaygroundURL();
     await userEvent.click(screen.getByRole("menuitem", { name: "Header" }));
 
     const header = screen.getByRole("heading", { level: 1 });
