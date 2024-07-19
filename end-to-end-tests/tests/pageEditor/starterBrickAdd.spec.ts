@@ -124,5 +124,5 @@ test("Add new from Start with a Template", async ({
       hasText: "Start with a Template",
     })
     .click();
-  await page.waitForURL(/https:\/\/www.pixiebrix.com\/templates-gallery/);
+  await page.waitForURL(/https:\/\/www\.pixiebrix\.com\/templates-gallery/);
 });
