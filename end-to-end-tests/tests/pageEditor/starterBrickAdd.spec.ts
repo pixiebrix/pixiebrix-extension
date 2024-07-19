@@ -26,6 +26,9 @@ test("Add new Button starter brick", async ({ page, newPageEditorPage }) => {
   const pageEditorPage = await newPageEditorPage(page.url());
   await pageEditorPage.modListingPanel.addStarterBrick("Button");
   await page.locator("#files .folder").first().click();
+  await expect(
+    pageEditorPage.getByText("My pbx.vercel.app button"),
+  ).toBeVisible();
   const brickPipeline =
     await pageEditorPage.brickActionsPanel.getBricksInPipeline();
   expect(brickPipeline).toHaveLength(1);
