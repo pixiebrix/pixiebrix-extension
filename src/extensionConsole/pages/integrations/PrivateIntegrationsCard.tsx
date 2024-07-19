@@ -34,7 +34,6 @@ import {
 } from "@/integrations/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
-import styles from "./PrivateIntegrationsCard.module.scss";
 
 type TableData = {
   integration: Integration;
