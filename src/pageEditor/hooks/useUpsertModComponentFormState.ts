@@ -182,7 +182,7 @@ function useUpsertModComponentFormState(): SaveCallback {
 
       try {
         let modComponent = selectModComponent(modComponentFormState);
-        const updateTimestamp: Timestamp = nowTimestamp();
+        const updateTimestamp = nowTimestamp();
 
         if (hasInnerStarterBrick) {
           const { definition } = selectStarterBrickDefinition(
