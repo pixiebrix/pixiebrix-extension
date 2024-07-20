@@ -88,11 +88,11 @@ const ArgumentsBody: React.FunctionComponent<{
       <>
         {traceRecord.skippedRun ? (
           <Alert variant="info">
-            Error rendering input arguments, but brick was skipped because
-            condition was not met
+            An error occurred evaluating input configuration, but the brick was
+            skipped because condition was not met
           </Alert>
         ) : (
-          <Alert variant="danger">Error rendering input arguments</Alert>
+          <Alert variant="danger">Error evaluating input configuration</Alert>
         )}
         <ErrorDisplay error={traceRecord.renderError} />
       </>
@@ -159,7 +159,7 @@ const ViewModeWidget: React.FunctionComponent = () => {
             <PopoverInfoLabel
               name="arguments"
               label="Arguments"
-              description="Arguments passed to the brick on the last run"
+              description="Arguments passed to the brick on the latest run"
             />
           </span>
         }
@@ -175,7 +175,7 @@ const ViewModeWidget: React.FunctionComponent = () => {
             <PopoverInfoLabel
               name={InputViewModes.Variables}
               label="Variables"
-              description="Variables available to brick configuration on the last run"
+              description="Variables available to brick configuration on the latest run"
             />
           </span>
         }

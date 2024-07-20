@@ -55,6 +55,7 @@ import {
 import { type BaseModComponentState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type Permissions } from "webextension-polyfill";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 const baseModComponentStateFactory = define<BaseModComponentState>({
   brickPipeline: () => pipelineFactory(),
@@ -241,7 +242,7 @@ export const menuItemFormStateFactory = (
   }) as ButtonFormState;
 };
 
-const foundationOutputFactory = define<JsonObject>({
+const starterBrickOutputFactory = define<JsonObject>({
   "@input": () => ({
     icon: "",
     title: "Test website title | test.com",
@@ -260,6 +261,7 @@ export const formStateWithTraceDataFactory = define<{
   records: TraceRecord[];
 }>({
   formState(): ModComponentFormState {
+    // Not a real cooky-cutter factory, so call as a function
     return formStateFactory();
   },
   records: derive<
@@ -273,10 +275,10 @@ export const formStateWithTraceDataFactory = define<{
     const { uuid: modComponentId, modComponent } = formState;
 
     let outputKey = "" as OutputKey;
-    let output: JsonObject = foundationOutputFactory();
+    let output: JsonObject = starterBrickOutputFactory();
     return modComponent.brickPipeline.map((brickConfig, index) => {
       const context = output;
-      outputKey = `output${index}` as OutputKey;
+      outputKey = validateOutputKey(`output${index}`);
       output = {
         foo: `bar number ${index}`,
         baz: index * 3,

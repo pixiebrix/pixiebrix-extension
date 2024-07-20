@@ -22,8 +22,9 @@ import {
   type EditorStateV4,
   type EditorStateV5,
   type EditorStateV6,
+  type EditorStateV7,
 } from "@/pageEditor/store/editor/pageEditorTypes";
-import { mapValues, omit } from "lodash";
+import { cloneDeep, mapValues, omit } from "lodash";
 import {
   formStateFactory,
   type InternalFormStateOverride,
@@ -33,7 +34,10 @@ import {
   type IntegrationDependencyV2,
 } from "@/integrations/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  autoUUIDSequence,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { validateRegistryId } from "@/types/helpers";
 import {
@@ -51,9 +55,14 @@ import {
   migrateEditorStateV3,
   migrateEditorStateV4,
   migrateEditorStateV5,
+  migrateEditorStateV6,
 } from "@/store/editorMigrations";
 import { type FactoryConfig } from "cooky-cutter/dist/define";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import {
+  FOUNDATION_NODE_ID,
+  makeInitialBrickPipelineUIState,
+} from "@/pageEditor/store/editor/uiState";
 
 const initialStateV1: EditorStateV1 & PersistedState = {
   selectionSeq: 0,
@@ -236,6 +245,9 @@ const initialStateV6: EditorStateV6 & PersistedState = {
     rehydrated: false,
   },
 };
+
+const initialStateV7: EditorStateV7 & PersistedState =
+  cloneDeep(initialStateV6);
 
 function unmigrateServices(
   integrationDependencies: IntegrationDependencyV2[] = [],
@@ -563,6 +575,43 @@ describe("editor state migrations", () => {
       const unmigrated = unmigrateEditorStateV6toV5(expectedEditorStateV6);
       expect(migrateEditorStateV5(unmigrated)).toStrictEqual(
         expectedEditorStateV6,
+      );
+    });
+  });
+
+  describe("migrateEditorState V6 to V7", () => {
+    it("migrates empty state", () => {
+      expect(migrateEditorStateV6(initialStateV6)).toStrictEqual(
+        initialStateV7,
+      );
+    });
+
+    it("resets data panel shape", () => {
+      const componentId = autoUUIDSequence();
+      const initial = cloneDeep(initialStateV6);
+
+      initial.brickPipelineUIStateById[componentId] =
+        makeInitialBrickPipelineUIState();
+
+      initial.brickPipelineUIStateById[componentId]!.nodeUIStates[
+        FOUNDATION_NODE_ID
+      ]!.dataPanel = {
+        // Exact shape doesn't matter here. Just testing that the migration resets the state
+        activeTabKey: "context" as any,
+        foo: {},
+      } as any;
+
+      const result = migrateEditorStateV6(initial);
+
+      expect(
+        result.brickPipelineUIStateById[componentId]!.nodeUIStates[
+          FOUNDATION_NODE_ID
+        ]!.dataPanel,
+      ).toStrictEqual(
+        expect.objectContaining({
+          activeTabKey: null,
+          input: expect.toBeObject(),
+        }),
       );
     });
   });

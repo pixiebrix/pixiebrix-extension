@@ -209,7 +209,7 @@ export function migrateEditorStateV6(
   // Reset the Data Panel state using the current set of DataPanelTabKeys
   return produce(state, (draft) => {
     for (const uiState of Object.values(draft.brickPipelineUIStateById)) {
-      for (const nodeUiState of Object.values(uiState.nodeUIStates)) {
+      for (const nodeUiState of Object.values(uiState.nodeUIStates ?? {})) {
         nodeUiState.dataPanel = {
           ...Object.fromEntries(
             Object.values(DataPanelTabKey).map((tabKey) => [
