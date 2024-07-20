@@ -54,7 +54,7 @@ export const registryIdFactory = () => registryIdSequence(registryIndex++);
 /**
  * Test factory for ISO timestamps.
  *
- * In code, use `isoTimestamp` directly.
+ * In code, use `nowTimestamp` directly.
  *
  * @see nowTimestamp
  */
