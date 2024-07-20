@@ -38,6 +38,7 @@ import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { isoTimestamp } from "@/utils/timeUtils";
 
 const { saveModComponent } = modComponentsSlice.actions;
 const { markClean } = editorSlice.actions;
@@ -181,8 +182,7 @@ function useUpsertModComponentFormState(): SaveCallback {
 
       try {
         let modComponent = selectModComponent(modComponentFormState);
-        const updateTimestamp: Timestamp =
-          new Date().toISOString() as Timestamp;
+        const updateTimestamp: Timestamp = isoTimestamp();
 
         if (hasInnerStarterBrick) {
           const { definition } = selectStarterBrickDefinition(

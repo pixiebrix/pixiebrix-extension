@@ -31,6 +31,7 @@ import useUserAction from "@/hooks/useUserAction";
 import download from "downloadjs";
 import filenamify from "filenamify";
 import { getExtensionVersion } from "@/utils/extensionUtils";
+import { isoTimestamp } from "@/utils/timeUtils";
 
 async function collectDiagnostics({
   extensions,
@@ -79,7 +80,7 @@ function useDiagnostics() {
 
       download(
         JSON.stringify(data),
-        filenamify(`diagnostics-${new Date().toISOString()}.json`),
+        filenamify(`diagnostics-${isoTimestamp()}.json`),
         "application/json",
       );
     },

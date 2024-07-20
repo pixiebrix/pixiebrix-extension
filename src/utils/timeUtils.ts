@@ -16,6 +16,43 @@
  */
 
 import { formatDistanceToNowStrict } from "date-fns";
+import { type Timestamp } from "@/types/stringTypes";
+
+/**
+ * Returns the current time in ISO format.
+ *
+ * In test files, use `timestampFactory` instead.
+ *
+ * @since 2.0.6
+ * @see timestampFactory
+ */
+export function isoTimestamp(): Timestamp {
+  return new Date().toISOString() as Timestamp;
+}
+
+function isTimestamp(value: string): value is Timestamp {
+  try {
+    return !Number.isNaN(Date.parse(value));
+  } catch {
+    return false;
+  }
+}
+
+export function validateTimestamp(value: string): Timestamp {
+  if (value == null) {
+    // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
+    // we can remove this check as strictNullChecks will check the call site
+    return value as Timestamp;
+  }
+
+  if (isTimestamp(value)) {
+    return value;
+  }
+
+  console.debug("Invalid timestamp %s", value);
+
+  throw new TypeError("Invalid timestamp");
+}
 
 export function timeSince(dateIso: string): string {
   return formatDistanceToNowStrict(new Date(dateIso), {

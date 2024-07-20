@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Timestamp } from "@/types/stringTypes";
 import { validateRegistryId, validateUUID } from "@/types/helpers";
 import { padStart } from "lodash";
+import { isoTimestamp } from "@/utils/timeUtils";
 
 let uuidIndex = 0;
 let registryIndex = 0;
@@ -51,4 +51,11 @@ export const registryIdSequence = (n: number) =>
  */
 export const registryIdFactory = () => registryIdSequence(registryIndex++);
 
-export const timestampFactory = () => new Date().toISOString() as Timestamp;
+/**
+ * Test factory for ISO timestamps.
+ *
+ * In code, use `isoTimestamp` directly.
+ *
+ * @see isoTimestamp
+ */
+export const timestampFactory = () => isoTimestamp();

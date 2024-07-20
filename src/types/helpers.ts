@@ -18,11 +18,7 @@
 import { valid as semVerValid, coerce as semVerCoerce } from "semver";
 import { startsWith } from "lodash";
 
-import {
-  type Timestamp,
-  type TimedSequence,
-  type UUID,
-} from "@/types/stringTypes";
+import { type TimedSequence, type UUID } from "@/types/stringTypes";
 import { v4, validate } from "uuid";
 import {
   INNER_SCOPE,
@@ -125,30 +121,6 @@ export function validateRegistryId(id: string | undefined): RegistryId {
   console.debug("Invalid registry id: %s", id);
 
   throw new Error("Invalid registry id");
-}
-
-function isTimestamp(value: string): value is Timestamp {
-  try {
-    return !Number.isNaN(Date.parse(value));
-  } catch {
-    return false;
-  }
-}
-
-export function validateTimestamp(value: string): Timestamp {
-  if (value == null) {
-    // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
-    // we can remove this check as strictNullChecks will check the call site
-    return value as Timestamp;
-  }
-
-  if (isTimestamp(value)) {
-    return value;
-  }
-
-  console.debug("Invalid timestamp %s", value);
-
-  throw new TypeError("Invalid timestamp");
 }
 
 /**

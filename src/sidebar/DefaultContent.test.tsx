@@ -21,8 +21,8 @@ import DefaultPanel from "./DefaultPanel";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
-import { type Timestamp } from "@/types/stringTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { timestampFactory } from "@/testUtils/factories/stringFactories";
 
 describe("renders DefaultPanel", () => {
   it("renders Page Editor call to action", () => {
@@ -42,7 +42,7 @@ describe("renders DefaultPanel", () => {
           extensionsSlice.actions.saveModComponent({
             modComponent: {
               ...(modComponentFactory() as ActivatedModComponent),
-              updateTimestamp: new Date().toISOString() as Timestamp,
+              updateTimestamp: timestampFactory(),
             },
           }),
         );

@@ -30,7 +30,10 @@ import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import brickRegistry from "@/bricks/registry";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  timestampFactory,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
 import { type getModComponentState } from "@/store/extensionsStorage";
 import { getPlatform } from "@/platform/platformContext";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -79,8 +82,8 @@ const activatedModComponentFactory = define<
     action: () => [] as BrickPipeline,
   }),
   _serializedModComponentBrand: null,
-  createTimestamp: new Date().toISOString(),
-  updateTimestamp: new Date().toISOString(),
+  createTimestamp: timestampFactory,
+  updateTimestamp: timestampFactory,
   active: true,
 });
 

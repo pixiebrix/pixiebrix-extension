@@ -31,7 +31,7 @@ import { type Permissions } from "webextension-polyfill";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type BrickPipeline } from "@/bricks/types";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import { validateRegistryId, validateTimestamp } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
@@ -46,6 +46,7 @@ import {
 import { freshIdentifier } from "@/utils/variableUtils";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type Availability } from "@/types/availabilityTypes";
+import { validateTimestamp } from "@/utils/timeUtils";
 
 export const modComponentDefinitionFactory = define<ModComponentDefinition>({
   id: "extensionPoint" as InnerDefinitionRef,

@@ -39,10 +39,10 @@ import { type SerializedError } from "@/types/messengerTypes";
 import { type SemVerString } from "@/types/registryTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { isObject } from "@/utils/objectUtils";
-import type { Timestamp } from "@/types/stringTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { selectAbsoluteUrl } from "@/utils/urlUtils";
 import { getExtensionVersion } from "@/utils/extensionUtils";
+import { isoTimestamp } from "@/utils/timeUtils";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -166,7 +166,7 @@ export async function reportToErrorService(
     user_agent_extension_version: extensionVersion,
     is_application_error: !selectSpecificError(error, BusinessError),
     error_data: data,
-    timestamp: new Date().toISOString() as Timestamp,
+    timestamp: isoTimestamp(),
   };
 
   // For blueprint_version/service_version/brick_version the server can't handle null value. Must leave the property
