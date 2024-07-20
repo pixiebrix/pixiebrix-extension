@@ -61,9 +61,9 @@ const contextFilter = (value: unknown, key: string): boolean => {
 /**
  * All variables available to the brick, even if the brick didn't run or there was an error rendering the arguments.
  */
-const VariablesBody: React.FunctionComponent<{ traceRecord: TraceRecord }> = ({
-  traceRecord,
-}) => {
+const VariablesBody: React.FunctionComponent<{
+  traceRecord: Nullishable<TraceRecord>;
+}> = ({ traceRecord }) => {
   const relevantContext = useMemo(
     () => pickBy(traceRecord?.templateContext ?? {}, contextFilter),
     [traceRecord?.templateContext],
@@ -80,10 +80,10 @@ const VariablesBody: React.FunctionComponent<{ traceRecord: TraceRecord }> = ({
   );
 };
 
-const ArgumentsBody: React.FunctionComponent<{ traceRecord: TraceRecord }> = ({
-  traceRecord,
-}) => {
-  if (traceRecord.renderError) {
+const ArgumentsBody: React.FunctionComponent<{
+  traceRecord: Nullishable<TraceRecord>;
+}> = ({ traceRecord }) => {
+  if (traceRecord?.renderError) {
     return (
       <>
         {traceRecord.skippedRun ? (
