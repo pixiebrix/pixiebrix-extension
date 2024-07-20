@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type PersistedState, type MigrationManifest } from "redux-persist";
+import { type MigrationManifest, type PersistedState } from "redux-persist";
 import { mapValues, omit } from "lodash";
 import {
   type BaseFormStateV1,
@@ -30,13 +30,18 @@ import {
   type IntegrationDependencyV2,
 } from "@/integrations/integrationTypes";
 import {
-  type EditorStateV2,
   type EditorStateV1,
+  type EditorStateV2,
   type EditorStateV3,
   type EditorStateV4,
   type EditorStateV5,
+  type EditorStateV6,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { produce } from "immer";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { makeInitialDataTabState } from "@/pageEditor/store/editor/uiState";
+import { type BrickConfigurationUIState } from "@/pageEditor/store/editor/uiStateTypes";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
@@ -47,6 +52,7 @@ export const migrations: MigrationManifest = {
   3: (state: EditorStateV2 & PersistedState) => migrateEditorStateV2(state),
   4: (state: EditorStateV3 & PersistedState) => migrateEditorStateV3(state),
   5: (state: EditorStateV4 & PersistedState) => migrateEditorStateV4(state),
+  6: (state: EditorStateV5 & PersistedState) => migrateEditorStateV5(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -186,4 +192,25 @@ export function migrateEditorStateV4({
       (formStates) => formStates.map((element) => migrateFormStateV3(element)),
     ) as Record<string, ModComponentFormState[]>,
   };
+}
+
+export function migrateEditorStateV5(
+  state: EditorStateV5 & PersistedState,
+): EditorStateV6 & PersistedState {
+  // Reset the Data Panel state using the current set of DataPanelTabKeys
+  return produce(state, (draft) => {
+    for (const uiState of Object.values(draft.brickPipelineUIStateById)) {
+      for (const nodeUiState of Object.values(uiState.nodeUIStates)) {
+        nodeUiState.dataPanel = {
+          ...Object.fromEntries(
+            Object.values(DataPanelTabKey).map((tabKey) => [
+              tabKey,
+              makeInitialDataTabState(),
+            ]),
+          ),
+          activeTabKey: null,
+        } as BrickConfigurationUIState["dataPanel"];
+      }
+    }
+  });
 }

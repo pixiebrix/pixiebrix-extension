@@ -31,13 +31,16 @@ import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { type ValueOf } from "type-fest";
+import styles from "./InputDataTab.module.scss";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 
-const ViewModes = {
+const InputViewModes = {
   Arguments: "arguments",
   Variables: "variables",
 } as const;
 
-type ViewMode = ValueOf<typeof ViewModes>;
+type ViewMode = ValueOf<typeof InputViewModes>;
 
 /**
  * Exclude irrelevant top-level keys in the context passed to the brick.
@@ -72,7 +75,7 @@ const VariablesBody: React.FunctionComponent<{ traceRecord: TraceRecord }> = ({
       copyable
       searchable
       tabKey={DataPanelTabKey.Input}
-      label="Available Variables"
+      label="Variables"
     />
   );
 };
@@ -108,47 +111,91 @@ const ArgumentsBody: React.FunctionComponent<{ traceRecord: TraceRecord }> = ({
 };
 
 const ViewModeRadio: React.FunctionComponent<{
-  label: string;
+  label: React.ReactNode;
   viewMode: ViewMode;
   isChecked: boolean;
   onSelect: () => void;
 }> = ({ viewMode, isChecked, onSelect, label }) => (
   <FormCheck
+    id={`inputViewMode-${viewMode}`}
+    name="inputViewMode"
+    label={label}
     type="radio"
     value={viewMode}
     checked={isChecked}
     onChange={() => {
       onSelect();
     }}
-    label={label}
-    name="inputView"
-    id="inputViewArguments"
   />
 );
 
+const ViewModeWidget: React.FunctionComponent = () => {
+  const dispatch = useDispatch();
+
+  const { viewMode = InputViewModes.Arguments } =
+    useSelector((state: RootState) =>
+      selectNodeDataPanelTabState(state, DataPanelTabKey.Input),
+    ) ?? {};
+
+  const setViewMode = (nextViewMode: string) => {
+    dispatch(
+      actions.setNodeDataPanelTabViewMode({
+        tabKey: DataPanelTabKey.Input,
+        viewMode: nextViewMode,
+      }),
+    );
+  };
+
+  return (
+    <div className={styles.viewToggle}>
+      <ViewModeRadio
+        viewMode={InputViewModes.Arguments}
+        isChecked={viewMode === InputViewModes.Arguments}
+        onSelect={() => {
+          setViewMode(InputViewModes.Arguments);
+        }}
+        label={
+          <span>
+            <PopoverInfoLabel
+              name="arguments"
+              label="Arguments"
+              description="Arguments passed to the brick on the last run"
+            />
+          </span>
+        }
+      />
+      <ViewModeRadio
+        viewMode={InputViewModes.Variables}
+        isChecked={viewMode === InputViewModes.Variables}
+        onSelect={() => {
+          setViewMode(InputViewModes.Variables);
+        }}
+        label={
+          <span>
+            <PopoverInfoLabel
+              name={InputViewModes.Variables}
+              label="Variables"
+              description="Variables available to brick configuration on the last run"
+            />
+          </span>
+        }
+      />
+    </div>
+  );
+};
+
 /**
- * Data Panel tab displaying input arguments and variables
+ * Data Panel tab displaying input arguments and variables.
  * @since 2.0.6 includes both arguments and variables in a single panel
  */
 const InputDataTab: React.FunctionComponent<{
   traceRecord: Nullishable<TraceRecord>;
   isInputStale: boolean;
 }> = ({ isInputStale, traceRecord }) => {
-  const dispatch = useDispatch();
-
-  const { viewMode = ViewModes.Arguments } =
+  const { viewMode = InputViewModes.Arguments } =
     useSelector((state: RootState) =>
       selectNodeDataPanelTabState(state, DataPanelTabKey.Input),
     ) ?? {};
-
-  const setViewMode = (value: string) => {
-    dispatch(
-      actions.setNodeDataPanelTabViewMode({
-        tabKey: DataPanelTabKey.Input,
-        viewMode: value,
-      }),
-    );
-  };
 
   return (
     <DataTab eventKey={DataPanelTabKey.Input} isTraceEmpty={!traceRecord}>
@@ -157,31 +204,15 @@ const InputDataTab: React.FunctionComponent<{
           A previous brick has changed, input may be out of date
         </Alert>
       )}
-      <div className="d-flex">
-        <div>View</div>
-        <div>
-          <ViewModeRadio
-            viewMode={ViewModes.Arguments}
-            isChecked={viewMode === ViewModes.Arguments}
-            onSelect={() => {
-              setViewMode(ViewModes.Arguments);
-            }}
-            label="Arguments"
-          />
-        </div>
-        <div>
-          <ViewModeRadio
-            viewMode={ViewModes.Variables}
-            isChecked={viewMode === ViewModes.Variables}
-            onSelect={() => {
-              setViewMode(ViewModes.Variables);
-            }}
-            label="Variables"
-          />
-        </div>
-      </div>
 
-      {viewMode === ViewModes.Arguments ? (
+      <FieldTemplate
+        name="viewMode"
+        label="View"
+        fitLabelWidth
+        as={ViewModeWidget}
+      />
+
+      {viewMode === InputViewModes.Arguments ? (
         <ArgumentsBody traceRecord={traceRecord} />
       ) : (
         <VariablesBody traceRecord={traceRecord} />

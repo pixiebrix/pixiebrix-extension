@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,19 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export enum DataPanelTabKey {
-  /**
-   * The input arguments/variables for the mod.
-   * @since 2.0.6 consolidated Context and Rendered Args panels into a single tab
-   */
-  Input = "input",
-  ModVariables = "modVariables",
-  Output = "output",
-  Preview = "preview",
-  Outline = "outline",
-  Comments = "comments",
-
-  // Developer-only tabs
-  ModComponentFormState = "modComponentFormState",
-  BrickConfigFormState = "brickConfig",
+.viewToggle {
+  display: flex;
+  gap: 1em;
+  font-size: 80%;
+  align-items: center;
 }

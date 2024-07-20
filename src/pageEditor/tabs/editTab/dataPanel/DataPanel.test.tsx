@@ -49,7 +49,7 @@ const renderDataPanel = () => {
       );
       dispatch(editorActions.setActiveNodeId(instanceId));
       dispatch(
-        editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Context),
+        editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Input),
       );
     },
   });
@@ -75,7 +75,7 @@ describe("DataPanel", () => {
 
     expect(reportEventMock).toHaveBeenCalledOnce();
     expect(reportEventMock).toHaveBeenCalledWith(Events.DATA_PANEL_TAB_VIEW, {
-      tabName: DataPanelTabKey.Context,
+      tabName: DataPanelTabKey.Input,
       brickId: formState.modComponent.brickPipeline[1].id,
       modId: undefined,
     });

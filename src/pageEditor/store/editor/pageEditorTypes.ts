@@ -367,8 +367,11 @@ export type EditorStateV5 = Except<
   deletedModComponentFormStatesByModId: Record<string, BaseFormStateV4[]>;
 };
 
+// Instead of maintaining old enums, just clearing data panel state on migration, see migrateEditorStateV5
+export type EditorStateV6 = EditorStateV5;
+
 export type EditorState = Except<
-  EditorStateV5,
+  EditorStateV6,
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: ModComponentFormState[];
