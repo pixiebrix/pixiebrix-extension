@@ -26,7 +26,7 @@ import { type Timestamp } from "@/types/stringTypes";
  * @since 2.0.6
  * @see timestampFactory
  */
-export function isoTimestamp(): Timestamp {
+export function nowTimestamp(): Timestamp {
   return new Date().toISOString() as Timestamp;
 }
 

@@ -31,7 +31,7 @@ import useUserAction from "@/hooks/useUserAction";
 import download from "downloadjs";
 import filenamify from "filenamify";
 import { getExtensionVersion } from "@/utils/extensionUtils";
-import { isoTimestamp } from "@/utils/timeUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 async function collectDiagnostics({
   extensions,
@@ -80,7 +80,7 @@ function useDiagnostics() {
 
       download(
         JSON.stringify(data),
-        filenamify(`diagnostics-${isoTimestamp()}.json`),
+        filenamify(`diagnostics-${nowTimestamp()}.json`),
         "application/json",
       );
     },

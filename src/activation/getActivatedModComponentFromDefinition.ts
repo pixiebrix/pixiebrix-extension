@@ -26,7 +26,7 @@ import type {
 import type { Deployment } from "@/types/contract";
 import type { OptionsArgs } from "@/types/runtimeTypes";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
-import { isoTimestamp } from "@/utils/timeUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 export type ActivateModComponentParam = {
   modComponentDefinition: ModComponentDefinition;
@@ -56,7 +56,7 @@ export function getActivatedModComponentFromDefinition<
   optionsArgs,
   integrationDependencies,
 }: ActivateModComponentParam): ActivatedModComponent<Config> {
-  const nowTimestamp = isoTimestamp();
+  const nowTimestamp = nowTimestamp();
 
   const activatedModComponent = {
     id: uuidv4(),

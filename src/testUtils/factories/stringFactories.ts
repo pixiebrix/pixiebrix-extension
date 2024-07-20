@@ -17,7 +17,7 @@
 
 import { validateRegistryId, validateUUID } from "@/types/helpers";
 import { padStart } from "lodash";
-import { isoTimestamp } from "@/utils/timeUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 let uuidIndex = 0;
 let registryIndex = 0;
@@ -56,6 +56,6 @@ export const registryIdFactory = () => registryIdSequence(registryIndex++);
  *
  * In code, use `isoTimestamp` directly.
  *
- * @see isoTimestamp
+ * @see nowTimestamp
  */
-export const timestampFactory = () => isoTimestamp();
+export const timestampFactory = () => nowTimestamp();

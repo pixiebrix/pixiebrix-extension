@@ -18,7 +18,7 @@
 import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { isoTimestamp } from "@/utils/timeUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 class DocumentReader extends ReaderABC {
   override defaultOutputKey = "context";
@@ -35,7 +35,7 @@ class DocumentReader extends ReaderABC {
     return {
       url: document.location.href,
       title: document.title,
-      timestamp: isoTimestamp(),
+      timestamp: nowTimestamp(),
       isFrame: isLoadedInIframe(),
     };
   }

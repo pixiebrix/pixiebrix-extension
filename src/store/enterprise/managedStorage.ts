@@ -31,7 +31,7 @@ import { mergeSignals, ReusableAbortController } from "abort-utils";
 import { StorageItem } from "webext-storage";
 import type { Timestamp } from "@/types/stringTypes";
 import { PromiseCancelled } from "@/errors/genericErrors";
-import { isoTimestamp } from "@/utils/timeUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 // 1.8.9: bumped to 4.5s because 2s was too short: https://github.com/pixiebrix/pixiebrix-extension/issues/7618
 //   Privacy Badger uses 4.5s timeout, but thinks policy should generally be available within 2.5s. In installer.ts,
@@ -217,7 +217,7 @@ const waitForInitialManagedStorage = pMemoize(async () => {
     }
 
     // Set timestamp so other callsites know they don't have to wait again. OK to set multiple times
-    await initializationTimestamp.set(isoTimestamp());
+    await initializationTimestamp.set(nowTimestamp());
   }
 
   managedStorageStateChange.emit(managedStorageSnapshot);
