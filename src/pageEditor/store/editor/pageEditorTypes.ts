@@ -260,7 +260,7 @@ export type EditorStateV3 = Except<
   activeModComponentId: UUID | null;
 
   /**
-   * The registry id of the active mod, if a mod is selected
+   * The registry id of the active mod, if a mod is selected. Is null if a mod component within the mod is selected.
    */
   activeModId: RegistryId | null;
 

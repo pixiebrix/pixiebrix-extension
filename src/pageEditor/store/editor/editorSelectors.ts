@@ -73,8 +73,19 @@ export const selectActiveModComponentFormState = createSelector(
     formStates.find((x) => x.uuid === activeModComponentId),
 );
 
+/**
+ * Select the id of the mod being edited. Is null when editing a mod component within the mod.
+ * @see selectExpandedModId
+ */
 export const selectActiveModId = ({ editor }: EditorRootState) =>
   editor.activeModId;
+
+/**
+ * Select the id of the mod being edited. Will be set when editing the mod or a mod component within the mod.
+ * @see selectActiveModId
+ */
+export const selectExpandedModId = ({ editor }: EditorRootState) =>
+  editor.expandedModId;
 
 /**
  * Select a runtime ModComponentRef for the mod component being edited
@@ -84,7 +95,7 @@ export const selectActiveModId = ({ editor }: EditorRootState) =>
  */
 export const selectActiveModComponentRef = createSelector(
   selectActiveModComponentFormState,
-  selectActiveModId,
+  selectExpandedModId,
   (formState, modId) => {
     assertNotNullish(
       formState,
@@ -296,9 +307,6 @@ export const selectIsDataPanelExpanded = ({ editor }: EditorRootState) =>
 
 export const selectKeepLocalCopyOnCreateMod = ({ editor }: EditorRootState) =>
   editor.keepLocalCopyOnCreateMod;
-
-export const selectExpandedModId = ({ editor }: EditorRootState) =>
-  editor.expandedModId;
 
 // UI state
 export function selectActiveBrickPipelineUIState({
