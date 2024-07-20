@@ -40,9 +40,14 @@ import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { sleep } from "@/utils/timeUtils";
 import { type NetworkRequestConfig } from "@/types/networkTypes";
 
-jest.mock("@/utils/timeUtils", () => ({
-  sleep: jest.fn(() => {}),
-}));
+jest.mock("@/utils/timeUtils", () => {
+  const actual = jest.requireActual("@/utils/timeUtils");
+
+  return {
+    ...actual,
+    sleep: jest.fn(() => {}),
+  };
+});
 
 const sleepMock = jest.mocked(sleep);
 
