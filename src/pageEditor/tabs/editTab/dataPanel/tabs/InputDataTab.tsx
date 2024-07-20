@@ -88,11 +88,11 @@ const ArgumentsBody: React.FunctionComponent<{
       <>
         {traceRecord.skippedRun ? (
           <Alert variant="info">
-            An error occurred evaluating input configuration, but the brick was
+            An error occurred evaluating the brick arguments, but the brick was
             skipped because condition was not met
           </Alert>
         ) : (
-          <Alert variant="danger">Error evaluating input configuration</Alert>
+          <Alert variant="danger">Error evaluating brick arguments</Alert>
         )}
         <ErrorDisplay error={traceRecord.renderError} />
       </>

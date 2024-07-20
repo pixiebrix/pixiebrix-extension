@@ -81,7 +81,7 @@ describe("InputDataTab", () => {
     renderInputDataTab(formState, records);
 
     expect(
-      screen.getByText("Error evaluating input configuration"),
+      screen.getByText("Error evaluating brick arguments"),
     ).toBeInTheDocument();
     expect(screen.getByText("Test Error")).toBeInTheDocument();
   });
