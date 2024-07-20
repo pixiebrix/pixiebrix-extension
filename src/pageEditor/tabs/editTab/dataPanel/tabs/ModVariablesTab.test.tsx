@@ -26,10 +26,14 @@ import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { getStandaloneModComponentRuntimeModId } from "@/utils/modUtils";
+
+const getPageStateMock = jest.mocked(getPageState);
 
 describe("ModVariablesTab", () => {
   beforeAll(() => {
-    jest.mocked(getPageState).mockResolvedValue({
+    getPageStateMock.mockReset();
+    getPageStateMock.mockResolvedValue({
       foo: "bar",
       baz: 32,
     });
@@ -57,15 +61,47 @@ describe("ModVariablesTab", () => {
     const formState = formStateFactory();
     const { asFragment } = await renderPageStateTab(formState);
     expect(asFragment()).toMatchSnapshot();
+
+    expect(getPageStateMock).toHaveBeenCalledWith(
+      {
+        frameId: 0,
+        tabId: 0,
+      },
+      {
+        namespace: expect.toBeString(),
+        modComponentRef: {
+          modComponentId: formState.uuid,
+          modId: getStandaloneModComponentRuntimeModId(formState.uuid),
+          starterBrickId: formState.starterBrick.metadata.id,
+        },
+      },
+    );
   });
 
   it("renders with mod's mod component", async () => {
+    const modMetadata = modMetadataFactory();
+
     const formState = formStateFactory({
       formStateConfig: {
-        modMetadata: modMetadataFactory(),
+        modMetadata,
       },
     });
     const { asFragment } = await renderPageStateTab(formState);
     expect(asFragment()).toMatchSnapshot();
+
+    expect(getPageStateMock).toHaveBeenCalledWith(
+      {
+        frameId: 0,
+        tabId: 0,
+      },
+      {
+        namespace: expect.toBeString(),
+        modComponentRef: {
+          modComponentId: formState.uuid,
+          modId: modMetadata.id,
+          starterBrickId: formState.starterBrick.metadata.id,
+        },
+      },
+    );
   });
 });
