@@ -25,7 +25,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type ShouldExpandNodeInitially } from "react-json-tree";
 import { inspectedTab } from "@/pageEditor/context/connection";
@@ -80,7 +80,7 @@ const ModVariablesTab: React.VFC = () => {
   );
 
   return (
-    <DataTab eventKey={DataPanelTabKey.ModVariables}>
+    <DataTabPane eventKey={DataPanelTabKey.ModVariables}>
       <div className="mb-1 d-flex">
         <div>
           <Button
@@ -117,7 +117,7 @@ const ModVariablesTab: React.VFC = () => {
           shouldExpandNodeInitially={expandTopLevelNodes}
         />
       )}
-    </DataTab>
+    </DataTabPane>
   );
 };
 

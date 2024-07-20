@@ -22,11 +22,18 @@ export enum DataPanelTabKey {
    */
   Input = "input",
   ModVariables = "modVariables",
+  /**
+   * The brick output/output preview
+   * @since 2.0.6 contains both the output and preview
+   */
   Output = "output",
-  Preview = "preview",
+  /**
+   * Design tab for the form/document builder
+   * @since 2.0.6 split from the Preview tab
+   */
+  Design = "design",
   Outline = "outline",
   Comments = "comments",
-
   // Developer-only tabs
   ModComponentFormState = "modComponentFormState",
   BrickConfigFormState = "brickConfig",

@@ -16,7 +16,7 @@
  */
 
 import { render } from "@/pageEditor/testHelpers";
-import InputDataTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/InputDataTab";
+import InputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/InputTab";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -34,26 +34,27 @@ function renderInputDataTab(
   records: TraceRecord[],
 ) {
   const modComponentId = formState.uuid;
-  const { instanceId } = formState.modComponent.brickPipeline[1];
 
   return render(
     <Tab.Container activeKey={DataPanelTabKey.Input}>
-      <Tab.Content>
-        <InputDataTab isInputStale={false} traceRecord={records[0]} />
-      </Tab.Content>
+      <InputTab />
     </Tab.Container>,
     {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
-        dispatch(editorActions.setActiveModComponentId(formState.uuid));
+        dispatch(editorActions.setActiveModComponentId(modComponentId));
         dispatch(
           runtimeSlice.actions.setModComponentTrace({
             modComponentId,
             records,
           }),
         );
-        dispatch(editorActions.setActiveNodeId(instanceId));
+        dispatch(
+          editorActions.setActiveNodeId(
+            formState.modComponent.brickPipeline[1].instanceId,
+          ),
+        );
       },
     },
   );

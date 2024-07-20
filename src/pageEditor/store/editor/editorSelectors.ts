@@ -46,6 +46,7 @@ import {
 } from "@/utils/modUtils";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { type ReportEventData } from "@/telemetry/telemetryTypes";
 
 export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -423,7 +424,7 @@ export function selectNodeDataPanelTabState(
 export function selectActiveBuilderPreviewElement(
   state: EditorRootState,
 ): Nullishable<string> {
-  return selectNodeDataPanelTabState(state, DataPanelTabKey.Preview)
+  return selectNodeDataPanelTabState(state, DataPanelTabKey.Design)
     ?.activeElement;
 }
 
@@ -512,3 +513,14 @@ export const selectKnownEventNamesForActiveModComponent = createSelector(
 
 export const selectIsDimensionsWarningDismissed = (state: EditorRootState) =>
   state.editor.isDimensionsWarningDismissed;
+
+export const selectActiveNodeEventData = createSelector(
+  selectActiveModComponentFormState,
+  selectActiveNodeInfo,
+  (activeModComponentFormState, activeNodeInfo) => {
+    return {
+      modId: activeModComponentFormState.modMetadata?.id,
+      brickId: activeNodeInfo.blockId,
+    } satisfies ReportEventData;
+  },
+);

@@ -19,28 +19,42 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import Alert from "@/components/Alert";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
-import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
+import DataTabPane, {
+  noTraceAvailableElement,
+} from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import React, { useMemo } from "react";
 import { type TraceRecord } from "@/telemetry/trace";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { FormCheck } from "react-bootstrap";
 import { isEmpty, pickBy } from "lodash";
 import ErrorDisplay from "@/pageEditor/tabs/editTab/dataPanel/ErrorDisplay";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
-import { actions } from "@/pageEditor/store/editor/editorSlice";
+import ViewModeField, {
+  type ViewModeOption,
+} from "@/pageEditor/tabs/editTab/dataPanel/tabs/ViewModeField";
+import useInputTrace from "@/pageEditor/tabs/editTab/dataPanel/tabs/useInputTrace";
 import { type ValueOf } from "type-fest";
-import styles from "./InputDataTab.module.scss";
-import FieldTemplate from "@/components/form/FieldTemplate";
-import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 
 const InputViewModes = {
   Arguments: "arguments",
   Variables: "variables",
 } as const;
 
-type ViewMode = ValueOf<typeof InputViewModes>;
+const VIEW_MODE_OPTIONS: Array<ViewModeOption<ValueOf<typeof InputViewModes>>> =
+  [
+    {
+      value: InputViewModes.Arguments,
+      label: "Arguments",
+      description: "Arguments passed to the brick on the latest run",
+    },
+    {
+      value: InputViewModes.Variables,
+      label: "Variables",
+      description:
+        "Variables available to brick configuration on the latest run",
+    },
+  ];
 
 /**
  * Exclude irrelevant top-level keys in the context passed to the brick.
@@ -110,115 +124,43 @@ const ArgumentsBody: React.FunctionComponent<{
   );
 };
 
-const ViewModeRadio: React.FunctionComponent<{
-  label: React.ReactNode;
-  viewMode: ViewMode;
-  isChecked: boolean;
-  onSelect: () => void;
-}> = ({ viewMode, isChecked, onSelect, label }) => (
-  <FormCheck
-    id={`inputViewMode-${viewMode}`}
-    name="inputViewMode"
-    label={label}
-    type="radio"
-    value={viewMode}
-    checked={isChecked}
-    onChange={() => {
-      onSelect();
-    }}
-  />
-);
-
-const ViewModeWidget: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
-
-  const { viewMode = InputViewModes.Arguments } =
-    useSelector((state: RootState) =>
-      selectNodeDataPanelTabState(state, DataPanelTabKey.Input),
-    ) ?? {};
-
-  const setViewMode = (nextViewMode: string) => {
-    dispatch(
-      actions.setNodeDataPanelTabViewMode({
-        tabKey: DataPanelTabKey.Input,
-        viewMode: nextViewMode,
-      }),
-    );
-  };
-
-  return (
-    <div className={styles.viewToggle}>
-      <ViewModeRadio
-        viewMode={InputViewModes.Arguments}
-        isChecked={viewMode === InputViewModes.Arguments}
-        onSelect={() => {
-          setViewMode(InputViewModes.Arguments);
-        }}
-        label={
-          <span>
-            <PopoverInfoLabel
-              name="arguments"
-              label="Arguments"
-              description="Arguments passed to the brick on the latest run"
-            />
-          </span>
-        }
-      />
-      <ViewModeRadio
-        viewMode={InputViewModes.Variables}
-        isChecked={viewMode === InputViewModes.Variables}
-        onSelect={() => {
-          setViewMode(InputViewModes.Variables);
-        }}
-        label={
-          <span>
-            <PopoverInfoLabel
-              name={InputViewModes.Variables}
-              label="Variables"
-              description="Variables available to brick configuration on the latest run"
-            />
-          </span>
-        }
-      />
-    </div>
-  );
-};
-
 /**
  * Data Panel tab displaying input arguments and variables.
  * @since 2.0.6 includes both arguments and variables in a single panel
  */
-const InputDataTab: React.FunctionComponent<{
-  traceRecord: Nullishable<TraceRecord>;
-  isInputStale: boolean;
-}> = ({ isInputStale, traceRecord }) => {
+const InputTab: React.FunctionComponent = () => {
+  const { isStale, traceRecord } = useInputTrace();
+
   const { viewMode = InputViewModes.Arguments } =
     useSelector((state: RootState) =>
       selectNodeDataPanelTabState(state, DataPanelTabKey.Input),
     ) ?? {};
 
+  if (!traceRecord) {
+    return (
+      <DataTabPane eventKey={DataPanelTabKey.Input}>
+        {noTraceAvailableElement}
+      </DataTabPane>
+    );
+  }
+
   return (
-    <DataTab eventKey={DataPanelTabKey.Input} isTraceEmpty={!traceRecord}>
-      {isInputStale && (
+    <DataTabPane eventKey={DataPanelTabKey.Input}>
+      {isStale && (
         <Alert variant="warning">
           A previous brick has changed, input may be out of date
         </Alert>
       )}
 
-      <FieldTemplate
-        name="viewMode"
-        label="View"
-        fitLabelWidth
-        as={ViewModeWidget}
-      />
+      <ViewModeField name="viewMode" viewModeOptions={VIEW_MODE_OPTIONS} />
 
       {viewMode === InputViewModes.Arguments ? (
         <ArgumentsBody traceRecord={traceRecord} />
       ) : (
         <VariablesBody traceRecord={traceRecord} />
       )}
-    </DataTab>
+    </DataTabPane>
   );
 };
 
-export default InputDataTab;
+export default InputTab;

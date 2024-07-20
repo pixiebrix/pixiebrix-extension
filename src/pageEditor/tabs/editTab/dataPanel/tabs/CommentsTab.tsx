@@ -15,45 +15,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React, { useContext } from "react";
-import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import styles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
-import { type RegistryId } from "@/types/registryTypes";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { type Schema } from "@/types/schemaTypes";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
+import { useSelector } from "react-redux";
+import {
+  selectActiveNodeEventData,
+  selectActiveNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
+import { joinPathParts } from "@/utils/formUtils";
 
 const commentsSchema: Schema = { type: "string" };
 
-const CommentsTab: React.FunctionComponent<{
-  brickId: RegistryId;
-  brickCommentsFieldName: string;
-  modId?: RegistryId;
-}> = ({ brickCommentsFieldName, brickId, modId }) => {
+const CommentsTab: React.FunctionComponent = () => {
+  const { path: brickPath } = useSelector(selectActiveNodeInfo);
+
   const context = useContext(FieldRuntimeContext);
+
+  const eventData = useSelector(selectActiveNodeEventData);
+
   const handleBlur = (event: React.FocusEvent<HTMLTextAreaElement>) => {
     const comments = event.target.value;
     reportEvent(Events.BRICK_COMMENTS_UPDATE, {
+      ...eventData,
       commentsLength: comments.length,
-      modId,
-      brickId,
     });
   };
 
   return (
-    <Tab.Pane eventKey={DataPanelTabKey.Comments} className={styles.tabPane}>
+    <DataTabPane eventKey={DataPanelTabKey.Comments}>
       <FieldRuntimeContext.Provider
         value={{ ...context, allowExpressions: false }}
       >
         <TextWidget
-          name={brickCommentsFieldName}
+          name={joinPathParts(brickPath, "comments")}
           schema={commentsSchema}
           onBlur={handleBlur}
         />
       </FieldRuntimeContext.Provider>
-    </Tab.Pane>
+    </DataTabPane>
   );
 };
 
