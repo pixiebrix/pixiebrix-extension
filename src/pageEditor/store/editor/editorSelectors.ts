@@ -76,12 +76,6 @@ export const selectActiveModComponentFormState = createSelector(
 export const selectActiveModId = ({ editor }: EditorRootState) =>
   editor.activeModId;
 
-export const selectInsertingStarterBrickType = ({ editor }: EditorRootState) =>
-  editor.insertingStarterBrickType;
-
-export const selectIsInsertingStarterBrick = ({ editor }: EditorRootState) =>
-  editor.insertingStarterBrickType != null;
-
 /**
  * Select a runtime ModComponentRef for the mod component being edited
  * @since 2.0.6 returns a synthetic mod id for standalone mods

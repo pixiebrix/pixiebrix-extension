@@ -36,6 +36,7 @@ import {
   type EditorStateV4,
   type EditorStateV5,
   type EditorStateV6,
+  type EditorStateV7,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { produce } from "immer";
@@ -194,9 +195,16 @@ export function migrateEditorStateV4({
   };
 }
 
-export function migrateEditorStateV5(
-  state: EditorStateV5 & PersistedState,
-): EditorStateV6 & PersistedState {
+export function migrateEditorStateV5({
+  insertingStarterBrickType,
+  ...rest
+}: EditorStateV5 & PersistedState): EditorStateV6 & PersistedState {
+  return rest;
+}
+
+export function migrateEditorStateV6(
+  state: EditorStateV6 & PersistedState,
+): EditorStateV7 & PersistedState {
   // Reset the Data Panel state using the current set of DataPanelTabKeys
   return produce(state, (draft) => {
     for (const uiState of Object.values(draft.brickPipelineUIStateById)) {

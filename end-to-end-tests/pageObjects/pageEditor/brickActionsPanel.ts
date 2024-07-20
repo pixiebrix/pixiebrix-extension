@@ -57,6 +57,10 @@ export class BrickActionsPanel extends BasePageObject {
     );
   }
 
+  async getBricksInPipeline() {
+    return this.getByTestId("editor-node").all();
+  }
+
   getActiveBrick() {
     return new Brick(
       this.getByTestId("editor-node").filter({

@@ -21,6 +21,7 @@ import {
   type EditorStateV3,
   type EditorStateV4,
   type EditorStateV5,
+  type EditorStateV6,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { mapValues, omit } from "lodash";
 import {
@@ -49,6 +50,7 @@ import {
   migrateEditorStateV2,
   migrateEditorStateV3,
   migrateEditorStateV4,
+  migrateEditorStateV5,
 } from "@/store/editorMigrations";
 import { type FactoryConfig } from "cooky-cutter/dist/define";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -193,6 +195,40 @@ const initialStateV5: EditorStateV5 & PersistedState = {
   isDataPanelExpanded: true,
   isDimensionsWarningDismissed: false,
   insertingStarterBrickType: null,
+  isVariablePopoverVisible: false,
+  // Function under test does not handle updating the persistence, this is handled by redux-persist
+  _persist: {
+    version: 1,
+    rehydrated: false,
+  },
+};
+
+const initialStateV6: EditorStateV6 & PersistedState = {
+  selectionSeq: 0,
+  activeModComponentId: null,
+  activeModId: null,
+  expandedModId: null,
+  error: null,
+  beta: false,
+  modComponentFormStates: [],
+  knownEditableBrickIds: [],
+  dirty: {},
+  isBetaUI: false,
+  copiedBrick: undefined,
+  brickPipelineUIStateById: {},
+  dirtyModOptionsById: {},
+  dirtyModMetadataById: {},
+  visibleModalKey: null,
+  addBrickLocation: undefined,
+  keepLocalCopyOnCreateMod: false,
+  deletedModComponentFormStatesByModId: {},
+  availableActivatedModComponentIds: [],
+  isPendingAvailableActivatedModComponents: false,
+  availableDraftModComponentIds: [],
+  isPendingDraftModComponents: false,
+  isModListExpanded: true,
+  isDataPanelExpanded: true,
+  isDimensionsWarningDismissed: false,
   isVariablePopoverVisible: false,
   // Function under test does not handle updating the persistence, this is handled by redux-persist
   _persist: {
@@ -353,6 +389,15 @@ function unmigrateEditorStateV5toV4(
   };
 }
 
+function unmigrateEditorStateV6toV5(
+  state: EditorStateV6 & PersistedState,
+): EditorStateV5 & PersistedState {
+  return {
+    ...state,
+    insertingStarterBrickType: null,
+  };
+}
+
 type SimpleFactory<T> = (override?: FactoryConfig<T>) => T;
 
 const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = (override) =>
@@ -501,6 +546,23 @@ describe("editor state migrations", () => {
       const unmigrated = unmigrateEditorStateV5toV4(expectedEditorStateV5);
       expect(migrateEditorStateV4(unmigrated)).toStrictEqual(
         expectedEditorStateV5,
+      );
+    });
+  });
+
+  describe("migrateEditorState V5 to V6", () => {
+    it("migrates empty state", () => {
+      expect(migrateEditorStateV5(initialStateV5)).toStrictEqual(
+        initialStateV6,
+      );
+    });
+
+    it("migrates remove insertingStarterBrickType property", () => {
+      const { insertingStarterBrickType, ...rest } = initialStateV5;
+      const expectedEditorStateV6: EditorStateV6 & PersistedState = rest;
+      const unmigrated = unmigrateEditorStateV6toV5(expectedEditorStateV6);
+      expect(migrateEditorStateV5(unmigrated)).toStrictEqual(
+        expectedEditorStateV6,
       );
     });
   });

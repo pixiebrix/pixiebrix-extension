@@ -367,11 +367,16 @@ export type EditorStateV5 = Except<
   deletedModComponentFormStatesByModId: Record<string, BaseFormStateV4[]>;
 };
 
+/**
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ */
+export type EditorStateV6 = Except<EditorStateV5, "insertingStarterBrickType">;
+
 // Instead of maintaining old enums, just clearing data panel state on migration, see migrateEditorStateV5
-export type EditorStateV6 = EditorStateV5;
+export type EditorStateV7 = EditorStateV6;
 
 export type EditorState = Except<
-  EditorStateV6,
+  EditorStateV7,
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: ModComponentFormState[];

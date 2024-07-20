@@ -1254,7 +1254,6 @@
     "./pageEditor/panes/insert/InsertButtonPane.tsx",
     "./pageEditor/panes/insert/InsertPane.tsx",
     "./pageEditor/panes/insert/exampleStarterBrickConfigs.ts",
-    "./pageEditor/panes/insert/useAutoInsert.ts",
     "./pageEditor/panes/save/SaveDataIntegrityErrorModal.tsx",
     "./pageEditor/panes/save/saveHelpers.ts",
     "./pageEditor/protocol.ts",
