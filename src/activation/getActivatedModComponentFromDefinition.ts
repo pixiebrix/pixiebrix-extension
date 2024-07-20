@@ -56,7 +56,7 @@ export function getActivatedModComponentFromDefinition<
   optionsArgs,
   integrationDependencies,
 }: ActivateModComponentParam): ActivatedModComponent<Config> {
-  const nowTimestamp = nowTimestamp();
+  const timestamp = nowTimestamp();
 
   const activatedModComponent = {
     id: uuidv4(),
@@ -71,8 +71,8 @@ export function getActivatedModComponentFromDefinition<
     extensionPointId: modComponentDefinition.id,
     config: modComponentDefinition.config as Config,
     active: true,
-    createTimestamp: nowTimestamp,
-    updateTimestamp: nowTimestamp,
+    createTimestamp: timestamp,
+    updateTimestamp: timestamp,
   } as ActivatedModComponent<Config>;
 
   // Set optional fields only if the source mod component has a value. Normalizing the values
