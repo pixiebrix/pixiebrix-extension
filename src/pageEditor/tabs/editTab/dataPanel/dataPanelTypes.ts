@@ -17,8 +17,8 @@
 
 export enum DataPanelTabKey {
   /**
-   * The input arguments/variables for the mod.
-   * @since 2.0.6 consolidated Context and Rendered Args panels into a single tab
+   * The input arguments/variables for the brick
+   * @since 2.0.6 consolidated Context and Rendered Args tabs into a single tab
    */
   Input = "input",
   ModVariables = "modVariables",
