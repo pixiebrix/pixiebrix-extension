@@ -29,7 +29,6 @@ import { type BrickPipeline } from "@/bricks/types";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import brickRegistry from "@/bricks/registry";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
-
 import {
   timestampFactory,
   uuidSequence,

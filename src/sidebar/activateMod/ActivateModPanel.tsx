@@ -223,7 +223,7 @@ const ActivateModPanelContent: React.FC<
   isActive,
 }) => {
   const reduxDispatch = useDispatch();
-  const marketplaceActivateRecipe = useActivateMod("marketplace");
+  const marketplaceActivateMod = useActivateMod("marketplace");
 
   const [state, stateDispatch] = useReducer(
     activationSlice.reducer,
@@ -268,7 +268,7 @@ const ActivateModPanelContent: React.FC<
 
     stateDispatch(activateStart());
 
-    const { success, error } = await marketplaceActivateRecipe(
+    const { success, error } = await marketplaceActivateMod(
       formValuesRef.current,
       modDefinition,
     );
@@ -280,7 +280,7 @@ const ActivateModPanelContent: React.FC<
       stateDispatch(activateError(error));
     }
   }, [
-    marketplaceActivateRecipe,
+    marketplaceActivateMod,
     modDefinition,
     state.isActivated,
     state.isActivating,

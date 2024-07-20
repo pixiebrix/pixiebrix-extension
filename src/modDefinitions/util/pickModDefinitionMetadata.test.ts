@@ -15,8 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
+import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
+import { mapStandaloneModDefinitionToModDefinition } from "@/mods/utils/mapStandaloneModDefinitionToModDefinition";
 
-export type FormState = {
-  integrationDependencies: IntegrationDependency[];
-};
+describe("pickModDefinitionMetadata", () => {
+  it("returns undefined for mod definition from standalone mod component", () => {
+    const standaloneModDefinition = standaloneModDefinitionFactory();
+    const modDefinition = mapStandaloneModDefinitionToModDefinition(
+      standaloneModDefinition,
+    );
+
+    expect(pickModDefinitionMetadata(modDefinition)).toBeUndefined();
+  });
+});

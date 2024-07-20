@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ActivateModCard activate mod definition permissions 1`] = `
+exports[`ActivateModDefinitionIdPage activate mod definition permissions 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -36,7 +36,7 @@ exports[`ActivateModCard activate mod definition permissions 1`] = `
               <h3
                 class="page-title"
               >
-                Activate Mod
+                Activate A Mod
               </h3>
               <div
                 class="page-documentation"
@@ -185,7 +185,7 @@ exports[`ActivateModCard activate mod definition permissions 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateModCard activate mod definition with missing required mod definition options 1`] = `
+exports[`ActivateModDefinitionIdPage activate mod definition with missing required mod definition options 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -221,7 +221,7 @@ exports[`ActivateModCard activate mod definition with missing required mod defin
               <h3
                 class="page-title"
               >
-                Activate Mod
+                Activate Mod with Req...
               </h3>
               <div
                 class="page-documentation"
@@ -510,7 +510,7 @@ exports[`ActivateModCard activate mod definition with missing required mod defin
 </DocumentFragment>
 `;
 
-exports[`ActivateModCard renders 1`] = `
+exports[`ActivateModDefinitionIdPage renders 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -546,7 +546,7 @@ exports[`ActivateModCard renders 1`] = `
               <h3
                 class="page-title"
               >
-                Activate Mod
+                Activate Mod 1
               </h3>
               <div
                 class="page-documentation"
@@ -695,7 +695,7 @@ exports[`ActivateModCard renders 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateModCard renders instructions 1`] = `
+exports[`ActivateModDefinitionIdPage renders instructions 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -731,7 +731,7 @@ exports[`ActivateModCard renders instructions 1`] = `
               <h3
                 class="page-title"
               >
-                Activate Mod
+                Activate Mod 6
               </h3>
               <div
                 class="page-documentation"
@@ -892,7 +892,7 @@ exports[`ActivateModCard renders instructions 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateModCard renders successfully with null services property 1`] = `
+exports[`ActivateModDefinitionIdPage renders successfully with null services property 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -928,7 +928,7 @@ exports[`ActivateModCard renders successfully with null services property 1`] = 
               <h3
                 class="page-title"
               >
-                Activate Mod
+                Activate Mod 2
               </h3>
               <div
                 class="page-documentation"

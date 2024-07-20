@@ -15,24 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RequiredMeMilestoneResponse } from "@/data/service/responseTypeHelpers";
+import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapStandaloneModDefinitionToModDefinition } from "@/mods/utils/mapStandaloneModDefinitionToModDefinition";
+import { isInternalRegistryId } from "@/utils/registryUtils";
 
-export type UserMilestone = {
-  /**
-   * A lower-snake-case, human-readable identifier for the Milestone, e.g. "first_time_extension_install"
-   */
-  milestoneName: string;
-  /**
-   * Optional additional information to provide context about the Milestone
-   */
-  metadata: UnknownObject;
-};
+describe("mapStandaloneModDefinitionToModDefinition", () => {
+  it("uses internal registry id", () => {
+    const standaloneModDefinition = standaloneModDefinitionFactory();
+    const modDefinition = mapStandaloneModDefinitionToModDefinition(
+      standaloneModDefinition,
+    );
 
-export function transformUserMilestoneResponse(
-  response: RequiredMeMilestoneResponse,
-): UserMilestone {
-  return {
-    milestoneName: response.key,
-    metadata: response.metadata ?? {},
-  };
-}
+    expect(isInternalRegistryId(modDefinition.metadata.id)).toBe(true);
+  });
+});
