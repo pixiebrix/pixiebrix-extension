@@ -699,7 +699,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                               name="starterBrick.definition.isAvailable.matchPatterns.0"
                               rows="1"
                             >
-                              https://www.mySite2.com/*
+                              https://www.mySite1.com/*
                             </textarea>
                           </div>
                           <div
@@ -1191,24 +1191,11 @@ exports[`renders a mod component with sub pipeline 1`] = `
                     <a
                       aria-selected="false"
                       class="nav-link"
-                      data-rb-event-key="context"
+                      data-rb-event-key="input"
                       href="#"
                       role="tab"
                     >
-                      Context
-                    </a>
-                  </div>
-                  <div
-                    class="tabNav nav-item"
-                  >
-                    <a
-                      aria-selected="false"
-                      class="nav-link"
-                      data-rb-event-key="rendered"
-                      href="#"
-                      role="tab"
-                    >
-                      Rendered
+                      Input
                     </a>
                   </div>
                   <div
@@ -1262,18 +1249,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                     <div
                       class="text-muted"
                     >
-                      This is the first step in the execution flow, so it does not receive inputs from any other brick.
-                    </div>
-                  </div>
-                  <div
-                    aria-hidden="true"
-                    class="fade tabPane tab-pane"
-                    role="tabpanel"
-                  >
-                    <div
-                      class="text-muted"
-                    >
-                      This is the first step in the execution flow, so it does not receive inputs from any other brick.
+                      Starter Bricks do not receive input.
                     </div>
                   </div>
                   <div
@@ -2067,11 +2043,11 @@ exports[`renders the first selected node 1`] = `
                       <a
                         aria-selected="false"
                         class="nav-link"
-                        data-rb-event-key="context"
+                        data-rb-event-key="input"
                         href="#"
                         role="tab"
                       >
-                        Context
+                        Input
                       </a>
                     </div>
                     <div
@@ -2085,19 +2061,6 @@ exports[`renders the first selected node 1`] = `
                         role="tab"
                       >
                         Mod Variables
-                      </a>
-                    </div>
-                    <div
-                      class="tabNav nav-item"
-                    >
-                      <a
-                        aria-selected="false"
-                        class="nav-link"
-                        data-rb-event-key="rendered"
-                        href="#"
-                        role="tab"
-                      >
-                        Rendered
                       </a>
                     </div>
                     <div

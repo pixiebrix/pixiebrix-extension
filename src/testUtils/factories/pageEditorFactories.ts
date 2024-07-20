@@ -32,7 +32,10 @@ import {
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import {
+  starterBrickDefinitionFactory,
+  starterBrickDefinitionPropFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type BrickPipeline } from "@/bricks/types";
 import contextMenu from "@/pageEditor/starterBricks/contextMenu";
@@ -120,6 +123,7 @@ formStateFactory.resetSequence = () => {
   internalFormStateFactory.resetSequence();
   brickConfigFactory.resetSequence();
   starterBrickDefinitionFactory.resetSequence();
+  starterBrickDefinitionPropFactory.resetSequence();
 };
 
 export const triggerFormStateFactory = (

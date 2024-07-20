@@ -83,7 +83,7 @@ describe("DataPanel", () => {
     reportEventMock.mockClear();
 
     // Selecting the same tab should not trigger another event
-    screen.getByRole("tab", { name: "Context" }).click();
+    screen.getByRole("tab", { name: "Input" }).click();
     await waitForEffect();
 
     expect(reportEventMock).not.toHaveBeenCalled();

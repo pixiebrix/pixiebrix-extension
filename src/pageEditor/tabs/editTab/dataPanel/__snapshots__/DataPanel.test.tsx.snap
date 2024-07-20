@@ -16,11 +16,11 @@ exports[`DataPanel renders with form state and trace data 1`] = `
           <a
             aria-selected="true"
             class="nav-link active"
-            data-rb-event-key="context"
+            data-rb-event-key="input"
             href="#"
             role="tab"
           >
-            Context
+            Input
           </a>
         </div>
         <div
@@ -34,19 +34,6 @@ exports[`DataPanel renders with form state and trace data 1`] = `
             role="tab"
           >
             Mod Variables
-          </a>
-        </div>
-        <div
-          class="tabNav nav-item"
-        >
-          <a
-            aria-selected="false"
-            class="nav-link"
-            data-rb-event-key="rendered"
-            href="#"
-            role="tab"
-          >
-            Rendered
           </a>
         </div>
         <div
@@ -98,6 +85,120 @@ exports[`DataPanel renders with form state and trace data 1`] = `
           role="tabpanel"
         >
           <div
+            class="formGroup form-group"
+          >
+            <div
+              class="mb-2 w-100 collapse"
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
+            <label
+              class="label labelFitContent form-label"
+              for="viewMode"
+            >
+              View
+            </label>
+            <div
+              class="formField"
+            >
+              <div
+                class="viewToggle"
+              >
+                <div
+                  class="form-check"
+                >
+                  <input
+                    checked=""
+                    class="form-check-input"
+                    id="inputViewMode-arguments"
+                    name="inputViewMode"
+                    type="radio"
+                    value="arguments"
+                  />
+                  <label
+                    class="form-check-label"
+                    for="inputViewMode-arguments"
+                    title=""
+                  >
+                    <span>
+                      <span
+                        class="span"
+                      >
+                        <span
+                          class="label"
+                        >
+                          Arguments
+                        </span>
+                         
+                        <svg
+                          aria-hidden="true"
+                          class="svg-inline--fa fa-info-circle fa-w-16 "
+                          data-icon="info-circle"
+                          data-prefix="fas"
+                          focusable="false"
+                          role="img"
+                          viewBox="0 0 512 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </span>
+                    </span>
+                  </label>
+                </div>
+                <div
+                  class="form-check"
+                >
+                  <input
+                    class="form-check-input"
+                    id="inputViewMode-variables"
+                    name="inputViewMode"
+                    type="radio"
+                    value="variables"
+                  />
+                  <label
+                    class="form-check-label"
+                    for="inputViewMode-variables"
+                    title=""
+                  >
+                    <span>
+                      <span
+                        class="span"
+                      >
+                        <span
+                          class="label"
+                        >
+                          Variables
+                        </span>
+                         
+                        <svg
+                          aria-hidden="true"
+                          class="svg-inline--fa fa-info-circle fa-w-16 "
+                          data-icon="info-circle"
+                          data-prefix="fas"
+                          focusable="false"
+                          role="img"
+                          viewBox="0 0 512 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
             class="root"
           >
             <div
@@ -129,7 +230,7 @@ exports[`DataPanel renders with form state and trace data 1`] = `
               </div>
             </div>
             <span>
-              Context 
+              Arguments 
               <a
                 aria-label="copy data"
                 class="copyPath p-0 btn btn-text"
@@ -161,201 +262,7 @@ exports[`DataPanel renders with form state and trace data 1`] = `
               >
                 <ul
                   style="padding: 0px; margin: 0px; list-style: none;"
-                >
-                  <li
-                    style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
-                  >
-                    <label
-                      style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
-                    >
-                      <div>
-                        <span>
-                          foo
-                        </span>
-                        : 
-                        <a
-                          aria-label="Copy path"
-                          class="copyPath p-0 btn btn-text"
-                          href="#"
-                          role="button"
-                        >
-                          <svg
-                            aria-hidden="true"
-                            class="svg-inline--fa fa-copy fa-w-14 "
-                            data-icon="copy"
-                            data-prefix="fas"
-                            focusable="false"
-                            role="img"
-                            viewBox="0 0 448 512"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </a>
-                      </div>
-                    </label>
-                    <span
-                      style="color: rgb(0, 113, 36);"
-                    >
-                      "bar number 0"
-                    </span>
-                  </li>
-                  <li
-                    style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
-                  >
-                    <label
-                      style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
-                    >
-                      <div>
-                        <span>
-                          baz
-                        </span>
-                        : 
-                        <a
-                          aria-label="Copy path"
-                          class="copyPath p-0 btn btn-text"
-                          href="#"
-                          role="button"
-                        >
-                          <svg
-                            aria-hidden="true"
-                            class="svg-inline--fa fa-copy fa-w-14 "
-                            data-icon="copy"
-                            data-prefix="fas"
-                            focusable="false"
-                            role="img"
-                            viewBox="0 0 448 512"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </a>
-                      </div>
-                    </label>
-                    <span
-                      style="color: rgb(249, 106, 56);"
-                    >
-                      0
-                    </span>
-                  </li>
-                  <li
-                    style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px;"
-                  >
-                    <div
-                      style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
-                    >
-                      <div
-                        style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
-                      >
-                        ▶
-                      </div>
-                    </div>
-                    <label
-                      style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
-                    >
-                      <div>
-                        <span>
-                          qux
-                        </span>
-                        : 
-                        <a
-                          aria-label="Copy path"
-                          class="copyPath p-0 btn btn-text"
-                          href="#"
-                          role="button"
-                        >
-                          <svg
-                            aria-hidden="true"
-                            class="svg-inline--fa fa-copy fa-w-14 "
-                            data-icon="copy"
-                            data-prefix="fas"
-                            focusable="false"
-                            role="img"
-                            viewBox="0 0 448 512"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </a>
-                      </div>
-                    </label>
-                    <span
-                      style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
-                    >
-                      <span>
-                        <span
-                          style="margin-left: 0.3em; margin-right: 0.3em;"
-                        >
-                          {}
-                        </span>
-                         2 keys
-                      </span>
-                    </span>
-                    <ul
-                      style="padding: 0px; margin: 0px; list-style: none; display: block;"
-                    />
-                  </li>
-                  <li
-                    style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 1.125em;"
-                  >
-                    <label
-                      style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: default;"
-                    >
-                      <div>
-                        <span>
-                          @mod
-                        </span>
-                        : 
-                        <a
-                          aria-label="Copy path"
-                          class="copyPath p-0 btn btn-text"
-                          href="#"
-                          role="button"
-                        >
-                          <svg
-                            aria-hidden="true"
-                            class="svg-inline--fa fa-copy fa-w-14 "
-                            data-icon="copy"
-                            data-prefix="fas"
-                            focusable="false"
-                            role="img"
-                            viewBox="0 0 448 512"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </a>
-                      </div>
-                    </label>
-                    <span
-                      style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
-                    >
-                      <span>
-                        <span
-                          style="margin-left: 0.3em; margin-right: 0.3em;"
-                        >
-                          {}
-                        </span>
-                         0 keys
-                      </span>
-                    </span>
-                    <ul
-                      style="padding: 0px; margin: 0px; list-style: none; display: block;"
-                    />
-                  </li>
-                </ul>
+                />
               </li>
             </ul>
           </div>

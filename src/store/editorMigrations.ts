@@ -54,6 +54,7 @@ export const migrations: MigrationManifest = {
   4: (state: EditorStateV3 & PersistedState) => migrateEditorStateV3(state),
   5: (state: EditorStateV4 & PersistedState) => migrateEditorStateV4(state),
   6: (state: EditorStateV5 & PersistedState) => migrateEditorStateV5(state),
+  7: (state: EditorStateV6 & PersistedState) => migrateEditorStateV6(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
