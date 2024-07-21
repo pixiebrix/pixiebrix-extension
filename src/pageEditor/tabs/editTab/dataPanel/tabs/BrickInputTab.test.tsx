@@ -52,7 +52,7 @@ function renderInputDataTab(
         );
         dispatch(
           editorActions.setActiveNodeId(
-            formState.modComponent.brickPipeline[1].instanceId,
+            formState.modComponent.brickPipeline[0].instanceId,
           ),
         );
       },

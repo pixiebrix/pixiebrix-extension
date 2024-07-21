@@ -43,7 +43,7 @@ const StarterBrickDataPanel: React.FC = () => {
 
   assertNotNullish(
     activeModComponentFormState,
-    "StarterBrickDataPanel cannot be rendered without an activeModComponentFormState",
+    "Starter Brick Data Panel can only be used in a mod component editor context",
   );
 
   const { starterBrick } = activeModComponentFormState;

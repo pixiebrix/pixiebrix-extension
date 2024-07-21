@@ -118,6 +118,16 @@ const DocumentPreview = ({
     <>
       {showPreviewButton && (
         <>
+          {doesNotHaveTrace && (
+            <Alert variant="info" className="mb-2">
+              No runs available. Run the brick to enable Live Preview
+            </Alert>
+          )}
+          {previewError && (
+            <Alert variant="danger" className="mb-2">
+              {getErrorMessage(previewError)}
+            </Alert>
+          )}
           <Button
             variant="info"
             size="sm"
@@ -126,17 +136,6 @@ const DocumentPreview = ({
           >
             Show Live Preview <FontAwesomeIcon icon={faExternalLinkAlt} />
           </Button>
-          {doesNotHaveTrace && (
-            <Alert variant={"info"} className={styles.alert}>
-              No data available for preview, run the mod first to generate
-              preview data
-            </Alert>
-          )}
-          {previewError && (
-            <Alert variant="danger" className={styles.alert}>
-              {getErrorMessage(previewError)}
-            </Alert>
-          )}
           <hr />
         </>
       )}

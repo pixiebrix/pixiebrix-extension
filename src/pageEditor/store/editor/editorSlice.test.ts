@@ -118,7 +118,7 @@ describe("DataPanel state", () => {
       actions.setActiveBuilderPreviewElement("test-field"),
     );
 
-    expect(getTabState(editorState, DataPanelTabKey.Output).activeElement).toBe(
+    expect(getTabState(editorState, DataPanelTabKey.Design).activeElement).toBe(
       "test-field",
     );
   });
