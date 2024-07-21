@@ -42,10 +42,11 @@ export const noTraceAvailableElement = (
  */
 const DataTabPane: React.FC<TabPaneProps> = ({ children, ...tabProps }) => (
   <Tab.Pane
+    className={dataPanelStyles.tabPane}
+    // Mount/unmount to ensure fresh data
     mountOnEnter
     unmountOnExit
     {...tabProps}
-    className={dataPanelStyles.tabPane}
   >
     <ErrorBoundary>{children}</ErrorBoundary>
   </Tab.Pane>

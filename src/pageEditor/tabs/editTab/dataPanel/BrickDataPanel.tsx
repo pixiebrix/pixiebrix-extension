@@ -32,18 +32,18 @@ import BrickConfigFormStateTab from "./tabs/BrickConfigFormStateTab";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import InputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/InputTab";
-import OutputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/OutputTab";
+import BrickInputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/BrickInputTab";
+import BrickOutputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/BrickOutputTab";
 import DesignTab, {
   shouldShowDocumentDesign,
   shouldShowFormDesign,
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/DesignTab";
 import OutlineTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/OutlineTab";
 
-const NavItem: React.FC<{ eventKey: DataPanelTabKey; label: string }> = ({
-  eventKey,
-  label,
-}) => (
+export const NavItem: React.FC<{
+  eventKey: DataPanelTabKey;
+  label: string;
+}> = ({ eventKey, label }) => (
   <Nav.Item className={dataPanelStyles.tabNav}>
     <Nav.Link eventKey={eventKey}>{label}</Nav.Link>
   </Nav.Item>
@@ -52,12 +52,14 @@ const NavItem: React.FC<{ eventKey: DataPanelTabKey; label: string }> = ({
 /**
  * The Page Editor Data Panel
  * @since 2.0.6 refactored to only include logic for which tabs to show
+ * @see StarterBrickDataPanel
  */
-const DataPanel: React.FC = () => {
+const BrickDataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const { blockId: brickId } = useSelector(selectActiveNodeInfo);
+  const { blockId: brickId, blockConfig: brickConfig } =
+    useSelector(selectActiveNodeInfo);
 
   const eventData = useSelector(selectActiveNodeEventData);
 
@@ -83,12 +85,6 @@ const DataPanel: React.FC = () => {
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <div>
         <Nav variant="tabs">
-          <NavItem eventKey={DataPanelTabKey.Input} label="Input" />
-          <NavItem
-            eventKey={DataPanelTabKey.ModVariables}
-            label="Mod Variables"
-          />
-
           {showDeveloperTabs && (
             <>
               <NavItem
@@ -102,7 +98,14 @@ const DataPanel: React.FC = () => {
             </>
           )}
 
+          <NavItem eventKey={DataPanelTabKey.Input} label="Input" />
+
           <NavItem eventKey={DataPanelTabKey.Output} label="Output" />
+
+          <NavItem
+            eventKey={DataPanelTabKey.ModVariables}
+            label="Mod Variables"
+          />
 
           {showDesign && (
             <NavItem eventKey={DataPanelTabKey.Design} label="Design" />
@@ -118,13 +121,13 @@ const DataPanel: React.FC = () => {
           {showDeveloperTabs && (
             <>
               <ModComponentFormStateTab />
-              <BrickConfigFormStateTab />
+              <BrickConfigFormStateTab config={brickConfig} />
             </>
           )}
 
-          <InputTab />
+          <BrickInputTab />
 
-          <OutputTab />
+          <BrickOutputTab />
 
           <ModVariablesTab />
 
@@ -139,4 +142,4 @@ const DataPanel: React.FC = () => {
   );
 };
 
-export default DataPanel;
+export default BrickDataPanel;

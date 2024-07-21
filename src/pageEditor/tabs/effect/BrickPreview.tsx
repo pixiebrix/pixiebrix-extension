@@ -286,7 +286,7 @@ const BrickPreview: React.FunctionComponent<{
           data={output}
           searchable
           copyable
-          tabKey={DataPanelTabKey.Preview}
+          tabKey={DataPanelTabKey.Output}
           label="Output Preview"
         />
       )}

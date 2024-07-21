@@ -128,7 +128,7 @@ const ArgumentsBody: React.FunctionComponent<{
  * Data Panel tab displaying input arguments and variables.
  * @since 2.0.6 includes both arguments and variables in a single panel
  */
-const InputTab: React.FunctionComponent = () => {
+const BrickInputTab: React.FunctionComponent = () => {
   const { isStale, traceRecord } = useInputTrace();
 
   const { viewMode = InputViewModes.Arguments } =
@@ -163,4 +163,4 @@ const InputTab: React.FunctionComponent = () => {
   );
 };
 
-export default InputTab;
+export default BrickInputTab;

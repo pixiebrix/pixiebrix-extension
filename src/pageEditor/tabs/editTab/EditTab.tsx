@@ -21,7 +21,7 @@ import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorN
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
+import BrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
 import useModComponentTrace from "@/pageEditor/hooks/useModComponentTrace";
 import StarterBrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel";
 import { useDispatch, useSelector } from "react-redux";
@@ -161,7 +161,7 @@ const EditTab: React.FC<{
                 {activeNodeId === FOUNDATION_NODE_ID ? (
                   <StarterBrickDataPanel />
                 ) : (
-                  <DataPanel key={activeNodeId} />
+                  <BrickDataPanel key={activeNodeId} />
                 )}
               </div>
             </div>

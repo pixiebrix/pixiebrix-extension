@@ -16,7 +16,7 @@
  */
 
 import { render } from "@/pageEditor/testHelpers";
-import InputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/InputTab";
+import BrickInputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/BrickInputTab";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -37,7 +37,7 @@ function renderInputDataTab(
 
   return render(
     <Tab.Container activeKey={DataPanelTabKey.Input}>
-      <InputTab />
+      <BrickInputTab />
     </Tab.Container>,
     {
       initialValues: formState,

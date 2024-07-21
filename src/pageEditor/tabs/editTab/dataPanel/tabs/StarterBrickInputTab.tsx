@@ -16,28 +16,13 @@
  */
 
 import React from "react";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import DataTabPane, {
-  developerOnlyTabAlertElement,
-} from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
-import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
-/**
- * Developer-only data panel tab for viewing the underlying brick configuration JSON. Used to debug brick and
- * starter brick configuration UI/functionality problems.
- *
- * @param config the brick or starter brick configuration
- * @see ModComponentFormStateTab
- */
-const BrickConfigFormStateTab: React.FC<{ config: unknown }> = ({ config }) => (
-  <DataTabPane eventKey={DataPanelTabKey.BrickConfigFormState}>
-    {developerOnlyTabAlertElement}
-    <DataTabJsonTree
-      data={config}
-      tabKey={DataPanelTabKey.BrickConfigFormState}
-      label="Brick Config Form State"
-    />
+const StarterBrickInputTab: React.FC = () => (
+  <DataTabPane eventKey={DataPanelTabKey.Input}>
+    <div className="text-muted">Starter Bricks do not receive input.</div>
   </DataTabPane>
 );
 
-export default BrickConfigFormStateTab;
+export default StarterBrickInputTab;
