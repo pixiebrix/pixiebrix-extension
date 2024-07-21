@@ -21,7 +21,6 @@ import { render } from "@/pageEditor/testHelpers";
 import { screen } from "@testing-library/react";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
-import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import StarterBrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel";
 import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
 

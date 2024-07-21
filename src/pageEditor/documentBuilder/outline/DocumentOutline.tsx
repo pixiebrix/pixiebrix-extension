@@ -35,7 +35,7 @@ import OutlineItem, {
 } from "@/pageEditor/documentBuilder/outline/OutlineItem";
 import useMoveElement from "@/pageEditor/documentBuilder/hooks/useMoveElement";
 import useDeleteElement from "@/pageEditor/documentBuilder/hooks/useDeleteElement";
-import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type DocumentOutlineProps = {
   /**
@@ -43,13 +43,13 @@ type DocumentOutlineProps = {
    */
   documentBodyName: string;
   /**
-   * The active builder element, or nullish if no element is selected.
+   * The active builder element, or null if no element is selected.
    */
-  activeElement: Nullishable<string>;
+  activeElement: string | null;
   /**
-   * Callback to set the active element
+   * Callback to set/clear the active element
    */
-  setActiveElement: (activeElement: string) => void;
+  setActiveElement: (activeElement: string | null) => void;
 };
 
 const DocumentOutline = ({
