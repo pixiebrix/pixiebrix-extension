@@ -24,10 +24,13 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 /**
  * A Page Editor Data Tab Pane layout component
+ *
  * @since 2.0.6 the pane only contains the layout style/error boundary. Children are responsible for rendering
  * loading, stale, and error states
+ *
+ * @param isDeveloperOnly true to show a developer-only message
  * @param tabProps the tab pane props
- * @param isDeveloperOnly true if the tab is only available to developers. The pane will show an info message
+ * @param children the tab content
  */
 const DataTabPane: React.FC<TabPaneProps & { isDeveloperOnly?: boolean }> = ({
   children,

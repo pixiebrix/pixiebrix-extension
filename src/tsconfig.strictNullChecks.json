@@ -1303,6 +1303,7 @@
     "./pageEditor/tabs/editTab/dataPanel/BrickDataPanel.tsx",
     "./pageEditor/tabs/editTab/dataPanel/DataTabJsonTree.test.tsx",
     "./pageEditor/tabs/editTab/dataPanel/DataTabJsonTree.tsx",
+    "./pageEditor/tabs/editTab/dataPanel/DataTabPane.tsx",
     "./pageEditor/tabs/editTab/dataPanel/ErrorDisplay.tsx",
     "./pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel.tsx",
     "./pageEditor/tabs/editTab/dataPanel/dataPanelTypes.ts",
