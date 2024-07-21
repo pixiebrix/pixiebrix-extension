@@ -17,9 +17,7 @@
 
 import React from "react";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import DataTabPane, {
-  developerOnlyTabAlertElement,
-} from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
 /**
@@ -31,8 +29,7 @@ import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree
  * @see ModComponentFormStateTab
  */
 const NodeFormStateTab: React.FC<{ config: unknown }> = ({ config }) => (
-  <DataTabPane eventKey={DataPanelTabKey.NodeFormState}>
-    {developerOnlyTabAlertElement}
+  <DataTabPane eventKey={DataPanelTabKey.NodeFormState} isDeveloperOnly>
     <DataTabJsonTree
       data={config}
       tabKey={DataPanelTabKey.NodeFormState}

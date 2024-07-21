@@ -28,6 +28,7 @@
 .tabPane {
   padding-top: 1rem;
 
+  // Override the default form layout, which has min-width 100px for labels
   :global(.form-group .form-label) {
     // Fit "View" and "Search" labels
     width: 65px;

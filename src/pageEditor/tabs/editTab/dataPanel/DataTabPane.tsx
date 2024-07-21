@@ -22,19 +22,18 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
-export const developerOnlyTabAlertElement = (
-  <div className="text-info">
-    <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
-    developers
-  </div>
-);
-
 /**
  * A Page Editor Data Tab Pane layout component
  * @since 2.0.6 the pane only contains the layout style/error boundary. Children are responsible for rendering
  * loading, stale, and error states
+ * @param tabProps the tab pane props
+ * @param isDeveloperOnly true if the tab is only available to developers. The pane will show an info message
  */
-const DataTabPane: React.FC<TabPaneProps> = ({ children, ...tabProps }) => (
+const DataTabPane: React.FC<TabPaneProps & { isDeveloperOnly?: boolean }> = ({
+  children,
+  isDeveloperOnly = false,
+  ...tabProps
+}) => (
   <Tab.Pane
     className={dataPanelStyles.tabPane}
     // Mount/unmount to ensure fresh data
@@ -42,6 +41,13 @@ const DataTabPane: React.FC<TabPaneProps> = ({ children, ...tabProps }) => (
     unmountOnExit
     {...tabProps}
   >
+    {isDeveloperOnly && (
+      <div className="text-info">
+        <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
+        developers
+      </div>
+    )}
+
     <ErrorBoundary>{children}</ErrorBoundary>
   </Tab.Pane>
 );
