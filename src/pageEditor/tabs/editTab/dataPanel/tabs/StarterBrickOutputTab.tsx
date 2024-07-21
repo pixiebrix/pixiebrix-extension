@@ -43,12 +43,12 @@ const VIEW_MODE_OPTIONS: Array<
   {
     value: OutputViewModes.Actual,
     label: "Latest Output",
-    description: "Actual @input produced on the latest run",
+    description: "Actual variables produced on the latest run",
   },
   {
     value: OutputViewModes.Preview,
     label: "Live Preview",
-    description: "@input preview produced with the current configuration",
+    description: "Preview produced with the current configuration",
   },
 ];
 
@@ -77,7 +77,7 @@ const OutputActualBody: React.FC = () => {
 
   return (
     <div className="text-muted">
-      Add a brick and run the mod to view Starter Brick output.
+      Add a brick and run the mod to view Starter Brick output
     </div>
   );
 };
@@ -90,7 +90,12 @@ const StarterBrickOutputTab: React.FC = () => {
 
   return (
     <DataTabPane eventKey={DataPanelTabKey.Output}>
-      <ViewModeField name="viewMode" viewModeOptions={VIEW_MODE_OPTIONS} />
+      <ViewModeField
+        name="viewMode"
+        viewModeOptions={VIEW_MODE_OPTIONS}
+        defaultValue={OutputViewModes.Actual}
+        tabKey={DataPanelTabKey.Output}
+      />
 
       {viewMode === OutputViewModes.Actual ? (
         <OutputActualBody />

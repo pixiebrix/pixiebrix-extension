@@ -4,8 +4,7 @@ import Alert from "@/components/Alert";
 import { BrickTypes } from "@/runtime/runtimeTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import ErrorDisplay from "@/pageEditor/tabs/editTab/dataPanel/ErrorDisplay";
-import React, { useMemo } from "react";
-import { isEqual } from "lodash";
+import React from "react";
 import type { JsonObject, ValueOf } from "type-fest";
 import BrickPreview, {
   usePreviewInfo,
@@ -20,7 +19,7 @@ import useAllBricks from "@/bricks/hooks/useAllBricks";
 import ViewModeField, {
   type ViewModeOption,
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/ViewModeField";
-import useInputTrace from "@/pageEditor/tabs/editTab/dataPanel/tabs/useInputTrace";
+import useBrickTraceRecord from "@/pageEditor/tabs/editTab/dataPanel/tabs/useBrickTraceRecord";
 import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { isTraceError } from "@/telemetry/trace";
@@ -52,23 +51,10 @@ const VIEW_MODE_OPTIONS: Array<
  * Content for showing the actual output from the brick for the latest trace.
  */
 const OutputActualBody: React.FC = () => {
-  const { blockId: brickId, blockConfig: brickConfig } =
-    useSelector(selectActiveNodeInfo);
+  const { blockId: brickId } = useSelector(selectActiveNodeInfo);
 
   const { data: previewInfo } = usePreviewInfo(brickId);
-  const { isStale, traceRecord } = useInputTrace();
-
-  const isCurrentStale = useMemo(() => {
-    if (isStale) {
-      return true;
-    }
-
-    if (traceRecord === undefined) {
-      return false;
-    }
-
-    return !isEqual(traceRecord.brickConfig, brickConfig);
-  }, [isStale, traceRecord, brickConfig]);
+  const { isStale, traceRecord } = useBrickTraceRecord();
 
   // Extract the output from the trace record
   const outputObj: JsonObject =
@@ -110,9 +96,9 @@ const OutputActualBody: React.FC = () => {
 
   return (
     <>
-      {isCurrentStale && (
+      {isStale && (
         <Alert variant="warning">
-          This or a previous brick has changed, output may be out of date
+          This or a preceding brick has changed, output may be out of date
         </Alert>
       )}
       <DataTabJsonTree
@@ -127,7 +113,7 @@ const OutputActualBody: React.FC = () => {
 };
 
 const OutputPreviewBody: React.FC = () => {
-  const { traceRecord } = useInputTrace();
+  const { traceRecord } = useBrickTraceRecord();
   const { starterBrick } = useSelector(selectActiveModComponentFormState);
 
   const { blockConfig: brickConfig } = useSelector(selectActiveNodeInfo);
@@ -148,8 +134,6 @@ const OutputPreviewBody: React.FC = () => {
           starterBrick={starterBrick}
         />
       </ErrorBoundary>
-      ) : (
-      <div className="text-muted">Run the mod once to enable live preview</div>)
     </>
   );
 };
@@ -178,7 +162,12 @@ const BrickOutputTab: React.FC = () => {
 
   return (
     <DataTabPane eventKey={DataPanelTabKey.Output}>
-      <ViewModeField name="viewMode" viewModeOptions={VIEW_MODE_OPTIONS} />
+      <ViewModeField
+        name="viewMode"
+        viewModeOptions={VIEW_MODE_OPTIONS}
+        defaultValue={OutputViewModes.Actual}
+        tabKey={DataPanelTabKey.Output}
+      />
 
       {viewMode === OutputViewModes.Actual ? (
         <OutputActualBody />

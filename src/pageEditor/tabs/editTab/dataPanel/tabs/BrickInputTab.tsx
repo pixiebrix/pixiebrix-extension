@@ -33,7 +33,7 @@ import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSel
 import ViewModeField, {
   type ViewModeOption,
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/ViewModeField";
-import useInputTrace from "@/pageEditor/tabs/editTab/dataPanel/tabs/useInputTrace";
+import useBrickTraceRecord from "@/pageEditor/tabs/editTab/dataPanel/tabs/useBrickTraceRecord";
 import { type ValueOf } from "type-fest";
 
 const InputViewModes = {
@@ -129,7 +129,7 @@ const ArgumentsBody: React.FunctionComponent<{
  * @since 2.0.6 includes both arguments and variables in a single panel
  */
 const BrickInputTab: React.FunctionComponent = () => {
-  const { isStale, traceRecord } = useInputTrace();
+  const { isInputStale, traceRecord } = useBrickTraceRecord();
 
   const { viewMode = InputViewModes.Arguments } =
     useSelector((state: RootState) =>
@@ -146,13 +146,18 @@ const BrickInputTab: React.FunctionComponent = () => {
 
   return (
     <DataTabPane eventKey={DataPanelTabKey.Input}>
-      {isStale && (
+      {isInputStale && (
         <Alert variant="warning">
-          A previous brick has changed, input may be out of date
+          A preceding brick has changed, input may be out of date
         </Alert>
       )}
 
-      <ViewModeField name="viewMode" viewModeOptions={VIEW_MODE_OPTIONS} />
+      <ViewModeField
+        name="viewMode"
+        viewModeOptions={VIEW_MODE_OPTIONS}
+        defaultValue={InputViewModes.Arguments}
+        tabKey={DataPanelTabKey.Input}
+      />
 
       {viewMode === InputViewModes.Arguments ? (
         <ArgumentsBody traceRecord={traceRecord} />

@@ -38,7 +38,7 @@ import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { type RegistryId } from "@/types/registryTypes";
-import useInputTrace from "@/pageEditor/tabs/editTab/dataPanel/tabs/useInputTrace";
+import useBrickTraceRecord from "@/pageEditor/tabs/editTab/dataPanel/tabs/useBrickTraceRecord";
 
 /**
  * Return true if the brick uses the Form Builder
@@ -62,7 +62,7 @@ export function shouldShowDocumentDesign(brickId: RegistryId): boolean {
 export function useIsRenderedPanelStale(): boolean {
   const { blockConfig: brickConfig } = useSelector(selectActiveNodeInfo);
 
-  const { traceRecord } = useInputTrace();
+  const { traceRecord } = useBrickTraceRecord();
 
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
