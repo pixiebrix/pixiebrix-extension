@@ -423,13 +423,15 @@ export function selectNodeDataPanelTabState(
 }
 
 /**
- * Selects the active element of the Document or Form builder on the Preview tab
+ * Returns the active element of the Document or Form builder, or null if no element is selected.
  */
 export function selectActiveBuilderPreviewElement(
   state: EditorRootState,
-): Nullishable<string> {
-  return selectNodeDataPanelTabState(state, DataPanelTabKey.Design)
-    ?.activeElement;
+): string | null {
+  return (
+    selectNodeDataPanelTabState(state, DataPanelTabKey.Design)?.activeElement ??
+    null
+  );
 }
 
 export const selectAddBlockLocation = ({ editor }: EditorRootState) =>
@@ -525,6 +527,11 @@ export const selectActiveNodeEventData = createSelector(
   selectActiveModComponentFormState,
   selectActiveNodeInfo,
   (activeModComponentFormState, activeNodeInfo) => {
+    assertNotNullish(
+      activeModComponentFormState,
+      "selectActiveNodeEventData can only be called from a mod component context",
+    );
+
     return {
       modId: activeModComponentFormState.modMetadata?.id,
       brickId: activeNodeInfo.blockId,

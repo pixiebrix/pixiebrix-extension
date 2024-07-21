@@ -40,11 +40,25 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { selectActiveModComponentTraceForBrick } from "@/pageEditor/store/runtime/runtimeSelectors";
 import ClickableElement from "@/components/ClickableElement";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type DocumentPreviewProps = {
+  /**
+   * Formik field name for the document body prop.
+   */
   documentBodyName: string;
-  activeElement: string;
-  setActiveElement: (activeElement: string) => void;
+  /**
+   * The active builder element, or null if no element is selected.
+   */
+  activeElement: string | null;
+  /**
+   * Set or clear the active builder element.
+   */
+  setActiveElement: (activeElement: string | null) => void;
+  /**
+   * Optional boundary for popover menu position calculations.
+   * @see EllipsisMenu
+   */
   menuBoundary?: Element;
 };
 
@@ -56,6 +70,7 @@ const DocumentPreview = ({
 }: DocumentPreviewProps) => {
   const [{ value: body }] =
     useField<DocumentBuilderElement[]>(documentBodyName);
+
   const bodyPreview = useMemo(() => getPreviewValues(body), [body]);
 
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
@@ -78,6 +93,12 @@ const DocumentPreview = ({
   };
 
   const activeNodeId = useSelector(selectActiveNodeId);
+
+  assertNotNullish(
+    activeNodeId,
+    "DocumentPreview can only be used in an brick editing context",
+  );
+
   const parentNodeInfo = useSelector(selectParentNodeInfo(activeNodeId));
   const showPreviewButton =
     parentNodeInfo?.blockId === DisplayTemporaryInfo.BRICK_ID;

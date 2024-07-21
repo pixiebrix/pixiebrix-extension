@@ -21,24 +21,21 @@ import Alert from "@/components/Alert";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import type { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DocumentPreview from "@/pageEditor/documentBuilder/preview/DocumentPreview";
-import React, { useMemo } from "react";
+import React from "react";
 import useReduxState from "@/hooks/useReduxState";
 import {
   selectActiveBuilderPreviewElement,
-  selectActiveModComponentFormState,
   selectActiveNodeInfo,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
-import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import { isEqual, omit } from "lodash";
 import { joinPathParts } from "@/utils/formUtils";
 import { useSelector } from "react-redux";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { type RegistryId } from "@/types/registryTypes";
-import useBrickTraceRecord from "@/pageEditor/tabs/editTab/dataPanel/tabs/useBrickTraceRecord";
+import useIsSidebarPanelStale from "@/pageEditor/tabs/editTab/dataPanel/tabs/useIsSidebarPanelStale";
 
 /**
  * Return true if the brick uses the Form Builder
@@ -56,42 +53,11 @@ export function shouldShowDocumentDesign(brickId: RegistryId): boolean {
   return brickId === DocumentRenderer.BRICK_ID;
 }
 
-/**
- * Return true if the rendered Sidebar Panel might be out of sync with the configuration.
- */
-export function useIsRenderedPanelStale(): boolean {
-  const { blockConfig: brickConfig } = useSelector(selectActiveNodeInfo);
-
-  const { traceRecord } = useBrickTraceRecord();
-
-  const activeModComponentFormState = useSelector(
-    selectActiveModComponentFormState,
-  );
-
-  return useMemo(() => {
-    // Only show alert for Side Panel mod components
-    if (
-      activeModComponentFormState.starterBrick.definition.type !==
-      StarterBrickTypes.SIDEBAR_PANEL
-    ) {
-      return false;
-    }
-
-    // No traces or no changes since the last render, we are good, no alert
-    if (
-      traceRecord == null ||
-      isEqual(
-        // Comments don't change the behavior of the panel
-        omit(traceRecord.brickConfig, ["comments"]),
-        omit(brickConfig, ["comments"]),
-      )
-    ) {
-      return false;
-    }
-
-    return true;
-  }, [activeModComponentFormState, traceRecord, brickConfig]);
-}
+export const staleSidePanelAlertElement = (
+  <Alert variant="info">
+    The Sidebar Panel is out of sync with the panel configuration
+  </Alert>
+);
 
 /**
  * The Form/Document Design tab in the Data Panel.
@@ -104,7 +70,7 @@ const DesignTab: React.FC = () => {
     path: brickPath,
   } = useSelector(selectActiveNodeInfo);
 
-  const isRenderedPanelStale = useIsRenderedPanelStale();
+  const isSidebarPanelStale = useIsSidebarPanelStale();
 
   const [activeBuilderPreviewElement, setActiveBuilderPreviewElement] =
     useReduxState(
@@ -118,16 +84,12 @@ const DesignTab: React.FC = () => {
   const showDocumentDesign = shouldShowDocumentDesign(brickId);
 
   const popupBoundary = showDocumentDesign
-    ? document.querySelector(`.${dataPanelStyles.tabContent}`)
+    ? document.querySelector(`.${dataPanelStyles.tabContent}`) ?? undefined
     : undefined;
 
   return (
     <DataTabPane eventKey={DataPanelTabKey.Design}>
-      {isRenderedPanelStale && (
-        <Alert variant="info">
-          The rendered panel is out of date with the design
-        </Alert>
-      )}
+      {isSidebarPanelStale && staleSidePanelAlertElement}
       {showFormDesign ? (
         <FormPreview
           rjsfSchema={brickConfig?.config as RJSFSchema}

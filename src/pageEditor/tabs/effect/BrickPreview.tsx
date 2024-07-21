@@ -143,7 +143,7 @@ const previewSlice = createSlice({
 const BrickPreview: React.FunctionComponent<{
   brickConfig: BrickConfig;
   starterBrick: BaseStarterBrickState;
-  traceRecord: TraceRecord;
+  traceRecord: Nullishable<TraceRecord>;
   previewRefreshMillis?: 250;
   // eslint-disable-next-line complexity -- complex due to formik
 }> = ({ brickConfig, starterBrick, traceRecord, previewRefreshMillis }) => {

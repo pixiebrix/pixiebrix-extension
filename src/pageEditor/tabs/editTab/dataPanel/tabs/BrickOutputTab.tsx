@@ -5,7 +5,7 @@ import { BrickTypes } from "@/runtime/runtimeTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import ErrorDisplay from "@/pageEditor/tabs/editTab/dataPanel/ErrorDisplay";
 import React from "react";
-import type { JsonObject, ValueOf } from "type-fest";
+import type { ValueOf } from "type-fest";
 import BrickPreview, {
   usePreviewInfo,
 } from "@/pageEditor/tabs/effect/BrickPreview";
@@ -25,6 +25,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { isTraceError } from "@/telemetry/trace";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const OutputViewModes = {
   Actual: "actual",
@@ -56,14 +57,6 @@ const OutputActualBody: React.FC = () => {
   const { data: previewInfo } = usePreviewInfo(brickId);
   const { isStale, traceRecord } = useBrickTraceRecord();
 
-  // Extract the output from the trace record
-  const outputObj: JsonObject =
-    traceRecord !== undefined && "output" in traceRecord
-      ? "outputKey" in traceRecord
-        ? { [`@${traceRecord.outputKey}`]: traceRecord.output }
-        : traceRecord.output
-      : null;
-
   if (traceRecord == null) {
     return (
       <>
@@ -74,15 +67,15 @@ const OutputActualBody: React.FC = () => {
         {previewInfo?.traceOptional && (
           <div className="text-info mt-2">
             <FontAwesomeIcon icon={faInfoCircle} />
-            &nbsp;This brick supports previews without running the mod. Select
-            Preview view to see the current preview
+            &nbsp;This brick supports live preview without running the mod.
+            Select Preview to view the preview
           </div>
         )}
       </>
     );
   }
 
-  if (traceRecord?.skippedRun) {
+  if (traceRecord.skippedRun) {
     return (
       <Alert variant="info">
         The brick did not run because its condition was not met
@@ -91,8 +84,17 @@ const OutputActualBody: React.FC = () => {
   }
 
   if (isTraceError(traceRecord)) {
-    return <ErrorDisplay error={traceRecord.error} />;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- isTraceError type guard
+    return <ErrorDisplay error={traceRecord.error!} />;
   }
+
+  // Extract the output from the trace record
+  const outputObj: unknown =
+    "output" in traceRecord
+      ? "outputKey" in traceRecord
+        ? { [`@${traceRecord.outputKey}`]: traceRecord.output }
+        : traceRecord.output
+      : null;
 
   return (
     <>
@@ -114,7 +116,14 @@ const OutputActualBody: React.FC = () => {
 
 const OutputPreviewBody: React.FC = () => {
   const { traceRecord } = useBrickTraceRecord();
-  const { starterBrick } = useSelector(selectActiveModComponentFormState);
+  const modComponentFormState = useSelector(selectActiveModComponentFormState);
+
+  assertNotNullish(
+    modComponentFormState,
+    "Output tab can only be shown in a mod component context",
+  );
+
+  const { starterBrick } = modComponentFormState;
 
   const { blockConfig: brickConfig } = useSelector(selectActiveNodeInfo);
 

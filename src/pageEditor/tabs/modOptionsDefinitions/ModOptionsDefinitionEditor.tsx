@@ -84,7 +84,7 @@ const formRuntimeContext: RuntimeContext = {
 
 const Preview: React.VFC<{
   optionsDefinition: RJSFSchema;
-  activeField: string | undefined;
+  activeField: string | null;
   setActiveField: (field: string) => void;
 }> = ({ optionsDefinition, activeField, setActiveField }) => (
   <Tab.Container activeKey="preview">
@@ -109,7 +109,7 @@ const Preview: React.VFC<{
 );
 
 const ModOptionsDefinitionEditor: React.VFC = () => {
-  const [activeField, setActiveField] = useState<string>();
+  const [activeField, setActiveField] = useState<string | null>(null);
   const modId = useSelector(selectActiveModId);
   const { data: mod, isFetching, error } = useOptionalModDefinition(modId);
 

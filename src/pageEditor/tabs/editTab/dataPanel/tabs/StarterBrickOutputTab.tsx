@@ -31,6 +31,7 @@ import type { ValueOf } from "type-fest";
 import { makeSelectBrickTrace } from "@/pageEditor/store/runtime/runtimeSelectors";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import StarterBrickPreview from "@/pageEditor/tabs/effect/StarterBrickPreview";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const OutputViewModes = {
   Actual: "actual",
@@ -53,9 +54,16 @@ const VIEW_MODE_OPTIONS: Array<
 ];
 
 const OutputActualBody: React.FC = () => {
+  const modComponentFormState = useSelector(selectActiveModComponentFormState);
+
+  assertNotNullish(
+    modComponentFormState,
+    "Starter Brick Output Tab requires an active mod component",
+  );
+
   const {
     modComponent: { brickPipeline },
-  } = useSelector(selectActiveModComponentFormState);
+  } = modComponentFormState;
 
   const firstBrickInstanceId = brickPipeline[0]?.instanceId;
 

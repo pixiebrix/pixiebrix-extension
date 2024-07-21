@@ -18,9 +18,7 @@
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import React from "react";
-import { Alert } from "react-bootstrap";
 import DocumentOutline from "@/pageEditor/documentBuilder/outline/DocumentOutline";
-import { useIsRenderedPanelStale } from "@/pageEditor/tabs/editTab/dataPanel/tabs/DesignTab";
 import useReduxState from "@/hooks/useReduxState";
 import {
   selectActiveBuilderPreviewElement,
@@ -29,6 +27,8 @@ import {
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { joinPathParts } from "@/utils/formUtils";
 import { useSelector } from "react-redux";
+import useIsSidebarPanelStale from "@/pageEditor/tabs/editTab/dataPanel/tabs/useIsSidebarPanelStale";
+import { staleSidePanelAlertElement } from "@/pageEditor/tabs/editTab/dataPanel/tabs/DesignTab";
 
 /**
  * Document Builder Outline tab. Introduced to support re-ordering Document Builder elements.
@@ -36,7 +36,7 @@ import { useSelector } from "react-redux";
 const OutlineTab: React.FC = () => {
   const { path: brickPath } = useSelector(selectActiveNodeInfo);
 
-  const isRenderedPanelStale = useIsRenderedPanelStale();
+  const isSidebarPanelStale = useIsSidebarPanelStale();
 
   const [activeBuilderPreviewElement, setActiveBuilderPreviewElement] =
     useReduxState(
@@ -48,12 +48,7 @@ const OutlineTab: React.FC = () => {
 
   return (
     <DataTabPane eventKey={DataPanelTabKey.Outline}>
-      {isRenderedPanelStale && (
-        <Alert variant="info">
-          The rendered panel is out of date with the design
-        </Alert>
-      )}
-
+      {isSidebarPanelStale && staleSidePanelAlertElement}
       <DocumentOutline
         documentBodyName={documentBodyFieldName}
         activeElement={activeBuilderPreviewElement}

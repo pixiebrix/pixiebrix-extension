@@ -16,7 +16,6 @@
  */
 
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
-import { type Nullishable } from "@/utils/nullishUtils";
 
 export type RJSFSchema = {
   schema?: Schema;
@@ -24,7 +23,7 @@ export type RJSFSchema = {
 };
 
 export type SetActiveField = React.Dispatch<
-  React.SetStateAction<Nullishable<string>>
+  React.SetStateAction<string | null>
 >;
 
 export type SelectStringOption = {

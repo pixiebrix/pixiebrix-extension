@@ -47,7 +47,6 @@ export type ElementPreviewProps = {
   elementName: string;
   // An element config having all expressions unwrapped, different from what is stored in Formik
   previewElement: DocumentBuilderElement;
-
   /**
    * The active element relative to the root element (i.e. "name" is not included)
    */
@@ -55,6 +54,10 @@ export type ElementPreviewProps = {
   setActiveElement: (name: string | null) => void;
   hoveredElement: string | null;
   setHoveredElement: (name: string | null) => void;
+  /**
+   * Optional boundary for popover menu position calculations.
+   * @see EllipsisMenu
+   */
   menuBoundary?: Element;
 };
 

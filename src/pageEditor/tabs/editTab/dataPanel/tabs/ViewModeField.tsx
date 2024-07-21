@@ -5,31 +5,40 @@ import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
 import { type DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
-import styles from "@/pageEditor/tabs/editTab/dataPanel/tabs/ViewModeToggle.module.scss";
+import styles from "@/pageEditor/tabs/editTab/dataPanel/tabs/ViewModeField.module.scss";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import FieldTemplate, {
   type CustomFieldWidget,
 } from "@/components/form/FieldTemplate";
 
 export type ViewModeOption<T extends string = string> = {
+  /**
+   * Option value.
+   */
   value: T;
+  /**
+   * Radio-button label.
+   */
   label: string;
-  description: string;
+  /**
+   * Optional description to display a help icon/popover.
+   */
+  description?: string;
 };
 
 const ViewModeRadio: React.FunctionComponent<{
   label: React.ReactNode;
   name: string;
-  viewMode: string;
+  value: string;
   isChecked: boolean;
   onSelect: ChangeEventHandler<HTMLInputElement>;
-}> = ({ viewMode, name, isChecked, onSelect, label }) => (
+}> = ({ value, name, isChecked, onSelect, label }) => (
   <FormCheck
-    id={`${name}-${viewMode}`}
+    id={`${name}-${value}`}
     name={name}
     label={label}
     type="radio"
-    value={viewMode}
+    value={value}
     checked={isChecked}
     onChange={onSelect}
   />
@@ -53,16 +62,20 @@ const ViewModeWidget: CustomFieldWidget<
       <ViewModeRadio
         key={value}
         name={name}
-        viewMode={value}
+        value={value}
         isChecked={currentValue === value}
         onSelect={onChange}
         label={
           <span>
-            <PopoverInfoLabel
-              name={value}
-              label={label}
-              description={description}
-            />
+            {description == null ? (
+              label
+            ) : (
+              <PopoverInfoLabel
+                name={value}
+                label={label}
+                description={description}
+              />
+            )}
           </span>
         }
       />
@@ -72,10 +85,11 @@ const ViewModeWidget: CustomFieldWidget<
 
 const ViewModeField: React.FC<{
   name: string;
+  label?: string;
   viewModeOptions: ViewModeOption[];
   tabKey: DataPanelTabKey;
   defaultValue: ViewModeOption["value"];
-}> = ({ name, tabKey, viewModeOptions, defaultValue }) => {
+}> = ({ name, label = "View", tabKey, viewModeOptions, defaultValue }) => {
   const dispatch = useDispatch();
 
   const { viewMode } =
@@ -95,7 +109,7 @@ const ViewModeField: React.FC<{
   return (
     <FieldTemplate
       name={name}
-      label="View"
+      label={label}
       value={viewMode ?? defaultValue}
       onChange={setViewMode}
       fitLabelWidth

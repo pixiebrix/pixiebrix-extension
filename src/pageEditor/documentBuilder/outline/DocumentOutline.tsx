@@ -35,13 +35,20 @@ import OutlineItem, {
 } from "@/pageEditor/documentBuilder/outline/OutlineItem";
 import useMoveElement from "@/pageEditor/documentBuilder/hooks/useMoveElement";
 import useDeleteElement from "@/pageEditor/documentBuilder/hooks/useDeleteElement";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 type DocumentOutlineProps = {
   /**
    * Formik field name for the document body prop.
    */
   documentBodyName: string;
-  activeElement: string;
+  /**
+   * The active builder element, or nullish if no element is selected.
+   */
+  activeElement: Nullishable<string>;
+  /**
+   * Callback to set the active element
+   */
   setActiveElement: (activeElement: string) => void;
 };
 
@@ -57,9 +64,16 @@ const DocumentOutline = ({
   const [{ value: body }] =
     useField<DocumentBuilderElement[]>(documentBodyName);
 
-  const { treeExpandedState } = useSelector((state: RootState) =>
+  const dataPanelTabState = useSelector((state: RootState) =>
     selectNodeDataPanelTabState(state, DataPanelTabKey.Outline),
   );
+
+  assertNotNullish(
+    dataPanelTabState,
+    "Document Outline can only be displayed in a brick editing context",
+  );
+
+  const { treeExpandedState } = dataPanelTabState;
 
   const tree = useMemo(
     () => selectTreeData(body, treeExpandedState),
@@ -80,7 +94,10 @@ const DocumentOutline = ({
           onSelect={() => {
             setActiveElement(elementName);
           }}
-          dragItem={dragItemId ? tree.items[dragItemId] : null}
+          dragItem={
+            // Normalize undefined to null
+            (dragItemId ? tree.items[dragItemId] : null) ?? null
+          }
           onDelete={async () => {
             await onDelete(elementName);
           }}
