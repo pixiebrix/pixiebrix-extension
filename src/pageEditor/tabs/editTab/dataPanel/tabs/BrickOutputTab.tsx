@@ -44,7 +44,7 @@ const VIEW_MODE_OPTIONS: Array<
     value: OutputViewModes.Preview,
     label: "Live Preview",
     description:
-      "Output preview generated with the current brick configuration and the input variables from the latest run",
+      "Output preview generated with the current configuration and the input variables from the latest run",
   },
 ];
 
@@ -53,7 +53,6 @@ const VIEW_MODE_OPTIONS: Array<
  */
 const OutputActualBody: React.FC = () => {
   const { blockId: brickId } = useSelector(selectActiveNodeInfo);
-
   const { data: previewInfo } = usePreviewInfo(brickId);
   const { isStale, traceRecord } = useBrickTraceRecord();
 
@@ -61,14 +60,14 @@ const OutputActualBody: React.FC = () => {
     return (
       <>
         <div className="text-muted">
-          No trace available. Run the mod to generate data
+          No runs available. Run the brick to view output
         </div>
 
         {previewInfo?.traceOptional && (
           <div className="text-info mt-2">
             <FontAwesomeIcon icon={faInfoCircle} />
-            &nbsp;This brick supports live preview without running the mod.
-            Select Preview to view the preview
+            &nbsp;This brick supports live preview without running the brick.
+            Select Live Preview to view the preview
           </div>
         )}
       </>
@@ -108,7 +107,7 @@ const OutputActualBody: React.FC = () => {
         copyable
         searchable
         tabKey={DataPanelTabKey.Output}
-        label="Actual Output"
+        label="Latest Output"
       />
     </>
   );
@@ -120,7 +119,7 @@ const OutputPreviewBody: React.FC = () => {
 
   assertNotNullish(
     modComponentFormState,
-    "Output tab can only be shown in a mod component context",
+    "Output Tab can only be shown in a mod component editor context",
   );
 
   const { starterBrick } = modComponentFormState;
@@ -129,8 +128,7 @@ const OutputPreviewBody: React.FC = () => {
 
   return (
     <>
-      {/* The value of `brick.if` can be `false`, in which case we also need to show a warning that brick execution is conditional. */}
-      {brickConfig?.if != null && (
+      {brickConfig.if != null && (
         <Alert variant="info">
           This brick has a condition. It will not execute if the condition is
           not met
@@ -148,23 +146,32 @@ const OutputPreviewBody: React.FC = () => {
 };
 
 const BrickOutputTab: React.FC = () => {
-  const { viewMode = OutputViewModes.Actual } =
+  const { viewMode: selectedViewMode } =
     useSelector((state: RootState) =>
       selectNodeDataPanelTabState(state, DataPanelTabKey.Output),
     ) ?? {};
 
   const { blockId: brickId } = useSelector(selectActiveNodeInfo);
+  const { data: previewInfo } = usePreviewInfo(brickId);
+  const { traceRecord } = useBrickTraceRecord();
+
+  const defaultViewMode =
+    traceRecord == null && previewInfo?.traceOptional
+      ? OutputViewModes.Preview
+      : OutputViewModes.Actual;
+
+  const viewMode = selectedViewMode ?? defaultViewMode;
 
   const { allBricks } = useAllBricks();
   const brick = allBricks.get(brickId);
   const brickType = brick?.type;
 
-  if (brickType === BrickTypes.RENDERER) {
+  if (brickType === BrickTypes.RENDERER || brickType === BrickTypes.EFFECT) {
     return (
       <DataTabPane eventKey={DataPanelTabKey.Output}>
-        <Alert variant="info">
-          Renderer brick output is not available in the Data Panel
-        </Alert>
+        <span className="text-muted">
+          This brick does not return an output variable
+        </span>
       </DataTabPane>
     );
   }
@@ -174,7 +181,7 @@ const BrickOutputTab: React.FC = () => {
       <ViewModeField
         name="viewMode"
         viewModeOptions={VIEW_MODE_OPTIONS}
-        defaultValue={OutputViewModes.Actual}
+        defaultValue={defaultViewMode}
         tabKey={DataPanelTabKey.Output}
       />
 

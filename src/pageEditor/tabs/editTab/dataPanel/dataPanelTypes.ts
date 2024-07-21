@@ -46,5 +46,5 @@ export enum DataPanelTabKey {
   Comments = "comments",
   // Developer-only tabs
   ModComponentFormState = "modComponentFormState",
-  BrickConfigFormState = "brickConfig",
+  NodeFormState = "nodeFormState",
 }

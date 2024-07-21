@@ -23,21 +23,23 @@ import DataTabPane, {
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
 /**
- * Developer-only data panel tab for viewing the underlying brick configuration JSON. Used to debug brick and
- * starter brick configuration UI/functionality problems.
+ * Developer-only data panel tab for viewing the underlying brick configuration JSON.
+ *
+ * Used to debug brick and starter brick configuration UI/functionality problems.
  *
  * @param config the brick or starter brick configuration
  * @see ModComponentFormStateTab
  */
-const BrickConfigFormStateTab: React.FC<{ config: unknown }> = ({ config }) => (
-  <DataTabPane eventKey={DataPanelTabKey.BrickConfigFormState}>
+const NodeFormStateTab: React.FC<{ config: unknown }> = ({ config }) => (
+  <DataTabPane eventKey={DataPanelTabKey.NodeFormState}>
     {developerOnlyTabAlertElement}
     <DataTabJsonTree
       data={config}
-      tabKey={DataPanelTabKey.BrickConfigFormState}
-      label="Brick Config Form State"
+      tabKey={DataPanelTabKey.NodeFormState}
+      label="Node Form State"
+      searchable
     />
   </DataTabPane>
 );
 
-export default BrickConfigFormStateTab;
+export default NodeFormStateTab;

@@ -33,6 +33,7 @@ import { staleSidePanelAlertElement } from "@/pageEditor/tabs/editTab/dataPanel/
 /**
  * Document Builder Outline tab. Introduced to support re-ordering Document Builder elements.
  */
+// XXX: consider making the outline a subview of the Design tab
 const OutlineTab: React.FC = () => {
   const { path: brickPath } = useSelector(selectActiveNodeInfo);
 

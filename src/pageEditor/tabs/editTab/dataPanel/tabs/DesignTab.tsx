@@ -28,7 +28,7 @@ import {
   selectActiveNodeInfo,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
+import dataPanelStyles from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTabs.module.scss";
 import { joinPathParts } from "@/utils/formUtils";
 import { useSelector } from "react-redux";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";

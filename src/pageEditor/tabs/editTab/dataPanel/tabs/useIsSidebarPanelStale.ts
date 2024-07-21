@@ -40,11 +40,11 @@ function useIsSidebarPanelStale(): boolean {
 
   assertNotNullish(
     activeModComponentFormState,
-    "useIsSidebarPanelStale can only be used in a mod component context",
+    "useIsSidebarPanelStale can only be called in a mod component editor context",
   );
 
   return useMemo(() => {
-    // Only show alert for Side Panel mod components
+    // Only returns true for Side Panel mod components
     if (
       activeModComponentFormState.starterBrick.definition.type !==
       StarterBrickTypes.SIDEBAR_PANEL

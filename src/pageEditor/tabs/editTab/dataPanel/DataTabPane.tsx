@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Tab, type TabPaneProps } from "react-bootstrap";
-import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
+import dataPanelStyles from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTabs.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
@@ -26,12 +26,6 @@ export const developerOnlyTabAlertElement = (
   <div className="text-info">
     <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
     developers
-  </div>
-);
-
-export const noTraceAvailableElement = (
-  <div className="text-muted">
-    No trace available. Run the mod to generate data
   </div>
 );
 

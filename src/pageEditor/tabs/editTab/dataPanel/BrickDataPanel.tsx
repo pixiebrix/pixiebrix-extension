@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import { Nav, Tab } from "react-bootstrap";
-import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
+import dataPanelStyles from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTabs.module.scss";
 import { useSelector } from "react-redux";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useFlags from "@/hooks/useFlags";
@@ -28,7 +28,7 @@ import {
   selectActiveNodeInfo,
 } from "@/pageEditor/store/editor/editorSelectors";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
-import BrickConfigFormStateTab from "./tabs/BrickConfigFormStateTab";
+import NodeFormStateTab from "./tabs/NodeFormStateTab";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -92,10 +92,18 @@ const BrickDataPanel: React.FC = () => {
                 label="Mod Component State"
               />
               <NavItem
-                eventKey={DataPanelTabKey.BrickConfigFormState}
-                label="Brick Config State"
+                eventKey={DataPanelTabKey.NodeFormState}
+                label="Node State"
               />
             </>
+          )}
+
+          {showDesign && (
+            <NavItem eventKey={DataPanelTabKey.Design} label="Design" />
+          )}
+
+          {showDocumentDesign && (
+            <NavItem eventKey={DataPanelTabKey.Outline} label="Outline" />
           )}
 
           <NavItem eventKey={DataPanelTabKey.Input} label="Input" />
@@ -107,21 +115,13 @@ const BrickDataPanel: React.FC = () => {
             label="Mod Variables"
           />
 
-          {showDesign && (
-            <NavItem eventKey={DataPanelTabKey.Design} label="Design" />
-          )}
-
-          {showDocumentDesign && (
-            <NavItem eventKey={DataPanelTabKey.Outline} label="Outline" />
-          )}
-
           <NavItem eventKey={DataPanelTabKey.Comments} label="Comments" />
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
           {showDeveloperTabs && (
             <>
               <ModComponentFormStateTab />
-              <BrickConfigFormStateTab config={brickConfig} />
+              <NodeFormStateTab config={brickConfig} />
             </>
           )}
 

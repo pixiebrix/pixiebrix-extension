@@ -23,11 +23,7 @@ import { Button } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExclamationTriangle,
-  faInfoCircle,
-  faSync,
-} from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faSync } from "@fortawesome/free-solid-svg-icons";
 import objectHash from "object-hash";
 import { isEmpty } from "lodash";
 import { type TraceRecord } from "@/telemetry/trace";
@@ -97,8 +93,8 @@ export function usePreviewInfo(
 const traceWarning = (
   // The text-warning font color is brutal. This is more of a warning, but this color/style will have to do for now
   <div className="text-info mb-2">
-    <FontAwesomeIcon icon={faExclamationTriangle} />
-    &nbsp; No trace available. The actual output will differ from the preview if
+    <FontAwesomeIcon icon={faInfoCircle} />
+    &nbsp; No runs available. The actual output will differ from the preview if
     the configuration uses templates/variables
   </div>
 );
@@ -255,9 +251,8 @@ const BrickPreview: React.FunctionComponent<{
 
   if (!brickInfo?.traceOptional && !traceRecord) {
     return (
-      <div className="text-info">
-        <FontAwesomeIcon icon={faInfoCircle} /> Run the brick once to enable
-        output preview
+      <div className="text-muted">
+        No runs available. Run the brick to enable output preview
       </div>
     );
   }
@@ -269,16 +264,23 @@ const BrickPreview: React.FunctionComponent<{
       {showTraceWarning && traceWarning}
 
       {brickInfo != null && !brickInfo.isPure && (
-        <Button
-          variant="info"
-          size="sm"
-          disabled={!traceRecord}
-          onClick={() => {
-            void debouncedRun(brickConfig, context as BrickArgsContext);
-          }}
-        >
-          <FontAwesomeIcon icon={faSync} /> Refresh Preview
-        </Button>
+        <>
+          <div className="text-info">
+            <FontAwesomeIcon icon={faInfoCircle} /> This brick&apos;s output
+            cannot be automatically determined from its input/configuration.
+            Click to refresh the preview
+          </div>
+          <Button
+            variant="info"
+            size="sm"
+            disabled={!traceRecord && !brickInfo.traceOptional}
+            onClick={() => {
+              void debouncedRun(brickConfig, context as BrickArgsContext);
+            }}
+          >
+            <FontAwesomeIcon icon={faSync} /> Refresh Preview
+          </Button>
+        </>
       )}
 
       {output && !isError && !isEmpty(output) && (
@@ -287,16 +289,16 @@ const BrickPreview: React.FunctionComponent<{
           searchable
           copyable
           tabKey={DataPanelTabKey.Output}
-          label="Output Preview"
+          label="Live Preview"
         />
       )}
 
       {output && !isError && isEmpty(output) && (
-        <div>Brick produced empty output</div>
+        <div className="text-muted mt-2">Brick produced empty output</div>
       )}
 
       {output && isError && (
-        <div className="text-danger">{getErrorMessage(output)}</div>
+        <div className="text-danger mt-2">{getErrorMessage(output)}</div>
       )}
     </div>
   );

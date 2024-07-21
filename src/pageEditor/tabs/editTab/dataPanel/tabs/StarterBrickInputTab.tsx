@@ -21,7 +21,10 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 
 const StarterBrickInputTab: React.FC = () => (
   <DataTabPane eventKey={DataPanelTabKey.Input}>
-    <div className="text-muted">Starter Bricks do not receive input</div>
+    <div className="text-muted">
+      Starter Bricks do not receive input. To view the <code>@input</code>{" "}
+      variable, switch to the Output Tab
+    </div>
   </DataTabPane>
 );
 

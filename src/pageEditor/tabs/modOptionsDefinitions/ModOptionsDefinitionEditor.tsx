@@ -25,7 +25,7 @@ import { isEmpty } from "lodash";
 import styles from "./ModOptionsDefinitionEditor.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
-import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
+import dataPanelStyles from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import { stringifyUiType } from "@/components/formBuilder/formBuilderHelpers";

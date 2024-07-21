@@ -23,7 +23,7 @@ import useFlags from "@/hooks/useFlags";
 import ModVariablesTab from "./tabs/ModVariablesTab";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
-import BrickConfigFormStateTab from "./tabs/BrickConfigFormStateTab";
+import NodeFormStateTab from "./tabs/NodeFormStateTab";
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { NavItem } from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
@@ -62,8 +62,8 @@ const StarterBrickDataPanel: React.FC = () => {
               label="Mod Component State"
             />
             <NavItem
-              eventKey={DataPanelTabKey.BrickConfigFormState}
-              label="Brick Config State"
+              eventKey={DataPanelTabKey.NodeFormState}
+              label="Node State"
             />
           </>
         )}
@@ -80,7 +80,7 @@ const StarterBrickDataPanel: React.FC = () => {
         {showDeveloperTabs && (
           <>
             <ModComponentFormStateTab />
-            <BrickConfigFormStateTab config={starterBrick} />
+            <NodeFormStateTab config={starterBrick} />
           </>
         )}
 

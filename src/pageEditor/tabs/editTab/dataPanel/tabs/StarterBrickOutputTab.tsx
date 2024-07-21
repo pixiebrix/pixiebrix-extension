@@ -32,6 +32,7 @@ import { makeSelectBrickTrace } from "@/pageEditor/store/runtime/runtimeSelector
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import StarterBrickPreview from "@/pageEditor/tabs/effect/StarterBrickPreview";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { type TraceRecord } from "@/telemetry/trace";
 
 const OutputViewModes = {
   Actual: "actual",
@@ -53,7 +54,7 @@ const VIEW_MODE_OPTIONS: Array<
   },
 ];
 
-const OutputActualBody: React.FC = () => {
+function useStarterBrickTraceRecord(): TraceRecord | undefined {
   const modComponentFormState = useSelector(selectActiveModComponentFormState);
 
   assertNotNullish(
@@ -67,9 +68,24 @@ const OutputActualBody: React.FC = () => {
 
   const firstBrickInstanceId = brickPipeline[0]?.instanceId;
 
-  const { record: firstBrickTraceRecord } = useSelector(
-    makeSelectBrickTrace(firstBrickInstanceId),
+  const { record } = useSelector(makeSelectBrickTrace(firstBrickInstanceId));
+
+  return record;
+}
+
+const OutputActualBody: React.FC = () => {
+  const modComponentFormState = useSelector(selectActiveModComponentFormState);
+
+  assertNotNullish(
+    modComponentFormState,
+    "Starter Brick Output Tab requires an active mod component",
   );
+
+  const {
+    modComponent: { brickPipeline },
+  } = modComponentFormState;
+
+  const firstBrickTraceRecord = useStarterBrickTraceRecord();
 
   if (firstBrickTraceRecord) {
     return (
@@ -83,18 +99,36 @@ const OutputActualBody: React.FC = () => {
     );
   }
 
+  if (brickPipeline.length > 0) {
+    return (
+      <div className="text-muted">
+        No runs available. Run the Starter Brick to view output
+      </div>
+    );
+  }
+
   return (
     <div className="text-muted">
-      Add a brick and run the mod to view Starter Brick output
+      No runs available. Add a brick and run the Starter Brick to view the
+      latest output
     </div>
   );
 };
 
 const StarterBrickOutputTab: React.FC = () => {
-  const { viewMode = OutputViewModes.Actual } =
+  const firstBrickTraceRecord = useStarterBrickTraceRecord();
+
+  const { viewMode: selectedViewMode } =
     useSelector((state: RootState) =>
       selectNodeDataPanelTabState(state, DataPanelTabKey.Output),
     ) ?? {};
+
+  // Default to preview if there's no runs available
+  const defaultViewMode = firstBrickTraceRecord
+    ? OutputViewModes.Actual
+    : OutputViewModes.Preview;
+
+  const viewMode = selectedViewMode ?? defaultViewMode;
 
   return (
     <DataTabPane eventKey={DataPanelTabKey.Output}>

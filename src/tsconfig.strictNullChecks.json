@@ -1306,7 +1306,7 @@
     "./pageEditor/tabs/editTab/dataPanel/ErrorDisplay.tsx",
     "./pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel.tsx",
     "./pageEditor/tabs/editTab/dataPanel/dataPanelTypes.ts",
-    "./pageEditor/tabs/editTab/dataPanel/tabs/BrickConfigFormStateTab.tsx",
+    "./pageEditor/tabs/editTab/dataPanel/tabs/NodeFormStateTab.tsx",
     "./pageEditor/tabs/editTab/dataPanel/tabs/BrickOutputTab.tsx",
     "./pageEditor/tabs/editTab/dataPanel/tabs/DesignTab.tsx",
     "./pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab.tsx",

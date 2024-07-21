@@ -19,5 +19,19 @@
   display: flex;
   gap: 1em;
   font-size: 80%;
-  align-items: center;
+
+  // Signify the user can click on the label to change the mode
+  :global(.form-check),
+  input[type="radio"],
+  label[title] {
+    cursor: pointer;
+  }
+}
+
+.formGroup {
+  :global(.form-label + div) {
+    align-content: center;
+  }
+
+  margin-bottom: 0;
 }

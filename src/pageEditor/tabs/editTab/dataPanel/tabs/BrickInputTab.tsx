@@ -19,9 +19,7 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import Alert from "@/components/Alert";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
-import DataTabPane, {
-  noTraceAvailableElement,
-} from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import React, { useMemo } from "react";
 import { type TraceRecord } from "@/telemetry/trace";
 import { type Nullishable } from "@/utils/nullishUtils";
@@ -71,6 +69,12 @@ const contextFilter = (value: unknown, key: string): boolean => {
   // keys. With the introduction of ApiVersion v2, we removed that filter
   return true;
 };
+
+export const noTraceAvailableElement = (
+  <div className="text-muted">
+    No runs available. Run the brick to view input
+  </div>
+);
 
 /**
  * All variables available to the brick, even if the brick didn't run or there was an error rendering the arguments.
@@ -131,10 +135,12 @@ const ArgumentsBody: React.FunctionComponent<{
 const BrickInputTab: React.FunctionComponent = () => {
   const { isInputStale, traceRecord } = useBrickTraceRecord();
 
-  const { viewMode = InputViewModes.Arguments } =
+  const { viewMode: selectedViewMode } =
     useSelector((state: RootState) =>
       selectNodeDataPanelTabState(state, DataPanelTabKey.Input),
     ) ?? {};
+
+  const viewMode = selectedViewMode ?? InputViewModes.Arguments;
 
   if (!traceRecord) {
     return (
@@ -148,14 +154,14 @@ const BrickInputTab: React.FunctionComponent = () => {
     <DataTabPane eventKey={DataPanelTabKey.Input}>
       {isInputStale && (
         <Alert variant="warning">
-          A preceding brick has changed, input may be out of date
+          A prior brick has changed, input may be out of date
         </Alert>
       )}
 
       <ViewModeField
         name="viewMode"
         viewModeOptions={VIEW_MODE_OPTIONS}
-        defaultValue={InputViewModes.Arguments}
+        defaultValue={viewMode}
         tabKey={DataPanelTabKey.Input}
       />
 
