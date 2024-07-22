@@ -32,7 +32,10 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 import { InvalidTypeError } from "@/errors/genericErrors";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { freeze } from "@/utils/objectUtils";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import {
+  autoUUIDSequence,
+  timestampFactory,
+} from "@/testUtils/factories/stringFactories";
 
 describe("getStandaloneModComponentRuntimeModId", () => {
   it("returns valid registry id", () => {
@@ -73,7 +76,7 @@ describe("getSharingType", () => {
       _deployment: {
         id: uuidv4(),
         active: true,
-        timestamp: new Date().toISOString(),
+        timestamp: timestampFactory(),
       },
     }) as any;
     const { type, label } = getSharingSource({
@@ -93,7 +96,7 @@ describe("getSharingType", () => {
       _deployment: {
         id: orgId,
         active: true,
-        timestamp: new Date().toISOString(),
+        timestamp: timestampFactory(),
       },
     }) as any;
 

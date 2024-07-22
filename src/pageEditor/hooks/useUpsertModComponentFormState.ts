@@ -31,13 +31,13 @@ import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
-import { type Timestamp, type UUID } from "@/types/stringTypes";
-
+import { type UUID } from "@/types/stringTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 const { saveModComponent } = modComponentsSlice.actions;
 const { markClean } = editorSlice.actions;
@@ -181,8 +181,7 @@ function useUpsertModComponentFormState(): SaveCallback {
 
       try {
         let modComponent = selectModComponent(modComponentFormState);
-        const updateTimestamp: Timestamp =
-          new Date().toISOString() as Timestamp;
+        const updateTimestamp = nowTimestamp();
 
         if (hasInnerStarterBrick) {
           const { definition } = selectStarterBrickDefinition(

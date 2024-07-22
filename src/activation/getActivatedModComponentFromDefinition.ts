@@ -26,6 +26,7 @@ import type {
 import type { Deployment } from "@/types/contract";
 import type { OptionsArgs } from "@/types/runtimeTypes";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 export type ActivateModComponentParam = {
   modComponentDefinition: ModComponentDefinition;
@@ -55,7 +56,7 @@ export function getActivatedModComponentFromDefinition<
   optionsArgs,
   integrationDependencies,
 }: ActivateModComponentParam): ActivatedModComponent<Config> {
-  const nowTimestamp = new Date().toISOString();
+  const timestamp = nowTimestamp();
 
   const activatedModComponent = {
     id: uuidv4(),
@@ -70,8 +71,8 @@ export function getActivatedModComponentFromDefinition<
     extensionPointId: modComponentDefinition.id,
     config: modComponentDefinition.config as Config,
     active: true,
-    createTimestamp: nowTimestamp,
-    updateTimestamp: nowTimestamp,
+    createTimestamp: timestamp,
+    updateTimestamp: timestamp,
   } as ActivatedModComponent<Config>;
 
   // Set optional fields only if the source mod component has a value. Normalizing the values

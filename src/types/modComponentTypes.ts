@@ -223,14 +223,14 @@ type ActivatedModComponentBase = {
    *
    * Currently, not used for anything - might be used for sorting, etc. in the future.
    */
-  createTimestamp: string;
+  createTimestamp: Timestamp;
 
   /**
    * Update timestamp in ISO format with timezone.
    *
    * Used to determine if local version is outdated compared to user's version on the server.
    */
-  updateTimestamp: string;
+  updateTimestamp: Timestamp;
 };
 
 export type ActivatedModComponentV1<
