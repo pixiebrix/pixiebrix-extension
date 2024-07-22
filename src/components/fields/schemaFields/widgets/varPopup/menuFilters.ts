@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownRecord } from "type-fest/source/internal";
+import { type UnknownRecord } from "type-fest";
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import { compact, reverse, toPath } from "lodash";
 import {
@@ -372,9 +372,7 @@ export function moveMenuOption({
   const [source, sourceVars] = sourceMatch;
 
   // eslint-disable-next-line security/detect-object-injection -- checked with hasOwn above
-  const varMap = filterVarMapByVariable(sourceVars, likelyVariable)[
-    head
-  ] as UnknownRecord;
+  const varMap = filterVarMapByVariable(sourceVars, likelyVariable)[head];
 
   // User is switching between top-level variables
   if (rest.length === 0) {
