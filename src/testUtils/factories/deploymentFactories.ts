@@ -19,13 +19,10 @@ import { define, derive, type FactoryConfig } from "cooky-cutter";
 import { type Deployment } from "@/types/contract";
 import { type ActivatableDeployment } from "@/types/deploymentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import {
-  validateRegistryId,
-  normalizeSemVerString,
-  validateTimestamp,
-} from "@/types/helpers";
+import { validateRegistryId, normalizeSemVerString } from "@/types/helpers";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { validateTimestamp } from "@/utils/timeUtils";
 
 // Deployments are returned from the API, but their shape is determined by the registry and ModDefinition type.
 

@@ -35,9 +35,9 @@ import {
 import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
 import extensionsSlice from "@/store/extensionsSlice";
-import { validateTimestamp } from "@/types/helpers";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Deployment } from "@/types/contract";
+import { validateTimestamp } from "@/utils/timeUtils";
 
 const axiosMock = new MockAdapter(axios);
 

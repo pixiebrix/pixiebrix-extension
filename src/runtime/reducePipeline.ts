@@ -79,6 +79,7 @@ import type { Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 import { getPlatform } from "@/platform/platformContext";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -715,7 +716,7 @@ export async function brickReducer(
     // Always add the trace entry, even if the brick didn't run
     getPlatform().debugger.traces.enter({
       ...traceMeta,
-      timestamp: new Date().toISOString(),
+      timestamp: nowTimestamp(),
       templateContext: context as JsonObject,
       renderError: renderError ? serializeError(renderError) : null,
       // `renderedArgs` will be null if there's an error rendering args

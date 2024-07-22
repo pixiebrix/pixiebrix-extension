@@ -29,6 +29,7 @@ import {
 } from "@/store/extensionsTypes";
 import { omit } from "lodash";
 import { migrateIntegrationDependenciesV1toV2 } from "@/store/editorMigrations";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to 0-indexed
@@ -73,7 +74,7 @@ function migrateModComponentStateV0ToV1(
 function migrateModComponentStateV1ToV2(
   state: ModComponentStateV1 & PersistedState,
 ): ModComponentStateV2 & PersistedState {
-  const now = new Date().toISOString();
+  const now = nowTimestamp();
   return {
     ...state,
     extensions: state.extensions.map((x) => ({
