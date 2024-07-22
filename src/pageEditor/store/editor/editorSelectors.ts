@@ -81,7 +81,7 @@ export const selectActiveModId = ({ editor }: EditorRootState) =>
   editor.activeModId;
 
 /**
- * Select the id of the mod being edited. Will be set when editing the mod or a mod component within the mod.
+ * Select the id of the mod being edited. Is set when editing the mod or a mod component within the mod.
  * @see selectActiveModId
  */
 export const selectExpandedModId = ({ editor }: EditorRootState) =>

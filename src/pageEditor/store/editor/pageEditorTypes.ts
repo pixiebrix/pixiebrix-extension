@@ -256,16 +256,26 @@ export type EditorStateV3 = Except<
 > & {
   /**
    * The uuid of the active mod component, if a mod component is selected
+   *
+   * @see activeModId
+   * @see expandedModId
    */
   activeModComponentId: UUID | null;
 
   /**
-   * The registry id of the active mod, if a mod is selected. Is null if a mod component within the mod is selected.
+   * The registry id of the active mod, if a mod is selected. Is null if a mod component is selected.
+   *
+   * @see expandedModId
+   * @see activeModComponentId
    */
   activeModId: RegistryId | null;
 
   /**
-   * The registry id of the 'expanded' mod in the sidebar, if one is expanded
+   * The registry id of the 'expanded' mod in the sidebar, if one is expanded. Is set if the mod is selected or a
+   * mod component within the mod component is selected.
+   *
+   * @see activeModId
+   * @see activeModComponentId
    */
   expandedModId: RegistryId | null;
 
