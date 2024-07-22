@@ -26,7 +26,7 @@ import settingsSlice, {
 import MockDate from "mockdate";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import { authSlice } from "@/auth/authSlice";
-import { useUpdateAvailable } from "@/extensionConsole/pages/UpdateBanner";
+import { useExtensionUpdateAvailable } from "@/extensionConsole/pages/UpdateBanner";
 import { type AuthState } from "@/auth/authTypes";
 
 jest.mock("@/extensionConsole/pages/UpdateBanner");
@@ -34,7 +34,7 @@ jest.mock("@/extensionConsole/pages/UpdateBanner");
 browser.runtime.reload = jest.fn();
 
 const reloadMock = jest.mocked(browser.runtime.reload);
-const useUpdateAvailableMock = jest.mocked(useUpdateAvailable);
+const useUpdateAvailableMock = jest.mocked(useExtensionUpdateAvailable);
 
 beforeEach(() => {
   reloadMock.mockReset();
@@ -73,7 +73,7 @@ describe("DeploymentModal", () => {
     const date = new Date("12/31/1998");
     MockDate.set(date);
 
-    jest.mocked(useUpdateAvailable).mockReturnValue(true);
+    jest.mocked(useExtensionUpdateAvailable).mockReturnValue(true);
 
     renderModal(
       {
@@ -94,7 +94,7 @@ describe("DeploymentModal", () => {
     const date = new Date("12/31/1998");
     MockDate.set(date);
 
-    jest.mocked(useUpdateAvailable).mockReturnValue(true);
+    jest.mocked(useExtensionUpdateAvailable).mockReturnValue(true);
 
     renderModal(
       {
@@ -144,7 +144,7 @@ describe("DeploymentModal", () => {
     const time = new Date("12/31/1998").getTime();
     MockDate.set(time);
 
-    jest.mocked(useUpdateAvailable).mockReturnValue(true);
+    jest.mocked(useExtensionUpdateAvailable).mockReturnValue(true);
 
     renderModal(
       {
@@ -170,7 +170,7 @@ describe("DeploymentModal", () => {
     const date = new Date("12/31/1998");
     MockDate.set(date);
 
-    jest.mocked(useUpdateAvailable).mockReturnValue(false);
+    jest.mocked(useExtensionUpdateAvailable).mockReturnValue(false);
 
     renderModal(
       {
@@ -195,7 +195,7 @@ describe("DeploymentModal", () => {
     const date = new Date("12/31/1998");
     MockDate.set(date);
 
-    jest.mocked(useUpdateAvailable).mockReturnValue(false);
+    jest.mocked(useExtensionUpdateAvailable).mockReturnValue(false);
 
     renderModal(
       {

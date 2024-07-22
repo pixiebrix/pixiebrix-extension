@@ -439,7 +439,7 @@ async function loadActivatedModComponents(): Promise<StarterBrick[]> {
   // Exclude the following:
   // - disabled deployments: the organization admin might have disabled the deployment because via Admin Console
   // - draft mod components: these are already installed on the page via the Page Editor
-  const activeModComponents = options.extensions.filter((modComponent) => {
+  const modComponentsToActivate = options.extensions.filter((modComponent) => {
     if (_draftModComponentStarterBrickMap.has(modComponent.id)) {
       const draftStarterBrick = _draftModComponentStarterBrickMap.get(
         modComponent.id,
@@ -456,7 +456,7 @@ async function loadActivatedModComponents(): Promise<StarterBrick[]> {
   const hydratedActiveModComponents = await logPromiseDuration(
     "loadActivatedModComponents:hydrateDefinitions",
     Promise.all(
-      activeModComponents.map(async (x) =>
+      modComponentsToActivate.map(async (x) =>
         hydrateModComponentInnerDefinitions(x),
       ),
     ),

@@ -21,8 +21,17 @@ import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
-import { type Dispatch } from "@reduxjs/toolkit";
+import {
+  type AnyAction,
+  type Dispatch,
+  type ThunkDispatch,
+} from "@reduxjs/toolkit";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
+import {
+  queueReloadModEveryTab,
+  reloadModsEveryTab,
+} from "@/contentScript/messenger/api";
+import { persistor, type RootState } from "@/store/optionsStore";
 
 const { actions } = extensionsSlice;
 
@@ -31,7 +40,7 @@ async function activateDeployment({
   activatableDeployment,
   activatedModComponents,
 }: {
-  dispatch: Dispatch;
+  dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
   activatableDeployment: ActivatableDeployment;
   activatedModComponents: ModComponentBase[];
 }): Promise<void> {
@@ -69,6 +78,9 @@ async function activateDeployment({
       isReactivate,
     }),
   );
+  // Ensure the mod state is persisted before continuing so the content script can immediately pick up the changes
+  // when activating a deployment from the extension console. See: https://github.com/pixiebrix/pixiebrix-extension/issues/8744
+  await persistor.flush();
 
   reportEvent(Events.DEPLOYMENT_ACTIVATE, {
     deployment: deployment.id,
@@ -79,10 +91,12 @@ export async function activateDeployments({
   dispatch,
   activatableDeployments,
   activatedModComponents,
+  reloadMode,
 }: {
   dispatch: Dispatch;
   activatableDeployments: ActivatableDeployment[];
   activatedModComponents: ModComponentBase[];
+  reloadMode: "queue" | "immediate";
 }): Promise<void> {
   // Activate as many as we can
   const errors = [];
@@ -104,6 +118,12 @@ export async function activateDeployments({
     // XXX: only throwing the first is OK, because the user will see the next error if they fix this error and then
     // activate deployments again
     throw errors[0];
+  }
+
+  if (reloadMode === "immediate") {
+    reloadModsEveryTab();
+  } else {
+    queueReloadModEveryTab();
   }
 }
 
