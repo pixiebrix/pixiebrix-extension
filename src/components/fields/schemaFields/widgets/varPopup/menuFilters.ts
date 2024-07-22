@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownRecord } from "type-fest/source/internal";
+import { type UnknownRecord } from "type-fest";
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import { compact, reverse, toPath } from "lodash";
 import {
@@ -299,9 +299,7 @@ export function defaultMenuOption(
   const result = [head];
 
   // eslint-disable-next-line security/detect-object-injection -- checked with hasOwn above
-  let currentVars = filterVarMapByVariable(vars, likelyVariable)[
-    head
-  ] as UnknownRecord;
+  let currentVars = filterVarMapByVariable(vars, likelyVariable)[head];
 
   for (const part of rest) {
     assertNotNullish(part, "Expected part to be non-null");
@@ -320,7 +318,7 @@ export function defaultMenuOption(
     }
 
     // eslint-disable-next-line security/detect-object-injection -- checked with hasOwn above
-    currentVars = currentVars[part] as UnknownRecord;
+    currentVars = currentVars[part];
 
     // JSONTree key path is in reverse
     result.unshift(part);
@@ -372,9 +370,7 @@ export function moveMenuOption({
   const [source, sourceVars] = sourceMatch;
 
   // eslint-disable-next-line security/detect-object-injection -- checked with hasOwn above
-  const varMap = filterVarMapByVariable(sourceVars, likelyVariable)[
-    head
-  ] as UnknownRecord;
+  const varMap = filterVarMapByVariable(sourceVars, likelyVariable)[head];
 
   // User is switching between top-level variables
   if (rest.length === 0) {

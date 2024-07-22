@@ -18,7 +18,7 @@
 import React, { useRef } from "react";
 import { type GetItemString, JSONTree, type KeyPath } from "react-json-tree";
 import { isEmpty } from "lodash";
-import { type UnknownRecord } from "type-fest/source/internal";
+import { type UnknownRecord } from "type-fest";
 import { popoverTheme } from "@/components/fields/schemaFields/widgets/varPopup/popoverTheme";
 import {
   expandCurrentVariableLevel,
