@@ -299,7 +299,9 @@ export function defaultMenuOption(
   const result = [head];
 
   // eslint-disable-next-line security/detect-object-injection -- checked with hasOwn above
-  let currentVars = filterVarMapByVariable(vars, likelyVariable)[head];
+  let currentVars = filterVarMapByVariable(vars, likelyVariable)[
+    head
+  ] as UnknownRecord;
 
   for (const part of rest) {
     assertNotNullish(part, "Expected part to be non-null");
@@ -318,7 +320,7 @@ export function defaultMenuOption(
     }
 
     // eslint-disable-next-line security/detect-object-injection -- checked with hasOwn above
-    currentVars = currentVars[part];
+    currentVars = currentVars[part] as UnknownRecord;
 
     // JSONTree key path is in reverse
     result.unshift(part);
