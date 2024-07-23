@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./activation/useActivateModWizard.ts",
     "./pageEditor/modals/addBrickModal/AddBrickModal.tsx",
     "./pageEditor/documentBuilder/edit/DocumentOptions.tsx",
     "../end-to-end-tests/env.ts",
