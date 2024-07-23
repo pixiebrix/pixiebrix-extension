@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./contrib/google/sheets/ui/AppendSpreadsheetOptions.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",

@@ -32,6 +32,7 @@ import hash from "object-hash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName } from "@/utils/formUtils";
 import { getHeaders } from "@/contrib/google/sheets/core/sheetsApi";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function headerFieldSchemaForHeaders(headers: string[]): Schema {
   const headerProperties: Record<string, Schema> = Object.fromEntries(
@@ -56,7 +57,7 @@ function headerFieldSchemaForHeaders(headers: string[]): Schema {
 const RowValuesField: React.FunctionComponent<{
   name: string;
   googleAccount: SanitizedIntegrationConfig | null;
-  spreadsheetId: string | null;
+  spreadsheetId: string | undefined;
   tabName: string | Expression;
 }> = ({ name, googleAccount, spreadsheetId, tabName }) => {
   const [{ value: rowValues }, , { setValue: setRowValues }] =
@@ -131,18 +132,22 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BrickOptionProps> = ({
     joinName(blockConfigPath, "tabName"),
   );
 
+  const schemaProperties = APPEND_SCHEMA.properties;
+
+  assertNotNullish(schemaProperties, "Hardcoded schema is missing properties");
+
   return (
     <div className="my-2">
       <SchemaField
         name={joinName(blockConfigPath, "googleAccount")}
-        schema={APPEND_SCHEMA.properties.googleAccount as Schema}
+        schema={schemaProperties.googleAccount as Schema}
       />
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
         {({ googleAccount, spreadsheet }) => (
           <>
             <TabField
               name={joinName(blockConfigPath, "tabName")}
-              schema={APPEND_SCHEMA.properties.tabName as Schema}
+              schema={schemaProperties.tabName as Schema}
               spreadsheet={spreadsheet}
             />
             <RowValuesField
@@ -156,15 +161,15 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BrickOptionProps> = ({
       </RequireGoogleSheet>
       <SchemaField
         name={joinName(blockConfigPath, "requireAllHeaders")}
-        schema={APPEND_SCHEMA.properties.requireAllHeaders as Schema}
+        schema={schemaProperties.requireAllHeaders as Schema}
       />
       <SchemaField
         name={joinName(blockConfigPath, "requireOnlyKnownHeaders")}
-        schema={APPEND_SCHEMA.properties.requireOnlyKnownHeaders as Schema}
+        schema={schemaProperties.requireOnlyKnownHeaders as Schema}
       />
       <SchemaField
         name={joinName(blockConfigPath, "requireSheetIsVisible")}
-        schema={APPEND_SCHEMA.properties.requireSheetIsVisible as Schema}
+        schema={schemaProperties.requireSheetIsVisible as Schema}
       />
     </div>
   );
