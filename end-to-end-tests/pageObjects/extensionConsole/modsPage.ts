@@ -21,8 +21,8 @@ import { BasePageObject } from "../basePageObject";
 import { ensureVisibility } from "../../utils";
 
 export class ModTableItem extends BasePageObject {
-  dropdownButton = this.locator(".dropdown");
-  dropdownMenu = this.locator(".dropdown-menu");
+  dropdownButton = this.getByTestId("ellipsis-menu-button");
+  dropdownMenu = this.getByLabel("Menu");
   statusCell = this.getByTestId("status-cell");
 
   async clickAction(actionName: string) {
@@ -33,7 +33,7 @@ export class ModTableItem extends BasePageObject {
         await this.dropdownButton.click();
       }
 
-      await this.dropdownMenu.getByRole("button", { name: actionName }).click({
+      await this.getByRole("menuitem", { name: actionName }).click({
         // Short timeout in order to handle retrying in the `toPass` block.
         timeout: 500,
       });
