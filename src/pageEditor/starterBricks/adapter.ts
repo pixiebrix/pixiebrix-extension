@@ -46,7 +46,7 @@ const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>([
   [StarterBrickTypes.DYNAMIC_QUICK_BAR, quickBarProviderModComponent],
 ]);
 
-export const ALL_ADAPTERS = sortBy(
+const ALL_ADAPTERS = sortBy(
   [...ADAPTERS.values()],
   (adapter) => adapter.displayOrder,
 );
