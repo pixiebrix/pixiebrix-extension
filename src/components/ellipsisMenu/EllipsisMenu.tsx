@@ -17,7 +17,7 @@
 
 import { type MutableRefObject, type ReactElement } from "react";
 import { type RequireExactlyOne } from "type-fest";
-import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
+import { Menu, MenuItem, MenuButton, SubMenu } from "@szhsin/react-menu";
 import React from "react";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -49,6 +49,9 @@ type EllipsisMenuItemInternal = {
   className?: string;
   hide?: boolean;
   disabled?: boolean;
+  // TODO: this doesn't include the requireexactlyone type of action or href
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- todo: fix this
+  submenu?: EllipsisMenuItem[];
 };
 
 export type EllipsisMenuItem = RequireExactlyOne<
@@ -76,6 +79,42 @@ type EllipsisMenuProps = {
   menuButtonClassName?: string;
 };
 
+const getMenuItemComponent = (item: EllipsisMenuItem): ReactElement => {
+  if (item.href) {
+    return (
+      <MenuItem
+        key={item.title}
+        href={item.href}
+        className={item.className}
+        disabled={item.disabled}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {item.icon}&nbsp;{item.title}
+      </MenuItem>
+    );
+  }
+
+  if (item.submenu) {
+    return (
+      <SubMenu label={item.title} key={item.title}>
+        {item.submenu.map((subItem) => getMenuItemComponent(subItem))}
+      </SubMenu>
+    );
+  }
+
+  return (
+    <MenuItem
+      key={item.title}
+      onClick={item.action}
+      className={item.className}
+      disabled={item.disabled}
+    >
+      {item.icon}&nbsp;{item.title}
+    </MenuItem>
+  );
+};
+
 const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
   ariaLabel,
   items,
@@ -100,31 +139,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
       </MenuButton>
     }
   >
-    {items
-      .filter((x) => !x.hide)
-      .map((item) =>
-        item.href ? (
-          <MenuItem
-            key={item.title}
-            href={item.href}
-            className={item.className}
-            disabled={item.disabled}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {item.icon}&nbsp;{item.title}
-          </MenuItem>
-        ) : (
-          <MenuItem
-            key={item.title}
-            onClick={item.action}
-            className={item.className}
-            disabled={item.disabled}
-          >
-            {item.icon}&nbsp;{item.title}
-          </MenuItem>
-        ),
-      )}
+    {items.filter((x) => !x.hide).map((item) => getMenuItemComponent(item))}
   </Menu>
 );
 
