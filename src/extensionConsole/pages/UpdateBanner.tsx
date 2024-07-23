@@ -25,7 +25,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 
 // XXX: move this kind of async state to the Redux state.
-export function useUpdateAvailable(): boolean {
+export function useExtensionUpdateAvailable(): boolean {
   const { data: updateAvailable } = useAsyncState(async () => {
     try {
       const available = await getAvailableVersion();
@@ -41,7 +41,7 @@ export function useUpdateAvailable(): boolean {
 }
 
 const UpdateBanner: React.FunctionComponent = () => {
-  const updateAvailable = useUpdateAvailable();
+  const updateAvailable = useExtensionUpdateAvailable();
 
   if (!updateAvailable) {
     return null;
