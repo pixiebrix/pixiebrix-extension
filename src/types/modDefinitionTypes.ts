@@ -120,7 +120,7 @@ type SharingDefinition = {
 };
 
 /**
- * Config of a Package returned from the PixieBrix API. Used to install ModComponents.
+ * Config of a Package returned from the PixieBrix API. Used to activate ModComponents.
  *
  * If you are creating a mod definition locally, you probably want UnsavedModDefinition, which doesn't include
  * the `sharing` and `updated_at` fields which aren't stored on the YAML/JSON, but are added by the server on responses.

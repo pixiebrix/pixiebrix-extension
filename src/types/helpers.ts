@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { valid as semVerValid, coerce as semVerCoerce } from "semver";
+import { coerce as semVerCoerce, valid as semVerValid } from "semver";
 import { startsWith } from "lodash";
 
 import { type TimedSequence, type UUID } from "@/types/stringTypes";

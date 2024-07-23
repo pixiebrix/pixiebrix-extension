@@ -30,7 +30,7 @@ import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { isNullOrBlank } from "@/utils/stringUtils";
 
 /**
- * Infer optionsSchema from the options provided to the extension.
+ * Infer optionsSchema from the options provided to the mod component.
  */
 function inferOptionsSchema(
   optionsArgs: OptionsArgs | undefined,
@@ -47,7 +47,11 @@ function inferOptionsSchema(
   };
 }
 
-function mapModComponentToModDefinition(
+/**
+ * Map a mod component to an unsaved mod definition, e.g. for export.
+ * @see mapStandaloneModDefinitionToModDefinition
+ */
+function mapModComponentToUnsavedModDefinition(
   modComponent: SerializedModComponent,
   metadata: Metadata,
 ): UnsavedModDefinition {
@@ -65,7 +69,7 @@ function mapModComponentToModDefinition(
   } = modComponent;
 
   if (isInnerDefinitionRegistryId(extensionPointId)) {
-    throw new Error("Expected UnresolvedExtension");
+    throw new Error("Expected mod component without hydrated definitions");
   }
 
   const modComponentDefinition: ModComponentDefinition = {
@@ -99,4 +103,4 @@ function mapModComponentToModDefinition(
   return modDefinition;
 }
 
-export default mapModComponentToModDefinition;
+export default mapModComponentToUnsavedModDefinition;

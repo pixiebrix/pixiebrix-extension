@@ -37,7 +37,7 @@ export function selectActivatedModComponents({
 
 const isModComponentSavedOnCloudSelector = createSelector(
   selectActivatedModComponents,
-  (state: ModComponentsRootState, modComponentId: UUID) => modComponentId,
+  (_state: ModComponentsRootState, modComponentId: UUID) => modComponentId,
   (modComponents, modComponentId) =>
     modComponents.some((modComponent) => modComponent.id === modComponentId),
 );

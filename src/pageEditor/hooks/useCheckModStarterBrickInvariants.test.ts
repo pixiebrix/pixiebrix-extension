@@ -26,7 +26,7 @@ import {
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { getActivatedModComponentFromDefinition } from "@/activation/getActivatedModComponentFromDefinition";
+import { mapModComponentDefinitionToActivatedModComponent } from "@/activation/mapModComponentDefinitionToActivatedModComponent";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { take } from "lodash";
 import { renderHook } from "@/pageEditor/testHelpers";
@@ -144,12 +144,13 @@ describe("useCheckModStarterBrickInvariants", () => {
       }
 
       for (const modComponentDefinition of dirtyModComponentDefinitions) {
-        const activatedModComponent = getActivatedModComponentFromDefinition({
-          modComponentDefinition,
-          modDefinition: activatedModDefinition,
-          optionsArgs: {},
-          integrationDependencies: [],
-        });
+        const activatedModComponent =
+          mapModComponentDefinitionToActivatedModComponent({
+            modComponentDefinition,
+            modDefinition: activatedModDefinition,
+            optionsArgs: {},
+            integrationDependencies: [],
+          });
         // eslint-disable-next-line no-await-in-loop -- we control the loop count to be low here
         const formState = await modComponentToFormState(activatedModComponent);
         activatedFormStates.push(formState);
@@ -174,12 +175,13 @@ describe("useCheckModStarterBrickInvariants", () => {
           extensionPoints: newModComponentDefinitions,
         });
         for (const modComponentDefinition of newModComponentDefinitions) {
-          const activatedModComponent = getActivatedModComponentFromDefinition({
-            modComponentDefinition,
-            modDefinition: modDefinitionForNewComponents,
-            optionsArgs: {},
-            integrationDependencies: [],
-          });
+          const activatedModComponent =
+            mapModComponentDefinitionToActivatedModComponent({
+              modComponentDefinition,
+              modDefinition: modDefinitionForNewComponents,
+              optionsArgs: {},
+              integrationDependencies: [],
+            });
           // eslint-disable-next-line no-await-in-loop -- we control the loop count to be low here
           const formState = await modComponentToFormState(
             activatedModComponent,
@@ -258,12 +260,13 @@ describe("useCheckModStarterBrickInvariants", () => {
       extensionPoints: [modComponentDefinition],
     });
 
-    const activatedModComponent = getActivatedModComponentFromDefinition({
-      modComponentDefinition,
-      modDefinition: resultModDefinition,
-      optionsArgs: {},
-      integrationDependencies: [],
-    });
+    const activatedModComponent =
+      mapModComponentDefinitionToActivatedModComponent({
+        modComponentDefinition,
+        modDefinition: resultModDefinition,
+        optionsArgs: {},
+        integrationDependencies: [],
+      });
     const formState = await modComponentToFormState(activatedModComponent);
 
     const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
@@ -296,12 +299,13 @@ describe("useCheckModStarterBrickInvariants", () => {
       definitions: modInnerDefinitions,
       extensionPoints: [modComponentDefinition],
     });
-    const activatedModComponent = getActivatedModComponentFromDefinition({
-      modComponentDefinition,
-      modDefinition: modForComponent,
-      optionsArgs: {},
-      integrationDependencies: [],
-    });
+    const activatedModComponent =
+      mapModComponentDefinitionToActivatedModComponent({
+        modComponentDefinition,
+        modDefinition: modForComponent,
+        optionsArgs: {},
+        integrationDependencies: [],
+      });
     const formState = await modComponentToFormState(activatedModComponent);
     delete formState.modMetadata;
 

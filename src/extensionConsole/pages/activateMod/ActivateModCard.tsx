@@ -19,17 +19,10 @@ import styles from "./ActivateModCard.module.scss";
 
 import React, { useState } from "react";
 import { Button, Card } from "react-bootstrap";
-import { truncate } from "lodash";
-import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import useActivateModWizard from "@/activation/useActivateModWizard";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
-import { useDispatch, useSelector } from "react-redux";
-import { selectModHasAnyActivatedModComponents } from "@/store/extensionsSelectors";
-import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";
-import {
-  useCreateMilestoneMutation,
-  useGetModDefinitionQuery,
-} from "@/data/service/api";
+import { useDispatch } from "react-redux";
+import { useCreateMilestoneMutation } from "@/data/service/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import useActivateMod from "@/activation/useActivateMod";
@@ -47,6 +40,8 @@ import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValues
 import Markdown from "@/components/Markdown";
 import { getModActivationInstructions } from "@/utils/modUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { isInternalRegistryId } from "@/utils/registryUtils";
+import { type UUID } from "@/types/stringTypes";
 
 const WizardHeader: React.VoidFunctionComponent<{
   mod: ModDefinition;
@@ -61,7 +56,9 @@ const WizardHeader: React.VoidFunctionComponent<{
         </span>
         <span>
           <Card.Title>{mod.metadata.name}</Card.Title>
-          <code className={styles.packageId}>{mod.metadata.id}</code>
+          {!isInternalRegistryId(mod.metadata.id) && (
+            <code className={styles.packageId}>{mod.metadata.id}</code>
+          )}
         </span>
       </div>
       <div className={styles.wizardDescription}>{mod.metadata.description}</div>
@@ -75,33 +72,24 @@ const WizardHeader: React.VoidFunctionComponent<{
   </>
 );
 
-const ActivateModCard: React.FC = () => {
+const ActivateModCard: React.FC<{
+  modDefinition: ModDefinition;
+  isReactivate: boolean;
+  forceModComponentId: UUID;
+}> = ({ modDefinition, isReactivate, forceModComponentId }) => {
   const dispatch = useDispatch();
-  const modId = useRegistryIdParam();
-  const isReactivate = useSelector(
-    selectModHasAnyActivatedModComponents(modId),
-  );
-  // Page parent component is gating this content component on isFetching, so
-  // recipe will always be resolved here
-  const { data: mod } = useGetModDefinitionQuery({ modId });
 
   const {
     data: wizardState,
     isLoading: isLoadingWizard,
     error: wizardError,
-  } = useActivateModWizard(mod);
+  } = useActivateModWizard(modDefinition);
 
   const activateMod = useActivateMod("extensionConsole");
   const [activationError, setActivationError] = useState<unknown>();
   const [createMilestone] = useCreateMilestoneMutation();
 
   const { hasMilestone } = useMilestones();
-
-  useSetDocumentTitle(
-    `${isReactivate ? "Reactivate" : "Activate"} ${truncate(mod.metadata.name, {
-      length: 15,
-    })}`,
-  );
 
   if (isLoadingWizard) {
     return <Loader />;
@@ -113,7 +101,7 @@ const ActivateModCard: React.FC = () => {
 
   const { wizardSteps, initialValues, validationSchema } = wizardState;
 
-  const instructions = getModActivationInstructions(mod);
+  const instructions = getModActivationInstructions(modDefinition);
 
   const renderBody: RenderBody = ({ isSubmitting }) => (
     <WizardValuesModIntegrationsContextAdapter>
@@ -121,7 +109,7 @@ const ActivateModCard: React.FC = () => {
       <Card>
         <Card.Header className={styles.wizardHeader}>
           <WizardHeader
-            mod={mod}
+            mod={modDefinition}
             isReactivate={isReactivate}
             isSubmitting={isSubmitting}
           />
@@ -141,7 +129,7 @@ const ActivateModCard: React.FC = () => {
               <div>
                 <h4>{label}</h4>
               </div>
-              <Component mod={mod} />
+              <Component mod={modDefinition} />
             </div>
           ))}
         </Card.Body>
@@ -149,17 +137,19 @@ const ActivateModCard: React.FC = () => {
     </WizardValuesModIntegrationsContextAdapter>
   );
 
-  const onSubmit: OnSubmit<WizardValues> = async (values, helpers) => {
-    const { success, error } = await activateMod(values, mod);
+  const onSubmit: OnSubmit<WizardValues> = async (values) => {
+    const { success, error } = await activateMod(values, modDefinition, {
+      forceModComponentId,
+    });
 
     if (success) {
-      notify.success(`Installed ${mod.metadata.name}`);
+      notify.success(`Activated ${modDefinition.metadata.name}`);
 
       if (!hasMilestone("first_time_public_blueprint_install")) {
         await createMilestone({
           milestoneName: "first_time_public_blueprint_install",
           metadata: {
-            blueprintId: modId,
+            blueprintId: modDefinition.metadata.id,
           },
         });
 
