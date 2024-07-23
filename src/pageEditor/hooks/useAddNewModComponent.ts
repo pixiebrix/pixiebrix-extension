@@ -39,7 +39,8 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 
-type AddNewModComponent = (config: ModComponentFormStateAdapter) => void;
+// TODO: rename config -> adapter
+export type AddNewModComponent = (config: ModComponentFormStateAdapter) => void;
 
 function useAddNewModComponent(): AddNewModComponent {
   const dispatch = useDispatch();

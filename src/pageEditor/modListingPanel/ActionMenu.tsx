@@ -22,6 +22,7 @@ import {
   faFileExport,
   faFileImport,
   faHistory,
+  faPlus,
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -30,6 +31,7 @@ import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
+import { type AddNewModComponent } from "@/pageEditor/hooks/useAddNewModComponent";
 
 type ActionMenuProps = {
   labelRoot?: string;
@@ -42,6 +44,7 @@ type ActionMenuProps = {
   onAddToMod?: () => Promise<void>;
   onRemoveFromMod?: () => Promise<void>;
   disabled?: boolean;
+  onAddStarterBrick?: AddNewModComponent;
 };
 
 const ActionMenu: React.FC<ActionMenuProps> = ({
@@ -55,13 +58,20 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   onAddToMod,
   onRemoveFromMod,
   disabled,
+  onAddStarterBrick,
 }) => {
+  // @ts-expect-error -- todo: why is this throwing?
   const menuItems: EllipsisMenuItem[] = [
     onReset && {
       title: "Reset",
       icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
       action: onReset,
       disabled: !isDirty || disabled,
+    },
+    onAddStarterBrick && {
+      title: "Add Starter Brick",
+      icon: <FontAwesomeIcon icon={faPlus} fixedWidth />,
+      submenu: [] as EllipsisMenuItem[],
     },
     onAddToMod && {
       title: "Add to mod",

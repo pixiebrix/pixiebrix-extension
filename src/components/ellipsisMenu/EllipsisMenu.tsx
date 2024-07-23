@@ -26,14 +26,16 @@ import "@szhsin/react-menu/dist/transitions/slide.css";
 import styles from "./EllipsisMenu.module.scss";
 import cx from "classnames";
 
-type EllipsisMenuItemInternal = {
+export type EllipsisMenuItem = {
   /**
    * User-visible display for the item, generally text of some sort
    */
   title: string;
-
   icon?: ReactElement;
-
+  className?: string;
+  hide?: boolean;
+  disabled?: boolean;
+} & RequireExactlyOne<{
   /**
    * The "on select" action for the item
    * You should provide either this or href, but not both
@@ -45,19 +47,8 @@ type EllipsisMenuItemInternal = {
    * You should provide either this or action, but not both
    */
   href: string;
-
-  className?: string;
-  hide?: boolean;
-  disabled?: boolean;
-  // TODO: this doesn't include the requireexactlyone type of action or href
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- todo: fix this
-  submenu?: EllipsisMenuItem[];
-};
-
-export type EllipsisMenuItem = RequireExactlyOne<
-  EllipsisMenuItemInternal,
-  "action" | "href"
->;
+  submenu: EllipsisMenuItem[];
+}>;
 
 type EllipsisMenuProps = {
   ariaLabel?: string;

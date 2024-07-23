@@ -42,6 +42,7 @@ import {
 import * as semver from "semver";
 import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
 import { useGetModDefinitionQuery } from "@/data/service/api";
+import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
 
 export type ModListItemProps = PropsWithChildren<{
   modMetadata: Metadata;
@@ -67,6 +68,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
+  const addNewModComponent = useAddNewModComponent();
   const { id: modId, name: savedName, version: activatedVersion } = modMetadata;
   const isActive = activeModId === modId;
 
@@ -125,6 +127,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
             onSave={onSave}
             onReset={onReset}
             onDeactivate={onDeactivate}
+            onAddStarterBrick={addNewModComponent}
             onClone={onClone}
             isDirty={isDirty}
             disabled={isSaving}
