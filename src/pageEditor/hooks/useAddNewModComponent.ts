@@ -64,6 +64,7 @@ function useAddNewModComponent(): AddNewModComponent {
             inspectedTab,
             suggestElements,
           );
+          setInsertingStarterBrickType(null);
         }
 
         const url = await getCurrentInspectedURL();
@@ -104,11 +105,9 @@ function useAddNewModComponent(): AddNewModComponent {
           message: `Error adding ${adapter.label.toLowerCase()}`,
           error,
         });
-      } finally {
-        setInsertingStarterBrickType(null);
       }
     },
-    [dispatch, flagOff, suggestElements],
+    [dispatch, flagOff, setInsertingStarterBrickType, suggestElements],
   );
 }
 
