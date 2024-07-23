@@ -32,6 +32,7 @@ import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
 import { type AddNewModComponent } from "@/pageEditor/hooks/useAddNewModComponent";
+import { ALL_ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 
 type ActionMenuProps = {
   labelRoot?: string;
@@ -71,7 +72,15 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
     onAddStarterBrick && {
       title: "Add Starter Brick",
       icon: <FontAwesomeIcon icon={faPlusSquare} fixedWidth />,
-      submenu: [],
+      submenu: ALL_ADAPTERS.map((adapter) => {
+        return {
+          title: adapter.label,
+          action() {
+            onAddStarterBrick(adapter);
+          },
+          icon: <FontAwesomeIcon icon={adapter.icon} fixedWidth />,
+        };
+      }),
     },
     onAddToMod && {
       title: "Add to mod",
