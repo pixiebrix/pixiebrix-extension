@@ -49,6 +49,37 @@ function useAddNewModComponent(): AddNewModComponent {
     (x) => x.settings.suggestElements ?? false,
   );
 
+  const getInitialModComponentFormState = useCallback(
+    async (
+      adapter: ModComponentFormStateAdapter,
+    ): Promise<ModComponentFormState> => {
+      let element = null;
+      if (adapter.selectNativeElement) {
+        setInsertingStarterBrickType(adapter.starterBrickType);
+        element = await adapter.selectNativeElement(
+          inspectedTab,
+          suggestElements,
+        );
+        setInsertingStarterBrickType(null);
+      }
+
+      const url = await getCurrentInspectedURL();
+      const metadata = internalStarterBrickMetaFactory();
+      const initialFormState = adapter.fromNativeElement(
+        url,
+        metadata,
+        element,
+      );
+
+      initialFormState.modComponent.brickPipeline = getExampleBrickPipeline(
+        adapter.starterBrickType,
+      );
+
+      return initialFormState as ModComponentFormState;
+    },
+    [setInsertingStarterBrickType, suggestElements],
+  );
+
   return useCallback(
     async (adapter: ModComponentFormStateAdapter) => {
       if (adapter.flag && flagOff(adapter.flag)) {
@@ -57,27 +88,7 @@ function useAddNewModComponent(): AddNewModComponent {
       }
 
       try {
-        let element = null;
-        if (adapter.selectNativeElement) {
-          setInsertingStarterBrickType(adapter.starterBrickType);
-          element = await adapter.selectNativeElement(
-            inspectedTab,
-            suggestElements,
-          );
-          setInsertingStarterBrickType(null);
-        }
-
-        const url = await getCurrentInspectedURL();
-        const metadata = internalStarterBrickMetaFactory();
-        const initialFormState = adapter.fromNativeElement(
-          url,
-          metadata,
-          element,
-        ) as ModComponentFormState;
-
-        initialFormState.modComponent.brickPipeline = getExampleBrickPipeline(
-          adapter.starterBrickType,
-        );
+        const initialFormState = await getInitialModComponentFormState(adapter);
 
         dispatch(actions.addModComponentFormState(initialFormState));
         dispatch(actions.checkActiveModComponentAvailability());
@@ -107,7 +118,7 @@ function useAddNewModComponent(): AddNewModComponent {
         });
       }
     },
-    [dispatch, flagOff, setInsertingStarterBrickType, suggestElements],
+    [dispatch, flagOff, getInitialModComponentFormState],
   );
 }
 
