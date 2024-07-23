@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./contrib/automationanywhere/RemoteFileInputArguments.tsx",
     "./activation/useActivateModWizard.ts",
     "./pageEditor/modals/addBrickModal/AddBrickModal.tsx",
     "./pageEditor/documentBuilder/edit/DocumentOptions.tsx",
