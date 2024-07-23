@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./contrib/uipath/LocalProcessOptions.tsx",
     "./contrib/google/sheets/ui/LookupSpreadsheetOptions.tsx",
     "./contrib/google/sheets/ui/AppendSpreadsheetOptions.tsx",
     "../end-to-end-tests/env.ts",
