@@ -22,7 +22,7 @@ import {
   faFileExport,
   faFileImport,
   faHistory,
-  faPlus,
+  faPlusSquare,
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -70,7 +70,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
     },
     onAddStarterBrick && {
       title: "Add Starter Brick",
-      icon: <FontAwesomeIcon icon={faPlus} fixedWidth />,
+      icon: <FontAwesomeIcon icon={faPlusSquare} fixedWidth />,
       submenu: [] as EllipsisMenuItem[],
     },
     onAddToMod && {

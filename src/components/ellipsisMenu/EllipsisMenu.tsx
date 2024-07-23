@@ -87,8 +87,16 @@ const getMenuItemComponent = (item: EllipsisMenuItem): ReactElement => {
   }
 
   if (item.submenu) {
+    const label = item.icon ? (
+      <>
+        {item.icon}&nbsp;{item.title}
+      </>
+    ) : (
+      item.title
+    );
+
     return (
-      <SubMenu label={item.title} key={item.title}>
+      <SubMenu label={label} key={item.title}>
         {item.submenu.map((subItem) => getMenuItemComponent(subItem))}
       </SubMenu>
     );
