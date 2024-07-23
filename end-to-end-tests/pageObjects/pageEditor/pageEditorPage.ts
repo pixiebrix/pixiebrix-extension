@@ -100,15 +100,8 @@ export class PageEditorPage extends BasePageObject {
 
   /** Used for interactions that require selecting an element on the connected page, such as the button starter brick */
   @ModifiesModState
-  async selectConnectedPageElement(
-    connectedPage: Page,
-    selectLocator: Locator,
-    expectedElementSelector: string,
-  ) {
-    // Without focusing first, the click doesn't enable selection tool ¯\_(ツ)_/¯
-    await this.getByLabel("Select element").focus();
-    await this.getByLabel("Select element").click();
-
+  async selectConnectedPageElement(selectLocator: Locator) {
+    const connectedPage = selectLocator.page();
     await connectedPage.bringToFront();
     await expect(
       connectedPage.getByText("Selection Tool: 0 matching"),
@@ -116,9 +109,6 @@ export class PageEditorPage extends BasePageObject {
     await selectLocator.click();
 
     await this.page.bringToFront();
-    await expect(this.getByPlaceholder("Select an element")).toHaveValue(
-      expectedElementSelector,
-    );
   }
 
   /**

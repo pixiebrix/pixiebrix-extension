@@ -40,6 +40,7 @@ export class Brick extends BasePageObject {
 export class BrickActionsPanel extends BasePageObject {
   removeBrickButton = this.getByTestId("icon-button-removeNode");
   copyBrickButton = this.getByTestId("icon-button-copyNode");
+  bricks = this.getByTestId("editor-node");
 
   getAddBrickButton(n: number) {
     return this.getByTestId(/icon-button-.*-add-brick/).nth(n);
@@ -51,19 +52,15 @@ export class BrickActionsPanel extends BasePageObject {
 
   getBrickByName(brickName: string) {
     return new Brick(
-      this.getByTestId("editor-node").filter({
+      this.bricks.filter({
         hasText: brickName,
       }),
     );
   }
 
-  async getBricksInPipeline() {
-    return this.getByTestId("editor-node").all();
-  }
-
   getActiveBrick() {
     return new Brick(
-      this.getByTestId("editor-node").filter({
+      this.bricks.filter({
         has: this.locator(".active"),
       }),
     );

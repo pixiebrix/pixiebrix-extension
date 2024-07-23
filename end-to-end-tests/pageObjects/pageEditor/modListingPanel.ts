@@ -17,6 +17,7 @@
 
 import { BasePageObject } from "../basePageObject";
 import { uuidv4 } from "@/types/helpers";
+import { ModifiesModState } from "./utils";
 
 export type StarterBrickUIName =
   | "Context Menu"
@@ -66,6 +67,7 @@ export class ModListingPanel extends BasePageObject {
    * not the underlying type
    * @returns modName the generated mod name
    */
+  @ModifiesModState
   async addStarterBrick(starterBrickName: StarterBrickUIName) {
     const modUuid = uuidv4();
     const modComponentName = `Test ${starterBrickName} ${modUuid}`;
