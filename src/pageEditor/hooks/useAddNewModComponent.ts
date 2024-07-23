@@ -38,10 +38,11 @@ import { getExampleBrickPipeline } from "@/pageEditor/panes/insert/exampleStarte
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
-import { ModMetadata } from "@/types/modComponentTypes";
+import { type ModMetadata } from "@/types/modComponentTypes";
 
-// TODO: rename config -> adapter
-export type AddNewModComponent = (config: ModComponentFormStateAdapter) => void;
+export type AddNewModComponent = (
+  adapter: ModComponentFormStateAdapter,
+) => void;
 
 function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   const dispatch = useDispatch();

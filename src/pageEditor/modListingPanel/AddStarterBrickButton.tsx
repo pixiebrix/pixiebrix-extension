@@ -65,14 +65,14 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
       title="Add"
       id="add-starter-brick"
     >
-      {modComponentFormStateAdapters.map((config) => (
+      {modComponentFormStateAdapters.map((adapter) => (
         <DropdownEntry
-          key={config.starterBrickType}
-          caption={config.label}
-          icon={config.icon}
-          beta={Boolean(config.flag)}
+          key={adapter.starterBrickType}
+          caption={adapter.label}
+          icon={adapter.icon}
+          beta={Boolean(adapter.flag)}
           onClick={() => {
-            addNewModComponent(config);
+            addNewModComponent(adapter);
           }}
         />
       ))}
