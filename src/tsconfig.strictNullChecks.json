@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionConsole/pages/packageEditor/referenceTab/PackageReference.tsx",
     "./extensionConsole/pages/packageEditor/referenceTab/PackageResult.tsx",
     "./extensionConsole/pages/mods/modals/shareModals/PublishContentLayout.tsx",
     "../end-to-end-tests/env.ts",

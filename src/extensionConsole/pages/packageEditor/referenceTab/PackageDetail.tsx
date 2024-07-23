@@ -35,6 +35,7 @@ import PackageIcon from "@/components/PackageIcon";
 import { writeToClipboard } from "@/utils/clipboardUtils";
 import { type PackageInstance } from "@/types/registryTypes";
 import { MARKETPLACE_URL } from "@/urlConstants";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";
@@ -71,7 +72,7 @@ function makeArgumentYaml(schema: Schema): string {
 
 type OwnProps<T extends PackageInstance> = {
   packageInstance: T;
-  packageConfig: string;
+  packageConfig: Nullishable<string>;
   isPackageConfigLoading: boolean;
 };
 
@@ -169,7 +170,7 @@ const PackageDetail = <T extends PackageInstance>({
         ) : (
           <Suspense fallback={<div className="text-muted">Loading...</div>}>
             <AceEditor
-              value={packageConfig}
+              value={packageConfig ?? undefined}
               mode="yaml"
               theme="chrome"
               width="100%"
