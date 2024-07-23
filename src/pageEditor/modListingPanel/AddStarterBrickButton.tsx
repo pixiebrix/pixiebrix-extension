@@ -22,14 +22,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
 import { useSelector } from "react-redux";
 import { selectTabHasPermissions } from "@/pageEditor/store/tabState/tabStateSelectors";
-import useAsyncState from "@/hooks/useAsyncState";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
-import { flagOn } from "@/auth/featureFlagStorage";
-import { ALL_ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { useAvailableFormStateAdapters } from "@/pageEditor/starterBricks/adapter";
 
 const TEMPLATE_TELEMETRY_SOURCE = "starter_brick_menu";
 
@@ -56,33 +54,8 @@ const DropdownEntry: React.FunctionComponent<{
 const AddStarterBrickButton: React.FunctionComponent = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
   const sessionId = useSelector(selectSessionId);
-
+  const modComponentFormStateAdapters = useAvailableFormStateAdapters();
   const addNewModComponent = useAddNewModComponent();
-
-  const { data: entries = [] } = useAsyncState<React.ReactNode>(async () => {
-    const results = await Promise.all(
-      ALL_ADAPTERS.map(async ({ flag }) => {
-        if (!flag) {
-          return true;
-        }
-
-        return flagOn(flag);
-      }),
-    );
-
-    // eslint-disable-next-line security/detect-object-injection -- index is from iterator
-    return ALL_ADAPTERS.filter((_, index) => results[index]).map((config) => (
-      <DropdownEntry
-        key={config.starterBrickType}
-        caption={config.label}
-        icon={config.icon}
-        beta={Boolean(config.flag)}
-        onClick={() => {
-          addNewModComponent(config);
-        }}
-      />
-    ));
-  }, []);
 
   return (
     <DropdownButton
@@ -92,7 +65,17 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
       title="Add"
       id="add-starter-brick"
     >
-      {entries}
+      {modComponentFormStateAdapters.map((config) => (
+        <DropdownEntry
+          key={config.starterBrickType}
+          caption={config.label}
+          icon={config.icon}
+          beta={Boolean(config.flag)}
+          onClick={() => {
+            addNewModComponent(config);
+          }}
+        />
+      ))}
 
       <Dropdown.Divider />
       <Dropdown.Item
