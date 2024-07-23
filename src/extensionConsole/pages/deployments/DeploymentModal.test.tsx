@@ -73,7 +73,7 @@ describe("DeploymentModal", () => {
     const date = new Date("12/31/1998");
     MockDate.set(date);
 
-    jest.mocked(useExtensionUpdateAvailable).mockReturnValue(true);
+    useUpdateAvailableMock.mockReturnValue(true);
 
     renderModal(
       {
@@ -94,7 +94,7 @@ describe("DeploymentModal", () => {
     const date = new Date("12/31/1998");
     MockDate.set(date);
 
-    jest.mocked(useExtensionUpdateAvailable).mockReturnValue(true);
+    useUpdateAvailableMock.mockReturnValue(true);
 
     renderModal(
       {
@@ -144,7 +144,7 @@ describe("DeploymentModal", () => {
     const time = new Date("12/31/1998").getTime();
     MockDate.set(time);
 
-    jest.mocked(useExtensionUpdateAvailable).mockReturnValue(true);
+    useUpdateAvailableMock.mockReturnValue(true);
 
     renderModal(
       {
@@ -170,7 +170,7 @@ describe("DeploymentModal", () => {
     const date = new Date("12/31/1998");
     MockDate.set(date);
 
-    jest.mocked(useExtensionUpdateAvailable).mockReturnValue(false);
+    useUpdateAvailableMock.mockReturnValue(false);
 
     renderModal(
       {
@@ -195,7 +195,7 @@ describe("DeploymentModal", () => {
     const date = new Date("12/31/1998");
     MockDate.set(date);
 
-    jest.mocked(useExtensionUpdateAvailable).mockReturnValue(false);
+    useUpdateAvailableMock.mockReturnValue(false);
 
     renderModal(
       {

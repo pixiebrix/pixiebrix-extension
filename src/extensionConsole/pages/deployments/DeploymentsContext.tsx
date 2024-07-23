@@ -120,6 +120,7 @@ function useDeployments(): DeploymentsState {
   const deploymentUpdateState = useDeriveAsyncState(
     deploymentsState,
     flagsState,
+    // Including activatedModComponents in the dependencies to ensure the derived state is recalculated when they change
     valueToAsyncState(activatedModComponents),
     async (
       deployments: Deployment[],

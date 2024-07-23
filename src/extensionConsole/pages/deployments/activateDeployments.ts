@@ -21,17 +21,13 @@ import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
-import {
-  type AnyAction,
-  type Dispatch,
-  type ThunkDispatch,
-} from "@reduxjs/toolkit";
+import { type Dispatch } from "@reduxjs/toolkit";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import {
   queueReloadModEveryTab,
   reloadModsEveryTab,
 } from "@/contentScript/messenger/api";
-import { persistor, type RootState } from "@/store/optionsStore";
+import { persistor } from "@/store/optionsStore";
 
 const { actions } = extensionsSlice;
 
@@ -40,7 +36,7 @@ async function activateDeployment({
   activatableDeployment,
   activatedModComponents,
 }: {
-  dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
+  dispatch: Dispatch;
   activatableDeployment: ActivatableDeployment;
   activatedModComponents: ModComponentBase[];
 }): Promise<void> {

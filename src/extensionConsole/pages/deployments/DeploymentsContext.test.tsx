@@ -38,6 +38,9 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Deployment } from "@/types/contract";
 import { validateTimestamp } from "@/utils/timeUtils";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
+
+jest.mock("@/contentScript/messenger/api");
 
 const axiosMock = new MockAdapter(axios);
 
@@ -90,7 +93,7 @@ describe("DeploymentsContext", () => {
     getLinkedApiClientMock.mockResolvedValue(axios);
   });
 
-  it("don't error on activating empty list of deployments", async () => {
+  it("doesn't error on activating empty list of deployments", async () => {
     axiosMock.onPost("/api/deployments/").reply(200, []);
 
     render(
@@ -150,6 +153,8 @@ describe("DeploymentsContext", () => {
 
     const { options } = getReduxStore().getState();
     expect((options as ModComponentState).extensions).toHaveLength(1);
+
+    expect(jest.mocked(reloadModsEveryTab)).toHaveBeenCalledTimes(1);
   });
 
   it("updating deployment mod id deactivates old mod", async () => {
@@ -210,6 +215,8 @@ describe("DeploymentsContext", () => {
 
     const { options } = getReduxStore().getState();
     expect((options as ModComponentState).extensions).toHaveLength(1);
+
+    expect(jest.mocked(reloadModsEveryTab)).toHaveBeenCalledTimes(1);
   });
 
   it("automatically deactivates unassigned deployments", async () => {
@@ -337,6 +344,8 @@ describe("DeploymentsContext", () => {
     // Still no changes in deployments, so no new fetch even after remount
     await waitForEffect();
     expect(axiosMock.history.post).toHaveLength(2);
+
+    expect(jest.mocked(reloadModsEveryTab)).toHaveBeenCalledTimes(1);
   });
 
   it("remounting the DeploymentsProvider refetches the deployments if more than 1 minute has passed", async () => {
@@ -391,7 +400,48 @@ describe("DeploymentsContext", () => {
     // Not called because there are no new deployments
     expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
 
+    expect(jest.mocked(reloadModsEveryTab)).toHaveBeenCalledTimes(1);
+
     jest.useRealTimers();
+  });
+
+  it("when activatedModComponents updates, it should refetch deployments", async () => {
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+
+    mockDeploymentActivationRequests(deployment, modDefinition);
+
+    const { rerender, getReduxStore } = render(
+      <DeploymentsProvider>
+        <Component />
+      </DeploymentsProvider>,
+    );
+
+    expect(screen.queryAllByTestId("Component")).toHaveLength(1);
+    expect(screen.queryAllByTestId("Error")).toHaveLength(0);
+
+    await waitFor(() => {
+      // Initial fetch with no installed deployments
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
+
+    getReduxStore().dispatch(
+      extensionsSlice.actions.activateMod({
+        modDefinition,
+        deployment,
+        screen: "extensionConsole",
+        isReactivate: false,
+      }),
+    );
+
+    rerender(
+      <DeploymentsProvider>
+        <Component />
+      </DeploymentsProvider>,
+    );
+
+    await waitFor(() => {
+      expect(axiosMock.history.post).toHaveLength(2);
+    });
   });
 
   it("unlinked extension error is ignored", async () => {
