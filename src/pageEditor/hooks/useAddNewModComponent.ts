@@ -38,11 +38,12 @@ import { getExampleBrickPipeline } from "@/pageEditor/panes/insert/exampleStarte
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
+import { ModMetadata } from "@/types/modComponentTypes";
 
 // TODO: rename config -> adapter
 export type AddNewModComponent = (config: ModComponentFormStateAdapter) => void;
 
-function useAddNewModComponent(): AddNewModComponent {
+function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   const dispatch = useDispatch();
   const { setInsertingStarterBrickType } = useInsertPane();
   const { flagOff } = useFlags();
@@ -76,9 +77,13 @@ function useAddNewModComponent(): AddNewModComponent {
         adapter.starterBrickType,
       );
 
+      if (modMetadata) {
+        initialFormState.modMetadata = modMetadata;
+      }
+
       return initialFormState as ModComponentFormState;
     },
-    [setInsertingStarterBrickType, suggestElements],
+    [modMetadata, setInsertingStarterBrickType, suggestElements],
   );
 
   return useCallback(
