@@ -38,6 +38,7 @@ import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsB
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type ActivateModInputsProps = {
   mod: ModDefinition;
@@ -49,7 +50,7 @@ type ActivateModInputsProps = {
   needsPermissions?: boolean;
   header?: React.ReactNode;
   formValuesRef?: React.MutableRefObject<WizardValues>;
-  onClickSubmit?: () => void;
+  onClickSubmit: () => void;
   activationError?: string;
 };
 
@@ -67,8 +68,12 @@ const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
 }) => {
   const normalizedMod = mod.options?.schema?.properties
     ? produce(mod, (draft) => {
+        assertNotNullish(
+          draft.options?.schema?.properties,
+          "options schema is nullish",
+        );
         for (const [name, optionSchema] of Object.entries(
-          mod.options.schema.properties,
+          draft.options.schema.properties,
         )) {
           if (typeof optionSchema === "boolean") {
             return;
