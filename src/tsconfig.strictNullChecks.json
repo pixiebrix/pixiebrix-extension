@@ -4,7 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
-    "./extensionConsole/pages/mods/onboardingView/useOnboarding.tsx",
+    "./sidebar/activateMod/RequireMods.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -917,6 +917,9 @@
     "./extensionConsole/pages/mods/modsPageSelectors.ts",
     "./extensionConsole/pages/mods/modsPageSlice.ts",
     "./extensionConsole/pages/mods/modsPageTypes.ts",
+    "./extensionConsole/pages/mods/onboardingView/OnboardingView.test.tsx",
+    "./extensionConsole/pages/mods/onboardingView/OnboardingView.tsx",
+    "./extensionConsole/pages/mods/onboardingView/useOnboarding.tsx",
     "./extensionConsole/pages/mods/utils/mapModComponentToModDefinition.test.ts",
     "./extensionConsole/pages/mods/utils/mapModComponentToModDefinition.ts",
     "./extensionConsole/pages/mods/utils/useReactivateMod.test.ts",
