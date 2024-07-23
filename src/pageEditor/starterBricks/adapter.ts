@@ -33,6 +33,7 @@ import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type DraftModComponent } from "@/contentScript/pageEditor/types";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { sortBy } from "lodash";
 
 const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>([
   [StarterBrickTypes.TRIGGER, triggerModComponent],
@@ -43,7 +44,10 @@ const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>([
   [StarterBrickTypes.DYNAMIC_QUICK_BAR, quickBarProviderModComponent],
 ]);
 
-export const ALL_ADAPTERS = [...ADAPTERS.values()];
+export const ALL_ADAPTERS = sortBy(
+  [...ADAPTERS.values()],
+  (adapter) => adapter.displayOrder,
+);
 
 export function adapter(
   starterBrickType: StarterBrickType,

@@ -19,7 +19,6 @@ import React from "react";
 import { Badge, Dropdown, DropdownButton } from "react-bootstrap";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { sortBy } from "lodash";
 import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
 import { useSelector } from "react-redux";
 import { selectTabHasPermissions } from "@/pageEditor/store/tabState/tabStateSelectors";
@@ -31,8 +30,6 @@ import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { ALL_ADAPTERS } from "@/pageEditor/starterBricks/adapter";
-
-const sortedModComponentAdapters = sortBy(ALL_ADAPTERS, (x) => x.displayOrder);
 
 const TEMPLATE_TELEMETRY_SOURCE = "starter_brick_menu";
 
@@ -64,7 +61,7 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
 
   const { data: entries = [] } = useAsyncState<React.ReactNode>(async () => {
     const results = await Promise.all(
-      sortedModComponentAdapters.map(async ({ flag }) => {
+      ALL_ADAPTERS.map(async ({ flag }) => {
         if (!flag) {
           return true;
         }
@@ -73,22 +70,18 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
       }),
     );
 
-    return (
-      sortedModComponentAdapters
-        // eslint-disable-next-line security/detect-object-injection -- array index
-        .filter((_, index) => results[index])
-        .map((config) => (
-          <DropdownEntry
-            key={config.starterBrickType}
-            caption={config.label}
-            icon={config.icon}
-            beta={Boolean(config.flag)}
-            onClick={() => {
-              addNewModComponent(config);
-            }}
-          />
-        ))
-    );
+    // eslint-disable-next-line security/detect-object-injection -- index is from iterator
+    return ALL_ADAPTERS.filter((_, index) => results[index]).map((config) => (
+      <DropdownEntry
+        key={config.starterBrickType}
+        caption={config.label}
+        icon={config.icon}
+        beta={Boolean(config.flag)}
+        onClick={() => {
+          addNewModComponent(config);
+        }}
+      />
+    ));
   }, []);
 
   return (

@@ -71,7 +71,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
     onAddStarterBrick && {
       title: "Add Starter Brick",
       icon: <FontAwesomeIcon icon={faPlusSquare} fixedWidth />,
-      submenu: [] as EllipsisMenuItem[],
+      submenu: [],
     },
     onAddToMod && {
       title: "Add to mod",
