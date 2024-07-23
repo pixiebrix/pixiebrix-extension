@@ -4,8 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./sidebar/activateMod/ActivateModPanel.tsx",
-    "./sidebar/activateMod/ActivateModInputs.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -1464,7 +1462,10 @@
     "./sidebar/SidebarErrorBoundary.tsx",
     "./sidebar/TemporaryPanelTabPane.tsx",
     "./sidebar/UnavailableOverlay.tsx",
+    "./sidebar/activateMod/ActivateModInputs.tsx",
+    "./sidebar/activateMod/ActivateModPanel.tsx",
     "./sidebar/activateMod/ActivateMultipleModsPanel.test.tsx",
+    "./sidebar/activateMod/ActivateMultipleModsPanel.tsx",
     "./sidebar/activateMod/RequireMods.test.ts",
     "./sidebar/activateMod/RequireMods.tsx",
     "./sidebar/components/RootCancelledPanel.stories.tsx",
