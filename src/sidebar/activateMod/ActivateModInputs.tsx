@@ -38,11 +38,11 @@ import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsB
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
-import { assertNotNullish } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 type ActivateModInputsProps = {
   mod: ModDefinition;
-  optionsWizardStep: WizardStep;
+  optionsWizardStep: WizardStep | undefined;
   initialValues: WizardValues;
   onChange: (values: WizardValues) => void;
   validationSchema: AnyObjectSchema;
@@ -51,7 +51,7 @@ type ActivateModInputsProps = {
   header?: React.ReactNode;
   formValuesRef?: React.MutableRefObject<WizardValues>;
   onClickSubmit: () => void;
-  activationError?: string;
+  activationError: Nullishable<string>;
 };
 
 const ActivateModInputs: React.FC<ActivateModInputsProps> = ({

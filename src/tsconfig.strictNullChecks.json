@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./sidebar/activateMod/ActivateModPanel.tsx",
     "./sidebar/activateMod/ActivateModInputs.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",

@@ -80,7 +80,7 @@ export function wizardStateFactory({
   initialModOptions,
 }: {
   modDefinition: ModDefinition;
-  defaultAuthOptions: Record<RegistryId, AuthOption>;
+  defaultAuthOptions: Record<RegistryId, AuthOption | null>;
   databaseOptions: Option[];
   activatedModComponents: ActivatedModComponent[];
   optionsValidationSchema: AnyObjectSchema;
@@ -197,7 +197,7 @@ export function wizardStateFactory({
 
 function useActivateModWizard(
   modDefinition: ModDefinition,
-  defaultAuthOptions: Record<RegistryId, AuthOption> = {},
+  defaultAuthOptions: Record<RegistryId, AuthOption | null> = {},
   initialOptions: UnknownObject = {},
 ): FetchableAsyncState<UseActivateModWizardResult> {
   const activatedModComponents = useSelector(selectActivatedModComponents);
