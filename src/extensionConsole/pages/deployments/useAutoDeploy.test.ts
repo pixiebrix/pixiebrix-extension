@@ -126,6 +126,7 @@ describe("useAutoDeploy", () => {
         dispatch: expect.any(Function),
         activatableDeployments,
         activatedModComponents,
+        reloadMode: "queue",
       });
 
       await waitForValueToChange(() => result.current.isAutoDeploying);
