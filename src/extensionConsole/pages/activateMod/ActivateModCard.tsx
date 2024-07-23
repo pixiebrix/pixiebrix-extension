@@ -137,7 +137,7 @@ const ActivateModCard: React.FC<{
     </WizardValuesModIntegrationsContextAdapter>
   );
 
-  const onSubmit: OnSubmit<WizardValues> = async (values, helpers) => {
+  const onSubmit: OnSubmit<WizardValues> = async (values) => {
     const { success, error } = await activateMod(values, modDefinition, {
       forceModComponentId,
     });
@@ -149,7 +149,7 @@ const ActivateModCard: React.FC<{
         await createMilestone({
           milestoneName: "first_time_public_blueprint_install",
           metadata: {
-            blueprintId: modDefinition,
+            blueprintId: modDefinition.metadata.id,
           },
         });
 
