@@ -81,7 +81,8 @@ export const selectActiveModId = ({ editor }: EditorRootState) =>
   editor.activeModId;
 
 /**
- * Select the id of the mod being edited. Is set when editing the mod or a mod component within the mod.
+ * Select the id of the "expanded" mod in the accordian layout in the Mod Listing Pane. NOTE: when editing a standalone
+ * mod component, an unrelated mod might be in an expanded state.
  * @see selectActiveModId
  */
 export const selectExpandedModId = ({ editor }: EditorRootState) =>
@@ -95,18 +96,19 @@ export const selectExpandedModId = ({ editor }: EditorRootState) =>
  */
 export const selectActiveModComponentRef = createSelector(
   selectActiveModComponentFormState,
-  selectExpandedModId,
-  (formState, modId) => {
+  (formState) => {
     assertNotNullish(
       formState,
-      "selectActiveModComponentRef can only be used in a mod component context",
+      "selectActiveModComponentRef can only be used in a mod component editing context",
     );
 
     return {
       modComponentId: formState.uuid,
-      modId: modId ?? getStandaloneModComponentRuntimeModId(formState.uuid),
-      // XXX: the Page Editor form state uses an artificial id. When it's added to the page, it will be replaced
-      // with the hash id calculated during hydration
+      modId:
+        formState.modMetadata?.id ??
+        getStandaloneModComponentRuntimeModId(formState.uuid),
+      // XXX: the Page Editor form state uses an artificial id. When it's added to the page, the artificial id will be
+      // replaced with the hash id calculated during hydration
       starterBrickId: formState.starterBrick.metadata.id,
     };
   },
