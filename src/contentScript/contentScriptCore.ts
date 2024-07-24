@@ -67,6 +67,23 @@ onUncaughtError((error) => {
   }
 });
 
+/**
+ * There is a bug introduced in chromium that prevents the content script from getting injected into
+ * iframes with both the `srcdoc` and `sandbox` attributes. This function reloads affected iframes after removing the
+ * `sandbox` attribute the force content script injection.
+ *
+ * See https://issues.chromium.org/issues/355256366
+ */
+const ensureSandboxedSrcdocIframeInjection = () => {
+  for (const iframe of document.querySelectorAll("iframe")) {
+    if (iframe.hasAttribute("sandbox") && iframe.hasAttribute("srcdoc")) {
+      iframe.removeAttribute("sandbox");
+      // eslint-disable-next-line no-self-assign -- force the iframe to reload
+      iframe.srcdoc = iframe.srcdoc;
+    }
+  }
+};
+
 export async function init(): Promise<void> {
   console.debug(`contentScriptCore: init, location: ${location.href}`);
 
@@ -80,14 +97,7 @@ export async function init(): Promise<void> {
   // Since 1.8.10, we inject the platform into the runtime
   initRuntime(brickRegistry);
   initDeferredLoginController();
-
-  for (const iframe of document.querySelectorAll("iframe")) {
-    if (iframe.hasAttribute("sandbox")) {
-      iframe.removeAttribute("sandbox");
-      // eslint-disable-next-line no-self-assign -- force the iframe to reload
-      iframe.srcdoc = iframe.srcdoc;
-    }
-  }
+  ensureSandboxedSrcdocIframeInjection();
 
   initTelemetry();
   initToaster();
