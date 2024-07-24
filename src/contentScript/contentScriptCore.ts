@@ -75,12 +75,10 @@ onUncaughtError((error) => {
  * See https://issues.chromium.org/issues/355256366
  */
 const ensureSandboxedSrcdocIframeInjection = () => {
-  for (const iframe of document.querySelectorAll("iframe")) {
-    if (iframe.hasAttribute("sandbox") && iframe.hasAttribute("srcdoc")) {
-      iframe.removeAttribute("sandbox");
-      // eslint-disable-next-line no-self-assign -- force the iframe to reload
-      iframe.srcdoc = iframe.srcdoc;
-    }
+  for (const iframe of document.querySelectorAll("iframe[srcdoc][sandbox]")) {
+    iframe.removeAttribute("sandbox");
+    // eslint-disable-next-line no-self-assign -- force the iframe to reload
+    iframe.srcdoc = iframe.srcdoc;
   }
 };
 
