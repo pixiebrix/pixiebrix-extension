@@ -81,6 +81,14 @@ export async function init(): Promise<void> {
   initRuntime(brickRegistry);
   initDeferredLoginController();
 
+  for (const iframe of document.querySelectorAll("iframe")) {
+    if (iframe.hasAttribute("sandbox")) {
+      iframe.removeAttribute("sandbox");
+      // eslint-disable-next-line no-self-assign -- force the iframe to reload
+      iframe.srcdoc = iframe.srcdoc;
+    }
+  }
+
   initTelemetry();
   initToaster();
 
