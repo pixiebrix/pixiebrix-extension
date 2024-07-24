@@ -75,7 +75,10 @@ onUncaughtError((error) => {
  * See https://issues.chromium.org/issues/355256366
  */
 const ensureSandboxedSrcdocIframeInjection = () => {
-  for (const iframe of document.querySelectorAll("iframe[srcdoc][sandbox]")) {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- selecting iframes with srcdoc and sandbox messes up type inference for iframe elements
+  for (const iframe of document.querySelectorAll(
+    "iframe[srcdoc][sandbox]",
+  ) as NodeListOf<HTMLIFrameElement>) {
     iframe.removeAttribute("sandbox");
     // eslint-disable-next-line no-self-assign -- force the iframe to reload
     iframe.srcdoc = iframe.srcdoc;
