@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./extensionConsole/pages/mods/gridView/GridView.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -899,6 +898,8 @@
     "./extensionConsole/pages/mods/emptyView/EmptyView.tsx",
     "./extensionConsole/pages/mods/gridView/GridCard.tsx",
     "./extensionConsole/pages/mods/gridView/GridCardErrorBoundary.tsx",
+    "./extensionConsole/pages/mods/gridView/GridView.test.ts",
+    "./extensionConsole/pages/mods/gridView/GridView.tsx",
     "./extensionConsole/pages/mods/hooks/useActivateAction.ts",
     "./extensionConsole/pages/mods/hooks/useModsPageActions.ts",
     "./extensionConsole/pages/mods/hooks/useReactivateAction.ts",
