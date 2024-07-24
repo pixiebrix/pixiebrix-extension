@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { isEmpty, isEqual, pickBy, omit } from "lodash";
 import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
@@ -78,6 +78,7 @@ const contextFilter = (value: unknown, key: string) => {
 };
 
 const DataPanel: React.FC = () => {
+  const popupBoundaryRef = useRef<HTMLElement | null>(null);
   const activeNodeId = useSelector(selectActiveNodeId);
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
@@ -174,10 +175,6 @@ const DataPanel: React.FC = () => {
       editorActions.setActiveBuilderPreviewElement,
     );
 
-  const popupBoundary = showDocumentPreview
-    ? document.querySelector(`.${dataPanelStyles.tabContent}`)
-    : undefined;
-
   const isRenderedPanelStale = useMemo(() => {
     // Only show alert for Panel and Side Panel mod components
     if (
@@ -250,7 +247,12 @@ const DataPanel: React.FC = () => {
             <Nav.Link eventKey={DataPanelTabKey.Comments}>Comments</Nav.Link>
           </Nav.Item>
         </Nav>
-        <Tab.Content className={dataPanelStyles.tabContent}>
+        <Tab.Content
+          className={dataPanelStyles.tabContent}
+          ref={(element: HTMLElement) => {
+            popupBoundaryRef.current = showDocumentPreview ? element : null;
+          }}
+        >
           <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
             {isInputStale && (
               <Alert variant="warning">
@@ -369,7 +371,7 @@ const DataPanel: React.FC = () => {
                     documentBodyName={documentBodyFieldName}
                     activeElement={activeBuilderPreviewElement}
                     setActiveElement={setActiveBuilderPreviewElement}
-                    menuBoundary={popupBoundary}
+                    boundingBoxRef={popupBoundaryRef}
                   />
                 )}
               </ErrorBoundary>

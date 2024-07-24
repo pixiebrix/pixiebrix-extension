@@ -15,10 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RegistryId } from "@/types/registryTypes";
+import { INNER_SCOPE, type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
 import { split } from "lodash";
+
+/**
+ * Returns true if the value is a valid internal registry id, i.e., that should not be displayed to the user.
+ */
+export function isInternalRegistryId(value: RegistryId): boolean {
+  return value.startsWith(`${INNER_SCOPE}/`);
+}
 
 /**
  * Return a valid package id, or empty string in case of error.

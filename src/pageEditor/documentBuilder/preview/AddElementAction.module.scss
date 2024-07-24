@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.toggle {
-  padding: 3px !important;
+// Increase specificity to override the default styles
+.ellipsisMenu.ellipsisMenu {
+  width: unset;
+  height: unset;
+  padding: 3px;
 }

@@ -15,20 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import mapModComponentToModDefinition from "@/extensionConsole/pages/mods/utils/mapModComponentToModDefinition";
-import { validateRegistryId } from "@/types/helpers";
+import mapModComponentToUnsavedModDefinition from "@/mods/utils/mapModComponentToUnsavedModDefinition";
 import { type SerializedModComponent } from "@/types/modComponentTypes";
-import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import {
+  modComponentFactory,
+  modMetadataFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import { DefinitionKinds } from "@/types/registryTypes";
 
-describe("mapModComponentToModDefinition", () => {
+describe("mapModComponentToUnsavedModDefinition", () => {
   it("smoke test", () => {
-    const result = mapModComponentToModDefinition(
+    const result = mapModComponentToUnsavedModDefinition(
       modComponentFactory() as SerializedModComponent,
-      {
-        id: validateRegistryId("test/blueprint"),
-        name: "test",
-      },
+      modMetadataFactory(),
     );
 
     expect(result).toEqual(
@@ -45,10 +44,10 @@ describe("mapModComponentToModDefinition", () => {
       },
     }) as SerializedModComponent;
 
-    const result = mapModComponentToModDefinition(modComponent, {
-      id: validateRegistryId("test/blueprint"),
-      name: "test",
-    });
+    const result = mapModComponentToUnsavedModDefinition(
+      modComponent,
+      modMetadataFactory(),
+    );
 
     expect(result).toEqual(
       expect.objectContaining({

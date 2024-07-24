@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
-import ActivateModCard from "@/extensionConsole/pages/activateMod/ActivateModPage";
+import ActivateModDefinitionIdPage from "@/extensionConsole/pages/activateMod/ActivateModDefinitionIdPage";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -26,8 +26,6 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { useGetModDefinitionQuery } from "@/data/service/api";
-import AsyncStateGate from "@/components/AsyncStateGate";
 import { validateRegistryId } from "@/types/helpers";
 import { type RetrieveRecipeResponse } from "@/types/contract";
 import {
@@ -83,24 +81,16 @@ beforeEach(() => {
   activateModHookMock.mockReturnValue(activateModCallbackMock);
 });
 
-// Activate Mod Card is always rendered when the mod has already been found
-const ModCard: React.FC = () => {
-  const modState = useGetModDefinitionQuery({
-    modId: testModId,
-  });
-  return (
-    <MemoryRouter>
-      <AsyncStateGate state={modState}>
-        {() => <ActivateModCard />}
-      </AsyncStateGate>
-    </MemoryRouter>
-  );
-};
+const ActivateModDefinitionIdPageWrapper: React.FC = () => (
+  <MemoryRouter>
+    <ActivateModDefinitionIdPage />
+  </MemoryRouter>
+);
 
-describe("ActivateModCard", () => {
+describe("ActivateModDefinitionIdPage", () => {
   test("renders", async () => {
     setupMod(defaultModDefinitionFactory());
-    const { asFragment } = render(<ModCard />);
+    const { asFragment } = render(<ActivateModDefinitionIdPageWrapper />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -111,7 +101,7 @@ describe("ActivateModCard", () => {
         extensionPoints: [modComponentDefinitionFactory({ services: null })],
       }),
     );
-    const { asFragment } = render(<ModCard />);
+    const { asFragment } = render(<ActivateModDefinitionIdPageWrapper />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -119,7 +109,7 @@ describe("ActivateModCard", () => {
   test("activate mod definition with missing required mod definition options", async () => {
     const modDefinition = defaultModDefinitionFactory({
       metadata: metadataFactory({
-        id: "test/blueprint-with-required-options" as RegistryId,
+        id: validateRegistryId("test/blueprint-with-required-options"),
         name: "Mod with Required Options",
       }),
       options: {
@@ -144,7 +134,7 @@ describe("ActivateModCard", () => {
     });
     setupMod(modDefinition);
 
-    const { asFragment } = render(<ModCard />);
+    const { asFragment } = render(<ActivateModDefinitionIdPageWrapper />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
     await userEvent.click(screen.getByText("Activate"));
@@ -165,7 +155,7 @@ describe("ActivateModCard", () => {
     });
     setupMod(modDefinition);
 
-    const { asFragment } = render(<ModCard />);
+    const { asFragment } = render(<ActivateModDefinitionIdPageWrapper />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
     await userEvent.click(screen.getByText("Activate"));
@@ -177,6 +167,8 @@ describe("ActivateModCard", () => {
         integrationDependencies: [],
       },
       modDefinition,
+      // Is provided for standalone mod activation
+      { forceModComponentId: undefined },
     );
   });
 
@@ -199,7 +191,7 @@ describe("ActivateModCard", () => {
     });
     setupMod(modDefinition);
 
-    render(<ModCard />);
+    render(<ActivateModDefinitionIdPageWrapper />);
     await waitForEffect();
     await userEvent.click(screen.getByText("Activate"));
     await waitForEffect();
@@ -218,7 +210,7 @@ describe("ActivateModCard", () => {
       },
     };
     setupMod(mod);
-    const { asFragment } = render(<ModCard />);
+    const { asFragment } = render(<ActivateModDefinitionIdPageWrapper />);
 
     await waitForEffect();
 

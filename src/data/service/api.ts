@@ -236,14 +236,14 @@ export const appApi = createApi({
     }),
     getStandaloneModDefinition: builder.query<
       StandaloneModDefinition,
-      { extensionId: UUID }
+      { modComponentId: UUID }
     >({
-      query: ({ extensionId }) => ({
-        url: `/api/extensions/${extensionId}/`,
+      query: ({ modComponentId }) => ({
+        url: `/api/extensions/${modComponentId}/`,
         method: "get",
       }),
-      providesTags: (result, error, { extensionId }) => [
-        { type: "StandaloneModDefinitions", extensionId },
+      providesTags: (result, error, { modComponentId }) => [
+        { type: "StandaloneModDefinitions", modComponentId },
         "StandaloneModDefinitions",
       ],
     }),

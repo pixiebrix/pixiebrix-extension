@@ -140,19 +140,6 @@ jest.mock("@/permissions/modComponentPermissionsHelpers", () => {
   };
 });
 
-jest.mock("@/permissions/cloudExtensionPermissionsHelpers", () => {
-  const originalModule = jest.requireActual(
-    "@/permissions/cloudExtensionPermissionsHelpers",
-  );
-  return {
-    ...originalModule,
-    checkCloudExtensionPermissions: jest.fn().mockImplementation(async () => ({
-      hasPermissions: true,
-      permissions: { origins: [] },
-    })),
-  };
-});
-
 jest.mock("@/permissions/deploymentPermissionsHelpers", () => {
   const originalModule = jest.requireActual(
     "@/permissions/deploymentPermissionsHelpers",

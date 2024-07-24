@@ -36,6 +36,8 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { uuidv4 } from "@/types/helpers";
+import useReduxState from "@/hooks/useReduxState";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 
 function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
   const formState = formStateFactory({
@@ -51,7 +53,11 @@ function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
   });
 
   const PreviewContainer = () => {
-    const [activeElement, setActiveElement] = useState<string | null>(null);
+    const [activeElement, setActiveElement] = useReduxState(
+      selectActiveBuilderPreviewElement,
+      actions.setActiveBuilderPreviewElement,
+    );
+
     return (
       <DocumentPreview
         documentBodyName="modComponent.brickPipeline[0].config.body"
@@ -97,41 +103,30 @@ describe("Add new element", () => {
 
     const { container } = renderDocumentPreview(containerElement);
 
+    const firstDropdown = screen.getAllByTestId("ellipsis-menu-button").at(0);
     // Select a dropdown inside a Col in List and open it
-    await userEvent.click(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
-      container.querySelector(".col .col .addElement button"),
-    );
-    expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
-      container.querySelector(".col .col .addElement button"),
-    ).toHaveAttribute("aria-expanded", "true");
+    await userEvent.click(firstDropdown);
+
+    expect(firstDropdown).toHaveAttribute("aria-haspopup", "true");
 
     // Hover over the Col in the list
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
     fireEvent.mouseOver(container.querySelector(".col .col"));
-    expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
-      container.querySelector(".col .col .addElement button"),
-    ).toHaveAttribute("aria-expanded", "true");
+    expect(firstDropdown).toHaveAttribute("aria-haspopup", "true");
 
     // Hover over the Container of the List, .root.root - is the Document root element
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
     fireEvent.mouseOver(container.querySelector(".root.root > .container"));
-    expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
-      container.querySelector(".col .col .addElement button"),
-    ).toHaveAttribute("aria-expanded", "true");
+    expect(firstDropdown).toHaveAttribute("aria-haspopup", "true");
   });
 
   test("can add an element to a container", async () => {
-    const { container } = renderDocumentPreview(
-      createNewDocumentBuilderElement("container"),
-    );
+    renderDocumentPreview(createNewDocumentBuilderElement("container"));
 
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
-    await userEvent.click(container.querySelector(".col .addElement button"));
-    await userEvent.click(screen.getByText("Header", { selector: "a" }));
+    const firstDropdown = screen.getAllByTestId("ellipsis-menu-button").at(0);
+
+    await userEvent.click(firstDropdown);
+    await userEvent.click(screen.getByRole("menuitem", { name: "Header" }));
 
     const header = screen.getByRole("heading", { level: 1 });
 

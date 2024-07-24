@@ -21,27 +21,21 @@
   gap: 4px;
 }
 
-.toggle {
-  width: 32px;
-  height: 32px;
-  padding: 6px;
-  border-radius: 4px;
-  border: none;
-  background-color: #e8f3fc !important;
-  color: #198ae3 !important;
-  box-shadow: none !important;
+// Increase specificity to override the default styles
+.ellipsisMenu.ellipsisMenu {
+  background-color: #e8f3fc;
+  color: #1368aa;
 
   &:hover {
-    background-color: #ddedfb !important;
-    color: #198ae3 !important;
+    background-color: #ddedfb;
+    color: #0f5388;
   }
 
   &:active {
-    background-color: #1368aa !important;
-    color: white !important;
+    background-color: #b8dbf6;
+    color: #0b3e66;
   }
 }
-
 .addIcon {
   margin-left: -2px;
   margin-right: 2px;

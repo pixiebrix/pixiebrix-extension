@@ -19,7 +19,7 @@ import { type RequiredMeMilestoneResponse } from "@/data/service/responseTypeHel
 
 export type UserMilestone = {
   /**
-   * A lower-snake-case, human-readible identifier for the Milestone, e.g. "first_time_extension_install"
+   * A lower-snake-case, human-readable identifier for the Milestone, e.g. "first_time_extension_install"
    */
   milestoneName: string;
   /**

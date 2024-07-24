@@ -26,7 +26,7 @@ export const AUTH_METHODS = [
   "partner-oauth2",
 ] as const;
 
-export type SkunkworksSettingsFlags = {
+export type ExperimentalSettingsFlags = {
   /**
    * Experimental feature to suggest HTML elements to select in the Page Editor
    */
@@ -67,12 +67,12 @@ export type GeneralSettingsFlags = {
   snippetShortcutMenu?: boolean;
 };
 
-export type SettingsFlags = SkunkworksSettingsFlags & GeneralSettingsFlags;
+export type SettingsFlags = ExperimentalSettingsFlags & GeneralSettingsFlags;
 
 /**
  * @deprecated - Do not use versioned state types directly
  */
-export type SettingsStateV1 = SkunkworksSettingsFlags &
+export type SettingsStateV1 = ExperimentalSettingsFlags &
   GeneralSettingsFlags & {
     /**
      * Time to snooze updates until (in milliseconds from the epoch), or null.

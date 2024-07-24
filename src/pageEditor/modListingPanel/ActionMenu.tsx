@@ -117,7 +117,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       <EllipsisMenu
         ariaLabel={labelRoot ? `${labelRoot} - Ellipsis` : undefined}
         items={menuItems}
-        toggleClassName={styles.toggle}
+        menuButtonClassName={styles.ellipsisMenu}
       />
     </div>
   );
