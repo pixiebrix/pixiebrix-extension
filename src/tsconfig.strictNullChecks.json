@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionConsole/pages/activateMod/ActivateModCard.tsx",
     "./contrib/uipath/LocalProcessOptions.tsx",
     "./contrib/google/sheets/ui/LookupSpreadsheetOptions.tsx",
     "./contrib/google/sheets/ui/AppendSpreadsheetOptions.tsx",
