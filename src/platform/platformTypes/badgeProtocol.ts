@@ -16,6 +16,7 @@
  */
 
 import type { Nullishable } from "@/utils/nullishUtils";
+import type { ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * Protocol for a badge displayed in the context. For the extension, corresponds to the browser action badge.
@@ -25,5 +26,8 @@ export type BadgeProtocol = {
   /**
    * Set the badge text. If the text is null, the badge will be hidden.
    */
-  setText(text: Nullishable<string>): void;
+  setText(
+    text: Nullishable<string>,
+    options: { modComponentRef: ModComponentRef },
+  ): void;
 };

@@ -46,6 +46,7 @@ import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel";
 import { initialSidebarState } from "@/store/sidebar/initialState";
 import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
+import { ModComponentRef } from "@/types/modComponentTypes";
 
 function eventKeyExists(
   state: SidebarState,
@@ -169,6 +170,7 @@ const sidebarSlice = createSlice({
     setInitialPanels(
       state,
       action: PayloadAction<{
+        initialModComponentRef: Nullishable<ModComponentRef>;
         staticPanels: StaticPanelEntry[];
         panels: PanelEntry[];
         temporaryPanels: TemporaryPanelEntry[];
@@ -176,6 +178,8 @@ const sidebarSlice = createSlice({
         modActivationPanel: ModActivationPanelEntry | null;
       }>,
     ) {
+      // TODO: if initialModComponentRef is set, find the corresponding panel and set it as active/not-closed
+
       /**
        * We need a visible count > 1 to prevent useHideEmptySidebar from closing it on first load. If there are no visible panels,
        * we'll show mod launcher. activatePanel then hides the modLauncher if there is another visible panel.

@@ -18,6 +18,32 @@
 import { browserAction } from "@/mv3/api";
 import { openSidePanel, getSidebarTarget } from "@/utils/sidePanelUtils";
 import { messenger } from "webext-messenger";
+import { type ModComponentRef } from "@/types/modComponentTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
+import { SessionMap } from "@/mv3/SessionStorage";
+
+/**
+ * Mapping from tabId to the ModComponentRef that set the badge.
+ */
+const tabBadgeModComponentRefMap = new SessionMap<ModComponentRef>(
+  "tabBadgeModComponentRefMap",
+  import.meta.url,
+);
+
+/**
+ * Set/unset the modComponentRef that set the badge for a tab. If set, when the user opens the sidebar, the sidebar
+ * will attempt to automatically open to a panel associated with the mod.
+ */
+export async function setTabBadgeModComponentRef(
+  tabId: number,
+  modComponentRef: Nullishable<ModComponentRef>,
+): Promise<void> {
+  if (modComponentRef) {
+    await tabBadgeModComponentRefMap.set(String(tabId), modComponentRef);
+  } else {
+    await tabBadgeModComponentRefMap.delete(String(tabId));
+  }
+}
 
 export default async function initBrowserAction(): Promise<void> {
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
@@ -44,7 +70,12 @@ export default async function initBrowserAction(): Promise<void> {
     - https://github.com/w3c/webextensions/issues/521
     */
     if (tab.id) {
-      await openSidePanel(tab.id);
+      const initialModComponentRef = await tabBadgeModComponentRefMap.get(
+        String(tab.id),
+      );
+      await openSidePanel(tab.id, {
+        initialModComponentRef,
+      });
       await messenger(
         "SIDEBAR_CLOSE",
         { isNotification: true, retry: false },

@@ -17,6 +17,9 @@
 
 import { browserAction } from "@/mv3/api";
 import { type MessengerMeta } from "webext-messenger";
+import { type ModComponentRef } from "@/types/modComponentTypes";
+import { setTabBadgeModComponentRef } from "@/background/browserAction";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Browsers will set the badge text color to white or black depending on the background color for accessible contrast.
@@ -29,22 +32,21 @@ export const DEFAULT_BADGE_COLOR = "#b4183f";
 export async function setToolbarBadge(
   this: MessengerMeta,
   text: string | null,
+  options: { modComponentRef?: ModComponentRef },
 ): Promise<void> {
   const tabId = this?.trace?.[0]?.tab?.id;
-  text ??= "";
 
-  if (!tabId) {
-    throw new Error("Unable to set toolbar badge: no tabId");
-  }
+  assertNotNullish(tabId, "Unable to set toolbar badge: no tabId");
 
   await Promise.all([
     browserAction.setBadgeText({
-      text,
+      text: text ?? "",
       tabId,
     }),
     browserAction.setBadgeBackgroundColor({
       color: DEFAULT_BADGE_COLOR,
       tabId,
     }),
+    setTabBadgeModComponentRef(tabId, text ? options.modComponentRef : null),
   ]);
 }

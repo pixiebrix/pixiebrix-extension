@@ -61,7 +61,7 @@ import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
 import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBrickUtils";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type SetRequired } from "type-fest";
-import { validateRegistryId } from "@/types/helpers";
+import { isRegistryId, isUUID, validateRegistryId } from "@/types/helpers";
 
 /**
  * Returns a synthetic mod id for a standalone mod component for use in the runtime
@@ -100,6 +100,31 @@ export function getModComponentRef(
     modId: getRuntimeModId(modComponent),
     starterBrickId: modComponent.extensionPointId,
   };
+}
+
+/**
+ * Returns true if the value is a ModComponentRef
+ */
+export function isModComponentRef(value: unknown): value is ModComponentRef {
+  if (typeof value !== "object" || value == null) {
+    return false;
+  }
+
+  const obj = value as ModComponentRef;
+
+  return (
+    isUUID(obj.modComponentId) &&
+    isRegistryId(obj.modId) &&
+    isRegistryId(obj.starterBrickId)
+  );
+}
+
+export function validateModComponentRef(value: unknown): ModComponentRef {
+  if (!isModComponentRef(value)) {
+    throw new TypeError("Invalid ModComponentRef");
+  }
+
+  return value;
 }
 
 /**

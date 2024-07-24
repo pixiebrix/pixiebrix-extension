@@ -53,6 +53,8 @@ import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
 import useEventListener from "@/hooks/useEventListener";
+import { ModComponentRef } from "@/types/modComponentTypes";
+import { validateModComponentRef } from "@/utils/modUtils";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -99,6 +101,13 @@ function useConnectedListener(): SidebarListener {
   );
 }
 
+function getInitialModComponentRef(): ModComponentRef | undefined {
+  const param = new URL(location.href).searchParams.get(
+    "initialModComponentRef",
+  );
+  return param ? validateModComponentRef(JSON.parse(param)) : undefined;
+}
+
 const staticPanels = [MOD_LAUNCHER];
 
 const ConnectedSidebar: React.VFC = () => {
@@ -136,7 +145,7 @@ const ConnectedSidebar: React.VFC = () => {
   useAsyncEffect(async () => {
     const topFrame = await getConnectedTarget();
 
-    // Ensure persistent sidebar extension points have been installed to have reserve their panels for the sidebar
+    // Ensure persistent sidebar starter bricks have been installed to reserve their panels for the sidebar
     await ensureStarterBricksInstalled(topFrame);
 
     const { panels, temporaryPanels, forms, modActivationPanel } =
@@ -153,6 +162,7 @@ const ConnectedSidebar: React.VFC = () => {
 
     dispatch(
       sidebarSlice.actions.setInitialPanels({
+        initialModComponentRef: getInitialModComponentRef(),
         panels,
         temporaryPanels,
         forms,
