@@ -40,7 +40,7 @@ import { type PackageInstance } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 
 type OwnProps<Instance extends PackageInstance> = {
-  packageInstances: Instance[];
+  packageInstances: Instance[] | undefined;
   initialSelected?: Instance;
 };
 
