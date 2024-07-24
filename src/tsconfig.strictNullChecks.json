@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./extensionConsole/pages/packageEditor/Editor.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -939,6 +938,8 @@
     "./extensionConsole/pages/onboarding/partner/partnerOnboardingUtils.test.ts",
     "./extensionConsole/pages/onboarding/partner/partnerOnboardingUtils.ts",
     "./extensionConsole/pages/packageEditor/CodeEditor.tsx",
+    "./extensionConsole/pages/packageEditor/Editor.test.tsx",
+    "./extensionConsole/pages/packageEditor/Editor.tsx",
     "./extensionConsole/pages/packageEditor/PackageHistory.test.tsx",
     "./extensionConsole/pages/packageEditor/PackageHistory.tsx",
     "./extensionConsole/pages/packageEditor/SharingTable.tsx",
