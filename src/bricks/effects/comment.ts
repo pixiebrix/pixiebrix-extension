@@ -51,7 +51,7 @@ class CommentEffect extends EffectABC {
   constructor() {
     super(
       CommentEffect.BRICK_ID,
-      "[Experimental] Comment",
+      "Comment",
       "A brick to record comments/notes for mod developers",
     );
   }

@@ -18,9 +18,13 @@
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { pick } from "lodash";
+import { isInternalRegistryId } from "@/utils/registryUtils";
 
 /**
- * Select information about the ModDefinition used to install an ModComponentBase
+ * Select information about the ModDefinition used to activate an ModComponentBase
+ *
+ * If the mod definition was transformed from a standalone mod component definition, returns undefined.
+ *
  * @see ModComponentBase._recipe
  */
 export function pickModDefinitionMetadata(
@@ -28,6 +32,10 @@ export function pickModDefinitionMetadata(
 ): ModComponentBase["_recipe"] {
   if (modDefinition.metadata?.id == null) {
     throw new TypeError("ModDefinition metadata id is required");
+  }
+
+  if (isInternalRegistryId(modDefinition.metadata.id)) {
+    return undefined;
   }
 
   return {

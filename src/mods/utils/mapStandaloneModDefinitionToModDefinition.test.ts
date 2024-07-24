@@ -15,15 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.ModalOverride {
-  :global(.BrickDetail) {
-    padding-top: 1em;
-    padding-bottom: 1em;
-    background-color: white;
-  }
+import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapStandaloneModDefinitionToModDefinition } from "@/mods/utils/mapStandaloneModDefinitionToModDefinition";
+import { isInternalRegistryId } from "@/utils/registryUtils";
 
-  :global(code) {
-    padding-left: 0;
-    padding-right: 0;
-  }
-}
+describe("mapStandaloneModDefinitionToModDefinition", () => {
+  it("uses internal registry id", () => {
+    const standaloneModDefinition = standaloneModDefinitionFactory();
+    const modDefinition = mapStandaloneModDefinitionToModDefinition(
+      standaloneModDefinition,
+    );
+
+    expect(isInternalRegistryId(modDefinition.metadata.id)).toBe(true);
+  });
+});

@@ -39,11 +39,11 @@ export class ModListItem extends BasePageObject {
   }
 
   get copyButton() {
-    return this.getByRole("button", { name: "Make a copy" });
+    return this.getByRole("menuitem", { name: "Make a copy" });
   }
 
   get deactivateButton() {
-    return this.getByRole("button", { name: "Deactivate" });
+    return this.getByRole("menuitem", { name: "Deactivate" });
   }
 
   async select() {

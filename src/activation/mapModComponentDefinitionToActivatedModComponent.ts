@@ -27,8 +27,10 @@ import type { Deployment } from "@/types/contract";
 import type { OptionsArgs } from "@/types/runtimeTypes";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
 import { nowTimestamp } from "@/utils/timeUtils";
+import { type UUID } from "@/types/stringTypes";
 
 export type ActivateModComponentParam = {
+  modComponentId?: UUID;
   modComponentDefinition: ModComponentDefinition;
   modDefinition: ModDefinition;
   deployment?: Deployment;
@@ -40,16 +42,19 @@ export type ActivateModComponentParam = {
  * Transform a given ModComponentDefinition into an ActivatedModComponent.
  * Note: This function has no side effects, it's just a type-transformer.
  *       It does NOT save the activated mod component anywhere.
+ * @param modComponentId the ID of the mod component, or undefined to generate a new mod component id. Used to force
+ * the id of the component for standalone mod component activation.
  * @param modComponentDefinition the component definition to activate
- * @param apiVersion the pixiebrix mod api version
+ * @param apiVersion the PixieBrix definition API version
  * @param modDefinition the mod definition this component belongs to
  * @param deployment the deployment for this component, if it belongs to one
  * @param optionsArgs mod option inputs for the mod this component belongs to
  * @param integrationDependencies the configured dependencies for the mod this component belongs to
  */
-export function getActivatedModComponentFromDefinition<
+export function mapModComponentDefinitionToActivatedModComponent<
   Config extends UnknownObject = UnknownObject,
 >({
+  modComponentId,
   modComponentDefinition,
   modDefinition,
   deployment,
@@ -59,7 +64,7 @@ export function getActivatedModComponentFromDefinition<
   const timestamp = nowTimestamp();
 
   const activatedModComponent = {
-    id: uuidv4(),
+    id: modComponentId ?? uuidv4(),
     // Default to `v1` for backward compatability
     apiVersion: modDefinition.apiVersion ?? "v1",
     _recipe: pickModDefinitionMetadata(modDefinition),

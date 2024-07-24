@@ -31,7 +31,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
   return (
     <Card>
       <Card.Header>
-        Skunkworks <FontAwesomeIcon icon={faFlask} />
+        Experimental Settings <FontAwesomeIcon icon={faFlask} />
       </Card.Header>
       <Card.Body>
         <Form>
