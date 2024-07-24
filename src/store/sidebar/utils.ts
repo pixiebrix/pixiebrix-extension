@@ -15,8 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SidebarState } from "@/types/sidebarTypes";
-import { getOpenPanelEntries } from "@/store/sidebar/eventKeyUtils";
+import {
+  type SidebarEntries,
+  type SidebarEntry,
+  type SidebarState,
+} from "@/types/sidebarTypes";
+import {
+  eventKeyForEntry,
+  getOpenPanelEntries,
+} from "@/store/sidebar/eventKeyUtils";
+import { type ModComponentRef } from "@/types/modComponentTypes";
+import { isEqual } from "lodash";
+import type { Nullishable } from "@/utils/nullishUtils";
+
+/**
+ * Returns the initial panel entry given a modComponentRef.
+ */
+export function findInitialPanelEntry(
+  entries: SidebarEntries,
+  modComponentRef: ModComponentRef,
+): SidebarEntry | undefined {
+  // Prefer an exact match, but fallback to a match from the same mod
+  return (
+    entries.panels.find((panel) =>
+      isEqual(panel.modComponentRef, modComponentRef),
+    ) ??
+    entries.panels.find(
+      (panel) => panel.modComponentRef.modId === modComponentRef.modId,
+    )
+  );
+}
 
 export const getVisiblePanelCount = ({
   panels,
@@ -37,3 +65,20 @@ export const getVisiblePanelCount = ({
     (modActivationPanel ? 1 : 0)
   );
 };
+
+export function eventKeyExists(
+  state: SidebarState,
+  query: Nullishable<string>,
+): boolean {
+  if (query == null) {
+    return false;
+  }
+
+  return (
+    state.forms.some((x) => eventKeyForEntry(x) === query) ||
+    state.temporaryPanels.some((x) => eventKeyForEntry(x) === query) ||
+    state.panels.some((x) => eventKeyForEntry(x) === query) ||
+    state.staticPanels.some((x) => eventKeyForEntry(x) === query) ||
+    eventKeyForEntry(state.modActivationPanel) === query
+  );
+}

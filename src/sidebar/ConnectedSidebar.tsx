@@ -53,8 +53,10 @@ import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
 import useEventListener from "@/hooks/useEventListener";
-import { ModComponentRef } from "@/types/modComponentTypes";
-import { validateModComponentRef } from "@/utils/modUtils";
+import {
+  type ModComponentRef,
+  validateModComponentRef,
+} from "@/types/modComponentTypes";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -101,8 +103,8 @@ function useConnectedListener(): SidebarListener {
   );
 }
 
-function getInitialModComponentRef(): ModComponentRef | undefined {
-  const param = new URL(location.href).searchParams.get(
+function getInitialModComponentRef(url?: string): ModComponentRef | undefined {
+  const param = new URL(url ?? location.href).searchParams.get(
     "initialModComponentRef",
   );
   return param ? validateModComponentRef(JSON.parse(param)) : undefined;

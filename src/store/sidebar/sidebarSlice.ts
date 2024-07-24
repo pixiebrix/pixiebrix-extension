@@ -37,7 +37,11 @@ import {
 } from "@/store/sidebar/eventKeyUtils";
 import { remove, sortBy } from "lodash";
 import { castDraft } from "immer";
-import { getVisiblePanelCount } from "@/store/sidebar/utils";
+import {
+  eventKeyExists,
+  findInitialPanelEntry,
+  getVisiblePanelCount,
+} from "@/store/sidebar/utils";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { type Nullishable } from "@/utils/nullishUtils";
 import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
@@ -46,24 +50,7 @@ import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel";
 import { initialSidebarState } from "@/store/sidebar/initialState";
 import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
-import { ModComponentRef } from "@/types/modComponentTypes";
-
-function eventKeyExists(
-  state: SidebarState,
-  query: Nullishable<string>,
-): boolean {
-  if (query == null) {
-    return false;
-  }
-
-  return (
-    state.forms.some((x) => eventKeyForEntry(x) === query) ||
-    state.temporaryPanels.some((x) => eventKeyForEntry(x) === query) ||
-    state.panels.some((x) => eventKeyForEntry(x) === query) ||
-    state.staticPanels.some((x) => eventKeyForEntry(x) === query) ||
-    eventKeyForEntry(state.modActivationPanel) === query
-  );
-}
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 function findNextActiveKey(
   state: SidebarState,
@@ -170,7 +157,7 @@ const sidebarSlice = createSlice({
     setInitialPanels(
       state,
       action: PayloadAction<{
-        initialModComponentRef: Nullishable<ModComponentRef>;
+        initialModComponentRef?: Nullishable<ModComponentRef>;
         staticPanels: StaticPanelEntry[];
         panels: PanelEntry[];
         temporaryPanels: TemporaryPanelEntry[];
@@ -178,7 +165,17 @@ const sidebarSlice = createSlice({
         modActivationPanel: ModActivationPanelEntry | null;
       }>,
     ) {
-      // TODO: if initialModComponentRef is set, find the corresponding panel and set it as active/not-closed
+      // If an initial panel is provided, un-hide the initial panel (if hidden) and mark it as the active panel
+      const initialPanel = findInitialPanelEntry(
+        action.payload,
+        action.payload.initialModComponentRef,
+      );
+      if (initialPanel) {
+        const initialPanelKey = eventKeyForEntry(initialPanel);
+        // eslint-disable-next-line security/detect-object-injection -- generated value
+        state.closedTabs[initialPanelKey] = false;
+        state.activeKey = initialPanelKey;
+      }
 
       /**
        * We need a visible count > 1 to prevent useHideEmptySidebar from closing it on first load. If there are no visible panels,

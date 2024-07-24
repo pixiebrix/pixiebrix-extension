@@ -32,7 +32,7 @@ export const DEFAULT_BADGE_COLOR = "#b4183f";
 export async function setToolbarBadge(
   this: MessengerMeta,
   text: string | null,
-  options: { modComponentRef?: ModComponentRef },
+  options: { modComponentRef?: ModComponentRef } = {},
 ): Promise<void> {
   const tabId = this?.trace?.[0]?.tab?.id;
 
