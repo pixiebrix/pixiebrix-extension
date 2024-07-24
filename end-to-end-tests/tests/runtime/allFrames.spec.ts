@@ -26,10 +26,6 @@ test("8527: availability allFrames declaration", async ({
   extensionId,
   chromiumChannel,
 }) => {
-  test.skip(
-    chromiumChannel === "chrome",
-    "Skip test on Chrome. https://pixiebrix.slack.com/archives/C07DQ2J7C78",
-  );
   const modId = "@pixies/test/8527-all-frames";
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);

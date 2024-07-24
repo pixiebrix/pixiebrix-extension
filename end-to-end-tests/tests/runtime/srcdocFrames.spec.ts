@@ -26,10 +26,6 @@ test("8143: mods can run in srcdoc iframes", async ({
   extensionId,
   chromiumChannel,
 }) => {
-  test.skip(
-    chromiumChannel === "chrome",
-    "Skip test on Chrome. See: https://pixiebrix.slack.com/archives/C07DGPVQJKH",
-  );
   const modId = "@pixies/test/8143-repro";
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
