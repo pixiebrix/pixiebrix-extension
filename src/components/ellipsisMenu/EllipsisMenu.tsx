@@ -65,6 +65,16 @@ type EllipsisMenuProps = {
   boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 
   /**
+   * True to render the dropdown menu in a portal in order to avoid clipping issues with e.g. scrollable containers
+   */
+  portal?: boolean;
+
+  /**
+   * The className prop for the menu.
+   */
+  menuClassName?: string;
+
+  /**
    * The className prop for the menu button toggle.
    */
   menuButtonClassName?: string;
@@ -118,13 +128,17 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
   ariaLabel,
   items,
   boundingBoxRef,
+  portal,
   menuButtonClassName,
+  menuClassName,
 }) => (
   <Menu
     align="end"
     direction="bottom"
     gap={4}
     boundingBoxRef={boundingBoxRef}
+    portal={portal}
+    className={menuClassName}
     menuButton={
       <MenuButton
         aria-label={ariaLabel}

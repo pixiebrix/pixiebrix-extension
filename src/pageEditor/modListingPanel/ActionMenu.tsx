@@ -136,7 +136,9 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       <EllipsisMenu
         ariaLabel={labelRoot ? `${labelRoot} - Ellipsis` : undefined}
         items={menuItems}
+        menuClassName={styles.menu}
         menuButtonClassName={styles.ellipsisMenu}
+        portal={true}
       />
     </div>
   );
