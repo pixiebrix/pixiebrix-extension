@@ -304,7 +304,7 @@ export type ModComponentRef = {
  * mod component, mod, or starter brick.
  * @see validateModComponentRef
  */
-export function isModComponentRef(value: unknown): value is ModComponentRef {
+function isModComponentRef(value: unknown): value is ModComponentRef {
   if (typeof value !== "object" || value == null) {
     return false;
   }
