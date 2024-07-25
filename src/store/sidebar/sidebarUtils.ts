@@ -29,12 +29,16 @@ import { isEqual } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
 
 /**
- * Returns the initial panel entry given a modComponentRef.
+ * Returns the initial panel entry given a modComponentRef, or undefined if not found.
  */
 export function findInitialPanelEntry(
   entries: SidebarEntries,
-  modComponentRef: ModComponentRef,
+  modComponentRef: Nullishable<ModComponentRef>,
 ): SidebarEntry | undefined {
+  if (modComponentRef == null) {
+    return;
+  }
+
   // Prefer an exact match, but fallback to a match from the same mod
   return (
     entries.panels.find((panel) =>
@@ -46,14 +50,14 @@ export function findInitialPanelEntry(
   );
 }
 
-export const getVisiblePanelCount = ({
+export function getVisiblePanelCount({
   panels,
   forms,
   temporaryPanels,
   staticPanels,
   modActivationPanel,
   closedTabs,
-}: SidebarState) => {
+}: SidebarState): number {
   // Temporary Panels are removed from the sidebar state when they are closed, so we don't need to filter them out
   const closablePanels = [...panels, ...staticPanels];
   const openPanels = getOpenPanelEntries(closablePanels, closedTabs);
@@ -64,7 +68,7 @@ export const getVisiblePanelCount = ({
     temporaryPanels.length +
     (modActivationPanel ? 1 : 0)
   );
-};
+}
 
 export function eventKeyExists(
   state: SidebarState,

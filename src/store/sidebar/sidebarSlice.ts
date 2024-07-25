@@ -41,7 +41,7 @@ import {
   eventKeyExists,
   findInitialPanelEntry,
   getVisiblePanelCount,
-} from "@/store/sidebar/utils";
+} from "@/store/sidebar/sidebarUtils";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { type Nullishable } from "@/utils/nullishUtils";
 import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
@@ -170,11 +170,11 @@ const sidebarSlice = createSlice({
         action.payload,
         action.payload.initialModComponentRef,
       );
+      let initialEventKey: string;
       if (initialPanel) {
-        const initialPanelKey = eventKeyForEntry(initialPanel);
-        // eslint-disable-next-line security/detect-object-injection -- generated value
-        state.closedTabs[initialPanelKey] = false;
-        state.activeKey = initialPanelKey;
+        initialEventKey = eventKeyForEntry(initialPanel);
+        // eslint-disable-next-line security/detect-object-injection -- event key
+        state.closedTabs[initialEventKey] = false;
       }
 
       /**
@@ -206,7 +206,7 @@ const sidebarSlice = createSlice({
             -- Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
             See: https://github.com/immerjs/immer/issues/839 */
             // @ts-ignore-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
-            defaultEventKey(state, state.closedTabs);
+            initialEventKey ?? defaultEventKey(state, state.closedTabs);
     },
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...
