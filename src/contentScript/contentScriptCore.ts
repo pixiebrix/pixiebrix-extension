@@ -98,7 +98,6 @@ export async function init(): Promise<void> {
   // Since 1.8.10, we inject the platform into the runtime
   initRuntime(brickRegistry);
   initDeferredLoginController();
-  ensureSandboxedSrcdocIframeInjection();
 
   initTelemetry();
   initToaster();

@@ -47,7 +47,7 @@ const ALLOWED_PROTOCOLS = [
 ];
 
 // Track module load so we hear something from content script in the console if Chrome attempted to import the module.
-console.debug("contentScript: module load");
+console.debug("contentScript: module load", document.location);
 void initRuntimeLogging();
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
