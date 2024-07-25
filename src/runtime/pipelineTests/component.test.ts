@@ -18,18 +18,14 @@
 import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/bricks/types";
-import {
-  contextBrick,
-  echoBrick,
-  simpleInput,
-  testOptions,
-} from "./pipelineTestHelpers";
+import { contextBrick, echoBrick, simpleInput } from "./pipelineTestHelpers";
 
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import { normalizeSemVerString } from "@/types/helpers";
 import { TEST_setContext } from "webext-detect";
 import { toExpression } from "@/utils/expressionUtils";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 TEST_setContext("contentScript");
 
@@ -84,7 +80,7 @@ describe("component block v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v2"),
+      reduceOptionsFactory("v2"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -112,7 +108,7 @@ describe("component block v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });

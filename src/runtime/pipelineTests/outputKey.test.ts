@@ -21,13 +21,9 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/bricks/types";
 import { cloneDeep } from "lodash";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import {
-  contextBrick,
-  echoBrick,
-  simpleInput,
-  testOptions,
-} from "./pipelineTestHelpers";
+import { contextBrick, echoBrick, simpleInput } from "./pipelineTestHelpers";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();
@@ -50,7 +46,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "bar" }),
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
     expect(result).toStrictEqual({ message: "hello, bar" });
   });
@@ -69,7 +65,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput(cloneDeep(initialContext)),
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
     expect(result).toStrictEqual(initialContext);
   });
@@ -95,7 +91,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       const result = await reducePipeline(
         pipeline,
         simpleInput({}),
-        testOptions(apiVersion),
+        reduceOptionsFactory(apiVersion),
       );
 
       expect(result).toStrictEqual({

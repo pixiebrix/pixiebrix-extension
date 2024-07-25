@@ -52,7 +52,7 @@ export abstract class AnalysisVisitorABC
     this.visitStarterBrick(formState.starterBrick);
 
     this.visitRootPipeline(formState.modComponent.brickPipeline, {
-      starterBrickType: formState.type,
+      starterBrickType: formState.starterBrick.definition.type,
     });
   }
 }

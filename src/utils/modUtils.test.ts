@@ -17,11 +17,12 @@
 
 import {
   getSharingSource,
+  getStandaloneModComponentRuntimeModId,
   isStandaloneModComponent,
   isUnavailableMod,
   normalizeModOptionsDefinition,
 } from "./modUtils";
-import { uuidv4 } from "@/types/helpers";
+import { isRegistryId, uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
 import { type Mod, type UnavailableMod } from "@/types/modTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
@@ -31,6 +32,18 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 import { InvalidTypeError } from "@/errors/genericErrors";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { freeze } from "@/utils/objectUtils";
+import {
+  autoUUIDSequence,
+  timestampFactory,
+} from "@/testUtils/factories/stringFactories";
+
+describe("getStandaloneModComponentRuntimeModId", () => {
+  it("returns valid registry id", () => {
+    expect(
+      isRegistryId(getStandaloneModComponentRuntimeModId(autoUUIDSequence())),
+    ).toBe(true);
+  });
+});
 
 describe("getSharingType", () => {
   test("throws on invalid type", () => {
@@ -63,7 +76,7 @@ describe("getSharingType", () => {
       _deployment: {
         id: uuidv4(),
         active: true,
-        timestamp: new Date().toISOString(),
+        timestamp: timestampFactory(),
       },
     }) as any;
     const { type, label } = getSharingSource({
@@ -83,7 +96,7 @@ describe("getSharingType", () => {
       _deployment: {
         id: orgId,
         active: true,
-        timestamp: new Date().toISOString(),
+        timestamp: timestampFactory(),
       },
     }) as any;
 

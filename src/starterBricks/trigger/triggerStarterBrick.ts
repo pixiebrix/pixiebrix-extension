@@ -51,6 +51,7 @@ import {
   type ReportMode,
   type TargetMode,
   type Trigger,
+  Triggers,
   USER_ACTION_TRIGGERS,
 } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import {
@@ -66,7 +67,11 @@ import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrick,
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import {
   isContextInvalidatedError,
   notifyContextInvalidated,
@@ -83,7 +88,10 @@ import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
-import { mapModComponentToMessageContext } from "@/utils/modUtils";
+import {
+  getModComponentRef,
+  mapModComponentToMessageContext,
+} from "@/utils/modUtils";
 
 type TriggerTarget = Document | HTMLElement;
 
@@ -114,7 +122,7 @@ export function getDefaultAllowInactiveFramesForTrigger(
 ): boolean {
   // Prior to 1.8.7, the `background` flag was ignored for non-interval triggers. Therefore, the effective
   // default was `true` for non-interval triggers.
-  return trigger !== "interval";
+  return trigger !== Triggers.INTERVAL;
 }
 
 async function interval({
@@ -208,8 +216,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   private readonly reportedEvents = new Set<UUID>();
   private readonly reportedErrors = new Set<UUID>();
 
-  public get kind(): "trigger" {
-    return "trigger";
+  public get kind(): StarterBrickType {
+    return StarterBrickTypes.TRIGGER;
   }
 
   readonly capabilities: PlatformCapability[] = ["dom", "state"];
@@ -412,6 +420,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
     await reduceModComponentPipeline(actionConfig, initialValues, {
       logger: componentLogger,
+      modComponentRef: getModComponentRef(modComponent),
       ...apiVersionOptions(modComponent.apiVersion),
     });
   }
@@ -745,7 +754,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     { watch = false }: { watch?: boolean },
   ): void {
     const domEventName =
-      this.trigger === "custom"
+      this.trigger === Triggers.CUSTOM
         ? this.customTriggerOptions?.eventName
         : this.trigger;
 
@@ -830,7 +839,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     const $root = await this.getRoot();
 
     switch (this.trigger) {
-      case "load": {
+      case Triggers.LOAD: {
         assertNotNullish($root, "Root is required");
         await this.debouncedRunTriggersAndNotify([...$root], {
           nativeEvent: null,
@@ -838,35 +847,31 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         break;
       }
 
-      case "interval": {
+      case Triggers.INTERVAL: {
         this.attachInterval();
         break;
       }
 
-      case "initialize": {
+      case Triggers.INITIALIZE: {
         assertNotNullish($root, "Root is required");
         this.attachInitializeTrigger($root);
         break;
       }
 
-      case "appear": {
+      case Triggers.APPEAR: {
         assertNotNullish($root, "Root is required");
         this.assertElement($root);
         this.attachAppearTrigger($root);
         break;
       }
 
-      case "selectionchange": {
+      case Triggers.STATE_CHANGE:
+      case Triggers.SELECTION_CHANGE: {
         this.attachDocumentTrigger();
         break;
       }
 
-      case "statechange": {
-        this.attachDocumentTrigger();
-        break;
-      }
-
-      case "custom": {
+      case Triggers.CUSTOM: {
         assertNotNullish($root, "Root is required");
         this.attachDOMTrigger($root, { watch: false });
         break;
@@ -1069,7 +1074,7 @@ export function fromJS(
   config: StarterBrickDefinitionLike<TriggerDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
-  if (type !== "trigger") {
+  if (type !== StarterBrickTypes.TRIGGER) {
     throw new Error(`Expected type=trigger, got ${type}`);
   }
 

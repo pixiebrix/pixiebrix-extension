@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownRecord } from "type-fest/source/internal";
+import { type UnknownRecord } from "type-fest";
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import { compact, reverse, toPath } from "lodash";
 import {
@@ -306,15 +306,16 @@ export function defaultMenuOption(
   for (const part of rest) {
     assertNotNullish(part, "Expected part to be non-null");
 
+    // Find the the first partial match, if it exists
     if (!Object.hasOwn(currentVars, part)) {
       const match = Object.keys(
         sortVarMapKeys(currentVars) as UnknownRecord,
       ).find((x) => x.startsWith(part));
 
-      assertNotNullish(match, "Expected match to exist");
+      if (match) {
+        result.unshift(match);
+      }
 
-      // No exact match, return first partial match as default.
-      result.unshift(match);
       break;
     }
 
@@ -371,9 +372,7 @@ export function moveMenuOption({
   const [source, sourceVars] = sourceMatch;
 
   // eslint-disable-next-line security/detect-object-injection -- checked with hasOwn above
-  const varMap = filterVarMapByVariable(sourceVars, likelyVariable)[
-    head
-  ] as UnknownRecord;
+  const varMap = filterVarMapByVariable(sourceVars, likelyVariable)[head];
 
   // User is switching between top-level variables
   if (rest.length === 0) {

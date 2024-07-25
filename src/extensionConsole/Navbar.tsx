@@ -22,55 +22,23 @@ import { Nav } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { getBaseURL } from "@/data/service/baseService";
-import {
-  addAuthListener,
-  getPartnerAuthData,
-  removeAuthListener,
-} from "@/auth/authStorage";
 import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";
 import cx from "classnames";
 import { selectAuth } from "@/auth/authSelectors";
 import { type ThemeLogo } from "@/themes/themeUtils";
 import useLinkState from "@/auth/useLinkState";
+import useAdminConsoleUrl from "@/hooks/useAdminConsoleUrl";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
-import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
-
-// NOTE: can't share subscribe methods across generators currently for useAsyncExternalStore because it maintains
-// a map of subscriptions to state controllers. See https://github.com/pixiebrix/pixiebrix-extension/issues/7789
-const subscribe = (callback: () => void) => {
-  addAuthListener(callback);
-
-  return () => {
-    removeAuthListener(callback);
-  };
-};
-
-async function getAdminConsoleUrl(): Promise<string> {
-  const [baseUrl, partnerAuth] = await Promise.all([
-    getBaseURL(),
-    getPartnerAuthData(),
-  ]);
-  const url = partnerAuth?.token
-    ? new URL("partner-auth", baseUrl)
-    : new URL(baseUrl);
-  return url.toString();
-}
-
-function useAdminConsoleUrl(): string {
-  // Need to update serviceURL on changes to partner auth data:
-  // https://github.com/pixiebrix/pixiebrix-extension/issues/4594
-  const { data } = useAsyncExternalStore(subscribe, getAdminConsoleUrl);
-  return data ?? DEFAULT_SERVICE_URL;
-}
 
 const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
   const { email } = useSelector(selectAuth);
-
   const { data: isLinked, isLoading: isLinkedLoading } = useLinkState();
-
-  const adminConsoleUrl = useAdminConsoleUrl();
+  const { data: adminConsoleUrl } = fallbackValue(
+    useAdminConsoleUrl(),
+    DEFAULT_SERVICE_URL,
+  );
 
   // Only show sidebar toggle if the extension is linked. Allow `isLinkedLoading` to optimistically show the toggle
   const showNavbarToggle = isLinked || isLinkedLoading;

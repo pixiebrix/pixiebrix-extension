@@ -59,7 +59,7 @@ test("groupPromisesByStatus", async () => {
 });
 
 describe("allSettled", () => {
-  test("it returns the values of fulfilled promises", async () => {
+  it("returns the values of fulfilled promises", async () => {
     const promises = [Promise.resolve(1), Promise.resolve(2)];
     // @ts-expect-error TS must error here because the callbacks are missing.
     // This expectation is part of the test. DO NOT REMOVE
@@ -67,7 +67,7 @@ describe("allSettled", () => {
     expect(result).toStrictEqual({ fulfilled: [1, 2], rejected: [] });
   });
 
-  test("it returns the errors of rejected promises", async () => {
+  it("returns the errors of rejected promises", async () => {
     const promises = [
       Promise.reject(new Error("error 1")),
       Promise.reject(new Error("error 2")),
@@ -81,7 +81,7 @@ describe("allSettled", () => {
     });
   });
 
-  test("it calls the onError callback for all rejected promises", async () => {
+  it("calls the onError callback for all rejected promises", async () => {
     const promises = [
       Promise.reject(new Error("error 1")),
       Promise.reject(new Error("error 2")),
@@ -97,7 +97,7 @@ describe("allSettled", () => {
     ]);
   });
 
-  test("it doesn't call onError if there are no rejections", async () => {
+  it("doesn't call onError if there are no rejections", async () => {
     const promises = [Promise.resolve(1), Promise.resolve(2)];
     const onError = jest.fn();
     await allSettled(promises, {
@@ -128,7 +128,7 @@ describe("retryWithJitter", () => {
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
-  test("it executes a function successfully and returns the result", async () => {
+  it("executes a function successfully and returns the result", async () => {
     const fn = jest.fn(async () => 1);
     const result = await retryWithJitter(fn, {
       retries: 3,
@@ -137,7 +137,7 @@ describe("retryWithJitter", () => {
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
-  test("it retries a function that fails once and returns the result", async () => {
+  it("retries a function that fails once and returns the result", async () => {
     const fn = jest.fn(async () => {
       if (fn.mock.calls.length === 1) {
         throw new Error("error");
@@ -152,7 +152,7 @@ describe("retryWithJitter", () => {
     expect(fn).toHaveBeenCalledTimes(2);
   });
 
-  test("it throws an error if the function fails more than the max retries", async () => {
+  it("throws an error if the function fails more than the max retries", async () => {
     const fn = jest.fn(async () => {
       throw new Error("error");
     });
@@ -165,7 +165,7 @@ describe("retryWithJitter", () => {
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
-  test("it retries on the specified error, and throws on all other errors", async () => {
+  it("retries on the specified error, and throws on all other errors", async () => {
     const fn = jest.fn(async () => {
       if (fn.mock.calls.length === 1) {
         throw new Error("a specified error");
@@ -186,7 +186,7 @@ describe("retryWithJitter", () => {
 });
 
 describe("asyncMapValues", () => {
-  test("it maps values", async () => {
+  it("maps values", async () => {
     const result = await asyncMapValues(
       {
         a: 1,

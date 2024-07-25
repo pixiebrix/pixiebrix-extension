@@ -1,0 +1,72 @@
+kind: recipe
+options:
+  schema:
+    type: object
+    $schema: https://json-schema.org/draft/2019-09/schema#
+    properties: {}
+  uiSchema:
+    ui:order:
+      - '*'
+metadata:
+  id: '@e2e-testing/test/write-to-db-static'
+  name: Write to Hard-Coded DB
+  version: 1.0.0
+  description: Regression test to write to a Hard-Coded DB
+apiVersion: v3
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: quickBar
+      documentUrlPatterns:
+        - '*://*/*'
+      contexts:
+        - all
+      targetMode: eventTarget
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+        - '@pixiebrix/selection'
+      isAvailable:
+        matchPatterns:
+          - https://news.ycombinator.com/*
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+extensionPoints:
+  - label: Write to DB
+    config:
+      title: Write to Hard-Coded DB
+      action:
+        - id: '@pixiebrix/timestamp'
+          root: null
+          config: {}
+          rootMode: document
+          outputKey: instant
+        - id: '@pixiebrix/session'
+          root: null
+          config: {}
+          rootMode: document
+          outputKey: session
+        - id: '@pixiebrix/data/put'
+          root: null
+          config:
+            key: !nunjucks '{{@session.email}}-{{@instant.timestamp}}'
+            value:
+              Test: !nunjucks '42'
+            service: !var '@pixiebrix'
+            databaseId: !nunjucks 00000000-0000-0000-0000-000000000000
+            mergeStrategy: replace
+          rootMode: document
+          outputKey: record
+        - id: '@pixiebrix/confetti'
+          root: null
+          config: {}
+          rootMode: document
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint
+    services:
+      pixiebrix: '@pixiebrix/api'

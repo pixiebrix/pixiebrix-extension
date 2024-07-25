@@ -46,6 +46,7 @@ import type { EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import DimensionGate from "@/pageEditor/components/DimensionGate";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
+import { InsertPaneProvider } from "@/pageEditor/panes/insert/InsertPane";
 
 const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
   StarterBrickTypes.SIDEBAR_PANEL,
@@ -60,7 +61,9 @@ const cleanUpStarterBrickForModComponentFormState = (
   modComponentFormState: EditorState["modComponentFormStates"][number],
 ) => {
   if (
-    STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(modComponentFormState.type)
+    STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(
+      modComponentFormState.starterBrick.definition.type,
+    )
   ) {
     return;
   }
@@ -129,8 +132,10 @@ const PanelContent: React.FC = () => {
             <DatabaseUnresponsiveBanner />
             <DimensionGate>
               <RequireAuth LoginPage={LoginCard}>
-                {/* eslint-disable-next-line react/jsx-max-depth -- Not worth simplifying */}
-                <EditorLayout />
+                <InsertPaneProvider>
+                  {/* eslint-disable-next-line react/jsx-max-depth -- Not worth simplifying */}
+                  <EditorLayout />
+                </InsertPaneProvider>
               </RequireAuth>
             </DimensionGate>
           </ErrorBoundary>

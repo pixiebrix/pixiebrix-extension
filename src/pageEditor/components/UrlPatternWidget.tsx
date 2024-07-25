@@ -23,13 +23,14 @@ import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/starterBrick
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { type Except } from "type-fest";
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/URLPattern
  *
  * Leaving off the more obscure URL parts for now
  */
-export const urlSchemaProject: Schema = {
+const urlSchemaProject: Schema = {
   type: "object",
   properties: {
     hostname: {
@@ -54,7 +55,9 @@ export const urlSchemaProject: Schema = {
   },
 };
 
-const UrlPatternWidget: React.VFC<SchemaFieldProps> = (props) => {
+const UrlPatternWidget: React.VFC<Except<SchemaFieldProps, "schema">> = (
+  props,
+) => {
   const { values: formState } = useFormikContext<ModComponentFormState>();
 
   return (
@@ -66,9 +69,9 @@ const UrlPatternWidget: React.VFC<SchemaFieldProps> = (props) => {
       }}
     >
       <ArrayWidget
-        schema={{ items: urlSchemaProject }}
         addButtonCaption="Add URL Pattern"
         {...props}
+        schema={{ items: urlSchemaProject }}
       />
     </FieldRuntimeContext.Provider>
   );

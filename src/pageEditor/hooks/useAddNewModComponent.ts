@@ -34,62 +34,66 @@ import {
   getCurrentInspectedURL,
   inspectedTab,
 } from "@/pageEditor/context/connection";
+import { getExampleBrickPipeline } from "@/pageEditor/panes/insert/exampleStarterBrickConfigs";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { openSidePanel } from "@/utils/sidePanelUtils";
+import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 
 type AddNewModComponent = (config: ModComponentFormStateAdapter) => void;
 
 function useAddNewModComponent(): AddNewModComponent {
   const dispatch = useDispatch();
+  const { setInsertingStarterBrickType } = useInsertPane();
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
     (x) => x.settings.suggestElements ?? false,
   );
 
   return useCallback(
-    async (modComponentFormStateAdapter: ModComponentFormStateAdapter) => {
-      if (
-        modComponentFormStateAdapter.flag &&
-        flagOff(modComponentFormStateAdapter.flag)
-      ) {
+    async (adapter: ModComponentFormStateAdapter) => {
+      if (adapter.flag && flagOff(adapter.flag)) {
         dispatch(actions.betaError());
         return;
       }
 
-      dispatch(actions.toggleInsert(modComponentFormStateAdapter.elementType));
-
-      if (!modComponentFormStateAdapter.selectNativeElement) {
-        // If the foundation is not for a native element, stop after toggling insertion mode
-        return;
-      }
-
       try {
-        const element = await modComponentFormStateAdapter.selectNativeElement(
-          inspectedTab,
-          suggestElements,
-        );
+        let element = null;
+        if (adapter.selectNativeElement) {
+          setInsertingStarterBrickType(adapter.starterBrickType);
+          element = await adapter.selectNativeElement(
+            inspectedTab,
+            suggestElements,
+          );
+        }
+
         const url = await getCurrentInspectedURL();
-
         const metadata = internalStarterBrickMetaFactory();
-
-        const initialState = modComponentFormStateAdapter.fromNativeElement(
+        const initialFormState = adapter.fromNativeElement(
           url,
           metadata,
           element,
+        ) as ModComponentFormState;
+
+        initialFormState.modComponent.brickPipeline = getExampleBrickPipeline(
+          adapter.starterBrickType,
         );
+
+        dispatch(actions.addModComponentFormState(initialFormState));
+        dispatch(actions.checkActiveModComponentAvailability());
 
         updateDraftModComponent(
           allFramesInInspectedTab,
-          modComponentFormStateAdapter.asDraftModComponent(initialState),
+          adapter.asDraftModComponent(initialFormState),
         );
 
-        dispatch(
-          actions.addModComponentFormState(
-            initialState as ModComponentFormState,
-          ),
-        );
-        dispatch(actions.checkActiveModComponentAvailability());
+        if (adapter.starterBrickType === StarterBrickTypes.SIDEBAR_PANEL) {
+          // For convenience, open the side panel if it's not already open so that the user doesn't
+          // have to manually toggle it
+          void openSidePanel(inspectedTab.tabId);
+        }
 
         reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
-          type: modComponentFormStateAdapter.elementType,
+          type: adapter.starterBrickType,
         });
       } catch (error) {
         if (isSpecificError(error, CancelError)) {
@@ -97,11 +101,11 @@ function useAddNewModComponent(): AddNewModComponent {
         }
 
         notify.error({
-          message: `Error adding ${modComponentFormStateAdapter.label.toLowerCase()}`,
+          message: `Error adding ${adapter.label.toLowerCase()}`,
           error,
         });
       } finally {
-        dispatch(actions.toggleInsert(null));
+        setInsertingStarterBrickType(null);
       }
     },
     [dispatch, flagOff, suggestElements],

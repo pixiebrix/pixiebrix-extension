@@ -135,8 +135,8 @@ describe("Collecting available vars", () => {
         },
       });
 
-      const formState = formStateFactory(
-        {
+      const formState = formStateFactory({
+        formStateConfig: {
           // Test both the PixieBrix api integration and a sample third-party service
           integrationDependencies: [
             integrationDependencyFactory({
@@ -153,8 +153,8 @@ describe("Collecting available vars", () => {
             id: validateRegistryId("test/mod"),
           }),
         },
-        [brickConfigFactory()],
-      );
+        brickPipeline: [brickConfigFactory()],
+      });
 
       await analysis.run(formState);
 
@@ -179,12 +179,14 @@ describe("Collecting available vars", () => {
     });
 
     test("collects the output key", async () => {
-      const formState = formStateFactory(undefined, [
-        brickConfigFactory({
-          outputKey: validateOutputKey("foo"),
-        }),
-        brickConfigFactory(),
-      ]);
+      const formState = formStateFactory({
+        brickPipeline: [
+          brickConfigFactory({
+            outputKey: validateOutputKey("foo"),
+          }),
+          brickConfigFactory(),
+        ],
+      });
 
       await analysis.run(formState);
 
@@ -205,13 +207,15 @@ describe("Collecting available vars", () => {
     });
 
     test("collects the output key of a conditional block", async () => {
-      const formState = formStateFactory(undefined, [
-        brickConfigFactory({
-          if: true,
-          outputKey: validateOutputKey("foo"),
-        }),
-        brickConfigFactory(),
-      ]);
+      const formState = formStateFactory({
+        brickPipeline: [
+          brickConfigFactory({
+            if: true,
+            outputKey: validateOutputKey("foo"),
+          }),
+          brickConfigFactory(),
+        ],
+      });
 
       await analysis.run(formState);
 
@@ -236,7 +240,9 @@ describe("Collecting available vars", () => {
     it("collects actual mod variables", async () => {
       const analysis = new VarAnalysis({ modState: { foo: 42 } });
 
-      const formState = formStateFactory({}, [brickConfigFactory()]);
+      const formState = formStateFactory({
+        brickPipeline: [brickConfigFactory()],
+      });
 
       await analysis.run(formState);
 
@@ -256,7 +262,9 @@ describe("Collecting available vars", () => {
         },
       });
 
-      const formState = formStateFactory({}, [brickConfigFactory()]);
+      const formState = formStateFactory({
+        brickPipeline: [brickConfigFactory()],
+      });
 
       await analysis.run(formState);
 
@@ -286,7 +294,9 @@ describe("Collecting available vars", () => {
     it("handles inferred mod variables", async () => {
       const analysis = new VarAnalysis({ modVariables: [{ foo: {} }] });
 
-      const formState = formStateFactory({}, [brickConfigFactory()]);
+      const formState = formStateFactory({
+        brickPipeline: [brickConfigFactory()],
+      });
 
       await analysis.run(formState);
 
@@ -308,14 +318,14 @@ describe("Collecting available vars", () => {
     test.each([{}, null, undefined])("no options", async (optionsSchema) => {
       mockModWithOptions(optionsSchema);
 
-      const formState = formStateFactory(
-        {
+      const formState = formStateFactory({
+        formStateConfig: {
           modMetadata: modMetadataFactory({
             id: validateRegistryId("test/mod"),
           }),
         },
-        [brickConfigFactory()],
-      );
+        brickPipeline: [brickConfigFactory()],
+      });
 
       await analysis.run(formState);
 
@@ -338,8 +348,8 @@ describe("Collecting available vars", () => {
         },
       });
 
-      const formState = formStateFactory(
-        {
+      const formState = formStateFactory({
+        formStateConfig: {
           // Let this mod component have an integration reference
           optionsArgs: {
             bar: "qux",
@@ -349,8 +359,8 @@ describe("Collecting available vars", () => {
             id: validateRegistryId("test/mod"),
           }),
         },
-        [brickConfigFactory()],
-      );
+        brickPipeline: [brickConfigFactory()],
+      });
 
       await analysis.run(formState);
 
@@ -379,14 +389,14 @@ describe("Collecting available vars", () => {
         required: ["foo"],
       });
 
-      const formState = formStateFactory(
-        {
+      const formState = formStateFactory({
+        formStateConfig: {
           modMetadata: modMetadataFactory({
             id: validateRegistryId("test/mod"),
           }),
         },
-        [brickConfigFactory()],
-      );
+        brickPipeline: [brickConfigFactory()],
+      });
 
       await analysis.run(formState);
 
@@ -409,8 +419,8 @@ describe("Collecting available vars", () => {
         },
       });
 
-      const formState = formStateFactory(
-        {
+      const formState = formStateFactory({
+        formStateConfig: {
           modMetadata: modMetadataFactory({
             id: validateRegistryId("test/mod"),
           }),
@@ -418,8 +428,8 @@ describe("Collecting available vars", () => {
             foo: "bar",
           },
         },
-        [brickConfigFactory()],
-      );
+        brickPipeline: [brickConfigFactory()],
+      });
 
       await analysis.run(formState);
 
@@ -437,12 +447,14 @@ describe("Collecting available vars", () => {
     const outputKey = validateOutputKey("foo");
 
     async function runAnalysisWithOutputSchema(outputSchema: Schema) {
-      const formState = formStateFactory(undefined, [
-        brickConfigFactory({
-          outputKey,
-        }),
-        brickConfigFactory(),
-      ]);
+      const formState = formStateFactory({
+        brickPipeline: [
+          brickConfigFactory({
+            outputKey,
+          }),
+          brickConfigFactory(),
+        ],
+      });
       jest.mocked(brickRegistry.allTyped).mockResolvedValue(
         new Map([
           [
@@ -731,10 +743,9 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const formState = formStateFactory(undefined, [
-        ifElseBlock,
-        brickConfigFactory(),
-      ]);
+      const formState = formStateFactory({
+        brickPipeline: [ifElseBlock, brickConfigFactory()],
+      });
 
       await analysis.run(formState);
     });
@@ -795,10 +806,9 @@ describe("Collecting available vars", () => {
         ]),
       );
 
-      const formState = formStateFactory(undefined, [
-        brickConfiguration,
-        brickConfiguration,
-      ]);
+      const formState = formStateFactory({
+        brickPipeline: [brickConfiguration, brickConfiguration],
+      });
 
       analysis = new VarAnalysis();
       await analysis.run(formState);
@@ -842,7 +852,9 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const formState = formStateFactory(undefined, [documentRendererBrick]);
+      const formState = formStateFactory({
+        brickPipeline: [documentRendererBrick],
+      });
 
       analysis = new VarAnalysis();
       await analysis.run(formState);
@@ -910,7 +922,9 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const formState = formStateFactory(undefined, [documentRendererBrick]);
+      const formState = formStateFactory({
+        brickPipeline: [documentRendererBrick],
+      });
 
       analysis = new VarAnalysis();
       await analysis.run(formState);
@@ -957,10 +971,9 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const formState = formStateFactory(undefined, [
-        tryExceptBlock,
-        brickConfigFactory(),
-      ]);
+      const formState = formStateFactory({
+        brickPipeline: [tryExceptBlock, brickConfigFactory()],
+      });
 
       analysis = new VarAnalysis();
       await analysis.run(formState);
@@ -997,10 +1010,9 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const formState = formStateFactory(undefined, [
-        forEachBlock,
-        brickConfigFactory(),
-      ]);
+      const formState = formStateFactory({
+        brickPipeline: [forEachBlock, brickConfigFactory()],
+      });
 
       analysis = new VarAnalysis();
       await analysis.run(formState);
@@ -1033,10 +1045,9 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const formState = formStateFactory(undefined, [
-        forEachBlock,
-        brickConfigFactory(),
-      ]);
+      const formState = formStateFactory({
+        brickPipeline: [forEachBlock, brickConfigFactory()],
+      });
 
       analysis = new VarAnalysis();
       await analysis.run(formState);
@@ -1124,10 +1135,9 @@ describe("Collecting available vars", () => {
         },
       };
 
-      const formState = formStateFactory(undefined, [
-        customFormBlock,
-        brickConfigFactory(),
-      ]);
+      const formState = formStateFactory({
+        brickPipeline: [customFormBlock, brickConfigFactory()],
+      });
 
       jest.mocked(brickRegistry.allTyped).mockResolvedValue(
         new Map([
@@ -1171,7 +1181,7 @@ describe("Invalid template", () => {
 
   beforeEach(() => {
     const invalidEchoBlock = {
-      id: EchoBrick.BLOCK_ID,
+      id: EchoBrick.BRICK_ID,
       config: {
         message: toExpression(
           "nunjucks",
@@ -1180,7 +1190,7 @@ describe("Invalid template", () => {
       },
     };
     const validEchoBlock = {
-      id: EchoBrick.BLOCK_ID,
+      id: EchoBrick.BRICK_ID,
       config: {
         message: toExpression(
           "nunjucks",
@@ -1189,7 +1199,9 @@ describe("Invalid template", () => {
       },
     };
 
-    formState = formStateFactory(undefined, [invalidEchoBlock, validEchoBlock]);
+    formState = formStateFactory({
+      brickPipeline: [invalidEchoBlock, validEchoBlock],
+    });
 
     analysis = new VarAnalysis();
   });
@@ -1212,17 +1224,19 @@ describe("Invalid template", () => {
 
 describe("var expression annotations", () => {
   test("doesn't annotate valid expressions", async () => {
-    const formState = formStateFactory(undefined, [
-      brickConfigFactory({
-        outputKey: validateOutputKey("foo"),
-      }),
-      {
-        id: EchoBrick.BLOCK_ID,
-        config: {
-          message: toExpression("var", "@foo"),
+    const formState = formStateFactory({
+      brickPipeline: [
+        brickConfigFactory({
+          outputKey: validateOutputKey("foo"),
+        }),
+        {
+          id: EchoBrick.BRICK_ID,
+          config: {
+            message: toExpression("var", "@foo"),
+          },
         },
-      },
-    ]);
+      ],
+    });
 
     const analysis = new VarAnalysis();
     await analysis.run(formState);
@@ -1231,14 +1245,16 @@ describe("var expression annotations", () => {
   });
 
   test("doesn't annotate empty variable", async () => {
-    const formState = formStateFactory(undefined, [
-      {
-        id: EchoBrick.BLOCK_ID,
-        config: {
-          message: toExpression("var", ""),
+    const formState = formStateFactory({
+      brickPipeline: [
+        {
+          id: EchoBrick.BRICK_ID,
+          config: {
+            message: toExpression("var", ""),
+          },
         },
-      },
-    ]);
+      ],
+    });
 
     const analysis = new VarAnalysis();
     await analysis.run(formState);
@@ -1247,14 +1263,16 @@ describe("var expression annotations", () => {
   });
 
   test("annotates variable which doesn't start with @", async () => {
-    const formState = formStateFactory(undefined, [
-      {
-        id: EchoBrick.BLOCK_ID,
-        config: {
-          message: toExpression("var", "foo"),
+    const formState = formStateFactory({
+      brickPipeline: [
+        {
+          id: EchoBrick.BRICK_ID,
+          config: {
+            message: toExpression("var", "foo"),
+          },
         },
-      },
-    ]);
+      ],
+    });
 
     const analysis = new VarAnalysis();
     await analysis.run(formState);
@@ -1267,14 +1285,16 @@ describe("var expression annotations", () => {
   });
 
   test("annotates variable which is just whitespace", async () => {
-    const formState = formStateFactory(undefined, [
-      {
-        id: EchoBrick.BLOCK_ID,
-        config: {
-          message: toExpression("var", "  "),
+    const formState = formStateFactory({
+      brickPipeline: [
+        {
+          id: EchoBrick.BRICK_ID,
+          config: {
+            message: toExpression("var", "  "),
+          },
         },
-      },
-    ]);
+      ],
+    });
 
     const analysis = new VarAnalysis();
     await analysis.run(formState);
@@ -1285,14 +1305,16 @@ describe("var expression annotations", () => {
   });
 
   test("return a generic error message for a single @ character", async () => {
-    const formState = formStateFactory(undefined, [
-      {
-        id: EchoBrick.BLOCK_ID,
-        config: {
-          message: toExpression("var", "@"),
+    const formState = formStateFactory({
+      brickPipeline: [
+        {
+          id: EchoBrick.BRICK_ID,
+          config: {
+            message: toExpression("var", "@"),
+          },
         },
-      },
-    ]);
+      ],
+    });
 
     const analysis = new VarAnalysis();
     await analysis.run(formState);
@@ -1307,7 +1329,7 @@ describe("var analysis integration tests", () => {
   it("should handle trigger event", async () => {
     const formState = triggerFormStateFactory(undefined, [
       {
-        id: EchoBrick.BLOCK_ID,
+        id: EchoBrick.BRICK_ID,
         config: {
           message: toExpression(
             "nunjucks",
@@ -1329,7 +1351,7 @@ describe("var analysis integration tests", () => {
   it("should handle trigger custom event", async () => {
     const formState = triggerFormStateFactory(undefined, [
       {
-        id: EchoBrick.BLOCK_ID,
+        id: EchoBrick.BRICK_ID,
         config: {
           message: toExpression(
             "nunjucks",
@@ -1351,7 +1373,7 @@ describe("var analysis integration tests", () => {
   it("should handle trigger selectionchange event", async () => {
     const formState = triggerFormStateFactory(undefined, [
       {
-        id: EchoBrick.BLOCK_ID,
+        id: EchoBrick.BRICK_ID,
         config: {
           message: toExpression(
             "nunjucks",

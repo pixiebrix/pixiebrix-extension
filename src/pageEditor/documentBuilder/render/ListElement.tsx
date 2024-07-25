@@ -93,7 +93,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
               config: config.__value__,
               context: elementContext.options.ctxt,
               options: apiVersionOptions("v3"),
-              modId: documentContext.options.logger.context.modId,
+              modComponentRef: documentContext.options.meta.modComponentRef,
             },
           )) as DocumentBuilderElement;
         } else {

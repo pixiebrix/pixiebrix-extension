@@ -16,16 +16,10 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
 import { AttachAutocomplete } from "@/bricks/effects/attachAutocomplete";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new AttachAutocomplete();
-
-const logger = new ConsoleLogger({
-  modComponentId: uuidSequence(0),
-});
 
 describe("AttachAutocomplete", () => {
   beforeEach(() => {
@@ -47,12 +41,11 @@ describe("AttachAutocomplete", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test("it attaches autocomplete", async () => {
+  it("attaches autocomplete", async () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: "[name='name']" }),
       brickOptionsFactory({
         root: document,
-        logger,
       }),
     );
 
@@ -61,12 +54,11 @@ describe("AttachAutocomplete", () => {
     );
   });
 
-  test("it is root aware", async () => {
+  it("is root aware", async () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: "[name='name']", isRootAware: true }),
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#noForm")!,
-        logger,
       }),
     );
 
@@ -78,7 +70,6 @@ describe("AttachAutocomplete", () => {
       unsafeAssumeValidArg({ selector: "[name='name']", isRootAware: true }),
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#hasForm")!,
-        logger,
       }),
     );
 

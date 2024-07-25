@@ -22,9 +22,9 @@ import { selectKnownVarsForActiveNode } from "./varSelectors";
 import VariablesTree from "./VariablesTree";
 import {
   selectActiveModComponentFormState,
+  selectActiveModComponentRef,
   selectPipelineMap,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import SourceLabel from "./SourceLabel";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useAsyncEffect } from "use-async-effect";
@@ -45,8 +45,9 @@ import { isEmpty } from "lodash";
 import { getSelectedLineVirtualElement } from "@/components/fields/schemaFields/widgets/varPopup/utils";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import useEventListener from "@/hooks/useEventListener";
-import { StateNamespaces } from "@/platform/state/stateController";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 const emptyVarMap = new VarMap();
 
@@ -163,6 +164,9 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
+
+  const modComponentRef = useSelector(selectActiveModComponentRef);
+
   const pipelineMap = useSelector(selectPipelineMap) ?? {};
   const { allBricks } = useAllBricks();
 
@@ -178,8 +182,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     async () =>
       getPageState(inspectedTab, {
         namespace: StateNamespaces.MOD,
-        modComponentId: null,
-        modId: activeModComponentFormState?.modMetadata?.id,
+        modComponentRef,
       }),
     [],
   );
@@ -199,10 +202,11 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     };
   }, [dispatch]);
 
-  const starterBrickLabel = activeModComponentFormState?.type
-    ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
-      ADAPTERS.get(activeModComponentFormState.type)!.label
-    : "";
+  let starterBrickLabel = "";
+  if (activeModComponentFormState) {
+    const { label } = adapterForComponent(activeModComponentFormState);
+    starterBrickLabel = label;
+  }
 
   const { allOptions, filteredOptions } = useMemo(() => {
     const values = { ...trace?.templateContext };

@@ -20,11 +20,12 @@ import {
   ensurePermissionsFromUserGesture,
 } from "@/permissions/permissionsUtils";
 import notify from "@/utils/notify";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { useCallback } from "react";
 import { type Permissions } from "webextension-polyfill";
 
 function useRequestPermissionsCallback(
-  permissions: Permissions.Permissions | null,
+  permissions: Nullishable<Permissions.Permissions>,
 ): () => Promise<boolean> {
   return useCallback(async () => {
     let accepted = false;

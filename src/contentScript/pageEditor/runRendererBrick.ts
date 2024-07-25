@@ -63,7 +63,7 @@ export async function runRendererBrick({
 
   let payload: PanelPayload;
   try {
-    await runBrickPreview({ ...args, modId: modComponentRef.modId });
+    await runBrickPreview({ ...args, modComponentRef });
     // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
     // noinspection ExceptionCaughtLocallyJS
     throw new NoRendererError();
@@ -74,14 +74,14 @@ export async function runRendererBrick({
         brickId: error.brickId,
         args: error.args,
         ctxt: error.ctxt,
-        modComponentId: modComponentRef.modComponentId,
+        modComponentRef,
         runId,
       };
     } else {
       payload = {
         key: nonce,
         error: serializeError(error),
-        modComponentId: modComponentRef.modComponentId,
+        modComponentRef,
         runId,
       };
     }

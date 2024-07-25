@@ -15,30 +15,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import Modals from "../modals/Modals";
-import { selectIsInsertingNewStarterBrick } from "@/pageEditor/store/editor/editorSelectors";
 import EditorContent from "@/pageEditor/layout/EditorContent";
 import styles from "./EditorLayout.module.scss";
 import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
-import InsertPane from "@/pageEditor/panes/insert/InsertPane";
+import InsertPane, {
+  useInsertPane,
+} from "@/pageEditor/panes/insert/InsertPane";
 import useCurrentInspectedUrl from "../hooks/useCurrentInspectedUrl";
 import NonScriptablePage from "../panes/NonScriptablePage";
 import { isScriptableUrl } from "webext-content-scripts";
 import Loader from "@/components/Loader";
 import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelectors";
 import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 const EditorLayout: React.FunctionComponent = () => {
-  const isInserting = useSelector(selectIsInsertingNewStarterBrick);
+  const dispatch = useDispatch();
+  const { insertingStarterBrickType } = useInsertPane();
+  const isInserting = Boolean(insertingStarterBrickType);
   const { restrict } = useFlags();
   const isRestricted = restrict("page-editor");
   const isStaleSession = useSelector(selectIsStaleSession);
 
   const url = useCurrentInspectedUrl();
+
+  const currentPane = useMemo(
+    () =>
+      isRestricted ? (
+        <RestrictedPane />
+      ) : isStaleSession ? (
+        <StaleSessionPane />
+      ) : isInserting ? (
+        <InsertPane />
+      ) : (
+        <>
+          <ModListingPanel />
+          <EditorContent />
+        </>
+      ),
+    [isInserting, isRestricted, isStaleSession],
+  );
+
+  const previousPane = usePreviousValue(currentPane);
+  if (previousPane !== currentPane) {
+    dispatch(editorActions.hideModal());
+  }
 
   if (!url) {
     // Nearly immediate, likely never shown
@@ -51,20 +78,7 @@ const EditorLayout: React.FunctionComponent = () => {
 
   return (
     <>
-      <div className={styles.root}>
-        {isRestricted ? (
-          <RestrictedPane />
-        ) : isStaleSession ? (
-          <StaleSessionPane />
-        ) : isInserting ? (
-          <InsertPane inserting={isInserting} />
-        ) : (
-          <>
-            <ModListingPanel />
-            <EditorContent />
-          </>
-        )}
-      </div>
+      <div className={styles.root}>{currentPane}</div>
       <Modals />
     </>
   );

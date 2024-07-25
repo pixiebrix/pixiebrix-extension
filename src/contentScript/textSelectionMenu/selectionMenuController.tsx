@@ -314,7 +314,7 @@ function isSelectionValid(selection: Nullishable<Selection>): boolean {
 }
 
 function markSelectionMenuReady() {
-  const html = globalThis.document?.documentElement;
+  const html = globalThis.document.documentElement;
   html.setAttribute(SELECTION_MENU_READY_ATTRIBUTE, "true");
 }
 

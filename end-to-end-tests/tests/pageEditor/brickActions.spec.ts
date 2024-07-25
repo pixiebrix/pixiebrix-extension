@@ -22,7 +22,8 @@ import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { type PageEditorPage } from "end-to-end-tests/pageObjects/pageEditor/pageEditorPage";
 
 const testModDefinitionName = "brick-actions";
-test.use({ modDefinitionNames: [testModDefinitionName] });
+const otherTestMod = "simple-sidebar-panel";
+test.use({ modDefinitionNames: [testModDefinitionName, otherTestMod] });
 test("brick actions panel behavior", async ({
   page,
   extensionId,
@@ -30,13 +31,23 @@ test("brick actions panel behavior", async ({
   newPageEditorPage,
   verifyModDefinitionSnapshot,
 }) => {
+  test.slow(
+    true,
+    "Longer test due to verifying each brick action in one user flow",
+  );
+
   const { id: modId } = modDefinitionsMap[testModDefinitionName];
-  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  const { id: otherModId } = modDefinitionsMap[otherTestMod];
   let pageEditorPage: PageEditorPage;
 
-  await test.step("Activate mod, and initialize page editor", async () => {
+  await test.step("Activate mods, and initialize page editor", async () => {
+    let modActivationPage = new ActivateModPage(page, extensionId, modId);
     await modActivationPage.goto();
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+    modActivationPage = new ActivateModPage(page, extensionId, otherModId);
+    await modActivationPage.goto();
+    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
     await page.goto("/");
     pageEditorPage = await newPageEditorPage(page.url());
   });
@@ -58,20 +69,20 @@ test("brick actions panel behavior", async ({
     await expect(brickActionsPanel.root).toBeVisible();
   });
 
-  await test.step("Add a new brick, then save the mod", async () => {
+  await test.step("Add a new brick", async () => {
     await brickActionsPanel.addBrick("Set Mod Variable", { index: 1 });
     await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({ modId, snapshotName: "brick-added" });
   });
 
-  await test.step("Remove a brick, then save the mod", async () => {
+  await test.step("Remove a brick", async () => {
     await brickActionsPanel.getBrickByName("Set Mod Variable").select();
     await brickActionsPanel.removeBrickButton.click();
     await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({ modId, snapshotName: "brick-removed" });
   });
 
-  await test.step("Copy and paste a brick, then save the mod", async () => {
+  await test.step("Copy and paste a brick", async () => {
     await brickActionsPanel.getBrickByName("Alert Brick").select();
     await expect(brickActionsPanel.getPasteBrickButton(0)).toBeHidden();
     await brickActionsPanel.copyActiveBrick();
@@ -84,10 +95,32 @@ test("brick actions panel behavior", async ({
     });
   });
 
-  await test.step("Move bricks, then save the mod", async () => {
+  await test.step("Move bricks", async () => {
     await brickActionsPanel.getBrickByName("Custom Modal").moveDown();
     await brickActionsPanel.getBrickByName("Assign Mod Var Brick").moveUp();
     await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({ modId, snapshotName: "bricks-moved" });
+  });
+
+  await test.step("Copy a brick from one mod to another", async () => {
+    const targetModId = modDefinitionsMap[otherTestMod].id;
+
+    await brickActionsPanel.getBrickByName("Assign Mod Var Brick").select();
+    await brickActionsPanel.copyActiveBrick();
+
+    // Switch to the other mod, and select its starter brick
+    await pageEditorPage.modListingPanel
+      .getModListItemByName("Simple Sidebar Panel")
+      .select();
+    await pageEditorPage.modListingPanel
+      .getModStarterBrick("Simple Sidebar Panel", "Simple Sidebar Panel")
+      .select();
+
+    await brickActionsPanel.pasteBrick(1);
+    await pageEditorPage.saveActiveMod();
+    await verifyModDefinitionSnapshot({
+      modId: targetModId,
+      snapshotName: "brick-copied-to-another-mod",
+    });
   });
 });

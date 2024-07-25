@@ -47,6 +47,7 @@ import {
   type QuickBarDefinition,
   type QuickBarConfig,
 } from "@/starterBricks/quickBar/quickBarTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
@@ -66,7 +67,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
         name: "Test Starter Brick",
       }) as Metadata,
     definition: define<QuickBarDefinition>({
-      type: "quickBar",
+      type: StarterBrickTypes.QUICK_BAR_ACTION,
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
       }),

@@ -90,7 +90,7 @@ class RunMetadataTransformer extends TransformerABC {
             description: "The mod version",
           },
         },
-        required: ["id", "version"],
+        required: ["id"],
       },
       deploymentId: {
         type: ["string", "null"],
@@ -114,10 +114,11 @@ class RunMetadataTransformer extends TransformerABC {
           ? null
           : {
               id: context.modId,
+              // `modVersion` won't be present for standalone mod components
               version: context.modVersion,
             },
       deploymentId: context.deploymentId ?? null,
-      modComponentId: context.modComponentId ?? null,
+      modComponentId: meta.modComponentRef.modComponentId,
       runId: meta.runId,
     };
   }

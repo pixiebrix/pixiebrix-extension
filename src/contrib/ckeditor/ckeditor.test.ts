@@ -23,13 +23,13 @@ import { BusinessError } from "@/errors/businessErrors";
 import { hasCKEditorClass } from "@/contrib/ckeditor/ckeditorDom";
 
 describe("CKEditor", () => {
-  test("it detects CKEditor instances", () => {
+  it("detects CKEditor instances", () => {
     const element = document.createElement("div");
     element.classList.add("ck-editor__editable");
     expect(hasCKEditorClass(element)).toBe(true);
   });
 
-  test("it returns CKEditor instance", () => {
+  it("returns CKEditor instance", () => {
     const element = document.createElement("div");
     element.classList.add("ck-editor__editable");
     expect(isCKEditorElement(element)).toBe(false);

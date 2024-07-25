@@ -1,0 +1,87 @@
+Index: brick-copied-to-another-mod
+===================================================================
+--- brick-copied-to-another-mod
++++ brick-copied-to-another-mod
+@@ -1,74 +1,82 @@
+ apiVersion: v3
+ definitions:
+   extensionPoint:
+     definition:
+       customEvent: null
+       debounce:
+         leading: false
+         trailing: true
+         waitMillis: 250
+       isAvailable:
++        allFrames: true
+         matchPatterns:
+           - https://pbx.vercel.app/*
+         selectors: []
+         urlPatterns: []
+       reader:
+         - '@pixiebrix/document-metadata'
+         - '@pixiebrix/document-context'
+       trigger: load
+       type: actionPanel
+     kind: extensionPoint
+ extensionPoints:
+   - config:
+       body:
+         - config:
+             body:
+               - children:
+                   - children:
+                       - children:
+                           - config:
+                               heading: h1
+                               title: !nunjucks Simple Sidebar Panel
+                             type: header
+                         config: {}
+                         type: column
+                     config: {}
+                     type: row
+                   - children:
+                       - children:
+                           - config:
+                               enableMarkdown: true
+                               text: !nunjucks >-
+                                 Simple sidebar panel for testing sidepanel
+                                 open/close behavior
+                             type: text
+                         config: {}
+                         type: column
+                     config: {}
+                     type: row
+                 config: {}
+                 type: container
+           id: '@pixiebrix/document'
+           root: null
+           rootMode: document
++        - config:
++            value: !nunjucks ''
++            variableName: !nunjucks ''
++          id: '@pixiebrix/state/assign'
++          label: Assign Mod Var Brick 123
++          root: null
++          rootMode: document
+       heading: Simple Sidebar Panel
+     id: extensionPoint
+     label: Simple Sidebar Panel
+     permissions:
+       origins: []
+       permissions: []
+     services: {}
+ kind: recipe
+ metadata:
+   description: Created with the PixieBrix Page Editor
+   id: >-
+     @extension-e2e-test-unaffiliated/simple-sidebar-panel-00000000-0000-0000-0000-000000000000
+   name: Simple Sidebar Panel
+   version: 1.0.0
+ options:
+   schema:
+     properties: {}
+     type: object
+   uiSchema:
+     ui:order:
+       - '*'

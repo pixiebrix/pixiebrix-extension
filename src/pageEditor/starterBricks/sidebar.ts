@@ -43,6 +43,7 @@ import {
   type SidebarDefinition,
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const base = makeInitialBaseState();
@@ -50,16 +51,15 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const heading = "Sidebar Panel";
 
   return {
-    type: "actionPanel",
     label: heading,
     ...base,
     starterBrick: {
       metadata,
 
       definition: {
-        type: "actionPanel",
+        type: StarterBrickTypes.SIDEBAR_PANEL,
         isAvailable: ALL_SITES_AVAILABILITY,
-        reader: getImplicitReader("actionPanel"),
+        reader: getImplicitReader(StarterBrickTypes.SIDEBAR_PANEL),
 
         trigger: "load",
 
@@ -89,7 +89,7 @@ function selectStarterBrickDefinition(
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
     definition: {
-      type: "actionPanel",
+      type: StarterBrickTypes.SIDEBAR_PANEL,
       reader,
       isAvailable,
       trigger,
@@ -120,7 +120,7 @@ function asDraftModComponent(
   sidebarFormState: SidebarFormState,
 ): DraftModComponent {
   return {
-    type: "actionPanel",
+    type: StarterBrickTypes.SIDEBAR_PANEL,
     extension: selectModComponent(sidebarFormState, {
       includeInstanceIds: true,
     }),
@@ -134,8 +134,8 @@ async function fromModComponent(
   const starterBrick = await lookupStarterBrick<
     SidebarDefinition,
     SidebarConfig,
-    "actionPanel"
-  >(config, "actionPanel");
+    typeof StarterBrickTypes.SIDEBAR_PANEL
+  >(config, StarterBrickTypes.SIDEBAR_PANEL);
 
   const base = baseFromModComponent(config, starterBrick.definition.type);
   const modComponent = await modComponentWithNormalizedPipeline(
@@ -171,7 +171,7 @@ async function fromModComponent(
 
 const config: ModComponentFormStateAdapter<never, SidebarFormState> = {
   displayOrder: 3,
-  elementType: "actionPanel",
+  starterBrickType: StarterBrickTypes.SIDEBAR_PANEL,
   label: "Sidebar Panel",
   baseClass: SidebarStarterBrickABC,
   selectNativeElement: undefined,

@@ -311,14 +311,14 @@ const validationError = {
 } as SchemaValidationError["errors"][number];
 
 describe("formatSchemaValidationMessage", () => {
-  test("it returns a message in the form of 'keywordLocation: error'", () => {
+  it("returns a message in the form of 'keywordLocation: error'", () => {
     const message = formatSchemaValidationMessage(validationError);
     expect(message).toBe(
       `${validationError.keywordLocation}: ${validationError.error}`,
     );
   });
 
-  test("it returns just the error if no keyword location", () => {
+  it("returns just the error if no keyword location", () => {
     const message = formatSchemaValidationMessage({
       ...validationError,
       keywordLocation: undefined,
@@ -326,7 +326,7 @@ describe("formatSchemaValidationMessage", () => {
     expect(message).toEqual(validationError.error);
   });
 
-  test("it returns empty string if no error or keyword location", () => {
+  it("returns empty string if no error or keyword location", () => {
     const message = formatSchemaValidationMessage(
       {} as SchemaValidationError["errors"][number],
     );

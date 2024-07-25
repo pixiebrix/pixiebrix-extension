@@ -16,16 +16,10 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
 import CustomEventEffect from "@/bricks/effects/customEvent";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new CustomEventEffect();
-
-const logger = new ConsoleLogger({
-  modComponentId: uuidSequence(0),
-});
 
 describe("CustomEventEffect", () => {
   beforeEach(() => {
@@ -44,7 +38,7 @@ describe("CustomEventEffect", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test("it fires custom event", async () => {
+  it("fires custom event", async () => {
     const eventHandler = jest.fn();
     document.querySelector("button")!.addEventListener("foo", eventHandler);
 
@@ -52,14 +46,13 @@ describe("CustomEventEffect", () => {
       unsafeAssumeValidArg({ eventName: "foo" }),
       brickOptionsFactory({
         root: document.querySelector("button")!,
-        logger,
       }),
     );
 
     expect(eventHandler).toHaveBeenCalled();
   });
 
-  test("it bubbles custom event", async () => {
+  it("bubbles custom event", async () => {
     const eventHandler = jest.fn();
     document.querySelector("div")!.addEventListener("foo", eventHandler);
 
@@ -67,7 +60,6 @@ describe("CustomEventEffect", () => {
       unsafeAssumeValidArg({ eventName: "foo" }),
       brickOptionsFactory({
         root: document.querySelector("button")!,
-        logger,
       }),
     );
 

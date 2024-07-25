@@ -21,7 +21,7 @@ import { Alert, Dropdown, DropdownButton, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import settingsSlice from "@/store/settings/settingsSlice";
 import notify from "@/utils/notify";
-import { useUpdateAvailable } from "@/extensionConsole/pages/UpdateBanner";
+import { useExtensionUpdateAvailable } from "@/extensionConsole/pages/UpdateBanner";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectAuth } from "@/auth/authSelectors";
@@ -142,7 +142,7 @@ const DeploymentModal: React.FC<
   >
 > = ({ extensionUpdateRequired, updateExtension, update }) => {
   const dispatch = useDispatch();
-  const hasUpdatesAvailable = useUpdateAvailable();
+  const hasExtensionUpdateAvailable = useExtensionUpdateAvailable();
   const { enforceUpdateMillis } = useSelector(selectAuth);
 
   const currentTime = useCurrentTime();
@@ -187,7 +187,7 @@ const DeploymentModal: React.FC<
     return null;
   }
 
-  if (hasUpdatesAvailable) {
+  if (hasExtensionUpdateAvailable) {
     return (
       <Modal show>
         <Modal.Header>

@@ -22,7 +22,10 @@ import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldPro
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import { partial } from "lodash";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
-import { type Trigger } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
+import {
+  SidebarTriggers,
+  type Trigger,
+} from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { useField, useFormikContext } from "formik";
 import { type TriggerFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type DebounceOptions } from "@/starterBricks/types";
@@ -47,20 +50,20 @@ const SidebarConfiguration: React.FC<{
   }: React.FormEvent<HTMLSelectElement>) => {
     const nextTrigger = currentTarget.value as Trigger;
 
-    if (nextTrigger === "custom") {
+    if (nextTrigger === SidebarTriggers.CUSTOM) {
       void setFieldValue(fieldName("customEvent"), { eventName: "" });
     } else {
       void setFieldValue(fieldName("customEvent"), null);
     }
 
-    if (nextTrigger !== "manual" && debounce == null) {
+    if (nextTrigger !== SidebarTriggers.MANUAL && debounce == null) {
       // Add debounce by default, because the selection event fires for every event when clicking and dragging
       void setFieldValue(fieldName("debounce"), {
         waitMillis: 250,
         leading: false,
         trailing: true,
       });
-    } else if (nextTrigger === "manual") {
+    } else if (nextTrigger === SidebarTriggers.MANUAL) {
       void setFieldValue(fieldName("debounce"), null);
     }
 
@@ -88,11 +91,13 @@ const SidebarConfiguration: React.FC<{
         onChange={onTriggerChange}
         {...makeLockableFieldProps("Trigger", isLocked)}
       >
-        <option value="load">Page Load / Navigation</option>
-        <option value="selectionchange">Selection Change</option>
-        <option value="statechange">State Change</option>
-        <option value="custom">Custom Event</option>
-        <option value="manual">Manual</option>
+        <option value={SidebarTriggers.LOAD}>Page Load / Navigation</option>
+        <option value={SidebarTriggers.SELECTION_CHANGE}>
+          Selection Change
+        </option>
+        <option value={SidebarTriggers.STATE_CHANGE}>State Change</option>
+        <option value={SidebarTriggers.CUSTOM}>Custom Event</option>
+        <option value={SidebarTriggers.MANUAL}>Manual</option>
       </ConnectedFieldTemplate>
 
       {trigger === "custom" && (

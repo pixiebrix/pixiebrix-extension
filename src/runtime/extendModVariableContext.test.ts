@@ -19,46 +19,46 @@ import extendModVariableContext, {
   contextAsPlainObject,
   isModVariableContext,
 } from "@/runtime/extendModVariableContext";
-import {
-  MergeStrategies,
-  setState,
-  StateNamespaces,
-} from "@/platform/state/stateController";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { setState } from "@/platform/state/stateController";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type ApiVersion } from "@/types/runtimeTypes";
+import {
+  modComponentRefFactory,
+  standaloneModComponentRefFactory,
+} from "@/testUtils/factories/modComponentFactories";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 describe("createModVariableProxy", () => {
   beforeEach(() => {
     setState({
       namespace: StateNamespaces.MOD,
       data: {},
-      modComponentId: autoUUIDSequence(),
-      modId: null,
+      modComponentRef: standaloneModComponentRefFactory(),
       mergeStrategy: MergeStrategies.REPLACE,
     });
   });
 
   it("reads from blank page state", () => {
     const ctxt = extendModVariableContext({} as UnknownObject, {
-      modId: null,
+      modComponentRef: standaloneModComponentRefFactory(),
       options: apiVersionOptions("v3"),
     });
     expect(contextAsPlainObject(ctxt)).toEqual({ "@mod": {} });
   });
 
   it("reads from page state", () => {
+    const modComponentRef = standaloneModComponentRefFactory();
+
     setState({
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
-      modComponentId: autoUUIDSequence(),
-      modId: null,
+      modComponentRef,
       mergeStrategy: MergeStrategies.REPLACE,
     });
 
     const ctxt = extendModVariableContext(
       {},
-      { modId: null, options: apiVersionOptions("v3") },
+      { modComponentRef, options: apiVersionOptions("v3") },
     );
 
     expect(ctxt["@mod"]!.foo).toBe(42);
@@ -67,9 +67,11 @@ describe("createModVariableProxy", () => {
   it.each(["v1", "v2"])(
     "doesn't extend for old runtime version: %s",
     (version: ApiVersion) => {
+      const modComponentRef = standaloneModComponentRefFactory();
+
       const ctxt = extendModVariableContext(
         {},
-        { modId: null, options: apiVersionOptions(version) },
+        { modComponentRef, options: apiVersionOptions(version) },
       );
 
       expect(ctxt["@mod"]).toBeUndefined();
@@ -77,17 +79,21 @@ describe("createModVariableProxy", () => {
   );
 
   it("does not overwrite existing state", () => {
+    const modComponentRef = standaloneModComponentRefFactory();
+
     const ctxt = extendModVariableContext(
       { "@mod": "foo" },
-      { modId: null, options: apiVersionOptions("v3") },
+      { modComponentRef, options: apiVersionOptions("v3") },
     );
     expect(ctxt["@mod"]).toBe("foo");
   });
 
   it("sets symbol", () => {
+    const modComponentRef = standaloneModComponentRefFactory();
+
     const ctxt = extendModVariableContext(
       {},
-      { modId: null, options: apiVersionOptions("v3") },
+      { modComponentRef, options: apiVersionOptions("v3") },
     );
     expect(isModVariableContext(ctxt)).toBe(true);
     // The symbol shouldn't show up when enumerating properties. (We don't want it to show up in the UI)
@@ -99,21 +105,22 @@ describe("createModVariableProxy", () => {
   });
 
   it("do not update by default", () => {
+    const modComponentRef = standaloneModComponentRefFactory();
+
     const ctxt1 = extendModVariableContext(
       {},
-      { modId: null, options: apiVersionOptions("v3") },
+      { modComponentRef, options: apiVersionOptions("v3") },
     );
 
     setState({
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
-      modComponentId: autoUUIDSequence(),
-      modId: null,
+      modComponentRef: standaloneModComponentRefFactory(),
       mergeStrategy: MergeStrategies.REPLACE,
     });
 
     const ctxt2 = extendModVariableContext(ctxt1, {
-      modId: null,
+      modComponentRef: standaloneModComponentRefFactory(),
       options: apiVersionOptions("v3"),
     });
 
@@ -121,21 +128,22 @@ describe("createModVariableProxy", () => {
   });
 
   it("update if update flag is set", () => {
+    const modComponentRef = modComponentRefFactory();
+
     const ctxt1 = extendModVariableContext(
       {},
-      { modId: null, options: apiVersionOptions("v3") },
+      { modComponentRef, options: apiVersionOptions("v3") },
     );
 
     setState({
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
-      modComponentId: autoUUIDSequence(),
-      modId: null,
+      modComponentRef,
       mergeStrategy: MergeStrategies.REPLACE,
     });
 
     const ctxt2 = extendModVariableContext(ctxt1, {
-      modId: null,
+      modComponentRef: modComponentRefFactory({ modId: modComponentRef.modId }),
       update: true,
       options: apiVersionOptions("v3"),
     });

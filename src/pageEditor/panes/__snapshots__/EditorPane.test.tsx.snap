@@ -5,6 +5,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
   <form
     autocomplete="off"
     class="form full-height"
+    data-testid="editorPane"
     novalidate=""
   >
     <div
@@ -698,7 +699,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                               name="starterBrick.definition.isAvailable.matchPatterns.0"
                               rows="1"
                             >
-                              https://www.mySite1.com/*
+                              https://www.mySite2.com/*
                             </textarea>
                           </div>
                           <div
@@ -1409,6 +1410,7 @@ exports[`renders the first selected node 1`] = `
   <form
     autocomplete="off"
     class="form full-height"
+    data-testid="editorPane"
     novalidate=""
   >
     <div

@@ -44,7 +44,9 @@ import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedColla
 import type { PipelineExpression } from "@/types/runtimeTypes";
 import { Collapse } from "react-bootstrap";
 import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
-import { StateNamespaces } from "@/platform/state/stateController";
+
+import { StateNamespaces } from "@/platform/state/stateTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const recordIdSchema: Schema = {
   type: "string",
@@ -185,7 +187,7 @@ const FormSubmissionOptions: React.FC<{
 }> = ({ makeName }) => {
   const [{ value: autoSave }] = useField<boolean>(makeName("autoSave"));
   const [{ value: postSubmitAction = "save" }, , postSubmitHelpers] =
-    useField<PostSubmitAction>(makeName("postSubmitAction"));
+    useField<PostSubmitAction | null>(makeName("postSubmitAction"));
   const [{ value: onSubmit }] = useField<PipelineExpression | null>(
     makeName("onSubmit"),
   );
@@ -196,6 +198,11 @@ const FormSubmissionOptions: React.FC<{
     "norender",
   );
   const [{ value: hideSubmitButton }] = useField<boolean>(hideSubmitButtonName);
+
+  assertNotNullish(
+    CUSTOM_FORM_SCHEMA.properties,
+    "Custom form schema missing properties",
+  );
 
   return (
     <>
@@ -276,6 +283,11 @@ const FormRendererOptions: React.FC<{
   const [activeElement, setActiveElement] = useReduxState(
     selectActiveBuilderPreviewElement,
     editorActions.setActiveBuilderPreviewElement,
+  );
+
+  assertNotNullish(
+    CUSTOM_FORM_SCHEMA.properties,
+    "Custom form schema missing properties",
   );
 
   return (

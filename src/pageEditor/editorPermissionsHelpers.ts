@@ -16,7 +16,6 @@
  */
 
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
 import { collectModComponentPermissions } from "@/permissions/modComponentPermissionsHelpers";
 import {
@@ -26,22 +25,17 @@ import {
 import notify from "@/utils/notify";
 import { type Permissions } from "webextension-polyfill";
 import { castArray } from "lodash";
-import { assertNotNullish } from "@/utils/nullishUtils";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 export async function calculatePermissionsForModComponentFormState(
   modComponentFormState: ModComponentFormState,
 ): Promise<{ hasPermissions: boolean; permissions: Permissions.Permissions }> {
-  const adapter = ADAPTERS.get(modComponentFormState.type);
-
-  assertNotNullish(
-    adapter,
-    `Adapter not found for ${modComponentFormState.type}`,
-  );
+  const { asDraftModComponent } = adapterForComponent(modComponentFormState);
 
   const {
     extension: modComponent,
     extensionPointConfig: starterBrickDefinition,
-  } = adapter.asDraftModComponent(modComponentFormState);
+  } = asDraftModComponent(modComponentFormState);
 
   const starterBrick = starterBrickFactory(starterBrickDefinition);
 

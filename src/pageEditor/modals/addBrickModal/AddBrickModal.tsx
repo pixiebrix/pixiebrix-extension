@@ -131,7 +131,7 @@ const AddBrickModal: React.FC = () => {
     selectEditorModalVisibilities,
   );
 
-  const gridRef = useRef<LazyGrid>();
+  const gridRef = useRef<LazyGrid>(null);
 
   const { allBricks, isLoading: isLoadingAllBricks } = useAllBricks();
 
@@ -276,7 +276,9 @@ const AddBrickModal: React.FC = () => {
         compact(
           await Promise.all(
             brickOptions.map(
-              async (brickOption): Promise<[RegistryId, React.ReactNode]> => {
+              async (
+                brickOption,
+              ): Promise<[RegistryId, React.ReactNode] | null> => {
                 const result = await testAddBrick(brickOption.brickResult);
                 if (result.error) {
                   return [brickOption.brickResult.id, result.error];
@@ -372,7 +374,8 @@ const AddBrickModal: React.FC = () => {
               </span>
             }
             onSelect={() => {
-              void addBrick(state.detailBrick);
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- existence checked above
+              void addBrick(state.detailBrick!);
               closeModal();
             }}
           />
@@ -407,7 +410,8 @@ const AddBrickModal: React.FC = () => {
                       height={height}
                       width={width}
                       columnWidth={
-                        (width - scrollbarWidth()) / BRICK_RESULT_COLUMN_COUNT
+                        (width - (scrollbarWidth() ?? 0)) /
+                        BRICK_RESULT_COLUMN_COUNT
                       }
                       rowHeight={BRICK_ITEM_FIXED_HEIGHT_PX}
                       columnCount={BRICK_RESULT_COLUMN_COUNT}

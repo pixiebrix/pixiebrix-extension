@@ -36,9 +36,10 @@ import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTy
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Except } from "type-fest";
 import {
-  type BaseFormStateV3,
   type BaseFormStateV1,
   type BaseFormStateV2,
+  type BaseFormStateV3,
+  type BaseFormStateV4,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
 
 export type AddBrickLocation = {
@@ -255,16 +256,26 @@ export type EditorStateV3 = Except<
 > & {
   /**
    * The uuid of the active mod component, if a mod component is selected
+   *
+   * @see activeModId
+   * @see expandedModId
    */
   activeModComponentId: UUID | null;
 
   /**
-   * The registry id of the active mod, if a mod is selected
+   * The registry id of the active mod, if a mod is selected. Is null if a mod component is selected.
+   *
+   * @see expandedModId
+   * @see activeModComponentId
    */
   activeModId: RegistryId | null;
 
   /**
-   * The registry id of the 'expanded' mod in the sidebar, if one is expanded
+   * The registry id of the 'expanded' mod in the sidebar, if one is expanded. Is set if the mod is selected or a
+   * mod component within the mod component is selected.
+   *
+   * @see activeModId
+   * @see activeModComponentId
    */
   expandedModId: RegistryId | null;
 
@@ -352,8 +363,27 @@ export type EditorStateV4 = Except<
   deletedModComponentFormStatesByModId: Record<string, BaseFormStateV3[]>;
 };
 
-export type EditorState = Except<
+/**
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ */
+export type EditorStateV5 = Except<
   EditorStateV4,
+  | "inserting"
+  | "modComponentFormStates"
+  | "deletedModComponentFormStatesByModId"
+> & {
+  insertingStarterBrickType: StarterBrickType | null;
+  modComponentFormStates: BaseFormStateV4[];
+  deletedModComponentFormStatesByModId: Record<string, BaseFormStateV4[]>;
+};
+
+/**
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ */
+export type EditorStateV6 = Except<EditorStateV5, "insertingStarterBrickType">;
+
+export type EditorState = Except<
+  EditorStateV6,
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: ModComponentFormState[];

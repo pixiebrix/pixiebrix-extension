@@ -28,7 +28,6 @@ import {
   OptionsBrick,
   optionsBrick,
   simpleInput,
-  testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import Run from "@/bricks/transformers/controlFlow/Run";
@@ -37,9 +36,10 @@ import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { TEST_setContext } from "webext-detect";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
-
 import { toExpression } from "@/utils/expressionUtils";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 TEST_setContext("contentScript");
 
@@ -174,7 +174,7 @@ test("inner pipelines receive correct context", async () => {
   await reducePipeline(
     pipeline,
     simpleInput({ customInput: "Closure Environment" }),
-    testOptions("v3"),
+    reduceOptionsFactory("v3"),
   );
 
   expect(ContextBrick.contexts[0]).toStrictEqual({
@@ -377,7 +377,8 @@ describe("tracing", () => {
     };
 
     const runId = uuidv4();
-    const modComponentId = uuidv4();
+    const modComponentRef = modComponentRefFactory();
+
     // Provide initial value to ensure it's preserved
     const initialBranches = [{ key: "body", counter: 1 }];
 
@@ -385,22 +386,22 @@ describe("tracing", () => {
       pipeline,
       simpleInput({ customInput: "Closure Environment" }),
       {
-        ...testOptions("v3"),
+        ...reduceOptionsFactory("v3"),
         runId,
-        modComponentId,
+        modComponentRef,
         branches: initialBranches,
       },
     );
 
     expect(OptionsBrick.options[0].meta).toStrictEqual({
       runId,
-      modComponentId,
+      modComponentRef,
       branches: initialBranches,
     });
 
     expect(OptionsBrick.options[1].meta).toStrictEqual({
       runId,
-      modComponentId,
+      modComponentRef,
       branches: [
         ...initialBranches,
         // Branch is added by the @pixiebrix/run brick

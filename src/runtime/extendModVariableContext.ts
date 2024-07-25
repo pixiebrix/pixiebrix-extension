@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getState, StateNamespaces } from "@/platform/state/stateController";
-import { type RegistryId } from "@/types/registryTypes";
+import { getState } from "@/platform/state/stateController";
 import apiVersionOptions, {
   type ApiVersionOptions,
 } from "@/runtime/apiVersionOptions";
 import { pickBy } from "lodash";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { assertPlatformCapability } from "@/platform/platformContext";
-import { type Nullishable } from "@/utils/nullishUtils";
+import { type ModComponentRef } from "@/types/modComponentTypes";
+import { type Except } from "type-fest";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 /**
  * Variable for accessing the mod Page State.
@@ -102,11 +103,11 @@ export function contextAsPlainObject<T extends UnknownObject = UnknownObject>(
 function extendModVariableContext<T extends UnknownObject = UnknownObject>(
   originalContext: T,
   {
-    modId,
+    modComponentRef,
     update = false,
     options,
   }: {
-    modId: Nullishable<RegistryId>;
+    modComponentRef: Except<ModComponentRef, "starterBrickId">;
     update?: boolean;
     options: Pick<ApiVersionOptions, "extendModVariable">;
   },
@@ -137,9 +138,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
   // Additionally, in the future to pass the context to the sandbox we'd have to always load the state anyway.
   const modState = getState({
     namespace: StateNamespaces.MOD,
-    modId,
-    // `modComopnentId` is not used because namespace is `blueprint`
-    modComponentId: null,
+    modComponentRef,
   });
 
   return {

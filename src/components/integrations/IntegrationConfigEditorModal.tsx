@@ -113,7 +113,7 @@ const ModalContent: React.FC<ContentProps> = ({
     [onSave, onClose],
   );
 
-  const Editor = useMemo<React.FC<BrickOptionProps>>(() => {
+  const Editor = useMemo<React.FC<BrickOptionProps> | undefined>(() => {
     if (optionsRegistry.has(integration.id)) {
       return optionsRegistry.get(integration.id);
     }
@@ -207,7 +207,7 @@ const ModalContent: React.FC<ContentProps> = ({
 const IntegrationConfigEditorModal: React.FunctionComponent<
   IntegrationConfigEditorModalProps
 > = ({ integration, initialValues, onSave, onClose, onDelete }) => {
-  const show = Boolean(initialValues) && Boolean(integration);
+  const show = initialValues != null && integration != null;
 
   return (
     <Modal

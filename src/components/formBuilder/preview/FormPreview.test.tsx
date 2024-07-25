@@ -101,7 +101,7 @@ describe("FormPreview", () => {
     },
   });
 
-  test("it does not render the name as the label if the title is an empty string", () => {
+  it("does not render the name as the label if the title is an empty string", () => {
     const schema: Schema = {
       title: "Form",
       type: "object",

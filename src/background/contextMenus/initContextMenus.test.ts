@@ -31,6 +31,7 @@ import {
 } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
 import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 TEST_setContext("background");
 
@@ -70,7 +71,7 @@ describe("contextMenus", () => {
   it("preload context menu", async () => {
     const extensionPoint =
       starterBrickDefinitionFactory() as unknown as StarterBrickDefinitionLike<ContextMenuDefinition>;
-    extensionPoint.definition.type = "contextMenu";
+    extensionPoint.definition.type = StarterBrickTypes.CONTEXT_MENU;
     extensionPoint.definition.contexts = ["all"];
 
     updateMenuMock.mockRejectedValue(new Error("My Error"));

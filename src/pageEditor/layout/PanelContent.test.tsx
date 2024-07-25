@@ -25,6 +25,11 @@ import { updateDraftModComponent } from "@/contentScript/messenger/api";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  starterBrickDefinitionFactory,
+  starterBrickDefinitionPropFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -55,7 +60,13 @@ describe("Listen to navigationEvent", () => {
   test("an element is selected", async () => {
     jest.spyOn(tabStateActions, "connectToContentScript");
 
-    const formState = formStateFactory();
+    const formState = formStateFactory({
+      starterBrick: starterBrickDefinitionFactory({
+        definition: starterBrickDefinitionPropFactory({
+          type: StarterBrickTypes.SIDEBAR_PANEL,
+        }),
+      }),
+    });
     render(<PanelContent />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
@@ -70,6 +81,6 @@ describe("Listen to navigationEvent", () => {
 
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(2);
     // Panels are not automatically updated on navigation
-    expect(updateDraftModComponent).toHaveBeenCalledTimes(0);
+    expect(updateDraftModComponent).not.toHaveBeenCalled();
   });
 });

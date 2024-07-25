@@ -45,6 +45,7 @@ import { ReusableAbortController } from "abort-utils";
 import { getSelectionRange, waitAnimationFrame } from "@/utils/domUtils";
 import { prefersReducedMotion } from "@/utils/a11yUtils";
 import SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
+import { SNIPPET_SHORTCUT_MENU_READY_ATTRIBUTE } from "@/domConstants";
 
 const COMMAND_KEY = "\\";
 
@@ -55,6 +56,11 @@ let targetElement: Nullishable<TextEditorElement>;
 let snippetShortcutMenu: Nullishable<HTMLElement>;
 
 const hideController = new ReusableAbortController();
+
+function markSnippetShortcutMenuReady() {
+  const html = globalThis.document.documentElement;
+  html.setAttribute(SNIPPET_SHORTCUT_MENU_READY_ATTRIBUTE, "true");
+}
 
 async function showMenu(element: HTMLElement): Promise<void> {
   if (targetElement != null) {
@@ -369,6 +375,11 @@ export const initSnippetShortcutMenuController = once(() => {
     },
     { capture: true, passive: true },
   );
+
+  snippetRegistry.onChange.add(async () => {
+    // Mark that the snippet shortcut menu is ready to be used with at least one action registered.
+    markSnippetShortcutMenuReady();
+  });
 
   onContextInvalidated.addListener(() => {
     destroyMenu();

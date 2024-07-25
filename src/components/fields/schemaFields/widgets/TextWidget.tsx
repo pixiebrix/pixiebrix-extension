@@ -97,7 +97,7 @@ export function isVarLike(value: string): boolean {
   }
 
   const match = unfinishedBracketExpressionRegex.exec(value);
-  return match != null && isVarValue(match.groups.base);
+  return match?.groups?.base != null && isVarValue(match.groups.base);
 }
 
 const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({

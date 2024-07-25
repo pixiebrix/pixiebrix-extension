@@ -39,11 +39,11 @@ import List from "./elementsPreview/List";
 const DUMMY_TRACE_PATH: DynamicPath = { staticId: "preview", branches: [] };
 
 const allowedBootstrapPrefixes = ["text", "bg"];
-function filterCssClassesForPreview(props: UnknownObject | undefined): void {
+function filterCssClassesForPreview(props: UnknownObject): void {
   // Never hide elements in the preview
   delete props.hidden;
 
-  if (typeof props?.className === "string") {
+  if (typeof props.className === "string") {
     props.className = props.className
       .split(" ")
       .filter((x) =>

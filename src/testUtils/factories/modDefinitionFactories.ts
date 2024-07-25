@@ -21,9 +21,9 @@ import {
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
 import {
+  DefinitionKinds,
   type InnerDefinitionRef,
   type InnerDefinitions,
-  DefinitionKinds,
   type RegistryId,
 } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
@@ -31,7 +31,7 @@ import { type Permissions } from "webextension-polyfill";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type BrickPipeline } from "@/bricks/types";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import { validateRegistryId, validateTimestamp } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
@@ -45,6 +45,8 @@ import {
 } from "@/testUtils/factories/integrationFactories";
 import { freshIdentifier } from "@/utils/variableUtils";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { type Availability } from "@/types/availabilityTypes";
+import { validateTimestamp } from "@/utils/timeUtils";
 
 export const modComponentDefinitionFactory = define<ModComponentDefinition>({
   id: "extensionPoint" as InnerDefinitionRef,
@@ -70,6 +72,17 @@ export const modDefinitionFactory = define<ModDefinition>({
   extensionPoints: array(modComponentDefinitionFactory, 1),
 });
 
+export const starterBrickDefinitionPropFactory =
+  define<StarterBrickDefinitionProp>({
+    type: StarterBrickTypes.BUTTON,
+    isAvailable(n: number): Availability {
+      return {
+        matchPatterns: [`https://www.mySite${n}.com/*`],
+      };
+    },
+    reader: validateRegistryId("@pixiebrix/document-context"),
+  });
+
 export const starterBrickDefinitionFactory = define<StarterBrickDefinitionLike>(
   {
     kind: DefinitionKinds.STARTER_BRICK,
@@ -79,15 +92,7 @@ export const starterBrickDefinitionFactory = define<StarterBrickDefinitionLike>(
         id: validateRegistryId(`test/starter-brick-${n}`),
         name: `Starter Brick ${n}`,
       }),
-    definition(n: number) {
-      return {
-        type: StarterBrickTypes.BUTTON,
-        isAvailable: {
-          matchPatterns: [`https://www.mySite${n}.com/*`],
-        },
-        reader: validateRegistryId("@pixiebrix/document-context"),
-      } satisfies StarterBrickDefinitionProp;
-    },
+    definition: starterBrickDefinitionPropFactory,
   },
 );
 

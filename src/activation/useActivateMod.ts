@@ -30,6 +30,8 @@ import { useCreateDatabaseMutation } from "@/data/service/api";
 import { Events } from "@/telemetry/events";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { autoCreateDatabaseOptionsArgsInPlace } from "@/activation/modOptionsHelpers";
+import { type ReportEventData } from "@/telemetry/telemetryTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export type ActivateResult = {
   success: boolean;
@@ -42,16 +44,20 @@ export type ActivateModFormCallback =
    *
    * @param formValues The form values for mod configuration options
    * @param modDefinition The mod definition to activate
+   * @param options Internal options/flags
    * @returns a promise that resolves to an ActivateResult
    */
   (
     formValues: WizardValues,
     modDefinition: ModDefinition,
+    options?: { forceModComponentId?: UUID },
   ) => Promise<ActivateResult>;
 
 type ActivationSource = "marketplace" | "extensionConsole";
 
-function selectActivateEventData(modDefinition: ModDefinition) {
+function selectActivateEventData(
+  modDefinition: ModDefinition,
+): ReportEventData {
   return {
     modId: modDefinition.metadata.id,
     modComponents: modDefinition.extensionPoints.map((x) => x.label),
@@ -77,7 +83,11 @@ function useActivateMod(
   const [createDatabase] = useCreateDatabaseMutation();
 
   return useCallback(
-    async (formValues: WizardValues, modDefinition: ModDefinition) => {
+    async (
+      formValues: WizardValues,
+      modDefinition: ModDefinition,
+      { forceModComponentId }: { forceModComponentId?: UUID } = {},
+    ) => {
       const isReactivate = activatedModComponents.some(
         (x) => x._recipe?.id === modDefinition.metadata.id,
       );
@@ -151,6 +161,7 @@ function useActivateMod(
 
         dispatch(
           modComponentsSlice.actions.activateMod({
+            forceModComponentId,
             modDefinition,
             configuredDependencies: integrationDependencies,
             optionsArgs,
@@ -179,7 +190,13 @@ function useActivateMod(
         success: true,
       };
     },
-    [createDatabase, dispatch, activatedModComponents, source],
+    [
+      createDatabase,
+      dispatch,
+      activatedModComponents,
+      source,
+      checkPermissions,
+    ],
   );
 }
 

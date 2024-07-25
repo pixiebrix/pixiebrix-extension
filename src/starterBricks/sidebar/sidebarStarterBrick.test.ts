@@ -17,35 +17,33 @@
 import { define } from "cooky-cutter";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
-import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
+import { DefinitionKinds, type Metadata } from "@/types/registryTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
-import {
-  autoUUIDSequence,
-  registryIdFactory,
-  uuidSequence,
-} from "@/testUtils/factories/stringFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type BrickPipeline } from "@/bricks/types";
 import { fromJS } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import { RunReason } from "@/types/runtimeTypes";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import {
   getReservedPanelEntries,
-  sidebarShowEvents,
   isSidePanelOpen,
+  sidebarShowEvents,
 } from "@/contentScript/sidebarController";
+import { setState } from "@/platform/state/stateController";
 import {
-  MergeStrategies,
-  setState,
-  StateNamespaces,
-} from "@/platform/state/stateController";
-import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+  modComponentRefFactory,
+  modMetadataFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import brickRegistry from "@/bricks/registry";
 import { sleep } from "@/utils/timeUtils";
 import { getPlatform } from "@/platform/platformContext";
 import {
-  type SidebarDefinition,
   type SidebarConfig,
+  type SidebarDefinition,
+  SidebarTriggers,
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ...jest.requireActual("@/contentScript/sidebarController"),
@@ -65,7 +63,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
         name: "Test Starter Brick",
       }) as Metadata,
     definition: define<SidebarDefinition>({
-      type: "actionPanel",
+      type: StarterBrickTypes.SIDEBAR_PANEL,
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
       }),
@@ -175,16 +173,16 @@ describe("sidebarExtension", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "statechange",
+        trigger: SidebarTriggers.STATE_CHANGE,
       })(),
     );
 
-    const extension = modComponentFactory({
+    const modComponent = modComponentFactory({
       extensionPointId: starterBrick.id,
       _recipe: modMetadataFactory(),
     });
 
-    starterBrick.registerModComponent(extension);
+    starterBrick.registerModComponent(modComponent);
 
     await starterBrick.install();
 
@@ -194,8 +192,10 @@ describe("sidebarExtension", () => {
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: extension.id,
-      modId: extension._recipe!.id,
+      modComponentRef: {
+        modComponentId: modComponent.id,
+        modId: modComponent._recipe!.id,
+      },
     });
 
     // Doesn't run because sidebar is not visible
@@ -215,8 +215,10 @@ describe("sidebarExtension", () => {
       // Data needs to be different than previous to trigger a state change event
       data: { foo: 42 },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: extension.id,
-      modId: extension._recipe!.id,
+      modComponentRef: {
+        modComponentId: modComponent.id,
+        modId: modComponent._recipe!.id,
+      },
     });
 
     await tick();
@@ -228,8 +230,7 @@ describe("sidebarExtension", () => {
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentId: autoUUIDSequence(),
-      modId: registryIdFactory(),
+      modComponentRef: modComponentRefFactory(),
     });
 
     await tick();
@@ -246,7 +247,7 @@ describe("sidebarExtension", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "statechange",
+        trigger: SidebarTriggers.STATE_CHANGE,
         debounce: {
           waitMillis: debounceMillis,
           trailing: true,
@@ -277,8 +278,10 @@ describe("sidebarExtension", () => {
         namespace: StateNamespaces.MOD,
         data: { foo: i },
         mergeStrategy: MergeStrategies.REPLACE,
-        modComponentId: extension.id,
-        modId: extension._recipe!.id,
+        modComponentRef: {
+          modComponentId: extension.id,
+          modId: extension._recipe!.id,
+        },
       });
     }
 

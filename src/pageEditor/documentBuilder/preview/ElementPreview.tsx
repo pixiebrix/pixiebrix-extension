@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type MouseEventHandler, useEffect, useMemo } from "react";
+import React, {
+  type MouseEventHandler,
+  type MutableRefObject,
+  useEffect,
+  useMemo,
+} from "react";
 import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
 import {
@@ -30,6 +35,7 @@ import { SCROLL_TO_HEADER_NODE_EVENT } from "@/pageEditor/tabs/editTab/editorNod
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { selectActiveNodeId } from "@/pageEditor/store/editor/editorSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT =
   "scroll-to-document-preview-element";
@@ -54,7 +60,7 @@ export type ElementPreviewProps = {
   setActiveElement: (name: string | null) => void;
   hoveredElement: string | null;
   setHoveredElement: (name: string | null) => void;
-  menuBoundary?: Element;
+  boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 };
 
 const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
@@ -73,7 +79,8 @@ const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
     }
 
     const scrollIntoView = () => {
-      elementRef.current.scrollIntoView({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
+      elementRef.current!.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
@@ -114,7 +121,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
   setActiveElement,
   hoveredElement,
   setHoveredElement,
-  menuBoundary,
+  boundingBoxRef,
 }) => {
   const dispatch = useDispatch();
   const activeNodeId = useSelector(selectActiveNodeId);
@@ -129,6 +136,8 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
     if (!isActive) {
       setActiveElement(elementName);
     }
+
+    assertNotNullish(activeNodeId, "activeNodeId is required to expand node");
 
     dispatch(actions.expandBrickPipelineNode(activeNodeId));
 
@@ -184,9 +193,9 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       isActive={isActive}
       elementRef={elementRef}
     >
-      {props?.children}
+      {props.children}
       {isContainer &&
-        previewElement.children.map((childElement, i) => {
+        previewElement.children?.map((childElement, i) => {
           const childElementName = `${elementName}.children.${i}`;
           return (
             <ElementPreview
@@ -196,7 +205,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
               previewElement={childElement}
               activeElement={activeElement}
               setActiveElement={setActiveElement}
-              menuBoundary={menuBoundary}
+              boundingBoxRef={boundingBoxRef}
               hoveredElement={hoveredElement}
               setHoveredElement={setHoveredElement}
             />
@@ -207,7 +216,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
           elementsCollectionName={`${documentBodyName}.${elementName}.children`}
           allowedTypes={getAllowedChildTypes(previewElement)}
           className={styles.addElement}
-          menuBoundary={menuBoundary}
+          boundingBoxRef={boundingBoxRef}
         />
       )}
       {isList && (
@@ -217,7 +226,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
           previewElement={previewElement.config.element.__value__}
           activeElement={activeElement}
           setActiveElement={setActiveElement}
-          menuBoundary={menuBoundary}
+          boundingBoxRef={boundingBoxRef}
           hoveredElement={hoveredElement}
           setHoveredElement={setHoveredElement}
         />

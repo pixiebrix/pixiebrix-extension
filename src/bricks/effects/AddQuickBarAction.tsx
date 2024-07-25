@@ -31,7 +31,6 @@ import type { PlatformCapability } from "@/platform/capabilities";
 import { uniq } from "lodash";
 import type { CustomAction } from "@/platform/platformTypes/quickBarProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { mapMessageContextToModComponentRef } from "@/utils/modUtils";
 
 type ActionConfig = {
   /**
@@ -68,11 +67,11 @@ const DEFAULT_PRIORITY = 1;
  * @see QuickBarProviderExtensionPoint
  */
 class AddQuickBarAction extends EffectABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/quickbar/add");
+  static BRICK_ID = validateRegistryId("@pixiebrix/quickbar/add");
 
   constructor() {
     super(
-      AddQuickBarAction.BLOCK_ID,
+      AddQuickBarAction.BRICK_ID,
       "Add Quick Bar Action",
       "Add an action to the PixieBrix Quick Bar",
     );
@@ -138,9 +137,16 @@ class AddQuickBarAction extends EffectABC {
       // Be explicit about the default priority if non is provided
       priority = DEFAULT_PRIORITY,
     }: BrickArgs<ActionConfig>,
-    { root, logger, runPipeline, abortSignal, platform }: BrickOptions,
+    {
+      root,
+      runPipeline,
+      abortSignal,
+      platform,
+      meta: { modComponentRef },
+    }: BrickOptions,
   ): Promise<void> {
     const { quickBar } = platform;
+    const { modComponentId } = modComponentRef;
 
     // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the Quick Bar
     if (abortSignal?.aborted) {
@@ -151,13 +157,13 @@ class AddQuickBarAction extends EffectABC {
     let counter = 0;
 
     // Expected parent id from QuickBarProviderExtensionPoint
-    const parentId = `provider-${logger.context.modComponentId}`;
+    const parentId = `provider-${modComponentId}`;
 
     const action: CustomAction = {
-      // XXX: old actions will still appear in the quick bar unless the extension point clears out the old actions
-      id: `${logger.context.modComponentId}-${title}`,
+      // XXX: old actions will still appear in the quick bar unless the starter brick clears out the old actions
+      id: `${modComponentId}-${title}`,
       // Additional metadata, for enabling clearing out old actions
-      modComponentRef: mapMessageContextToModComponentRef(logger.context),
+      modComponentRef,
       // Can only provide a parent if the parent exists
       parent: quickBar.knownGeneratorRootIds.has(parentId)
         ? parentId

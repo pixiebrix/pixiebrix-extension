@@ -29,10 +29,13 @@ import { type BrickPipeline } from "@/bricks/types";
 import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import brickRegistry from "@/bricks/registry";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
-
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  timestampFactory,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
 import { type getModComponentState } from "@/store/extensionsStorage";
 import { getPlatform } from "@/platform/platformContext";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 let starterBrickRegistry: any;
 let lifecycleModule: any;
@@ -55,7 +58,7 @@ const starterBrickDefinitionFactory = (
         name: "Test Starter Brick",
       }) as Metadata,
     definition: define<TriggerDefinition>({
-      type: "trigger",
+      type: StarterBrickTypes.TRIGGER,
       background: false,
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
@@ -78,8 +81,8 @@ const activatedModComponentFactory = define<
     action: () => [] as BrickPipeline,
   }),
   _serializedModComponentBrand: null,
-  createTimestamp: new Date().toISOString(),
-  updateTimestamp: new Date().toISOString(),
+  createTimestamp: timestampFactory,
+  updateTimestamp: timestampFactory,
   active: true,
 });
 

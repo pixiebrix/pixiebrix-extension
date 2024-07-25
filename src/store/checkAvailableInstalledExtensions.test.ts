@@ -43,7 +43,7 @@ jest.mock("@/pageEditor/context/connection");
 const { actions: optionsActions, reducer: extensionsReducer } = extensionsSlice;
 
 describe("checkAvailableInstalledExtensions", () => {
-  test("it checks installed extensions correctly", async () => {
+  it("checks installed extensions correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
     jest.mocked(getCurrentInspectedURL).mockResolvedValue(testUrl);
 
@@ -98,7 +98,7 @@ describe("checkAvailableInstalledExtensions", () => {
         },
         definition(): QuickBarDefinition {
           return {
-            type: "quickBar",
+            type: StarterBrickTypes.QUICK_BAR_ACTION,
             contexts: ["all"],
             documentUrlPatterns: [testUrl],
             isAvailable: {

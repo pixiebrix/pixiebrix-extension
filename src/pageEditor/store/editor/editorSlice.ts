@@ -23,7 +23,6 @@ import {
 import { clearModComponentTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import { type BrickConfig } from "@/bricks/types";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
 import {
   type AddBrickLocation,
   type EditorRootState,
@@ -112,9 +111,6 @@ export const initialState: EditorState = {
   isModListExpanded: true,
   isDataPanelExpanded: true,
   isDimensionsWarningDismissed: false,
-
-  // Not persisted
-  inserting: null,
   isVariablePopoverVisible: false,
 };
 
@@ -313,11 +309,6 @@ export const editorSlice = createSlice({
     resetEditor() {
       return initialState;
     },
-    toggleInsert(state, action: PayloadAction<StarterBrickType | null>) {
-      state.inserting = action.payload;
-      state.beta = false;
-      state.error = null;
-    },
     markEditable(state, action: PayloadAction<RegistryId>) {
       state.knownEditableBrickIds.push(action.payload);
     },
@@ -327,7 +318,6 @@ export const editorSlice = createSlice({
     ) {
       const modComponentFormState =
         action.payload as Draft<ModComponentFormState>;
-      state.inserting = null;
       state.modComponentFormStates.push(modComponentFormState);
       state.dirty[modComponentFormState.uuid] = true;
 
@@ -867,11 +857,6 @@ export const editorSlice = createSlice({
     hideModal(state) {
       state.visibleModalKey = null;
     },
-    hideModalIfShowing(state, action: PayloadAction<ModalKey>) {
-      if (state.visibleModalKey === action.payload) {
-        state.visibleModalKey = null;
-      }
-    },
     editModOptionsValues(state, action: PayloadAction<OptionsArgs>) {
       const modId = state.activeModId;
       if (modId == null) {
@@ -1024,12 +1009,13 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 4,
+  version: 6,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: [
     "inserting",
     "isVarPopoverVisible",
     "isSaveDataIntegrityErrorModalVisible",
+    "visibleModalKey",
   ],
 };
 

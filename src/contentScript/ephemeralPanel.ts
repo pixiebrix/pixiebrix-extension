@@ -38,12 +38,16 @@ import {
   updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
 import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
-import type { TemporaryPanelDefinition } from "@/platform/panels/panelTypes";
+import {
+  RefreshTriggers,
+  type TemporaryPanelDefinition,
+} from "@/platform/panels/panelTypes";
 import type { Location } from "@/types/starterBrickTypes";
 import { getThisFrame } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import { showModal } from "@/contentScript/modalDom";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { STATE_CHANGE_JS_EVENT_TYPE } from "@/platform/state/stateTypes";
 
 export async function createFrameSource(
   nonce: string,
@@ -82,6 +86,7 @@ export async function ephemeralPanel({
   onCloseClick,
 }: TemporaryPanelDefinition): Promise<JsonObject> {
   expectContext("contentScript");
+  const { modComponentId } = panelEntryMetadata.modComponentRef;
 
   if (location === "panel" && isLoadedInIframe()) {
     // Validate before registerEmptyTemporaryPanel to avoid an uncaught promise rejection
@@ -114,7 +119,7 @@ export async function ephemeralPanel({
     registerEmptyTemporaryPanel({
       nonce,
       location,
-      modComponentId: panelEntryMetadata.modComponentRef.modComponentId,
+      modComponentId,
     });
 
     await showSidebar();
@@ -125,7 +130,7 @@ export async function ephemeralPanel({
       nonce,
       payload: {
         key: uuidv4(),
-        modComponentId: panelEntryMetadata.modComponentRef.modComponentId,
+        modComponentRef: panelEntryMetadata.modComponentRef,
         loadingMessage: "Loading",
       },
     });
@@ -148,7 +153,7 @@ export async function ephemeralPanel({
     registerEmptyTemporaryPanel({
       nonce,
       location,
-      modComponentId: panelEntryMetadata.modComponentRef.modComponentId,
+      modComponentId,
     });
 
     // Create a source URL for content that will be loaded in the panel iframe
@@ -226,8 +231,8 @@ export async function ephemeralPanel({
     }
   };
 
-  if (refreshTrigger === "statechange") {
-    $(document).on("statechange", rerender);
+  if (refreshTrigger === RefreshTriggers.STATE_CHANGE) {
+    $(document).on(STATE_CHANGE_JS_EVENT_TYPE, rerender);
   }
 
   try {
@@ -235,7 +240,7 @@ export async function ephemeralPanel({
       nonce,
       location,
       entry,
-      modComponentId: entry.modComponentRef.modComponentId,
+      modComponentId,
       onRegister: onReady,
     });
     return panelAction ?? {};
@@ -256,7 +261,7 @@ export async function ephemeralPanel({
     }
   } finally {
     controller.abort();
-    $(document).off("statechange", rerender);
+    $(document).off(STATE_CHANGE_JS_EVENT_TYPE, rerender);
   }
 
   return {};

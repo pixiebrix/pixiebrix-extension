@@ -30,21 +30,24 @@ import { integrationDependencyFactory } from "@/testUtils/factories/integrationF
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { normalizeAvailability } from "@/bricks/available";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
-    const formState = formStateFactory(undefined, [
-      brickConfigFactory({
-        config: {
-          data: false,
-        },
-      }),
-      brickConfigFactory({
-        config: {
-          input: toExpression("nunjucks", "foo: {{ @foo }}"),
-        },
-      }),
-    ]);
+    const formState = formStateFactory({
+      brickPipeline: [
+        brickConfigFactory({
+          config: {
+            data: false,
+          },
+        }),
+        brickConfigFactory({
+          config: {
+            input: toExpression("nunjucks", "foo: {{ @foo }}"),
+          },
+        }),
+      ],
+    });
 
     const actual = selectIntegrationDependencyVariables(formState);
     expect(actual).toEqual(new Set());
@@ -57,24 +60,28 @@ describe("selectVariables", () => {
       input: toExpression("var", "@foo"),
     };
 
-    const formState = formStateFactory(undefined, [
-      brickConfigFactory({
-        config: serviceConfig,
-      }),
-    ]);
+    const formState = formStateFactory({
+      brickPipeline: [
+        brickConfigFactory({
+          config: serviceConfig,
+        }),
+      ],
+    });
 
     const actual = selectIntegrationDependencyVariables(formState);
     expect(actual).toEqual(new Set(["@foo"]));
   });
 
   test("do not select variable with path seperator", () => {
-    const formState = formStateFactory(undefined, [
-      brickConfigFactory({
-        config: {
-          foo: toExpression("var", "@foo.bar"),
-        },
-      }),
-    ]);
+    const formState = formStateFactory({
+      brickPipeline: [
+        brickConfigFactory({
+          config: {
+            foo: toExpression("var", "@foo.bar"),
+          },
+        }),
+      ],
+    });
 
     const actual = selectIntegrationDependencyVariables(formState);
     expect(actual).toEqual(new Set([]));
@@ -105,11 +112,13 @@ describe("selectVariables", () => {
       instanceId: uuidSequence(1),
     };
 
-    const formState = formStateFactory(undefined, [
-      brickConfigFactory({
-        config: documentWithButtonConfig,
-      }),
-    ]);
+    const formState = formStateFactory({
+      brickPipeline: [
+        brickConfigFactory({
+          config: documentWithButtonConfig,
+        }),
+      ],
+    });
 
     const actual = selectIntegrationDependencyVariables(formState);
     expect(actual).toEqual(new Set(["@foo"]));
@@ -137,11 +146,13 @@ describe("selectVariables", () => {
       instanceId: uuidSequence(1),
     };
 
-    const formState = formStateFactory(undefined, [
-      brickConfigFactory({
-        config: documentWithButtonConfig,
-      }),
-    ]);
+    const formState = formStateFactory({
+      brickPipeline: [
+        brickConfigFactory({
+          config: documentWithButtonConfig,
+        }),
+      ],
+    });
 
     const actual = selectIntegrationDependencyVariables(formState);
     expect(actual).toEqual(new Set(["@foo"]));
@@ -184,11 +195,13 @@ describe("selectVariables", () => {
       instanceId: uuidSequence(1),
     };
 
-    const formState = formStateFactory(undefined, [
-      brickConfigFactory({
-        config: documentWithButtonConfig,
-      }),
-    ]);
+    const formState = formStateFactory({
+      brickPipeline: [
+        brickConfigFactory({
+          config: documentWithButtonConfig,
+        }),
+      ],
+    });
 
     const actual = selectIntegrationDependencyVariables(formState);
     expect(actual).toEqual(new Set(["@foo", "@bar"]));
@@ -209,7 +222,6 @@ describe("selectVariables", () => {
       ],
       permissions: emptyPermissionsFactory(),
       optionsArgs: {},
-      type: "actionPanel",
       modMetadata: null,
       modComponent: {
         brickPipeline: [
@@ -270,7 +282,7 @@ describe("selectVariables", () => {
           name: "Temporary starter brick",
         },
         definition: {
-          type: "actionPanel",
+          type: StarterBrickTypes.SIDEBAR_PANEL,
           reader: [validateRegistryId("@pixiebrix/document-metadata")],
           isAvailable: normalizeAvailability({
             matchPatterns: ["https://pbx.vercel.app/*"],

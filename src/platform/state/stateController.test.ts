@@ -15,28 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { setState } from "@/platform/state/stateController";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   MergeStrategies,
-  setState,
+  STATE_CHANGE_JS_EVENT_TYPE,
   StateNamespaces,
-} from "@/platform/state/stateController";
-import { uuidv4 } from "@/types/helpers";
-import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+} from "@/platform/state/stateTypes";
 
 describe("pageState", () => {
   it("deep merge triggers event", () => {
     const listener = jest.fn();
 
-    document.addEventListener("statechange", listener);
+    document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
 
-    const blueprintId = registryIdFactory();
+    const modComponentRef = modComponentRefFactory();
 
     setState({
       namespace: StateNamespaces.MOD,
       data: { foo: { bar: "baz" } },
       mergeStrategy: MergeStrategies.DEEP,
-      modComponentId: uuidv4(),
-      modId: blueprintId,
+      modComponentRef,
     });
 
     expect(listener).toHaveBeenCalledTimes(1);
@@ -45,10 +44,9 @@ describe("pageState", () => {
   it("deep merges async state", () => {
     const listener = jest.fn();
 
-    document.addEventListener("statechange", listener);
+    document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
 
-    const modId = registryIdFactory();
-    const modComponentId = uuidv4();
+    const modComponentRef = modComponentRefFactory();
 
     setState({
       namespace: StateNamespaces.MOD,
@@ -56,16 +54,14 @@ describe("pageState", () => {
         asyncState: { isFetching: false, data: "foo", currentData: "foo" },
       },
       mergeStrategy: MergeStrategies.DEEP,
-      modComponentId: uuidv4(),
-      modId,
+      modComponentRef,
     });
 
     const updatedState = setState({
       namespace: StateNamespaces.MOD,
       data: { asyncState: { isFetching: true, currentData: null } },
       mergeStrategy: MergeStrategies.DEEP,
-      modComponentId,
-      modId,
+      modComponentRef,
     });
 
     expect(listener).toHaveBeenCalledTimes(2);

@@ -36,8 +36,8 @@ describe("DisableEffect", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test.each([undefined, false])(
-    "it disable element for isRootAware: %s",
+  it.each([undefined, false])(
+    "disable element for isRootAware: %s",
     async (isRootAware) => {
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
@@ -50,7 +50,7 @@ describe("DisableEffect", () => {
     },
   );
 
-  test("it disables element for isRootAware: true", async () => {
+  it("disables element for isRootAware: true", async () => {
     await brick.run(
       unsafeAssumeValidArg({ isRootAware: true }),
       brickOptionsFactory({

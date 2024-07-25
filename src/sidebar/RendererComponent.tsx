@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { type PanelRunMeta } from "@/types/sidebarTypes";
+import { type PanelRunMetadata } from "@/types/sidebarTypes";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { type RegistryId } from "@/types/registryTypes";
 import { type RendererOutput } from "@/types/runtimeTypes";
@@ -12,7 +12,7 @@ const RendererComponent: React.FunctionComponent<{
   onAction?: (action: SubmitPanelAction) => void;
   brickId?: RegistryId;
   body?: RendererOutput;
-  meta?: PanelRunMeta;
+  meta?: PanelRunMetadata;
 }> = ({ body, meta, brickId, onAction }) =>
   useMemo(() => {
     if (!body) {

@@ -28,12 +28,15 @@ import pluralize from "@/utils/pluralize";
 import type { BrickConfig, BrickPosition } from "@/bricks/types";
 import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { inputProperties } from "@/utils/schemaUtils";
-import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
+import {
+  castTextLiteralOrThrow,
+  containsTemplateExpression,
+} from "@/utils/expressionUtils";
 import { guessUsefulness } from "@/utils/detectRandomString";
 import type { Schema } from "@/types/schemaTypes";
 import { isObject } from "@/utils/objectUtils";
-import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 
 // `jQuery` selector extension: https://api.jquery.com/category/selectors/jquery-selector-extensions/
 const jQueryExtensions = new Set([
@@ -90,14 +93,14 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
   override id = "selector";
 
   override async run(component: ModComponentFormState): Promise<void> {
-    switch (component.type) {
+    switch (component.starterBrick.definition.type) {
       case StarterBrickTypes.BUTTON: {
-        this.checkAction(component);
+        this.checkAction(component as ButtonFormState);
         break;
       }
 
       case StarterBrickTypes.TRIGGER: {
-        this.checkTrigger(component);
+        this.checkTrigger(component as TriggerFormState);
         break;
       }
 
@@ -198,8 +201,12 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     selector,
   }: {
     position: BrickPosition;
-    selector: string;
+    selector: string | null;
   }) {
+    if (selector == null) {
+      return;
+    }
+
     if (!isValidSelector(selector)) {
       this.annotations.push({
         position,
@@ -220,6 +227,17 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
         type: AnnotationType.Warning,
       });
     }
+
+    if (containsTemplateExpression(selector)) {
+      this.annotations.push({
+        position,
+        message: `Selector literal appears to contain a template expression. To use a text template as a selector, use the ${
+          new IdentityTransformer().name
+        } brick to assign the value to a variable.`,
+        analysisId: this.id,
+        type: AnnotationType.Info,
+      });
+    }
   }
 
   visitValue(position: BrickPosition, value: unknown, schema: Schema): void {
@@ -234,8 +252,6 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     } catch {
       return;
     }
-
-    assertNotNullish(selector, "Selector is null.");
 
     this.visitSelector({
       position,

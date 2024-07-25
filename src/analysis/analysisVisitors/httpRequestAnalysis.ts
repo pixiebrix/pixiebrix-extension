@@ -53,7 +53,7 @@ class HttpRequestAnalysis extends AnalysisVisitorABC {
   ) {
     super.visitBrick(position, blockConfig, extra);
 
-    if (blockConfig.id !== RemoteMethod.BLOCK_ID) {
+    if (blockConfig.id !== RemoteMethod.BRICK_ID) {
       return;
     }
 

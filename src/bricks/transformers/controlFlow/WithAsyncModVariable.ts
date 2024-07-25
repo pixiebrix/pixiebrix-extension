@@ -18,12 +18,7 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
-import {
-  getState,
-  MergeStrategies,
-  setState,
-  StateNamespaces,
-} from "@/platform/state/stateController";
+import { getState, setState } from "@/platform/state/stateController";
 import {
   type BrickArgs,
   type BrickOptions,
@@ -38,6 +33,7 @@ import { PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 /**
  * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
@@ -177,10 +173,9 @@ export class WithAsyncModVariable extends TransformerABC {
       body: PipelineExpression;
       stateKey: string;
     }>,
-    { logger, runPipeline }: BrickOptions,
+    { meta: { modComponentRef }, runPipeline }: BrickOptions,
   ) {
     const requestId = uuidv4();
-    const { modId: blueprintId, modComponentId: extensionId } = logger.context;
 
     if (isNullOrBlank(stateKey)) {
       throw new PropError(
@@ -203,8 +198,7 @@ export class WithAsyncModVariable extends TransformerABC {
         // Using shallow will replace the state key, but keep other keys
         mergeStrategy:
           strategy === "put" ? MergeStrategies.SHALLOW : MergeStrategies.DEEP,
-        modComponentId: extensionId,
-        modId: blueprintId,
+        modComponentRef,
       });
     };
 
@@ -214,8 +208,7 @@ export class WithAsyncModVariable extends TransformerABC {
     // Get/set page state calls are synchronous from the content script, so safe to call sequentially
     const currentState = getState({
       namespace: StateNamespaces.MOD,
-      modComponentId: extensionId,
-      modId: blueprintId,
+      modComponentRef,
     });
 
     // eslint-disable-next-line security/detect-object-injection -- user provided value that's readonly

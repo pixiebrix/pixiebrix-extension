@@ -18,18 +18,14 @@
 import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import brickRegistry from "@/bricks/registry";
-import {
-  simpleInput,
-  testOptions,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { simpleInput } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { toExpression } from "@/utils/expressionUtils";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
-import ConsoleLogger from "@/utils/ConsoleLogger";
+import { validateRegistryId } from "@/types/helpers";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new AddDynamicTextSnippet();
 const identity = new IdentityTransformer();
@@ -47,11 +43,7 @@ describe("AddDynamicTextSnippet", () => {
   it.each(["/echo", "echo", "\\echo"])(
     "registers snippet: %s",
     async (shortcut) => {
-      const extensionId = uuidv4();
-      const logger = new ConsoleLogger({
-        modComponentId: extensionId,
-        modId: registryIdFactory(),
-      });
+      const reduceOptions = reduceOptionsFactory();
 
       const pipeline = {
         id: brick.id,
@@ -64,11 +56,7 @@ describe("AddDynamicTextSnippet", () => {
         },
       };
 
-      await reducePipeline(pipeline, simpleInput({}), {
-        ...testOptions("v3"),
-        modComponentId: extensionId,
-        logger,
-      });
+      await reducePipeline(pipeline, simpleInput({}), reduceOptions);
 
       expect(snippetRegistry.snippetShortcuts).toStrictEqual([
         {
@@ -78,9 +66,9 @@ describe("AddDynamicTextSnippet", () => {
           // Preview is optional
           preview: undefined,
           handler: expect.toBeFunction(),
-          componentId: extensionId,
+          componentId: reduceOptions.modComponentRef.modComponentId,
           context: {
-            ...logger.context,
+            ...reduceOptions.logger.context,
             brickId: brick.id,
             brickVersion: expect.toBeString(),
             label: brick.name,
@@ -97,8 +85,7 @@ describe("AddDynamicTextSnippet", () => {
   it.each(["preview text", undefined])(
     "passes preview directly: %s",
     async (preview) => {
-      const extensionId = uuidv4();
-      const logger = new ConsoleLogger({ modComponentId: extensionId });
+      const reduceOptions = reduceOptionsFactory();
 
       const pipeline = {
         id: brick.id,
@@ -112,11 +99,7 @@ describe("AddDynamicTextSnippet", () => {
         },
       };
 
-      await reducePipeline(pipeline, simpleInput({}), {
-        ...testOptions("v3"),
-        modComponentId: extensionId,
-        logger,
-      });
+      await reducePipeline(pipeline, simpleInput({}), reduceOptions);
 
       expect(snippetRegistry.snippetShortcuts).toStrictEqual([
         {
@@ -124,9 +107,9 @@ describe("AddDynamicTextSnippet", () => {
           title: "Echo",
           preview,
           handler: expect.toBeFunction(),
-          componentId: extensionId,
+          componentId: reduceOptions.modComponentRef.modComponentId,
           context: {
-            ...logger.context,
+            ...reduceOptions.logger.context,
             brickId: brick.id,
             brickVersion: expect.toBeString(),
             label: brick.name,

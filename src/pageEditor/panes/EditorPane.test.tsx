@@ -61,6 +61,11 @@ import {
 import { meWithPartnerApiResponseFactory } from "@/testUtils/factories/authFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { PipelineFlavor } from "@/bricks/types";
+import {
+  starterBrickDefinitionFactory,
+  starterBrickDefinitionPropFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 /* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectEditorError"] }] -- TODO: replace with native expect and it.each */
 
@@ -136,44 +141,102 @@ beforeEach(() => {
 afterEach(async () => clock.runAllAsync());
 
 const getPlainFormState = (): ModComponentFormState =>
-  formStateFactory(undefined, [
-    brickConfigFactory({
-      id: echoBrick.id,
-      outputKey: "echoOutput" as OutputKey,
-      config: defaultBrickConfig(echoBrick.inputSchema),
+  formStateFactory({
+    brickPipeline: [
+      brickConfigFactory({
+        id: echoBrick.id,
+        outputKey: "echoOutput" as OutputKey,
+        config: defaultBrickConfig(echoBrick.inputSchema),
+      }),
+      brickConfigFactory({
+        id: teapotBrick.id,
+        outputKey: "teapotOutput" as OutputKey,
+        config: defaultBrickConfig(teapotBrick.inputSchema),
+      }),
+    ],
+  });
+
+const getSidebarPanelPlainFormState = (): ModComponentFormState =>
+  formStateFactory({
+    brickPipeline: [
+      brickConfigFactory({
+        id: echoBrick.id,
+        outputKey: "echoOutput" as OutputKey,
+        config: defaultBrickConfig(echoBrick.inputSchema),
+      }),
+      brickConfigFactory({
+        id: teapotBrick.id,
+        outputKey: "teapotOutput" as OutputKey,
+        config: defaultBrickConfig(teapotBrick.inputSchema),
+      }),
+    ],
+    starterBrick: starterBrickDefinitionFactory({
+      definition: starterBrickDefinitionPropFactory({
+        type: StarterBrickTypes.SIDEBAR_PANEL,
+      }),
     }),
-    brickConfigFactory({
-      id: teapotBrick.id,
-      outputKey: "teapotOutput" as OutputKey,
-      config: defaultBrickConfig(teapotBrick.inputSchema),
-    }),
-  ]);
+  });
 
 const getFormStateWithSubPipelines = (): ModComponentFormState =>
-  formStateFactory(undefined, [
-    brickConfigFactory({
-      id: echoBrick.id,
-      outputKey: "echoOutput" as OutputKey,
-      config: defaultBrickConfig(echoBrick.inputSchema),
+  formStateFactory({
+    brickPipeline: [
+      brickConfigFactory({
+        id: echoBrick.id,
+        outputKey: "echoOutput" as OutputKey,
+        config: defaultBrickConfig(echoBrick.inputSchema),
+      }),
+      brickConfigFactory({
+        id: forEachBrick.id,
+        outputKey: "forEachOutput" as OutputKey,
+        config: {
+          elements: toExpression("var", "@input.elements"),
+          elementKey: "element",
+          body: toExpression("pipeline", [
+            brickConfigFactory({
+              id: echoBrick.id,
+              outputKey: "subEchoOutput" as OutputKey,
+              config: {
+                message: toExpression("nunjucks", "iteration {{ @element }}"),
+              },
+            }),
+          ]),
+        },
+      }),
+    ],
+  });
+
+const getSidebarFormStateWithSubPipelines = (): ModComponentFormState =>
+  formStateFactory({
+    brickPipeline: [
+      brickConfigFactory({
+        id: echoBrick.id,
+        outputKey: "echoOutput" as OutputKey,
+        config: defaultBrickConfig(echoBrick.inputSchema),
+      }),
+      brickConfigFactory({
+        id: forEachBrick.id,
+        outputKey: "forEachOutput" as OutputKey,
+        config: {
+          elements: toExpression("var", "@input.elements"),
+          elementKey: "element",
+          body: toExpression("pipeline", [
+            brickConfigFactory({
+              id: echoBrick.id,
+              outputKey: "subEchoOutput" as OutputKey,
+              config: {
+                message: toExpression("nunjucks", "iteration {{ @element }}"),
+              },
+            }),
+          ]),
+        },
+      }),
+    ],
+    starterBrick: starterBrickDefinitionFactory({
+      definition: starterBrickDefinitionPropFactory({
+        type: StarterBrickTypes.SIDEBAR_PANEL,
+      }),
     }),
-    brickConfigFactory({
-      id: forEachBrick.id,
-      outputKey: "forEachOutput" as OutputKey,
-      config: {
-        elements: toExpression("var", "@input.elements"),
-        elementKey: "element",
-        body: toExpression("pipeline", [
-          brickConfigFactory({
-            id: echoBrick.id,
-            outputKey: "subEchoOutput" as OutputKey,
-            config: {
-              message: toExpression("nunjucks", "iteration {{ @element }}"),
-            },
-          }),
-        ]),
-      },
-    }),
-  ]);
+  });
 
 async function addABlock(addButton: Element, blockName: string) {
   await immediateUserEvent.click(addButton);
@@ -204,7 +267,7 @@ describe("renders", () => {
   });
 
   test("the first selected node", async () => {
-    const formState = getPlainFormState();
+    const formState = getSidebarPanelPlainFormState();
     const { instanceId } = formState.modComponent.brickPipeline[0];
     const { asFragment } = render(<EditorPane />, {
       setupRedux(dispatch) {
@@ -220,7 +283,7 @@ describe("renders", () => {
   });
 
   test("a mod component with sub pipeline", async () => {
-    const formState = getFormStateWithSubPipelines();
+    const formState = getSidebarFormStateWithSubPipelines();
     const { asFragment } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
@@ -270,7 +333,9 @@ describe("can add a node", () => {
   });
 
   test("to an empty mod component", async () => {
-    const modComponentFormState = formStateFactory(undefined, []);
+    const modComponentFormState = formStateFactory({
+      brickPipeline: [],
+    });
     render(
       <>
         <EditorPane />
@@ -648,12 +713,14 @@ describe("validation", () => {
     // The test adds 2 mod components.
     // It creates an input field error to one node of the mod component 1,
     // then it creates a node level error on another node (adding a renderer at the beginning of the pipeline).
-    // Then we select the second mod component and make sure there're no error badges displayed.
+    // Then we select the second mod component and make sure there are no error badges displayed.
     // Going back to mod component 1.
     // See the 2 error badges in the Node Layout.
     // Select the Markdown node and check the error.
     // Select the Echo brick and check the error.
-    const modComponent1 = getPlainFormState();
+
+    // We need to make component one a side panel mod component
+    const modComponent1 = getSidebarPanelPlainFormState();
     const modComponent2 = getPlainFormState();
 
     // Selecting the Echo brick in the first mod component
@@ -743,7 +810,7 @@ describe("validation", () => {
   });
 
   test("validates multiple renderers on add", async () => {
-    const formState = getPlainFormState();
+    const formState = getSidebarPanelPlainFormState();
     formState.modComponent.brickPipeline.push(
       brickConfigFactory({
         id: MarkdownRenderer.BRICK_ID,
@@ -780,7 +847,7 @@ describe("validation", () => {
   });
 
   test("validates that renderer is the last node on move", async () => {
-    const formState = getPlainFormState();
+    const formState = getSidebarPanelPlainFormState();
     formState.modComponent.brickPipeline.push(
       brickConfigFactory({
         id: MarkdownRenderer.BRICK_ID,
@@ -821,7 +888,14 @@ describe("validation", () => {
     },
     {
       pipelineFlavor: PipelineFlavor.NoEffect,
-      formFactory: formStateFactory,
+      formFactory: () =>
+        formStateFactory({
+          starterBrick: starterBrickDefinitionFactory({
+            definition: starterBrickDefinitionPropFactory({
+              type: StarterBrickTypes.SIDEBAR_PANEL,
+            }),
+          }),
+        }),
       disallowedBlock: alertBrick,
     },
   ];
@@ -873,7 +947,14 @@ describe("brick validation in Add Brick Modal UI", () => {
     },
     {
       pipelineFlavor: PipelineFlavor.NoEffect,
-      formFactory: formStateFactory,
+      formFactory: () =>
+        formStateFactory({
+          starterBrick: starterBrickDefinitionFactory({
+            definition: starterBrickDefinitionPropFactory({
+              type: StarterBrickTypes.SIDEBAR_PANEL,
+            }),
+          }),
+        }),
       disallowedBlockName: "Window Alert",
     },
   ];

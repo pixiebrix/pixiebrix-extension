@@ -169,7 +169,7 @@ const BrickConfiguration: React.FunctionComponent<{
       StarterBrickTypes.QUICK_BAR_ACTION,
       StarterBrickTypes.DYNAMIC_QUICK_BAR,
       StarterBrickTypes.BUTTON,
-    ].includes(context.values.type);
+    ].includes(context.values.starterBrick.definition.type);
   const showIfAndTarget =
     brickType && brickType !== BrickTypes.RENDERER && !isComment;
   const noAdvancedOptions = (!showRootMode && !showIfAndTarget) || isComment;

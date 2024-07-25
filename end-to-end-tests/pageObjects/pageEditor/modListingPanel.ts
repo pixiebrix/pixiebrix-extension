@@ -32,6 +32,20 @@ export class ModListItem extends BasePageObject {
     return this.getByLabel(" - Ellipsis");
   }
 
+  get unavailableIcon() {
+    return this.getByRole("img", {
+      name: "Not available on page",
+    });
+  }
+
+  get copyButton() {
+    return this.getByRole("menuitem", { name: "Make a copy" });
+  }
+
+  get deactivateButton() {
+    return this.getByRole("menuitem", { name: "Deactivate" });
+  }
+
   async select() {
     return this.click();
   }

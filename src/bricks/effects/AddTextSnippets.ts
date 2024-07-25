@@ -108,20 +108,16 @@ class AddTextSnippets extends EffectABC {
 
   async effect(
     { snippets }: BrickArgs<{ snippets: Snippet[] }>,
-    { logger, abortSignal, platform }: BrickOptions,
+    { meta, logger, abortSignal, platform }: BrickOptions,
   ): Promise<void> {
     // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the popover
     if (abortSignal?.aborted) {
       return;
     }
 
-    if (logger.context.modComponentId == null) {
-      throw new Error("Must be run in the context of a mod component");
-    }
-
     for (const { shortcut, title, text } of snippets) {
       platform.snippetShortcutMenu.register({
-        componentId: logger.context.modComponentId,
+        componentId: meta.modComponentRef.modComponentId,
         context: logger.context,
         shortcut: normalizeShortcut(shortcut),
         title,

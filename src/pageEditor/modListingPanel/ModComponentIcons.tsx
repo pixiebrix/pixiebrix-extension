@@ -17,23 +17,17 @@
 
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import {
   faExclamationTriangle,
   faEyeSlash,
-  faPuzzlePiece,
 } from "@fortawesome/free-solid-svg-icons";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import Icon from "@/icons/Icon";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
 
 export const ModComponentIcon: React.FunctionComponent<{
   type: StarterBrickType;
-}> = ({ type }) => (
-  <FontAwesomeIcon
-    fixedWidth
-    icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece}
-  />
-);
+}> = ({ type }) => <FontAwesomeIcon fixedWidth icon={adapter(type).icon} />;
 
 export const NotAvailableIcon: React.FunctionComponent = () => (
   <FontAwesomeIcon icon={faEyeSlash} title="Not available on page" />
