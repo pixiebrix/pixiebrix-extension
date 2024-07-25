@@ -31,6 +31,7 @@ import useAsyncEffect from "use-async-effect";
 import hash from "object-hash";
 import { joinName } from "@/utils/formUtils";
 import { getHeaders } from "@/contrib/google/sheets/core/sheetsApi";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function headerFieldSchemaForHeaders(headers: string[]): Schema {
   return {
@@ -44,7 +45,7 @@ function headerFieldSchemaForHeaders(headers: string[]): Schema {
 const HeaderField: React.FunctionComponent<{
   name: string;
   googleAccount: SanitizedIntegrationConfig | null;
-  spreadsheetId: string | null;
+  spreadsheetId: string | undefined;
   tabName: string | Expression;
 }> = ({ name, googleAccount, spreadsheetId, tabName }) => {
   const [{ value: header }, , { setValue: setHeader }] = useField<
@@ -80,7 +81,7 @@ const HeaderField: React.FunctionComponent<{
       }
 
       // Set to empty nunjucks expression if no headers have loaded
-      if (isEmpty(headers)) {
+      if (headers.length === 0) {
         await setHeader(toExpression("nunjucks", ""));
         return;
       }
@@ -91,7 +92,8 @@ const HeaderField: React.FunctionComponent<{
       }
 
       // Remaining cases are either empty expression or invalid, selected header, so set to first header
-      await setHeader(headers[0]);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- headers guaranteed to be non-empty by this point in the flow
+      await setHeader(headers[0]!);
     },
     // Hash just in case tabName is an expression, and we
     // don't need to run the effect when googleAccount changes,
@@ -128,23 +130,27 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BrickOptionProps> = ({
   // For backwards compatibility, we want to show the filters if the field is undefined.
   const showFilters = filterRows === undefined || filterRows;
 
+  const schemaProperties = LOOKUP_SCHEMA.properties;
+
+  assertNotNullish(schemaProperties, "Hardcoded schema is missing properties");
+
   return (
     <div className="my-2">
       <SchemaField
         name={joinName(blockConfigPath, "googleAccount")}
-        schema={LOOKUP_SCHEMA.properties.googleAccount as Schema}
+        schema={schemaProperties.googleAccount as Schema}
       />
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
         {({ googleAccount, spreadsheet }) => (
           <>
             <TabField
               name={joinName(blockConfigPath, "tabName")}
-              schema={LOOKUP_SCHEMA.properties.tabName as Schema}
+              schema={schemaProperties.tabName as Schema}
               spreadsheet={spreadsheet}
             />
             <SchemaField
               name={filterRowsFieldPath}
-              schema={LOOKUP_SCHEMA.properties.filterRows as Schema}
+              schema={schemaProperties.filterRows as Schema}
               defaultType="boolean"
             />
             {showFilters && (
@@ -159,14 +165,14 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BrickOptionProps> = ({
                   name={joinName(blockConfigPath, "query")}
                   label="Query"
                   description="Value to search for in the column"
-                  schema={LOOKUP_SCHEMA.properties.query as Schema}
+                  schema={schemaProperties.query as Schema}
                   isRequired
                 />
                 <SchemaField
                   name={joinName(blockConfigPath, "multi")}
                   label="All Matches"
                   description="Toggle on to return an array of matches"
-                  schema={LOOKUP_SCHEMA.properties.multi as Schema}
+                  schema={schemaProperties.multi as Schema}
                   isRequired
                 />
               </>

@@ -17,7 +17,7 @@
 
 import { BasePageObject } from "../basePageObject";
 import { type UUID } from "@/types/stringTypes";
-import { ModifiesModState } from "./utils";
+import { ModifiesModFormState } from "./utils";
 
 export class CreateModModal extends BasePageObject {
   modIdInput = this.getByTestId("registryId-id-id");
@@ -29,7 +29,7 @@ export class CreateModModal extends BasePageObject {
    * @param modName the modName to use
    * @param modUuid the UUID of the mod component from adding the starter brick
    */
-  @ModifiesModState
+  @ModifiesModFormState
   async createMod(modName: string, modUuid: UUID): Promise<string> {
     const modId = `${modName.split(" ").join("-").toLowerCase()}-${modUuid}`;
 
@@ -46,7 +46,7 @@ export class CreateModModal extends BasePageObject {
    * @param modName the modName to use
    * @param modUuid the UUID of the mod component from adding the starter brick
    */
-  @ModifiesModState
+  @ModifiesModFormState
   async copyMod(modName: string, modUuid: UUID): Promise<string> {
     const modId = `${modName.split(" ").join("-").toLowerCase()}-${modUuid}`;
 

@@ -21,111 +21,95 @@ import { test, expect } from "../../fixtures/testBase";
 import { type Page, test as base } from "@playwright/test";
 import { getSidebarPage } from "../../utils";
 
-test("Add new Button starter brick", async ({ page, newPageEditorPage }) => {
+test("Add starter bricks", async ({ page, newPageEditorPage, extensionId }) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
-  await pageEditorPage.modListingPanel.addStarterBrick("Button");
-  await page.locator("#files .folder").first().click();
-  await expect(
-    pageEditorPage.getByText("My pbx.vercel.app button"),
-  ).toBeVisible();
-  const brickPipeline =
-    await pageEditorPage.brickActionsPanel.getBricksInPipeline();
-  expect(brickPipeline).toHaveLength(1);
-  await expect(brickPipeline[0]).toContainText("Button");
-  await expect(
-    pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
-      name: "Name",
-    }),
-  ).toHaveValue("My pbx.vercel.app button");
-});
+  const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
 
-test("Add new Context Menu starter brick", async ({
-  page,
-  newPageEditorPage,
-}) => {
-  await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
-  await pageEditorPage.modListingPanel.addStarterBrick("Context Menu");
-  const brickPipeline =
-    await pageEditorPage.brickActionsPanel.getBricksInPipeline();
-  expect(brickPipeline).toHaveLength(1);
-  await expect(brickPipeline[0]).toContainText("Context Menu");
-  await expect(
-    pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
-      name: "Name",
-    }),
-  ).toHaveValue("Context menu item");
-});
+  await test.step("Add new Button starter brick", async () => {
+    await pageEditorPage.modListingPanel.addStarterBrick("Button");
+    await pageEditorPage.selectConnectedPageElement(
+      page.getByRole("link", { name: "navigation" }),
+    );
 
-test("Add new Quick Bar Action starter brick", async ({
-  page,
-  newPageEditorPage,
-}) => {
-  await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
-  await pageEditorPage.modListingPanel.addStarterBrick("Quick Bar Action");
-  const brickPipeline =
-    await pageEditorPage.brickActionsPanel.getBricksInPipeline();
-  expect(brickPipeline).toHaveLength(1);
-  await expect(brickPipeline[0]).toContainText("Quick Bar Action");
-  await expect(
-    pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
-      name: "Name",
-    }),
-  ).toHaveValue("Quick Bar item");
-});
+    await expect(
+      pageEditorPage.getByText("My pbx.vercel.app button"),
+    ).toBeVisible();
+    await expect(brickPipeline).toHaveCount(1);
+    await expect(brickPipeline.first()).toContainText("Button");
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+        name: "Name",
+      }),
+    ).toHaveValue("My pbx.vercel.app button");
 
-test("Add new Sidebar Panel starter brick", async ({
-  page,
-  newPageEditorPage,
-  extensionId,
-}) => {
-  await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
-  await pageEditorPage.modListingPanel.addStarterBrick("Sidebar Panel");
-  const brickPipeline =
-    await pageEditorPage.brickActionsPanel.getBricksInPipeline();
-  expect(brickPipeline).toHaveLength(2);
-  await expect(brickPipeline[0]).toContainText("Sidebar Panel");
-  await expect(brickPipeline[1]).toContainText("Render Document");
-  await expect(
-    pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
-      name: "Name",
-    }),
-  ).toHaveValue("Sidebar Panel");
+    // TODO: save the mod and verify the snapshot of the mod definition with `verifyModDefinitionSnapshot` fixture
+  });
 
-  const sidebarPage = await getSidebarPage(page, extensionId);
-  await expect(sidebarPage.getByText("Example Document")).toBeVisible();
-});
+  await test.step("Add new Context Menu starter brick", async () => {
+    await pageEditorPage.modListingPanel.addStarterBrick("Context Menu");
+    await expect(brickPipeline).toHaveCount(1);
+    await expect(brickPipeline.first()).toContainText("Context Menu");
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+        name: "Name",
+      }),
+    ).toHaveValue("Context menu item");
+  });
 
-test("Add new Trigger starter brick", async ({ page, newPageEditorPage }) => {
-  await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
-  await pageEditorPage.modListingPanel.addStarterBrick("Trigger");
-  const brickPipeline =
-    await pageEditorPage.brickActionsPanel.getBricksInPipeline();
-  expect(brickPipeline).toHaveLength(1);
-  await expect(brickPipeline[0]).toContainText("Trigger");
-  await expect(
-    pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
-      name: "Name",
-    }),
-  ).toHaveValue("My pbx.vercel.app trigger");
-});
+  await test.step("Add new Quick Bar Action starter brick", async () => {
+    await pageEditorPage.modListingPanel.addStarterBrick("Quick Bar Action");
+    await expect(brickPipeline).toHaveCount(1);
+    await expect(brickPipeline.first()).toContainText("Quick Bar Action");
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+        name: "Name",
+      }),
+    ).toHaveValue("Quick Bar item");
+  });
 
-// eslint-disable-next-line playwright/expect-expect -- The test is checking for page navigation
-test("Add new from Start with a Template", async ({
-  page,
-  newPageEditorPage,
-}) => {
-  await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
-  await pageEditorPage.modListingPanel.addButton.click();
-  await pageEditorPage.modListingPanel
-    .locator("[role=button].dropdown-item", {
-      hasText: "Start with a Template",
-    })
-    .click();
-  await page.waitForURL(/https:\/\/www\.pixiebrix\.com\/templates-gallery/);
+  await test.step("Add new Sidebar Panel starter brick", async () => {
+    await pageEditorPage.modListingPanel.addStarterBrick("Sidebar Panel");
+    await expect(brickPipeline).toHaveCount(2);
+    await expect(brickPipeline.first()).toContainText("Sidebar Panel");
+    await expect(brickPipeline.nth(1)).toContainText("Render Document");
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+        name: "Name",
+      }),
+    ).toHaveValue("Sidebar Panel");
+
+    const sidebarPage = await getSidebarPage(page, extensionId);
+    await expect(sidebarPage.getByText("Example Document")).toBeVisible();
+  });
+
+  await test.step("Add new Trigger starter brick", async () => {
+    await pageEditorPage.modListingPanel.addStarterBrick("Trigger");
+    await expect(brickPipeline).toHaveCount(1);
+    await expect(brickPipeline.first()).toContainText("Trigger");
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+        name: "Name",
+      }),
+    ).toHaveValue("My pbx.vercel.app trigger");
+  });
+
+  await test.step("Add new from Start with a Template", async () => {
+    const templatesGalleryUrl =
+      /^https:\/\/www\.pixiebrix\.com\/templates-gallery/;
+
+    const pageRequestPromise = page.waitForRequest(templatesGalleryUrl);
+
+    await pageEditorPage.modListingPanel.addButton.click();
+    await pageEditorPage.modListingPanel
+      .getByRole("button", {
+        name: "Start with a Template",
+      })
+      .click();
+
+    await expect(page).toHaveURL(templatesGalleryUrl);
+    const pageRequest = await pageRequestPromise;
+    const pageRequestResponse = await pageRequest.response();
+    expect(pageRequestResponse.status()).toBe(200);
+  });
 });

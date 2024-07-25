@@ -40,13 +40,13 @@ export type EllipsisMenuItem = {
    * The "on select" action for the item
    * You should provide either this or href, but not both
    */
-  action: () => void;
+  action: (() => void) | null;
 
   /**
    * The href for the item, if it's a link
    * You should provide either this or action, but not both
    */
-  href: string;
+  href: string | null;
   submenu: EllipsisMenuItem[];
 }>;
 
@@ -115,7 +115,7 @@ const getMenuItemComponent = (item: EllipsisMenuItem): ReactElement => {
   return (
     <MenuItem
       key={item.title}
-      onClick={item.action}
+      onClick={item.action ?? undefined}
       className={item.className}
       disabled={item.disabled}
     >

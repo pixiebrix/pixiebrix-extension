@@ -16,18 +16,18 @@
  */
 
 import { BasePageObject } from "../basePageObject";
-import { ModifiesModState } from "./utils";
+import { ModifiesModFormState } from "./utils";
 
 export class Brick extends BasePageObject {
   moveBrickUpButton = this.getByRole("button", { name: "Move brick higher" });
   moveBrickDownButton = this.getByRole("button", { name: "Move brick lower" });
 
-  @ModifiesModState
+  @ModifiesModFormState
   async moveUp() {
     return this.moveBrickUpButton.click();
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async moveDown() {
     return this.moveBrickDownButton.click();
   }
@@ -40,6 +40,7 @@ export class Brick extends BasePageObject {
 export class BrickActionsPanel extends BasePageObject {
   removeBrickButton = this.getByTestId("icon-button-removeNode");
   copyBrickButton = this.getByTestId("icon-button-copyNode");
+  bricks = this.getByTestId("editor-node");
 
   getAddBrickButton(n: number) {
     return this.getByTestId(/icon-button-.*-add-brick/).nth(n);
@@ -51,25 +52,21 @@ export class BrickActionsPanel extends BasePageObject {
 
   getBrickByName(brickName: string) {
     return new Brick(
-      this.getByTestId("editor-node").filter({
+      this.bricks.filter({
         hasText: brickName,
       }),
     );
   }
 
-  async getBricksInPipeline() {
-    return this.getByTestId("editor-node").all();
-  }
-
   getActiveBrick() {
     return new Brick(
-      this.getByTestId("editor-node").filter({
+      this.bricks.filter({
         has: this.locator(".active"),
       }),
     );
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async removeActiveBrick() {
     return this.removeBrickButton.click();
   }
@@ -78,12 +75,12 @@ export class BrickActionsPanel extends BasePageObject {
     return this.copyBrickButton.click();
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async pasteBrick(index = 0) {
     return this.getPasteBrickButton(index).click();
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async addBrick(brickName: string, { index = 0 }: { index?: number } = {}) {
     await this.getAddBrickButton(index).click();
 
