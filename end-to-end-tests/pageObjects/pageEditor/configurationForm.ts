@@ -16,10 +16,10 @@
  */
 
 import { BasePageObject } from "../basePageObject";
-import { ModifiesModState } from "./utils";
+import { ModifiesModFormState } from "./utils";
 
 export class ConfigurationForm extends BasePageObject {
-  @ModifiesModState
+  @ModifiesModFormState
   async fillField(fieldLabel: string, value: string) {
     const field = this.getByLabel(fieldLabel);
     // Click to enable the field, if it's not already enabled
@@ -27,7 +27,7 @@ export class ConfigurationForm extends BasePageObject {
     await field.fill(value);
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async fillFieldByPlaceholder(fieldPlaceholder: string, value: string) {
     const field = this.getByPlaceholder(fieldPlaceholder);
     // Click to enable the field, if it's not already enabled
@@ -35,7 +35,7 @@ export class ConfigurationForm extends BasePageObject {
     await field.fill(value);
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async toggleSwitch(label: string) {
     await this.getSwitchByLabel(label).click();
   }
