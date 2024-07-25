@@ -20,15 +20,14 @@ import { openSidePanel, getSidebarTarget } from "@/utils/sidePanelUtils";
 import { messenger } from "webext-messenger";
 import { type ModComponentRef } from "@/types/modComponentTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { SessionMap } from "@/mv3/SessionStorage";
 
 /**
  * Mapping from tabId to the ModComponentRef that set the badge.
  */
-const tabBadgeModComponentRefMap = new SessionMap<ModComponentRef>(
-  "tabBadgeModComponentRefMap",
-  import.meta.url,
-);
+// Can't use SessionMap because calling SessionMap.get was causing Chrome to lose the user gesture in the
+// browserAction.onClicked handler even when using `then()` instead of async/await
+// eslint-disable-next-line local-rules/persistBackgroundData -- see comment
+const tabBadgeModComponentRefMap = new Map<number, ModComponentRef>();
 
 /**
  * Set/unset the modComponentRef that set the badge for a tab. If set, when the user opens the sidebar, the sidebar
@@ -39,9 +38,9 @@ export async function setTabBadgeModComponentRef(
   modComponentRef: Nullishable<ModComponentRef>,
 ): Promise<void> {
   if (modComponentRef) {
-    await tabBadgeModComponentRefMap.set(String(tabId), modComponentRef);
+    tabBadgeModComponentRefMap.set(tabId, modComponentRef);
   } else {
-    await tabBadgeModComponentRefMap.delete(String(tabId));
+    tabBadgeModComponentRefMap.delete(tabId);
   }
 }
 
@@ -70,11 +69,8 @@ export default async function initBrowserAction(): Promise<void> {
     - https://github.com/w3c/webextensions/issues/521
     */
     if (tab.id) {
-      const initialModComponentRef = await tabBadgeModComponentRefMap.get(
-        String(tab.id),
-      );
       await openSidePanel(tab.id, {
-        initialModComponentRef,
+        initialModComponentRef: tabBadgeModComponentRefMap.get(tab.id),
       });
       await messenger(
         "SIDEBAR_CLOSE",
