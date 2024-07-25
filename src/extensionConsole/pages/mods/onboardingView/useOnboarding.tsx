@@ -48,8 +48,8 @@ function useOnboarding(): {
     (recipe) => recipe.sharing.organizations.length > 0,
   );
 
-  const hasTeamBlueprints = teamRecipes?.length > 0;
-  const hasOrganization = organizations?.length > 0;
+  const hasTeamBlueprints = teamRecipes.length > 0;
+  const hasOrganization = Number(organizations?.length) > 0;
 
   const onboardingType = useMemo(() => {
     if (hasOrganization) {

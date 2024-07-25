@@ -56,7 +56,7 @@ function headerFieldSchemaForHeaders(headers: string[]): Schema {
 const RowValuesField: React.FunctionComponent<{
   name: string;
   googleAccount: SanitizedIntegrationConfig | null;
-  spreadsheetId: string | null;
+  spreadsheetId: string | undefined;
   tabName: string | Expression;
 }> = ({ name, googleAccount, spreadsheetId, tabName }) => {
   const [{ value: rowValues }, , { setValue: setRowValues }] =

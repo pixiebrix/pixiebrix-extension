@@ -32,6 +32,7 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 import type { ModActivationConfig } from "@/types/modTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export type RequiredModDefinition = {
   /**
@@ -160,7 +161,11 @@ const RequireMods: React.FC<Props> = ({ mods, children }) => {
     ) =>
       Promise.all(
         zip(modOptionPairs, modDefinitions).map(
-          async ([{ initialOptions }, modDefinition]) => {
+          async ([modOptionPair, modDefinition]) => {
+            const { initialOptions } = modOptionPair ?? {};
+            assertNotNullish(modDefinition, "modDefinition is nullish");
+            assertNotNullish(initialOptions, "initialOptions is nullish");
+
             const defaultAuthOptions = getDefaultAuthOptionsForMod(
               modDefinition,
               authOptions,
@@ -194,6 +199,8 @@ const RequireMods: React.FC<Props> = ({ mods, children }) => {
   if (state.isLoading) {
     return <Loader />;
   }
+
+  assertNotNullish(state.data, "state.data is nullish");
 
   return children(state.data);
 };

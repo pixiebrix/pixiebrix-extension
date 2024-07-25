@@ -42,6 +42,7 @@ import { getModActivationInstructions } from "@/utils/modUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { isInternalRegistryId } from "@/utils/registryUtils";
 import { type UUID } from "@/types/stringTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const WizardHeader: React.VoidFunctionComponent<{
   mod: ModDefinition;
@@ -98,6 +99,8 @@ const ActivateModCard: React.FC<{
   if (wizardError) {
     throw wizardError;
   }
+
+  assertNotNullish(wizardState, "wizardState is nullish");
 
   const { wizardSteps, initialValues, validationSchema } = wizardState;
 

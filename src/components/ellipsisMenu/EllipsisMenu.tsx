@@ -38,13 +38,13 @@ type EllipsisMenuItemInternal = {
    * The "on select" action for the item
    * You should provide either this or href, but not both
    */
-  action: () => void;
+  action: (() => void) | null;
 
   /**
    * The href for the item, if it's a link
    * You should provide either this or action, but not both
    */
-  href: string;
+  href: string | null;
 
   className?: string;
   hide?: boolean;
@@ -117,7 +117,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
         ) : (
           <MenuItem
             key={item.title}
-            onClick={item.action}
+            onClick={item.action ?? undefined}
             className={item.className}
             disabled={item.disabled}
           >
