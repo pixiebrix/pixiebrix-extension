@@ -40,7 +40,7 @@ import { type PackageInstance } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 
 type OwnProps<Instance extends PackageInstance> = {
-  packageInstances: Instance[];
+  packageInstances: Instance[] | undefined;
   initialSelected?: Instance;
 };
 
@@ -49,7 +49,9 @@ const PackageReference = ({
   initialSelected,
 }: OwnProps<PackageInstance>) => {
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState<PackageInstance>(initialSelected);
+  const [selected, setSelected] = useState<PackageInstance | undefined>(
+    initialSelected,
+  );
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const sortedPackages = useMemo(

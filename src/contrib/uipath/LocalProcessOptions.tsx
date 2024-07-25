@@ -65,10 +65,8 @@ const LocalProcessOptions: React.FunctionComponent<BrickOptionProps> = ({
     return { robotAvailable: available, consentCode };
   }, []);
 
-  const { consentCode, robotAvailable = false } = fallbackValue(
-    robotState,
-    {},
-  ).data;
+  const { consentCode, robotAvailable = false } =
+    fallbackValue(robotState, {}).data ?? {};
 
   const processOptionsPromise: Promise<Option[]> = useMemo(async () => {
     if (robotAvailable) {

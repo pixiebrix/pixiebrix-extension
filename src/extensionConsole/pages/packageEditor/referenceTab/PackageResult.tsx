@@ -61,7 +61,9 @@ const SharingTag = <T extends PackageInstance>({
     }
 
     // If more than one sharing organization, use the first
-    return organizations.find((org) => sharing.organizations.includes(org.id));
+    return organizations.find(
+      (org) => org.id && sharing.organizations.includes(org.id),
+    );
   }, [organizations, sharing]);
 
   const label = useMemo(() => {
