@@ -31,18 +31,21 @@ export type TargetMode =
   // The element the trigger is attached to
   | "root";
 
+export const ReportModes = {
+  // Events (trigger/error) reported only once per mod component per page
+  ONCE: "once",
+  // Only errors are reported once per mod component per page
+  ERROR_ONCE: "error-once",
+  // Never reports events
+  NEVER: "never",
+  // Report all events
+  ALL: "all",
+} as const;
+
 /**
  * The report mode. Used to prevent repeat events (e.g., interval triggers) from flooding telemetry.
  */
-export type ReportMode =
-  // Events (trigger/error) reported only once per extension per page
-  | "once"
-  // Only errors are reported once per extension per page
-  | "error-once"
-  // Never reports events
-  | "never"
-  // Report all events
-  | "all";
+export type ReportMode = ValueOf<typeof ReportModes>;
 
 export const Triggers = {
   // `load` is page load
