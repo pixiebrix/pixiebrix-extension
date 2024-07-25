@@ -21,7 +21,11 @@ import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { test as base } from "@playwright/test";
 import { range } from "lodash";
 
-test("8143: mods can run in srcdoc iframes", async ({ page, extensionId }) => {
+test("8143: mods can run in srcdoc iframes", async ({
+  page,
+  extensionId,
+  chromiumChannel,
+}) => {
   const modId = "@pixies/test/8143-repro";
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
