@@ -108,7 +108,7 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
   const getItemSize = useCallback(
     (index: number): number => {
       const row = expandedGridRows.at(index);
-      return row && "isGrouped" in row ? HEADER_ROW_HEIGHT_PX : CARD_HEIGHT_PX;
+      return isRowModViewItem(row) ? HEADER_ROW_HEIGHT_PX : CARD_HEIGHT_PX;
     },
     [expandedGridRows],
   );
