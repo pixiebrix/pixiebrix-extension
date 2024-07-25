@@ -26,7 +26,7 @@ import { BrickActionsPanel } from "./brickActionsPanel";
 import { ConfigurationForm } from "./configurationForm";
 import { DataPanel } from "./dataPanel";
 import { ModEditorPane } from "./modEditorPane";
-import { ModifiesModState } from "./utils";
+import { ModifiesModFormState } from "./utils";
 import { CreateModModal } from "./createModModal";
 import { DeactivateModModal } from "end-to-end-tests/pageObjects/pageEditor/deactivateModModal";
 
@@ -99,7 +99,7 @@ export class PageEditorPage extends BasePageObject {
   }
 
   /** Used for interactions that require selecting an element on the connected page, such as the button starter brick */
-  @ModifiesModState
+  @ModifiesModFormState
   async selectConnectedPageElement(selectLocator: Locator) {
     const connectedPage = selectLocator.page();
     await connectedPage.bringToFront();
@@ -134,7 +134,7 @@ export class PageEditorPage extends BasePageObject {
     );
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async saveStandaloneMod(modName: string, modUuid: UUID) {
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
@@ -146,7 +146,7 @@ export class PageEditorPage extends BasePageObject {
     this.savedPackageModIds.push(modId);
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async copyMod(modName: string, modUuid: UUID) {
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
@@ -171,7 +171,7 @@ export class PageEditorPage extends BasePageObject {
     await deactivateModModal.deactivateButton.click();
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async createModFromModComponent({
     modNameRoot,
     modComponentName,

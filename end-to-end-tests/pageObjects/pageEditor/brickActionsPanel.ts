@@ -16,18 +16,18 @@
  */
 
 import { BasePageObject } from "../basePageObject";
-import { ModifiesModState } from "./utils";
+import { ModifiesModFormState } from "./utils";
 
 export class Brick extends BasePageObject {
   moveBrickUpButton = this.getByRole("button", { name: "Move brick higher" });
   moveBrickDownButton = this.getByRole("button", { name: "Move brick lower" });
 
-  @ModifiesModState
+  @ModifiesModFormState
   async moveUp() {
     return this.moveBrickUpButton.click();
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async moveDown() {
     return this.moveBrickDownButton.click();
   }
@@ -66,7 +66,7 @@ export class BrickActionsPanel extends BasePageObject {
     );
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async removeActiveBrick() {
     return this.removeBrickButton.click();
   }
@@ -75,12 +75,12 @@ export class BrickActionsPanel extends BasePageObject {
     return this.copyBrickButton.click();
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async pasteBrick(index = 0) {
     return this.getPasteBrickButton(index).click();
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async addBrick(brickName: string, { index = 0 }: { index?: number } = {}) {
     await this.getAddBrickButton(index).click();
 
