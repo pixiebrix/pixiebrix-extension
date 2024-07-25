@@ -28,6 +28,6 @@ export type BadgeProtocol = {
    */
   setText(
     text: Nullishable<string>,
-    options: { modComponentRef: ModComponentRef },
+    options?: { modComponentRef?: ModComponentRef },
   ): void;
 };
