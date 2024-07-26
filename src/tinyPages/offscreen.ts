@@ -49,7 +49,7 @@ export type RecordErrorMessage = {
 export async function setupOffscreenDocument() {
   /*
    * WARNING: The runtime.getContexts() api is crashing the browser under
-   *  certain conditions in chrome versions >127.0.0.0. See issue
+   *  certain conditions in chrome versions >127.0.6533.73. See issue
    *  tracker here: https://issues.chromium.org/issues/355625882
    *
    * Dangerous code to check if the offscreen document exists:
