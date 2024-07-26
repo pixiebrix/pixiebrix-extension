@@ -54,7 +54,6 @@ test("8143: mods can run in srcdoc iframes", async ({
     iframe.setAttribute("sandbox", "");
     document.body.append(iframe);
   });
-  await page.pause();
 
   const frame = frameLocator.nth(2);
   const locator = frame.locator("mark").first();
