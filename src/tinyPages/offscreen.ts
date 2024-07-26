@@ -90,13 +90,15 @@ export async function setupOffscreenDocument() {
         justification:
           "Error telemetry SDK usage that is incompatible with service workers",
       });
+      await createOffscreenDocumentPromise;
     } catch (error) {
+      createOffscreenDocumentPromise = null;
+
       const errorMessage = getErrorMessage(error);
       if (
         errorMessage.includes("Only a single offscreen document may be created")
       ) {
         // The offscreen document has already been created
-        createOffscreenDocumentPromise = null;
         return;
       }
 
@@ -108,7 +110,6 @@ export async function setupOffscreenDocument() {
       );
     }
 
-    await createOffscreenDocumentPromise;
     createOffscreenDocumentPromise = null;
   } else {
     await createOffscreenDocumentPromise;
