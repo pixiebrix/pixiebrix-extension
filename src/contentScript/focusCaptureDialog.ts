@@ -63,6 +63,7 @@ async function rawFocusCaptureDialog({
   dialog.showModal();
 
   const anyPromiseWillCloseTheDialog = [
+    oneEvent(button, "mousedown"),
     oneEvent(button, "click"),
     oneEvent(dialog, "cancel"),
     onContextInvalidated.promise,
