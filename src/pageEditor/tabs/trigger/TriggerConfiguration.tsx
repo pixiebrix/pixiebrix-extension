@@ -30,6 +30,7 @@ import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
 import { type DebounceOptions } from "@/starterBricks/types";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import {
+  ReportModes,
   type Trigger,
   Triggers,
 } from "@/starterBricks/trigger/triggerStarterBrickTypes";
@@ -257,10 +258,10 @@ const TriggerConfiguration: React.FC<{
         }
         {...makeLockableFieldProps("Telemetry Mode", isLocked)}
       >
-        <option value="all">Report All Events and Errors</option>
-        <option value="once">Report First Event and Error</option>
-        <option value="error-once">Report First Error</option>
-        <option value="never">Never Report Events or Errors</option>
+        <option value={ReportModes.ALL}>Report All Events and Errors</option>
+        <option value={ReportModes.ONCE}>Report First Event and Error</option>
+        <option value={ReportModes.ERROR_ONCE}>Report First Error</option>
+        <option value={ReportModes.NEVER}>Never Report Events or Errors</option>
       </ConnectedFieldTemplate>
 
       <MatchRulesSection isLocked={isLocked} />

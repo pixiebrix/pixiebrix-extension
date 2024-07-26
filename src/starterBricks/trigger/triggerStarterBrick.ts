@@ -49,6 +49,7 @@ import {
   type AttachMode,
   type IntervalArgs,
   type ReportMode,
+  ReportModes,
   type TargetMode,
   type Trigger,
   Triggers,
@@ -107,8 +108,8 @@ export function getDefaultReportModeForTrigger(
   trigger: Nullishable<Trigger>,
 ): ReportMode {
   return trigger && USER_ACTION_TRIGGERS.includes(trigger)
-    ? "all"
-    : "error-once";
+    ? ReportModes.ALL
+    : ReportModes.ERROR_ONCE;
 }
 
 /**
@@ -235,19 +236,19 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     isError: boolean;
   }): boolean {
     switch (this.reportMode) {
-      case "once": {
+      case ReportModes.ONCE: {
         return !alreadyReported;
       }
 
-      case "error-once": {
+      case ReportModes.ERROR_ONCE: {
         return isError && !alreadyReported;
       }
 
-      case "never": {
+      case ReportModes.NEVER: {
         return false;
       }
 
-      case "all": {
+      case ReportModes.ALL: {
         return true;
       }
 
