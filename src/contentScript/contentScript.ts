@@ -30,6 +30,7 @@ import { onContextInvalidated } from "webext-events";
 import { logPromiseDuration } from "@/utils/promiseUtils";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { type Runtime } from "webextension-polyfill";
+import { init as contentScriptInit } from "./contentScriptCore";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
@@ -85,16 +86,7 @@ async function initContentScript() {
 
   setContentScriptState("installed");
 
-  // Keeping the import separate ensures that no side effects are run until this point
-  const contentScriptPromise = import(
-    /* webpackChunkName: "contentScriptCore" */ "./contentScriptCore"
-  );
-
-  // "imported" timing includes the parsing of the file, which can take 500-1000ms
-  void logPromiseDuration("contentScript: imported", contentScriptPromise);
-
-  const { init } = await contentScriptPromise;
-  await logPromiseDuration("contentScript: ready", init());
+  await logPromiseDuration("contentScript: ready", contentScriptInit());
   setContentScriptState("ready");
 
   onContextInvalidated.addListener(() => {
