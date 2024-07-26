@@ -55,7 +55,7 @@ type HookResult = Restrict & {
 /**
  * Hook for feature flags and organization restrictions.
  *
- * For permit/restrict, features will be restricted in the fetching/loading state
+ * For permit/restrict, features will be restricted in the fetching/loading state.
  */
 function useFlags(): HookResult {
   const queryState = useGetFeatureFlagsQuery();

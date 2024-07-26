@@ -29,8 +29,8 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
-import { flagOn } from "@/auth/featureFlagStorage";
 import { ALL_ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import useFlags from "@/hooks/useFlags";
 
 const sortedModComponentAdapters = sortBy(ALL_ADAPTERS, (x) => x.displayOrder);
 
@@ -59,6 +59,7 @@ const DropdownEntry: React.FunctionComponent<{
 const AddStarterBrickButton: React.FunctionComponent = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
   const sessionId = useSelector(selectSessionId);
+  const { flagOn } = useFlags();
 
   const addNewModComponent = useAddNewModComponent();
 
@@ -89,7 +90,7 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
           />
         ))
     );
-  }, []);
+  }, [flagOn]);
 
   return (
     <DropdownButton
