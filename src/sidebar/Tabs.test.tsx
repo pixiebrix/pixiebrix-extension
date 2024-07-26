@@ -18,7 +18,7 @@
 import React from "react";
 import Tabs from "@/sidebar/Tabs";
 import { render, screen, waitFor, within } from "@/sidebar/testHelpers";
-import { type SidebarEntries } from "@/types/sidebarTypes";
+import { type SidebarEntries, type SidebarEntry } from "@/types/sidebarTypes";
 import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
@@ -27,8 +27,14 @@ import userEvent from "@testing-library/user-event";
 import * as messengerApi from "@/contentScript/messenger/api";
 import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 mockAllApiEndpoints();
+
+jest.mock("@/contentScript/messenger/api", () => ({
+  ...jest.requireActual("@/contentScript/messenger/api"),
+  getReservedSidebarEntries: jest.fn(),
+}));
 
 const cancelFormSpy = jest.spyOn(messengerApi, "cancelForm");
 const hideSidebarSpy = jest.spyOn(window, "close").mockImplementation(() => {});
@@ -37,11 +43,15 @@ async function setupPanelsAndRender(options: {
   sidebarEntries?: Partial<SidebarEntries>;
   showModLauncher?: boolean;
   reservedSidebarEntries?: Partial<SidebarEntries>;
+  initialModComponentRef?: ModComponentRef;
+  initialClosedEntries?: SidebarEntry[];
 }) {
   const {
     sidebarEntries = {},
     showModLauncher = true,
     reservedSidebarEntries = {},
+    initialModComponentRef,
+    initialClosedEntries = [],
   } = options;
   jest.mocked(messengerApi.getReservedSidebarEntries).mockImplementation(
     () =>
@@ -56,8 +66,13 @@ async function setupPanelsAndRender(options: {
 
   const utils = render(<Tabs />, {
     setupRedux(dispatch) {
+      for (const closedEntry of initialClosedEntries) {
+        dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(closedEntry)));
+      }
+
       dispatch(
         sidebarSlice.actions.setInitialPanels({
+          initialModComponentRef,
           panels: [],
           staticPanels: [],
           temporaryPanels: [],
@@ -77,11 +92,6 @@ async function setupPanelsAndRender(options: {
 
   return utils;
 }
-
-jest.mock("@/contentScript/messenger/api", () => ({
-  ...jest.requireActual("@/contentScript/messenger/api"),
-  getReservedSidebarEntries: jest.fn(),
-}));
 
 describe("Tabs", () => {
   const panel = sidebarEntryFactory("panel");
@@ -317,6 +327,43 @@ describe("Tabs", () => {
         expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
       });
     });
+
+    it("shows initial panel", async () => {
+      await setupPanelsAndRender({
+        // Force panel2 to be active panel. Otherwise the first panel is active
+        initialModComponentRef: panel2.modComponentRef,
+        sidebarEntries: {
+          panels: [panel, panel2],
+          staticPanels: [],
+        },
+      });
+
+      expect(
+        screen.getByRole("tab", { name: /panel test 1/i }),
+      ).toHaveAttribute("aria-selected", "false");
+      expect(
+        screen.getByRole("tab", { name: /panel test 2/i }),
+      ).toHaveAttribute("aria-selected", "true");
+    });
+
+    it("un-hides initial panel", async () => {
+      await setupPanelsAndRender({
+        // Force panel2 to be active panel. Otherwise the first panel is active
+        initialModComponentRef: panel2.modComponentRef,
+        initialClosedEntries: [panel, panel2],
+        sidebarEntries: {
+          panels: [panel, panel2],
+          staticPanels: [],
+        },
+      });
+
+      expect(
+        screen.queryByRole("tab", { name: /panel test 1/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("tab", { name: /panel test 2/i }),
+      ).toHaveAttribute("aria-selected", "true");
+    });
   });
 
   describe("Temporary Panels", () => {
@@ -341,7 +388,7 @@ describe("Tabs", () => {
       });
     });
 
-    test("can close a tempoarary panel when mod launcher is unavailable", async () => {
+    test("can close a temporary panel when mod launcher is unavailable", async () => {
       await setupPanelsAndRender({
         sidebarEntries: { temporaryPanels: [temporaryPanel] },
       });

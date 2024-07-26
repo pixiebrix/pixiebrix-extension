@@ -49,13 +49,13 @@ class SetToolbarBadge extends EffectABC {
 
   async effect(
     { text }: BrickArgs<{ text: string }>,
-    { platform }: BrickOptions,
+    { platform, meta: { modComponentRef } }: BrickOptions,
   ): Promise<void> {
     if (isLoadedInIframe()) {
       throw new BusinessError("Cannot set toolbar badge from an iframe.");
     }
 
-    platform.badge.setText(text);
+    platform.badge.setText(text, { modComponentRef });
   }
 }
 

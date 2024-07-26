@@ -37,7 +37,11 @@ import {
 } from "@/store/sidebar/eventKeyUtils";
 import { remove, sortBy } from "lodash";
 import { castDraft } from "immer";
-import { getVisiblePanelCount } from "@/store/sidebar/utils";
+import {
+  eventKeyExists,
+  findInitialPanelEntry,
+  getVisiblePanelCount,
+} from "@/store/sidebar/sidebarUtils";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { type Nullishable } from "@/utils/nullishUtils";
 import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
@@ -46,23 +50,7 @@ import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel";
 import { initialSidebarState } from "@/store/sidebar/initialState";
 import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
-
-function eventKeyExists(
-  state: SidebarState,
-  query: Nullishable<string>,
-): boolean {
-  if (query == null) {
-    return false;
-  }
-
-  return (
-    state.forms.some((x) => eventKeyForEntry(x) === query) ||
-    state.temporaryPanels.some((x) => eventKeyForEntry(x) === query) ||
-    state.panels.some((x) => eventKeyForEntry(x) === query) ||
-    state.staticPanels.some((x) => eventKeyForEntry(x) === query) ||
-    eventKeyForEntry(state.modActivationPanel) === query
-  );
-}
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 function findNextActiveKey(
   state: SidebarState,
@@ -169,6 +157,7 @@ const sidebarSlice = createSlice({
     setInitialPanels(
       state,
       action: PayloadAction<{
+        initialModComponentRef?: Nullishable<ModComponentRef>;
         staticPanels: StaticPanelEntry[];
         panels: PanelEntry[];
         temporaryPanels: TemporaryPanelEntry[];
@@ -176,6 +165,18 @@ const sidebarSlice = createSlice({
         modActivationPanel: ModActivationPanelEntry | null;
       }>,
     ) {
+      // If an initial panel is provided, un-hide the initial panel (if hidden) and mark it as the active panel
+      const initialPanel = findInitialPanelEntry(
+        action.payload,
+        action.payload.initialModComponentRef,
+      );
+      let initialEventKey: string;
+      if (initialPanel) {
+        initialEventKey = eventKeyForEntry(initialPanel);
+        // eslint-disable-next-line security/detect-object-injection -- event key
+        state.closedTabs[initialEventKey] = false;
+      }
+
       /**
        * We need a visible count > 1 to prevent useHideEmptySidebar from closing it on first load. If there are no visible panels,
        * we'll show mod launcher. activatePanel then hides the modLauncher if there is another visible panel.
@@ -205,7 +206,7 @@ const sidebarSlice = createSlice({
             -- Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
             See: https://github.com/immerjs/immer/issues/839 */
             // @ts-ignore-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
-            defaultEventKey(state, state.closedTabs);
+            initialEventKey ?? defaultEventKey(state, state.closedTabs);
     },
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...

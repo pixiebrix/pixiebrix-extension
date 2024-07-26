@@ -1582,7 +1582,7 @@
     "./store/sidebar/thunks/removeFormPanel.ts",
     "./store/sidebar/thunks/removeTemporaryPanel.ts",
     "./store/sidebar/thunks/resolveTemporaryPanel.ts",
-    "./store/sidebar/utils.ts",
+    "./store/sidebar/sidebarUtils.ts",
     "./store/workshopSlice.ts",
     "./telemetry/BackgroundLogger.ts",
     "./telemetry/deployments.ts",
