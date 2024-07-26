@@ -45,50 +45,48 @@ interface ErrorReportOptions {
  * @param context Optional context for error telemetry
  * @param logToConsole Additionally log error to the browser console (default=true)
  */
-// export default function reportError(
-//   errorLike: unknown, // It might also be an ErrorEvent or string
-//   { context = {}, logToConsole = true }: ErrorReportOptions = {},
-// ): void {
-//   if (logToConsole) {
-//     console.error(errorLike, { context });
-//   }
-//
-//   if (shouldErrorBeIgnored(errorLike, context)) {
-//     console.debug("Ignoring error matching IGNORED_ERROR_PATTERNS", {
-//       error: errorLike,
-//     });
-//     return;
-//   }
-//
-//   try {
-//     _record(serializeError(selectError(errorLike)), {
-//       ...context,
-//       // Add on the reporter side of the message. On the receiving side it would always be `background`
-//       pageName: getContextName(),
-//       ...(typeof window === "undefined"
-//         ? { url: "", referrer: "" } // In case of service worker.
-//         : {
-//             // Record original current url and referrer here before it is lost in the service worker.
-//             url: window.location.href,
-//             referrer: document.referrer,
-//           }),
-//       // Network speed. "4g", "3g", "2g", "slow-2g" https://developer.mozilla.org/en-US/docs/Glossary/Effective_connection_type
-//       connectionType:
-//         // Casting effectiveType since isn't currently on the navigator type
-//         // TODO: remove this cast when the TS lib type for navigator is updated
-//         //  https://github.com/microsoft/TypeScript/issues/56962
-//         (navigator as unknown as { connection?: { effectiveType?: string } })
-//           ?.connection?.effectiveType || "unknown",
-//     });
-//   } catch (reportingError) {
-//     // The messenger does not throw async errors on "notifiers" but if this is
-//     // called in the background the call will be executed directly and it could
-//     // theoretically throw a synchronous error
-//     console.error("An error occurred when reporting an error", {
-//       originalError: errorLike,
-//       reportingError,
-//     });
-//   }
-// }
+export default function reportError(
+  errorLike: unknown, // It might also be an ErrorEvent or string
+  { context = {}, logToConsole = true }: ErrorReportOptions = {},
+): void {
+  if (logToConsole) {
+    console.error(errorLike, { context });
+  }
 
-export default function reportError() {}
+  if (shouldErrorBeIgnored(errorLike, context)) {
+    console.debug("Ignoring error matching IGNORED_ERROR_PATTERNS", {
+      error: errorLike,
+    });
+    return;
+  }
+
+  try {
+    _record(serializeError(selectError(errorLike)), {
+      ...context,
+      // Add on the reporter side of the message. On the receiving side it would always be `background`
+      pageName: getContextName(),
+      ...(typeof window === "undefined"
+        ? { url: "", referrer: "" } // In case of service worker.
+        : {
+            // Record original current url and referrer here before it is lost in the service worker.
+            url: window.location.href,
+            referrer: document.referrer,
+          }),
+      // Network speed. "4g", "3g", "2g", "slow-2g" https://developer.mozilla.org/en-US/docs/Glossary/Effective_connection_type
+      connectionType:
+        // Casting effectiveType since isn't currently on the navigator type
+        // TODO: remove this cast when the TS lib type for navigator is updated
+        //  https://github.com/microsoft/TypeScript/issues/56962
+        (navigator as unknown as { connection?: { effectiveType?: string } })
+          ?.connection?.effectiveType || "unknown",
+    });
+  } catch (reportingError) {
+    // The messenger does not throw async errors on "notifiers" but if this is
+    // called in the background the call will be executed directly and it could
+    // theoretically throw a synchronous error
+    console.error("An error occurred when reporting an error", {
+      originalError: errorLike,
+      reportingError,
+    });
+  }
+}
