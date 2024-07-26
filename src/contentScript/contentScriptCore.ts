@@ -45,6 +45,9 @@ import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import axios from "axios";
 import { initDeferredLoginController } from "@/contentScript/integrations/deferredLoginController";
 import { debounce } from "lodash";
+import { flagOn } from "@/auth/featureFlagStorage";
+
+const DISABLE_SANDBOX_SRCDOC_HACK_FLAG = "disable-iframe-srcdoc-sandbox-hack";
 
 setPlatform(contentScriptPlatform);
 
@@ -75,7 +78,7 @@ onUncaughtError((error) => {
  *
  * See https://issues.chromium.org/issues/355256366
  */
-const ensureSandboxedSrcdocIframeInjection = () => {
+const ensureSandboxedSrcdocIframeInjection = async () => {
   const applyFixToIframes = () => {
     // Use the faster querySelector first to check if there are any iframes that need fixing
     if (!document.querySelector("iframe[srcdoc][sandbox]")) {
@@ -94,6 +97,10 @@ const ensureSandboxedSrcdocIframeInjection = () => {
       }
     }
   };
+
+  if (await flagOn(DISABLE_SANDBOX_SRCDOC_HACK_FLAG)) {
+    return;
+  }
 
   const domObserver = new MutationObserver(
     debounce(applyFixToIframes, 800, {
@@ -121,7 +128,7 @@ export async function init(): Promise<void> {
   // Since 1.8.10, we inject the platform into the runtime
   initRuntime(brickRegistry);
   initDeferredLoginController();
-  ensureSandboxedSrcdocIframeInjection();
+  void ensureSandboxedSrcdocIframeInjection();
 
   initTelemetry();
   initToaster();
