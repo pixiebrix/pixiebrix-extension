@@ -206,6 +206,11 @@ describe("DeploymentsContext", () => {
       expect(axiosMock.history.post).toHaveLength(1);
     });
 
+    // The initial load will automatically remove the old mod.
+    const { options } = getReduxStore().getState();
+    expect((options as ModComponentState).extensions).toHaveLength(0);
+    expect(jest.mocked(reloadModsEveryTab)).toHaveBeenCalledTimes(1);
+
     await userEvent.click(screen.getByText("Update"));
 
     await waitFor(() => {
@@ -213,10 +218,10 @@ describe("DeploymentsContext", () => {
       expect(axiosMock.history.post).toHaveLength(3);
     });
 
-    const { options } = getReduxStore().getState();
-    expect((options as ModComponentState).extensions).toHaveLength(1);
+    const { options: updatedOptions } = getReduxStore().getState();
+    expect((updatedOptions as ModComponentState).extensions).toHaveLength(1);
 
-    expect(jest.mocked(reloadModsEveryTab)).toHaveBeenCalledTimes(1);
+    expect(jest.mocked(reloadModsEveryTab)).toHaveBeenCalledTimes(2);
   });
 
   it("automatically deactivates unassigned deployments", async () => {
