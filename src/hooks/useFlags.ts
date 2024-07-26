@@ -57,7 +57,7 @@ type HookResult = Restrict & {
  *
  * For permit/restrict, features will be restricted in the fetching/loading state.
  *
- * If not in a React context, use featureFlagStorage flagOn
+ * If not in a React context, use featureFlagStorage.flagOn.
  *
  * @see flagOn
  */

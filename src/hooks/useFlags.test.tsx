@@ -22,6 +22,7 @@ import useFlags from "@/hooks/useFlags";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { TEST_setAuthData, TEST_triggerListeners } from "@/auth/authStorage";
 import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
+// eslint-disable-next-line no-restricted-imports -- test file
 import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 
 const TestComponent: React.FC<{ name: string }> = ({ name, children }) => {
