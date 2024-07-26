@@ -80,6 +80,7 @@ export async function setupOffscreenDocument() {
 
   if (createOffscreenDocumentPromise == null) {
     try {
+      console.debug("Creating the offscreen document");
       createOffscreenDocumentPromise = chrome.offscreen.createDocument({
         url: "offscreen.html",
         // Our reason for creating an offscreen document does not fit nicely into options offered by the Chrome API, which
@@ -99,6 +100,7 @@ export async function setupOffscreenDocument() {
         errorMessage.includes("Only a single offscreen document may be created")
       ) {
         // The offscreen document has already been created
+        console.debug("Offscreen document already exists");
         return;
       }
 
@@ -111,7 +113,11 @@ export async function setupOffscreenDocument() {
     }
 
     createOffscreenDocumentPromise = null;
+    console.debug("Offscreen document created successfully");
   } else {
+    console.debug(
+      "Offscreen document creation in progress from a previous call",
+    );
     await createOffscreenDocumentPromise;
   }
 }
