@@ -63,6 +63,12 @@ async function rawFocusCaptureDialog({
   dialog.showModal();
 
   const anyPromiseWillCloseTheDialog = [
+    // In Chrome 127.0.6533.73, the `chrome.sidePanel.open()` API started throwing user gesture errors
+    // when a message from the content script was sent to the background script.
+    // The root cause appears to be a registered mousedown handler on the document that sends a message
+    // Adding `mousedown` here ensures that the sidePanel.open call is made before the message for the mousedown
+    // handler on the document is sent.
+    // See https://issues.chromium.org/issues/355266358 for more details.
     oneEvent(button, "mousedown"),
     oneEvent(button, "click"),
     oneEvent(dialog, "cancel"),
