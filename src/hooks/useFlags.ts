@@ -56,6 +56,10 @@ type HookResult = Restrict & {
  * Hook for feature flags and organization restrictions.
  *
  * For permit/restrict, features will be restricted in the fetching/loading state.
+ *
+ * If not in a React context, use featureFlagStorage flagOn
+ *
+ * @see flagOn
  */
 function useFlags(): HookResult {
   const queryState = useGetFeatureFlagsQuery();
