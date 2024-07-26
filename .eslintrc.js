@@ -299,6 +299,23 @@ module.exports = {
       },
     },
     {
+      files: ["./src/**/*.tsx", "./src/**/use*.ts"],
+      rules: {
+        "no-restricted-imports": [
+          "error",
+          extendNoRestrictedImports({
+            patterns: [
+              {
+                group: ["@/auth/featureFlagStorage"],
+                message:
+                  "Use useFlags instead of featureFlagStorage in React code.",
+              },
+            ],
+          }),
+        ],
+      },
+    },
+    {
       files: ["./src/pageEditor/**.tsx", "./src/sidebar/**.tsx"],
       rules: {
         "react/forbid-dom-props": forbiddenDomPropsConfig,
