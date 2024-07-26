@@ -50,7 +50,10 @@ import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { screen } from "@testing-library/react";
-import type { Trigger } from "@/starterBricks/trigger/triggerStarterBrickTypes";
+import {
+  ReportModes,
+  type Trigger,
+} from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { getPlatform } from "@/platform/platformContext";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
@@ -558,7 +561,7 @@ describe("triggerStarterBrick", () => {
       getPlatform(),
       starterBrickFactory({
         trigger: "load",
-        reportMode: "once",
+        reportMode: ReportModes.ONCE,
         showErrors: true,
       })({}),
     );
@@ -600,7 +603,7 @@ describe("triggerStarterBrick", () => {
       getPlatform(),
       starterBrickFactory({
         trigger: "load",
-        reportMode: "error-once",
+        reportMode: ReportModes.ERROR_ONCE,
         showErrors: true,
       })({}),
     );
@@ -638,7 +641,7 @@ describe("triggerStarterBrick", () => {
       getPlatform(),
       starterBrickFactory({
         trigger: "load",
-        reportMode: "never",
+        reportMode: ReportModes.NEVER,
         showErrors: true,
       })({}),
     );
@@ -665,7 +668,7 @@ describe("triggerStarterBrick", () => {
       getPlatform(),
       starterBrickFactory({
         trigger: "load",
-        reportMode: "all",
+        reportMode: ReportModes.ALL,
         showErrors: true,
       })({}),
     );
@@ -694,7 +697,7 @@ describe("triggerStarterBrick", () => {
       getPlatform(),
       starterBrickFactory({
         trigger: "load",
-        reportMode: "all",
+        reportMode: ReportModes.ALL,
         // Testing the default of false, for backward compatability
         // showErrors: false,
       })({}),
