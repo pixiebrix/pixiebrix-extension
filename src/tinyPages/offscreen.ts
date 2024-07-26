@@ -20,10 +20,8 @@ import { type TelemetryUser } from "@/telemetry/telemetryTypes";
 import { type SemVerString } from "@/types/registryTypes";
 import { type SerializedError } from "@/types/messengerTypes";
 import { deserializeError } from "serialize-error";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
-// Note that only one offscreen document can be active at a time, so it's unlikely that you'll want to create an
-// additional html document for that purpose.
-const OFFSCREEN_DOCUMENT_PATH = "offscreen.html";
 let createOffscreenDocumentPromise: Promise<void> | null = null;
 
 // Use optional chaining in case the chrome runtime is not available:
@@ -49,6 +47,13 @@ export type RecordErrorMessage = {
 // can be active at a time per extension, so it's unlikely that you'll want to introduce additional html documents for
 // that purpose.
 export async function setupOffscreenDocument() {
+  /*
+   * WARNING: The runtime.getContexts() api is crashing the browser under
+   *  certain conditions in chrome versions >127.0.0.0. See issue
+   *  tracker here: https://issues.chromium.org/issues/355625882
+   *
+   * Dangerous code to check if the offscreen document exists:
+
   const existingContexts = await chrome.runtime.getContexts({
     contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
     documentUrls: [chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH)],
@@ -58,17 +63,51 @@ export async function setupOffscreenDocument() {
     return;
   }
 
+   *
+   * Also, there is currently a function present in the chrome.offscreen api
+   * called hasDocument. This function is not documented in the chrome docs:
+   *   https://developer.chrome.com/docs/extensions/reference/api/offscreen#method
+   * Apparently, this function should not be treated as "stable," and may be
+   * removed in the future, if/when more functionality is added to the offscreen api:
+   *   https://issues.chromium.org/issues/40849649#:~:text=hasDocument()%20returns%20whether,in%20testing%20contexts.
+   *
+   * Currently, PixieBrix only uses an offscreen document in this one place,
+   * to support DataDog error reporting. So, the safest thing right now is to
+   * wrap the createDocument() in a try-catch and look for the error text to
+   * match "Only a single offscreen document may be created" to detect when
+   * the offscreen document has already been created.
+   */
+
   if (createOffscreenDocumentPromise == null) {
-    createOffscreenDocumentPromise = chrome.offscreen.createDocument({
-      url: "offscreen.html",
-      // Our reason for creating an offscreen document does not fit nicely into options offered by the Chrome API, which
-      // is error telemetry as of 1.8.13 (we use this as a workaround for Datadog SDK service worker limitations).
-      // We chose BLOBS because it's the closest to interaction with error objects.
-      // See https://developer.chrome.com/docs/extensions/reference/api/offscreen#reasons
-      reasons: [chrome.offscreen.Reason.BLOBS],
-      justification:
-        "Error telemetry SDK usage that is incompatible with service workers",
-    });
+    try {
+      createOffscreenDocumentPromise = chrome.offscreen.createDocument({
+        url: "offscreen.html",
+        // Our reason for creating an offscreen document does not fit nicely into options offered by the Chrome API, which
+        // is error telemetry as of 1.8.13 (we use this as a workaround for Datadog SDK service worker limitations).
+        // We chose BLOBS because it's the closest to interaction with error objects.
+        // See https://developer.chrome.com/docs/extensions/reference/api/offscreen#reasons
+        reasons: [chrome.offscreen.Reason.BLOBS],
+        justification:
+          "Error telemetry SDK usage that is incompatible with service workers",
+      });
+    } catch (error) {
+      const errorMessage = getErrorMessage(error);
+      if (
+        errorMessage.includes("Only a single offscreen document may be created")
+      ) {
+        // The offscreen document has already been created
+        createOffscreenDocumentPromise = null;
+        return;
+      }
+
+      throw new Error(
+        "Error occurred while creating the offscreen document used for error reporting",
+        {
+          cause: error,
+        },
+      );
+    }
+
     await createOffscreenDocumentPromise;
     createOffscreenDocumentPromise = null;
   } else {
