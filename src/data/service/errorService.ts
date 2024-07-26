@@ -162,7 +162,7 @@ export async function reportToErrorService(
     extension_uuid: flatContext.modComponentId,
     extension_label: flatContext.modComponentLabel,
     step_label: flatContext.label,
-    user_agent: window.navigator.userAgent,
+    user_agent: navigator.userAgent,
     user_agent_extension_version: extensionVersion,
     is_application_error: !selectSpecificError(error, BusinessError),
     error_data: data,
