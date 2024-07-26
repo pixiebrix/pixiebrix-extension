@@ -99,7 +99,6 @@ export async function setupOffscreenDocument() {
       if (
         errorMessage.includes("Only a single offscreen document may be created")
       ) {
-        // The offscreen document has already been created
         console.debug("Offscreen document already exists");
         return;
       }
