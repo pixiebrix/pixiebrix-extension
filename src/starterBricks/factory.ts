@@ -44,20 +44,22 @@ const TYPE_MAP: Record<StarterBrickType, Factory> = {
   quickBarProvider: deserializeDynamicQuickBar,
 } as const;
 
-export function fromJS(config: StarterBrickDefinitionLike): StarterBrick {
-  if (config.kind !== DefinitionKinds.STARTER_BRICK) {
+export function fromJS(definition: StarterBrickDefinitionLike): StarterBrick {
+  if (definition.kind !== DefinitionKinds.STARTER_BRICK) {
     // Is `never` due to check, but needed because this method is called dynamically
-    const exhaustiveCheck: never = config.kind;
+    const exhaustiveCheck: never = definition.kind;
     throw new Error(
       `Expected kind ${DefinitionKinds.STARTER_BRICK}, got ${exhaustiveCheck}`,
     );
   }
 
-  if (!Object.hasOwn(TYPE_MAP, config.definition.type)) {
-    throw new Error(`Unexpected starter brick type: ${config.definition.type}`);
+  if (!Object.hasOwn(TYPE_MAP, definition.definition.type)) {
+    throw new Error(
+      `Unexpected starter brick type: ${definition.definition.type}`,
+    );
   }
 
   // TODO: Find a better solution than casting to any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- the factory methods perform validation
-  return TYPE_MAP[config.definition.type](getPlatform(), config as any);
+  return TYPE_MAP[definition.definition.type](getPlatform(), definition as any);
 }
