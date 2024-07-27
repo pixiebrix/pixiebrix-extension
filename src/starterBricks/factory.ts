@@ -15,25 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromJS as deserializeMenuItem } from "@/starterBricks/button/buttonStarterBrick";
+import { fromJS as deserializeButton } from "@/starterBricks/button/buttonStarterBrick";
 import { fromJS as deserializeTrigger } from "@/starterBricks/trigger/triggerStarterBrick";
 import { fromJS as deserializeContextMenu } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { fromJS as deserializeSidebar } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import { fromJS as deserializeQuickBar } from "@/starterBricks/quickBar/quickBarStarterBrick";
-import { fromJS as deserializeQuickBarProvider } from "@/starterBricks/quickBarProvider/quickBarProviderStarterBrick";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import { fromJS as deserializeDynamicQuickBar } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarStarterBrick";
+import {
+  type StarterBrick,
+  type StarterBrickType,
+} from "@/types/starterBrickTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { getPlatform } from "@/platform/platformContext";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 
-const TYPE_MAP = {
-  menuItem: deserializeMenuItem,
+type Factory = (
+  platform: PlatformProtocol,
+  definition: StarterBrickDefinitionLike,
+) => StarterBrick;
+
+const TYPE_MAP: Record<StarterBrickType, Factory> = {
+  menuItem: deserializeButton,
   trigger: deserializeTrigger,
   contextMenu: deserializeContextMenu,
   actionPanel: deserializeSidebar,
   quickBar: deserializeQuickBar,
-  quickBarProvider: deserializeQuickBarProvider,
-};
+  quickBarProvider: deserializeDynamicQuickBar,
+} as const;
 
 export function fromJS(config: StarterBrickDefinitionLike): StarterBrick {
   if (config.kind !== DefinitionKinds.STARTER_BRICK) {

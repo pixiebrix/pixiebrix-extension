@@ -18,7 +18,7 @@
 import { validateRegistryId } from "@/types/helpers";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
 import { define } from "cooky-cutter";
-import { fromJS } from "@/starterBricks/quickBarProvider/quickBarProviderStarterBrick";
+import { fromJS } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarStarterBrick";
 import { type BrickPipeline } from "@/bricks/types";
 import {
   getDocument,
@@ -38,15 +38,14 @@ import defaultActions, {
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
-
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { starterBrickDefinitionFactory as genericExtensionPointFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { starterBrickDefinitionFactory as genericStarterBrickFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { act } from "@testing-library/react";
 import { getPlatform } from "@/platform/platformContext";
 import {
-  type QuickBarProviderDefinition,
-  type QuickBarProviderConfig,
-} from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
+  type DynamicQuickBarDefinition,
+  type DynamicQuickBarConfig,
+} from "@/starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 const rootReaderId = validateRegistryId("test/root-reader");
@@ -57,8 +56,8 @@ jest.mock("@/auth/featureFlagStorage", () => ({
 }));
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
-  genericExtensionPointFactory({
-    definition: define<QuickBarProviderDefinition>({
+  genericStarterBrickFactory({
+    definition: define<DynamicQuickBarDefinition>({
       type: StarterBrickTypes.DYNAMIC_QUICK_BAR,
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
@@ -68,23 +67,23 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const modComponentFactory = define<
-  HydratedModComponent<QuickBarProviderConfig>
->({
-  apiVersion: "v3",
-  _hydratedModComponentBrand: undefined as never,
-  id: uuidSequence,
-  extensionPointId: (n: number) =>
-    validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: undefined,
-  label: "Test Extension",
-  config: define<QuickBarProviderConfig>({
-    rootAction: () => ({
-      title: "Test Root Action",
+const modComponentFactory = define<HydratedModComponent<DynamicQuickBarConfig>>(
+  {
+    apiVersion: "v3",
+    _hydratedModComponentBrand: undefined as never,
+    id: uuidSequence,
+    extensionPointId: (n: number) =>
+      validateRegistryId(`test/starter-brick-${n}`),
+    _recipe: undefined,
+    label: "Test Extension",
+    config: define<DynamicQuickBarConfig>({
+      rootAction: () => ({
+        title: "Test Root Action",
+      }),
+      generator: () => [] as BrickPipeline,
     }),
-    generator: () => [] as BrickPipeline,
-  }),
-});
+  },
+);
 
 const rootReader = new RootReader();
 
@@ -98,7 +97,7 @@ beforeAll(async () => {
 const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
   .length;
 
-describe("quickBarProviderExtension", () => {
+describe("dynamicQuickBarStarterBrick", () => {
   beforeEach(() => {
     brickRegistry.clear();
     brickRegistry.register([rootReader]);
@@ -106,7 +105,7 @@ describe("quickBarProviderExtension", () => {
     rootReader.ref = null;
   });
 
-  it("quick bar provider adds root action instantly", async () => {
+  it("dynamic quick bar adds root action instantly", async () => {
     const user = userEvent.setup();
 
     const starterBrick = fromJS(getPlatform(), starterBrickFactory());

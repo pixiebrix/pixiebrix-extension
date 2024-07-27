@@ -41,7 +41,7 @@ import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import {
   QuickBarQueryReader,
   quickbarQueryReaderShim,
-} from "@/starterBricks/quickBarProvider/quickBarQueryReader";
+} from "@/starterBricks/dynamicQuickBar/quickBarQueryReader";
 import { type Reader } from "@/types/bricks/readerTypes";
 import {
   type StarterBrick,
@@ -61,20 +61,20 @@ import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { selectEventData } from "@/telemetry/deployments";
 import {
-  type QuickBarProviderDefaultOptions,
-  type QuickBarProviderConfig,
-  type QuickBarProviderDefinition,
-} from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
+  type DynamicQuickBarDefaultOptions,
+  type DynamicQuickBarConfig,
+  type DynamicQuickBarDefinition,
+} from "@/starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import {
   getModComponentRef,
   mapModComponentToMessageContext,
 } from "@/utils/modUtils";
 
-export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<QuickBarProviderConfig> {
-  static isQuickBarProviderStarterBrick(
+export abstract class DynamicQuickBarStarterBrickABC extends StarterBrickABC<DynamicQuickBarConfig> {
+  static isDynamicQuickBarStarterBrick(
     starterBrick: StarterBrick,
-  ): starterBrick is QuickBarProviderStarterBrickABC {
+  ): starterBrick is DynamicQuickBarStarterBrickABC {
     return (
       /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- Need to access a type specific property (QuickBarProviderStarterBrickABC._definition) on a base-typed entity (StarterBrick) */
       (starterBrick as any)?._definition?.type ===
@@ -117,7 +117,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   );
 
   async getBricks(
-    modComponent: HydratedModComponent<QuickBarProviderConfig>,
+    modComponent: HydratedModComponent<DynamicQuickBarConfig>,
   ): Promise<Brick[]> {
     return collectAllBricks(modComponent.config.generator);
   }
@@ -229,7 +229,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
    * Add a QuickBar action for mod component
    */
   private async registerActionProvider(
-    modComponent: HydratedModComponent<QuickBarProviderConfig>,
+    modComponent: HydratedModComponent<DynamicQuickBarConfig>,
   ): Promise<void> {
     const { generator, rootAction } = modComponent.config;
 
@@ -324,18 +324,18 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   }
 }
 
-class RemoteQuickBarProviderStarterBrick extends QuickBarProviderStarterBrickABC {
-  private readonly _definition: QuickBarProviderDefinition;
+class RemoteDynamicQuickBarStarterBrick extends DynamicQuickBarStarterBrickABC {
+  private readonly _definition: DynamicQuickBarDefinition;
 
   public readonly permissions: Permissions.Permissions;
 
   public readonly documentUrlPatterns: Manifest.MatchPattern[];
 
-  public readonly rawConfig: StarterBrickDefinitionLike<QuickBarProviderDefinition>;
+  public readonly rawConfig: StarterBrickDefinitionLike<DynamicQuickBarDefinition>;
 
   constructor(
     platform: PlatformProtocol,
-    config: StarterBrickDefinitionLike<QuickBarProviderDefinition>,
+    config: StarterBrickDefinitionLike<DynamicQuickBarDefinition>,
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
@@ -378,19 +378,19 @@ class RemoteQuickBarProviderStarterBrick extends QuickBarProviderStarterBrickABC
     return mergeReaders(this._definition.reader);
   }
 
-  public override get defaultOptions(): QuickBarProviderDefaultOptions {
+  public override get defaultOptions(): DynamicQuickBarDefaultOptions {
     return this._definition.defaultOptions ?? {};
   }
 }
 
 export function fromJS(
   platform: PlatformProtocol,
-  config: StarterBrickDefinitionLike<QuickBarProviderDefinition>,
+  config: StarterBrickDefinitionLike<DynamicQuickBarDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== StarterBrickTypes.DYNAMIC_QUICK_BAR) {
     throw new Error(`Expected type=quickBarProvider, got ${type}`);
   }
 
-  return new RemoteQuickBarProviderStarterBrick(platform, config);
+  return new RemoteDynamicQuickBarStarterBrick(platform, config);
 }
