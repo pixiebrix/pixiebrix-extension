@@ -172,7 +172,7 @@ class AddQuickBarAction extends EffectABC {
       subtitle,
       section,
       priority,
-      // Defaults to a box; match behavior from Quick Bar Action extension point
+      // Defaults to a box; match behavior from Quick Bar Action starter brick
       icon: iconConfig ? (
         <Icon icon={iconConfig.id} library={iconConfig.library} />
       ) : (
