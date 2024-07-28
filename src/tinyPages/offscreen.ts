@@ -34,10 +34,12 @@ import {
   type RecordErrorMessage,
   type StartAudioCaptureMessage,
 } from "@/tinyPages/offscreenProtocol";
+import { compact } from "lodash";
 
 type MediaClient = {
   liveClient: LiveClient;
   recorder: MediaRecorder;
+  streams: MediaStream[];
 };
 
 let mediaClient: MediaClient | null;
@@ -89,35 +91,19 @@ async function startRecording({
   apiKey,
   tabId,
   tabStreamId,
-  // TODO: implement controlling whether microphone is captured
   captureMicrophone,
 }: StartAudioCaptureMessage["data"]): Promise<void> {
   if (mediaClient) {
-    throw new Error("Connection already exists");
+    throw new Error("Deepgram connection already exists");
   }
 
-  // NOTE: call to get microphone will fail if extension doesn't already have microphone permissions
-  // https://github.com/GoogleChrome/chrome-extensions-samples/issues/627#issuecomment-1737511452
-  // https://github.com/GoogleChrome/chrome-extensions-samples/issues/821
-  const micStream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: false,
-  });
-
-  const tabStream = await navigator.mediaDevices.getUserMedia({
-    audio: {
-      // @ts-expect-error -- incorrect types
-      mandatory: {
-        chromeMediaSource: "tab",
-        chromeMediaSourceId: tabStreamId,
-      },
-    },
-    video: false,
-  });
+  // Combine the mic and tab streams
+  const context = new AudioContext();
+  const analysisDestination = context.createMediaStreamDestination();
 
   const client = createClient(apiKey);
 
-  // TODO: determine use of multichannel vs. diarization: https://developers.deepgram.com/docs/diarization
+  // XXX: determine use of multichannel vs. diarization: https://developers.deepgram.com/docs/diarization
   // https://developers.deepgram.com/reference/stt-streaming-feature-overview
   const liveClient = client.listen.live({ model: "nova", multichannel: true });
 
@@ -139,16 +125,41 @@ async function startRecording({
     connectPromise.resolve();
   });
 
-  // Continue to play the captured audio to the user
-  const context = new AudioContext();
-  const micSource = context.createMediaStreamSource(micStream);
-  const tabSource = context.createMediaStreamSource(tabStream);
-  tabSource.connect(context.destination);
+  let micStream: MediaStream | null = null;
 
-  // Combine the mic and tab streams
-  const analysisDestination = context.createMediaStreamDestination();
-  micSource.connect(analysisDestination);
-  tabSource.connect(analysisDestination);
+  if (captureMicrophone) {
+    // NOTE: call to get microphone will fail if extension doesn't already have microphone permissions
+    // https://github.com/GoogleChrome/chrome-extensions-samples/issues/627#issuecomment-1737511452
+    // https://github.com/GoogleChrome/chrome-extensions-samples/issues/821
+    micStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: false,
+    });
+
+    const micSource = context.createMediaStreamSource(micStream);
+    micSource.connect(analysisDestination);
+  }
+
+  let tabStream: MediaStream | null = null;
+
+  if (tabStreamId) {
+    tabStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        // @ts-expect-error -- incorrect types
+        mandatory: {
+          chromeMediaSource: "tab",
+          chromeMediaSourceId: tabStreamId,
+        },
+      },
+      video: false,
+    });
+
+    const tabSource = context.createMediaStreamSource(tabStream);
+    tabSource.connect(analysisDestination);
+
+    // Continue to play the captured audio to the user
+    tabSource.connect(context.destination);
+  }
 
   const recorder = new MediaRecorder(analysisDestination.stream);
 
@@ -162,7 +173,11 @@ async function startRecording({
   });
 
   // Set module variable before async connection to avoid repeat connections
-  mediaClient = { liveClient, recorder };
+  mediaClient = {
+    liveClient,
+    recorder,
+    streams: compact([micStream, tabStream]),
+  };
 
   // Wait to start recording until we're connected to deepgram
   await connectPromise.promise;
@@ -178,15 +193,21 @@ async function stopRecording(): Promise<void> {
     return;
   }
 
-  const { recorder, liveClient } = mediaClient;
+  const { recorder, liveClient, streams } = mediaClient;
 
   recorder.stop();
   liveClient.finish();
 
-  // TODO: double-check stopping the recorder doesn't disrupt the dialer on the page
   // Stop so the recording icon goes away
   for (const track of recorder.stream.getTracks()) {
     track.stop();
+  }
+
+  // :shrug: recording icon wasn't going away when just stopping tracks via recorder.stream
+  for (const stream of streams) {
+    for (const track of stream.getTracks()) {
+      track.stop();
+    }
   }
 
   mediaClient = null;

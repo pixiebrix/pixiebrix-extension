@@ -138,7 +138,7 @@ export interface PlatformProtocol {
   get audio(): AudioProtocol;
 
   /**
-   * The audio/screenshot capture protocol for the platform.
+   * The audio/screen capture protocol for the platform.
    * @since 2.0.7
    */
   get capture(): CaptureProtocol;

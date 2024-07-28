@@ -19,7 +19,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { type GetRecordingTabIdMessage } from "@/tinyPages/offscreenProtocol";
 
 // Only one offscreen document can be active at a time. We use offscreen documents for error telemetry, so we won't
-// be able to use different documents for different purposes.
+// be able to use different documents for different purposes because the error telemetry document needs to be active.
 const OFFSCREEN_DOCUMENT_PATH = "offscreen.html";
 
 // Manually manage promise vs. using pMemoize to support re-adding if the offscreen document has closed

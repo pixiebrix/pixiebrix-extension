@@ -18,7 +18,7 @@
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 /**
- * Protocol for capturing screenshots and audio.
+ * Protocol for capturing the screen and audio.
  * @since 2.0.7
  */
 export type CaptureProtocol = {
@@ -31,7 +31,6 @@ export type CaptureProtocol = {
    * [Experimental] Start capturing audio.
    * @since 2.0.7
    */
-  // XXX: move to a `capture` protocol?
   startAudioCapture(
     integrationConfig: SanitizedIntegrationConfig,
     options: {
@@ -44,6 +43,5 @@ export type CaptureProtocol = {
    * [Experimental] Stop capturing audio.
    * @since 2.0.7
    */
-  // XXX: move to a `capture` protocol?
   stopAudioCapture(): Promise<void>;
 };

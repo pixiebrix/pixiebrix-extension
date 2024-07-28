@@ -31,6 +31,7 @@ import {
   type StopAudioCaptureMessage,
 } from "@/tinyPages/offscreenProtocol";
 import { assertDeepgramIntegrationConfig } from "@/contrib/deepgram/deepgramTypes";
+import { BusinessError } from "@/errors/businessErrors";
 
 /**
  * Whether audio is currently being recorded. Kept in sync across worker reloads via the offscreen document hash.
@@ -93,11 +94,10 @@ export async function startAudioCapture(
   }
 
   if (audioCaptureTabId && audioCaptureTabId !== tabId) {
-    // TODO: stop capture and recursively call startAudioCapture
-    throw new Error("Switching recording tab is not implemented");
+    throw new BusinessError("Already recording audio from another tab");
   }
 
-  // Get a MediaStream for the active tab.
+  // Get a MediaStream for the tab
   let tabStreamId: Nullishable<string>;
   if (captureTab) {
     // XXX: fix typings, so we can use await on chrome API directly here

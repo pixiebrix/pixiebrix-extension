@@ -55,6 +55,8 @@ export type StopAudioCaptureMessage = {
   target: "offscreen";
 };
 
+// XXX: ideally would use chrome.runtime.getContexts and look at the URL of the event page document. But must message
+// due to the crashing bug in runtime.getContexts
 export type GetRecordingTabIdMessage = {
   type: "recording-tab-id";
   target: "offscreen";
