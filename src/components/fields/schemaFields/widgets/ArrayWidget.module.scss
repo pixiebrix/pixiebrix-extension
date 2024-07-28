@@ -23,7 +23,10 @@
   // Match the padding in TemplateToggleWidget.module.scss
   padding: 0.25rem !important;
 
+  // Match the style in OptionIcon.module.scss
   svg {
-    height: 1.2em;
+    height: 1.2rem;
+    vertical-align: text-bottom;
+    margin-top: 2px;
   }
 }
