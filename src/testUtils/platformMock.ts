@@ -40,8 +40,11 @@ export const platformMock: PlatformProtocol = {
   form: jest.fn(),
   audio: {
     play: jest.fn(),
-    startCapture: jest.fn(),
-    stopCapture: jest.fn(),
+  },
+  capture: {
+    captureScreenshot: jest.fn(),
+    startAudioCapture: jest.fn(),
+    stopAudioCapture: jest.fn(),
   },
   badge: {
     setText: jest.fn(),

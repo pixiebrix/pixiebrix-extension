@@ -110,7 +110,7 @@ declare global {
     QUERY_TABS: typeof browser.tabs.query;
     FETCH_FEATURE_FLAGS: typeof fetchFeatureFlags;
 
-    CAPTURE_TAB: typeof captureTab;
+    CAPTURE_TAB_SCREENSHOT: typeof captureTab;
     AUDIO_CAPTURE_START: typeof startAudioCapture;
     AUDIO_CAPTURE_STOP: typeof stopAudioCapture;
     AUDIO_CAPTURE_EVENT: typeof forwardAudioCaptureEvent;
@@ -188,7 +188,7 @@ export default function registerMessenger(): void {
     QUERY_TABS: browser.tabs.query,
     FETCH_FEATURE_FLAGS: fetchFeatureFlags,
 
-    CAPTURE_TAB: captureTab,
+    CAPTURE_TAB_SCREENSHOT: captureTab,
     AUDIO_CAPTURE_START: startAudioCapture,
     AUDIO_CAPTURE_STOP: stopAudioCapture,
     AUDIO_CAPTURE_EVENT: forwardAudioCaptureEvent,

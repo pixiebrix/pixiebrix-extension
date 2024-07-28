@@ -38,6 +38,7 @@ import type { TextSelectionMenuProtocol } from "@/platform/platformTypes/textSel
 import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
 import type { QuickBarProtocol } from "@/platform/platformTypes/quickBarProtocol";
 import type { ModComponentRef } from "@/types/modComponentTypes";
+import type { CaptureProtocol } from "@/platform/platformTypes/captureProtocol";
 
 /**
  * A protocol for the platform/environment running the mods.
@@ -135,6 +136,12 @@ export interface PlatformProtocol {
    * @since 1.8.10
    */
   get audio(): AudioProtocol;
+
+  /**
+   * The audio/screenshot capture protocol for the platform.
+   * @since 2.0.7
+   */
+  get capture(): CaptureProtocol;
 
   /**
    * The clipboard protocol for the platform.

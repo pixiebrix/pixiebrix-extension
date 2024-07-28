@@ -15,13 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+
 /**
- * Protocol for playing/capturing audio.
- * @since 1.8.10
+ * Protocol for capturing screenshots and audio.
+ * @since 2.0.7
  */
-export type AudioProtocol = {
+export type CaptureProtocol = {
   /**
-   * Play a known sound effect.
+   * Capture a screenshot of the current page as a PNG data URL.
    */
-  play(soundEffect: string): Promise<void>;
+  captureScreenshot(): Promise<string>;
+
+  /**
+   * [Experimental] Start capturing audio.
+   * @since 2.0.7
+   */
+  // XXX: move to a `capture` protocol?
+  startAudioCapture(
+    integrationConfig: SanitizedIntegrationConfig,
+    options: {
+      captureMicrophone: boolean;
+      captureSystem: boolean;
+    },
+  ): Promise<void>;
+
+  /**
+   * [Experimental] Stop capturing audio.
+   * @since 2.0.7
+   */
+  // XXX: move to a `capture` protocol?
+  stopAudioCapture(): Promise<void>;
 };

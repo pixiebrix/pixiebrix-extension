@@ -40,7 +40,7 @@ export const traces = {
   clearAll: getNotifier("CLEAR_ALL_TRACES", bg),
 };
 
-export const captureTab = getMethod("CAPTURE_TAB", bg);
+export const captureTabScreenshot = getMethod("CAPTURE_TAB_SCREENSHOT", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 

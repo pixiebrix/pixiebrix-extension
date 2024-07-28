@@ -71,7 +71,7 @@ export class StartCaptureAudioEffect extends EffectABC {
     { platform }: BrickOptions,
   ): Promise<void> {
     // XXX: consider showing popover to get user to confirm capture?
-    await platform.audio.startCapture(integrationConfig, {
+    await platform.capture.startAudioCapture(integrationConfig, {
       captureMicrophone,
       captureSystem,
     });
@@ -92,6 +92,6 @@ export class StopCaptureAudioEffect extends EffectABC {
   inputSchema: Schema = minimalSchemaFactory();
 
   async effect(_args: BrickArgs, { platform }: BrickOptions): Promise<void> {
-    await platform.audio.stopCapture();
+    await platform.capture.stopAudioCapture();
   }
 }

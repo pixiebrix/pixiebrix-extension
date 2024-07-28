@@ -100,7 +100,7 @@ export async function startAudioCapture(
   // Get a MediaStream for the active tab.
   let tabStreamId: Nullishable<string>;
   if (captureTab) {
-    // TODO: fix typings so we can use await on chrome API directly here
+    // XXX: fix typings, so we can use await on chrome API directly here
     tabStreamId = await new Promise<string>((resolve) => {
       chrome.tabCapture.getMediaStreamId(
         { targetTabId: tabId },
