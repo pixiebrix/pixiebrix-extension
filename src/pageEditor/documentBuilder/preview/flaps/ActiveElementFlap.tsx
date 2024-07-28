@@ -20,12 +20,14 @@ import cx from "classnames";
 import SelectParentIcon from "@/icons/select-parent.svg?loadAsComponent";
 import ArrowUpwardIcon from "@/icons/arrow-upward.svg?loadAsComponent";
 import ArrowDownwardIcon from "@/icons/arrow-downward.svg?loadAsComponent";
+import DuplicateIcon from "@/icons/duplicate.svg?loadAsComponent";
 import DeleteIcon from "@/icons/delete.svg?loadAsComponent";
 import useDeleteElement from "@/pageEditor/documentBuilder/hooks/useDeleteElement";
 import useSelectParentElement from "@/pageEditor/documentBuilder/hooks/useSelectParentElement";
 import useMoveWithinParent from "@/pageEditor/documentBuilder/hooks/useMoveWithinParent";
 import styles from "./ActiveElementFlap.module.scss";
 import flapStyles from "./Flaps.module.scss";
+import useDuplicateElement from "@/pageEditor/documentBuilder/hooks/useDuplicateElement";
 
 type ActiveElementFlapProps = {
   className?: string;
@@ -39,14 +41,8 @@ const ActiveElementFlap: React.FunctionComponent<ActiveElementFlapProps> = ({
   elementName,
 }) => {
   const selectParent = useSelectParentElement();
-  const onSelectParent = () => {
-    selectParent(elementName);
-  };
-
   const deleteElement = useDeleteElement(documentBodyName);
-  const onDelete = async () => {
-    await deleteElement(elementName);
-  };
+  const duplicateElement = useDuplicateElement(documentBodyName);
 
   const { canMoveUp, canMoveDown, moveElement } =
     useMoveWithinParent(documentBodyName);
@@ -56,7 +52,9 @@ const ActiveElementFlap: React.FunctionComponent<ActiveElementFlapProps> = ({
       <SelectParentIcon
         className={styles.icon}
         role="button"
-        onClick={onSelectParent}
+        onClick={() => {
+          selectParent(elementName);
+        }}
       />
 
       <ArrowUpwardIcon
@@ -81,7 +79,21 @@ const ActiveElementFlap: React.FunctionComponent<ActiveElementFlapProps> = ({
         }}
       />
 
-      <DeleteIcon className={styles.icon} role="button" onClick={onDelete} />
+      <DuplicateIcon
+        className={styles.icon}
+        role="button"
+        onClick={async () => {
+          await duplicateElement(elementName);
+        }}
+      />
+
+      <DeleteIcon
+        className={styles.icon}
+        role="button"
+        onClick={async () => {
+          await deleteElement(elementName);
+        }}
+      />
     </div>
   );
 };
