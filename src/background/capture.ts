@@ -17,19 +17,20 @@
 
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { type MessengerMeta, type Sender } from "webext-messenger";
-import { type SanitizedConfig } from "@/integrations/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type JsonObject } from "type-fest";
-import {
-  type StartAudioCaptureMessage,
-  type StopAudioCaptureMessage,
-} from "@/tinyPages/offscreen";
 import { emitAudioEvent } from "@/contentScript/messenger/api";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import {
   ensureOffscreenDocument,
-  getOffscreenDocument,
-  getRecordingTab,
+  getRecordingTabId,
 } from "@/tinyPages/offscreenDocumentController";
+import { integrationConfigLocator } from "@/background/integrationConfigLocator";
+import {
+  type StartAudioCaptureMessage,
+  type StopAudioCaptureMessage,
+} from "@/tinyPages/offscreenProtocol";
+import { assertDeepgramIntegrationConfig } from "@/contrib/deepgram/deepgramTypes";
 
 /**
  * Whether audio is currently being recorded. Kept in sync across worker reloads via the offscreen document hash.
@@ -64,27 +65,26 @@ function getSenderTabId(sender: Sender): number {
 export async function startAudioCapture(
   this: MessengerMeta,
   {
-    // TODO: take an integration config for controlling which deepgram account to use
-    integrationConfig,
+    integrationConfig: { id: configId },
     captureMicrophone,
     captureTab,
   }: {
-    integrationConfig: SanitizedConfig;
+    integrationConfig: SanitizedIntegrationConfig;
     captureMicrophone: boolean;
     captureTab: boolean;
   },
 ): Promise<void> {
+  const integrationConfig =
+    await integrationConfigLocator.findIntegrationConfig(configId);
+  assertDeepgramIntegrationConfig(integrationConfig);
+
   const sender = this.trace[0];
   assertNotNullish(sender, "Expected sender from webext-messenger");
   const tabId = getSenderTabId(sender);
 
-  const offscreenDocument = await getOffscreenDocument();
-
-  if (offscreenDocument) {
-    // Re-sync background worker state with event page state. (Because the background worker might have restarted.
-    // since the offscreen document was created.)
-    audioCaptureTabId = await getRecordingTab();
-  }
+  // Re-sync background worker state with event page state. (Because the background worker might have restarted.
+  // since the offscreen document was created.)
+  audioCaptureTabId = await getRecordingTabId();
 
   if (audioCaptureTabId === tabId) {
     // NOTE: not checking if capture args are the same
@@ -119,6 +119,7 @@ export async function startAudioCapture(
     type: "start-recording",
     target: "offscreen",
     data: {
+      apiKey: integrationConfig.config.apiKey,
       tabId,
       tabStreamId,
       captureMicrophone,

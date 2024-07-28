@@ -17,14 +17,13 @@
 
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
-import type { SanitizedConfig } from "@/integrations/integrationTypes";
-import { tabCapture } from "@/background/messenger/api";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { minimalSchemaFactory, propertiesToSchema } from "@/utils/schemaUtils";
+import { DEEPGRAM_INTEGRATION_ID } from "@/contrib/deepgram/deepgramTypes";
 
-const DEEPGRAM_INTEGRATION_REF =
-  "https://app.pixiebrix.com/schemas/services/deepgram/api";
+const DEEPGRAM_INTEGRATION_REF = `https://app.pixiebrix.com/schemas/services/${DEEPGRAM_INTEGRATION_ID}`;
 
 export class StartCaptureAudioEffect extends EffectABC {
   static BRICK_ID = validateRegistryId(
@@ -35,13 +34,12 @@ export class StartCaptureAudioEffect extends EffectABC {
     super(
       StartCaptureAudioEffect.BRICK_ID,
       "[Experimental] Capture Audio",
-      "Start capturing audio from the tab",
+      "Start capturing audio",
     );
   }
 
   inputSchema: Schema = propertiesToSchema(
     {
-      // TODO: decide whether to make deepgram specific, or vary brick/options based on provider
       integrationConfig: {
         title: "Deepgram Integration",
         $ref: DEEPGRAM_INTEGRATION_REF,
@@ -51,29 +49,31 @@ export class StartCaptureAudioEffect extends EffectABC {
         description: "Whether to capture audio from the microphone",
         default: true,
       },
-      captureTab: {
+      captureSystem: {
         type: "boolean",
-        description: "Whether to capture audio from the tab",
+        description: "Whether to capture audio from the system/tab",
         default: true,
       },
     },
     ["integrationConfig"],
   );
 
-  async effect({
-    integrationConfig,
-    captureMicrophone = true,
-    captureTab = true,
-  }: BrickArgs<{
-    integrationConfig: SanitizedConfig;
-    captureMicrophone: boolean;
-    captureTab: boolean;
-  }>): Promise<void> {
-    // TODO: show popover to get user to confirm capture?
-    await tabCapture.startAudioCapture({
+  async effect(
+    {
       integrationConfig,
+      captureMicrophone = true,
+      captureSystem = true,
+    }: BrickArgs<{
+      integrationConfig: SanitizedIntegrationConfig;
+      captureMicrophone: boolean;
+      captureSystem: boolean;
+    }>,
+    { platform }: BrickOptions,
+  ): Promise<void> {
+    // XXX: consider showing popover to get user to confirm capture?
+    await platform.audio.startCapture(integrationConfig, {
       captureMicrophone,
-      captureTab,
+      captureSystem,
     });
   }
 }
@@ -85,13 +85,13 @@ export class StopCaptureAudioEffect extends EffectABC {
     super(
       StopCaptureAudioEffect.BRICK_ID,
       "[Experimental] Stop Audio Capture",
-      "Stop capturing audio from the tab",
+      "Stop capturing audio",
     );
   }
 
   inputSchema: Schema = minimalSchemaFactory();
 
-  async effect(): Promise<void> {
-    await tabCapture.stopAudioCapture();
+  async effect(_args: BrickArgs, { platform }: BrickOptions): Promise<void> {
+    await platform.audio.stopCapture();
   }
 }

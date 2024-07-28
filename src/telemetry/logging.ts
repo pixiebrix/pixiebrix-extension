@@ -44,8 +44,8 @@ import { StorageItem } from "webext-storage";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
 import { readAuthData } from "@/auth/authStorage";
-import { type RecordErrorMessage } from "@/tinyPages/offscreen";
 import { ensureOffscreenDocument } from "@/tinyPages/offscreenDocumentController";
+import { RecordErrorMessage } from "@/tinyPages/offscreenProtocol";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";

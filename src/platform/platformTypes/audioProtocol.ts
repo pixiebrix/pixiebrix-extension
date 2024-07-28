@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+
 /**
- * Protocol for playing audio.
+ * Protocol for playing/capturing audio.
  * @since 1.8.10
  */
 export type AudioProtocol = {
@@ -24,4 +26,24 @@ export type AudioProtocol = {
    * Play a known sound effect.
    */
   play(soundEffect: string): Promise<void>;
+
+  /**
+   * [Experimental] Start capturing audio.
+   * @since 2.0.7
+   */
+  // XXX: move to a `capture` protocol?
+  startCapture(
+    integrationConfig: SanitizedIntegrationConfig,
+    options: {
+      captureMicrophone: boolean;
+      captureSystem: boolean;
+    },
+  ): Promise<void>;
+
+  /**
+   * [Experimental] Stop capturing audio.
+   * @since 2.0.7
+   */
+  // XXX: move to a `capture` protocol?
+  stopCapture(): Promise<void>;
 };
