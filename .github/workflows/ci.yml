@@ -90,7 +90,7 @@ jobs:
           DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
       - name: Save extension
         uses: actions/upload-artifact@v4
-        if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
+        # if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         with:
           name: build-staging
           path: |
