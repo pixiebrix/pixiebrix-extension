@@ -16,26 +16,25 @@
  */
 
 import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
-import { type BrickConfig, type BrickPosition } from "@/bricks/types";
+import {
+  type BrickCondition,
+  type BrickConfig,
+  type BrickPosition,
+} from "@/bricks/types";
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { getConstantConditionOrUndefined } from "@/runtime/runtimeUtils";
 import { isTemplateExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { AnnotationType } from "@/types/annotationTypes";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
+import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 
 class ConditionAnalysis extends AnalysisVisitorABC {
   get id() {
     return "condition";
   }
 
-  override visitBrick(
-    position: BrickPosition,
-    brickConfig: BrickConfig,
-    extra: VisitBlockExtra,
-  ): void {
-    super.visitBrick(position, brickConfig, extra);
-
+  visitBrickCondition(position: BrickPosition, brickConfig: BrickConfig) {
     const conditionPosition = nestedPosition(position, "if");
     const condition = brickConfig.if;
 
@@ -81,6 +80,66 @@ class ConditionAnalysis extends AnalysisVisitorABC {
           type: AnnotationType.Info,
         });
       }
+    }
+  }
+
+  visitIfElseBrickCondition(position: BrickPosition, brickConfig: BrickConfig) {
+    const conditionPosition = nestedPosition(position, "config.condition");
+    const { condition } = brickConfig.config as { condition: BrickCondition };
+
+    if (condition == null) {
+      this.annotations.push({
+        position: conditionPosition,
+        message:
+          "Excluded conditions are considered falsy. The if branch will never run",
+        analysisId: this.id,
+        type: AnnotationType.Warning,
+      });
+    }
+
+    if (getConstantConditionOrUndefined(condition) != null) {
+      if (
+        isTemplateExpression(condition) &&
+        isNullOrBlank(condition.__value__)
+      ) {
+        this.annotations.push({
+          position: conditionPosition,
+          message:
+            "Blank conditions are considered falsy. The if branch will never run",
+          analysisId: this.id,
+          type: AnnotationType.Warning,
+        });
+      } else if (getConstantConditionOrUndefined(condition)) {
+        this.annotations.push({
+          position: conditionPosition,
+          message:
+            "Constant truthy condition found. The if branch will always run",
+          analysisId: this.id,
+          type: AnnotationType.Warning,
+        });
+      } else {
+        this.annotations.push({
+          position: conditionPosition,
+          message:
+            "Constant falsy condition found. The if branch will never run",
+          analysisId: this.id,
+          type: AnnotationType.Warning,
+        });
+      }
+    }
+  }
+
+  override visitBrick(
+    position: BrickPosition,
+    brickConfig: BrickConfig,
+    extra: VisitBlockExtra,
+  ): void {
+    super.visitBrick(position, brickConfig, extra);
+
+    this.visitBrickCondition(position, brickConfig);
+
+    if (brickConfig.id === IfElse.BRICK_ID) {
+      this.visitIfElseBrickCondition(position, brickConfig);
     }
   }
 }
