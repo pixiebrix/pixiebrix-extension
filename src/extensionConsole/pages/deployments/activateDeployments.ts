@@ -31,6 +31,16 @@ import { persistor } from "@/store/optionsStore";
 
 const { actions } = extensionsSlice;
 
+// For ensuring the mod state is persisted before continuing so the content script can immediately pick up the changes
+async function flushAndPersist(mode: "queue" | "immediate") {
+  await persistor.flush();
+  if (mode === "immediate") {
+    reloadModsEveryTab();
+  } else {
+    queueReloadModEveryTab();
+  }
+}
+
 async function activateDeployment({
   dispatch,
   activatableDeployment,
@@ -74,9 +84,6 @@ async function activateDeployment({
       isReactivate,
     }),
   );
-  // Ensure the mod state is persisted before continuing so the content script can immediately pick up the changes
-  // when activating a deployment from the extension console. See: https://github.com/pixiebrix/pixiebrix-extension/issues/8744
-  await persistor.flush();
 
   reportEvent(Events.DEPLOYMENT_ACTIVATE, {
     deployment: deployment.id,
@@ -116,11 +123,9 @@ export async function activateDeployments({
     throw errors[0];
   }
 
-  if (reloadMode === "immediate") {
-    reloadModsEveryTab();
-  } else {
-    queueReloadModEveryTab();
-  }
+  // Ensure the mod state is persisted before continuing so the content script can immediately pick up the changes
+  // when activating a deployment from the extension console. See: https://github.com/pixiebrix/pixiebrix-extension/issues/8744
+  await flushAndPersist(reloadMode);
 }
 
 export function deactivateUnassignedModComponents({
@@ -148,6 +153,8 @@ export function deactivateUnassignedModComponents({
       );
     }
   }
+
+  void flushAndPersist("immediate");
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
     auto: true,

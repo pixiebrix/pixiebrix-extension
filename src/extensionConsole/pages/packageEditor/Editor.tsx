@@ -110,7 +110,7 @@ export function useOpenEditorTab(): (id: RegistryId) => Promise<void> {
 }
 
 const Content = ({ showLogs }: { showLogs: boolean }) => {
-  const [activeTab, setTab] = useState("edit");
+  const [activeTab, setTab] = useState<string | undefined>("edit");
   const [editorWidth, setEditorWidth] = useState<number>();
   const [selectedReference, setSelectedReference] = useState<Metadata>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
@@ -138,7 +138,7 @@ const Content = ({ showLogs }: { showLogs: boolean }) => {
         setTab("reference");
       } else {
         console.debug("Known packages", {
-          packages: sortBy(packageInstances.map((x) => x.id)),
+          packages: sortBy(packageInstances?.map((x) => x.id)),
         });
         notify.warning(`Cannot find package: ${registryId}`);
       }
@@ -163,7 +163,13 @@ const Content = ({ showLogs }: { showLogs: boolean }) => {
     >
       <Card ref={editorRef}>
         <Card.Header>
-          <Nav variant="tabs" onSelect={setTab}>
+          <Nav
+            variant="tabs"
+            onSelect={(eventKey: string | null) => {
+              // `activeKey` must be a string or undefined per the type definition
+              setTab(eventKey ?? undefined);
+            }}
+          >
             <Nav.Link eventKey="edit">
               {dirty ? (
                 <span className="text-danger">

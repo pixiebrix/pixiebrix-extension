@@ -50,7 +50,7 @@ export type RemoteSchemaObjectFieldProps = {
   /**
    * Async state for the remote schema
    */
-  remoteSchemaState: AsyncState<Schema>;
+  remoteSchemaState: AsyncState<Schema | null>;
 };
 
 const ChildObjectWidgetContent: React.FC<

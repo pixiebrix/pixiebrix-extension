@@ -20,7 +20,7 @@ import styles from "@/extensionConsole/pages/mods/listView/ListItem.module.scss"
 
 const ListGroupHeader: React.VoidFunctionComponent<{
   groupName: string;
-  style: React.CSSProperties;
+  style: React.CSSProperties | undefined;
 }> = ({ groupName, style }) => (
   <div className={styles.listHeader} style={style}>
     {groupName}

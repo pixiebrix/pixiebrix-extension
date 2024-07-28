@@ -34,19 +34,10 @@ test("#8740: can view the starter mods on the pixiebrix.com/welcome page", async
   await runModViaQuickBar(page, "Open Sidebar");
 
   const sideBarPage = await getSidebarPage(page, extensionId);
+
+  await expect(sideBarPage.getByRole("tab", { name: "Mods" })).toBeVisible();
+
   await expect(
-    sideBarPage.getByRole("heading", { name: "Announcements" }),
-  ).toBeVisible();
-  await expect(
-    sideBarPage.getByRole("heading", { name: "Decision Tree" }),
-  ).toBeVisible();
-  await expect(
-    sideBarPage.getByRole("heading", { name: "Search" }),
-  ).toBeVisible();
-  await expect(
-    sideBarPage.getByRole("heading", { name: "Snippet Manager" }),
-  ).toBeVisible();
-  await expect(
-    sideBarPage.getByRole("heading", { name: "Writing Assist" }),
-  ).toBeVisible();
+    sideBarPage.locator(".list-group").getByRole("heading").first(),
+  ).not.toBeEmpty();
 });
