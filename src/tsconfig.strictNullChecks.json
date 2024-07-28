@@ -1146,6 +1146,8 @@
     "./pageEditor/documentBuilder/edit/useElementOptions.tsx",
     "./pageEditor/documentBuilder/elementTypeLabels.ts",
     "./pageEditor/documentBuilder/hooks/useDeleteElement.ts",
+    "./pageEditor/documentBuilder/hooks/useDuplicateElement.ts",
+    "./pageEditor/documentBuilder/hooks/useDuplicateElement.test.ts",
     "./pageEditor/documentBuilder/hooks/useMoveElement.ts",
     "./pageEditor/documentBuilder/hooks/useMoveWithinParent.ts",
     "./pageEditor/documentBuilder/hooks/useSelectParentElement.ts",

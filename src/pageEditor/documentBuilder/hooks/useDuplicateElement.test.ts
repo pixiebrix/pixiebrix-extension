@@ -108,9 +108,10 @@ describe("useDuplicateElement", () => {
         setupRedux(dispatch) {
           dispatch(actions.addModComponentFormState(formState));
           dispatch(actions.setActiveModComponentId(formState.uuid));
+
           dispatch(
             actions.setActiveNodeId(
-              formState.modComponent.brickPipeline[0].instanceId,
+              formState.modComponent.brickPipeline[0]!.instanceId!,
             ),
           );
         },
@@ -122,7 +123,7 @@ describe("useDuplicateElement", () => {
     });
 
     const container =
-      wrapper.getFormState().modComponent.brickPipeline[0].config.body[0]
+      wrapper.getFormState()!.modComponent.brickPipeline[0].config.body[0]
         .children[0].children[0];
     expect(container.children).toHaveLength(2);
     // Should be exactly the same since there's no brickInstanceIds to re-assign
@@ -143,7 +144,7 @@ describe("useDuplicateElement", () => {
           dispatch(actions.setActiveModComponentId(formState.uuid));
           dispatch(
             actions.setActiveNodeId(
-              formState.modComponent.brickPipeline[0].instanceId,
+              formState.modComponent.brickPipeline[0]!.instanceId!,
             ),
           );
         },
@@ -155,7 +156,7 @@ describe("useDuplicateElement", () => {
     });
 
     const container =
-      wrapper.getFormState().modComponent.brickPipeline[0].config.body[0]
+      wrapper.getFormState()!.modComponent.brickPipeline[0].config.body[0]
         .children[0].children[0];
     expect(container.children).toHaveLength(2);
 
