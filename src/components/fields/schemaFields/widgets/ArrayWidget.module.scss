@@ -18,3 +18,12 @@
 .addButton {
   padding: 0;
 }
+
+.moveButton {
+  // Match the padding in TemplateToggleWidget.module.scss
+  padding: 0.25rem !important;
+
+  svg {
+    height: 1.2em;
+  }
+}
