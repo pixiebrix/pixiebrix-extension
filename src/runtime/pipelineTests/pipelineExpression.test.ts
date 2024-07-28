@@ -32,7 +32,7 @@ beforeEach(() => {
 });
 
 describe("apiVersion: v3", () => {
-  test("run block with pipeline arg", async () => {
+  test("run brick with pipeline arg", async () => {
     const pipeline = {
       id: pipelineBrick.id,
       config: {
