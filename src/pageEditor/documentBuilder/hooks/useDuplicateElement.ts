@@ -20,26 +20,7 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import getElementCollectionName from "@/pageEditor/documentBuilder/edit/getElementCollectionName";
 import { produce } from "immer";
 import { useCallback } from "react";
-import { isPipelineExpression } from "@/utils/expressionUtils";
-import { uuidv4 } from "@/types/helpers";
-
-/**
- * Recursively re-assign all brick instanceIds.
- * @see NormalizePipelineVisitor
- */
-// Can't use NormalizePipelineVisitor because it doesn't work on an arbitrary elements in the document builder
-function generateBrickInstanceIdsInPlace(obj: unknown): void {
-  if (isPipelineExpression(obj)) {
-    for (const brick of obj.__value__) {
-      brick.instanceId = uuidv4();
-      generateBrickInstanceIdsInPlace(brick);
-    }
-  } else if (obj && typeof obj === "object") {
-    for (const value of Object.values(obj)) {
-      generateBrickInstanceIdsInPlace(value);
-    }
-  }
-}
+import { generateBrickInstanceIdsInPlace } from "@/pageEditor/starterBricks/pipelineMapping";
 
 /**
  * Hook to duplicate a Document Builder element.
@@ -60,8 +41,8 @@ function useDuplicateElement(documentBodyName: string) {
         const elementsCollection = getIn(draft, collectionName) as unknown[];
 
         // Generate new brickInstanceIds for any pipelines in the element
-        // eslint-disable-next-line security/detect-object-injection -- number
         const duplicateElement = produce(
+          // eslint-disable-next-line security/detect-object-injection -- number
           elementsCollection[elementIndex],
           (elementDraft) => {
             generateBrickInstanceIdsInPlace(elementDraft);
