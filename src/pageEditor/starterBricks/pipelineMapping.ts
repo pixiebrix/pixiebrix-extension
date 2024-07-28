@@ -118,19 +118,19 @@ export function omitEditorMetadata(pipeline: BrickPipeline): BrickPipeline {
 }
 
 /**
- * Recursively re-assign all brick instanceIds.
+ * Recursively assign all brick instanceIds. Overwrites existing instanceIds.
  * @see NormalizePipelineVisitor
  */
 // Can't use NormalizePipelineVisitor because it doesn't work on an arbitrary elements in the document builder
-export function generateBrickInstanceIdsInPlace(obj: unknown): void {
+export function addBrickInstanceIdsInPlace(obj: unknown): void {
   if (isPipelineExpression(obj)) {
     for (const brick of obj.__value__) {
       brick.instanceId = uuidv4();
-      generateBrickInstanceIdsInPlace(brick);
+      addBrickInstanceIdsInPlace(brick);
     }
   } else if (obj && typeof obj === "object") {
     for (const value of Object.values(obj)) {
-      generateBrickInstanceIdsInPlace(value);
+      addBrickInstanceIdsInPlace(value);
     }
   }
 }
