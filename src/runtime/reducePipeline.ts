@@ -815,9 +815,9 @@ export async function brickReducer(
     return { output: previousOutput, context, brickReturnValue: undefined };
   }
 
-  // XXX: note this check comes before isLastBrick. We're keeping this order for backward compatability with
-  // apiVersion: 1. It's a bit error-prone when writing user-defined bricks though, because the brick output won't
-  // be what you expect if you accidentally include on an outputKey
+  // XXX: note this check comes before the isLastBrick check. We're keeping this order for backward compatability with
+  // apiVersion: 1. The downside is its error-prone when writing user-defined bricks, because the brick output won't
+  // be what you expect if you accidentally include on an outputKey (e.g., as when copying configurations from a mod)
   if (brickConfig.outputKey) {
     return {
       output: previousOutput,
@@ -830,6 +830,7 @@ export async function brickReducer(
     };
   }
 
+  // Always return the value of the last brick in the pipeline
   if (isLastBrick) {
     return { output: brickReturnValue, context, brickReturnValue };
   }
