@@ -48,35 +48,35 @@ export async function getRecordingTabId(): Promise<number | null> {
  */
 export async function ensureOffscreenDocument(): Promise<void> {
   /*
-     * WARNING: The runtime.getContexts() api is crashing the browser under
-     *  certain conditions in chrome versions >127.0.6533.73. See issue
-     *  tracker here: https://issues.chromium.org/issues/355625882
-     *
-     * Dangerous code to check if the offscreen document exists:
+   * WARNING: The runtime.getContexts() api is crashing the browser under
+   *  certain conditions in chrome versions >127.0.6533.73. See issue
+   *  tracker here: https://issues.chromium.org/issues/355625882
+   *
+   * Dangerous code to check if the offscreen document exists:
 
-    const existingContexts = await chrome.runtime.getContexts({
-      contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
-      documentUrls: [chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH)],
-    });
+   const existingContexts = await chrome.runtime.getContexts({
+     contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
+     documentUrls: [chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH)],
+   });
 
-    if (existingContexts.length > 0) {
-      return;
-    }
+   if (existingContexts.length > 0) {
+     return;
+   }
 
-     *
-     * Also, there is currently a function present in the chrome.offscreen api
-     * called hasDocument. This function is not documented in the chrome docs:
-     *   https://developer.chrome.com/docs/extensions/reference/api/offscreen#method
-     * Apparently, this function should not be treated as "stable," and may be
-     * removed in the future, if/when more functionality is added to the offscreen api:
-     *   https://issues.chromium.org/issues/40849649#:~:text=hasDocument()%20returns%20whether,in%20testing%20contexts.
-     *
-     * Currently, PixieBrix only uses an offscreen document in this one place,
-     * to support DataDog error reporting. So, the safest thing right now is to
-     * wrap the createDocument() in a try-catch and look for the error text to
-     * match "Only a single offscreen document may be created" to detect when
-     * the offscreen document has already been created.
-     */
+   *
+   * Also, there is currently a function present in the chrome.offscreen api
+   * called hasDocument. This function is not documented in the chrome docs:
+   *   https://developer.chrome.com/docs/extensions/reference/api/offscreen#method
+   * Apparently, this function should not be treated as "stable," and may be
+   * removed in the future, if/when more functionality is added to the offscreen api:
+   *   https://issues.chromium.org/issues/40849649#:~:text=hasDocument()%20returns%20whether,in%20testing%20contexts.
+   *
+   * Currently, PixieBrix only uses an offscreen document in this one place,
+   * to support DataDog error reporting. So, the safest thing right now is to
+   * wrap the createDocument() in a try-catch and look for the error text to
+   * match "Only a single offscreen document may be created" to detect when
+   * the offscreen document has already been created.
+   */
 
   if (createOffscreenDocumentPromise != null) {
     console.debug(
