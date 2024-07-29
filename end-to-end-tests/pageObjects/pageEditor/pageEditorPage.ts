@@ -30,6 +30,16 @@ import { ModifiesModFormState } from "./utils";
 import { CreateModModal } from "./createModModal";
 import { DeactivateModModal } from "end-to-end-tests/pageObjects/pageEditor/deactivateModModal";
 
+export class ModActionMenu extends BasePageObject {
+  get copyButton() {
+    return this.getByRole("menuitem", { name: "Make a copy" });
+  }
+
+  get deactivateButton() {
+    return this.getByRole("menuitem", { name: "Deactivate" });
+  }
+}
+
 class EditorPane extends BasePageObject {
   editTab = this.getByRole("tab", { name: "Edit" });
   logsTab = this.getByRole("tab", { name: "Logs" });
@@ -134,6 +144,10 @@ export class PageEditorPage extends BasePageObject {
     );
   }
 
+  getModActionMenu() {
+    return new ModActionMenu(this.getByLabel("Menu"));
+  }
+
   @ModifiesModFormState
   async saveStandaloneMod(modName: string, modUuid: UUID) {
     const modListItem = this.modListingPanel.getModListItemByName(modName);
@@ -152,7 +166,8 @@ export class PageEditorPage extends BasePageObject {
     await modListItem.select();
 
     await modListItem.menuButton.click();
-    await modListItem.copyButton.click();
+    const actionMenu = this.getModActionMenu();
+    await actionMenu.copyButton.click();
 
     const createModModal = new CreateModModal(this.getByRole("dialog"));
     const modId = await createModModal.copyMod(modName, modUuid);
@@ -165,7 +180,8 @@ export class PageEditorPage extends BasePageObject {
     await modListItem.select();
 
     await modListItem.menuButton.click();
-    await modListItem.deactivateButton.click();
+    const actionMenu = this.getModActionMenu();
+    await actionMenu.deactivateButton.click();
 
     const deactivateModModal = new DeactivateModModal(this.getByRole("dialog"));
     await deactivateModModal.deactivateButton.click();

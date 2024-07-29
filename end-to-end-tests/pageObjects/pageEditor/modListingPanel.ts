@@ -39,14 +39,6 @@ export class ModListItem extends BasePageObject {
     });
   }
 
-  get copyButton() {
-    return this.getByRole("menuitem", { name: "Make a copy" });
-  }
-
-  get deactivateButton() {
-    return this.getByRole("menuitem", { name: "Deactivate" });
-  }
-
   async select() {
     return this.click();
   }
