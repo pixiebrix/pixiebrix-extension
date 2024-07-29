@@ -21,7 +21,7 @@ import { ModsPage } from "../extensionConsole/modsPage";
 import { WorkshopPage } from "../extensionConsole/workshop/workshopPage";
 import { type UUID } from "@/types/stringTypes";
 import { BasePageObject } from "../basePageObject";
-import { ModListingPanel } from "./modListingPanel";
+import { ModActionMenu, ModListingPanel } from "./modListingPanel";
 import { BrickActionsPanel } from "./brickActionsPanel";
 import { ConfigurationForm } from "./configurationForm";
 import { DataPanel } from "./dataPanel";
@@ -29,16 +29,6 @@ import { ModEditorPane } from "./modEditorPane";
 import { ModifiesModFormState } from "./utils";
 import { CreateModModal } from "./createModModal";
 import { DeactivateModModal } from "end-to-end-tests/pageObjects/pageEditor/deactivateModModal";
-
-export class ModActionMenu extends BasePageObject {
-  get copyButton() {
-    return this.getByRole("menuitem", { name: "Make a copy" });
-  }
-
-  get deactivateButton() {
-    return this.getByRole("menuitem", { name: "Deactivate" });
-  }
-}
 
 class EditorPane extends BasePageObject {
   editTab = this.getByRole("tab", { name: "Edit" });

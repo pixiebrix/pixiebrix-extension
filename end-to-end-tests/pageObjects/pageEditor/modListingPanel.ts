@@ -44,6 +44,16 @@ export class ModListItem extends BasePageObject {
   }
 }
 
+export class ModActionMenu extends BasePageObject {
+  get copyButton() {
+    return this.getByRole("menuitem", { name: "Make a copy" });
+  }
+
+  get deactivateButton() {
+    return this.getByRole("menuitem", { name: "Deactivate" });
+  }
+}
+
 export class ModListingPanel extends BasePageObject {
   addButton = this.getByRole("button", { name: "Add", exact: true });
   quickFilterInput = this.getByPlaceholder("Quick filter");
