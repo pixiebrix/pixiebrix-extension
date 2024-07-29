@@ -44,4 +44,19 @@ test("8143: mods can run in srcdoc iframes", async ({
       await expect(locator).toBeVisible();
     }),
   );
+
+  await page.evaluate(() => {
+    const iframe = document.createElement("iframe");
+    iframe.setAttribute(
+      "srcdoc",
+      "<div>Hello inserted sandboxed srcdoc world!</div>",
+    );
+    iframe.setAttribute("sandbox", "");
+    document.body.append(iframe);
+  });
+
+  const frame = frameLocator.nth(2);
+  const locator = frame.locator("mark").first();
+  await expect(frame.getByText("Hello inserted sandboxed")).toBeVisible();
+  await expect(locator).toBeVisible();
 });
