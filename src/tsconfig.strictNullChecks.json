@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./contrib/zapier/PushOptions.tsx",
     "./contrib/automationanywhere/ApiTaskOptions.tsx",
     "./sidebar/Tabs.tsx",
     "../end-to-end-tests/env.ts",
