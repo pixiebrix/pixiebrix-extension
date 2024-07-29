@@ -32,7 +32,7 @@ const OutputVariableField: React.FC<{
   className?: string;
   brickInfo: TypedBrickPair;
 }> = ({ name, className, brickInfo }) => {
-  const [{ value }, , { setValue }] = useField<string>(name);
+  const [{ value }, , { setValue }] = useField<string | undefined>(name);
 
   const isOutputDisabled = !(
     brickInfo?.type && brickTypeSupportsOutputKey(brickInfo?.type)
@@ -59,8 +59,9 @@ const OutputVariableField: React.FC<{
       as={KeyNameWidget}
       value={value ?? ""}
       onChange={async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
         await setValue(
-          event.target.value === "" ? undefined : event.target.value,
+          typeof value === "string" && value.length > 0 ? value : undefined,
         );
       }}
       placeholder={

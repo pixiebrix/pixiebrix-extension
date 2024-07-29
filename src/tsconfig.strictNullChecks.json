@@ -1335,6 +1335,7 @@
     "./pageEditor/tabs/editTab/editHelpers.ts",
     "./pageEditor/tabs/editTab/editTabTypes.ts",
     "./pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview.tsx",
+    "./pageEditor/tabs/editTab/editorNodeConfigPanel/OutputVariableField.tsx",
     "./pageEditor/tabs/editTab/editorNodeLayout/decideStatus.ts",
     "./pageEditor/tabs/editTab/editorNodeLayout/nodeSummary.tsx",
     "./pageEditor/tabs/editTab/editorNodeLayout/usePasteBrick.ts",
