@@ -35,21 +35,21 @@ import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
-import { type QuickBarProviderFormState } from "./formStateTypes";
-import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProvider/quickBarProviderStarterBrick";
-import QuickBarProviderConfiguration from "@/pageEditor/tabs/quickBarProvider/QuickBarProviderConfiguration";
+import { type DynamicQuickBarFormState } from "./formStateTypes";
+import { DynamicQuickBarStarterBrickABC } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarStarterBrick";
+import DynamicQuickBarConfiguration from "@/pageEditor/tabs/dynamicQuickBar/DynamicQuickBarConfiguration";
 import { type SingleLayerReaderConfig } from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
-  type QuickBarProviderDefinition,
-  type QuickBarProviderConfig,
-} from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
+  type DynamicQuickBarDefinition,
+  type DynamicQuickBarConfig,
+} from "@/starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 function fromNativeElement(
-  url: string,
+  _url: string,
   metadata: Metadata,
-): QuickBarProviderFormState {
+): DynamicQuickBarFormState {
   const base = makeInitialBaseState();
 
   const isAvailable = ALL_SITES_AVAILABILITY;
@@ -78,8 +78,8 @@ function fromNativeElement(
 }
 
 function selectStarterBrickDefinition(
-  formState: QuickBarProviderFormState,
-): StarterBrickDefinitionLike<QuickBarProviderDefinition> {
+  formState: DynamicQuickBarFormState,
+): StarterBrickDefinitionLike<DynamicQuickBarDefinition> {
   const { starterBrick } = formState;
   const {
     definition: { isAvailable, documentUrlPatterns, reader },
@@ -96,11 +96,11 @@ function selectStarterBrickDefinition(
 }
 
 function selectModComponent(
-  state: QuickBarProviderFormState,
+  state: DynamicQuickBarFormState,
   options: { includeInstanceIds?: boolean } = {},
-): ModComponentBase<QuickBarProviderConfig> {
+): ModComponentBase<DynamicQuickBarConfig> {
   const { modComponent } = state;
-  const config: QuickBarProviderConfig = {
+  const config: DynamicQuickBarConfig = {
     rootAction: modComponent.rootAction,
     generator: options.includeInstanceIds
       ? modComponent.brickPipeline
@@ -113,11 +113,11 @@ function selectModComponent(
 }
 
 async function fromModComponent(
-  config: ModComponentBase<QuickBarProviderConfig>,
-): Promise<QuickBarProviderFormState> {
+  config: ModComponentBase<DynamicQuickBarConfig>,
+): Promise<DynamicQuickBarFormState> {
   const starterBrick = await lookupStarterBrick<
-    QuickBarProviderDefinition,
-    QuickBarProviderConfig,
+    DynamicQuickBarDefinition,
+    DynamicQuickBarConfig,
     typeof StarterBrickTypes.DYNAMIC_QUICK_BAR
   >(config, StarterBrickTypes.DYNAMIC_QUICK_BAR);
 
@@ -153,28 +153,28 @@ async function fromModComponent(
 }
 
 function asDraftModComponent(
-  quickBarProviderFormState: QuickBarProviderFormState,
+  dynamicQuickBarFormState: DynamicQuickBarFormState,
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.DYNAMIC_QUICK_BAR,
-    extension: selectModComponent(quickBarProviderFormState, {
+    extension: selectModComponent(dynamicQuickBarFormState, {
       includeInstanceIds: true,
     }),
     extensionPointConfig: selectStarterBrickDefinition(
-      quickBarProviderFormState,
+      dynamicQuickBarFormState,
     ),
   };
 }
 
 const config: ModComponentFormStateAdapter<
   undefined,
-  QuickBarProviderFormState
+  DynamicQuickBarFormState
 > = {
   displayOrder: 1,
   starterBrickType: StarterBrickTypes.DYNAMIC_QUICK_BAR,
   label: "Dynamic Quick Bar",
-  baseClass: QuickBarProviderStarterBrickABC,
-  EditorNode: QuickBarProviderConfiguration,
+  baseClass: DynamicQuickBarStarterBrickABC,
+  EditorNode: DynamicQuickBarConfiguration,
   selectNativeElement: undefined,
   icon: faPlusSquare,
   flag: "pageeditor-quickbar-provider",

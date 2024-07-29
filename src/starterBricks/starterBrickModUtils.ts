@@ -26,7 +26,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { compact, uniq } from "lodash";
 import { hydrateModInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
-import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProvider/quickBarProviderStarterBrick";
+import { DynamicQuickBarStarterBrickABC } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarStarterBrick";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 
@@ -93,9 +93,7 @@ export async function includesQuickBarStarterBrick(
     const starterBrick = await starterBrickRegistry.lookup(id);
     if (
       QuickBarStarterBrickABC.isQuickBarStarterBrick(starterBrick) ||
-      QuickBarProviderStarterBrickABC.isQuickBarProviderStarterBrick(
-        starterBrick,
-      )
+      DynamicQuickBarStarterBrickABC.isDynamicQuickBarStarterBrick(starterBrick)
     ) {
       return true;
     }

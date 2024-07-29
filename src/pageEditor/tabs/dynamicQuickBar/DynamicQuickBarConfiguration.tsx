@@ -23,20 +23,20 @@ import IconWidget from "@/components/fields/IconWidget";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField, useFormikContext } from "formik";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { type QuickBarProviderConfig } from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
-import { type QuickBarProviderFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type DynamicQuickBarConfig } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
+import { type DynamicQuickBarFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
-const QuickBarProviderConfiguration: React.FC<{
+const DynamicQuickBarConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => {
-  const { setFieldValue } = useFormikContext<QuickBarProviderFormState>();
+  const { setFieldValue } = useFormikContext<DynamicQuickBarFormState>();
 
   const [rootActionField] = useField<
-    QuickBarProviderConfig["rootAction"] | null
+    DynamicQuickBarConfig["rootAction"] | null
   >("modComponent.rootAction");
 
   return (
@@ -121,4 +121,4 @@ const QuickBarProviderConfiguration: React.FC<{
   );
 };
 
-export default QuickBarProviderConfiguration;
+export default DynamicQuickBarConfiguration;
