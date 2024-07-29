@@ -24,7 +24,7 @@ import brickRegistry from "@/bricks/registry";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import userEvent from "@testing-library/user-event";
-import { screen } from "@testing-library/react";
+import { screen, act } from "@testing-library/react";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
@@ -66,9 +66,17 @@ describe("OutputVariableField", () => {
       validateOutputKey("output"),
     );
 
-    // FIXME: Error: clear()` is only supported on editable elements.
-    await user.clear(screen.getByLabelText("Output Variable"));
-    await user.type(screen.getByLabelText("Output Variable"), "newOutput");
+    await act(async () => {
+      await user.dblClick(screen.getByLabelText("Output Variable"));
+      await user.type(
+        screen.getByLabelText("Output Variable"),
+        "{backspace}newOutput",
+        {
+          // Already double-clicked to select all text
+          skipClick: true,
+        },
+      );
+    });
 
     expect(screen.getByLabelText("Output Variable")).toHaveValue("newOutput");
 
