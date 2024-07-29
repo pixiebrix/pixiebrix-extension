@@ -176,15 +176,15 @@ export type IntermediateState = {
    */
   root: Nullishable<SelectorRoot>;
   /**
-   * The stage's position in the BrickPipeline. Used to improve logging and error messages
+   * The brick's position in the BrickPipeline. Used to improve logging and error messages
    * @see BrickPipeline
    */
   index: number;
   /**
-   * `true` if the stage is the last stage in the pipeline, for logging and validation
+   * `true` if the brick is the last brick in the pipeline, for logging and validation
    * @see BrickPipeline
    */
-  isLastBlock: boolean;
+  isLastBrick: boolean;
 };
 
 /**
@@ -218,16 +218,17 @@ type BrickProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
 
 type BrickOutput = {
   /**
-   * The output of the brick to pass to the next brick. If a brick uses an outputKey, output will be the output of the
-   * previous brick in the BrickPipeline.
+   * The implicit output to pass to the next brick in the pipeline.
+   *
+   * Since runtime apiVersion: 2, output will be an empty object until the last brick in the pipeline.
    */
   output: unknown;
 
   /**
-   * The output of the brick (even if it has an outputKey)
+   * The value returned by the brick.
    * @since 1.7.0
    */
-  blockOutput: unknown;
+  brickReturnValue: unknown;
 
   /**
    * The updated context, i.e., with the new outputKey.
@@ -441,7 +442,7 @@ async function executeBrickWithValidatedProps(
     }
 
     default: {
-      throw new BusinessError(`Unexpected stage window ${config.window}`);
+      throw new BusinessError(`Unexpected window ${config.window}`);
     }
   }
 }
@@ -466,10 +467,10 @@ async function renderBrickArg(
   } = options;
 
   // Support YAML shorthand of leaving of `config:` directive for bricks that don't have parameters
-  const stageTemplate = config.config ?? {};
+  const configTemplate = config.config ?? {};
 
   if (type === BrickTypes.READER) {
-    // `reducePipeline` is responsible for passing the correct root into runStage based on the BrickConfig
+    // `reducePipeline` is responsible for passing the correct root on the BrickConfig
     if ((config.window ?? "self") === "self") {
       return { root: state.root } as unknown as RenderedArgs;
     }
@@ -504,7 +505,7 @@ async function renderBrickArg(
         { autoescape },
       );
 
-  const brickArgs = (await mapArgs(stageTemplate, ctxt, {
+  const brickArgs = (await mapArgs(configTemplate, ctxt, {
     implicitRender,
     autoescape,
   })) as RenderedArgs;
@@ -514,7 +515,7 @@ async function renderBrickArg(
       `Input for brick ${config.id} (window=${config.window ?? "self"})`,
       {
         id: config.id,
-        template: stageTemplate,
+        template: configTemplate,
         templateContext: state.context,
         renderedArgs: brickArgs,
       },
@@ -557,7 +558,7 @@ async function runBrick(
 ): Promise<unknown> {
   const { validateInput, logger, headless, trace } = options;
 
-  const { config: stage, brick, type } = resolvedConfig;
+  const { config: brickConfig, brick, type } = resolvedConfig;
 
   if (validateInput) {
     await throwIfInvalidInput(brick, props.args);
@@ -565,9 +566,9 @@ async function runBrick(
 
   let notification: string | undefined;
 
-  if (stage.notifyProgress) {
+  if (brickConfig.notifyProgress) {
     notification = showNotification({
-      message: stage.label ?? brick.name,
+      message: brickConfig.label ?? brick.name,
       type: "loading",
     });
   }
@@ -604,7 +605,7 @@ async function runBrick(
       options,
     );
   } finally {
-    if (stage.notifyProgress && notification) {
+    if (brickConfig.notifyProgress && notification) {
       hideNotification(notification);
     }
   }
@@ -653,7 +654,7 @@ export async function brickReducer(
   state: IntermediateState,
   options: ReduceOptions,
 ): Promise<BrickOutput> {
-  const { index, isLastBlock, previousOutput, context, root } = state;
+  const { index, isLastBrick, previousOutput, context, root } = state;
   const {
     runId,
     modComponentRef,
@@ -706,7 +707,7 @@ export async function brickReducer(
     }
   });
 
-  // Pass blockOptions because it includes the trace property
+  // Pass optionsWithTraceRef because it includes the trace property
   const traceMeta = selectTraceRecordMeta(resolvedConfig, optionsWithTraceRef);
   const traceEnabled = selectTraceEnabled(traceMeta);
 
@@ -737,7 +738,7 @@ export async function brickReducer(
   if (
     !(await shouldRunBrick(brickConfig, contextWithPreviousOutput, options))
   ) {
-    logger.debug(`Skipping stage ${brickConfig.id} because condition not met`);
+    logger.debug(`Skipping brick ${brickConfig.id} because condition not met`);
 
     if (traceEnabled) {
       getPlatform().debugger.traces.exit({
@@ -747,13 +748,13 @@ export async function brickReducer(
       });
     }
 
-    return { output: previousOutput, context, blockOutput: undefined };
+    return { output: previousOutput, context, brickReturnValue: undefined };
   }
 
   // Render args for the run
   await lazyRenderArgs();
 
-  // Above we had wrapped the call to renderBlockArg in a try-catch to always have an entry trace entry
+  // Above we had wrapped the call to renderBrickArg in a try-catch to always have an entry trace entry
   if (renderError) {
     throw renderError;
   }
@@ -765,16 +766,20 @@ export async function brickReducer(
     context: contextWithPreviousOutput,
   };
 
-  const output = await runBrick(resolvedConfig, props, optionsWithTraceRef);
+  const brickReturnValue = await runBrick(
+    resolvedConfig,
+    props,
+    optionsWithTraceRef,
+  );
 
   if (logValues) {
     console.info(`Output for brick #${index + 1}: ${brickConfig.id}`, {
-      output,
+      brickReturnValue,
       outputKey: brickConfig.outputKey ? `@${brickConfig.outputKey}` : null,
     });
 
     logger.debug(`Output for brick #${index + 1}: ${brickConfig.id}`, {
-      output,
+      brickReturnValue,
       outputKey: brickConfig.outputKey ? `@${brickConfig.outputKey}` : null,
     });
   }
@@ -782,49 +787,64 @@ export async function brickReducer(
   if (traceEnabled) {
     getPlatform().debugger.traces.exit({
       ...preconfiguredTraceExit,
-      output: output as JsonObject,
+      output: brickReturnValue as JsonObject,
       skippedRun: false,
     });
   }
 
-  await logIfInvalidOutput(resolvedConfig.brick, output, logger, {
+  await logIfInvalidOutput(resolvedConfig.brick, brickReturnValue, logger, {
     window: brickConfig.window,
   });
 
   if (resolvedConfig.type === BrickTypes.EFFECT) {
     if (brickConfig.outputKey) {
-      logger.warn(`Ignoring output key for effect ${brickConfig.id}`);
+      logger.warn(`Ignoring output key for effect: ${brickConfig.id}`);
     }
 
     // If run against multiple targets, the output at this point will be an array
-    if (output != null && !hasMultipleTargets(resolvedConfig.config.window)) {
-      console.warn(`Effect ${brickConfig.id} produced an output`, { output });
-      logger.warn(`Ignoring output produced by effect ${brickConfig.id}`);
+    if (
+      brickReturnValue != null &&
+      !hasMultipleTargets(resolvedConfig.config.window)
+    ) {
+      console.warn(`Effect ${brickConfig.id} produced a return value`, {
+        output: brickReturnValue,
+      });
+      logger.warn(`Ignoring return value produced by effect ${brickConfig.id}`);
     }
 
-    return { output: previousOutput, context, blockOutput: undefined };
+    return { output: previousOutput, context, brickReturnValue: undefined };
   }
 
+  // XXX: note this check comes before the isLastBrick check. We're keeping this order for backward compatability with
+  // apiVersion: 1. The downside is its error-prone when writing user-defined bricks, because the brick output won't
+  // be what you expect if you accidentally include on an outputKey (e.g., as when copying configurations from a mod)
   if (brickConfig.outputKey) {
     return {
       output: previousOutput,
       context: {
         ...context,
         // Keys overwrite any previous keys with the same name
-        [`@${brickConfig.outputKey}`]: output,
+        [`@${brickConfig.outputKey}`]: brickReturnValue,
       },
-      blockOutput: output,
+      brickReturnValue,
     };
   }
 
-  if (!isLastBlock && explicitDataFlow) {
-    // Force correct use of outputKey in `apiVersion: v2` usage
-    throw new BusinessError(
-      "outputKey is required for bricks that return data (since apiVersion: v2)",
-    );
+  // Always return the value of the last brick in the pipeline
+  if (isLastBrick) {
+    return { output: brickReturnValue, context, brickReturnValue };
   }
 
-  return { output, context, blockOutput: output };
+  // In apiVersion: 2+, treat bricks without outputKeys like effect bricks.
+  // Prior to 2.0.7, the runtime would throw an error here if explicitDataFlow flag was set, but the brick did not have
+  // an output key. In 2.0.7 we made output keys optional in the runtime so that we can let users avoid introducing
+  // unnecessary output variables in the Page Editor UI
+  if (explicitDataFlow) {
+    return { output: previousOutput, context, brickReturnValue: undefined };
+  }
+
+  // In apiVersion: 1, the brick's return value would be implicitly passed to the next brick
+  return { output: brickReturnValue, context, brickReturnValue };
 }
 
 function throwBrickError(
@@ -874,7 +894,7 @@ function throwBrickError(
   }
 
   throw new ContextError(
-    `An error occurred running pipeline stage #${index + 1}: ${brickConfig.id}`,
+    `Error running pipeline brick at position #${index}: ${brickConfig.id}`,
     {
       cause: error,
       context: logger.context,
@@ -969,7 +989,7 @@ export async function reducePipeline(
     const state: IntermediateState = {
       root,
       index,
-      isLastBlock: index === pipelineArray.length - 1,
+      isLastBrick: index === pipelineArray.length - 1,
       previousOutput: output,
       context: extendModVariableContext(localVariableContext, {
         modComponentRef: partialOptions.modComponentRef,
@@ -1035,13 +1055,13 @@ async function reducePipelineExpression(
 
   // The implicit output flowing from the bricks
   let legacyOutput: unknown = null;
-  let lastBrickOutput: unknown = null;
+  let lastBrickReturnValue: unknown = null;
 
   for (const [index, brickConfig] of pipeline.entries()) {
     const state: IntermediateState = {
       root,
       index,
-      isLastBlock: index === pipeline.length - 1,
+      isLastBrick: index === pipeline.length - 1,
       previousOutput: legacyOutput,
       // Assume @input and @options are present
       context: extendModVariableContext(context as BrickArgsContext, {
@@ -1072,9 +1092,10 @@ async function reducePipelineExpression(
     assertNotNullish(nextValues, "nextValues must be set after running brick");
 
     legacyOutput = nextValues.output;
-    lastBrickOutput = nextValues.blockOutput;
+    lastBrickReturnValue = nextValues.brickReturnValue;
     context = nextValues.context;
   }
 
-  return lastBrickOutput;
+  // Unlike reducePipeline, always returns the last brick's return value
+  return lastBrickReturnValue;
 }

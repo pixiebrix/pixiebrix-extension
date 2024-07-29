@@ -1888,7 +1888,7 @@ exports[`renders the first selected node 1`] = `
                       <span
                         class="label"
                       >
-                        Output
+                        Output Variable
                       </span>
                        
                       <svg
@@ -1925,8 +1925,10 @@ exports[`renders the first selected node 1`] = `
                       </div>
                       <input
                         class="form-control"
+                        disabled=""
                         id="modComponent.brickPipeline.0.outputKey"
                         name="modComponent.brickPipeline.0.outputKey"
+                        placeholder="Not supported for brick"
                         value="echoOutput"
                       />
                     </div>

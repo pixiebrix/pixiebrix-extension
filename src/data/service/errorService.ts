@@ -135,6 +135,10 @@ export async function reportToErrorService(
     "reportToErrorService should only be called from the background page",
   );
 
+  if (await flagOn("error-service-disable-report")) {
+    return;
+  }
+
   if (flatContext.modComponentId == null) {
     // Only report errors that occurred within a user-defined extension/blueprint. Other errors only go to Application error telemetry.
     // (They're problems with our software.)
