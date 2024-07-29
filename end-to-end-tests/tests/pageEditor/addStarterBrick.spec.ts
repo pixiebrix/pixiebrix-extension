@@ -128,6 +128,7 @@ test("Add new starter brick to mod", async ({
   const pageEditorPage = await newPageEditorPage(page.url());
   const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
 
+  // Create arbitrary mod to which to add starter bricks
   const { modComponentName, modUuid } =
     await pageEditorPage.modListingPanel.addStarterBrick("Trigger");
   await pageEditorPage.brickConfigurationPanel.fillField(
@@ -158,11 +159,18 @@ test("Add new starter brick to mod", async ({
         name: "Name",
       }),
     ).toHaveValue("My pbx.vercel.app button");
+
+    await modListItem.select();
+    await modListItem.saveButton.click();
+    await verifyModDefinitionSnapshot({
+      modId: modComponentName,
+      snapshotName: "add-button-starter-brick-to-mod",
+      mode: "current",
+    });
   });
 
-  await modListItem.select();
-
   await test.step("Add new Context Menu starter brick to mod", async () => {
+    await modListItem.select();
     await modListItem.menuButton.click();
     const modActionMenu = pageEditorPage.getModActionMenu();
     await modActionMenu.addStarterBrick("Context Menu");
@@ -174,11 +182,18 @@ test("Add new starter brick to mod", async ({
         name: "Name",
       }),
     ).toHaveValue("Context menu item");
+
+    await modListItem.select();
+    await modListItem.saveButton.click();
+    await verifyModDefinitionSnapshot({
+      modId: modComponentName,
+      snapshotName: "add-context-menu-starter-brick-to-mod",
+      mode: "diff",
+    });
   });
 
-  await modListItem.select();
-
   await test.step("Add new Quick Bar Action starter brick", async () => {
+    await modListItem.select();
     await modListItem.menuButton.click();
     const modActionMenu = pageEditorPage.getModActionMenu();
     await modActionMenu.addStarterBrick("Quick Bar Action");
@@ -190,11 +205,18 @@ test("Add new starter brick to mod", async ({
         name: "Name",
       }),
     ).toHaveValue("Quick Bar item");
+
+    await modListItem.select();
+    await modListItem.saveButton.click();
+    await verifyModDefinitionSnapshot({
+      modId: modComponentName,
+      snapshotName: "add-quick-bar-starter-brick-to-mod",
+      mode: "diff",
+    });
   });
 
-  await modListItem.select();
-
   await test.step("Add new Sidebar Panel starter brick", async () => {
+    await modListItem.select();
     await modListItem.menuButton.click();
     const modActionMenu = pageEditorPage.getModActionMenu();
     await modActionMenu.addStarterBrick("Sidebar Panel");
@@ -210,11 +232,18 @@ test("Add new starter brick to mod", async ({
 
     const sidebarPage = await getSidebarPage(page, extensionId);
     await expect(sidebarPage.getByText("Example Document")).toBeVisible();
+
+    await modListItem.select();
+    await modListItem.saveButton.click();
+    await verifyModDefinitionSnapshot({
+      modId: modComponentName,
+      snapshotName: "add-sidebar-panel-starter-brick-to-mod",
+      mode: "diff",
+    });
   });
 
-  await modListItem.select();
-
   await test.step("Add new Trigger starter brick", async () => {
+    await modListItem.select();
     await modListItem.menuButton.click();
     const modActionMenu = pageEditorPage.getModActionMenu();
     await modActionMenu.addStarterBrick("Trigger");
@@ -226,14 +255,13 @@ test("Add new starter brick to mod", async ({
         name: "Name",
       }),
     ).toHaveValue("My pbx.vercel.app trigger");
-  });
 
-  await modListItem.select();
-  await modListItem.saveButton.click();
-
-  await verifyModDefinitionSnapshot({
-    modId: modComponentName,
-    snapshotName: "add-starter-brick-to-mod",
-    mode: "current",
+    await modListItem.select();
+    await modListItem.saveButton.click();
+    await verifyModDefinitionSnapshot({
+      modId: modComponentName,
+      snapshotName: "add-trigger-starter-brick-to-mod",
+      mode: "diff",
+    });
   });
 });
