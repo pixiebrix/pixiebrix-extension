@@ -52,6 +52,12 @@ export class ModActionMenu extends BasePageObject {
   get deactivateButton() {
     return this.getByRole("menuitem", { name: "Deactivate" });
   }
+
+  @ModifiesModFormState
+  async addStarterBrick(starterBrickName: StarterBrickUIName) {
+    await this.getByRole("menuitem", { name: "Add starter brick" }).hover();
+    await this.getByRole("menuitem", { name: starterBrickName }).click();
+  }
 }
 
 export class ModListingPanel extends BasePageObject {

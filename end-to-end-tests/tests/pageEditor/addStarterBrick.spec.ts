@@ -21,7 +21,11 @@ import { test, expect } from "../../fixtures/testBase";
 import { type Page, test as base } from "@playwright/test";
 import { getSidebarPage } from "../../utils";
 
-test("Add starter bricks", async ({ page, newPageEditorPage, extensionId }) => {
+test("Add new starter brick", async ({
+  page,
+  newPageEditorPage,
+  extensionId,
+}) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
   const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
@@ -111,5 +115,115 @@ test("Add starter bricks", async ({ page, newPageEditorPage, extensionId }) => {
     const pageRequest = await pageRequestPromise;
     const pageRequestResponse = await pageRequest.response();
     expect(pageRequestResponse.status()).toBe(200);
+  });
+});
+
+test("Add new starter brick to mod", async ({
+  page,
+  newPageEditorPage,
+  extensionId,
+}) => {
+  await page.goto("/");
+  const pageEditorPage = await newPageEditorPage(page.url());
+  const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
+
+  const { modComponentName, modUuid } =
+    await pageEditorPage.modListingPanel.addStarterBrick("Trigger");
+  await pageEditorPage.brickConfigurationPanel.fillField(
+    "name",
+    modComponentName,
+  );
+  await pageEditorPage.saveStandaloneMod(modComponentName, modUuid);
+
+  const modListItem =
+    pageEditorPage.modListingPanel.getModListItemByName(modComponentName);
+  await modListItem.select();
+
+  await test.step("Add new Button starter brick to the mod", async () => {
+    await modListItem.menuButton.click();
+    const modActionMenu = pageEditorPage.getModActionMenu();
+    await modActionMenu.addStarterBrick("Button");
+    await pageEditorPage.selectConnectedPageElement(
+      page.getByRole("link", { name: "navigation" }),
+    );
+
+    await expect(
+      pageEditorPage.getByText("My pbx.vercel.app button"),
+    ).toBeVisible();
+    await expect(brickPipeline).toHaveCount(1);
+    await expect(brickPipeline.first()).toContainText("Button");
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+        name: "Name",
+      }),
+    ).toHaveValue("My pbx.vercel.app button");
+  });
+
+  await modListItem.select();
+
+  await test.step("Add new Context Menu starter brick to mod", async () => {
+    await modListItem.menuButton.click();
+    const modActionMenu = pageEditorPage.getModActionMenu();
+    await modActionMenu.addStarterBrick("Context Menu");
+
+    await expect(brickPipeline).toHaveCount(1);
+    await expect(brickPipeline.first()).toContainText("Context Menu");
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+        name: "Name",
+      }),
+    ).toHaveValue("Context menu item");
+  });
+
+  await modListItem.select();
+
+  await test.step("Add new Quick Bar Action starter brick", async () => {
+    await modListItem.menuButton.click();
+    const modActionMenu = pageEditorPage.getModActionMenu();
+    await modActionMenu.addStarterBrick("Quick Bar Action");
+
+    await expect(brickPipeline).toHaveCount(1);
+    await expect(brickPipeline.first()).toContainText("Quick Bar Action");
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+        name: "Name",
+      }),
+    ).toHaveValue("Quick Bar item");
+  });
+
+  await modListItem.select();
+
+  await test.step("Add new Sidebar Panel starter brick", async () => {
+    await modListItem.menuButton.click();
+    const modActionMenu = pageEditorPage.getModActionMenu();
+    await modActionMenu.addStarterBrick("Sidebar Panel");
+
+    await expect(brickPipeline).toHaveCount(2);
+    await expect(brickPipeline.first()).toContainText("Sidebar Panel");
+    await expect(brickPipeline.nth(1)).toContainText("Render Document");
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+        name: "Name",
+      }),
+    ).toHaveValue("Sidebar Panel");
+
+    const sidebarPage = await getSidebarPage(page, extensionId);
+    await expect(sidebarPage.getByText("Example Document")).toBeVisible();
+  });
+
+  await modListItem.select();
+
+  await test.step("Add new Trigger starter brick", async () => {
+    await modListItem.menuButton.click();
+    const modActionMenu = pageEditorPage.getModActionMenu();
+    await modActionMenu.addStarterBrick("Trigger");
+
+    await expect(brickPipeline).toHaveCount(1);
+    await expect(brickPipeline.first()).toContainText("Trigger");
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+        name: "Name",
+      }),
+    ).toHaveValue("My pbx.vercel.app trigger");
   });
 });
