@@ -27,7 +27,7 @@ import quickBarActionModComponent from "@/pageEditor/starterBricks/quickBar";
 import triggerModComponent from "@/pageEditor/starterBricks/trigger";
 import contextMenuModComponent from "@/pageEditor/starterBricks/contextMenu";
 import sidebarPanelModComponent from "@/pageEditor/starterBricks/sidebar";
-import quickBarProviderModComponent from "@/pageEditor/starterBricks/quickBarProvider";
+import dynamicQuickBarModComponent from "@/pageEditor/starterBricks/dynamicQuickBar";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -43,7 +43,7 @@ const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>([
   [StarterBrickTypes.SIDEBAR_PANEL, sidebarPanelModComponent],
   [StarterBrickTypes.BUTTON, buttonModComponent],
   [StarterBrickTypes.QUICK_BAR_ACTION, quickBarActionModComponent],
-  [StarterBrickTypes.DYNAMIC_QUICK_BAR, quickBarProviderModComponent],
+  [StarterBrickTypes.DYNAMIC_QUICK_BAR, dynamicQuickBarModComponent],
 ]);
 
 const ALL_ADAPTERS = sortBy(

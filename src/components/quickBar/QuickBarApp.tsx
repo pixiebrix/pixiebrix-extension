@@ -51,6 +51,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { onContextInvalidated } from "webext-events";
 import StopPropagation from "@/components/StopPropagation";
 import useScrollLock from "@/hooks/useScrollLock";
+// eslint-disable-next-line no-restricted-imports -- being used in initQuickBarApp
 import { flagOn } from "@/auth/featureFlagStorage";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
 

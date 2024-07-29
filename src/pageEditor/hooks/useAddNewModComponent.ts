@@ -47,6 +47,9 @@ export type AddNewModComponent = (
 function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   const dispatch = useDispatch();
   const { setInsertingStarterBrickType } = useInsertPane();
+  // XXX: useFlags is async. The flag query might not be initialized by the time the callback is called. Ensure
+  // useFlags has already been used on the page, e.g., the AddStarterBrickButton, to ensure the flags have loaded by
+  // the time the returned callback is called.
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
     (x) => x.settings.suggestElements ?? false,
@@ -125,7 +128,13 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
         });
       }
     },
-    [dispatch, flagOff, getInitialModComponentFormState],
+    [
+      dispatch,
+      flagOff,
+      suggestElements,
+      getInitialModComponentFormState,
+      setInsertingStarterBrickType,
+    ],
   );
 }
 

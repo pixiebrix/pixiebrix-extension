@@ -21,7 +21,7 @@ import {
 } from "@/types/sidebarTypes";
 import { isEmpty } from "lodash";
 import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
-import { getVisiblePanelCount } from "@/store/sidebar/utils";
+import { getVisiblePanelCount } from "@/store/sidebar/sidebarUtils";
 import { createSelector } from "@reduxjs/toolkit";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";

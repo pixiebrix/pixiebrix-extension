@@ -34,7 +34,7 @@ const useDeactivateUnassignedDeploymentsEffect = (
       dispatch,
       unassignedModComponents,
     });
-  }, [unassignedModComponents]);
+  }, [dispatch, unassignedModComponents]);
 };
 
 export default useDeactivateUnassignedDeploymentsEffect;

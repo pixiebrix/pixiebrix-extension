@@ -29,14 +29,14 @@ jest.mock("@/utils/iframeUtils", () => ({
 describe("SetToolbarBadge", () => {
   it("runs without error", async () => {
     const expectedText = "test";
+    const options = brickOptionsFactory();
     await expect(
-      brick.run(
-        unsafeAssumeValidArg({ text: expectedText }),
-        brickOptionsFactory(),
-      ),
+      brick.run(unsafeAssumeValidArg({ text: expectedText }), options),
     ).resolves.not.toThrow();
 
-    expect(setToolbarBadge).toHaveBeenCalledWith(expectedText);
+    expect(setToolbarBadge).toHaveBeenCalledWith(expectedText, {
+      modComponentRef: options.meta.modComponentRef,
+    });
   });
 
   it("throws a BusinessError if run in an iframe", async () => {

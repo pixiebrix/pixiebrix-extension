@@ -21,6 +21,15 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { forbidContext, isBrowserSidebarTopFrame } from "@/utils/expectContext";
 import { type PageTarget, messenger, getThisFrame } from "webext-messenger";
 import { isContentScript } from "webext-detect";
+import { type ModComponentRef } from "@/types/modComponentTypes";
+
+/**
+ * Options for opening the side panel. E.g., the default panel to open.
+ * @since 2.0.6
+ */
+type OpenSidePanelOptions = {
+  initialModComponentRef?: ModComponentRef;
+};
 
 /**
  * Returns true if an error showing sidebar is due to a missing user gesture.
@@ -29,7 +38,10 @@ export function isUserGestureRequiredError(error: unknown): boolean {
   return getErrorMessage(error).includes("user gesture");
 }
 
-export async function openSidePanel(tabId: number): Promise<void> {
+export async function openSidePanel(
+  tabId: number,
+  options: OpenSidePanelOptions = {},
+): Promise<void> {
   if (isBrowserSidebarTopFrame()) {
     console.warn(
       'The sidePanel called "openSidePanel". This should not happen.',
@@ -42,17 +54,21 @@ export async function openSidePanel(tabId: number): Promise<void> {
     "The content script doesn't have direct access to the `sidePanel` API. Call `showMySidePanel` instead",
   );
 
-  await _openSidePanel(tabId);
+  await _openSidePanel(tabId, options);
 }
 
-async function _openSidePanel(tabId: number): Promise<void> {
+async function _openSidePanel(
+  tabId: number,
+  options: OpenSidePanelOptions = {},
+): Promise<void> {
   // Simultaneously enable and open the side panel.
   // If we wait too long before calling .open(), we will lose the "user gesture" permission
   // There is no way to know whether the side panel is open yet, so we call it regardless.
   void chrome.sidePanel.setOptions({
     tabId,
     enabled: true,
-    path: getSidebarPath(tabId), // Very seldom, the side panel will not open if this is not set again here
+    // Very seldom, the side panel will not open if path is not set again here
+    path: getSidebarPath(tabId, options),
   });
 
   try {
@@ -86,8 +102,19 @@ async function isSidePanelOpen(tabId: number): Promise<boolean> {
   }
 }
 
-export function getSidebarPath(tabId: number): string {
-  return "/sidebar.html?tabId=" + tabId;
+export function getSidebarPath(
+  tabId: number,
+  { initialModComponentRef }: OpenSidePanelOptions = {},
+): string {
+  const paramObj: Record<string, string> = {
+    tabId: tabId.toString(),
+  };
+
+  if (initialModComponentRef) {
+    paramObj.initialModComponentRef = JSON.stringify(initialModComponentRef);
+  }
+
+  return "/sidebar.html?" + new URLSearchParams(paramObj).toString();
 }
 
 export function getSidebarTarget(tabId: number): PageTarget {

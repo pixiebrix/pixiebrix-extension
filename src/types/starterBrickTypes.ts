@@ -30,8 +30,8 @@ import { type ValueOf } from "type-fest";
  * Constants for starter brick types/kinds. Used to update names in code to match UI display names without migrating
  * persisted values.
  */
+// Match terminology in the Page Editor UI
 export const StarterBrickTypes = {
-  // Match terminology in the Page Editor UI
   SIDEBAR_PANEL: "actionPanel",
   BUTTON: "menuItem",
   TRIGGER: "trigger",
