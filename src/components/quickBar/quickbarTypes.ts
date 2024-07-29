@@ -18,7 +18,7 @@
 /**
  * Shape of arguments passed to action generators for dynamic QuickBar action generator.
  *
- * @see QuickBarProviderExtensionPoint
+ * @see DynamicQuickBarStarterBrickABC
  */
 export type GeneratorArgs = {
   /**

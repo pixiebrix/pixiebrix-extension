@@ -20,7 +20,7 @@ import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Manifest } from "webextension-polyfill";
 
-export type QuickBarProviderConfig = {
+export type DynamicQuickBarConfig = {
   /**
    * A root action. If provided, produced actions will be nested under this action.
    */
@@ -47,9 +47,9 @@ export type QuickBarProviderConfig = {
   generator: BrickConfig | BrickPipeline;
 };
 
-export type QuickBarProviderDefaultOptions = Record<string, string | string[]>;
+export type DynamicQuickBarDefaultOptions = Record<string, string | string[]>;
 
-export interface QuickBarProviderDefinition extends StarterBrickDefinitionProp {
+export interface DynamicQuickBarDefinition extends StarterBrickDefinitionProp {
   documentUrlPatterns?: Manifest.MatchPattern[];
-  defaultOptions?: QuickBarProviderDefaultOptions;
+  defaultOptions?: DynamicQuickBarDefaultOptions;
 }
