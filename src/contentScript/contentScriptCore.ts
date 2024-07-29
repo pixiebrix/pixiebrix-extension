@@ -47,7 +47,7 @@ import { initDeferredLoginController } from "@/contentScript/integrations/deferr
 import { debounce } from "lodash";
 import { flagOn } from "@/auth/featureFlagStorage";
 
-const DISABLE_SANDBOX_SRCDOC_HACK_FLAG = "disable-iframe-srcdoc-sandbox-hack";
+const SANDBOX_SRCDOC_HACK_FLAG = "iframe-srcdoc-sandbox-hack";
 
 setPlatform(contentScriptPlatform);
 
@@ -79,6 +79,11 @@ onUncaughtError((error) => {
  * See https://issues.chromium.org/issues/355256366
  */
 const ensureSandboxedSrcdocIframeInjection = async () => {
+  const isSandboxSrcdocHackEnabled = await flagOn(SANDBOX_SRCDOC_HACK_FLAG);
+  if (!isSandboxSrcdocHackEnabled) {
+    return;
+  }
+
   const applyFixToIframes = () => {
     // Use the faster querySelector first to check if there are any iframes that need fixing
     if (!document.querySelector("iframe[srcdoc][sandbox]")) {
@@ -97,10 +102,6 @@ const ensureSandboxedSrcdocIframeInjection = async () => {
       }
     }
   };
-
-  if (await flagOn(DISABLE_SANDBOX_SRCDOC_HACK_FLAG)) {
-    return;
-  }
 
   const domObserver = new MutationObserver(
     debounce(applyFixToIframes, 800, {
