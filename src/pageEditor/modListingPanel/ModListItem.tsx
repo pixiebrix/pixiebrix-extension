@@ -42,7 +42,7 @@ import * as semver from "semver";
 import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
 import { useGetModDefinitionQuery } from "@/data/service/api";
 import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
-import { ModMetadata } from "@/types/modComponentTypes";
+import { type ModMetadata } from "@/types/modComponentTypes";
 
 export type ModListItemProps = PropsWithChildren<{
   modMetadata: ModMetadata;
@@ -69,7 +69,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
     selectActiveModComponentFormState,
   );
   const addNewModComponent = useAddNewModComponent(modMetadata);
-  console.log("*** modMetadata", modMetadata);
+
   const { id: modId, name: savedName, version: activatedVersion } = modMetadata;
   const isActive = activeModId === modId;
 
