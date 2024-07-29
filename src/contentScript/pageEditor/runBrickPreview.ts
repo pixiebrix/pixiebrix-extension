@@ -61,7 +61,7 @@ export async function runBrickPreview({
     // below with `logValues: false`
     index: 0,
     // Force isLastBlock so blockReducer does not complain about the outputKey being forced to undefined
-    isLastBlock: true,
+    isLastBrick: true,
     // `root` is over-ridden below if rootSelector is provided
     root: document,
     // We're forcing apiVersion: 2 or higher above values must come from the context
