@@ -122,6 +122,7 @@ test("Add new starter brick to mod", async ({
   page,
   newPageEditorPage,
   extensionId,
+  verifyModDefinitionSnapshot,
 }) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
@@ -225,5 +226,14 @@ test("Add new starter brick to mod", async ({
         name: "Name",
       }),
     ).toHaveValue("My pbx.vercel.app trigger");
+  });
+
+  await modListItem.select();
+  await modListItem.saveButton.click();
+
+  await verifyModDefinitionSnapshot({
+    modId: modComponentName,
+    snapshotName: "add-starter-brick-to-mod",
+    mode: "current",
   });
 });

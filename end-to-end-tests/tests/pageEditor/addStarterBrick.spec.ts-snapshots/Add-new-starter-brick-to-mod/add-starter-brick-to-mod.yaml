@@ -1,0 +1,192 @@
+kind: recipe
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - '*'
+metadata:
+  id: >-
+    @extension-e2e-test-unaffiliated/test-trigger-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
+  name: Test Trigger 00000000-0000-0000-0000-000000000000
+  version: 1.0.0
+  description: Created with the PixieBrix Page Editor
+apiVersion: v3
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: trigger
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+      isAvailable:
+        matchPatterns:
+          - https://pbx.vercel.app/*
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      trigger: load
+      background: true
+      reportMode: once
+      showErrors: true
+  extensionPoint2:
+    kind: extensionPoint
+    definition:
+      type: menuItem
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+      isAvailable:
+        matchPatterns:
+          - https://pbx.vercel.app/*
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      containerSelector: ul:has(> * > a:contains('navigation'))
+      targetMode: document
+      attachMode: once
+      position: append
+      template: <li><a href="#">{{{ caption }}}</a></li>
+  extensionPoint3:
+    kind: extensionPoint
+    definition:
+      type: contextMenu
+      documentUrlPatterns:
+        - '*://*/*'
+      contexts:
+        - all
+      targetMode: eventTarget
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+      isAvailable:
+        matchPatterns:
+          - '*://*/*'
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+  extensionPoint4:
+    kind: extensionPoint
+    definition:
+      type: quickBar
+      documentUrlPatterns:
+        - '*://*/*'
+      contexts:
+        - all
+      targetMode: eventTarget
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+        - '@pixiebrix/selection'
+      isAvailable:
+        matchPatterns:
+          - '*://*/*'
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+  extensionPoint5:
+    kind: extensionPoint
+    definition:
+      type: actionPanel
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+      isAvailable:
+        matchPatterns:
+          - '*://*/*'
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      trigger: load
+      debounce:
+        waitMillis: 250
+        leading: false
+        trailing: true
+      customEvent: null
+extensionPoints:
+  - label: Test Trigger 00000000-0000-0000-0000-000000000000
+    config:
+      action: []
+    id: extensionPoint
+    services: {}
+  - label: My pbx.vercel.app trigger
+    config:
+      action: []
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint
+    services: {}
+  - label: My pbx.vercel.app button
+    config:
+      caption: Action
+      action: []
+      dynamicCaption: false
+      onSuccess: true
+      synchronous: false
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint2
+    services: {}
+  - label: Context menu item
+    config:
+      title: Context menu item
+      onSuccess: true
+      action: []
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint3
+    services: {}
+  - label: Quick Bar item
+    config:
+      title: Quick Bar item
+      action: []
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint4
+    services: {}
+  - label: Sidebar Panel
+    config:
+      heading: Sidebar Panel
+      body:
+        - id: '@pixiebrix/document'
+          rootMode: document
+          config:
+            body:
+              - type: container
+                config: {}
+                children:
+                  - type: row
+                    config: {}
+                    children:
+                      - type: column
+                        config: {}
+                        children:
+                          - type: header
+                            config:
+                              title: Example document
+                              heading: h1
+                  - type: row
+                    config: {}
+                    children:
+                      - type: column
+                        config: {}
+                        children:
+                          - type: text
+                            config:
+                              text: Example text element. **Markdown** is supported.
+                              enableMarkdown: true
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint5
+    services: {}
