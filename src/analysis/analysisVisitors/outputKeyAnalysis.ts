@@ -17,13 +17,11 @@
 
 import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
-import { type BrickType } from "@/runtime/runtimeTypes";
 import { AnalysisVisitorWithResolvedBricksABC } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/types/annotationTypes";
+import { brickTypeSupportsOutputKey } from "@/runtime/runtimeUtils";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
-
-const blockTypesWithEmptyOutputKey: BrickType[] = ["effect", "renderer"];
 
 class OutputKeyAnalysis extends AnalysisVisitorWithResolvedBricksABC {
   get id() {
@@ -83,15 +81,16 @@ class OutputKeyAnalysis extends AnalysisVisitorWithResolvedBricksABC {
       return;
     }
 
-    const { type: blockType } = typedBlock;
-    if (blockTypesWithEmptyOutputKey.includes(blockType ?? "")) {
+    const { type: brickType } = typedBlock;
+    if (brickType && !brickTypeSupportsOutputKey(brickType)) {
       if (!outputKey) {
         return;
       }
 
-      errorMessage = `Output variable name must be empty for "${blockType}" block.`;
+      errorMessage = `Output variable name must be empty for "${brickType}" block.`;
     } else if (!outputKey) {
-      errorMessage = "This field is required.";
+      // As of 2.0.7, outputKeys are optional
+      return;
     } else if (outputKeyRegex.test(outputKey)) {
       return;
     } else {
