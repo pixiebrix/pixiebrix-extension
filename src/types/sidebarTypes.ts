@@ -28,7 +28,6 @@ import { type ModComponentState } from "@/store/extensionsTypes";
 import { isObject } from "@/utils/objectUtils";
 import { type RunMetadata } from "@/types/runtimeTypes";
 import type { ModActivationConfig } from "@/types/modTypes";
-import type { Nullishable } from "@/utils/nullishUtils";
 import type { ModComponentRef } from "@/types/modComponentTypes";
 
 /**
@@ -334,8 +333,7 @@ export type ActivatePanelOptions = {
 export type PanelRunMetadata = Pick<RunMetadata, "runId" | "modComponentRef">;
 
 export type SidebarState = SidebarEntries & {
-  activeKey: Nullishable<string>;
-
+  activeKey?: string;
   /**
    * Pending panel activation request.
    *

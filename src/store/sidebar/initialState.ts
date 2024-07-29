@@ -23,7 +23,6 @@ export const initialSidebarState: SidebarState = {
   temporaryPanels: [],
   staticPanels: [],
   modActivationPanel: null,
-  activeKey: null,
   pendingActivePanel: null,
   closedTabs: {},
 } as const;
