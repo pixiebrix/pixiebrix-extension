@@ -66,7 +66,7 @@ const OutputVariableField: React.FC<{
         );
       }}
       placeholder={
-        isOutputDisabled ? "Not supported for brick" : "No output variable"
+        isOutputDisabled ? "Not supported for brick" : "Enter a variable name"
       }
     />
   );
