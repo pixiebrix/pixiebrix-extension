@@ -78,7 +78,7 @@ onUncaughtError((error) => {
  *
  * See https://issues.chromium.org/issues/355256366
  */
-const ensureSandboxedSrcdocIframeInjection = async () => {
+const initSandboxedSrcdocIframeInjection = async () => {
   const isSandboxSrcdocHackEnabled = await flagOn(SANDBOX_SRCDOC_HACK_FLAG);
   if (!isSandboxSrcdocHackEnabled) {
     return;
@@ -110,7 +110,7 @@ export async function init(): Promise<void> {
   // Since 1.8.10, we inject the platform into the runtime
   initRuntime(brickRegistry);
   initDeferredLoginController();
-  void ensureSandboxedSrcdocIframeInjection();
+  void initSandboxedSrcdocIframeInjection();
 
   initTelemetry();
   initToaster();
