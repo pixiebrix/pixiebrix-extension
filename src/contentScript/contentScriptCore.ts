@@ -44,8 +44,8 @@ import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import axios from "axios";
 import { initDeferredLoginController } from "@/contentScript/integrations/deferredLoginController";
-import { debounce } from "lodash";
 import { flagOn } from "@/auth/featureFlagStorage";
+import initialize from "@/vendors/jQueryInitialize";
 
 const SANDBOX_SRCDOC_HACK_FLAG = "iframe-srcdoc-sandbox-hack";
 
@@ -84,36 +84,17 @@ const ensureSandboxedSrcdocIframeInjection = async () => {
     return;
   }
 
-  const applyFixToIframes = () => {
-    // Use the faster querySelector first to check if there are any iframes that need fixing
-    if (!document.querySelector("iframe[srcdoc][sandbox]")) {
-      return;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- selecting iframes with srcdoc and sandbox messes up type inference for iframe elements
-    const iframes = document.querySelectorAll(
-      "iframe[srcdoc][sandbox]",
-    ) as NodeListOf<HTMLIFrameElement>;
-    if (iframes.length > 0) {
-      for (const iframe of iframes) {
-        iframe.removeAttribute("sandbox");
-        // eslint-disable-next-line no-self-assign -- force the iframe to reload
-        iframe.srcdoc = iframe.srcdoc;
-      }
-    }
-  };
-
-  const domObserver = new MutationObserver(
-    debounce(applyFixToIframes, 800, {
-      leading: true,
-      maxWait: 1600,
-    }),
+  initialize(
+    "iframe[srcdoc][sandbox]",
+    (_index: number, element: HTMLIFrameElement) => {
+      const clonedIframe = element.cloneNode(true) as HTMLIFrameElement;
+      clonedIframe.removeAttribute("sandbox");
+      element.replaceWith(clonedIframe);
+    },
+    {
+      target: document,
+    },
   );
-
-  domObserver.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
 };
 
 export async function init(): Promise<void> {
