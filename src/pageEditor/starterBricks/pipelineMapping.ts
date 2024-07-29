@@ -122,15 +122,15 @@ export function omitEditorMetadata(pipeline: BrickPipeline): BrickPipeline {
  * @see NormalizePipelineVisitor
  */
 // Can't use NormalizePipelineVisitor because it doesn't work on an arbitrary elements in the document builder
-export function addBrickInstanceIdsInPlace(obj: unknown): void {
+export function assignBrickInstanceIdsInPlace(obj: unknown): void {
   if (isPipelineExpression(obj)) {
     for (const brick of obj.__value__) {
       brick.instanceId = uuidv4();
-      addBrickInstanceIdsInPlace(brick);
+      assignBrickInstanceIdsInPlace(brick);
     }
   } else if (obj && typeof obj === "object") {
     for (const value of Object.values(obj)) {
-      addBrickInstanceIdsInPlace(value);
+      assignBrickInstanceIdsInPlace(value);
     }
   }
 }

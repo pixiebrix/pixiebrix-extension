@@ -20,7 +20,7 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import getElementCollectionName from "@/pageEditor/documentBuilder/edit/getElementCollectionName";
 import { produce } from "immer";
 import { useCallback } from "react";
-import { addBrickInstanceIdsInPlace } from "@/pageEditor/starterBricks/pipelineMapping";
+import { assignBrickInstanceIdsInPlace } from "@/pageEditor/starterBricks/pipelineMapping";
 
 /**
  * Hook to duplicate a Document Builder element.
@@ -45,7 +45,7 @@ function useDuplicateElement(documentBodyName: string) {
           // eslint-disable-next-line security/detect-object-injection -- number
           elementsCollection[elementIndex],
           (elementDraft) => {
-            addBrickInstanceIdsInPlace(elementDraft);
+            assignBrickInstanceIdsInPlace(elementDraft);
           },
         );
 
