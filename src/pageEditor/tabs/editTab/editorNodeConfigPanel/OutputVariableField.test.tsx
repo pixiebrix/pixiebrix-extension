@@ -55,14 +55,14 @@ describe("OutputVariableField", () => {
         dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
           actions.setActiveNodeId(
-            formState.modComponent.brickPipeline[0].instanceId,
+            formState.modComponent.brickPipeline[0]!.instanceId!,
           ),
         );
       },
     });
 
     // Assert initial value to verify test setup
-    expect(getFormState().modComponent.brickPipeline[0].outputKey).toBe(
+    expect(getFormState()!.modComponent.brickPipeline[0].outputKey).toBe(
       validateOutputKey("output"),
     );
 
@@ -72,14 +72,14 @@ describe("OutputVariableField", () => {
 
     expect(screen.getByLabelText("Output Variable")).toHaveValue("newOutput");
 
-    expect(getFormState().modComponent.brickPipeline[0].outputKey).toBe(
+    expect(getFormState()!.modComponent.brickPipeline[0].outputKey).toBe(
       validateOutputKey("newOutput"),
     );
 
     await user.clear(screen.getByLabelText("Output Variable"));
 
     expect(
-      getFormState().modComponent.brickPipeline[0].outputKey,
+      getFormState()!.modComponent.brickPipeline[0].outputKey,
     ).toBeUndefined();
   });
 });

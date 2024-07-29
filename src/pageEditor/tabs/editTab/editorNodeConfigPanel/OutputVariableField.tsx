@@ -22,6 +22,7 @@ import { brickTypeSupportsOutputKey } from "@/runtime/runtimeUtils";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import { type TypedBrickPair } from "@/bricks/registry";
 import { useField } from "formik";
+import { Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Field for output variable name.
@@ -30,7 +31,7 @@ import { useField } from "formik";
 const OutputVariableField: React.FC<{
   name: string;
   className?: string;
-  brickInfo: TypedBrickPair;
+  brickInfo: Nullishable<TypedBrickPair>;
 }> = ({ name, className, brickInfo }) => {
   const [{ value }, , { setValue }] = useField<string | undefined>(name);
 
