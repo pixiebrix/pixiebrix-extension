@@ -39,4 +39,30 @@ export class ConfigurationForm extends BasePageObject {
   async toggleSwitch(label: string) {
     await this.getSwitchByLabel(label).click();
   }
+
+  @ModifiesModFormState
+  async chooseMultiselectOption(label: string, option: string) {
+    await this.getByLabel(label).click();
+    await this.getByRole("option", { name: option }).click();
+  }
+
+  @ModifiesModFormState
+  async chooseSelectOption(label: string, option: string) {
+    await this.getByLabel(label).selectOption(option);
+  }
+
+  @ModifiesModFormState
+  async waitForModFormStateToUpdate() {}
+
+  @ModifiesModFormState
+  async clickShortcut(fieldLabel: string, linkLabel: string) {
+    const field = await this.getFieldGroup(fieldLabel);
+    await field.getByRole("button", { name: linkLabel, exact: true }).click();
+  }
+
+  async getFieldGroup(label: string) {
+    return this.getByTestId("field-template-form-group").filter({
+      hasText: label,
+    });
+  }
 }

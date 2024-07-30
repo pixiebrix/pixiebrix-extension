@@ -158,7 +158,9 @@ export class ActivateModPage extends BasePageObject {
   async goto() {
     await this.page.goto(this.activateModUrl);
 
-    await expect(this.getByText("Activate Mod")).toBeVisible();
+    await expect(
+      this.getByRole("heading", { name: "Activate " }),
+    ).toBeVisible();
     // Loading the mod details may take a long time. Using ensureVisibility because the modId may be attached and hidden
     await ensureVisibility(this.getByText(this.modId), {
       timeout: 10_000,
