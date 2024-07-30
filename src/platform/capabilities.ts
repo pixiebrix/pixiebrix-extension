@@ -43,6 +43,8 @@ export const platformCapabilities = [
   "clipboardWrite",
   // Play known sound effects
   "audio",
+  // Capture audio and screenshots
+  "capture",
   // PixieBrix quick bar or, eventually, the native app's command palette
   "quickBar",
   // PixieBrix selection menu or, eventually, the native app's native selection menu

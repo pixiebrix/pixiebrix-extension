@@ -266,7 +266,6 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
           label="Search"
           placeholder="Search for a property or value"
           onChange={onChangeQuery}
-          fitLabelWidth
         />
       )}
       {labelText && (

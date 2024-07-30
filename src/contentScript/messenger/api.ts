@@ -124,3 +124,5 @@ export const updateDraftModComponent = getNotifier(
   "UPDATE_DRAFT_MOD_COMPONENT",
 );
 export const checkAvailable = getMethod("CHECK_AVAILABLE");
+
+export const emitAudioEvent = getNotifier("AUDIO_CAPTURE_EMIT");

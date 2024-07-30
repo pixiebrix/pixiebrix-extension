@@ -25,6 +25,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import styles from "./PopoverInfoLabel.module.scss";
 
+/**
+ * A span with an info icon that displays a tooltip on hover.
+ * @param name a name unique to the popover
+ * @param label the label to display
+ * @param description the description to show in the tooltip
+ */
 const PopoverInfoLabel: React.FC<{
   name: string;
   label: string;

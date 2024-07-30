@@ -37,14 +37,14 @@ import { type Schema } from "@/types/schemaTypes";
 import { produce } from "immer";
 import { joinName } from "@/utils/formUtils";
 import { ActiveField } from "./ActiveField";
-import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export type FormEditorProps = {
   /**
    * The Formik name of the form field.
    */
   name: string;
-  activeField: Nullishable<string>;
+  activeField: string | null;
   setActiveField: SetActiveField;
   fieldTypes?: SelectStringOption[];
 };
@@ -136,7 +136,8 @@ const FormEditor: React.FC<FormEditorProps> = ({
     );
     const nextActiveField = nextUiOrder.length > 1 ? nextUiOrder[0] : undefined;
 
-    setActiveField(nextActiveField);
+    // Convert undefined to null
+    setActiveField(nextActiveField ?? null);
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
       normalizeSchema(draft);

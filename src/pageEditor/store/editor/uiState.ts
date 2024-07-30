@@ -25,7 +25,7 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;
 
-function makeInitialDataTabState(): DataPanelTabUIState {
+export function makeInitialDataTabState(): DataPanelTabUIState {
   return {
     query: "",
     treeExpandedState: {},

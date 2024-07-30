@@ -262,7 +262,7 @@ async function addABlock(addButton: Element, blockName: string) {
 
 describe("renders", () => {
   beforeEach(() => {
-    // :barf: these Jest snapshot contains sequence UUIDs
+    // :barf: these Jest snapshots contains sequence UUIDs
     formStateFactory.resetSequence();
   });
 

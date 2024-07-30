@@ -16,12 +16,10 @@
  */
 
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useSelector } from "react-redux";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -43,18 +41,17 @@ const ModComponentFormStateTab: React.FC = () => {
   );
 
   return (
-    <DataTab eventKey={DataPanelTabKey.ModComponentFormState}>
-      <div className="text-info">
-        <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
-        developers
-      </div>
+    <DataTabPane
+      eventKey={DataPanelTabKey.ModComponentFormState}
+      isDeveloperOnly
+    >
       <DataTabJsonTree
         data={{ activeElement: activeModComponentFormState, annotations }}
         searchable
         tabKey={DataPanelTabKey.ModComponentFormState}
         label="Mod Component Form State"
       />
-    </DataTab>
+    </DataTabPane>
   );
 };
 

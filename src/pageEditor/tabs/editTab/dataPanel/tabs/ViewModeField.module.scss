@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,16 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.tabNav {
-  font-size: small;
-}
-
-.tabContent {
-  flex: 1;
+.viewToggle {
   display: flex;
-  flex-direction: column;
+  gap: 1em;
+  font-size: 80%;
+
+  // Signify the user can click on the label to change the mode
+  :global(.form-check),
+  input[type="radio"],
+  label[title] {
+    cursor: pointer;
+  }
 }
 
-.tabPane {
-  padding-top: 1rem;
+.formGroup {
+  :global(.form-label + div) {
+    align-content: center;
+  }
+
+  margin-bottom: 0;
 }
