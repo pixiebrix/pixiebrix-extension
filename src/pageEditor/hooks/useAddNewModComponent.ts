@@ -38,10 +38,13 @@ import { getExampleBrickPipeline } from "@/pageEditor/panes/insert/exampleStarte
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
+import { type ModMetadata } from "@/types/modComponentTypes";
 
-type AddNewModComponent = (config: ModComponentFormStateAdapter) => void;
+export type AddNewModComponent = (
+  adapter: ModComponentFormStateAdapter,
+) => void;
 
-function useAddNewModComponent(): AddNewModComponent {
+function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   const dispatch = useDispatch();
   const { setInsertingStarterBrickType } = useInsertPane();
   // XXX: useFlags is async. The flag query might not be initialized by the time the callback is called. Ensure
@@ -52,6 +55,41 @@ function useAddNewModComponent(): AddNewModComponent {
     (x) => x.settings.suggestElements ?? false,
   );
 
+  const getInitialModComponentFormState = useCallback(
+    async (
+      adapter: ModComponentFormStateAdapter,
+    ): Promise<ModComponentFormState> => {
+      let element = null;
+      if (adapter.selectNativeElement) {
+        setInsertingStarterBrickType(adapter.starterBrickType);
+        element = await adapter.selectNativeElement(
+          inspectedTab,
+          suggestElements,
+        );
+        setInsertingStarterBrickType(null);
+      }
+
+      const url = await getCurrentInspectedURL();
+      const metadata = internalStarterBrickMetaFactory();
+      const initialFormState = adapter.fromNativeElement(
+        url,
+        metadata,
+        element,
+      );
+
+      initialFormState.modComponent.brickPipeline = getExampleBrickPipeline(
+        adapter.starterBrickType,
+      );
+
+      if (modMetadata) {
+        initialFormState.modMetadata = modMetadata;
+      }
+
+      return initialFormState as ModComponentFormState;
+    },
+    [modMetadata, setInsertingStarterBrickType, suggestElements],
+  );
+
   return useCallback(
     async (adapter: ModComponentFormStateAdapter) => {
       if (adapter.flag && flagOff(adapter.flag)) {
@@ -60,26 +98,7 @@ function useAddNewModComponent(): AddNewModComponent {
       }
 
       try {
-        let element = null;
-        if (adapter.selectNativeElement) {
-          setInsertingStarterBrickType(adapter.starterBrickType);
-          element = await adapter.selectNativeElement(
-            inspectedTab,
-            suggestElements,
-          );
-        }
-
-        const url = await getCurrentInspectedURL();
-        const metadata = internalStarterBrickMetaFactory();
-        const initialFormState = adapter.fromNativeElement(
-          url,
-          metadata,
-          element,
-        ) as ModComponentFormState;
-
-        initialFormState.modComponent.brickPipeline = getExampleBrickPipeline(
-          adapter.starterBrickType,
-        );
+        const initialFormState = await getInitialModComponentFormState(adapter);
 
         dispatch(actions.addModComponentFormState(initialFormState));
         dispatch(actions.checkActiveModComponentAvailability());
@@ -107,11 +126,15 @@ function useAddNewModComponent(): AddNewModComponent {
           message: `Error adding ${adapter.label.toLowerCase()}`,
           error,
         });
-      } finally {
-        setInsertingStarterBrickType(null);
       }
     },
-    [dispatch, flagOff, suggestElements, setInsertingStarterBrickType],
+    [
+      dispatch,
+      flagOff,
+      suggestElements,
+      getInitialModComponentFormState,
+      setInsertingStarterBrickType,
+    ],
   );
 }
 

@@ -15,15 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import type { Metadata } from "@/types/registryTypes";
 import type { UUID } from "@/types/stringTypes";
 
 export type ModComponentSidebarItem = ModComponentBase | ModComponentFormState;
 
 export type ModSidebarItem = {
-  modMetadata: Metadata;
+  modMetadata: ModMetadata;
   modComponents: ModComponentSidebarItem[];
 };
 

@@ -152,7 +152,8 @@ export class PageEditorPage extends BasePageObject {
     await modListItem.select();
 
     await modListItem.menuButton.click();
-    await modListItem.copyButton.click();
+    const actionMenu = modListItem.modActionMenu;
+    await actionMenu.copyButton.click();
 
     const createModModal = new CreateModModal(this.getByRole("dialog"));
     const modId = await createModModal.copyMod(modName, modUuid);
@@ -165,7 +166,8 @@ export class PageEditorPage extends BasePageObject {
     await modListItem.select();
 
     await modListItem.menuButton.click();
-    await modListItem.deactivateButton.click();
+    const actionMenu = modListItem.modActionMenu;
+    await actionMenu.deactivateButton.click();
 
     const deactivateModModal = new DeactivateModModal(this.getByRole("dialog"));
     await deactivateModModal.deactivateButton.click();

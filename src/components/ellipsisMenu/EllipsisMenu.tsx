@@ -16,8 +16,7 @@
  */
 
 import { type MutableRefObject, type ReactElement } from "react";
-import { type RequireExactlyOne } from "type-fest";
-import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
+import { Menu, MenuItem, MenuButton, SubMenu } from "@szhsin/react-menu";
 import React from "react";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,35 +25,35 @@ import "@szhsin/react-menu/dist/transitions/slide.css";
 import styles from "./EllipsisMenu.module.scss";
 import cx from "classnames";
 
-type EllipsisMenuItemInternal = {
+type MenuItemBase = {
   /**
    * User-visible display for the item, generally text of some sort
    */
   title: string;
-
   icon?: ReactElement;
-
-  /**
-   * The "on select" action for the item
-   * You should provide either this or href, but not both
-   */
-  action: (() => void) | null;
-
-  /**
-   * The href for the item, if it's a link
-   * You should provide either this or action, but not both
-   */
-  href: string | null;
-
   className?: string;
   hide?: boolean;
   disabled?: boolean;
 };
 
-export type EllipsisMenuItem = RequireExactlyOne<
-  EllipsisMenuItemInternal,
-  "action" | "href"
->;
+type ActionEllipsisMenuItem = MenuItemBase & {
+  action: (() => void) | null;
+};
+
+type LinkEllipsisMenuItem = MenuItemBase & {
+  href: string | null;
+};
+
+type SubmenuEllipsisMenuItem = MenuItemBase & {
+  submenu: Array<
+    LinkEllipsisMenuItem | ActionEllipsisMenuItem | SubmenuEllipsisMenuItem
+  >;
+};
+
+export type EllipsisMenuItem =
+  | LinkEllipsisMenuItem
+  | ActionEllipsisMenuItem
+  | SubmenuEllipsisMenuItem;
 
 type EllipsisMenuProps = {
   ariaLabel?: string;
@@ -71,26 +70,81 @@ type EllipsisMenuProps = {
   boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 
   /**
-   * The className prop for the menu button toggle.
+   * True to render the dropdown menu in a portal in order to avoid clipping issues with e.g. scrollable containers
    */
-  menuButtonClassName?: string;
+  portal?: boolean;
+
+  /**
+   * The classNames prop for the menu and/or menu button toggle.
+   */
+  classNames?: {
+    menu?: string;
+    menuButton?: string;
+  };
+};
+
+const getMenuItemComponent = (item: EllipsisMenuItem): ReactElement => {
+  if ("href" in item) {
+    return (
+      <MenuItem
+        key={item.title}
+        href={item.href ?? undefined}
+        className={cx(styles.menuItem, item.className)}
+        disabled={item.disabled}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {item.icon}&nbsp;{item.title}
+      </MenuItem>
+    );
+  }
+
+  if ("submenu" in item) {
+    const label = item.icon ? (
+      <>
+        {item.icon}&nbsp;{item.title}
+      </>
+    ) : (
+      item.title
+    );
+
+    return (
+      <SubMenu label={label} key={item.title}>
+        {item.submenu.map((subItem) => getMenuItemComponent(subItem))}
+      </SubMenu>
+    );
+  }
+
+  return (
+    <MenuItem
+      key={item.title}
+      onClick={item.action ?? undefined}
+      className={cx(styles.menuItem, item.className)}
+      disabled={item.disabled}
+    >
+      {item.icon}&nbsp;{item.title}
+    </MenuItem>
+  );
 };
 
 const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
   ariaLabel,
   items,
   boundingBoxRef,
-  menuButtonClassName,
+  portal,
+  classNames,
 }) => (
   <Menu
     align="end"
     direction="bottom"
     gap={4}
     boundingBoxRef={boundingBoxRef}
+    portal={portal}
+    className={classNames?.menu}
     menuButton={
       <MenuButton
         aria-label={ariaLabel}
-        className={cx(styles.button, menuButtonClassName)}
+        className={cx(styles.button, classNames?.menuButton)}
         data-testid="ellipsis-menu-button"
         onClick={(event) => {
           event.stopPropagation();
@@ -100,31 +154,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
       </MenuButton>
     }
   >
-    {items
-      .filter((x) => !x.hide)
-      .map((item) =>
-        item.href ? (
-          <MenuItem
-            key={item.title}
-            href={item.href}
-            className={cx(styles.menuItem, item.className)}
-            disabled={item.disabled}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {item.icon}&nbsp;{item.title}
-          </MenuItem>
-        ) : (
-          <MenuItem
-            key={item.title}
-            onClick={item.action ?? undefined}
-            className={cx(styles.menuItem, item.className)}
-            disabled={item.disabled}
-          >
-            {item.icon}&nbsp;{item.title}
-          </MenuItem>
-        ),
-      )}
+    {items.filter((x) => !x.hide).map((item) => getMenuItemComponent(item))}
   </Menu>
 );
 
