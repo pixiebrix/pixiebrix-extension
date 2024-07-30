@@ -26,7 +26,7 @@ import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 describe("defaultEventKey", () => {
-  it("returns null no content", () => {
+  it("returns undefined no content", () => {
     expect(
       defaultEventKey(
         {
@@ -38,7 +38,7 @@ describe("defaultEventKey", () => {
         },
         {},
       ),
-    ).toBeNull();
+    ).toBeUndefined();
   });
 
   it("prefers latest form", () => {
@@ -144,8 +144,8 @@ describe("defaultEventKey", () => {
 });
 
 describe("eventKeyForEntry", () => {
-  it.each([[undefined, null]])("returns null for %s", (value?: null) => {
-    expect(eventKeyForEntry(value)).toBeNull();
+  it.each([[undefined, null]])("returns undefined for %s", (value?: null) => {
+    expect(eventKeyForEntry(value)).toBeUndefined();
   });
 
   it("uses modId for activateMods", () => {
