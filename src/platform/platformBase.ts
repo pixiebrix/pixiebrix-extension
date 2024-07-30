@@ -42,6 +42,7 @@ import type { PlatformProtocol } from "@/platform/platformProtocol";
 import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
 import type { QuickBarProtocol } from "@/platform/platformTypes/quickBarProtocol";
 import type { ModComponentRef } from "@/types/modComponentTypes";
+import type { CaptureProtocol } from "@/platform/platformTypes/captureProtocol";
 
 /**
  * Base protocol with no capabilities implemented.
@@ -112,6 +113,10 @@ export class PlatformBase implements PlatformProtocol {
 
   get audio(): AudioProtocol {
     throw new PlatformCapabilityNotAvailableError(this.platformName, "audio");
+  }
+
+  get capture(): CaptureProtocol {
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "capture");
   }
 
   get state(): StateProtocol {

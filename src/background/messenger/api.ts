@@ -40,7 +40,6 @@ export const traces = {
   clearAll: getNotifier("CLEAR_ALL_TRACES", bg),
 };
 
-export const captureTab = getMethod("CAPTURE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 
@@ -168,3 +167,10 @@ export const refreshPartnerAuthentication = getMethod(
   bg,
 );
 export const removeOAuth2Token = getMethod("REMOVE_OAUTH2_TOKEN", bg);
+
+export const tabCapture = {
+  captureTabScreenshot: getMethod("CAPTURE_TAB_SCREENSHOT", bg),
+  startAudioCapture: getMethod("AUDIO_CAPTURE_START", bg),
+  stopAudioCapture: getMethod("AUDIO_CAPTURE_STOP", bg),
+  forwardAudioCaptureEvent: getNotifier("AUDIO_CAPTURE_EVENT", bg),
+};

@@ -25,6 +25,7 @@ import {
   performConfiguredRequestInBackground,
   ensureContextMenu,
   uninstallContextMenu,
+  tabCapture,
 } from "@/background/messenger/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -97,6 +98,7 @@ class ContentScriptPlatform extends PlatformBase {
     "contentScript",
     "logs",
     "debugger",
+    "capture",
     "alert",
     "form",
     "panel",
@@ -206,6 +208,30 @@ class ContentScriptPlatform extends PlatformBase {
   override get audio(): PlatformProtocol["audio"] {
     return {
       play: playSound,
+    };
+  }
+
+  override get capture(): PlatformProtocol["capture"] {
+    return {
+      async captureScreenshot() {
+        return tabCapture.captureTabScreenshot();
+      },
+      async startAudioCapture(
+        integrationConfig: SanitizedIntegrationConfig,
+        options: {
+          captureMicrophone: boolean;
+          captureSystem: boolean;
+        },
+      ): Promise<void> {
+        await tabCapture.startAudioCapture({
+          integrationConfig,
+          captureMicrophone: options.captureMicrophone,
+          captureTab: options.captureSystem,
+        });
+      },
+      async stopAudioCapture(): Promise<void> {
+        await tabCapture.stopAudioCapture();
+      },
     };
   }
 
