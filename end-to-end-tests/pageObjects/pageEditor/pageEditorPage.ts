@@ -152,7 +152,7 @@ export class PageEditorPage extends BasePageObject {
     await modListItem.select();
 
     await modListItem.menuButton.click();
-    const actionMenu = modListItem.getModActionMenu();
+    const actionMenu = modListItem.modActionMenu;
     await actionMenu.copyButton.click();
 
     const createModModal = new CreateModModal(this.getByRole("dialog"));
@@ -166,7 +166,7 @@ export class PageEditorPage extends BasePageObject {
     await modListItem.select();
 
     await modListItem.menuButton.click();
-    const actionMenu = modListItem.getModActionMenu();
+    const actionMenu = modListItem.modActionMenu;
     await actionMenu.deactivateButton.click();
 
     const deactivateModModal = new DeactivateModModal(this.getByRole("dialog"));

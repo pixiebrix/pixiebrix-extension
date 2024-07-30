@@ -143,7 +143,7 @@ test("Add new starter brick to mod", async ({
   const openModActionMenu = async () => {
     await modListItem.select();
     await modListItem.menuButton.click();
-    return modListItem.getModActionMenu();
+    return modListItem.modActionMenu;
   };
 
   await test.step("Add new Button starter brick to the mod", async () => {

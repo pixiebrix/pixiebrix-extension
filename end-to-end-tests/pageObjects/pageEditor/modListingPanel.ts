@@ -59,7 +59,7 @@ export class ModListItem extends BasePageObject {
     return this.click();
   }
 
-  getModActionMenu() {
+  get modActionMenu() {
     return new ModActionMenu(this.page.getByLabel("Menu"));
   }
 }
