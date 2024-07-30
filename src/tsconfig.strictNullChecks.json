@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./extensionConsole/pages/deployments/DeploymentModal.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -897,6 +896,10 @@
     "./extensionConsole/pages/activateMod/PermissionsBody.tsx",
     "./extensionConsole/pages/activateMod/UrlPermissionsList.tsx",
     "./extensionConsole/pages/activateMod/useModPermissions.ts",
+    "./extensionConsole/pages/deployments/CountdownTimer.stories.tsx",
+    "./extensionConsole/pages/deployments/DeploymentBanner.tsx",
+    "./extensionConsole/pages/deployments/DeploymentModal.test.tsx",
+    "./extensionConsole/pages/deployments/DeploymentModal.tsx",
     "./extensionConsole/pages/deployments/DeploymentsContext.tsx",
     "./extensionConsole/pages/deployments/activateDeployments.ts",
     "./extensionConsole/pages/deployments/useAutoDeploy.ts",
