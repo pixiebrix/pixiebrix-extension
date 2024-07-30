@@ -16,7 +16,7 @@
  */
 
 /**
- * Protocol for playing/capturing audio.
+ * Protocol for playing audio.
  * @since 1.8.10
  */
 export type AudioProtocol = {
