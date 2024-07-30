@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./extensionConsole/pages/mods/modals/convertToModModal/ConvertToModModalBody.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -935,6 +934,8 @@
     "./extensionConsole/pages/mods/listView/ListItem.tsx",
     "./extensionConsole/pages/mods/listView/ListItemErrorBoundary.tsx",
     "./extensionConsole/pages/mods/listView/ListView.tsx",
+    "./extensionConsole/pages/mods/modals/convertToModModal/ConvertToModModal.tsx",
+    "./extensionConsole/pages/mods/modals/convertToModModal/ConvertToModModalBody.tsx",
     "./extensionConsole/pages/mods/modals/modLogsModal/ModLogsModal.tsx",
     "./extensionConsole/pages/mods/modals/modModalsSelectors.ts",
     "./extensionConsole/pages/mods/modals/modModalsSlice.ts",
