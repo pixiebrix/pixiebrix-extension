@@ -88,7 +88,7 @@ const getMenuItemComponent = (item: EllipsisMenuItem): ReactElement => {
     return (
       <MenuItem
         key={item.title}
-        href={item.href}
+        href={item.href ?? undefined}
         className={cx(styles.menuItem, item.className)}
         disabled={item.disabled}
         target="_blank"
