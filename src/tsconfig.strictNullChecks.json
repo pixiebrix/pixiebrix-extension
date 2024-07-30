@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./extensionConsole/pages/mods/listView/ListView.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -910,6 +909,9 @@
     "./extensionConsole/pages/mods/GetStartedView.stories.tsx",
     "./extensionConsole/pages/mods/GetStartedView.tsx",
     "./extensionConsole/pages/mods/ModsPageActions.tsx",
+    "./extensionConsole/pages/mods/ModsPageContent.tsx",
+    "./extensionConsole/pages/mods/ModsPageLayout.test.tsx",
+    "./extensionConsole/pages/mods/ModsPageLayout.tsx",
     "./extensionConsole/pages/mods/ModsPageSidebar.tsx",
     "./extensionConsole/pages/mods/ModsPageToolbar.tsx",
     "./extensionConsole/pages/mods/Status.test.tsx",
@@ -931,6 +933,7 @@
     "./extensionConsole/pages/mods/listView/ListGroupHeader.tsx",
     "./extensionConsole/pages/mods/listView/ListItem.tsx",
     "./extensionConsole/pages/mods/listView/ListItemErrorBoundary.tsx",
+    "./extensionConsole/pages/mods/listView/ListView.tsx",
     "./extensionConsole/pages/mods/modals/modLogsModal/ModLogsModal.tsx",
     "./extensionConsole/pages/mods/modals/modModalsSelectors.ts",
     "./extensionConsole/pages/mods/modals/modModalsSlice.ts",
