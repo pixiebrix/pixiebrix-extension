@@ -22,7 +22,6 @@ import integrationsSlice from "@/integrations/store/integrationsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import sessionSlice from "@/pageEditor/store/session/sessionSlice";
-import { savingModComponentSlice } from "@/pageEditor/store/savingModComponentSlice";
 import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import {
@@ -45,7 +44,6 @@ const configureStoreForTests = () =>
       settings: settingsSlice.reducer,
       editor: editorSlice.reducer,
       session: sessionSlice.reducer,
-      savingModComponent: savingModComponentSlice.reducer,
       runtime: runtimeSlice.reducer,
       logs: logSlice.reducer,
       analysis: analysisSlice.reducer,
