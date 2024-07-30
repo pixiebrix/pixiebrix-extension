@@ -535,7 +535,7 @@ export const editorSlice = createSlice({
         validateBrickConfigurationUIState(state);
 
       brickConfigurationUIState.dataPanel[
-        DataPanelTabKey.Preview
+        DataPanelTabKey.Design
       ].activeElement = activeElement;
 
       brickConfigurationUIState.dataPanel[

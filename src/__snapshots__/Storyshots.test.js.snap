@@ -619,7 +619,7 @@ exports[`Storyshots Components/JsonTree Kitchen Sink 1`] = `
       />
     </div>
     <label
-      className="label labelFitContent form-label"
+      className="label form-label"
       htmlFor="traceSearch"
     >
       Search
@@ -917,7 +917,7 @@ exports[`Storyshots Components/JsonTree Searchable Tree 1`] = `
       />
     </div>
     <label
-      className="label labelFitContent form-label"
+      className="label form-label"
       htmlFor="traceSearch"
     >
       Search

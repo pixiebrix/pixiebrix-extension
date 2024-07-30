@@ -18,7 +18,7 @@
 import React from "react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render, screen } from "@/pageEditor/testHelpers";
-import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
+import BrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
 import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
@@ -36,7 +36,7 @@ const renderDataPanel = () => {
   const modComponentId = formState.uuid;
   const { instanceId } = formState.modComponent.brickPipeline[1];
 
-  return render(<DataPanel />, {
+  return render(<BrickDataPanel />, {
     initialValues: formState,
     setupRedux(dispatch) {
       dispatch(editorActions.addModComponentFormState(formState));
@@ -57,7 +57,7 @@ const renderDataPanel = () => {
 
 const reportEventMock = jest.mocked(reportEvent);
 
-describe("DataPanel", () => {
+describe("BrickDataPanel", () => {
   beforeEach(() => {
     reportEventMock.mockClear();
   });

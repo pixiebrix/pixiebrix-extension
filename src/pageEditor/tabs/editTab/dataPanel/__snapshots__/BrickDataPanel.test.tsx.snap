@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DataPanel renders with form state and trace data 1`] = `
+exports[`BrickDataPanel renders with form state and trace data 1`] = `
 <DocumentFragment>
   <form
     action="#"
@@ -29,19 +29,6 @@ exports[`DataPanel renders with form state and trace data 1`] = `
           <a
             aria-selected="false"
             class="nav-link"
-            data-rb-event-key="modVariables"
-            href="#"
-            role="tab"
-          >
-            Mod Variables
-          </a>
-        </div>
-        <div
-          class="tabNav nav-item"
-        >
-          <a
-            aria-selected="false"
-            class="nav-link"
             data-rb-event-key="output"
             href="#"
             role="tab"
@@ -55,11 +42,11 @@ exports[`DataPanel renders with form state and trace data 1`] = `
           <a
             aria-selected="false"
             class="nav-link"
-            data-rb-event-key="preview"
+            data-rb-event-key="modVariables"
             href="#"
             role="tab"
           >
-            Preview
+            Mod Variables
           </a>
         </div>
         <div
@@ -85,7 +72,7 @@ exports[`DataPanel renders with form state and trace data 1`] = `
           role="tabpanel"
         >
           <div
-            class="formGroup form-group"
+            class="formGroup formGroup form-group"
           >
             <div
               class="mb-2 w-100 collapse"
@@ -95,7 +82,7 @@ exports[`DataPanel renders with form state and trace data 1`] = `
               />
             </div>
             <label
-              class="label labelFitContent form-label"
+              class="label form-label"
               for="viewMode"
             >
               View
@@ -112,14 +99,14 @@ exports[`DataPanel renders with form state and trace data 1`] = `
                   <input
                     checked=""
                     class="form-check-input"
-                    id="inputViewMode-arguments"
-                    name="inputViewMode"
+                    id="viewMode-arguments"
+                    name="viewMode"
                     type="radio"
                     value="arguments"
                   />
                   <label
                     class="form-check-label"
-                    for="inputViewMode-arguments"
+                    for="viewMode-arguments"
                     title=""
                   >
                     <span>
@@ -156,14 +143,14 @@ exports[`DataPanel renders with form state and trace data 1`] = `
                 >
                   <input
                     class="form-check-input"
-                    id="inputViewMode-variables"
-                    name="inputViewMode"
+                    id="viewMode-variables"
+                    name="viewMode"
                     type="radio"
                     value="variables"
                   />
                   <label
                     class="form-check-label"
-                    for="inputViewMode-variables"
+                    for="viewMode-variables"
                     title=""
                   >
                     <span>
@@ -212,7 +199,7 @@ exports[`DataPanel renders with form state and trace data 1`] = `
                 />
               </div>
               <label
-                class="label labelFitContent form-label"
+                class="label form-label"
                 for="traceSearch"
               >
                 Search
@@ -266,17 +253,6 @@ exports[`DataPanel renders with form state and trace data 1`] = `
               </li>
             </ul>
           </div>
-        </div>
-        <div
-          aria-hidden="true"
-          class="fade tabPane tab-pane"
-          role="tabpanel"
-        >
-          <textarea
-            class="form-control"
-            name="modComponent.brickPipeline.1.comments"
-            rows="1"
-          />
         </div>
       </div>
     </div>

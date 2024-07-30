@@ -21,13 +21,30 @@ export enum DataPanelTabKey {
    * @since 2.0.6 consolidated Context and Rendered Args tabs into a single tab
    */
   Input = "input",
+  /**
+   * The mod variables and page state
+   * @since 2.0.5 renamed from page state and always displayed
+   */
   ModVariables = "modVariables",
+  /**
+   * The brick output/output preview
+   * @since 2.0.6 contains both the output and preview
+   */
   Output = "output",
-  Preview = "preview",
+  /**
+   * Design tab for the form/document builder
+   * @since 2.0.6 split from the Preview tab
+   */
+  Design = "design",
+  /**
+   * Outline tab for the document builder
+   */
   Outline = "outline",
+  /**
+   * Brick comments. Currently not supported for starter bricks.
+   */
   Comments = "comments",
-
   // Developer-only tabs
   ModComponentFormState = "modComponentFormState",
-  BrickConfigFormState = "brickConfig",
+  NodeFormState = "nodeFormState",
 }
