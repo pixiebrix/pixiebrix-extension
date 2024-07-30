@@ -63,7 +63,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
 }) => {
   const modComponentFormStateAdapters = useAvailableFormStateAdapters();
 
-  // @ts-expect-error -- todo: why is this throwing?
   const menuItems: EllipsisMenuItem[] = [
     onReset && {
       title: "Reset",

@@ -16,7 +16,6 @@
  */
 
 import { type MutableRefObject, type ReactElement } from "react";
-import { type RequireExactlyOne } from "type-fest";
 import { Menu, MenuItem, MenuButton, SubMenu } from "@szhsin/react-menu";
 import React from "react";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
@@ -26,7 +25,7 @@ import "@szhsin/react-menu/dist/transitions/slide.css";
 import styles from "./EllipsisMenu.module.scss";
 import cx from "classnames";
 
-export type EllipsisMenuItem = {
+type MenuItemBase = {
   /**
    * User-visible display for the item, generally text of some sort
    */
@@ -35,20 +34,26 @@ export type EllipsisMenuItem = {
   className?: string;
   hide?: boolean;
   disabled?: boolean;
-} & RequireExactlyOne<{
-  /**
-   * The "on select" action for the item
-   * You should provide either this or href, but not both
-   */
-  action: (() => void) | null;
+};
 
-  /**
-   * The href for the item, if it's a link
-   * You should provide either this or action, but not both
-   */
-  href: string | null;
-  submenu: EllipsisMenuItem[];
-}>;
+type ActionEllipsisMenuItem = MenuItemBase & {
+  action: () => void;
+};
+
+type LinkEllipsisMenuItem = MenuItemBase & {
+  href: string;
+};
+
+type SubmenuEllipsisMenuItem = MenuItemBase & {
+  submenu: Array<
+    LinkEllipsisMenuItem | ActionEllipsisMenuItem | SubmenuEllipsisMenuItem
+  >;
+};
+
+export type EllipsisMenuItem =
+  | LinkEllipsisMenuItem
+  | ActionEllipsisMenuItem
+  | SubmenuEllipsisMenuItem;
 
 type EllipsisMenuProps = {
   ariaLabel?: string;
@@ -81,7 +86,7 @@ type EllipsisMenuProps = {
 };
 
 const getMenuItemComponent = (item: EllipsisMenuItem): ReactElement => {
-  if (item.href) {
+  if ("href" in item) {
     return (
       <MenuItem
         key={item.title}
@@ -96,7 +101,7 @@ const getMenuItemComponent = (item: EllipsisMenuItem): ReactElement => {
     );
   }
 
-  if (item.submenu) {
+  if ("submenu" in item) {
     const label = item.icon ? (
       <>
         {item.icon}&nbsp;{item.title}
