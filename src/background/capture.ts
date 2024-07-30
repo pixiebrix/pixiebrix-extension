@@ -145,7 +145,7 @@ export function forwardAudioCaptureEvent(
   this: MessengerMeta,
   data: JsonObject,
 ): void {
-  // TODO: can the offscreen document message the contentScript directly?
+  // PERFORMANCE: could the offscreen document message the contentScript directly?
   if (audioCaptureTabId == null) {
     console.debug("Ignoring event because no tab is recording");
     return;
