@@ -107,7 +107,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
           <MenuItem
             key={item.title}
             href={item.href}
-            className={item.className}
+            className={cx(styles.menuItem, item.className)}
             disabled={item.disabled}
             target="_blank"
             rel="noopener noreferrer"
@@ -118,7 +118,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
           <MenuItem
             key={item.title}
             onClick={item.action ?? undefined}
-            className={item.className}
+            className={cx(styles.menuItem, item.className)}
             disabled={item.disabled}
           >
             {item.icon}&nbsp;{item.title}
