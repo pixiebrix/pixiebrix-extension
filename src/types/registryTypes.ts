@@ -26,6 +26,7 @@ export type RegistryId = Tagged<string, "RegistryId">;
 
 /**
  * Scope for inner definitions
+ * @see isInternalRegistryId
  */
 export const INNER_SCOPE = "@internal";
 

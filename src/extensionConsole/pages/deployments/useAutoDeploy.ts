@@ -91,6 +91,7 @@ function useAutoDeploy({
           dispatch,
           activatableDeployments,
           activatedModComponents,
+          reloadMode: "queue",
         });
         notify.success("Updated team deployments");
       } catch (error) {

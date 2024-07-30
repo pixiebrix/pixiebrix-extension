@@ -29,7 +29,7 @@ import {
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { validateRegistryId, validateTimestamp } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
@@ -41,6 +41,7 @@ import {
 } from "@/types/registryTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { getStandaloneModComponentRuntimeModId } from "@/utils/modUtils";
+import { validateTimestamp } from "@/utils/timeUtils";
 
 export const modComponentRefFactory = define<ModComponentRef>({
   // Don't repeat UUIDs across contexts

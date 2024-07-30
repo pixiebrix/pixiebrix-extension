@@ -63,7 +63,7 @@ class IfElse extends TransformerABC {
         description: "The bricks to run if the condition is not met",
       },
     },
-    ["condition", "if"],
+    ["if"],
   );
 
   async transform(

@@ -22,8 +22,7 @@ import {
   type ExistenceNode,
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { isEmpty, merge } from "lodash";
-import { type JsonObject } from "type-fest";
-import { type UnknownRecord } from "type-fest/source/internal";
+import { type UnknownRecord, type JsonObject } from "type-fest";
 import { excludeIntegrationVariables } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 import { assertNotNullish } from "@/utils/nullishUtils";
 

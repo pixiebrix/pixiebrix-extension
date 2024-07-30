@@ -44,6 +44,10 @@ import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import axios from "axios";
 import { initDeferredLoginController } from "@/contentScript/integrations/deferredLoginController";
+import { flagOn } from "@/auth/featureFlagStorage";
+import initialize from "@/vendors/jQueryInitialize";
+
+const SANDBOX_SRCDOC_HACK_FLAG = "iframe-srcdoc-sandbox-hack";
 
 setPlatform(contentScriptPlatform);
 
@@ -67,6 +71,32 @@ onUncaughtError((error) => {
   }
 });
 
+/**
+ * There is a bug introduced in chromium that prevents the content script from getting injected into
+ * iframes with both the `srcdoc` and `sandbox` attributes. This function reloads affected iframes after removing the
+ * `sandbox` attribute to force content script injection.
+ *
+ * See https://issues.chromium.org/issues/355256366
+ */
+const initSandboxedSrcdocIframeInjection = async () => {
+  const isSandboxSrcdocHackEnabled = await flagOn(SANDBOX_SRCDOC_HACK_FLAG);
+  if (!isSandboxSrcdocHackEnabled) {
+    return;
+  }
+
+  initialize(
+    "iframe[srcdoc][sandbox]",
+    (_index: number, element: HTMLIFrameElement) => {
+      const clonedIframe = element.cloneNode(true) as HTMLIFrameElement;
+      clonedIframe.removeAttribute("sandbox");
+      element.replaceWith(clonedIframe);
+    },
+    {
+      target: document,
+    },
+  );
+};
+
 export async function init(): Promise<void> {
   console.debug(`contentScriptCore: init, location: ${location.href}`);
 
@@ -80,6 +110,7 @@ export async function init(): Promise<void> {
   // Since 1.8.10, we inject the platform into the runtime
   initRuntime(brickRegistry);
   initDeferredLoginController();
+  void initSandboxedSrcdocIframeInjection();
 
   initTelemetry();
   initToaster();

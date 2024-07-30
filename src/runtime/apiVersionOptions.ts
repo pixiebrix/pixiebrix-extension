@@ -33,14 +33,14 @@ export const DEFAULT_IMPLICIT_TEMPLATE_ENGINE: TemplateEngine = "mustache";
  */
 export type ApiVersionOptions = {
   /**
-   * If set to `true`, data only flows via output keys. The last output of the last stage is returned.
+   * If set to `true`, data only flows via output keys. The last output of the last brick is returned.
    * @since apiVersion 2
    * @since 1.4.0
    */
   explicitDataFlow?: boolean;
 
   /**
-   * This was a hack in older versions to pass primitive values and lists directly to the next block without applying
+   * This was a hack in older versions to pass primitive values and lists directly to the next brick without applying
    * any template engine. (Because originally in PixieBrix there was no way to explicitly pass list variables
    * via outputKeys/variable expressions).
    * @since apiVersion 3

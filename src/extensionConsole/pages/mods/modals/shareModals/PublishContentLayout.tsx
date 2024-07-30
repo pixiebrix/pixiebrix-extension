@@ -27,6 +27,7 @@ import { RequireScope } from "@/auth/RequireScope";
 import ModOwnerLabel from "@/extensionConsole/pages/mods/modals/shareModals/ModOwnerLabel";
 import useHasEditPermissions from "@/extensionConsole/pages/mods/modals/shareModals/useHasEditPermissions";
 import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type PublishContentLayoutProps = React.PropsWithChildren<{
   title: string;
@@ -35,11 +36,13 @@ type PublishContentLayoutProps = React.PropsWithChildren<{
 const PublishContentLayout: React.FunctionComponent<
   PublishContentLayoutProps
 > = ({ title, children }) => {
-  const { blueprintId } = useSelector(selectShowPublishContext);
-  const { data: recipe } = useOptionalModDefinition(blueprintId);
+  const { blueprintId: modId } = useSelector(selectShowPublishContext) ?? {};
+  assertNotNullish(modId, "showPublishContext is nullish");
+
+  const { data: mod } = useOptionalModDefinition(modId);
 
   const sortedOrganizations = useSortOrganizations();
-  const hasEditPermissions = useHasEditPermissions(blueprintId);
+  const hasEditPermissions = useHasEditPermissions(modId);
 
   const body = hasEditPermissions ? (
     children
@@ -50,11 +53,11 @@ const PublishContentLayout: React.FunctionComponent<
         to change sharing
       </div>
       <div className={styles.row}>
-        <ModOwnerLabel modId={blueprintId} />
+        <ModOwnerLabel modId={modId} />
         <span className="text-muted">Owner</span>
       </div>
       {sortedOrganizations
-        .filter((x) => recipe.sharing.organizations.includes(x.id))
+        .filter((x) => mod?.sharing.organizations.includes(x.id))
         .map((organization) => (
           <div className={styles.row} key={organization.id}>
             <span>
@@ -64,6 +67,7 @@ const PublishContentLayout: React.FunctionComponent<
         ))}
     </Modal.Body>
   );
+
   return (
     <>
       <Modal.Header closeButton>

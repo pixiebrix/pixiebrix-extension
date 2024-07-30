@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type MouseEventHandler, useEffect, useMemo } from "react";
+import React, {
+  type MouseEventHandler,
+  type MutableRefObject,
+  useEffect,
+  useMemo,
+} from "react";
 import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
 import {
@@ -58,7 +63,7 @@ export type ElementPreviewProps = {
    * Optional boundary for popover menu position calculations.
    * @see EllipsisMenu
    */
-  menuBoundary?: Element;
+  boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 };
 
 const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
@@ -119,7 +124,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
   setActiveElement,
   hoveredElement,
   setHoveredElement,
-  menuBoundary,
+  boundingBoxRef,
 }) => {
   const dispatch = useDispatch();
   const activeNodeId = useSelector(selectActiveNodeId);
@@ -203,7 +208,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
               previewElement={childElement}
               activeElement={activeElement}
               setActiveElement={setActiveElement}
-              menuBoundary={menuBoundary}
+              boundingBoxRef={boundingBoxRef}
               hoveredElement={hoveredElement}
               setHoveredElement={setHoveredElement}
             />
@@ -214,7 +219,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
           elementsCollectionName={`${documentBodyName}.${elementName}.children`}
           allowedTypes={getAllowedChildTypes(previewElement)}
           className={styles.addElement}
-          menuBoundary={menuBoundary}
+          boundingBoxRef={boundingBoxRef}
         />
       )}
       {isList && (
@@ -224,7 +229,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
           previewElement={previewElement.config.element.__value__}
           activeElement={activeElement}
           setActiveElement={setActiveElement}
-          menuBoundary={menuBoundary}
+          boundingBoxRef={boundingBoxRef}
           hoveredElement={hoveredElement}
           setHoveredElement={setHoveredElement}
         />

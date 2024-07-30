@@ -21,7 +21,7 @@ import {
   readManagedStorage,
   readManagedStorageByKey,
 } from "@/store/enterprise/managedStorage";
-import type { Timestamp } from "@/types/stringTypes";
+import { timestampFactory } from "@/testUtils/factories/stringFactories";
 
 beforeEach(async () => {
   jest.clearAllMocks();
@@ -31,7 +31,7 @@ beforeEach(async () => {
 
 describe("readManagedStorage", () => {
   it("reads immediately if managed storage is already initialized", async () => {
-    await initializationTimestamp.set(new Date().toISOString() as Timestamp);
+    await initializationTimestamp.set(timestampFactory());
     await expect(readManagedStorage()).resolves.toStrictEqual({});
 
     // Should only be called once vs. polling

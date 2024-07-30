@@ -16,7 +16,30 @@
  */
 
 import { type RegistryId } from "@/types/registryTypes";
-import { generatePackageId, getScopeAndId } from "@/utils/registryUtils";
+import {
+  generatePackageId,
+  getScopeAndId,
+  isInternalRegistryId,
+} from "@/utils/registryUtils";
+import { getStandaloneModComponentRuntimeModId } from "@/utils/modUtils";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { validateRegistryId } from "@/types/helpers";
+
+describe("isInternalRegistryId", () => {
+  it("returns true for internal registry ids", () => {
+    expect(
+      isInternalRegistryId(
+        getStandaloneModComponentRuntimeModId(autoUUIDSequence()),
+      ),
+    ).toBe(true);
+  });
+
+  it("returns false for custom registry ids", () => {
+    expect(isInternalRegistryId(validateRegistryId("@internal1/foo"))).toBe(
+      false,
+    );
+  });
+});
 
 describe("generatePackageId", () => {
   test("no special chars", () => {

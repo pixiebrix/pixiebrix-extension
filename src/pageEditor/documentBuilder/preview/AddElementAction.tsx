@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import React from "react";
+import React, { type MutableRefObject } from "react";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import {
   type DocumentBuilderElement,
@@ -26,6 +26,7 @@ import {
 import styles from "./AddElementAction.module.scss";
 import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
+import cx from "classnames";
 
 type AddElementActionProps = {
   /**
@@ -38,14 +39,14 @@ type AddElementActionProps = {
    * Optional boundary for popover menu position calculations.
    * @see EllipsisMenu
    */
-  menuBoundary?: Element;
+  boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 };
 
 const AddElementAction: React.FC<AddElementActionProps> = ({
   elementsCollectionName,
   allowedTypes = DOCUMENT_BUILDER_ELEMENT_TYPES,
   className,
-  menuBoundary,
+  boundingBoxRef,
 }) => {
   const [{ value: elementsCollection }, , { setValue }] = useField<
     DocumentBuilderElement[]
@@ -80,10 +81,9 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
 
   return (
     <EllipsisMenu
-      className={className}
-      toggleClassName={styles.toggle}
+      menuButtonClassName={cx(className, styles.ellipsisMenu)}
       items={[...elementItems, ...pipelineItems]}
-      menuBoundary={menuBoundary}
+      boundingBoxRef={boundingBoxRef}
     />
   );
 };

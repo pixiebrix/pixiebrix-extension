@@ -17,12 +17,14 @@
 
 import { define } from "cooky-cutter";
 import { type Database } from "@/types/contract";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import type { Timestamp } from "@/types/stringTypes";
+import {
+  timestampFactory,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
 
 export const databaseFactory = define<Database>({
   id: uuidSequence,
   name: (n: number) => `Test Database ${n}`,
-  created_at: () => new Date().toISOString() as Timestamp,
-  last_write_at: () => new Date().toISOString() as Timestamp,
+  created_at: timestampFactory,
+  last_write_at: timestampFactory,
 });

@@ -19,9 +19,9 @@ import { type BasePageObject } from "../basePageObject";
 
 type AsyncFunction<T> = (...args: any[]) => Promise<T>;
 
-// Decorator used for functions that modify the state of the mod.
+// Decorator used for functions that modify the Page Editor mod form state.
 // This is used to wait for Redux to update before continuing.
-export function ModifiesModState<T>(
+export function ModifiesModFormState<T>(
   value: AsyncFunction<T>,
   context: ClassMethodDecoratorContext<BasePageObject, AsyncFunction<T>>,
 ) {

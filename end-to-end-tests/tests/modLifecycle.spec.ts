@@ -38,10 +38,10 @@ test("create, run, package, and update mod", async ({
     await pageEditorPage.modListingPanel.addStarterBrick("Button");
 
   await test.step("Configure the Button brick", async () => {
-    await page.bringToFront();
-    await page.getByRole("button", { name: "Action #3" }).click();
+    await pageEditorPage.selectConnectedPageElement(
+      page.getByRole("button", { name: "Action #3" }),
+    );
 
-    await pageEditorPage.bringToFront();
     await pageEditorPage.brickConfigurationPanel.fillField(
       "Button text",
       "Search Youtube",
@@ -60,11 +60,23 @@ test("create, run, package, and update mod", async ({
       "searchText",
     );
 
+    // Without focusing first, the click doesn't enable selection tool ¯\_(ツ)_/¯
+    await pageEditorPage.brickConfigurationPanel
+      .getByLabel("Select element")
+      .focus();
+    await pageEditorPage.brickConfigurationPanel
+      .getByLabel("Select element")
+      .click();
+
     await pageEditorPage.selectConnectedPageElement(
-      page,
       page.getByRole("heading", { name: "Transaction Table" }),
-      "#root h1",
     );
+
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByPlaceholder(
+        "Select an element",
+      ),
+    ).toHaveValue("#root h1");
   });
 
   await test.step("Add the YouTube search brick and configure it", async () => {

@@ -21,10 +21,7 @@ import styles from "./EditorNodeConfigPanel.module.scss";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BrickConfiguration from "@/pageEditor/tabs/effect/BrickConfiguration";
 import brickRegistry from "@/bricks/registry";
-import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
-import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
-import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 import { useSelector } from "react-redux";
 import { selectActiveNodeInfo } from "@/pageEditor/store/editor/editorSelectors";
@@ -32,6 +29,7 @@ import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { MARKETPLACE_URL } from "@/urlConstants";
 import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview";
 import useAsyncState from "@/hooks/useAsyncState";
+import OutputVariableField from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/OutputVariableField";
 
 const EditorNodeConfigPanel: React.FC = () => {
   const {
@@ -60,21 +58,6 @@ const EditorNodeConfigPanel: React.FC = () => {
   const { instructions: listingInstructions, id: listingId } =
     listings[brickId] ?? {};
 
-  const isOutputDisabled = !(
-    brickInfo == null || showOutputKey(brickInfo?.type)
-  );
-  const outputDescription = isOutputDisabled
-    ? "Effect and renderer bricks do not produce outputs"
-    : "Provide an output variable name to refer to the outputs of this brick later.";
-
-  const PopoverOutputLabel = (
-    <PopoverInfoLabel
-      name="output-label"
-      label="Output"
-      description={outputDescription}
-    />
-  );
-
   const showDocumentationLink = listingInstructions && listingId;
 
   return (
@@ -101,12 +84,10 @@ const EditorNodeConfigPanel: React.FC = () => {
             className="flex-grow-1"
             placeholder={brickInfo?.block.name}
           />
-          <ConnectedFieldTemplate
+          <OutputVariableField
+            brickInfo={brickInfo}
             name={`${brickFieldName}.outputKey`}
-            label={PopoverOutputLabel}
             className="flex-grow-1"
-            disabled={isOutputDisabled}
-            as={KeyNameWidget}
           />
         </div>
       </div>

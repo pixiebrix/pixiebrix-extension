@@ -17,6 +17,7 @@
 
 import { BasePageObject } from "../basePageObject";
 import { uuidv4 } from "@/types/helpers";
+import { ModifiesModFormState } from "./utils";
 
 export type StarterBrickUIName =
   | "Context Menu"
@@ -39,11 +40,11 @@ export class ModListItem extends BasePageObject {
   }
 
   get copyButton() {
-    return this.getByRole("button", { name: "Make a copy" });
+    return this.getByRole("menuitem", { name: "Make a copy" });
   }
 
   get deactivateButton() {
-    return this.getByRole("button", { name: "Deactivate" });
+    return this.getByRole("menuitem", { name: "Deactivate" });
   }
 
   async select() {
@@ -66,6 +67,7 @@ export class ModListingPanel extends BasePageObject {
    * not the underlying type
    * @returns modName the generated mod name
    */
+  @ModifiesModFormState
   async addStarterBrick(starterBrickName: StarterBrickUIName) {
     const modUuid = uuidv4();
     const modComponentName = `Test ${starterBrickName} ${modUuid}`;

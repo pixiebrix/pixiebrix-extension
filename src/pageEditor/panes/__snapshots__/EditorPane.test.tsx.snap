@@ -672,7 +672,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                   class="list-group mb-2"
                 >
                   <li
-                    class="list-group-item py-1"
+                    class="list-group-item py-1 d-flex pl-1"
                   >
                     <div
                       class="formGroup mb-0 form-group"
@@ -1280,7 +1280,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                                   >
                                     Latest Output
                                   </span>
-                                   
+
                                   <svg
                                     aria-hidden="true"
                                     class="svg-inline--fa fa-info-circle fa-w-16 "
@@ -1324,7 +1324,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                                   >
                                     Live Preview
                                   </span>
-                                   
+
                                   <svg
                                     aria-hidden="true"
                                     class="svg-inline--fa fa-info-circle fa-w-16 "
@@ -1954,7 +1954,7 @@ exports[`renders the first selected node 1`] = `
                       <span
                         class="label"
                       >
-                        Output
+                        Output Variable
                       </span>
                        
                       <svg
@@ -1991,8 +1991,10 @@ exports[`renders the first selected node 1`] = `
                       </div>
                       <input
                         class="form-control"
+                        disabled=""
                         id="modComponent.brickPipeline.0.outputKey"
                         name="modComponent.brickPipeline.0.outputKey"
+                        placeholder="Not supported for brick"
                         value="echoOutput"
                       />
                     </div>
@@ -2235,7 +2237,7 @@ exports[`renders the first selected node 1`] = `
                                     >
                                       Latest Output
                                     </span>
-                                     
+
                                     <svg
                                       aria-hidden="true"
                                       class="svg-inline--fa fa-info-circle fa-w-16 "
@@ -2279,7 +2281,7 @@ exports[`renders the first selected node 1`] = `
                                     >
                                       Live Preview
                                     </span>
-                                     
+
                                     <svg
                                       aria-hidden="true"
                                       class="svg-inline--fa fa-info-circle fa-w-16 "

@@ -80,7 +80,11 @@ export async function TEST_overrideFeatureFlags(
 
 /**
  * Returns true if the specified flag is on for the current user. Fetches the flags if they are not already cached.
+ *
+ * In React code, use useFlags instead.
+ *
  * @param flag the feature flag to check
+ * @see useFlags
  */
 export async function flagOn(flag: string): Promise<boolean> {
   const flags = await featureFlags.get();

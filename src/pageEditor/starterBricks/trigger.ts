@@ -47,6 +47,7 @@ import { type TriggerFormState } from "./formStateTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { ReportModes } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 
 function fromNativeElement(
   url: string,
@@ -65,7 +66,7 @@ function fromNativeElement(
         attachMode: undefined,
         targetMode: undefined,
         // Use "once" for reportMode, because the default is "load"
-        reportMode: "once",
+        reportMode: ReportModes.ONCE,
         // Show error notifications by default, to assist with development
         showErrors: true,
         intervalMillis: undefined,

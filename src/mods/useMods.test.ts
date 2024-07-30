@@ -18,7 +18,6 @@
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useMods from "@/mods/useMods";
 import extensionsSlice from "@/store/extensionsSlice";
-import { validateTimestamp } from "@/types/helpers";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { range } from "lodash";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -37,6 +36,7 @@ import {
   DefinitionKinds,
   type InnerDefinitionRef,
 } from "@/types/registryTypes";
+import { timestampFactory } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 
@@ -72,7 +72,7 @@ describe("useMods", () => {
             activatedModComponentFactory({
               _recipe: {
                 ...metadataFactory(),
-                updated_at: validateTimestamp(new Date().toISOString()),
+                updated_at: timestampFactory(),
                 sharing: { public: false, organizations: [] },
               },
             }),
@@ -104,7 +104,7 @@ describe("useMods", () => {
               activatedModComponentFactory({
                 _recipe: {
                   ...metadata,
-                  updated_at: validateTimestamp(new Date().toISOString()),
+                  updated_at: timestampFactory(),
                   sharing: { public: false, organizations: [] },
                 },
               }),
@@ -141,7 +141,7 @@ describe("useMods", () => {
             activatedModComponentFactory({
               _recipe: {
                 ...metadata,
-                updated_at: validateTimestamp(new Date().toISOString()),
+                updated_at: timestampFactory(),
                 sharing: { public: false, organizations: [] },
               },
             }),

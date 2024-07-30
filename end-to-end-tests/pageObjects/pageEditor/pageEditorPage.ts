@@ -26,7 +26,7 @@ import { BrickActionsPanel } from "./brickActionsPanel";
 import { ConfigurationForm } from "./configurationForm";
 import { DataPanel } from "./dataPanel";
 import { ModEditorPane } from "./modEditorPane";
-import { ModifiesModState } from "./utils";
+import { ModifiesModFormState } from "./utils";
 import { CreateModModal } from "./createModModal";
 import { DeactivateModModal } from "end-to-end-tests/pageObjects/pageEditor/deactivateModModal";
 
@@ -99,16 +99,9 @@ export class PageEditorPage extends BasePageObject {
   }
 
   /** Used for interactions that require selecting an element on the connected page, such as the button starter brick */
-  @ModifiesModState
-  async selectConnectedPageElement(
-    connectedPage: Page,
-    selectLocator: Locator,
-    expectedElementSelector: string,
-  ) {
-    // Without focusing first, the click doesn't enable selection tool ¯\_(ツ)_/¯
-    await this.getByLabel("Select element").focus();
-    await this.getByLabel("Select element").click();
-
+  @ModifiesModFormState
+  async selectConnectedPageElement(selectLocator: Locator) {
+    const connectedPage = selectLocator.page();
     await connectedPage.bringToFront();
     await expect(
       connectedPage.getByText("Selection Tool: 0 matching"),
@@ -116,9 +109,6 @@ export class PageEditorPage extends BasePageObject {
     await selectLocator.click();
 
     await this.page.bringToFront();
-    await expect(this.getByPlaceholder("Select an element")).toHaveValue(
-      expectedElementSelector,
-    );
   }
 
   /**
@@ -144,7 +134,7 @@ export class PageEditorPage extends BasePageObject {
     );
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async saveStandaloneMod(modName: string, modUuid: UUID) {
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
@@ -156,7 +146,7 @@ export class PageEditorPage extends BasePageObject {
     this.savedPackageModIds.push(modId);
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async copyMod(modName: string, modUuid: UUID) {
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
@@ -181,7 +171,7 @@ export class PageEditorPage extends BasePageObject {
     await deactivateModModal.deactivateButton.click();
   }
 
-  @ModifiesModState
+  @ModifiesModFormState
   async createModFromModComponent({
     modNameRoot,
     modComponentName,
@@ -196,7 +186,7 @@ export class PageEditorPage extends BasePageObject {
     const modListItem =
       this.modListingPanel.getModListItemByName(modComponentName);
     await modListItem.menuButton.click();
-    await this.getByRole("button", { name: "Add to mod" }).click();
+    await this.getByRole("menuitem", { name: "Add to mod" }).click();
 
     await this.getByText("Select...Choose a mod").click();
     await this.getByRole("option", { name: /Create new mod.../ }).click();

@@ -16,4 +16,7 @@
  *
  */
 
-export const push = jest.fn();
+export const { push, connectRouter, routerMiddleware } = {
+  ...jest.requireActual("connected-react-router"),
+  push: jest.fn(),
+};

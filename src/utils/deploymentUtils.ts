@@ -60,7 +60,7 @@ export function isDeploymentActive(extensionLike: {
  * - Same as above, but ignore deployments where the user has a newer version of the blueprint installed because that
  *   means they are doing local deployment on the blueprint.
  *
- * @param activatedModComponents the user's currently installed extensions (including for paused deployments)
+ * @param activatedModComponents the user's currently installed modComponents (including for paused deployments)
  * @param restricted `true` if the user is a restricted organization user (i.e., as opposed to a developer)
  */
 export const makeUpdatedFilter =
@@ -70,7 +70,7 @@ export const makeUpdatedFilter =
   ) =>
   (deployment: Deployment) => {
     const deploymentMatch = activatedModComponents.find(
-      (extension) => extension._deployment?.id === deployment.id,
+      (modComponent) => modComponent._deployment?.id === deployment.id,
     );
 
     if (restricted) {

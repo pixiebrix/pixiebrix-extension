@@ -15,25 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SidebarState } from "@/types/sidebarTypes";
-import { getOpenPanelEntries } from "@/store/sidebar/eventKeyUtils";
+import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
+import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
+import { mapStandaloneModDefinitionToModDefinition } from "@/mods/utils/mapStandaloneModDefinitionToModDefinition";
 
-export const getVisiblePanelCount = ({
-  panels,
-  forms,
-  temporaryPanels,
-  staticPanels,
-  modActivationPanel,
-  closedTabs,
-}: SidebarState) => {
-  // Temporary Panels are removed from the sidebar state when they are closed, so we don't need to filter them out
-  const closablePanels = [...panels, ...staticPanels];
-  const openPanels = getOpenPanelEntries(closablePanels, closedTabs);
+describe("pickModDefinitionMetadata", () => {
+  it("returns undefined for mod definition from standalone mod component", () => {
+    const standaloneModDefinition = standaloneModDefinitionFactory();
+    const modDefinition = mapStandaloneModDefinitionToModDefinition(
+      standaloneModDefinition,
+    );
 
-  return (
-    openPanels.length +
-    forms.length +
-    temporaryPanels.length +
-    (modActivationPanel ? 1 : 0)
-  );
-};
+    expect(pickModDefinitionMetadata(modDefinition)).toBeUndefined();
+  });
+});

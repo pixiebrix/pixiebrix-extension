@@ -75,8 +75,20 @@ export const selectActiveModComponentFormState = createSelector(
     formStates.find((x) => x.uuid === activeModComponentId),
 );
 
+/**
+ * Select the id of the mod being edited. Is null when editing a mod component within the mod.
+ * @see selectExpandedModId
+ */
 export const selectActiveModId = ({ editor }: EditorRootState) =>
   editor.activeModId;
+
+/**
+ * Select the id of the "expanded" mod in the accordian layout in the Mod Listing Pane. NOTE: when editing a standalone
+ * mod component, an unrelated mod might be in an expanded state.
+ * @see selectActiveModId
+ */
+export const selectExpandedModId = ({ editor }: EditorRootState) =>
+  editor.expandedModId;
 
 /**
  * Select a runtime ModComponentRef for the mod component being edited
@@ -86,18 +98,19 @@ export const selectActiveModId = ({ editor }: EditorRootState) =>
  */
 export const selectActiveModComponentRef = createSelector(
   selectActiveModComponentFormState,
-  selectActiveModId,
-  (formState, modId) => {
+  (formState) => {
     assertNotNullish(
       formState,
-      "selectActiveModComponentRef can only be used in a mod component context",
+      "selectActiveModComponentRef can only be used in a mod component editing context",
     );
 
     return {
       modComponentId: formState.uuid,
-      modId: modId ?? getStandaloneModComponentRuntimeModId(formState.uuid),
-      // XXX: the Page Editor form state uses an artificial id. When it's added to the page, it will be replaced
-      // with the hash id calculated during hydration
+      modId:
+        formState.modMetadata?.id ??
+        getStandaloneModComponentRuntimeModId(formState.uuid),
+      // XXX: the Page Editor form state uses an artificial id. When it's added to the page, the artificial id will be
+      // replaced with the hash id calculated during hydration
       starterBrickId: formState.starterBrick.metadata.id,
     };
   },
@@ -298,9 +311,6 @@ export const selectIsDataPanelExpanded = ({ editor }: EditorRootState) =>
 
 export const selectKeepLocalCopyOnCreateMod = ({ editor }: EditorRootState) =>
   editor.keepLocalCopyOnCreateMod;
-
-export const selectExpandedModId = ({ editor }: EditorRootState) =>
-  editor.expandedModId;
 
 // UI state
 export function selectActiveBrickPipelineUIState({

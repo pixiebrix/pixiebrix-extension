@@ -429,6 +429,9 @@ async function selectUpdatedDeployments(
  *
  * NOTE: if updates are snoozed, does not activate updated deployments automatically. (To not interrupt the current business
  * process the team member is working on.)
+ *
+ * WARNING: Partially duplicated code with DeploymentsProvider
+ * @see DeploymentsProvider
  */
 export async function syncDeployments(): Promise<void> {
   expectContext("background");

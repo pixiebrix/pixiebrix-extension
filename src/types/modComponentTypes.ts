@@ -34,6 +34,7 @@ import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
 } from "@/integrations/integrationTypes";
+import { isRegistryId, isUUID } from "@/types/helpers";
 
 /**
  * ModMetadata that includes sharing information.
@@ -223,14 +224,14 @@ type ActivatedModComponentBase = {
    *
    * Currently, not used for anything - might be used for sorting, etc. in the future.
    */
-  createTimestamp: string;
+  createTimestamp: Timestamp;
 
   /**
    * Update timestamp in ISO format with timezone.
    *
    * Used to determine if local version is outdated compared to user's version on the server.
    */
-  updateTimestamp: string;
+  updateTimestamp: Timestamp;
 };
 
 export type ActivatedModComponentV1<
@@ -297,3 +298,35 @@ export type ModComponentRef = {
    */
   starterBrickId: RegistryId;
 };
+
+/**
+ * Returns true if the value is a syntactically valid non-null ModComponentRef. Does not validate the existence of the
+ * mod component, mod, or starter brick.
+ * @see validateModComponentRef
+ */
+function isModComponentRef(value: unknown): value is ModComponentRef {
+  if (typeof value !== "object" || value == null) {
+    return false;
+  }
+
+  const obj = value as ModComponentRef;
+
+  return (
+    isUUID(obj.modComponentId) &&
+    isRegistryId(obj.modId) &&
+    isRegistryId(obj.starterBrickId)
+  );
+}
+
+/**
+ * Validates and returns a ModComponentRef. Does not validate the existence of the mod component, mod, or starter brick.
+ * @throws TypeError if the value is not a valid ModComponentRef
+ * @see isModComponentRef
+ */
+export function validateModComponentRef(value: unknown): ModComponentRef {
+  if (!isModComponentRef(value)) {
+    throw new TypeError("Invalid ModComponentRef");
+  }
+
+  return value;
+}

@@ -76,6 +76,12 @@ export function expandGridRows(
   return gridRows;
 }
 
+function isRowModViewItem(
+  row: Row<ModViewItem> | Array<Row<ModViewItem>> | undefined,
+): row is Row<ModViewItem> {
+  return Boolean(row && "isGrouped" in row);
+}
+
 // 220px min card width + 15px padding
 // see: GridView.module.scss
 const MIN_CARD_WIDTH_PX = 235;
@@ -102,7 +108,7 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
   const getItemSize = useCallback(
     (index: number): number => {
       const row = expandedGridRows.at(index);
-      return "isGrouped" in row ? HEADER_ROW_HEIGHT_PX : CARD_HEIGHT_PX;
+      return isRowModViewItem(row) ? HEADER_ROW_HEIGHT_PX : CARD_HEIGHT_PX;
     },
     [expandedGridRows],
   );
@@ -125,7 +131,7 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
     }) => {
       const gridRow = expandedGridRows.at(index);
 
-      if ("isGrouped" in gridRow) {
+      if (isRowModViewItem(gridRow)) {
         tableInstance.prepareRow(gridRow);
 
         return <ListGroupHeader groupName={gridRow.groupByVal} style={style} />;
@@ -133,7 +139,7 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
 
       return (
         <div style={style} className={styles.root}>
-          {gridRow.map((row: Row<ModViewItem>) => {
+          {gridRow?.map((row: Row<ModViewItem>) => {
             tableInstance.prepareRow(row);
             return (
               <GridCardErrorBoundary
