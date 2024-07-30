@@ -118,7 +118,7 @@ test("Add new starter brick", async ({
   });
 });
 
-test("Add new starter brick to mod", async ({
+test("Add starter brick to mod", async ({
   page,
   newPageEditorPage,
   extensionId,
@@ -146,7 +146,7 @@ test("Add new starter brick to mod", async ({
     return modListItem.modActionMenu;
   };
 
-  await test.step("Add new Button starter brick to the mod", async () => {
+  await test.step("Add Button starter brick to mod", async () => {
     const modActionMenu = await openModActionMenu();
     await modActionMenu.addStarterBrick("Button");
     await pageEditorPage.selectConnectedPageElement(
@@ -173,7 +173,7 @@ test("Add new starter brick to mod", async ({
     });
   });
 
-  await test.step("Add new Context Menu starter brick to mod", async () => {
+  await test.step("Add Context Menu starter brick to mod", async () => {
     const modActionMenu = await openModActionMenu();
     await modActionMenu.addStarterBrick("Context Menu");
 
@@ -194,7 +194,7 @@ test("Add new starter brick to mod", async ({
     });
   });
 
-  await test.step("Add new Quick Bar Action starter brick", async () => {
+  await test.step("Add Quick Bar Action starter brick to mod", async () => {
     const modActionMenu = await openModActionMenu();
     await modActionMenu.addStarterBrick("Quick Bar Action");
 
@@ -215,7 +215,7 @@ test("Add new starter brick to mod", async ({
     });
   });
 
-  await test.step("Add new Sidebar Panel starter brick", async () => {
+  await test.step("Add Sidebar Panel starter brick to mod", async () => {
     const modActionMenu = await openModActionMenu();
     await modActionMenu.addStarterBrick("Sidebar Panel");
 
@@ -240,7 +240,7 @@ test("Add new starter brick to mod", async ({
     });
   });
 
-  await test.step("Add new Trigger starter brick", async () => {
+  await test.step("Add Trigger starter brick to mod", async () => {
     const modActionMenu = await openModActionMenu();
     await modActionMenu.addStarterBrick("Trigger");
 
