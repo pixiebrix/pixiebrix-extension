@@ -60,7 +60,7 @@ export const staleSidePanelAlertElement = (
 
 /**
  * The Form/Document Design tab in the Data Panel.
- * @since 2.0.6 split out into a separate component
+ * @since 2.0.7 split out into a separate component
  */
 const DesignTab: React.FC<{
   /**

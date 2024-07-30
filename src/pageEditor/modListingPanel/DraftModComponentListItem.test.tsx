@@ -40,7 +40,7 @@ afterAll(() => {
 
 describe("DraftModComponentListItem", () => {
   beforeEach(() => {
-    // :barf: these Jest snapshot contains sequence UUIDs
+    // :barf: these Jest snapshot contain sequence UUIDs
     formStateFactory.resetSequence();
   });
 

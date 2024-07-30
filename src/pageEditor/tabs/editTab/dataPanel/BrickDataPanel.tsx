@@ -51,7 +51,7 @@ export const NavItem: React.FC<{
 
 /**
  * The Page Editor Data Panel
- * @since 2.0.6 refactored to only include logic for which tabs to show
+ * @since 2.0.7 refactored to only include logic for which tabs to show
  * @see StarterBrickDataPanel
  */
 const BrickDataPanel: React.FC = () => {

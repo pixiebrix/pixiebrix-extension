@@ -85,7 +85,7 @@ const ViewModeWidget: CustomFieldWidget<
 
 /**
  * Data Panel tab view selector
- * @since 2.0.6 introduced to reduce the number of Data Panel tabs
+ * @since 2.0.7 introduced to reduce the number of Data Panel tabs
  */
 const ViewModeField: React.FC<{
   name: string;
