@@ -102,7 +102,7 @@ exports[`StarterBrickDataPanel renders with form state and trace data 1`] = `
                       <span
                         class="label"
                       >
-                        Latest Output
+                        Latest Run
                       </span>
                        
                       <svg
@@ -203,7 +203,7 @@ exports[`StarterBrickDataPanel renders with form state and trace data 1`] = `
             </div>
           </div>
           <span>
-            Latest Output 
+            Latest Run 
             <a
               aria-label="copy data"
               class="copyPath p-0 btn btn-text"
