@@ -113,10 +113,6 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
           // have to manually toggle it
           void openSidePanel(inspectedTab.tabId);
         }
-
-        reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
-          type: adapter.starterBrickType,
-        });
       } catch (error) {
         if (isSpecificError(error, CancelError)) {
           return;
@@ -125,6 +121,17 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
         notify.error({
           message: `Error adding ${adapter.label.toLowerCase()}`,
           error,
+        });
+      }
+
+      if (modMetadata) {
+        reportEvent(Events.MOD_ADD_STARTER_BRICK, {
+          starterBrickType: adapter.starterBrickType,
+          modId: modMetadata.id,
+        });
+      } else {
+        reportEvent(Events.MOD_CREATE_NEW, {
+          type: adapter.starterBrickType,
         });
       }
     },
