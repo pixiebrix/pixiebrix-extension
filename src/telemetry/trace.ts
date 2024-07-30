@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JsonObject, SetRequired } from "type-fest";
+import { type JsonObject, type SetRequired } from "type-fest";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { sortBy } from "lodash";
 import { type BrickConfig } from "@/bricks/types";
