@@ -21,7 +21,7 @@ import { ModsPage } from "../extensionConsole/modsPage";
 import { WorkshopPage } from "../extensionConsole/workshop/workshopPage";
 import { type UUID } from "@/types/stringTypes";
 import { BasePageObject } from "../basePageObject";
-import { ModActionMenu, ModListingPanel } from "./modListingPanel";
+import { ModListingPanel } from "./modListingPanel";
 import { BrickActionsPanel } from "./brickActionsPanel";
 import { ConfigurationForm } from "./configurationForm";
 import { DataPanel } from "./dataPanel";
@@ -134,10 +134,6 @@ export class PageEditorPage extends BasePageObject {
     );
   }
 
-  getModActionMenu() {
-    return new ModActionMenu(this.getByLabel("Menu"));
-  }
-
   @ModifiesModFormState
   async saveStandaloneMod(modName: string, modUuid: UUID) {
     const modListItem = this.modListingPanel.getModListItemByName(modName);
@@ -156,7 +152,7 @@ export class PageEditorPage extends BasePageObject {
     await modListItem.select();
 
     await modListItem.menuButton.click();
-    const actionMenu = this.getModActionMenu();
+    const actionMenu = modListItem.getModActionMenu();
     await actionMenu.copyButton.click();
 
     const createModModal = new CreateModModal(this.getByRole("dialog"));
@@ -170,7 +166,7 @@ export class PageEditorPage extends BasePageObject {
     await modListItem.select();
 
     await modListItem.menuButton.click();
-    const actionMenu = this.getModActionMenu();
+    const actionMenu = modListItem.getModActionMenu();
     await actionMenu.deactivateButton.click();
 
     const deactivateModModal = new DeactivateModModal(this.getByRole("dialog"));

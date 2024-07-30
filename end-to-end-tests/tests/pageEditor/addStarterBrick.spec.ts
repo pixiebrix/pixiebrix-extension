@@ -143,7 +143,7 @@ test("Add new starter brick to mod", async ({
 
   await test.step("Add new Button starter brick to the mod", async () => {
     await modListItem.menuButton.click();
-    const modActionMenu = pageEditorPage.getModActionMenu();
+    const modActionMenu = modListItem.getModActionMenu();
     await modActionMenu.addStarterBrick("Button");
     await pageEditorPage.selectConnectedPageElement(
       page.getByRole("link", { name: "navigation" }),
@@ -172,7 +172,7 @@ test("Add new starter brick to mod", async ({
   await test.step("Add new Context Menu starter brick to mod", async () => {
     await modListItem.select();
     await modListItem.menuButton.click();
-    const modActionMenu = pageEditorPage.getModActionMenu();
+    const modActionMenu = modListItem.getModActionMenu();
     await modActionMenu.addStarterBrick("Context Menu");
 
     await expect(brickPipeline).toHaveCount(1);
@@ -195,7 +195,7 @@ test("Add new starter brick to mod", async ({
   await test.step("Add new Quick Bar Action starter brick", async () => {
     await modListItem.select();
     await modListItem.menuButton.click();
-    const modActionMenu = pageEditorPage.getModActionMenu();
+    const modActionMenu = modListItem.getModActionMenu();
     await modActionMenu.addStarterBrick("Quick Bar Action");
 
     await expect(brickPipeline).toHaveCount(1);
@@ -218,7 +218,7 @@ test("Add new starter brick to mod", async ({
   await test.step("Add new Sidebar Panel starter brick", async () => {
     await modListItem.select();
     await modListItem.menuButton.click();
-    const modActionMenu = pageEditorPage.getModActionMenu();
+    const modActionMenu = modListItem.getModActionMenu();
     await modActionMenu.addStarterBrick("Sidebar Panel");
 
     await expect(brickPipeline).toHaveCount(2);
@@ -245,7 +245,7 @@ test("Add new starter brick to mod", async ({
   await test.step("Add new Trigger starter brick", async () => {
     await modListItem.select();
     await modListItem.menuButton.click();
-    const modActionMenu = pageEditorPage.getModActionMenu();
+    const modActionMenu = modListItem.getModActionMenu();
     await modActionMenu.addStarterBrick("Trigger");
 
     await expect(brickPipeline).toHaveCount(1);
