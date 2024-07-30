@@ -21,14 +21,13 @@ import Alert from "@/components/Alert";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import type { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DocumentPreview from "@/pageEditor/documentBuilder/preview/DocumentPreview";
-import React from "react";
+import React, { useRef } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import {
   selectActiveBuilderPreviewElement,
   selectActiveNodeInfo,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import dataPanelStyles from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTabs.module.scss";
 import { joinPathParts } from "@/utils/formUtils";
 import { useSelector } from "react-redux";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
@@ -69,7 +68,6 @@ const DesignTab: React.FC = () => {
     blockConfig: brickConfig,
     path: brickPath,
   } = useSelector(selectActiveNodeInfo);
-
   const isSidebarPanelStale = useIsSidebarPanelStale();
 
   const [activeBuilderPreviewElement, setActiveBuilderPreviewElement] =
@@ -78,17 +76,19 @@ const DesignTab: React.FC = () => {
       editorActions.setActiveBuilderPreviewElement,
     );
 
+  const popupBoundaryRef = useRef<HTMLElement | null>(null);
+
   const documentBodyFieldName = joinPathParts(brickPath, "config.body");
 
   const showFormDesign = shouldShowFormDesign(brickId);
-  const showDocumentDesign = shouldShowDocumentDesign(brickId);
-
-  const popupBoundary = showDocumentDesign
-    ? document.querySelector(`.${dataPanelStyles.tabContent}`) ?? undefined
-    : undefined;
 
   return (
-    <DataTabPane eventKey={DataPanelTabKey.Design}>
+    <DataTabPane
+      eventKey={DataPanelTabKey.Design}
+      ref={(element: HTMLDivElement) => {
+        popupBoundaryRef.current = element;
+      }}
+    >
       {isSidebarPanelStale && staleSidePanelAlertElement}
       {showFormDesign ? (
         <FormPreview
@@ -101,7 +101,7 @@ const DesignTab: React.FC = () => {
           documentBodyName={documentBodyFieldName}
           activeElement={activeBuilderPreviewElement}
           setActiveElement={setActiveBuilderPreviewElement}
-          menuBoundary={popupBoundary}
+          boundingBoxRef={popupBoundaryRef}
         />
       )}
     </DataTabPane>

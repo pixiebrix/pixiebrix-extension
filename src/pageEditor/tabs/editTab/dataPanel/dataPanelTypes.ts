@@ -18,7 +18,7 @@
 export enum DataPanelTabKey {
   /**
    * The input arguments/variables for the brick
-   * @since 2.0.6 consolidated Context and Rendered Args tabs into a single tab
+   * @since 2.0.7 consolidated Context and Rendered Args tabs into a single tab
    */
   Input = "input",
   /**
@@ -28,12 +28,12 @@ export enum DataPanelTabKey {
   ModVariables = "modVariables",
   /**
    * The brick output/output preview
-   * @since 2.0.6 contains both the output and preview
+   * @since 2.0.7 contains both the output and preview
    */
   Output = "output",
   /**
    * Design tab for the form/document builder
-   * @since 2.0.6 split from the Preview tab
+   * @since 2.0.7 split from the Preview tab
    */
   Design = "design",
   /**
@@ -44,7 +44,12 @@ export enum DataPanelTabKey {
    * Brick comments. Currently not supported for starter bricks.
    */
   Comments = "comments",
-  // Developer-only tabs
+  /**
+   * Developer Only: Formik form state for the mod component form
+   */
   ModComponentFormState = "modComponentFormState",
+  /**
+   * Developer Only: Formik form state for the selected node, i.e., brick or starter brick
+   */
   NodeFormState = "nodeFormState",
 }
