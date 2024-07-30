@@ -51,15 +51,15 @@ type ActionMenuProps = {
 const ActionMenu: React.FC<ActionMenuProps> = ({
   labelRoot,
   onSave,
-  onDelete,
-  onDeactivate,
+  onDelete = null,
+  onDeactivate = null,
   onClone,
-  onReset,
+  onReset = null,
   isDirty,
-  onAddToMod,
-  onRemoveFromMod,
+  onAddToMod = null,
+  onRemoveFromMod = null,
   disabled,
-  onAddStarterBrick,
+  onAddStarterBrick = null,
 }) => {
   const modComponentFormStateAdapters = useAvailableFormStateAdapters();
 
@@ -76,9 +76,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       icon: <FontAwesomeIcon icon={faPlus} fixedWidth />,
       submenu: modComponentFormStateAdapters.map((adapter) => ({
         title: adapter.label,
-        action() {
-          onAddStarterBrick(adapter);
-        },
+        action: onAddStarterBrick
+          ? () => {
+              onAddStarterBrick(adapter);
+            }
+          : null,
         icon: <FontAwesomeIcon icon={adapter.icon} fixedWidth />,
       })),
       hide: !onAddStarterBrick,

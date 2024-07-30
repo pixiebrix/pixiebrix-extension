@@ -37,11 +37,11 @@ type MenuItemBase = {
 };
 
 type ActionEllipsisMenuItem = MenuItemBase & {
-  action: () => void;
+  action: (() => void) | null;
 };
 
 type LinkEllipsisMenuItem = MenuItemBase & {
-  href: string;
+  href: string | null;
 };
 
 type SubmenuEllipsisMenuItem = MenuItemBase & {
