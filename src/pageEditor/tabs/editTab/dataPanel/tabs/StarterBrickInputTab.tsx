@@ -15,18 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import React from "react";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
-export type RJSFSchema = {
-  schema?: Schema;
-  uiSchema: UiSchema;
-};
+const StarterBrickInputTab: React.FC = () => (
+  <DataTabPane eventKey={DataPanelTabKey.Input}>
+    <div className="text-muted">
+      Starter Bricks do not receive input. To view the <code>@input</code>{" "}
+      variable, switch to the Output Tab
+    </div>
+  </DataTabPane>
+);
 
-export type SetActiveField = React.Dispatch<
-  React.SetStateAction<string | null>
->;
-
-export type SelectStringOption = {
-  label: string;
-  value: string | null;
-};
+export default StarterBrickInputTab;

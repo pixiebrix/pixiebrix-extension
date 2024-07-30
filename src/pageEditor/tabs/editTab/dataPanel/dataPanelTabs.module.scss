@@ -15,18 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema, type UiSchema } from "@/types/schemaTypes";
+.tabNav {
+  font-size: small;
+}
 
-export type RJSFSchema = {
-  schema?: Schema;
-  uiSchema: UiSchema;
-};
+.tabContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 
-export type SetActiveField = React.Dispatch<
-  React.SetStateAction<string | null>
->;
+.tabPane {
+  padding-top: 1rem;
 
-export type SelectStringOption = {
-  label: string;
-  value: string | null;
-};
+  // Override the default form layout, which has min-width 100px for labels
+  :global(.form-group .form-label) {
+    // Fit "View" and "Search" labels
+    width: 65px;
+    min-width: unset;
+  }
+}

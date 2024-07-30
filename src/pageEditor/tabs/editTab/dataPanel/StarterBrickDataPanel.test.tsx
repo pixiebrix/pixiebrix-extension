@@ -18,9 +18,9 @@
 import React from "react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
+import { screen } from "@testing-library/react";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
-import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import StarterBrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel";
 import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
 
@@ -41,12 +41,12 @@ describe("StarterBrickDataPanel", () => {
           }),
         );
         dispatch(editorActions.setActiveNodeId(instanceId));
-        dispatch(
-          editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Output),
-        );
       },
     });
     await waitForEffect();
+
+    // Stater Brick should default to showing the output tab
+    expect(screen.getByLabelText("Latest Run")).toBeInTheDocument();
 
     expect(asFragment()).toMatchSnapshot();
   });

@@ -481,6 +481,21 @@ export const editorSlice = createSlice({
     },
 
     /**
+     * Updates the viewMode on a DataPane tab
+     */
+    setNodeDataPanelTabViewMode(
+      state,
+      action: PayloadAction<{ tabKey: DataPanelTabKey; viewMode: string }>,
+    ) {
+      const { tabKey, viewMode } = action.payload;
+
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+
+      brickConfigurationUIState.dataPanel[tabKey].viewMode = viewMode;
+    },
+
+    /**
      * Updates the query on a DataPane tab with the JsonTree component
      */
     setNodeDataPanelTabSearchQuery(
@@ -520,7 +535,7 @@ export const editorSlice = createSlice({
         validateBrickConfigurationUIState(state);
 
       brickConfigurationUIState.dataPanel[
-        DataPanelTabKey.Preview
+        DataPanelTabKey.Design
       ].activeElement = activeElement;
 
       brickConfigurationUIState.dataPanel[
@@ -1009,7 +1024,7 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 6,
+  version: 7,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: [
     "inserting",

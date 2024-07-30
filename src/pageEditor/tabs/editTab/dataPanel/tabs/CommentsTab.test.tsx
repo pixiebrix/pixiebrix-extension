@@ -19,8 +19,6 @@ import React from "react";
 import { Tab } from "react-bootstrap";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
 import { render, screen } from "@/pageEditor/testHelpers";
-// eslint-disable-next-line no-restricted-imports -- used for testing purposes
-import { Formik } from "formik";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import userEvent from "@testing-library/user-event";
@@ -28,11 +26,12 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
 const reportEventMock = jest.mocked(reportEvent);
 
-const commentsFieldName = "modComponent.brickPipeline.0.comments";
 const initialComments = "Hello world!";
+
 const formStateWithComments = menuItemFormStateFactory(
   {
     modMetadata: modMetadataFactory(),
@@ -47,18 +46,24 @@ const formStateWithComments = menuItemFormStateFactory(
 const formStateWithNoComments = menuItemFormStateFactory({}, [
   brickConfigFactory(),
 ]);
+
 const renderCommentsTab = (formState = formStateWithComments) => {
-  const brickId = formState.modComponent.brickPipeline[0].id;
   render(
     <Tab.Container defaultActiveKey={DataPanelTabKey.Comments}>
-      <Formik onSubmit={jest.fn()} initialValues={formState}>
-        <CommentsTab
-          brickId={brickId}
-          brickCommentsFieldName={commentsFieldName}
-          modId={formState.modMetadata?.id}
-        />
-      </Formik>
+      <CommentsTab />
     </Tab.Container>,
+    {
+      initialValues: formState,
+      setupRedux(dispatch) {
+        dispatch(editorActions.addModComponentFormState(formState));
+        dispatch(editorActions.setActiveModComponentId(formState.uuid));
+        dispatch(
+          editorActions.setActiveNodeId(
+            formState.modComponent.brickPipeline[0].instanceId,
+          ),
+        );
+      },
+    },
   );
 };
 

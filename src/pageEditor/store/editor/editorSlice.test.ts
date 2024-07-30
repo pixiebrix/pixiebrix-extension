@@ -46,7 +46,7 @@ import { migrations } from "@/store/editorMigrations";
 
 function getTabState(
   state: EditorState,
-  tabKey: DataPanelTabKey = DataPanelTabKey.Context,
+  tabKey: DataPanelTabKey = DataPanelTabKey.Input,
 ) {
   return state.brickPipelineUIStateById[state.activeModComponentId]
     .nodeUIStates[FOUNDATION_NODE_ID].dataPanel[tabKey];
@@ -84,7 +84,7 @@ describe("DataPanel state", () => {
     const editorState = editorSlice.reducer(
       state,
       actions.setNodeDataPanelTabSearchQuery({
-        tabKey: DataPanelTabKey.Context,
+        tabKey: DataPanelTabKey.Input,
         query: "test query",
       }),
     );
@@ -102,7 +102,7 @@ describe("DataPanel state", () => {
     const editorState = editorSlice.reducer(
       state,
       actions.setNodeDataPanelTabExpandedState({
-        tabKey: DataPanelTabKey.Context,
+        tabKey: DataPanelTabKey.Input,
         expandedState: nextExpandedState,
       }),
     );
@@ -118,9 +118,9 @@ describe("DataPanel state", () => {
       actions.setActiveBuilderPreviewElement("test-field"),
     );
 
-    expect(
-      getTabState(editorState, DataPanelTabKey.Preview).activeElement,
-    ).toBe("test-field");
+    expect(getTabState(editorState, DataPanelTabKey.Design).activeElement).toBe(
+      "test-field",
+    );
   });
 });
 

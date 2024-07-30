@@ -35,6 +35,10 @@ type AddElementActionProps = {
   elementsCollectionName: string;
   allowedTypes?: DocumentBuilderElementType[];
   className?: string;
+  /**
+   * Optional boundary for popover menu position calculations.
+   * @see EllipsisMenu
+   */
   boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 };
 
