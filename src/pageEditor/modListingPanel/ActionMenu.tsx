@@ -64,13 +64,14 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   const modComponentFormStateAdapters = useAvailableFormStateAdapters();
 
   const menuItems: EllipsisMenuItem[] = [
-    onReset && {
+    {
       title: "Reset",
       icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
       action: onReset,
       disabled: !isDirty || disabled,
+      hide: !onReset,
     },
-    onAddStarterBrick && {
+    {
       title: "Add Starter Brick",
       icon: <FontAwesomeIcon icon={faPlus} fixedWidth />,
       submenu: modComponentFormStateAdapters.map((adapter) => ({
@@ -80,8 +81,9 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
         },
         icon: <FontAwesomeIcon icon={adapter.icon} fixedWidth />,
       })),
+      hide: !onAddStarterBrick,
     },
-    onAddToMod && {
+    {
       title: "Add to mod",
       icon: (
         <FontAwesomeIcon
@@ -92,8 +94,9 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       ),
       action: onAddToMod,
       disabled,
+      hide: !onAddToMod,
     },
-    onRemoveFromMod && {
+    {
       title: "Move from mod",
       icon: (
         <FontAwesomeIcon
@@ -104,6 +107,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       ),
       action: onRemoveFromMod,
       disabled,
+      hide: !onRemoveFromMod,
     },
     {
       title: "Make a copy",
@@ -111,19 +115,21 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       action: onClone,
       disabled,
     },
-    onDelete && {
+    {
       title: "Delete",
       icon: <FontAwesomeIcon icon={faTrash} fixedWidth />,
       action: onDelete,
       disabled,
+      hide: !onDelete,
     },
-    onDeactivate && {
+    {
       title: "Deactivate",
       icon: <FontAwesomeIcon icon={faTimes} fixedWidth />,
       action: onDeactivate,
       disabled,
+      hide: !onDeactivate,
     },
-  ].filter(Boolean);
+  ];
 
   return (
     <div className={styles.root}>
