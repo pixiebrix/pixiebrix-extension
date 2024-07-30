@@ -130,7 +130,7 @@ const ArgumentsBody: React.FunctionComponent<{
 
 /**
  * Data Panel tab displaying input arguments and variables.
- * @since 2.0.6 includes both arguments and variables in a single panel
+ * @since 2.0.7 includes both arguments and variables in a single panel
  */
 const BrickInputTab: React.FunctionComponent = () => {
   const { isInputStale, traceRecord } = useBrickTraceRecord();

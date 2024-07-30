@@ -37,7 +37,7 @@ const VIEW_MODE_OPTIONS: Array<
 > = [
   {
     value: OutputViewModes.Actual,
-    label: "Latest Output",
+    label: "Latest Run",
     description: "Actual output returned by the brick on the latest run",
   },
   {
@@ -107,7 +107,7 @@ const OutputActualBody: React.FC = () => {
         copyable
         searchable
         tabKey={DataPanelTabKey.Output}
-        label="Latest Output"
+        label="Latest Run"
       />
     </>
   );

@@ -270,16 +270,19 @@ const BrickPreview: React.FunctionComponent<{
             cannot be automatically determined from its input/configuration.
             Click to refresh the preview
           </div>
-          <Button
-            variant="info"
-            size="sm"
-            disabled={!traceRecord && !brickInfo.traceOptional}
-            onClick={() => {
-              void debouncedRun(brickConfig, context as BrickArgsContext);
-            }}
-          >
-            <FontAwesomeIcon icon={faSync} /> Refresh Preview
-          </Button>
+          <div>
+            <Button
+              variant="info"
+              size="sm"
+              className="mt-2"
+              disabled={!traceRecord && !brickInfo.traceOptional}
+              onClick={() => {
+                void debouncedRun(brickConfig, context as BrickArgsContext);
+              }}
+            >
+              <FontAwesomeIcon icon={faSync} /> Refresh Preview
+            </Button>
+          </div>
         </>
       )}
 

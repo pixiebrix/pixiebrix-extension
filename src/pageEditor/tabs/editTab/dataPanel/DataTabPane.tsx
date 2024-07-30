@@ -25,7 +25,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 /**
  * A Page Editor Data Tab Pane layout component
  *
- * @since 2.0.6 the pane only contains the layout style/error boundary. Children are responsible for rendering
+ * @since 2.0.7 the pane only contains the layout style/error boundary. Children are responsible for rendering
  * loading, stale, and error states
  *
  * @param isDeveloperOnly true to show a developer-only message

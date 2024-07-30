@@ -61,7 +61,7 @@ export type PipelineMap = Record<UUID, NodeInfo>;
 export type DataPanelTabUIState = {
   /**
    * The view mode of the Data Panel tab.
-   * @since 2.0.6 introduced to support toggling between input arguments and available variables on the Input tab
+   * @since 2.0.7 introduced to support toggling between input arguments and available variables on the Input tab
    */
   viewMode?: string;
 

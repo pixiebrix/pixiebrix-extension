@@ -2257,7 +2257,7 @@ exports[`renders the first selected node 1`] = `
                                     <span
                                       class="label"
                                     >
-                                      Latest Output
+                                      Latest Run
                                     </span>
                                      
                                     <svg

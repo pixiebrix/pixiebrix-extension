@@ -18,19 +18,19 @@
 export enum DataPanelTabKey {
   /**
    * The input arguments/variables for the brick
-   * @since 2.0.7 consolidated Context and Rendered Args tabs into a single tab
+   * @since 2.0.7 contains both the rendered arguments and the variables in the context
    */
   Input = "input",
-  /**
-   * The mod variables and page state
-   * @since 2.0.5 renamed from page state and always displayed
-   */
-  ModVariables = "modVariables",
   /**
    * The brick output/output preview
    * @since 2.0.7 contains both the output and preview
    */
   Output = "output",
+  /**
+   * The mod variables and page state
+   * @since 2.0.5 renamed from page state and always displayed
+   */
+  ModVariables = "modVariables",
   /**
    * Design tab for the form/document builder
    * @since 2.0.7 split from the Preview tab
