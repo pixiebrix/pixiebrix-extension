@@ -52,7 +52,7 @@ function renderInputDataTab(
         );
         dispatch(
           editorActions.setActiveNodeId(
-            formState.modComponent.brickPipeline[0].instanceId,
+            formState.modComponent.brickPipeline[0]!.instanceId!,
           ),
         );
       },
@@ -77,7 +77,7 @@ describe("InputDataTab", () => {
   it("handles input error", async () => {
     const { formState, records } = formStateWithTraceDataFactory();
 
-    records[0].renderError = serializeError(new Error("Test Error"));
+    records[0]!.renderError = serializeError(new Error("Test Error"));
 
     renderInputDataTab(formState, records);
 

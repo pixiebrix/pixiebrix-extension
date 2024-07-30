@@ -1332,6 +1332,7 @@
     "./pageEditor/tabs/editTab/dataPanel/tabs/DesignTab.tsx",
     "./pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab.tsx",
     "./pageEditor/tabs/editTab/dataPanel/tabs/BrickInputTab.tsx",
+    "./pageEditor/tabs/editTab/dataPanel/tabs/BrickInputTab.test.tsx",
     "./pageEditor/tabs/editTab/dataPanel/tabs/ModComponentFormStateTab.tsx",
     "./pageEditor/tabs/editTab/dataPanel/tabs/ModVariablesTab.test.tsx",
     "./pageEditor/tabs/editTab/dataPanel/tabs/ModVariablesTab.tsx",

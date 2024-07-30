@@ -70,7 +70,7 @@ const contextFilter = (value: unknown, key: string): boolean => {
   return true;
 };
 
-export const noTraceAvailableElement = (
+const noTraceAvailableElement = (
   <div className="text-muted">
     No runs available. Run the brick to view input
   </div>
