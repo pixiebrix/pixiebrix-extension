@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionConsole/pages/activateMod/ActivateModDefinitionPage.tsx",
     "./contrib/zapier/PushOptions.tsx",
     "./contrib/automationanywhere/ApiTaskOptions.tsx",
     "./sidebar/Tabs.tsx",
