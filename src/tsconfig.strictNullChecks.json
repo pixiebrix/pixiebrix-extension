@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionConsole/pages/mods/modals/shareModals/PublishedContent.tsx",
     "./extensionConsole/pages/mods/modals/shareModals/EditPublishContent.tsx",
     "./extensionConsole/pages/mods/modals/shareModals/CancelPublishContent.tsx",
     "../end-to-end-tests/env.ts",

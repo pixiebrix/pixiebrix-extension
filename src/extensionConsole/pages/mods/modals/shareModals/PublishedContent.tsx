@@ -21,16 +21,19 @@ import { useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import ActivationLink from "@/activation/ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
-const PublishedContent: React.FunctionComponent = (props) => {
-  const { blueprintId } = useSelector(selectShowPublishContext);
+const PublishedContent: React.FunctionComponent = () => {
+  const { blueprintId: modId } = useSelector(selectShowPublishContext) ?? {};
+
+  assertNotNullish(modId, "modId from publish context is nullish");
 
   return (
     <PublishContentLayout title="Published">
       <Modal.Body>
         <p>The mod has been published to the Marketplace.</p>
         <p className="mb-1">Public link to share:</p>
-        <ActivationLink modId={blueprintId} />
+        <ActivationLink modId={modId} />
       </Modal.Body>
     </PublishContentLayout>
   );
