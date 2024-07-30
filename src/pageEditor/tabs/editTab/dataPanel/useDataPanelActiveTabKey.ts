@@ -17,7 +17,7 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import { selectNodeDataPanelTabSelected } from "@/pageEditor/store/editor/editorSelectors";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { type DataPanelTabKey } from "./dataPanelTypes";
 
@@ -43,10 +43,5 @@ export default function useDataPanelActiveTabKey(
     }
   }, [defaultTabKey, onSelectTab, savedActiveKey]);
 
-  const activeKey = useMemo(
-    () => savedActiveKey ?? defaultTabKey,
-    [defaultTabKey, savedActiveKey],
-  );
-
-  return [activeKey, onSelectTab];
+  return [savedActiveKey ?? defaultTabKey, onSelectTab];
 }

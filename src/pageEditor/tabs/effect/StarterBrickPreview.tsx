@@ -178,8 +178,8 @@ const StarterBrickPreview: React.FC = () => {
         data={output ?? {}}
         searchable
         copyable
-        tabKey={DataPanelTabKey.Preview}
-        label="Output Preview"
+        tabKey={DataPanelTabKey.Output}
+        label="Live Preview"
       />
     </div>
   );

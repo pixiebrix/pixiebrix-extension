@@ -46,6 +46,7 @@ import {
 } from "@/utils/modUtils";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { type ReportEventData } from "@/telemetry/telemetryTypes";
 
 export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -69,6 +70,7 @@ export const selectActiveModComponentFormState = createSelector(
   (
     activeModComponentId,
     formStates,
+    // XXX: consider making the return value required so callers don't all need their own dynamic check
   ): Nullishable<EditorState["modComponentFormStates"][number]> =>
     formStates.find((x) => x.uuid === activeModComponentId),
 );
@@ -343,19 +345,23 @@ export const selectPipelineMap = createSelector(
 export const selectActiveNodeInfo = createSelector(
   selectActiveBrickPipelineUIState,
   selectActiveNodeId,
-  (uiState: Nullishable<BrickPipelineUIState>, activeNodeId?: UUID) => {
+  (
+    uiState: Nullishable<BrickPipelineUIState>,
+    activeNodeId: Nullishable<UUID>,
+  ) => {
     assertNotNullish(
       uiState,
-      `UI state is ${typeof uiState === "object" ? "null" : "undefined"}`,
+      `uiState is ${typeof uiState === "object" ? "null" : "undefined"}`,
     );
-    assertNotNullish(activeNodeId, "Active Node ID is undefined");
+
+    assertNotNullish(activeNodeId, "activeNodeId is nullish");
 
     // eslint-disable-next-line security/detect-object-injection -- UUID
     const activeNodeInfo = uiState.pipelineMap[activeNodeId];
 
     assertNotNullish(
       activeNodeInfo,
-      `Active Node Info not found for node id: ${activeNodeId}`,
+      `activeNodeInfo not found for node id: ${activeNodeId}`,
     );
 
     return activeNodeInfo;
@@ -428,13 +434,15 @@ export function selectNodeDataPanelTabState(
 }
 
 /**
- * Selects the active element of the Document or Form builder on the Preview tab
+ * Returns the active element of the Document or Form builder, or null if no element is selected.
  */
 export function selectActiveBuilderPreviewElement(
   state: EditorRootState,
-): Nullishable<string> {
-  return selectNodeDataPanelTabState(state, DataPanelTabKey.Preview)
-    ?.activeElement;
+): string | null {
+  return (
+    selectNodeDataPanelTabState(state, DataPanelTabKey.Design)?.activeElement ??
+    null
+  );
 }
 
 export const selectAddBlockLocation = ({ editor }: EditorRootState) =>
@@ -522,3 +530,22 @@ export const selectKnownEventNamesForActiveModComponent = createSelector(
 
 export const selectIsDimensionsWarningDismissed = (state: EditorRootState) =>
   state.editor.isDimensionsWarningDismissed;
+
+/**
+ * Return event telemetry data for the currently selected node.
+ */
+export const selectActiveNodeEventData = createSelector(
+  selectActiveModComponentFormState,
+  selectActiveNodeInfo,
+  (activeModComponentFormState, activeNodeInfo) => {
+    assertNotNullish(
+      activeModComponentFormState,
+      "selectActiveNodeEventData can only be called from a mod component context",
+    );
+
+    return {
+      modId: activeModComponentFormState.modMetadata?.id,
+      brickId: activeNodeInfo.blockId,
+    } satisfies ReportEventData;
+  },
+);

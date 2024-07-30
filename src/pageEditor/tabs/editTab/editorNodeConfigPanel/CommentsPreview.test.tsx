@@ -35,7 +35,7 @@ const renderCommentsPreview = (comments: string) => {
           formState.modComponent.brickPipeline[0].instanceId,
         ),
       );
-      dispatch(actions.setNodeDataPanelTabSelected(DataPanelTabKey.Context));
+      dispatch(actions.setNodeDataPanelTabSelected(DataPanelTabKey.Input));
     },
   });
 };

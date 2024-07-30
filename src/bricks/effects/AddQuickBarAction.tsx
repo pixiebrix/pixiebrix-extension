@@ -64,7 +64,7 @@ const DEFAULT_PRIORITY = 1;
 
 /**
  * An effect that adds an action to the PixieBrix Quick Bar.
- * @see QuickBarProviderExtensionPoint
+ * @see DynamicQuickBarStarterBrick
  */
 class AddQuickBarAction extends EffectABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/quickbar/add");
@@ -156,7 +156,7 @@ class AddQuickBarAction extends EffectABC {
     // Counter to keep track of the action run number for tracing
     let counter = 0;
 
-    // Expected parent id from QuickBarProviderExtensionPoint
+    // Expected parent id from DynamicQuickBarStarterBrickABC
     const parentId = `provider-${modComponentId}`;
 
     const action: CustomAction = {
@@ -172,7 +172,7 @@ class AddQuickBarAction extends EffectABC {
       subtitle,
       section,
       priority,
-      // Defaults to a box; match behavior from Quick Bar Action extension point
+      // Defaults to a box; match behavior from Quick Bar Action starter brick
       icon: iconConfig ? (
         <Icon icon={iconConfig.id} library={iconConfig.library} />
       ) : (

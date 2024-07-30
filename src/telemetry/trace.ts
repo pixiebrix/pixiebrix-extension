@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JsonObject } from "type-fest";
+import { type JsonObject, type SetRequired } from "type-fest";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { sortBy } from "lodash";
 import { type BrickConfig } from "@/bricks/types";
@@ -149,8 +149,12 @@ export type TraceRecord = TraceEntryData & Partial<TraceExitData> & DerivedData;
 export type TraceError = TraceEntryData & ErrorOutput & DerivedData;
 
 export function isTraceError(
-  traceRecord: TraceRecord,
-): traceRecord is TraceError {
+  traceRecord: Nullishable<TraceRecord>,
+): traceRecord is SetRequired<TraceError, "error"> {
+  if (traceRecord == null) {
+    return false;
+  }
+
   return "error" in traceRecord && traceRecord.error != null;
 }
 

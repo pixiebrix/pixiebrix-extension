@@ -16,7 +16,6 @@
  */
 
 import React, { type PropsWithChildren } from "react";
-import { type Metadata } from "@/types/registryTypes";
 import styles from "./Entry.module.scss";
 import {
   ModHasUpdateIcon,
@@ -42,9 +41,11 @@ import {
 import * as semver from "semver";
 import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
 import { useGetModDefinitionQuery } from "@/data/service/api";
+import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
+import { type ModMetadata } from "@/types/modComponentTypes";
 
 export type ModListItemProps = PropsWithChildren<{
-  modMetadata: Metadata;
+  modMetadata: ModMetadata;
   onSave: () => Promise<void>;
   isSaving: boolean;
   onReset: () => Promise<void>;
@@ -67,6 +68,8 @@ const ModListItem: React.FC<ModListItemProps> = ({
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
+  const addNewModComponent = useAddNewModComponent(modMetadata);
+
   const { id: modId, name: savedName, version: activatedVersion } = modMetadata;
   const isActive = activeModId === modId;
 
@@ -125,6 +128,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
             onSave={onSave}
             onReset={onReset}
             onDeactivate={onDeactivate}
+            onAddStarterBrick={addNewModComponent}
             onClone={onClone}
             isDirty={isDirty}
             disabled={isSaving}

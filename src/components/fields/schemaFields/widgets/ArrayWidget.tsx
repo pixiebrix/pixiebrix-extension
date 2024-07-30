@@ -26,6 +26,8 @@ import {
   textPredicate,
 } from "@/components/fields/schemaFields/schemaUtils";
 import { defaultBrickConfig } from "@/bricks/util";
+import ArrowUpwardIcon from "@/icons/arrow-upward.svg?loadAsComponent";
+import ArrowDownwardIcon from "@/icons/arrow-downward.svg?loadAsComponent";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import styles from "./ArrayWidget.module.scss";
 import { joinName } from "@/utils/formUtils";
@@ -87,21 +89,52 @@ const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
 
   return (
     <FieldArray name={name}>
-      {({ push }) => (
+      {({ push, swap }) => (
         <>
           <ul className="list-group mb-2">
-            {field.value?.map((_, index) => (
-              // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
-              <li className="list-group-item py-1" key={index}>
-                <SchemaField
-                  name={joinName(name, String(index))}
-                  schema={schemaItems}
-                  validationSchema={validationSchema}
-                  hideLabel
-                  isArrayItem
-                />
-              </li>
-            ))}
+            {field.value?.map((_, index) => {
+              const canMoveUp = index > 0;
+              const canMoveDown = index < field.value.length - 1;
+
+              return (
+                // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
+                <li className="list-group-item py-1 d-flex pl-1" key={index}>
+                  <div>
+                    <Button
+                      className={styles.moveButton}
+                      title="Move up"
+                      variant="link"
+                      disabled={!canMoveUp}
+                      onClick={() => {
+                        swap(index, index - 1);
+                      }}
+                    >
+                      <ArrowUpwardIcon />
+                    </Button>
+                    <Button
+                      className={styles.moveButton}
+                      title="Move down"
+                      variant="link"
+                      disabled={!canMoveDown}
+                      onClick={() => {
+                        swap(index, index + 1);
+                      }}
+                    >
+                      <ArrowDownwardIcon />
+                    </Button>
+                  </div>
+                  <div className="flex-grow-1">
+                    <SchemaField
+                      name={joinName(name, String(index))}
+                      schema={schemaItems}
+                      validationSchema={validationSchema}
+                      hideLabel
+                      isArrayItem
+                    />
+                  </div>
+                </li>
+              );
+            })}
           </ul>
           <Button
             variant="link"
