@@ -217,13 +217,26 @@ async function stopRecording(): Promise<void> {
 // Use optional chaining in case the chrome runtime is not available:
 // https://github.com/pixiebrix/pixiebrix-extension/issues/8397
 chrome.runtime?.onMessage?.addListener(async (message: unknown) => {
-  if (isRecordErrorMessage(message)) {
-    await sendErrorViaErrorReporter(message.data);
-  } else if (isStartAudioCaptureMessage(message)) {
-    await startRecording(message.data);
-  } else if (isStopAudioCaptureMessage(message)) {
-    await stopRecording();
-  } else if (isGetRecordingTabIdMessage(message)) {
-    return extractRecordingTabId(document.location.href);
+  switch (true) {
+    case isRecordErrorMessage(message): {
+      await sendErrorViaErrorReporter(message.data);
+      break;
+    }
+
+    case isStartAudioCaptureMessage(message): {
+      await startRecording(message.data);
+      break;
+    }
+
+    case isStopAudioCaptureMessage(message): {
+      await stopRecording();
+      break;
+    }
+
+    case isGetRecordingTabIdMessage(message): {
+      return extractRecordingTabId(document.location.href);
+    }
+
+    default:
   }
 });

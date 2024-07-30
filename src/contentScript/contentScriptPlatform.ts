@@ -26,7 +26,6 @@ import {
   ensureContextMenu,
   uninstallContextMenu,
   tabCapture,
-  captureTabScreenshot,
 } from "@/background/messenger/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -215,7 +214,7 @@ class ContentScriptPlatform extends PlatformBase {
   override get capture(): PlatformProtocol["capture"] {
     return {
       async captureScreenshot() {
-        return captureTabScreenshot();
+        return tabCapture.captureTabScreenshot();
       },
       async startAudioCapture(
         integrationConfig: SanitizedIntegrationConfig,
