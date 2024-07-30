@@ -21,7 +21,7 @@ import Alert from "@/components/Alert";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import type { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DocumentPreview from "@/pageEditor/documentBuilder/preview/DocumentPreview";
-import React, { useRef } from "react";
+import React, { type MutableRefObject } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import {
   selectActiveBuilderPreviewElement,
@@ -62,7 +62,13 @@ export const staleSidePanelAlertElement = (
  * The Form/Document Design tab in the Data Panel.
  * @since 2.0.6 split out into a separate component
  */
-const DesignTab: React.FC = () => {
+const DesignTab: React.FC<{
+  /**
+   * Boundary for popover menu position calculations.
+   * @see EllipsisMenu
+   */
+  boundingBoxRef: MutableRefObject<HTMLElement | null>;
+}> = ({ boundingBoxRef }) => {
   const {
     blockId: brickId,
     blockConfig: brickConfig,
@@ -76,19 +82,12 @@ const DesignTab: React.FC = () => {
       editorActions.setActiveBuilderPreviewElement,
     );
 
-  const popupBoundaryRef = useRef<HTMLElement | null>(null);
-
   const documentBodyFieldName = joinPathParts(brickPath, "config.body");
 
   const showFormDesign = shouldShowFormDesign(brickId);
 
   return (
-    <DataTabPane
-      eventKey={DataPanelTabKey.Design}
-      ref={(element: HTMLDivElement) => {
-        popupBoundaryRef.current = element;
-      }}
-    >
+    <DataTabPane eventKey={DataPanelTabKey.Design}>
       {isSidebarPanelStale && staleSidePanelAlertElement}
       {showFormDesign ? (
         <FormPreview
@@ -101,7 +100,7 @@ const DesignTab: React.FC = () => {
           documentBodyName={documentBodyFieldName}
           activeElement={activeBuilderPreviewElement}
           setActiveElement={setActiveBuilderPreviewElement}
-          boundingBoxRef={popupBoundaryRef}
+          boundingBoxRef={boundingBoxRef}
         />
       )}
     </DataTabPane>

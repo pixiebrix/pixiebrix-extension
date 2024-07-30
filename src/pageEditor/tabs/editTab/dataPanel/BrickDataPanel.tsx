@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTabs.module.scss";
 import { useSelector } from "react-redux";
@@ -67,6 +67,8 @@ const BrickDataPanel: React.FC = () => {
   const showDocumentDesign = shouldShowDocumentDesign(brickId);
   const showDesign = showFormDesign || showDocumentDesign;
 
+  const contentBoundaryRef = useRef<HTMLElement | null>(null);
+
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
     showFormDesign || showDocumentDesign
       ? DataPanelTabKey.Design
@@ -117,7 +119,12 @@ const BrickDataPanel: React.FC = () => {
 
           <NavItem eventKey={DataPanelTabKey.Comments} label="Comments" />
         </Nav>
-        <Tab.Content className={dataPanelStyles.tabContent}>
+        <Tab.Content
+          className={dataPanelStyles.tabContent}
+          ref={(element: HTMLDivElement) => {
+            contentBoundaryRef.current = element;
+          }}
+        >
           {showDeveloperTabs && (
             <>
               <ModComponentFormStateTab />
@@ -131,7 +138,7 @@ const BrickDataPanel: React.FC = () => {
 
           <ModVariablesTab />
 
-          {showDesign && <DesignTab />}
+          {showDesign && <DesignTab boundingBoxRef={contentBoundaryRef} />}
 
           {showDocumentDesign && <OutlineTab />}
 
