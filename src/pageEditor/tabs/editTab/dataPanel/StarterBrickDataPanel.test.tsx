@@ -46,7 +46,7 @@ describe("StarterBrickDataPanel", () => {
     await waitForEffect();
 
     // Stater Brick should default to showing the output tab
-    expect(screen.getByLabelText("Latest Output")).toBeInTheDocument();
+    expect(screen.getByLabelText("Latest Run")).toBeInTheDocument();
 
     expect(asFragment()).toMatchSnapshot();
   });
