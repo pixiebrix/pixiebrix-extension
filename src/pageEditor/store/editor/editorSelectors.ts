@@ -351,7 +351,7 @@ export const selectActiveNodeInfo = createSelector(
   ) => {
     assertNotNullish(
       uiState,
-      `UI state is ${typeof uiState === "object" ? "null" : "undefined"}`,
+      `uiState is ${typeof uiState === "object" ? "null" : "undefined"}`,
     );
 
     assertNotNullish(activeNodeId, "activeNodeId is nullish");

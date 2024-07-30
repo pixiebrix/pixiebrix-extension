@@ -101,7 +101,7 @@ const DocumentPreview = ({
 
   assertNotNullish(
     activeNodeId,
-    "DocumentPreview can only be used in an brick editing context",
+    "DocumentPreview can only be used in a brick editing context",
   );
 
   const parentNodeInfo = useSelector(selectParentNodeInfo(activeNodeId));
