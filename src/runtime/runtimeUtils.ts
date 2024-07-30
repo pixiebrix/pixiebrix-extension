@@ -59,6 +59,7 @@ import {
   isTextLiteralOrNull,
 } from "@/utils/expressionUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick
@@ -298,4 +299,13 @@ export function isApiVersionAtLeast(
   const atLeastNum = Number(atLeast.slice(1));
 
   return isNum >= atLeastNum;
+}
+
+/**
+ * Return true if the brick supports output variables.
+ */
+export function brickTypeSupportsOutputKey(brickType: BrickType): boolean {
+  // Output keys for effects are ignored by the runtime (and generate a warning at runtime)
+  // Renderers are always the last brick in a pipeline, so they don't need an output key
+  return brickType !== BrickTypes.EFFECT && brickType !== BrickTypes.RENDERER;
 }

@@ -16,7 +16,6 @@
  */
 
 import getType from "@/runtime/getType";
-import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
 import {
   type BrickConfig,
   type BrickPipeline,
@@ -31,20 +30,12 @@ import { type Brick } from "@/types/brickTypes";
 import { type SafeString } from "@/types/stringTypes";
 import { freshIdentifier } from "@/utils/variableUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { brickTypeSupportsOutputKey } from "@/runtime/runtimeUtils";
 
 /**
  * Default brick output key, if the brick doesn't define its own default output key.
  */
 const DEFAULT_OUTPUT_KEY = "output" as SafeString;
-
-/**
- * Return true if the Page Editor should show an output field for the brick.
- */
-export function showOutputKey(brickType: BrickType): boolean {
-  // Output keys for effects are ignored by the runtime (and generate a warning at runtime)
-  // Renderers are always the last brick in a pipeline, so they don't need an output key
-  return brickType !== BrickTypes.EFFECT && brickType !== BrickTypes.RENDERER;
-}
 
 /**
  * Generate a fresh outputKey for `brick`
@@ -59,7 +50,7 @@ export async function generateFreshOutputKey(
   // BrickABC so there's only a run method (e.g., in test cases), then getType will return null.
   const type = (await getType(brick)) ?? "transform";
 
-  if (!showOutputKey(type)) {
+  if (!brickTypeSupportsOutputKey(type)) {
     // Output keys for effects are ignored by the runtime (and generate a warning at runtime)
     return undefined;
   }

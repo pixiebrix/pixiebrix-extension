@@ -153,4 +153,44 @@ describe("ArrayWidget", () => {
       [fieldName]: ["abc"],
     });
   });
+
+  test("move item", async () => {
+    const schema: Schema = {
+      type: "array",
+      additionalItems: true,
+      items: {
+        type: "string",
+      },
+    };
+    const { getFormState } = render(
+      <ArrayWidget
+        name={fieldName}
+        schema={schema}
+        isRequired
+        description={fieldDescription}
+        defaultType="array"
+      />,
+      {
+        initialValues: {
+          [fieldName]: ["abc", "def"],
+        },
+      },
+    );
+
+    await userEvent.click(
+      screen.getAllByRole("button", { name: "Move down" })[0]!,
+    );
+
+    expect(getFormState()).toStrictEqual({
+      [fieldName]: ["def", "abc"],
+    });
+
+    await userEvent.click(
+      screen.getAllByRole("button", { name: "Move up" })[1]!,
+    );
+
+    expect(getFormState()).toStrictEqual({
+      [fieldName]: ["abc", "def"],
+    });
+  });
 });

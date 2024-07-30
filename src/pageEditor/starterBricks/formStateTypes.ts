@@ -48,9 +48,9 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
 import { type Menus } from "webextension-polyfill";
 import {
-  type QuickBarProviderConfig,
-  type QuickBarProviderDefaultOptions,
-} from "@/starterBricks/quickBarProvider/quickBarProviderTypes";
+  type DynamicQuickBarConfig,
+  type DynamicQuickBarDefaultOptions,
+} from "@/starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
 import {
   type BaseStarterBrickState,
   type BaseModComponentState,
@@ -198,15 +198,15 @@ type QuickBarStarterBrickState = BaseStarterBrickState & {
   };
 };
 
-// QuickBarFormState
-type QuickBarProviderModComponentState = BaseModComponentState &
-  Except<QuickBarProviderConfig, "generator"> & {
-    rootAction?: QuickBarProviderConfig["rootAction"];
+// DynamicQuickBarFormState
+type DynamicQuickBarModComponentState = BaseModComponentState &
+  Except<DynamicQuickBarConfig, "generator"> & {
+    rootAction?: DynamicQuickBarConfig["rootAction"];
   };
-type QuickBarProviderStarterBrickState = BaseStarterBrickState & {
+type DynamicQuickBarStarterBrickState = BaseStarterBrickState & {
   definition: {
     type: typeof StarterBrickTypes.DYNAMIC_QUICK_BAR;
-    defaultOptions: QuickBarProviderDefaultOptions;
+    defaultOptions: DynamicQuickBarDefaultOptions;
     documentUrlPatterns: string[];
     reader: SingleLayerReaderConfig;
     isAvailable: NormalizedAvailability;
@@ -227,9 +227,9 @@ export type QuickBarFormState = BaseFormState<
   QuickBarStarterBrickState
 >;
 
-export type QuickBarProviderFormState = BaseFormState<
-  QuickBarProviderModComponentState,
-  QuickBarProviderStarterBrickState
+export type DynamicQuickBarFormState = BaseFormState<
+  DynamicQuickBarModComponentState,
+  DynamicQuickBarStarterBrickState
 >;
 
 /**
@@ -242,4 +242,4 @@ export type ModComponentFormState =
   | SidebarFormState
   | ContextMenuFormState
   | QuickBarFormState
-  | QuickBarProviderFormState;
+  | DynamicQuickBarFormState;
