@@ -28,7 +28,7 @@ import {
   selectModalsContext,
   selectShowShareContext,
 } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
-import { type RootState } from "@/store/optionsStore";
+import { type RootState } from "@/extensionConsole/store/optionsStore";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";

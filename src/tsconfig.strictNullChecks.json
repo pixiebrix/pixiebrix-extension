@@ -1572,7 +1572,7 @@
     "./store/extensionsUtils.ts",
     "./store/migratePersistedState.test.ts",
     "./store/migratePersistedState.ts",
-    "./store/optionsStore.ts",
+    "./extensionConsole/store/optionsStore.ts",
     "./store/sessionChanges/sessionChangesListenerMiddleware.ts",
     "./store/sessionChanges/sessionChangesSelectors.test.ts",
     "./store/sessionChanges/sessionChangesSelectors.ts",
