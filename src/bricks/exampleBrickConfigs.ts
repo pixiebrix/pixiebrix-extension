@@ -36,6 +36,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
 
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 
 /**
  * Get an example brick config for a given brick id.
@@ -244,6 +245,15 @@ export function getExampleBrickConfig(
   return x;
 }`,
         arguments: { x: "Hello from PixieBrix!" },
+      };
+    }
+
+    case IfElse.BRICK_ID: {
+      return {
+        // `condition` is not required, default to empty string so it's not excluded
+        condition: toExpression("nunjucks", ""),
+        if: toExpression("pipeline", []),
+        else: toExpression("pipeline", []),
       };
     }
 

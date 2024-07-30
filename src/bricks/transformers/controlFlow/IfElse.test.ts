@@ -105,6 +105,22 @@ describe("IfElse", () => {
     expect(result).toStrictEqual({ prop: "I'm a teapot" });
   });
 
+  test("undefined condition follows else branch", async () => {
+    const pipeline = {
+      id: ifElseBlock.id,
+      config: {
+        if: toExpression("pipeline", []),
+        else: toExpression("pipeline", [{ id: teapotBrick.id, config: {} }]),
+      },
+    };
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3"),
+    );
+    expect(result).toStrictEqual({ prop: "I'm a teapot" });
+  });
+
   test("else optional", async () => {
     const pipeline = {
       id: ifElseBlock.id,
