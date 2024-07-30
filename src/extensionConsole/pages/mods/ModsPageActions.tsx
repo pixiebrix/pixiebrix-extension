@@ -41,60 +41,53 @@ const ModsPageActions: React.FunctionComponent<{
   const { hasUpdate } = modViewItem;
 
   const actionItems = useMemo(
-    (): EllipsisMenuItem[] => [
-      {
-        title: "Publish to Marketplace",
-        // Applying the same classes which <FontAwesomeIcon/> applies
-        icon: <PublishIcon className="svg-inline--fa fa-w-16 fa-fw" />,
-        action: actions.viewPublish,
-        hide: !actions.viewPublish,
-      },
-      {
-        title: "View Mod Details",
-        icon: <FontAwesomeIcon fixedWidth icon={faStore} />,
-        href: actions.viewInMarketplaceHref,
-        hide: !actions.viewInMarketplaceHref,
-      },
-      {
-        title: "Share with Teams",
-        icon: <FontAwesomeIcon fixedWidth icon={faShare} />,
-        action: actions.viewShare,
-        hide: !actions.viewShare,
-      },
-      {
-        title: "View Logs",
-        icon: <FontAwesomeIcon fixedWidth icon={faList} />,
-        action: actions.viewLogs,
-        hide: !actions.viewLogs,
-      },
-      {
-        title: "Edit in Workshop",
-        icon: <FontAwesomeIcon fixedWidth icon={faHammer} />,
-        action: actions.editInWorkshop,
-        hide: !actions.editInWorkshop,
-      },
-      {
-        title: hasUpdate ? "Update" : "Reactivate",
-        icon: <FontAwesomeIcon fixedWidth icon={faSyncAlt} />,
-        action: actions.reactivate,
-        hide: !actions.reactivate,
-        className: "text-info",
-      },
-      {
-        title: "Deactivate",
-        icon: <FontAwesomeIcon fixedWidth icon={faTimes} />,
-        action: actions.deactivate,
-        hide: !actions.deactivate,
-        className: "text-danger",
-      },
-      {
-        title: "Delete",
-        icon: <FontAwesomeIcon fixedWidth icon={faTrash} />,
-        action: actions.delete,
-        hide: !actions.delete,
-        className: "text-danger",
-      },
-    ],
+    (): EllipsisMenuItem[] =>
+      [
+        actions.viewPublish && {
+          title: "Publish to Marketplace",
+          // Applying the same classes which <FontAwesomeIcon/> applies
+          icon: <PublishIcon className="svg-inline--fa fa-w-16 fa-fw" />,
+          action: actions.viewPublish,
+        },
+        actions.viewInMarketplaceHref && {
+          title: "View Mod Details",
+          icon: <FontAwesomeIcon fixedWidth icon={faStore} />,
+          href: actions.viewInMarketplaceHref,
+        },
+        actions.viewShare && {
+          title: "Share with Teams",
+          icon: <FontAwesomeIcon fixedWidth icon={faShare} />,
+          action: actions.viewShare,
+        },
+        actions.viewLogs && {
+          title: "View Logs",
+          icon: <FontAwesomeIcon fixedWidth icon={faList} />,
+          action: actions.viewLogs,
+        },
+        actions.editInWorkshop && {
+          title: "Edit in Workshop",
+          icon: <FontAwesomeIcon fixedWidth icon={faHammer} />,
+          action: actions.editInWorkshop,
+        },
+        actions.reactivate && {
+          title: hasUpdate ? "Update" : "Reactivate",
+          icon: <FontAwesomeIcon fixedWidth icon={faSyncAlt} />,
+          action: actions.reactivate,
+          className: "text-info",
+        },
+        actions.deactivate && {
+          title: "Deactivate",
+          icon: <FontAwesomeIcon fixedWidth icon={faTimes} />,
+          action: actions.deactivate,
+          className: "text-danger",
+        },
+        actions.delete && {
+          title: "Delete",
+          icon: <FontAwesomeIcon fixedWidth icon={faTrash} />,
+          action: actions.delete,
+          className: "text-danger",
+        },
+      ].filter(Boolean),
     [actions, hasUpdate],
   );
 

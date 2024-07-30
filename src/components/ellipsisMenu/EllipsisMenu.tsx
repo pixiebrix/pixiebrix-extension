@@ -75,14 +75,12 @@ type EllipsisMenuProps = {
   portal?: boolean;
 
   /**
-   * The className prop for the menu.
+   * The classNames prop for the menu and/or menu button toggle.
    */
-  menuClassName?: string;
-
-  /**
-   * The className prop for the menu button toggle.
-   */
-  menuButtonClassName?: string;
+  classNames?: {
+    menu?: string;
+    menuButton?: string;
+  };
 };
 
 const getMenuItemComponent = (item: EllipsisMenuItem): ReactElement => {
@@ -134,8 +132,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
   items,
   boundingBoxRef,
   portal,
-  menuButtonClassName,
-  menuClassName,
+  classNames,
 }) => (
   <Menu
     align="end"
@@ -143,11 +140,11 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
     gap={4}
     boundingBoxRef={boundingBoxRef}
     portal={portal}
-    className={menuClassName}
+    className={classNames?.menu}
     menuButton={
       <MenuButton
         aria-label={ariaLabel}
-        className={cx(styles.button, menuButtonClassName)}
+        className={cx(styles.button, classNames?.menuButton)}
         data-testid="ellipsis-menu-button"
         onClick={(event) => {
           event.stopPropagation();
