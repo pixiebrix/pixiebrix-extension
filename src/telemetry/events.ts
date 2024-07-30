@@ -76,7 +76,7 @@ export const Events = {
   MOD_ACTIVATE: "InstallBlueprint",
   MOD_ACTIVATION_CANCEL: "CancelModActivation",
   MOD_ACTIVATION_SUBMIT: "SubmitModActivation",
-  MOD_COMPONENT_ADD_NEW: "ExtensionAddNew",
+  MOD_CREATE_NEW: "ExtensionAddNew",
   MOD_COMPONENT_CLOUD_ACTIVATE: "ExtensionCloudActivate",
   MOD_COMPONENT_REMOVE: "ExtensionRemove",
   MOD_REMOVE: "BlueprintRemove",

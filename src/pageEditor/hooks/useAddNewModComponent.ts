@@ -114,7 +114,7 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
           void openSidePanel(inspectedTab.tabId);
         }
 
-        reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
+        reportEvent(Events.MOD_CREATE_NEW, {
           type: adapter.starterBrickType,
         });
       } catch (error) {
