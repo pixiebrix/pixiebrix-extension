@@ -21,7 +21,7 @@ import {
   addAuthListener as addAuthStorageListener,
   removeAuthListener as removeAuthStorageListener,
 } from "@/auth/authStorage";
-import type { AsyncState } from "@/types/sliceTypes";
+import type { FetchableAsyncState } from "@/types/sliceTypes";
 import { mergeAsyncState } from "@/utils/asyncStateUtils";
 
 const RESTRICTED_PREFIX = "restricted";
@@ -38,18 +38,18 @@ type RestrictedFeature =
   | "service-url"
   | "page-editor";
 
-export type Restrict = {
+export type FlagHelpers = {
   permit: (area: RestrictedFeature) => boolean;
   restrict: (area: RestrictedFeature) => boolean;
   flagOn: (flag: string) => boolean;
   flagOff: (flag: string) => boolean;
 };
 
-type HookResult = Restrict & {
+type HookResult = FlagHelpers & {
   // The async state for use in deriving values that require valid flags. NOTE: the data is not serializable,
   // so the state might not work with any state helpers that require serializable data (e.g., due to cloning, Immer,
   // or Redux).
-  state: AsyncState<Restrict>;
+  state: FetchableAsyncState<FlagHelpers>;
 };
 
 /**
@@ -80,7 +80,7 @@ function useFlags(): HookResult {
   return useMemo(() => {
     const flagSet = new Set(queryState.data);
 
-    const helpers: Restrict = {
+    const helpers: FlagHelpers = {
       permit: (area: RestrictedFeature) =>
         !flagSet.has(`${RESTRICTED_PREFIX}-${area}`),
       restrict: (area: RestrictedFeature) =>
@@ -91,7 +91,10 @@ function useFlags(): HookResult {
 
     return {
       ...helpers,
-      state: mergeAsyncState(queryState, () => helpers),
+      state: {
+        ...mergeAsyncState(queryState, () => helpers),
+        refetch: queryState.refetch,
+      },
     };
   }, [queryState]);
 }
