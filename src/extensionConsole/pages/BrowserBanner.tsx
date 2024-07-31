@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type RootState } from "@/store/optionsStore";
+import { type RootState } from "@/extensionConsole/store";
 import { selectBrowserWarningDismissed } from "@/store/settings/settingsSelectors";
 import Banner from "@/components/banner/Banner";
 import { useDispatch, useSelector } from "react-redux";
