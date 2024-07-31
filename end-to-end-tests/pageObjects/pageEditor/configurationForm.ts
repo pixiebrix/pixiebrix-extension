@@ -41,9 +41,11 @@ export class ConfigurationForm extends BasePageObject {
   }
 
   @ModifiesModFormState
-  async chooseMultiselectOption(label: string, option: string) {
-    await this.getByLabel(label).click();
-    await this.getByRole("option", { name: option }).click();
+  async chooseMultiselectOption(label: string, options: string[]) {
+    for (const option of options) {
+      await this.getByLabel(label).click();
+      await this.getByRole("option", { name: option }).click();
+    }
   }
 
   @ModifiesModFormState

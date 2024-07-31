@@ -72,10 +72,9 @@ test("brick configuration", async ({
     await brickConfigurationPanel.fillField("Title", "Do cool stuff with ");
     await brickConfigurationPanel.clickShortcut("Title", "selected text");
 
-    await brickConfigurationPanel.chooseMultiselectOption(
-      "Menu Context",
+    await brickConfigurationPanel.chooseMultiselectOption("Menu Context", [
       "editable",
-    );
+    ]);
   });
 
   await test.step("Modify sites patterns", async () => {
