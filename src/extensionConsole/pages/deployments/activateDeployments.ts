@@ -27,7 +27,7 @@ import {
   queueReloadModEveryTab,
   reloadModsEveryTab,
 } from "@/contentScript/messenger/api";
-import { persistor } from "@/store/optionsStore";
+import { persistor } from "@/extensionConsole/store";
 
 const { actions } = extensionsSlice;
 

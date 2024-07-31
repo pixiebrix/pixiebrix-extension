@@ -69,7 +69,7 @@ exports[`customizeManifest release builds beta 1`] = `
     },
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:;",
+    "extension_pages": "script-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https: wss:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:;",
     "sandbox": "sandbox allow-scripts allow-forms; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';",
   },
   "description": "Customize, extend, and integrate your favorite SaaS apps without writing a line of code!",
@@ -104,6 +104,7 @@ exports[`customizeManifest release builds beta 1`] = `
     "storage",
     "identity",
     "tabs",
+    "tabCapture",
     "webNavigation",
     "contextMenus",
     "alarms",
@@ -220,7 +221,7 @@ exports[`customizeManifest release builds stable 1`] = `
     },
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:;",
+    "extension_pages": "script-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https: wss:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:;",
     "sandbox": "sandbox allow-scripts allow-forms; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';",
   },
   "description": "Customize, extend, and integrate your favorite SaaS apps without writing a line of code!",
@@ -255,6 +256,7 @@ exports[`customizeManifest release builds stable 1`] = `
     "storage",
     "identity",
     "tabs",
+    "tabCapture",
     "webNavigation",
     "contextMenus",
     "alarms",

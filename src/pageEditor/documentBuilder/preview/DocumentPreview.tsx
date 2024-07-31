@@ -45,11 +45,25 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { selectActiveModComponentTraceForBrick } from "@/pageEditor/store/runtime/runtimeSelectors";
 import ClickableElement from "@/components/ClickableElement";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type DocumentPreviewProps = {
+  /**
+   * Formik field name for the document body prop.
+   */
   documentBodyName: string;
-  activeElement: string;
-  setActiveElement: (activeElement: string) => void;
+  /**
+   * The active builder element, or null if no element is selected.
+   */
+  activeElement: string | null;
+  /**
+   * Set or clear the active builder element.
+   */
+  setActiveElement: (activeElement: string | null) => void;
+  /**
+   * Optional boundary for popover menu position calculations.
+   * @see EllipsisMenu
+   */
   boundingBoxRef?: MutableRefObject<HTMLElement | null>;
 };
 
@@ -61,6 +75,7 @@ const DocumentPreview = ({
 }: DocumentPreviewProps) => {
   const [{ value: body }] =
     useField<DocumentBuilderElement[]>(documentBodyName);
+
   const bodyPreview = useMemo(() => getPreviewValues(body), [body]);
 
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
@@ -83,6 +98,12 @@ const DocumentPreview = ({
   };
 
   const activeNodeId = useSelector(selectActiveNodeId);
+
+  assertNotNullish(
+    activeNodeId,
+    "DocumentPreview can only be used in a brick editing context",
+  );
+
   const parentNodeInfo = useSelector(selectParentNodeInfo(activeNodeId));
   const showPreviewButton =
     parentNodeInfo?.blockId === DisplayTemporaryInfo.BRICK_ID;
@@ -102,6 +123,16 @@ const DocumentPreview = ({
     <>
       {showPreviewButton && (
         <>
+          {doesNotHaveTrace && (
+            <Alert variant="info" className="mb-2">
+              No runs available. Run the brick to enable Live Preview
+            </Alert>
+          )}
+          {previewError && (
+            <Alert variant="danger" className="mb-2">
+              {getErrorMessage(previewError)}
+            </Alert>
+          )}
           <Button
             variant="info"
             size="sm"
@@ -110,17 +141,6 @@ const DocumentPreview = ({
           >
             Show Live Preview <FontAwesomeIcon icon={faExternalLinkAlt} />
           </Button>
-          {doesNotHaveTrace && (
-            <Alert variant={"info"} className={styles.alert}>
-              No data available for preview, run the mod first to generate
-              preview data
-            </Alert>
-          )}
-          {previewError && (
-            <Alert variant="danger" className={styles.alert}>
-              {getErrorMessage(previewError)}
-            </Alert>
-          )}
           <hr />
         </>
       )}

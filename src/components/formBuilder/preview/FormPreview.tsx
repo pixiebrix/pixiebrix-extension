@@ -46,7 +46,10 @@ import { cloneDeep } from "lodash";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
-  activeField?: string;
+  /**
+   * The active field in the form builder, or null if no field is selected.
+   */
+  activeField: string | null;
   setActiveField: SetActiveField;
 };
 

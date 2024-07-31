@@ -27,6 +27,22 @@ export type StarterBrickUIName =
   | "Dynamic Quick Bar"
   | "Sidebar Panel";
 
+export class ModActionMenu extends BasePageObject {
+  get copyButton() {
+    return this.getByRole("menuitem", { name: "Make a copy" });
+  }
+
+  get deactivateButton() {
+    return this.getByRole("menuitem", { name: "Deactivate" });
+  }
+
+  @ModifiesModFormState
+  async addStarterBrick(starterBrickName: StarterBrickUIName) {
+    await this.getByRole("menuitem", { name: "Add starter brick" }).hover();
+    await this.getByRole("menuitem", { name: starterBrickName }).click();
+  }
+}
+
 export class ModListItem extends BasePageObject {
   saveButton = this.locator("[data-icon=save]");
   get menuButton() {
@@ -39,16 +55,12 @@ export class ModListItem extends BasePageObject {
     });
   }
 
-  get copyButton() {
-    return this.getByRole("menuitem", { name: "Make a copy" });
-  }
-
-  get deactivateButton() {
-    return this.getByRole("menuitem", { name: "Deactivate" });
-  }
-
   async select() {
     return this.click();
+  }
+
+  get modActionMenu() {
+    return new ModActionMenu(this.page.getByLabel("Menu"));
   }
 }
 

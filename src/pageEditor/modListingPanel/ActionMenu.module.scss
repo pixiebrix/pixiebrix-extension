@@ -21,6 +21,10 @@
   gap: 4px;
 }
 
+.menu {
+  z-index: 999;
+}
+
 // Increase specificity to override the default styles
 .ellipsisMenu.ellipsisMenu {
   background-color: #e8f3fc;

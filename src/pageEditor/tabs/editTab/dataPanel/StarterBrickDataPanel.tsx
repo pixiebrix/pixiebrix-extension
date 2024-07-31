@@ -17,20 +17,22 @@
 
 import React from "react";
 import { useSelector } from "react-redux";
-import { makeSelectBrickTrace } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { Nav, Tab } from "react-bootstrap";
-import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
-import StarterBrickPreview from "@/pageEditor/tabs/effect/StarterBrickPreview";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useFlags from "@/hooks/useFlags";
 import ModVariablesTab from "./tabs/ModVariablesTab";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import DataTabJsonTree from "./DataTabJsonTree";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
-import BrickConfigFormStateTab from "./tabs/BrickConfigFormStateTab";
+import NodeFormStateTab from "./tabs/NodeFormStateTab";
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { NavItem } from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
+import StarterBrickInputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/StarterBrickInputTab";
+import StarterBrickOutputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/StarterBrickOutputTab";
 
+/**
+ * @see DataPanel
+ */
 const StarterBrickDataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
@@ -38,114 +40,54 @@ const StarterBrickDataPanel: React.FC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
+
   assertNotNullish(
     activeModComponentFormState,
-    "StarterBrickDataPanel cannot be rendered without an activeModComponentFormState",
+    "Starter Brick Data Panel can only be used in a mod component editor context",
   );
 
-  const {
-    modComponent: { brickPipeline },
-    starterBrick,
-  } = activeModComponentFormState;
-  const firstBrickInstanceId = brickPipeline[0]?.instanceId;
-
-  const { record: firstBrickTraceRecord } = useSelector(
-    makeSelectBrickTrace(firstBrickInstanceId),
-  );
+  const { starterBrick } = activeModComponentFormState;
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
-    firstBrickTraceRecord ? DataPanelTabKey.Output : DataPanelTabKey.Preview,
+    DataPanelTabKey.Output,
   );
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <Nav variant="tabs">
-        <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey={DataPanelTabKey.Context}>Context</Nav.Link>
-        </Nav.Item>
         {showDeveloperTabs && (
           <>
-            <Nav.Item className={dataPanelStyles.tabNav}>
-              <Nav.Link eventKey={DataPanelTabKey.ModComponentFormState}>
-                Mod Component State
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item className={dataPanelStyles.tabNav}>
-              <Nav.Link eventKey={DataPanelTabKey.BrickConfigFormState}>
-                Brick Config State
-              </Nav.Link>
-            </Nav.Item>
+            <NavItem
+              eventKey={DataPanelTabKey.ModComponentFormState}
+              label="Mod Component State"
+            />
+            <NavItem
+              eventKey={DataPanelTabKey.NodeFormState}
+              label="Node State"
+            />
           </>
         )}
-        <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey={DataPanelTabKey.Rendered}>Rendered</Nav.Link>
-        </Nav.Item>
-        <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey={DataPanelTabKey.Output}>Output</Nav.Link>
-        </Nav.Item>
-        <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey={DataPanelTabKey.Preview}>Preview</Nav.Link>
-        </Nav.Item>
-        <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey={DataPanelTabKey.ModVariables}>
-            Mod Variables
-          </Nav.Link>
-        </Nav.Item>
+        <NavItem eventKey={DataPanelTabKey.Input} label="Input" />
+
+        <NavItem eventKey={DataPanelTabKey.Output} label="Output" />
+
+        <NavItem
+          eventKey={DataPanelTabKey.ModVariables}
+          label="Mod Variables"
+        />
       </Nav>
       <Tab.Content>
-        <Tab.Pane
-          eventKey={DataPanelTabKey.Context}
-          className={dataPanelStyles.tabPane}
-        >
-          <div className="text-muted">
-            This is the first step in the execution flow, so it does not receive
-            inputs from any other brick.
-          </div>
-        </Tab.Pane>
         {showDeveloperTabs && (
           <>
             <ModComponentFormStateTab />
-            <BrickConfigFormStateTab config={starterBrick} />
+            <NodeFormStateTab config={starterBrick} />
           </>
         )}
-        <Tab.Pane
-          eventKey={DataPanelTabKey.Rendered}
-          className={dataPanelStyles.tabPane}
-        >
-          <div className="text-muted">
-            This is the first step in the execution flow, so it does not receive
-            inputs from any other brick.
-          </div>
-        </Tab.Pane>
-        <Tab.Pane
-          eventKey={DataPanelTabKey.Output}
-          className={dataPanelStyles.tabPane}
-          mountOnEnter
-          unmountOnExit
-        >
-          {firstBrickTraceRecord ? (
-            <DataTabJsonTree
-              data={firstBrickTraceRecord.templateContext}
-              copyable
-              searchable
-              tabKey={DataPanelTabKey.Output}
-              label="Output Data"
-            />
-          ) : (
-            <div className="text-muted">
-              This is the first step in the execution flow, so it does not
-              receive inputs from any other brick.
-            </div>
-          )}
-        </Tab.Pane>
-        <Tab.Pane
-          eventKey={DataPanelTabKey.Preview}
-          className={dataPanelStyles.tabPane}
-          mountOnEnter
-          unmountOnExit
-        >
-          <StarterBrickPreview />
-        </Tab.Pane>
+
+        <StarterBrickInputTab />
+
+        <StarterBrickOutputTab />
+
         <ModVariablesTab />
       </Tab.Content>
     </Tab.Container>

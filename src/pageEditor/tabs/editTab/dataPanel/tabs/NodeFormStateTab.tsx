@@ -15,31 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
 /**
- * Developer-only data panel tab for viewing the underlying brick configuration JSON. Used to debug brick configuration
- * UI/functionality problems.
+ * Developer-only data panel tab for viewing the underlying brick configuration JSON.
  *
+ * Used to debug brick and starter brick configuration UI/functionality problems.
+ *
+ * @param config the brick or starter brick configuration
  * @see ModComponentFormStateTab
  */
-const BrickConfigFormStateTab: React.FC<{ config: unknown }> = ({ config }) => (
-  <DataTab eventKey={DataPanelTabKey.BrickConfigFormState}>
-    <div className="text-info">
-      <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
-      developers
-    </div>
+const NodeFormStateTab: React.FC<{ config: unknown }> = ({ config }) => (
+  <DataTabPane eventKey={DataPanelTabKey.NodeFormState} isDeveloperOnly>
     <DataTabJsonTree
-      data={config ?? {}}
-      tabKey={DataPanelTabKey.BrickConfigFormState}
-      label="Brick Config Form State"
+      data={config}
+      tabKey={DataPanelTabKey.NodeFormState}
+      label="Node Form State"
+      searchable
     />
-  </DataTab>
+  </DataTabPane>
 );
 
-export default BrickConfigFormStateTab;
+export default NodeFormStateTab;

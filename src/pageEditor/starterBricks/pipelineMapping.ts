@@ -22,7 +22,7 @@ import {
   type BrickPosition,
   PipelineFlavor,
 } from "@/bricks/types";
-import { produce, type Draft } from "immer";
+import { type Draft, produce } from "immer";
 import PipelineVisitor, {
   ROOT_POSITION,
   type VisitResolvedBlockExtra,
@@ -115,4 +115,22 @@ export function omitEditorMetadata(pipeline: BrickPipeline): BrickPipeline {
       flavor: PipelineFlavor.AllBricks,
     });
   });
+}
+
+/**
+ * Recursively assign all brick instanceIds. Overwrites existing instanceIds.
+ * @see NormalizePipelineVisitor
+ */
+// Can't use NormalizePipelineVisitor because it doesn't work on an arbitrary elements in the document builder
+export function assignBrickInstanceIdsInPlace(obj: unknown): void {
+  if (isPipelineExpression(obj)) {
+    for (const brick of obj.__value__) {
+      brick.instanceId = uuidv4();
+      assignBrickInstanceIdsInPlace(brick);
+    }
+  } else if (obj && typeof obj === "object") {
+    for (const value of Object.values(obj)) {
+      assignBrickInstanceIdsInPlace(value);
+    }
+  }
 }

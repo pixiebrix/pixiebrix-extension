@@ -17,9 +17,10 @@
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { captureTab } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 export class ScreenshotTab extends TransformerABC {
   constructor() {
@@ -30,10 +31,7 @@ export class ScreenshotTab extends TransformerABC {
     );
   }
 
-  inputSchema: Schema = {
-    type: "object",
-    properties: {},
-  };
+  inputSchema: Schema = minimalSchemaFactory();
 
   override outputSchema: Schema = {
     type: "object",
@@ -47,10 +45,13 @@ export class ScreenshotTab extends TransformerABC {
 
   override defaultOutputKey = "screenshot";
 
-  async transform(): Promise<unknown> {
+  async transform(
+    args: BrickArgs,
+    { platform }: BrickOptions,
+  ): Promise<unknown> {
     try {
       return {
-        data: await captureTab(),
+        data: platform.capture.captureScreenshot(),
       };
     } catch (error) {
       if (getErrorMessage(error).includes("activeTab")) {

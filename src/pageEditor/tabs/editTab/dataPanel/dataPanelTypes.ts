@@ -16,15 +16,40 @@
  */
 
 export enum DataPanelTabKey {
-  Context = "context",
-  ModVariables = "modVariables",
-  Rendered = "rendered",
+  /**
+   * The input arguments/variables for the brick
+   * @since 2.0.7 contains both the rendered arguments and the variables in the context
+   */
+  Input = "input",
+  /**
+   * The brick output/output preview
+   * @since 2.0.7 contains both the output and preview
+   */
   Output = "output",
-  Preview = "preview",
+  /**
+   * The mod variables and page state
+   * @since 2.0.5 renamed from page state and always displayed
+   */
+  ModVariables = "modVariables",
+  /**
+   * Design tab for the form/document builder
+   * @since 2.0.7 split from the Preview tab
+   */
+  Design = "design",
+  /**
+   * Outline tab for the document builder
+   */
   Outline = "outline",
+  /**
+   * Brick comments. Currently not supported for starter bricks.
+   */
   Comments = "comments",
-
-  // Developer-only tabs
+  /**
+   * Developer Only: Formik form state for the mod component form
+   */
   ModComponentFormState = "modComponentFormState",
-  BrickConfigFormState = "brickConfig",
+  /**
+   * Developer Only: Formik form state for the selected node, i.e., brick or starter brick
+   */
+  NodeFormState = "nodeFormState",
 }

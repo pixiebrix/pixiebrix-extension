@@ -138,7 +138,7 @@ export interface AuthData {
 /**
  * @deprecated - Do not use versioned state types directly
  */
-export type IntegrationConfigV1 = {
+export type IntegrationConfigV1<T extends SecretsConfig = SecretsConfig> = {
   // Nominal typing to distinguish from SanitizedIntegrationConfig
   _rawIntegrationConfigBrand: null;
 
@@ -159,29 +159,31 @@ export type IntegrationConfigV1 = {
   label: string;
 
   /**
-   * Configuration including all data
+   * Configuration including all secrets and keys.
    */
-  config: SecretsConfig;
+  config: T;
 };
 
 /**
  * @deprecated - Do not use versioned state types directly
  */
-export type IntegrationConfigV2 = Except<IntegrationConfigV1, "serviceId"> & {
-  /**
-   * Registry identifier for the integration, e.g., `@pixiebrix/api`.
-   *
-   * @since 1.7.41 renamed from `serviceId` to `integrationId`
-   */
-  integrationId: RegistryId;
-};
+export type IntegrationConfigV2<T extends SecretsConfig = SecretsConfig> =
+  Except<IntegrationConfigV1<T>, "serviceId"> & {
+    /**
+     * Registry identifier for the integration, e.g., `@pixiebrix/api`.
+     *
+     * @since 1.7.41 renamed from `serviceId` to `integrationId`
+     */
+    integrationId: RegistryId;
+  };
 
 /**
  * Integration configuration provided by a user.
  *
  * V1/V2 types for persistence migration.
  */
-export type IntegrationConfig = IntegrationConfigV2;
+export type IntegrationConfig<T extends SecretsConfig = SecretsConfig> =
+  IntegrationConfigV2<T>;
 
 export interface SanitizedIntegrationConfig {
   // Nominal typing to distinguish from IntegrationConfig

@@ -18,7 +18,6 @@
 import { type AuthRootState } from "@/auth/authTypes";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import { type SavingModComponentState } from "@/pageEditor/store/savingModComponentSlice";
 import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/store/runtime/runtimeSliceTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
@@ -382,8 +381,11 @@ export type EditorStateV5 = Except<
  */
 export type EditorStateV6 = Except<EditorStateV5, "insertingStarterBrickType">;
 
+// Instead of maintaining old enums, just clearing data panel state on migration, see migrateEditorStateV5
+export type EditorStateV7 = EditorStateV6;
+
 export type EditorState = Except<
-  EditorStateV6,
+  EditorStateV7,
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: ModComponentFormState[];
@@ -404,6 +406,4 @@ export type RootState = AuthRootState &
   RuntimeRootState &
   SettingsRootState &
   SessionRootState &
-  SessionChangesRootState & {
-    savingExtension: SavingModComponentState;
-  };
+  SessionChangesRootState;
