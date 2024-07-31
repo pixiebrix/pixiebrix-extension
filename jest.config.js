@@ -56,6 +56,7 @@ const esmPackages = [
 ];
 const config = {
   silent: true,
+  maxWorkers: 1,
   testEnvironment: "./src/testUtils/FixJsdomEnvironment.js",
   modulePaths: ["/src"],
   moduleFileExtensions: [
