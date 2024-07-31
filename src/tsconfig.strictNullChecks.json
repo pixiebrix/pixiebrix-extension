@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./extensionConsole/pages/mods/modals/shareModals/PublishModModals.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -948,6 +947,8 @@
     "./extensionConsole/pages/mods/modals/shareModals/ModOwnerLabel.tsx",
     "./extensionConsole/pages/mods/modals/shareModals/PublishContentLayout.tsx",
     "./extensionConsole/pages/mods/modals/shareModals/PublishModContent.tsx",
+    "./extensionConsole/pages/mods/modals/shareModals/PublishModModals.test.tsx",
+    "./extensionConsole/pages/mods/modals/shareModals/PublishModModals.tsx",
     "./extensionConsole/pages/mods/modals/shareModals/PublishedContent.tsx",
     "./extensionConsole/pages/mods/modals/shareModals/useHasEditPermissions.ts",
     "./extensionConsole/pages/mods/modals/shareModals/useSortOrganizations.ts",
