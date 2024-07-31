@@ -106,7 +106,6 @@ const store = configureStore({
       persistIntegrationsConfig,
       integrationsSlice.reducer,
     ),
-    // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
     modModals: modModalsSlice.reducer,

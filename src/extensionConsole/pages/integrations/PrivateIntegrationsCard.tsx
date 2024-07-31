@@ -21,7 +21,7 @@ import React, { useCallback, useMemo } from "react";
 import { type Column, type Row } from "react-table";
 import { isEqual } from "lodash";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
-import { type RootState } from "@/store/optionsStore";
+import { type RootState } from "@/extensionConsole/store";
 import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { deleteCachedAuthData } from "@/background/messenger/api";
