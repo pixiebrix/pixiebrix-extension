@@ -27,10 +27,12 @@ import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import EditPublishContent from "./EditPublishContent";
 import CancelPublishContent from "./CancelPublishContent";
 import PublishedContent from "./PublishedContent";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ModalContentSwitch: React.FunctionComponent = () => {
   const showPublishContext = useSelector(selectShowPublishContext);
-  const { blueprintId: modId, cancelingPublish } = showPublishContext;
+  const { blueprintId: modId, cancelingPublish } = showPublishContext ?? {};
+  assertNotNullish(modId, "modId not found in showPublishContext");
   const { data: listing, isLoading: isLoadingListing } =
     useGetMarketplaceListingQuery({ packageId: modId });
   const { data: modDefinition, isLoading: isLoadingModDefinition } =
@@ -44,7 +46,7 @@ const ModalContentSwitch: React.FunctionComponent = () => {
     );
   }
 
-  if (!modDefinition.sharing.public) {
+  if (!modDefinition?.sharing.public) {
     return <PublishModContent />;
   }
 
