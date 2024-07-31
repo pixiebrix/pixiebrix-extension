@@ -45,7 +45,7 @@ const MultiSelectWidget: React.FC<MultiSelectWidgetProps> = ({
       isDisabled={disabled}
       isClearable={isClearable}
       options={options}
-      {...(props.id ? { inputId: props.id } : {})}
+      inputId={props.id}
       value={options.filter((option: Option) =>
         (field.value ?? []).includes(option.value),
       )}
