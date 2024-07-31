@@ -137,6 +137,12 @@ export interface Brick extends PackageInstance {
   defaultOutputKey: Nullishable<string>;
 
   /**
+   * (Optional) feature flag required to view/run the brick.
+   * @since 2.0.7
+   */
+  featureFlag?: string;
+
+  /**
    * Run the brick.
    * @param value the rendered input values
    * @param options the runtime options for the brick.
