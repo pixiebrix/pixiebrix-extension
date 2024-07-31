@@ -56,6 +56,7 @@ exports[`ArrayWidget renders widget with items 1`] = `
         >
           <div
             class="formGroup mb-0 form-group"
+            data-testid="field-template-form-group"
           >
             <div
               class="mb-2 w-100 collapse"
@@ -131,6 +132,7 @@ exports[`ArrayWidget renders widget with items 1`] = `
         >
           <div
             class="formGroup mb-0 form-group"
+            data-testid="field-template-form-group"
           >
             <div
               class="mb-2 w-100 collapse"
@@ -207,6 +209,7 @@ exports[`ArrayWidget renders widget with items 1`] = `
         >
           <div
             class="formGroup mb-0 form-group"
+            data-testid="field-template-form-group"
           >
             <div
               class="mb-2 w-100 collapse"

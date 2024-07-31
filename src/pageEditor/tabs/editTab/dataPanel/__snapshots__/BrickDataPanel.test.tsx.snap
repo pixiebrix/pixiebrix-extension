@@ -73,6 +73,7 @@ exports[`BrickDataPanel renders with form state and trace data 1`] = `
         >
           <div
             class="formGroup formGroup form-group"
+            data-testid="field-template-form-group"
           >
             <div
               class="mb-2 w-100 collapse"
@@ -190,6 +191,7 @@ exports[`BrickDataPanel renders with form state and trace data 1`] = `
           >
             <div
               class="formGroup form-group"
+              data-testid="field-template-form-group"
             >
               <div
                 class="mb-2 w-100 collapse"

@@ -175,7 +175,10 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   );
 
   return (
-    <FormGroup className={cx(styles.formGroup, className)}>
+    <FormGroup
+      data-testid="field-template-form-group"
+      className={cx(styles.formGroup, className)}
+    >
       <Collapse in={fieldAnnotations.length > 0}>
         <div className="mb-2 w-100">
           {fieldAnnotations.length === 0 ? (

@@ -56,6 +56,8 @@ const esmPackages = [
 ];
 const config = {
   silent: true,
+  // Uncomment to run tests serially, which can be useful for debugging or avoiding flaky tests.
+  // maxWorkers: 1,
   testEnvironment: "./src/testUtils/FixJsdomEnvironment.js",
   modulePaths: ["/src"],
   moduleFileExtensions: [

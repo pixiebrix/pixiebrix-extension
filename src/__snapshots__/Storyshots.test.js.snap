@@ -3,6 +3,7 @@
 exports[`Storyshots ActivateWizard/OptionsBody Text Field 1`] = `
 <div
   className="formGroup form-group"
+  data-testid="field-template-form-group"
 >
   <div
     aria-expanded={null}
@@ -603,6 +604,7 @@ exports[`Storyshots Components/JsonTree Kitchen Sink 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -901,6 +903,7 @@ exports[`Storyshots Components/JsonTree Searchable Tree 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -3980,6 +3983,7 @@ exports[`Storyshots Fields/RemoteSchemaObjectField Primitive Value 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -4005,6 +4009,7 @@ exports[`Storyshots Fields/RemoteSchemaObjectField Primitive Value 1`] = `
         >
           <div
             className="formGroup form-group"
+            data-testid="field-template-form-group"
           >
             <div
               aria-expanded={null}
@@ -4098,6 +4103,7 @@ exports[`Storyshots Fields/SchemaField Array Items 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -4177,6 +4183,7 @@ exports[`Storyshots Fields/SchemaField Boolean 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -4270,6 +4277,7 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -4453,6 +4461,7 @@ exports[`Storyshots Fields/SchemaField Integer 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -4531,6 +4540,7 @@ exports[`Storyshots Fields/SchemaField Multi Schema 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -4628,6 +4638,7 @@ exports[`Storyshots Fields/SchemaField Normal Text 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -4707,6 +4718,7 @@ exports[`Storyshots Fields/SchemaField Not Required Text 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -4786,6 +4798,7 @@ exports[`Storyshots Fields/SchemaField Number 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -4864,6 +4877,7 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -4921,6 +4935,7 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                   <td>
                     <div
                       className="formGroup mb-0 form-group"
+                      data-testid="field-template-form-group"
                     >
                       <div
                         aria-expanded={null}
@@ -4991,6 +5006,7 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                   <td>
                     <div
                       className="formGroup mb-0 form-group"
+                      data-testid="field-template-form-group"
                     >
                       <div
                         aria-expanded={null}
@@ -5061,6 +5077,7 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                   <td>
                     <div
                       className="formGroup mb-0 form-group"
+                      data-testid="field-template-form-group"
                     >
                       <div
                         aria-expanded={null}
@@ -5131,6 +5148,7 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                   <td>
                     <div
                       className="formGroup mb-0 form-group"
+                      data-testid="field-template-form-group"
                     >
                       <div
                         aria-expanded={null}
@@ -5234,6 +5252,7 @@ exports[`Storyshots Fields/SchemaField Password 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -5354,6 +5373,7 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -5537,6 +5557,7 @@ exports[`Storyshots Fields/SchemaField Text Area 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -5648,6 +5669,7 @@ exports[`Storyshots Fields/UrlMatchPatternField Default 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -5756,6 +5778,7 @@ exports[`Storyshots Fields/UrlPatternField Default 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -5829,6 +5852,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
     >
       <div
         className="formGroup form-group"
+        data-testid="field-template-form-group"
       >
         <div
           aria-expanded={null}
@@ -5902,6 +5926,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       </div>
       <div
         className="formGroup form-group"
+        data-testid="field-template-form-group"
       >
         <div
           aria-expanded={null}
@@ -6038,6 +6063,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       >
         <div
           className="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             aria-expanded={null}
@@ -6080,6 +6106,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         </div>
         <div
           className="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             aria-expanded={null}
@@ -6153,6 +6180,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         </div>
         <div
           className="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             aria-expanded={null}
@@ -6226,6 +6254,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         </div>
         <div
           className="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             aria-expanded={null}
@@ -6370,6 +6399,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         </div>
         <div
           className="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             aria-expanded={null}
@@ -6432,6 +6462,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         </div>
         <div
           className="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             aria-expanded={null}
@@ -6504,6 +6535,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         </div>
         <div
           className="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             aria-expanded={null}
@@ -6556,6 +6588,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       </div>
       <div
         className="formGroup form-group"
+        data-testid="field-template-form-group"
       >
         <div
           aria-expanded={null}
@@ -6856,6 +6889,7 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
     >
       <div
         className="formGroup form-group"
+        data-testid="field-template-form-group"
       >
         <div
           aria-expanded={null}
@@ -6928,6 +6962,7 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
       </div>
       <div
         className="formGroup form-group"
+        data-testid="field-template-form-group"
       >
         <div
           aria-expanded={null}
@@ -7054,6 +7089,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -7095,6 +7131,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   </div>
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -7137,6 +7174,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   </div>
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -7275,6 +7313,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   </div>
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -7413,6 +7452,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   </div>
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -7483,6 +7523,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   </div>
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -7533,6 +7574,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   </div>
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -7590,6 +7632,7 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -7615,6 +7658,7 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
   </div>
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -7656,6 +7700,7 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
   </div>
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -7711,6 +7756,7 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
 >
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -7736,6 +7782,7 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
   </div>
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -7778,6 +7825,7 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
   </div>
   <div
     className="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       aria-expanded={null}
@@ -8628,6 +8676,7 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard OAuth2 1`] = `
                 >
                   <div
                     className="formGroup form-group"
+                    data-testid="field-template-form-group"
                   >
                     <div
                       aria-expanded={null}

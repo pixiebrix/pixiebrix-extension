@@ -78,6 +78,7 @@ exports[`ObjectWidget renders widget with properties 1`] = `
             <td>
               <div
                 class="formGroup mb-0 form-group"
+                data-testid="field-template-form-group"
               >
                 <div
                   class="mb-2 w-100 collapse"
@@ -141,6 +142,7 @@ exports[`ObjectWidget renders widget with properties 1`] = `
             <td>
               <div
                 class="formGroup mb-0 form-group"
+                data-testid="field-template-form-group"
               >
                 <div
                   class="mb-2 w-100 collapse"
@@ -204,6 +206,7 @@ exports[`ObjectWidget renders widget with properties 1`] = `
             <td>
               <div
                 class="formGroup mb-0 form-group"
+                data-testid="field-template-form-group"
               >
                 <div
                   class="mb-2 w-100 collapse"

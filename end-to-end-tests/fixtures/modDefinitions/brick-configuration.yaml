@@ -1,0 +1,68 @@
+apiVersion: v3
+kind: recipe
+metadata:
+  id: "{{ modId }}"
+  name: Test mod - Brick Configuration
+  version: 1.0.0
+  description: Created for the purpose of testing brick configuration in the PixieBrix Page Editor
+extensionPoints:
+  - label: Context menu item
+    config:
+      title: Context menu item
+      onSuccess: true
+      action:
+        - id: "@pixiebrix/state/assign"
+          rootMode: document
+          config:
+            value: !nunjucks ""
+          root: null
+        - id: "@pixiebrix/identity"
+          rootMode: document
+          config:
+            property: !nunjucks ""
+          outputKey: output
+          root: null
+        - id: "@pixiebrix/javascript"
+          rootMode: document
+          config:
+            function: |-
+              function (args) {
+                const { x } = args;
+                return x;
+              }
+            arguments:
+              x: Hello from PixieBrix!
+          outputKey: output2
+          root: null
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint
+    services: {}
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: contextMenu
+      documentUrlPatterns:
+        - "*://*/*"
+      contexts:
+        - all
+      targetMode: eventTarget
+      reader:
+        - "@pixiebrix/document-metadata"
+        - "@pixiebrix/document-context"
+        - element: "@pixiebrix/html/element"
+      isAvailable:
+        matchPatterns:
+          - "*://*/*"
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - "*"
