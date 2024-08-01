@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/modListingPanel/DraftModComponentListItem.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
