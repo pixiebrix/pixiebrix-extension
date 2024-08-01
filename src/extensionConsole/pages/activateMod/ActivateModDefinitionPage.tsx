@@ -33,6 +33,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { DefinitionKinds } from "@/types/registryTypes";
 import { truncate } from "lodash";
 import { type UUID } from "@/types/stringTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Effect to automatically redirect the user to the mods screen if the mod is not found.
@@ -114,12 +115,13 @@ const ActivateModDefinitionPage: React.FC<{
   }
 
   const title = `${isReactivate ? "Reactivate" : "Activate"} ${truncate(
-    modDefinition.metadata.name,
+    modDefinition?.metadata.name,
     {
       length: 15,
     },
   )}`;
 
+  assertNotNullish(modDefinitionQuery.data, "modDefinition is nullish");
   // Require that bricks have been fetched at least once before showing. Handles new mod activation where the bricks
   // haven't been completely fetched yet.
   // XXX: we might also want to enforce a full re-sync of the brick registry to ensure the latest brick

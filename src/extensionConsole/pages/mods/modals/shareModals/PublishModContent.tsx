@@ -33,10 +33,13 @@ import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import PublishContentLayout from "./PublishContentLayout";
 
 import { MARKETPLACE_URL } from "@/urlConstants";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const PublishModContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { blueprintId: modId } = useSelector(selectShowPublishContext);
+  const { blueprintId: modId } = useSelector(selectShowPublishContext) ?? {};
+  assertNotNullish(modId, "modId from publish context is nullish");
+
   const [updateModDefinition] = useUpdateModDefinitionMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
@@ -55,14 +58,23 @@ const PublishModContent: React.FunctionComponent = () => {
     setError(null);
 
     try {
+      assertNotNullish(
+        modDefinition,
+        `modDefinition for modId: ${modId} is nullish`,
+      );
       const newModDefinition = produce(modDefinition, (draft) => {
         draft.sharing.public = true;
       });
 
+      assertNotNullish(editablePackages, "editablePackages is nullish");
       const packageId = editablePackages.find(
         (x) => x.name === newModDefinition.metadata.id,
       )?.id;
 
+      assertNotNullish(
+        packageId,
+        `packageId metadata id: ${newModDefinition.metadata.id} is nullish`,
+      );
       await updateModDefinition({
         packageId,
         modDefinition: newModDefinition,
@@ -74,9 +86,10 @@ const PublishModContent: React.FunctionComponent = () => {
     } catch (error) {
       if (
         isSingleObjectBadRequestError(error) &&
-        error.response.data.config?.length > 0
+        Number(error.response?.data.config?.length) > 0
       ) {
-        setError(error.response.data.config.join(" "));
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- See if block above
+        setError(error.response!.data.config!.join(" "));
       } else {
         const message = getErrorMessage(error);
         setError(message);

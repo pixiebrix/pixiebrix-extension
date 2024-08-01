@@ -22,8 +22,8 @@ import { ImageReader } from "./ImageReader";
 import { SelectionReader } from "./SelectionReader";
 import { ImageExifReader } from "./ImageExifReader";
 import { ElementReader } from "./ElementReader";
-import { registerFactory } from "./factory";
-import { frameworkReadFactory } from "./frameworkReader";
+import { type Read, registerFactory } from "./factory";
+import { type FrameworkConfig, frameworkReadFactory } from "./frameworkReader";
 import { readJQuery } from "@/bricks/readers/jquery";
 import { HtmlReader } from "./HtmlReader";
 import DocumentReader from "./DocumentReader";
@@ -59,7 +59,7 @@ export function registerReaderFactories(): void {
   registerFactory("react", frameworkReadFactory("react"));
   registerFactory("vue", frameworkReadFactory("vue"));
   registerFactory("vuejs", frameworkReadFactory("vue"));
-  registerFactory("jquery", readJQuery);
+  registerFactory("jquery", readJQuery as unknown as Read<FrameworkConfig>);
 }
 
 export default getAllReaders;

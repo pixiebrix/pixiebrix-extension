@@ -44,9 +44,11 @@ const ModEditorPane: React.VFC = () => {
   const layoutKey = `${activeModId}-${editorUpdateKey}`;
 
   useEffect(() => {
-    const messageContext: MessageContext = {
-      modId: activeModId,
-    };
+    const messageContext: MessageContext = activeModId
+      ? {
+          modId: activeModId,
+        }
+      : {};
     dispatch(logActions.setContext(messageContext));
   }, [dispatch, activeModId]);
 

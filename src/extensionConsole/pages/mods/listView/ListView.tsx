@@ -23,6 +23,7 @@ import ListGroupHeader from "@/extensionConsole/pages/mods/listView/ListGroupHea
 import { uuidv4 } from "@/types/helpers";
 import ListItemErrorBoundary from "@/extensionConsole/pages/mods/listView/ListItemErrorBoundary";
 import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/modsPageTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ROW_HEIGHT_PX = 90;
 const HEADER_ROW_HEIGHT_PX = 43;
@@ -42,6 +43,7 @@ const ListView: React.VoidFunctionComponent<ModsPageContentProps> = ({
   const getItemSize = useCallback(
     (index: number) => {
       const row = expandedRows.at(index);
+      assertNotNullish(row, `Unable to find row at index ${index}`);
       return row.isGrouped ? HEADER_ROW_HEIGHT_PX : ROW_HEIGHT_PX;
     },
     [expandedRows],
@@ -66,6 +68,7 @@ const ListView: React.VoidFunctionComponent<ModsPageContentProps> = ({
       >
         {({ index, style }) => {
           const row = expandedRows.at(index);
+          assertNotNullish(row, `Unable to find row at index ${index}`);
           tableInstance.prepareRow(row);
 
           return row.isGrouped ? (

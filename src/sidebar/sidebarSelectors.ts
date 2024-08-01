@@ -25,6 +25,7 @@ import { getVisiblePanelCount } from "@/store/sidebar/sidebarUtils";
 import { createSelector } from "@reduxjs/toolkit";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.panels) &&
@@ -64,7 +65,7 @@ const extensionForEventKeySelector = createSelector(
   selectSidebarEntries,
   selectActivatedModComponents,
   (_state: SidebarRootState, eventKey: string) => eventKey,
-  (entries, extensions, eventKey): ActivatedModComponent | undefined => {
+  (entries, modComponents, eventKey): ActivatedModComponent | undefined => {
     // Get sidebar entry by event key
     const sidebarEntry = entries.find(
       (entry) => eventKeyForEntry(entry) === eventKey,
@@ -74,7 +75,7 @@ const extensionForEventKeySelector = createSelector(
       return;
     }
 
-    return extensions.find(
+    return modComponents.find(
       (modComponent) =>
         modComponent.id === sidebarEntry.modComponentRef.modComponentId,
     );
@@ -85,11 +86,11 @@ export const selectModComponentForEventKey =
   (eventKey: string) => (state: SidebarRootState) =>
     extensionForEventKeySelector(state, eventKey);
 
-export const selectExtensionFromEventKey =
+export const selectModComponentFromEventKey =
   (state: SidebarRootState) =>
-  (eventKey: string): ActivatedModComponent | undefined => {
+  (eventKey: Nullishable<string>): ActivatedModComponent | undefined => {
     const sidebarEntries = selectSidebarEntries(state);
-    const extensions = selectActivatedModComponents(state);
+    const modComponents = selectActivatedModComponents(state);
 
     // Get sidebar entry by event key
     const sidebarEntry = sidebarEntries.find(
@@ -100,7 +101,7 @@ export const selectExtensionFromEventKey =
       return;
     }
 
-    return extensions.find(
+    return modComponents.find(
       (modComponent) =>
         modComponent.id === sidebarEntry.modComponentRef.modComponentId,
     );

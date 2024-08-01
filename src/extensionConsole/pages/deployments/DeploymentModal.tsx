@@ -58,11 +58,11 @@ function useCurrentTime() {
  */
 export const CountdownTimer: React.FunctionComponent<{
   duration: number;
-  start: number;
+  start: number | null;
   onFinish?: () => void;
 }> = ({ duration, start, onFinish = noop }) => {
   const now = useCurrentTime();
-  const remaining = duration - (now - start);
+  const remaining = duration - (now - Number(start));
   const isExpired = remaining < 0;
 
   useEffect(() => {
